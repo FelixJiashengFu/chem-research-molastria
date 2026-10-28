@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>量子化学基准与基础参数 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="这一类不给“某个体系的答案”，给的是“你的计算可不可信”的标尺：基准集（GMTKN55 是 DFT 精度的事实标尺）、基组与赝势（BSE 是唯一可编程取全的）、以及溶剂化与热化学的参考数据。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p04-cat02.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="量子化学基准与基础参数 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="这一类不给“某个体系的答案”，给的是“你的计算可不可信”的标尺：基准集（GMTKN55 是 DFT 精度的事实标尺）、基组与赝势（BSE 是唯一可编程取全的）、以及溶剂化与热化学的参考数据。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p04-cat02.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"量子化学基准与基础参数","description":"这一类不给“某个体系的答案”，给的是“你的计算可不可信”的标尺：基准集（GMTKN55 是 DFT 精度的事实标尺）、基组与赝势（BSE 是唯一可编程取全的）、以及溶剂化与热化学的参考数据。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p04-cat02.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"02 · 量子化学基准与参数","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p04-cat02.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html" aria-current="page"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>02 · 量子化学基准与参数</span></nav><a href="../atlas/index.html#guide/p04-cat02">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">02<small>QC BENCHMARKS</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>量子化学基准与基础参数</h1>
+      <div class="en">Quantum-chemistry benchmarks &amp; basis data</div>
+    </div>
+  </div>
+  <p class="lead">这一类不给“某个体系的答案”，给的是“你的计算可不可信”的标尺：基准集（GMTKN55 是 DFT 精度的事实标尺）、基组与赝势（BSE 是唯一可编程取全的）、以及溶剂化与热化学的参考数据。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">008</td><td><b>NIST CCCBDB</b><br><span class="muted">cccbdb.nist.gov</span></td><td>计算化学基准数据库，汇集实验与计算的几何、能量、振动频率等，可直接对比方法误差。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">009</td><td><b>GMTKN55</b><br><span class="muted">www.chemie.uni-bonn.de/grimme/de/software/gmtkn/gmtkn55</span></td><td>Grimme 组的主族热化学与反应能基准集，DFT 方法评测的事实标准之一。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">010</td><td><b>Minnesota Databases</b><br><span class="muted">comp.chem.umn.edu/db/</span></td><td>Truhlar 组维护的多样基准库集合（M06、S22、MGCDB84 等），含几何与能量数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">011</td><td><b>ATcT</b><br><span class="muted">atct.anl.gov</span></td><td>Active Thermochemical Tables，通过网络化评估给出高精度生成焓与键能。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">012</td><td><b>NIST-JANAF</b><br><span class="muted">janaf.nist.gov</span></td><td>经典热力学函数表，提供物质在宽温区内的 Cp、S、H 以及平衡常数。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">013</td><td><b>Burcat 热化学库</b><br><span class="muted">garfield.chem.elte.hu/Burcat/burcat.html</span></td><td>NASA 多项式热化学数据库，燃烧与反应机理建模的常用参数来源。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">014</td><td><b>ReSpecTh</b><br><span class="muted">respecth.hu</span></td><td>燃烧反应机理与实验数据平台，含点火延迟、火焰速度等模型验证数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">015</td><td><b>NIST Kinetics</b><br><span class="muted">kinetics.nist.gov</span></td><td>气相化学动力学实验数据检索库，可按反应物或产物查速率常数。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">016</td><td><b>IUPAC 气相动力学</b><br><span class="muted">iupac.aeris-data.fr/en/home-english/</span></td><td>IUPAC 气相动力学数据评估项目（现由 AERIS 托管），提供经评审的速率常数与光解数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">017</td><td><b>Basis Set Exchange</b><br><span class="muted">www.basissetexchange.org</span></td><td>基组与赝势的一站式检索、下载平台，支持主流量化程序格式转换。</td><td>免费</td><td class="hi">★适配器</td></tr>
+<tr><td class="n">018</td><td><b>SSSP</b><br><span class="muted">www.materialscloud.org/discover/sssp</span></td><td>Materials Cloud 的标准固体赝势库，为可复现的固体 DFT 计算提供推荐设置。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">019</td><td><b>libxc</b><br><span class="muted">libxc.gitlab.io</span></td><td>开源交换-相关泛函库，被主流量化与固体电子结构程序广泛调用。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>使用顺序：先在 BSE（017，本机已做离线适配器）按方法选基组；新泛函或新流程先在 GMTKN55 子集（008）上自检再谈应用；溶剂化自由能先查 FreeSolv（012）与 MNSol（013）的实验参照。注意 QCArchive（019 在导航中为 QCArchive 生态入口，本机对应 #076 分类下亦有条目）的数据是“可回溯的计算档案”，和基准集不是一回事：前者存过程，后者定标尺。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p03-cat01.html"><small>← 上一章</small>01 · 综合化合物与化学信息</a><a href="p05-cat03a.html"><small>下一章 →</small>03 · 材料与晶体：计算库</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

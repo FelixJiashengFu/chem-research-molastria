@@ -506,14 +506,14 @@ def crawl_resdir():
     return items, status
 
 SOURCES_META = [
-    {"id": "keinsci", "name": "计算化学公社", "url": "http://bbs.keinsci.com/", "role": "海量真实问答、报错求解、教程帖的主战场", "color": "#22d3ee"},
-    {"id": "sobereva", "name": "Sobereva 博客", "url": "http://sobereva.com/", "role": "Multiwfn 深度长文、方法论与官方博文目录", "color": "#a78bfa"},
-    {"id": "xmol", "name": "X-MOL 学术平台", "url": "https://www.x-mol.com/", "role": "文献追踪、学科频道与学术工具", "color": "#34d399"},
-    {"id": "ccl", "name": "CCL 计算化学列表", "url": "https://www.ccl.net/chemistry/", "role": "历史最久的邮件列表归档、软件与资源索引", "color": "#fbbf24"},
-    {"id": "arxiv", "name": "arXiv 化学物理", "url": "https://arxiv.org/list/physics.chem-ph/recent", "role": "化学物理/计算物理最新预印本（arXiv 官方 API，按提交时间倒序）", "color": "#fb7185"},
-    {"id": "crossref", "name": "最新期刊论文 · Crossref", "url": "https://www.crossref.org/", "role": "JCTC、JCP、PCCP、JPCL 最新论文元数据（Crossref 官方 API，DOI 直达）", "color": "#60a5fa"},
-    {"id": "github", "name": "GitHub 开源项目", "url": "https://github.com/topics/computational-chemistry", "role": "计算化学开源软件与工具库（GitHub 官方 API，按 Star 排序）", "color": "#e2e8f0"},
-    {"id": "resdir", "name": "官方软件与数据库", "url": "", "role": "主流软件官网与权威数据库目录（逐站实测可达才收录，点卡片进各官网）", "color": "#2dd4bf"},
+    {"id": "keinsci", "name": "计算化学公社", "url": "http://bbs.keinsci.com/", "role": "海量真实问答、报错求解、教程帖的主战场", "color": "#2f7f73"},
+    {"id": "sobereva", "name": "Sobereva 博客", "url": "http://sobereva.com/", "role": "Multiwfn 深度长文、方法论与官方博文目录", "color": "#6e5aa8"},
+    {"id": "xmol", "name": "X-MOL 学术平台", "url": "https://www.x-mol.com/", "role": "文献追踪、学科频道与学术工具", "color": "#3f8a4f"},
+    {"id": "ccl", "name": "CCL 计算化学列表", "url": "https://www.ccl.net/chemistry/", "role": "历史最久的邮件列表归档、软件与资源索引", "color": "#b07a1e"},
+    {"id": "arxiv", "name": "arXiv 化学物理", "url": "https://arxiv.org/list/physics.chem-ph/recent", "role": "化学物理/计算物理最新预印本（arXiv 官方 API，按提交时间倒序）", "color": "#b0414f"},
+    {"id": "crossref", "name": "最新期刊论文 · Crossref", "url": "https://www.crossref.org/", "role": "JCTC、JCP、PCCP、JPCL 最新论文元数据（Crossref 官方 API，DOI 直达）", "color": "#3d6fa8"},
+    {"id": "github", "name": "GitHub 开源项目", "url": "https://github.com/topics/computational-chemistry", "role": "计算化学开源软件与工具库（GitHub 官方 API，按 Star 排序）", "color": "#4c535c"},
+    {"id": "resdir", "name": "官方软件与数据库", "url": "", "role": "主流软件官网与权威数据库目录（逐站实测可达才收录，点卡片进各官网）", "color": "#2f7d8c"},
 ]
 
 def main():

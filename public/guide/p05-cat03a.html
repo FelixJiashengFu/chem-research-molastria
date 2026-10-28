@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>材料与晶体结构：计算库 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="材料类是本册和本机工程的主战场。020–027 以计算库为主：都有统一的元素/化学式检索，其中 MP、AFLOW、NOMAD、JARVIS、Materials Cloud 现在都能经 OPTIMADE 一条协议访问（见下页）。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p05-cat03a.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="材料与晶体结构：计算库 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="材料类是本册和本机工程的主战场。020–027 以计算库为主：都有统一的元素/化学式检索，其中 MP、AFLOW、NOMAD、JARVIS、Materials Cloud 现在都能经 OPTIMADE 一条协议访问（见下页）。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p05-cat03a.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"材料与晶体结构：计算库","description":"材料类是本册和本机工程的主战场。020–027 以计算库为主：都有统一的元素/化学式检索，其中 MP、AFLOW、NOMAD、JARVIS、Materials Cloud 现在都能经 OPTIMADE 一条协议访问（见下页）。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p05-cat03a.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"03 · 材料与晶体：计算库","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p05-cat03a.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html" aria-current="page"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>03 · 材料与晶体：计算库</span></nav><a href="../atlas/index.html#guide/p05-cat03a">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">03<small>MATERIALS I</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>材料与晶体结构：计算库</h1>
+      <div class="en">Computational materials databases</div>
+    </div>
+  </div>
+  <p class="lead">材料类是本册和本机工程的主战场。020–027 以计算库为主：都有统一的元素/化学式检索，其中 MP、AFLOW、NOMAD、JARVIS、Materials Cloud 现在都能经 OPTIMADE 一条协议访问（见下页）。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">020</td><td><b>Materials Project</b><br><span class="muted">materialsproject.org</span></td><td>美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。</td><td>注册</td><td class="hi">★适配器</td></tr>
+<tr><td class="n">021</td><td><b>OQMD</b><br><span class="muted">www.oqmd.org</span></td><td>开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">022</td><td><b>AFLOW</b><br><span class="muted">aflow.org</span></td><td>高通量材料计算平台，提供结构原型、热力学与电子性质等大规模数据。</td><td>免费</td><td class="hi">★OPTIMADE</td></tr>
+<tr><td class="n">023</td><td><b>NOMAD</b><br><span class="muted">nomad-lab.eu</span></td><td>欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。</td><td>免费</td><td class="hi">★OPTIMADE</td></tr>
+<tr><td class="n">024</td><td><b>JARVIS</b><br><span class="muted">jarvis.nist.gov</span></td><td>NIST 的材料与分子数据平台，含 DFT 性质、力场与机器学习工具。</td><td>免费</td><td class="hi">★OPTIMADE</td></tr>
+<tr><td class="n">025</td><td><b>Materials Cloud</b><br><span class="muted">www.materialscloud.org</span></td><td>EPFL 托管的开放材料数据与工具门户，含二维材料、SSSP 与 AiiDA 工作流。</td><td>免费</td><td class="hi">★OPTIMADE</td></tr>
+<tr><td class="n">026</td><td><b>C2DB</b><br><span class="muted">cmr.fysik.dtu.dk/c2db/c2db.html</span></td><td>二维材料计算数据库，提供数百种单层材料的结构稳定性与电子、磁性质。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">027</td><td><b>ICSD</b><br><span class="muted">icsd.fiz-karlsruhe.de</span></td><td>无机晶体结构数据库，收录实验测定的晶体结构，通常需机构订阅。</td><td>机构订阅</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>分工：<strong>Materials Project</strong>（020）胜在性质全与生态（pymatgen/mp-api），但能量带 MP2020 校正、许可为 CC-BY，要求引用；<strong>AFLOW</strong>（022）条目多且老牌；<strong>NOMAD</strong>（023）是 FAIR 档案库，同一个体系可能有多个来源的计算，检索要带周期性过滤；<strong>JARVIS</strong>（024）胜在性质维度（光电、拓扑）；<strong>Materials Cloud</strong>（025）的结构在其 MC3D 子库。OQMD（021）方法学独特（拟合形成能），但本机实测其 OPTIMADE 端点 502，暂按目录条目对待。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p04-cat02.html"><small>← 上一章</small>02 · 量子化学基准与参数</a><a href="p06-cat03b.html"><small>下一章 →</small>03 · 材料与晶体：实验库</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

@@ -5,7 +5,7 @@ const TYPE_LABEL = {tutorial:"深度教程", qa:"论坛帖", discipline:"学科�
 const state = { data:null, filtered:[], shown:24, q:"", source:"", type:"", tag:"", sort:"recent" };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const sourceMeta = (id) => (state.data?.sources || []).find((s) => s.id === id) || {name:id, color:"#94a3b8", url:"#"};
+const sourceMeta = (id) => (state.data?.sources || []).find((s) => s.id === id) || {name:id, color:"var(--muted)", url:"#"};
 
 function cardHTML(it){
   const sm = sourceMeta(it.source);
@@ -44,8 +44,8 @@ function donut(bySource){
     acc += frac;
   }
   $("donutChart").innerHTML = '<svg viewBox="0 0 180 180" width="190" height="190" role="img" aria-label="来源构成环形图">' +
-    segs.join("") + '<text x="90" y="86" text-anchor="middle" fill="#e8eefc" font-size="26" font-weight="700">' + total + "</text>" +
-    '<text x="90" y="108" text-anchor="middle" fill="#93a4c8" font-size="12">真实条目</text></svg>';
+    segs.join("") + '<text x="90" y="86" text-anchor="middle" style="fill:var(--ink)" font-size="26" font-weight="400" font-family="Georgia,serif">' + total + "</text>" +
+    '<text x="90" y="108" text-anchor="middle" style="fill:var(--muted)" font-size="12">真实条目</text></svg>';
   $("donutLegend").innerHTML = bySource.map((s) =>
     '<span><i style="background:' + esc(s.color) + '"></i>' + esc(s.name) + " " + s.count + "</span>").join("");
 }
@@ -64,11 +64,11 @@ function histogram(items){
     const h = b.count / max * (H - 34);
     return '<rect x="' + (i*bw + 5).toFixed(1) + '" y="' + (H - 20 - h).toFixed(1) + '" width="' + (bw - 10).toFixed(1) +
       '" height="' + h.toFixed(1) + '" rx="4" fill="url(#hg)"><title>' + b.name + ": " + b.count + ' 篇</title></rect>' +
-      '<text x="' + (i*bw + bw/2).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" fill="#93a4c8" font-size="8.5">' + (i*100+1) + "</text>" +
-      '<text x="' + (i*bw + bw/2).toFixed(1) + '" y="' + (H - 26 - h).toFixed(1) + '" text-anchor="middle" fill="#c3cfe9" font-size="10">' + b.count + "</text>";
+      '<text x="' + (i*bw + bw/2).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" style="fill:var(--muted)" font-size="8.5">' + (i*100+1) + "</text>" +
+      '<text x="' + (i*bw + bw/2).toFixed(1) + '" y="' + (H - 26 - h).toFixed(1) + '" text-anchor="middle" style="fill:var(--ink-2)" font-size="10">' + b.count + "</text>";
   }).join("");
   $("histChart").innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="博文编号分布直方图">' +
-    '<defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>' + rects + "</svg>";
+    '<defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--accent-2)"/><stop offset="1" style="stop-color:var(--accent)"/></linearGradient></defs>' + rects + "</svg>";
 }
 
 /* ---------- 筛选 ---------- */

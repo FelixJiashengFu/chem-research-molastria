@@ -7,3 +7,4 @@ maintenance/_probe/
 .env
 .env.*
 *.log
+dist/

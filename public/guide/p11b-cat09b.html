@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>机器学习数据集与势函数：基础设施 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="下半部分是“数据集的基础设施”：轨迹库、势函数基准与数据托管框架。它们决定训练粮能不能被复现、被引用、被持续更新。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p11b-cat09b.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="机器学习数据集与势函数：基础设施 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="下半部分是“数据集的基础设施”：轨迹库、势函数基准与数据托管框架。它们决定训练粮能不能被复现、被引用、被持续更新。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p11b-cat09b.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"机器学习数据集与势函数：基础设施","description":"下半部分是“数据集的基础设施”：轨迹库、势函数基准与数据托管框架。它们决定训练粮能不能被复现、被引用、被持续更新。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p11b-cat09b.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"09 · 机器学习：材料与工具","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p11b-cat09b.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html" aria-current="page"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>09 · 机器学习：材料与工具</span></nav><a href="../atlas/index.html#guide/p11b-cat09b">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">09<small>ML DATA II</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>机器学习数据集与势函数：基础设施</h1>
+      <div class="en">ML datasets &amp; interatomic potentials II</div>
+    </div>
+  </div>
+  <p class="lead">下半部分是“数据集的基础设施”：轨迹库、势函数基准与数据托管框架。它们决定训练粮能不能被复现、被引用、被持续更新。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">075</td><td><b>tmQM</b><br><span class="muted">github.com/uiocompcat/tmQM</span></td><td>过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">076</td><td><b>QCArchive</b><br><span class="muted">qcarchive.molssi.org</span></td><td>MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。</td><td>免费</td><td class="hi">○占位</td></tr>
+<tr><td class="n">077</td><td><b>Open Graph Benchmark</b><br><span class="muted">ogb.stanford.edu</span></td><td>图神经网络基准套件，包含分子图性质预测等任务与标准划分。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">078</td><td><b>DeepChem / MoleculeNet</b><br><span class="muted">deepchem.io</span></td><td>DeepChem 生态的分子机器学习数据集与 MoleculeNet 基准合集。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">079</td><td><b>NIST Interatomic Potentials</b><br><span class="muted">www.ctcms.nist.gov/potentials/</span></td><td>NIST 原子间势函数库，收录 EAM、MEAM 等经典势参数与评估工具。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>QCArchive（076）在本机是下一阶段的适配目标——它存的是可回溯的单点计算，正好补 MP/PubChem “只有结构没有能量”的缺口，目前状态如实标为 stub。评测势函数先看基准条目给的任务定义与划分方式；托管型条目（如 ColabFit 一类）先确认引用方式与版本号规则，再把数据拉进自己的管线。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p11-cat09.html"><small>← 上一章</small>09 · 机器学习：分子与催化</a><a href="p12-cat10a.html"><small>下一章 →</small>10 · 软件：量化与动力学</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

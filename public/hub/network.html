@@ -4,17 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>网状查询 · ChemResearch Hub 计算化学研究导航</title>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/hub/network.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="网状查询 · ChemResearch Hub 计算化学研究导航">
+  <meta property="og:description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/hub/network.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- seo:end -->
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
+<script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="../shared-nav.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="network.css">
-<link rel="stylesheet" href="../shared-nav.css">
 </head>
 <body data-section="network">
 <a class="network-skip" href="#netQ">跳到跨库查询</a>
 <header class="topbar">
-  <a class="brand" href="../index.html" aria-label="返回 ChemResearch Hub 首页">
-    <span class="brand-mark" aria-hidden="true">◈</span>
-    <span><strong>ChemResearch Hub</strong><small>计算化学研究导航 · 网状查询</small></span>
+  <a class="brand" href="network.html" aria-label="网状查询">
+    <span class="brand-mark" aria-hidden="true">❖</span>
+    <span><strong>网状查询</strong><small>资源 · 主题 · 数据库</small></span>
   </a>
   <nav class="nav" aria-label="主导航">
     <a href="index.html#overview">总览</a><a href="index.html#explore">探索</a>
@@ -22,7 +36,7 @@
     <a href="index.html#fresh">最新论文</a><a href="index.html#open">开源与官网</a><a href="#directory">数据库总表</a>
   </nav>
   <div class="top-actions"><span id="generatedAt" class="muted small">加载中…</span>
-  <a class="btn ghost" href="index.html">← 返回首页</a></div>
+  </div>
 </header>
 
 <main id="top">
@@ -66,11 +80,11 @@
         <div id="tooltip" class="graph-tooltip" hidden></div>
       </div>
       <div class="legend net-legend">
-        <span><i style="background:#22d3ee"></i>数据源（颜色随各源品牌色）</span>
-        <span><i style="background:#a78bfa"></i>主题标签</span>
-        <span><i style="background:#2dd4bf"></i>数据库分类</span>
-        <span><i style="background:#34d399"></i>数据库 / 软件官网</span>
-        <span><i style="background:#fbbf24"></i>中心枢纽</span>
+        <span><i style="background:#2f7f73"></i>数据源（每个来源一种颜色）</span>
+        <span><i style="background:#6e5aa8"></i>主题标签</span>
+        <span><i style="background:#2f7d8c"></i>数据库分类</span>
+        <span><i style="background:#3f8a4f"></i>数据库 / 软件官网</span>
+        <span><i style="background:#a67d42"></i>中心枢纽</span>
       </div>
       <div id="selectedInfo" class="selected-info" role="status">正在加载真实数据…</div>
     </article>
@@ -84,7 +98,7 @@
   </section>
 
   <section id="directory" class="section">
-    <div class="section-head"><h2>🗄 所有数据库与软件官网总表</h2>
+    <div class="section-head"><h2>所有数据库与软件官网总表</h2>
     <p>下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。相同网址已合并，来源关系仍保留。
     点「在网中定位」回到图上看它与各主题、各来源的关系；点「访问」直达原站。</p></div>
     <div id="dbDirectory"></div>
@@ -103,7 +117,7 @@
 
 <footer class="footer">
   <span>ChemResearch Hub 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。</span>
-  <span><a href="../index.html">返回统一首页</a></span>
+  <span><a href="../index.html">返回统一首页</a> · <a href="../resources/index.html">资源目录</a> · <a href="../guide/index.html">中文讲解</a></span>
 </footer>
 <script src="../shared-nav.js"></script>
 <script src="../merged-data.js"></script>

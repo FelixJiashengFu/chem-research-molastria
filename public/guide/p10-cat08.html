@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>光谱与波谱 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="光谱库的价值在“指纹比对”：NMRShiftDB 与 SpectraBase 管 NMR 化学位移，MassBank 与 GNPS 管质谱碎片，AIST SDBS 是老牌的综合谱图库。它们是鉴定与结构确证的证据，不是计算输入。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p10-cat08.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="光谱与波谱 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="光谱库的价值在“指纹比对”：NMRShiftDB 与 SpectraBase 管 NMR 化学位移，MassBank 与 GNPS 管质谱碎片，AIST SDBS 是老牌的综合谱图库。它们是鉴定与结构确证的证据，不是计算输入。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p10-cat08.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"光谱与波谱","description":"光谱库的价值在“指纹比对”：NMRShiftDB 与 SpectraBase 管 NMR 化学位移，MassBank 与 GNPS 管质谱碎片，AIST SDBS 是老牌的综合谱图库。它们是鉴定与结构确证的证据，不是计算输入。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p10-cat08.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"08 · 光谱与波谱","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p10-cat08.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html" aria-current="page"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>08 · 光谱与波谱</span></nav><a href="../atlas/index.html#guide/p10-cat08">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">08<small>SPECTRA</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>光谱与波谱</h1>
+      <div class="en">Spectroscopy databases</div>
+    </div>
+  </div>
+  <p class="lead">光谱库的价值在“指纹比对”：NMRShiftDB 与 SpectraBase 管 NMR 化学位移，MassBank 与 GNPS 管质谱碎片，AIST SDBS 是老牌的综合谱图库。它们是鉴定与结构确证的证据，不是计算输入。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">063</td><td><b>HITRAN</b><br><span class="muted">hitran.org</span></td><td>高分辨率分子光谱数据库，大气探测与燃烧诊断的标准谱线来源。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">064</td><td><b>ExoMol</b><br><span class="muted">www.exomol.com</span></td><td>系外行星与高温分子谱线库，覆盖大量小分子的完整 rovibronic 谱线。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">065</td><td><b>JPL Molecular Spectroscopy</b><br><span class="muted">spec.jpl.nasa.gov</span></td><td>JPL 微波、毫米波分子谱线目录，射电天文与气相光谱研究常用。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">066</td><td><b>CDMS</b><br><span class="muted">cdms.astro.uni-koeln.de</span></td><td>科隆分子光谱数据库，提供气相分子的转动与振动谱线数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">067</td><td><b>SDBS</b><br><span class="muted">sdbs.db.aist.go.jp</span></td><td>日本 AIST 谱图数据库，可检索 IR、Raman、NMR 与 MS 实测谱。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">068</td><td><b>NIST Atomic Spectra Database</b><br><span class="muted">www.nist.gov/pml/atomic-spectra-database</span></td><td>NIST 原子光谱数据库，提供原子能级、谱线与跃迁概率。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>计算化学与这一类的连接点是“预测谱 vs 实测谱”：DFT 算的 NMR 位移、振动频率，最终要在这里找实验参照。注意谱图库的许可与再分发限制普遍比结构库严（MassBank 相对开放），把谱图打包进自己的数据集前逐条确认。用量纲提醒一句：化学位移 ppm 是相对量，跨库比对前先确认参考标准是否一致。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p09-cat06-07.html"><small>← 上一章</small>06–07 · 代谢与反应通路</a><a href="p11-cat09.html"><small>下一章 →</small>09 · 机器学习：分子与催化</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

@@ -6,8 +6,23 @@
   <meta name="description" content="计算化学研究资源统一入口：数据库、论文、中文教程与开源工具，配合关系图谱、19章讲解和Agent工程说明。">
   <meta name="theme-color" content="#173f34">
   <title>ChemResearch Hub · 计算化学研究导航</title>
-  <link rel="icon" href="atlas/favicon.svg" type="image/svg+xml">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:description" content="计算化学研究资源统一入口：数据库、论文、中文教程与开源工具，配合关系图谱、19章讲解和Agent工程说明。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"ChemResearch Hub","alternateName":"计算化学研究导航","url":"https://felixjiashengfu.github.io/chem-research-hub/","inLanguage":"zh-CN","description":"计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。"},{"@context":"https://schema.org","@type":"Dataset","name":"ChemResearch Hub 计算化学资源目录","description":"1465 条计算化学数据库、软件、教程、论文与开源项目的标题级索引，保留原始来源与链接。","url":"https://felixjiashengfu.github.io/chem-research-hub/","inLanguage":"zh-CN","dateModified":"2026-10-27","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://felixjiashengfu.github.io/chem-research-hub/merged-data.json"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="shared-nav.css">
+  <link rel="stylesheet" href="theme-auto.css">
   <link rel="stylesheet" href="styles.css">
   <script src="merged-data.js" defer></script>
   <script src="shared-nav.js" defer></script>
@@ -25,14 +40,15 @@
     <div class="section-title"><div><p class="eyebrow">ONE CATALOGUE, MORE CONNECTIONS</p><h2 id="catalog-title">统一资源检索</h2></div><button id="export" class="text-button">导出筛选结果 ↓</button></div>
     <div class="searchbar"><label for="search" class="search-label">⌕ <span class="sr-only">搜索名称、摘要、分类与关键词</span><input id="search" type="search" autocomplete="off" placeholder="搜索 PubChem、ORCA、晶体、静电势…"><kbd>Ctrl K</kbd></label><a id="network-query" class="button primary" href="hub/network.html">在图谱中搜索 ↗</a></div>
     <div class="filterbar"><label>内容范围<select id="collection"><option value="">全部内容</option><option value="atlas">数据库与研究资源目录</option><option value="hub">论文、教程与社区</option><option value="saved">我的收藏</option></select></label><label>来源<select id="source"><option value="">全部来源</option></select></label><label>类型<select id="type"><option value="">全部类型</option></select></label><label>排序<select id="sort"><option value="relevance">默认 / 关键词相关</option><option value="date">日期从新到旧</option><option value="title">名称 A–Z</option></select></label><button class="button reset" id="reset">清除筛选</button></div>
+    <div class="ask-ai"><span aria-hidden="true">✦</span><span><b>想要一段带出处的回答？</b> AI 助手会先在本站目录里检索，再用 DeepSeek 或 Muse 作答，并标出引用的条目。</span><button class="button" type="button" id="ask-ai">用 AI 回答当前问题 →</button></div>
     <div class="quick-topics" aria-label="快捷关键词"><span>试着搜索</span><button data-query="基组">基组</button><button data-query="Multiwfn">Multiwfn</button><button data-query="分子动力学">分子动力学</button><button data-query="机器学习">机器学习</button><button data-query="PubChem">PubChem</button></div>
     <div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
     <div id="results" class="results"></div>
     <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以换用英文名称、缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
     <div class="more"><button id="more" class="button">显示更多资源 ↓</button><p id="page-count"></p></div>
   </section>
-  <section class="paths" aria-label="进一步探索"><a href="atlas/index.html#guide"><span>01 / 读懂背景</span><h2>中文讲解手册 <b>↗</b></h2><p>从三分钟导读开始，理解化学数据的分层、用途与边界。</p></a><a href="hub/index.html#overview"><span>02 / 回到来源</span><h2>论文与社区看板 <b>↗</b></h2><p>查看各来源的内容分布、接入状态、论文与教程快照。</p></a><a href="atlas/index.html#agent"><span>03 / 连接流程</span><h2>Agent 工程 <b>↗</b></h2><p>查看适配器、MCP 工具与源码下载，区分已实现和待完成能力。</p></a></section>
-  <footer><strong>ChemResearch Hub<small>由 ChemDB Atlas 与 ChemVis Hub 合并</small></strong><p id="merge-note">保留原始来源与原文链接，重复地址合并展示。</p><p>数据为原项目保存的快照，合并时未重新测试外部网站。<br>全文、更新日期与使用许可请以原站为准。收藏保存在当前浏览器。</p></footer>
+  <section class="paths" aria-label="进一步探索"><a href="atlas/index.html#guide"><span>01 / 读懂背景</span><h2>中文讲解手册 <b>↗</b></h2><p>从三分钟导读开始，理解化学数据的分层、用途与边界。</p></a><a href="hub/index.html#overview"><span>02 / 回到来源</span><h2>论文与社区看板 <b>↗</b></h2><p>查看各来源的内容分布、接入状态、论文与教程快照。</p></a><a href="atlas/index.html#agent"><span>03 / 连接流程</span><h2>Agent 工程 <b>↗</b></h2><p>查看适配器、MCP 工具与源码下载，区分已实现和待完成能力。</p></a><a class="lab-path" href="lab/index.html"><span>04 / 闭环发现 · 新</span><h2>AI 实验室 <b>↗</b></h2><p>让 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，按可靠性分配 DFT 验证。</p></a></section>
+  <footer><strong>ChemResearch Hub<small>由 ChemDB Atlas 与 ChemVis Hub 合并</small></strong><p id="merge-note">保留原始来源与原文链接，重复地址合并展示。</p><p class="site-links"><a href="resources/index.html">资源目录（静态页）</a> · <a href="guide/index.html">中文讲解 19 章</a> · <a href="lab/index.html">AI 实验室</a> · <a href="sitemap.xml">站点地图</a></p><p>数据为原项目保存的快照，合并时未重新测试外部网站。<br>全文、更新日期与使用许可请以原站为准。收藏保存在当前浏览器。</p></footer>
 </main>
 <dialog id="details" aria-labelledby="detail-title"><button id="close-details" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>

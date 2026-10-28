@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="闭环 AI 科学家：用 Muse Wonder 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层决定 DFT 验证预算，PubChem 新颖性检查。">
+  <meta name="theme-color" content="#173f34">
+  <title>AI 实验室 · 闭环电解液分子发现 · ChemResearch Hub</title>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/lab/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="AI 实验室 · 闭环电解液分子发现 · ChemResearch Hub">
+  <meta property="og:description" content="闭环 AI 科学家：用 Muse Wonder 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层决定 DFT 验证预算，PubChem 新颖性检查。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/lab/">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"闭环电解液分子发现 · AI 实验室","applicationCategory":"ScientificApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://felixjiashengfu.github.io/chem-research-hub/lab/","isAccessibleForFree":true,"description":"用 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层分配 DFT 验证。"}</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="lab.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../ai/config.js" defer></script>
+  <script src="../ai/ai.js" defer></script>
+  <script src="chem.js" defer></script>
+  <script src="lab.js" defer></script>
+</head>
+<body data-section="lab">
+<a class="skip" href="#workbench">跳到工作台</a>
+<main>
+  <section class="lab-hero">
+    <div class="lab-hero-copy">
+      <p class="eyebrow">CLOSED-LOOP AI SCIENTIST · ELECTROLYTE DISCOVERY</p>
+      <h1>让 AI 提出分子，<br><em>也让它知道何时不可信。</em></h1>
+      <p class="lead">从“替人计算已知分子”到“自己发现新分子”。语言模型扮演化学家提出电解液溶剂候选，RDKit 拦下不合理的结构，UMA 机器学习势在 Rowan 云端快速筛选，可靠性层再决定把有限的 DFT 预算花在哪些“有希望但可疑”的分子上。</p>
+      <div class="actions">
+        <a class="button primary" href="#workbench">打开工作台 <span aria-hidden="true">↓</span></a>
+        <button class="button" type="button" id="hero-demo">载入演示数据</button>
+        <a class="button ghost" href="#method">方法与边界 <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="fine">AI 由你自己的 DeepSeek 或 Meta Muse API key 驱动；量化计算在 Rowan 上运行，结果导回本页。所有项目数据只保存在你的浏览器。</p>
+    </div>
+    <figure class="loop" aria-labelledby="loop-cap">
+      <ol class="loop-grid">
+        <li class="loop-node" data-step="propose"><span>01</span><b>化学家提出</b><small>Muse Wonder / DeepSeek 每轮提出 10 个分子与设计理由</small></li>
+        <li class="loop-node" data-step="filter"><span>02</span><b>RDKit 过滤</b><small>元素、大小、危险基团、复杂度、InChIKey 去重</small></li>
+        <li class="loop-node cloud" data-step="results"><span>03</span><b>UMA · Tier 1</b><small>构象 + 4 个电荷态，IP / EA / Li⁺ 结合能</small></li>
+        <li class="loop-node" data-step="memory"><span>06</span><b>记忆与反馈</b><small>前沿、失败案例与 DFT 判决回传给下一轮</small></li>
+        <li class="loop-node cloud" data-step="pareto"><span>05</span><b>Tier 2 / 3 验证</b><small>Rapid 氧化还原电位；ωB97M-V 单点确认或推翻</small></li>
+        <li class="loop-node judge" data-step="reliability"><span>04</span><b>可靠性层</b><small>先验误差、模型分歧、适用域、参考集距离</small></li>
+      </ol>
+      <figcaption id="loop-cap"><i></i>灰底步骤运行在 Rowan 云端 · 每轮 6 步 · 计划 10 轮以上</figcaption>
+    </figure>
+  </section>
+
+  <section class="facts" aria-label="方法要点">
+    <div><strong>3</strong><span>级精度：UMA → 隐式溶剂电位 → ωB97M-V</span></div>
+    <div><strong>6</strong><span>条可靠性规则，决定谁值得 DFT</span></div>
+    <div><strong>9</strong><span>个常用溶剂作为种子与参考集</span></div>
+    <div><strong>0.26 V</strong><span>UMA-S 主族还原电位 MAE（N = 192）</span></div>
+  </section>
+
+  <section id="workbench" class="bench" aria-labelledby="bench-title">
+    <div class="bench-head">
+      <div><p class="eyebrow">WORKBENCH</p><h2 id="bench-title">闭环工作台</h2></div>
+      <div class="bench-status" id="bench-status" role="status" aria-live="polite"></div>
+      <div class="bench-actions">
+        <button class="button small" type="button" id="load-demo">载入演示数据</button>
+        <label class="button small file">导入项目<input type="file" id="import-project" accept=".json,application/json" hidden></label>
+        <button class="button small" type="button" id="export-project">导出项目</button>
+        <button class="button small ghost" type="button" id="reset-project">清空</button>
+      </div>
+    </div>
+    <div class="demo-banner" id="demo-banner" hidden><b>当前是合成演示数据。</b>分子与 RDKit 过滤结果是真实的；IP、EA、Li⁺ 结合能、电位与 DFT 数值由简单的含氟规则随机生成，<em>不是计算结果</em>，只用于展示界面。点「清空」后再导入你的 Rowan 结果。</div>
+    <nav class="steps" role="tablist" aria-label="工作台步骤">
+      <button role="tab" type="button" data-tab="propose" aria-selected="true"><span>①</span>提出候选</button>
+      <button role="tab" type="button" data-tab="filter"><span>②</span>RDKit 过滤</button>
+      <button role="tab" type="button" data-tab="results"><span>③</span>计算结果</button>
+      <button role="tab" type="button" data-tab="reliability"><span>④</span>可靠性层</button>
+      <button role="tab" type="button" data-tab="pareto"><span>⑤</span>前沿与 DFT 预算</button>
+      <button role="tab" type="button" data-tab="cards"><span>⑥</span>候选卡片</button>
+    </nav>
+
+    <div class="tab" id="tab-propose" role="tabpanel">
+      <div class="split">
+        <div class="card">
+          <h3>让 AI 化学家提出下一轮候选</h3>
+          <p class="muted">AI 会看到当前 Pareto 前沿、上一轮被过滤的分子和被 DFT 推翻的判决，按 JSON 输出 SMILES 与一句话设计理由。生成后自动进入 RDKit 过滤。</p>
+          <div class="ai-line" id="ai-line"></div>
+          <div class="form-row">
+            <label>候选数量<select id="n-propose"><option>5</option><option selected>10</option><option>15</option></select></label>
+            <label>侧重<select id="focus"><option value="balance">兼顾三项</option><option value="oxidation">更抗氧化（高电压正极）</option><option value="reduction">更抗还原（负极稳定）</option><option value="solvation">Li⁺ 溶剂化适中</option><option value="additive">SEI 成膜添加剂（易还原）</option></select></label>
+          </div>
+          <label class="block">额外指令（可选）<textarea id="extra" rows="3" placeholder="例如：优先考虑线性碳酸酯；避免 CF3 直接连在羰基上；给出能买到前体的结构"></textarea></label>
+          <div class="btn-row"><button class="button primary" type="button" id="propose-btn">让 AI 提出候选</button><button class="button" type="button" id="propose-stop" hidden>停止</button><button class="button ghost" type="button" id="show-prompt">查看提示词</button></div>
+          <div id="propose-out" class="stream" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <h3>手动添加分子</h3>
+          <p class="muted">每行一个 SMILES，后面可以跟空格和设计理由。也可以贴入从论文或数据库里挑出的结构。</p>
+          <textarea id="manual-smiles" rows="7" class="mono" placeholder="COC(=O)OCC(F)(F)F 末端三氟乙基提高抗氧化性&#10;FC(F)OCCOC(F)F"></textarea>
+          <div class="btn-row"><button class="button" type="button" id="manual-add">加入并过滤</button></div>
+          <h4>历次轮次</h4>
+          <div id="round-list" class="round-list"></div>
+        </div>
+      </div>
+      <pre id="prompt-preview" class="prompt" hidden></pre>
+    </div>
+
+    <div class="tab" id="tab-filter" role="tabpanel" hidden>
+      <div class="card settings">
+        <h3>过滤条件</h3>
+        <div class="form-row wrap">
+          <fieldset class="checks"><legend>允许的元素</legend><label><input type="checkbox" checked disabled> C H O F</label><label><input type="checkbox" data-el="N"> N</label><label><input type="checkbox" data-el="S"> S</label><label><input type="checkbox" data-el="P"> P</label><label><input type="checkbox" data-el="B"> B</label></fieldset>
+          <label>最多重原子<input type="number" id="max-heavy" min="4" max="60"></label>
+          <label>合成复杂度上限<input type="number" id="max-cx" min="1" max="10" step="0.5"></label>
+          <button class="button small" type="button" id="refilter">按新条件重新过滤</button>
+        </div>
+        <p class="muted small">复杂度是近似值：按立体中心、螺 / 桥头原子、环数与大小计分，不等于 Ertl–Schuffenhauer SA score（后者需要 RDKit Python 的片段统计）。正式运行请在 filter 模块里算真实 SA score。</p>
+      </div>
+      <div class="table-head"><h3>全部提出过的分子</h3><div class="seg" id="filter-view" role="group" aria-label="显示范围"><button type="button" data-v="all" aria-pressed="true">全部</button><button type="button" data-v="pass" aria-pressed="false">通过</button><button type="button" data-v="fail" aria-pressed="false">未通过</button><button type="button" data-v="seed" aria-pressed="false">种子</button></div><button class="text-button" type="button" id="copy-passed">复制通过的 SMILES</button></div>
+      <div class="table-wrap"><table class="grid" id="filter-table"></table></div>
+    </div>
+
+    <div class="tab" id="tab-results" role="tabpanel" hidden>
+      <div class="split">
+        <div class="card">
+          <h3>1 · 在 Rowan 上运行</h3>
+          <p class="muted">为通过过滤、尚无结果的分子生成 rowan-python 脚本。先用 <code>is_draft=True</code> + <code>dispatch_info()</code> 估价，再正式提交。</p>
+          <div class="seg" id="tier-pick" role="group" aria-label="精度层级"><button type="button" data-t="t1" aria-pressed="true">Tier 1 · UMA 筛选</button><button type="button" data-t="t2" aria-pressed="false">Tier 2 · 氧化还原电位</button><button type="button" data-t="t3" aria-pressed="false">Tier 3 · ωB97M-V</button></div>
+          <div class="code-box"><div class="code-bar"><span id="script-note"></span><button class="text-button" type="button" id="copy-script">复制脚本</button><button class="text-button" type="button" id="download-script">下载 .py</button></div><pre><code id="script"></code></pre></div>
+        </div>
+        <div class="card">
+          <h3>2 · 导入计算结果</h3>
+          <p class="muted">CSV 或 JSON，按 SMILES / InChIKey 对应到分子；空单元格保留原值。</p>
+          <label class="drop" id="drop"><input type="file" id="import-results" accept=".csv,.json,text/csv,application/json" hidden><b>拖入或点选文件</b><span>也可以把 CSV 直接粘贴到下面</span></label>
+          <textarea id="paste-results" rows="5" class="mono" placeholder="smiles,ip_uma_s,ip_uma_m,ea_uma_s,ea_uma_m,li_uma_s,li_uma_m,e_ox,e_red,rowan_warning,ip_dft,ea_dft,rowan_url"></textarea>
+          <div class="btn-row"><button class="button" type="button" id="apply-paste">导入粘贴内容</button><button class="text-button" type="button" id="template">下载 CSV 模板</button></div>
+          <details class="cols"><summary>列说明</summary><ul>
+            <li><code>ip_uma_s</code> / <code>ip_uma_m</code>：绝热电离能 E(+1, 二重态) − E(0)，eV；UMA-S 与 UMA-M 同几何</li>
+            <li><code>ea_uma_s</code> / <code>ea_uma_m</code>：绝热电子亲和能 E(0) − E(−1, 二重态)，eV</li>
+            <li><code>li_uma_s</code> / <code>li_uma_m</code>：Li⁺ 结合能 E(Li⁺·溶剂) − E(Li⁺) − E(溶剂)，eV</li>
+            <li><code>e_ox</code> / <code>e_red</code>：Tier 2 氧化 / 还原电位，V（相对 SCE，乙腈）</li>
+            <li><code>rowan_warning</code>：工作流报告的碎片化或电位异常，非空即标为存疑</li>
+            <li><code>ip_dft</code> / <code>ea_dft</code>：Tier 3 ωB97M-V/def2-TZVPD 结果，eV</li>
+          </ul></details>
+          <p id="import-msg" class="msg" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="table-head"><h3>结果总表</h3><label class="inline">电位换算：Li/Li⁺ = SCE + <input type="number" id="sce-li" step="0.01"> V</label></div>
+      <div class="table-wrap"><table class="grid" id="results-table"></table></div>
+    </div>
+
+    <div class="tab" id="tab-reliability" role="tabpanel" hidden>
+      <div class="card settings">
+        <h3>阈值（规则 6：用参考集和已完成的 DFT 校准，而不是凭感觉）</h3>
+        <div class="form-row wrap">
+          <label>IP 先验误差 eV<input type="number" id="prior-ip" step="0.01"></label>
+          <label>EA 先验误差 eV<input type="number" id="prior-ea" step="0.01"></label>
+          <label>UMA-S/M 分歧 · IP<input type="number" id="dis-ip" step="0.05"></label>
+          <label>分歧 · EA<input type="number" id="dis-ea" step="0.05"></label>
+          <label>分歧 · Li⁺<input type="number" id="dis-li" step="0.05"></label>
+          <label>参考集相似度下限<input type="number" id="sim-min" step="0.05" min="0" max="1"></label>
+          <label class="check"><input type="checkbox" id="tie-prior"> 差距小于先验误差视为并列</label>
+          <button class="button small" type="button" id="calibrate">用已有 DFT 校准</button>
+        </div>
+        <p class="muted small" id="calib-msg">先验来自 Rowan 公布的基准（VanZanten &amp; Wagen, 2025）：UMA-S 主族还原电位 MAE 0.261 V（N = 192），电子亲和能 MAE 0.439 eV（N = 37）。IP 没有单独基准，暂用 EA 的数值，待校准。</p>
+      </div>
+      <ol class="rules">
+        <li><b>先验误差</b>两个候选相差小于先验误差时视为并列，不强行排名。</li>
+        <li><b>模型分歧</b>UMA-S 与 UMA-M 结果差距超过阈值，降为“存疑”。</li>
+        <li><b>适用域</b>检查元素与体系大小；超出主要验证范围的额外降级。</li>
+        <li><b>参考集距离</b>与最近种子溶剂的 Morgan 指纹相似度越低，可靠性越低。</li>
+        <li><b>Rowan 警告</b>电位工作流报告碎片化或异常大的电位时，自动标为存疑。</li>
+        <li><b>校准</b>阈值随参考集与已完成的 DFT 验证更新。</li>
+      </ol>
+      <div class="table-wrap"><table class="grid" id="rel-table"></table></div>
+    </div>
+
+    <div class="tab" id="tab-pareto" role="tabpanel" hidden>
+      <div class="chart-card card">
+        <div class="chart-head"><h3>Pareto 前沿 · 逐轮推进</h3>
+          <div class="round-ctl"><button class="button small" type="button" id="play">▶ 回放</button><label>显示到第 <output id="round-out">0</output> 轮<input type="range" id="round" min="0" max="0" value="0"></label></div>
+        </div>
+        <div class="chart" id="pareto-chart"></div>
+        <div class="legend" id="pareto-legend"></div>
+        <div class="hv"><h4>前沿超体积（相对种子溶剂中最差的 IP 与 EA）</h4><div id="hv-chart"></div></div>
+      </div>
+      <div class="split">
+        <div class="card">
+          <h3>本轮 DFT 分配</h3>
+          <p class="muted">按“在前沿上或附近 × 存疑程度”排序，在本轮预算内选 2–3 个做 ωB97M-V 单点，不重新优化几何。</p>
+          <div class="form-row"><label>本轮预算 credits<input type="number" id="round-budget" min="0" step="5"></label><label>每轮最多<input type="number" id="max-dft" min="1" max="10"></label></div>
+          <div id="dft-picks"></div>
+          <div class="btn-row"><button class="button" type="button" id="dft-script">生成 Tier 3 估价脚本</button></div>
+        </div>
+        <div class="card">
+          <h3>十轮 credits 预算</h3>
+          <p class="muted">单价是假设值，请用 <code>dispatch_info()</code> 实测后替换。</p>
+          <table class="budget" id="budget"></table>
+          <p class="muted small" id="budget-note"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab" id="tab-cards" role="tabpanel" hidden>
+      <div class="table-head"><h3>候选分子卡片</h3><div class="seg" id="card-view" role="group" aria-label="筛选卡片"><button type="button" data-v="front" aria-pressed="true">前沿</button><button type="button" data-v="verified" aria-pressed="false">已 DFT 验证</button><button type="button" data-v="doubtful" aria-pressed="false">存疑</button><button type="button" data-v="all" aria-pressed="false">全部有结果</button></div>
+        <span class="spacer"></span><button class="text-button" type="button" id="pubchem-all">检查 PubChem 新颖性</button><button class="text-button" type="button" id="export-md">导出报告 .md</button><button class="text-button" type="button" id="export-csv">导出 CSV</button></div>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+
+  <section id="method" class="method" aria-labelledby="method-title">
+    <p class="eyebrow">METHOD &amp; LIMITS</p>
+    <h2 id="method-title">方法：三级精度、六条可靠性规则</h2>
+    <p class="lead">目标是找到同时强抗氧化、强抗还原、与 Li⁺ 结合强度适中的溶剂分子。评估分三级，每升一级更准、更贵、覆盖的分子更少；排名用多目标 Pareto 前沿，不压缩成单一分数。</p>
+    <div class="table-wrap"><table class="grid static">
+      <thead><tr><th>层级</th><th>对象</th><th>计算内容</th><th>方法（均在 Rowan 上）</th></tr></thead>
+      <tbody>
+        <tr><th>Tier 1 · 筛选</th><td>每轮全部分子</td><td>构象搜索 → 中性 / 阳离子 / 阴离子 / Li⁺ 络合物优化 → IP、EA、Li⁺ 结合能</td><td>UMA-S 1.2（<code>uma_s_1_2_omol</code>），再在同一几何上做 UMA-M 单点检查分歧</td></tr>
+        <tr><th>Tier 2 · 电位</th><td>每轮前 3–5 个</td><td>乙腈中的单电子氧化 / 还原电位（V）</td><td>氧化还原电位工作流，Rapid 模式（GFN2-xTB 几何 + r²SCAN-3c 单点）</td></tr>
+        <tr><th>Tier 3 · 验证</th><td>每轮 2–3 个“有希望但可疑”的</td><td>中性与离子态的高精度单点，得到 DFT 级 IP、EA</td><td>ωB97M-V/def2-TZVPD（与 OMol25 同一约定），或电位工作流的 Meticulous 模式</td></tr>
+      </tbody>
+    </table></div>
+    <div class="table-wrap"><table class="grid static">
+      <thead><tr><th>性质</th><th>Tier 1 算法（UMA）</th><th>Tier 2</th><th>目标方向</th></tr></thead>
+      <tbody>
+        <tr><th>抗氧化</th><td>绝热 IP = E(阳离子, +1, 二重态) − E(中性, 0, 单重态)</td><td>氧化电位</td><td>越高越好</td></tr>
+        <tr><th>抗还原</th><td>绝热 EA = E(中性) − E(阴离子, −1, 二重态)</td><td>还原电位</td><td>溶剂：还原电位越负越好；SEI 添加剂相反</td></tr>
+        <tr><th>溶剂化</th><td>Li⁺ 结合能 = E(Li⁺·溶剂, +1) − E(Li⁺) − E(溶剂)</td><td>—</td><td>落在参考溶剂范围内：太强难脱溶剂，太弱溶盐差</td></tr>
+        <tr><th>抗夺氢（可选）</th><td>—</td><td>键解离能工作流</td><td>最弱 C–H 键越强越好</td></tr>
+      </tbody>
+    </table></div>
+    <div class="method-grid">
+      <div>
+        <h3>Rowan 电位工作流的四种精度</h3>
+        <table class="grid static compact"><thead><tr><th>模式</th><th>几何优化</th><th>单点能</th></tr></thead><tbody>
+          <tr><th>Reckless</th><td>GFN-FF</td><td>GFN2-xTB</td></tr>
+          <tr><th>Rapid（网页默认）</th><td>GFN2-xTB</td><td>r²SCAN-3c</td></tr>
+          <tr><th>Careful</th><td>r²SCAN-3c</td><td>ωB97X-3c</td></tr>
+          <tr><th>Meticulous</th><td>r²SCAN-3c → ωB97X-3c</td><td>ωB97M-D3BJ/def2-TZVPPD</td></tr>
+        </tbody></table>
+        <p class="muted small">几何在气相优化，单点包含隐式乙腈。默认输出相对 SCE 的电位；面向电池读者时统一换算到 Li/Li⁺。</p>
+      </div>
+      <div>
+        <h3>可靠性先验：OMol25 系列模型的基准</h3>
+        <table class="grid static compact"><thead><tr><th>方法</th><th>还原电位 MAE（V，N = 192）</th><th>电子亲和能 MAE（eV，N = 37）</th></tr></thead><tbody>
+          <tr><th>UMA-S</th><td>0.261</td><td>0.439</td></tr>
+          <tr><th>UMA-M</th><td>0.407</td><td>0.398</td></tr>
+          <tr><th>eSEN-S</th><td>0.505</td><td>0.502</td></tr>
+          <tr><th>GFN2-xTB</th><td>0.303</td><td>0.600</td></tr>
+        </tbody></table>
+        <p class="muted small">UMA-S 的主族还原电位误差与低成本 DFT 方法 B97-3c（0.260 V）相当；UMA-M 与 eSEN-S 存在离群值，使 RMSE 超过 1 V——这正是“S/M 模型分歧即存疑”这条规则的依据。另一项独立基准发现这类模型在纯电子转移与训练集中少见的活泼离子上会退化，建议“势函数几何 + DFT 单点 + 隐式溶剂校正”，与这里的分级设计一致。</p>
+      </div>
+    </div>
+    <div class="method-grid">
+      <div>
+        <h3>种子、参考集与分子约束</h3>
+        <p>种子与参考集为 9 个常用溶剂：EC、PC、DMC、DEC、EMC、FEC、VC、DME、DOL。参考值优先取自 LIBE 数据集（ωB97X-V/def2-TZVPPD/SMD，以碳酸酯为主），缺失的由 Tier 3 补齐。进入计算前由 RDKit 自动检查：只含 C、H、O、F（可放宽到 N、S、P、B）；重原子不超过 20 个；SMILES 能解析；合成可及性低于阈值；排除过氧、叠氮等不稳定或危险基团；按 InChIKey 去重，不重复评估。</p>
+        <p>新颖性检查按 InChIKey 查询 PubChem。未收录只说明“新”，不说明“好”或“可合成”。</p>
+      </div>
+      <div>
+        <h3>已知局限</h3>
+        <ul>
+          <li>电位工作流的溶剂固定为乙腈，不是碳酸酯电解液，只适合做相对排序。</li>
+          <li>忽略阴离子（如 PF₆⁻）与电极界面对氧化稳定性的影响。</li>
+          <li>不考虑黏度、熔点、闪点、电导率等宏观性质。</li>
+          <li>合成可及性只是启发式分数，没有实验验证；结论只作为初筛。</li>
+          <li>SCE 到 Li/Li⁺ 的换算默认用水相约定（SCE = +0.241 V，Li⁺/Li = −3.040 V，均相对 SHE），在乙腈体系里需要核对后写入说明。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="sources">
+      <h3>来源</h3>
+      <ul>
+        <li><a href="https://rowansci.com" rel="noopener" target="_blank">Rowan</a>：云端 UMA、氧化还原电位工作流与 GPU DFT；<a href="https://github.com/rowansci/rowan-python" rel="noopener" target="_blank">rowan-python</a>（MIT）</li>
+        <li>VanZanten &amp; Wagen（2025）：OMol25 系列模型对实验还原电位与电子亲和能的基准（上表数值）；背景见 Rowan 的 <a href="https://rowansci.substack.com/p/the-omol25uma-release" rel="noopener" target="_blank">The OMol25/UMA Release</a></li>
+        <li><a href="https://arxiv.org/abs/2510.24063" rel="noopener" target="_blank">arXiv:2510.24063</a>：基础势函数与量子化学方法计算氧化还原电位的比较</li>
+        <li><a href="https://arxiv.org/abs/2505.08762" rel="noopener" target="_blank">arXiv:2505.08762</a>：OMol25 数据集（CC BY 4.0）；UMA 权重遵循 FAIR Chemistry License</li>
+        <li><a href="https://huggingface.co/facebook/UMA" rel="noopener" target="_blank">facebook/UMA</a> · <a href="https://fair-chem.github.io/" rel="noopener" target="_blank">fairchem 文档</a></li>
+        <li>MolLEO（ICLR 2025）：已有的 LLM 驱动分子进化搜索；本工作台的差异在于分级物理计算与可信度判断</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="lab-foot">
+    <strong>ChemResearch Hub · AI 实验室</strong>
+    <p>项目数据保存在当前浏览器；导出 JSON 可在其他设备继续。AI 调用费用由你的服务商账户结算，Rowan credits 由你的 Rowan 账户结算。</p>
+  </footer>
+</main>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<noscript><p>AI 实验室需要启用 JavaScript。</p></noscript>
+</body>
+</html>

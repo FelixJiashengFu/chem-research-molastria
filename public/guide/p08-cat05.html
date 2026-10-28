@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>药物、生物活性与化学空间 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="这一类的货币不是结构而是“活性”：ChEMBL 的 IC50/Ki 人工标定数据是 QSAR 的金标准，GDB 系列则定义了“化学空间有多大”这个问题的边界。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p08-cat05.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="药物、生物活性与化学空间 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="这一类的货币不是结构而是“活性”：ChEMBL 的 IC50/Ki 人工标定数据是 QSAR 的金标准，GDB 系列则定义了“化学空间有多大”这个问题的边界。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p08-cat05.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"药物、生物活性与化学空间","description":"这一类的货币不是结构而是“活性”：ChEMBL 的 IC50/Ki 人工标定数据是 QSAR 的金标准，GDB 系列则定义了“化学空间有多大”这个问题的边界。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p08-cat05.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"05 · 药物与化学空间","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p08-cat05.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html" aria-current="page"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>05 · 药物与化学空间</span></nav><a href="../atlas/index.html#guide/p08-cat05">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">05<small>DRUGS</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>药物、生物活性与化学空间</h1>
+      <div class="en">Drugs, bioactivity &amp; chemical space</div>
+    </div>
+  </div>
+  <p class="lead">这一类的货币不是结构而是“活性”：ChEMBL 的 IC50/Ki 人工标定数据是 QSAR 的金标准，GDB 系列则定义了“化学空间有多大”这个问题的边界。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">043</td><td><b>ChEMBL</b><br><span class="muted">www.ebi.ac.uk/chembl</span></td><td>EBI 的生物活性数据库，整合药物、靶点与测定数据，是药物机器学习首选。</td><td>免费</td><td class="hi">★适配器</td></tr>
+<tr><td class="n">044</td><td><b>DrugBank</b><br><span class="muted">go.drugbank.com</span></td><td>药物与靶点知识库，含已上市及在研药物信息，学术访问免费。</td><td>学术免费</td><td class="hi"></td></tr>
+<tr><td class="n">045</td><td><b>ZINC</b><br><span class="muted">zinc.docking.org</span></td><td>可购买化合物的虚拟筛选库，提供多种预处理格式与三维构象。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">046</td><td><b>Enamine REAL</b><br><span class="muted">enamine.net/compound-collections/real-compounds</span></td><td>超大规模可合成化合物库，适合按需订购与十亿级虚拟筛选。</td><td>商业</td><td class="hi"></td></tr>
+<tr><td class="n">047</td><td><b>Guide to Pharmacology</b><br><span class="muted">www.guidetopharmacology.org</span></td><td>IUPHAR 的受体、离子通道与配体数据库，人工注释质量高。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">048</td><td><b>DUDE-Z</b><br><span class="muted">dudez.docking.org</span></td><td>分子对接评测的诱饵分子集，用于检验虚拟筛选方法的富集能力。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">049</td><td><b>Tox21</b><br><span class="muted">tox21.gov</span></td><td>美国联邦毒理研究计划数据门户，提供 21 世纪毒理学测试数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">050</td><td><b>EPA CompTox</b><br><span class="muted">comptox.epa.gov/dashboard</span></td><td>美国 EPA 化学品仪表盘，整合毒性、暴露与化学性质数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">051</td><td><b>ADMETlab 3.0</b><br><span class="muted">admetlab3.scbdd.com</span></td><td>在线 ADMET 性质预测平台，输入 SMILES 即可获得成药性与安全性评估。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">052</td><td><b>Therapeutics Data Commons</b><br><span class="muted">tdcommons.ai</span></td><td>治疗数据共享平台，汇集药物发现相关的机器学习数据集与基准。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p><strong>ChEMBL</strong>（043，本机已新增适配器）：名称/SMILES/InChIKey 精确检索，返回 2D 重原子坐标与描述符，许可 CC BY-SA——注意它的坐标不含氢、不能直接当 3D 构象用，要 3D 去 PubChem 或自己做构象生成。ZINC（046）管“能买到的化合物”，Enamine（049）管按需合成空间；GDB-13/17（051/052）的 10⁹–10¹¹ 量级是给生成模型划边界用的，不是拿来逐个算的。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p07-cat04.html"><small>← 上一章</small>04 · 生物大分子结构</a><a href="p09-cat06-07.html"><small>下一章 →</small>06–07 · 代谢与反应通路</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

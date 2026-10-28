@@ -33,28 +33,28 @@ function buildGraph(){
     edges.push({a, b, w, kind}); neighbors.get(a).add(b); neighbors.get(b).add(a);
   };
   const addNodeRaw = addNode;
-  addNodeRaw({id:"hub", kind:"hub", label:"ChemResearch Hub", sub:"全部真实条目", count:ITEMS.length, color:"#fbbf24", r:26});
+  addNodeRaw({id:"hub", kind:"hub", label:"ChemResearch Hub", sub:"全部真实条目", count:ITEMS.length, color:"#a67d42", r:26});
 
   const srcCount = {};
   ITEMS.forEach((i) => itemSources(i).forEach((id) => srcCount[id] = (srcCount[id] || 0) + 1));
   for (const s of SOURCES)
     addNode({id:"src:" + s.id, kind:"source", label:s.name, sub:s.statusLabel || s.status, count:srcCount[s.id] || 0,
-      color:s.color || "#94a3b8", sourceId:s.id, url:s.url || "", r:15 + Math.min(13, Math.sqrt(srcCount[s.id] || 0))});
+      color:s.color || "#7d8a80", sourceId:s.id, url:s.url || "", r:15 + Math.min(13, Math.sqrt(srcCount[s.id] || 0))});
 
   const tagCount = {};
   ITEMS.forEach((i) => (i.tags || []).forEach((t) => tagCount[t] = (tagCount[t] || 0) + 1));
   const topTags = Object.entries(tagCount).sort((a,b) => b[1] - a[1]).slice(0, 24).map((e) => e[0]);
   for (const t of topTags)
-    addNode({id:"tag:" + t, kind:"tag", label:t, sub:"主题标签", count:tagCount[t], color:"#a78bfa", tag:t,
+    addNode({id:"tag:" + t, kind:"tag", label:t, sub:"主题标签", count:tagCount[t], color:"#6e5aa8", tag:t,
       r:9 + Math.min(11, Math.sqrt(tagCount[t]) * 0.75)});
 
   const officials = ITEMS.filter(isOfficial);
   const cats = [...new Set(officials.map((i) => i.category || "未分类"))];
   for (const c of cats)
     addNode({id:"cat:" + c, kind:"category", label:c, sub:"数据库分类",
-      count:officials.filter((i) => (i.category || "未分类") === c).length, color:"#2dd4bf", category:c, r:14});
+      count:officials.filter((i) => (i.category || "未分类") === c).length, color:"#2f7d8c", category:c, r:14});
   for (const it of officials)
-    addNode({id:"db:" + it.id, kind:"db", label:it.title, sub:it.category || "", count:1, color:"#34d399",
+    addNode({id:"db:" + it.id, kind:"db", label:it.title, sub:it.category || "", count:1, color:"#3f8a4f",
       item:it, url:it.url, category:it.category || "未分类",
       r:10 + Math.min(5, String(it.title).length * 0.25)});
 
@@ -141,6 +141,16 @@ function step(){
 function isVisible(n){ return !kindFilter || n.kind === kindFilter || n.kind === "hub"; }
 function visibleNodes(){ return nodes.filter(isVisible); }
 
+/* 画布颜色取自全站 CSS 变量，切换浅色/深色时重新读取。 */
+const THEME = {};
+function readTheme(){
+  const css = getComputedStyle(document.documentElement), v = (name) => css.getPropertyValue(name).trim();
+  Object.assign(THEME, {edge: v("--graph-edge") || "rgba(60,90,70,0.18)", edgeHot: v("--accent-2") || "#4b704f",
+    match: v("--gold") || "#a67d42", selected: v("--ink") || "#1c3a2f", ring: v("--surface") || "#fdfcf8",
+    label: v("--ink") || "#1c3a2f", halo: v("--paper") || "#f6f5ee", count: "#ffffff"});
+}
+readTheme();
+document.addEventListener("chemhub:theme", readTheme);
 function draw(){
   const c = $("graph"), ctx = c.getContext("2d");
   const W = c.clientWidth, H = c.clientHeight; if (!W) return;
@@ -155,7 +165,7 @@ function draw(){
     const a = nodeById.get(e.a), b = nodeById.get(e.b);
     if (!a || !b || !isVisible(a) || !isVisible(b)) continue;
     const hot = selected && (e.a === selected.id || e.b === selected.id);
-    ctx.strokeStyle = hot ? "#7dd3fc" : "rgba(120,160,255,0.20)";
+    ctx.strokeStyle = hot ? THEME.edgeHot : THEME.edge;
     ctx.lineWidth = hot ? 2.2 : Math.min(3, 0.5 + Math.log10(e.w + 1));
     ctx.globalAlpha = selected && !hot ? 0.25 : 1;
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
@@ -168,14 +178,16 @@ function draw(){
     ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
     ctx.fillStyle = n.color; ctx.fill();
     ctx.lineWidth = (selected && selected.id === n.id) || match ? 3.4 : 1.4;
-    ctx.strokeStyle = match ? "#fde68a" : (selected && selected.id === n.id ? "#ffffff" : "rgba(6,10,20,0.85)");
+    ctx.strokeStyle = match ? THEME.match : (selected && selected.id === n.id ? THEME.selected : THEME.ring);
     ctx.stroke();
-    ctx.fillStyle = "#e8eefc"; ctx.font = (n.kind === "source" || n.kind === "hub" ? "700 " : "") + "12px 'Segoe UI','Microsoft YaHei',sans-serif";
+    ctx.fillStyle = THEME.label; ctx.font = (n.kind === "source" || n.kind === "hub" ? "700 " : "") + "12px 'Segoe UI','Microsoft YaHei',sans-serif";
     ctx.textAlign = "center";
     const label = n.label.length > 16 ? n.label.slice(0, 15) + "…" : n.label;
+    ctx.lineWidth = 3; ctx.strokeStyle = THEME.halo; ctx.lineJoin = "round";
+    ctx.strokeText(label, n.x, n.y + n.r + 15);
     ctx.fillText(label, n.x, n.y + n.r + 15);
     if (n.kind === "source" || n.kind === "tag")
-      { ctx.fillStyle = "#93a4c8"; ctx.font = "10px sans-serif"; ctx.fillText(String(n.count), n.x, n.y + 4); }
+      { ctx.fillStyle = THEME.count; ctx.font = "10px sans-serif"; ctx.fillText(String(n.count), n.x, n.y + 4); }
   }
   ctx.restore(); ctx.globalAlpha = 1;
 }
@@ -205,7 +217,7 @@ function bindGraph(){
     if (n){
       tip.hidden = false;
       tip.innerHTML = "<b>" + esc(n.label) + "</b> · " + esc(KIND_LABEL[n.kind] || n.kind) + "<br>" +
-        esc(n.sub || "") + (n.count ? " · 关联/包含 " + n.count + " 条" : "") + "<br><span style='color:#93a4c8'>单击查询 · 拖动挪位</span>";
+        esc(n.sub || "") + (n.count ? " · 关联/包含 " + n.count + " 条" : "") + "<br><span style='color:var(--muted)'>单击查询 · 拖动挪位</span>";
       tip.style.left = Math.max(8, Math.min(c.clientWidth - 290, p.sx + 16)) + "px"; tip.style.top = (p.sy + 14) + "px";
     } else tip.hidden = true;
   });
@@ -260,7 +272,7 @@ function refreshResults(){
   shown = 40; renderResults(q);
 }
 function renderResults(q){
-  const sm = (id) => SOURCES.find((s) => s.id === id) || {name: id, color: "#94a3b8"};
+  const sm = (id) => SOURCES.find((s) => s.id === id) || {name: id, color: "#7d8a80"};
   const what = selected ? (KIND_LABEL[selected.kind] + "「" + selected.label + "」") : "全部资源";
   $("resultTitle").textContent = "跨库查询结果 · " + what + (q ? " ∩ 关键词「" + queryText.trim() + "」" : "");
   $("selectedInfo").innerHTML = selected

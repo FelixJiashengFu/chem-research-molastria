@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>生物大分子与结构 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="从晶体跨到生命体系：PDB 是实验结构的唯一权威，AlphaFold DB 把“预测结构”变成了默认起点，SCOP/CATH 管分类，DrugBank 与 BindingDB 管“蛋白—配体”的关系数据。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p07-cat04.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="生物大分子与结构 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="从晶体跨到生命体系：PDB 是实验结构的唯一权威，AlphaFold DB 把“预测结构”变成了默认起点，SCOP/CATH 管分类，DrugBank 与 BindingDB 管“蛋白—配体”的关系数据。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p07-cat04.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"生物大分子与结构","description":"从晶体跨到生命体系：PDB 是实验结构的唯一权威，AlphaFold DB 把“预测结构”变成了默认起点，SCOP/CATH 管分类，DrugBank 与 BindingDB 管“蛋白—配体”的关系数据。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p07-cat04.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"04 · 生物大分子结构","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p07-cat04.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html" aria-current="page"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>04 · 生物大分子结构</span></nav><a href="../atlas/index.html#guide/p07-cat04">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">04<small>BIO</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>生物大分子与结构</h1>
+      <div class="en">Biomolecular structures</div>
+    </div>
+  </div>
+  <p class="lead">从晶体跨到生命体系：PDB 是实验结构的唯一权威，AlphaFold DB 把“预测结构”变成了默认起点，SCOP/CATH 管分类，DrugBank 与 BindingDB 管“蛋白—配体”的关系数据。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">035</td><td><b>Protein Data Bank</b><br><span class="muted">www.rcsb.org</span></td><td>实验测定的蛋白质与核酸三维结构总库，结构生物学与分子对接的起点。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">036</td><td><b>AlphaFold DB</b><br><span class="muted">alphafold.ebi.ac.uk</span></td><td>AlphaFold 预测的蛋白结构库，覆盖数百万物种的蛋白质组。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">037</td><td><b>EMDB</b><br><span class="muted">www.ebi.ac.uk/emdb</span></td><td>冷冻电镜密度图数据库，与 PDB 中的原子模型互相补充。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">038</td><td><b>UniProt</b><br><span class="muted">www.uniprot.org</span></td><td>蛋白序列与功能注释的权威数据库，可直接下载 FASTA 用于建模。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">039</td><td><b>BMRB</b><br><span class="muted">bmrb.io</span></td><td>生物大分子核磁共振数据银行，收录化学位移、结构约束与弛豫数据。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">040</td><td><b>PDBbind+</b><br><span class="muted">www.pdbbind-plus.org.cn</span></td><td>蛋白-配体复合物结合亲和力数据集，广泛用于打分函数开发与机器学习训练。</td><td>学术免费</td><td class="hi"></td></tr>
+<tr><td class="n">041</td><td><b>BindingDB</b><br><span class="muted">www.bindingdb.org</span></td><td>公开的结合亲和力数据库，可按靶点或化合物检索 Ki、Kd 与 IC50。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">042</td><td><b>PLINDER</b><br><span class="muted">www.plinder.sh</span></td><td>大规模蛋白-配体相互作用数据集，提供高质量结构、界面标注与划分。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>一条分界线：实验结构（035 RCSB PDB、036 PDBe、038 EMDB）可进结构生物学的证据链；预测结构（037 AlphaFold）置信度看 pLDDT，低置信区不能当实验事实。做对接与口袋分析先从 PDB 拿复合物（042 PDBBind 是精制过的亲和力子集）；只查序列与功能注释去 UniProt（039）。本机的计算化学管线暂不接生物类——它们的记录粒度（链、残基、配体）与小分子/晶体不同，硬塞进同一 schema 会丢信息。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p06-cat03b.html"><small>← 上一章</small>03 · 材料与晶体：实验库</a><a href="p08-cat05.html"><small>下一章 →</small>05 · 药物与化学空间</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>软件、平台与计算入口：计算引擎 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="软件类不是数据库：它们是产生与消费数据的引擎。080–089 以量化/材料计算程序与托管平台为主——选引擎看的是方法覆盖与输入格式生态，不是“哪个算得准”的排名。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p12-cat10a.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="软件、平台与计算入口：计算引擎 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="软件类不是数据库：它们是产生与消费数据的引擎。080–089 以量化/材料计算程序与托管平台为主——选引擎看的是方法覆盖与输入格式生态，不是“哪个算得准”的排名。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p12-cat10a.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"软件、平台与计算入口：计算引擎","description":"软件类不是数据库：它们是产生与消费数据的引擎。080–089 以量化/材料计算程序与托管平台为主——选引擎看的是方法覆盖与输入格式生态，不是“哪个算得准”的排名。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p12-cat10a.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"10 · 软件：量化与动力学","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p12-cat10a.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html" aria-current="page"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>10 · 软件：量化与动力学</span></nav><a href="../atlas/index.html#guide/p12-cat10a">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">10<small>SOFTWARE I</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>软件、平台与计算入口：计算引擎</h1>
+      <div class="en">Compute engines &amp; hosted platforms</div>
+    </div>
+  </div>
+  <p class="lead">软件类不是数据库：它们是产生与消费数据的引擎。080–089 以量化/材料计算程序与托管平台为主——选引擎看的是方法覆盖与输入格式生态，不是“哪个算得准”的排名。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">080</td><td><b>ORCA</b><br><span class="muted">www.faccts.de/orca</span></td><td>学术免费的高效量子化学程序，DFT、MP2、CCSD(T) 与多参考方法齐全。</td><td>学术免费</td><td class="hi"></td></tr>
+<tr><td class="n">081</td><td><b>Gaussian</b><br><span class="muted">gaussian.com</span></td><td>商业量子化学软件的标杆，方法覆盖广、生态成熟、教程与文献极多。</td><td>商业</td><td class="hi"></td></tr>
+<tr><td class="n">082</td><td><b>Q-Chem</b><br><span class="muted">www.q-chem.com</span></td><td>商业量子化学程序，擅长激发态、溶剂化与高端电子结构方法。</td><td>商业</td><td class="hi"></td></tr>
+<tr><td class="n">083</td><td><b>Psi4</b><br><span class="muted">psicode.org</span></td><td>开源量子化学程序，适合脚本化工作流、方法开发与教学。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">084</td><td><b>NWChem</b><br><span class="muted">nwchemgit.github.io</span></td><td>开源大规模并行量子化学程序，适合集群上的大体系计算。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">085</td><td><b>GAMESS</b><br><span class="muted">www.msg.chem.iastate.edu/gamess</span></td><td>经典开源量子化学程序，方法齐全、教程与社区资源丰富。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">086</td><td><b>CP2K</b><br><span class="muted">www.cp2k.org</span></td><td>开源固体与液体 DFT、分子动力学程序，擅长大规模周期体系。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">087</td><td><b>Quantum ESPRESSO</b><br><span class="muted">www.quantum-espresso.org</span></td><td>开源平面波 DFT 程序，固体与赝势计算的标准工具之一。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">088</td><td><b>VASP</b><br><span class="muted">www.vasp.at</span></td><td>商业平面波 DFT 程序，材料科学与表面催化领域使用极广。</td><td>商业</td><td class="hi"></td></tr>
+<tr><td class="n">089</td><td><b>LAMMPS</b><br><span class="muted">www.lammps.org</span></td><td>开源分子动力学引擎，擅长大规模体系、粗粒化模型与自定义势函数。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>本册把软件单列一类是清醒的：数据库给结构与性质，软件给新的计算结果，两者的版本都要进 provenance。托管平台（网页提交作业）适合教学与一次性任务；可复现研究要本地程序 + 版本号入档。本机 chemdb-agent 只登记这一类作导航，不做适配——但导出训练集时，生成数据的程序名与版本正是 mix_key 的一部分。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p11b-cat09b.html"><small>← 上一章</small>09 · 机器学习：材料与工具</a><a href="p13-cat10b.html"><small>下一章 →</small>10 · 软件：分析与工作流</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

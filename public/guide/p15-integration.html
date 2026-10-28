@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>哪些已经能被程序调用，哪些只是地图上的一个名字 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="讲解这本导航册的同一天，册中资源被接进了本仓库的 MCP 服务器 chemdb-agent。原则只有一条： 接入状态必须实测 ——端点通、字段对、测试过，才标“已接入”；其余 94 条只进资源目录（可检索、可查许可与访问方式），不冒充数据源。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p15-integration.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="哪些已经能被程序调用，哪些只是地图上的一个名字 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="讲解这本导航册的同一天，册中资源被接进了本仓库的 MCP 服务器 chemdb-agent。原则只有一条： 接入状态必须实测 ——端点通、字段对、测试过，才标“已接入”；其余 94 条只进资源目录（可检索、可查许可与访问方式），不冒充数据源。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p15-integration.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"哪些已经能被程序调用，哪些只是地图上的一个名字","description":"讲解这本导航册的同一天，册中资源被接进了本仓库的 MCP 服务器 chemdb-agent。原则只有一条： 接入状态必须实测 ——端点通、字段对、测试过，才标“已接入”；其余 94 条只进资源目录（可检索、可查许可与访问方式），不冒充数据源。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p15-integration.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"接入实况与边界","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p15-integration.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html" aria-current="page"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>接入实况与边界</span></nav><a href="../atlas/index.html#guide/p15-integration">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+
+  <div class="chap">
+    <div class="num">12<small>ENGINEERING</small></div>
+    <div class="tt">
+      <div class="kicker">导航册落进代码：九条真接入，其余如实登记</div>
+      <h1>哪些已经能被程序调用，<br>哪些只是地图上的一个名字</h1>
+      <div class="en">What is actually wired into chemdb-agent — verified endpoints, not intentions.</div>
+    </div>
+  </div>
+
+  <p class="lead">讲解这本导航册的同一天，册中资源被接进了本仓库的 MCP 服务器 chemdb-agent。原则只有一条：<strong>接入状态必须实测</strong>——端点通、字段对、测试过，才标“已接入”；其余 94 条只进资源目录（可检索、可查许可与访问方式），不冒充数据源。</p>
+
+  <table class="tbl tbl--tight">
+    <thead><tr><th>编号</th><th>资源</th><th>接入方式</th><th>实测要点（2026-10-27）</th></tr></thead>
+    <tbody>
+      <tr><td class="n">001</td><td><b>PubChem</b></td><td>适配器</td><td>3D 构象优先、电荷取自性质查询；限速 0.3 s/次</td></tr>
+      <tr><td class="n">017</td><td><b>Basis Set Exchange</b></td><td>适配器（离线）</td><td>def2-SVP/TZVP 取基组文本，Pt 带 ECP；ORCA 输出用元素全名</td></tr>
+      <tr><td class="n">020</td><td><b>Materials Project</b></td><td>适配器</td><td>形成能 + MP2020 校正标注；需 API key</td></tr>
+      <tr><td class="n">043</td><td><b>ChEMBL</b></td><td>适配器（本次新增）</td><td>名称/SMILES/InChIKey 精确检索；molfile 为 2D 重原子，电荷解析 M CHG 行；5xx 退避重试</td></tr>
+      <tr><td class="n">022</td><td><b>AFLOW</b></td><td>OPTIMADE</td><td>空页时客户端会误报 infinite loop，已按错误类型区分</td></tr>
+      <tr><td class="n">029</td><td><b>COD</b></td><td>OPTIMADE</td><td>必须点名 response_fields 才返回坐标</td></tr>
+      <tr><td class="n">023</td><td><b>NOMAD</b></td><td>OPTIMADE（本次新增）</td><td>Si 检索 38395 条含团簇；加 nperiodic_dimensions&gt;=1 后 25384 条周期结构</td></tr>
+      <tr><td class="n">024</td><td><b>JARVIS</b></td><td>OPTIMADE（本次新增）</td><td>端点 /optimade/jarvisdft，API 1.1 字段兼容</td></tr>
+      <tr><td class="n">025</td><td><b>Materials Cloud</b></td><td>OPTIMADE（本次新增）</td><td>本体是索引元数据库；结构查 MC3D-PBE-v1 子库</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout--warn">
+    <div class="lbl">如实登记的未接入</div>
+    <p><strong>OQMD（021）</strong>：OPTIMADE 端点实测 502，目录里标 catalog，待恢复后接入。<strong>QCArchive（076）</strong>：适配器为下一阶段占位（stub）。其余条目（含全部软件与社区类）只进目录：MCP 工具 <span class="lat">search_resources</span> 可按关键词/类别/接入状态检索这 103 条，但不会假装能从中取结构。</p>
+  </div>
+
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>这一页是本讲解版与普通书评的分界线：导航的价值最终要落在“能不能被调用”上。九条接入覆盖了四种形态——REST 适配器（PubChem/ChEMBL）、专业 API（MP）、离线数据（BSE）、统一协议（OPTIMADE 五家）。下一次扩容的优先级也由此排出：先 QCArchive 补“带能量的分子数据”，再视 OQMD 端点恢复情况补材料覆盖。</p>
+  </div>
+
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p14-cat11.html"><small>← 上一章</small>11 · 社区与中文入口</a><a href="p16-critique.html"><small>下一章 →</small>细读质疑与使用提醒</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

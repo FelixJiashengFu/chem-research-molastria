@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>材料与晶体结构：实验库与基准 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="028–034 是实验结构与评测基准：ICSD/CSD 是实验晶体的权威来源（订阅），COD 是其开放替代（CC0），Matbench 系列则回答“模型到底准不准”，与算结构是两个工种。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p06-cat03b.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="材料与晶体结构：实验库与基准 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="028–034 是实验结构与评测基准：ICSD/CSD 是实验晶体的权威来源（订阅），COD 是其开放替代（CC0），Matbench 系列则回答“模型到底准不准”，与算结构是两个工种。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p06-cat03b.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"材料与晶体结构：实验库与基准","description":"028–034 是实验结构与评测基准：ICSD/CSD 是实验晶体的权威来源（订阅），COD 是其开放替代（CC0），Matbench 系列则回答“模型到底准不准”，与算结构是两个工种。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p06-cat03b.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"03 · 材料与晶体：实验库","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p06-cat03b.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html" aria-current="page"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>03 · 材料与晶体：实验库</span></nav><a href="../atlas/index.html#guide/p06-cat03b">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">03<small>MATERIALS II</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>材料与晶体结构：实验库与基准</h1>
+      <div class="en">Experimental structures &amp; materials benchmarks</div>
+    </div>
+  </div>
+  <p class="lead">028–034 是实验结构与评测基准：ICSD/CSD 是实验晶体的权威来源（订阅），COD 是其开放替代（CC0），Matbench 系列则回答“模型到底准不准”，与算结构是两个工种。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">028</td><td><b>Cambridge Structural Database</b><br><span class="muted">www.ccdc.cam.ac.uk</span></td><td>剑桥结构数据库（CSD），有机与金属有机晶体结构的权威来源。</td><td>机构订阅</td><td class="hi"></td></tr>
+<tr><td class="n">029</td><td><b>Crystallography Open Database</b><br><span class="muted">www.crystallography.net/cod</span></td><td>开放晶体学数据库，免费提供数十万条晶体结构 CIF 文件。</td><td>免费</td><td class="hi">★OPTIMADE</td></tr>
+<tr><td class="n">030</td><td><b>AMCSD</b><br><span class="muted">www.rruff.net/amcsd/</span></td><td>矿物与相关固体的晶体结构库，适合矿物学与地球化学研究。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">031</td><td><b>Bilbao Crystallographic Server</b><br><span class="muted">www.cryst.ehu.es</span></td><td>晶体学对称性服务器，可查空间群、不可约表示与相变对称性。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">032</td><td><b>Catalysis-Hub</b><br><span class="muted">www.catalysis-hub.org</span></td><td>催化表面吸附能与反应能数据库，汇总多个研究组的 DFT 计算结果。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">033</td><td><b>Matbench</b><br><span class="muted">matbench.materialsproject.org</span></td><td>材料机器学习基准套件，含 13 个性质预测任务与固定数据划分。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">034</td><td><b>Matbench Discovery</b><br><span class="muted">matbench-discovery.materialsproject.org</span></td><td>材料发现专用基准，评估机器学习势函数在稳定材料筛选中的实际表现。</td><td>免费</td><td class="hi"></td></tr>
+</tbody></table>
+  <div class="callout callout--ink"><div class="lbl">统一入口：OPTIMADE</div><p>本机把 022/023/024/025/029 五家收进同一条 OPTIMADE 协议：一次元素/化学式查询、同一套字段回来。实测坑各不同——COD 必须点名要坐标字段才给坐标；NOMAD 混有分子条目，要加 <span class="lat">nperiodic_dimensions&gt;=1</span>；Materials Cloud 本体只是索引，结构要查 MC3D 子库。这些差异已写进适配器，调用方不需要知道。</p></div>
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>实验结构与计算结构不要混用：COD（029，本机已接入）给的是实验测定的晶胞，含氢位置与无序的实验局限；拿它当 DFT 初猜很好，当“真值能量”则不行。<strong>Matbench</strong>（033/034）是评测层：你的模型在它的 13 个任务上排第几，才是可比较的结论。Bilbao（031）管对称性与相变路径，Catalysis-Hub（032）管催化表面的 DFT 数据——都是窄而深的专用库。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p05-cat03a.html"><small>← 上一章</small>03 · 材料与晶体：计算库</a><a href="p07-cat04.html"><small>下一章 →</small>04 · 生物大分子结构</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

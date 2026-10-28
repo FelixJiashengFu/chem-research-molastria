@@ -6,9 +6,24 @@
   <meta name="description" content="103 条计算化学资源，11 个研究主题。搜索数据库、阅读中文讲解，了解 chemdb-agent 的接入进展。">
   <meta name="theme-color" content="#183e35">
   <title>ChemDB Atlas · ChemResearch Hub 计算化学资源导航</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/atlas/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="ChemDB Atlas · ChemResearch Hub 计算化学资源导航">
+  <meta property="og:description" content="103 条计算化学资源，11 个研究主题。搜索数据库、阅读中文讲解，了解 chemdb-agent 的接入进展。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/atlas/">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"ChemDB Atlas 计算化学数据库导航","inLanguage":"zh-CN","url":"https://felixjiashengfu.github.io/chem-research-hub/atlas/"}</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="styles.css">
   <script src="../shared-nav.js" defer></script>
   <script src="content.js" defer></script>
   <script src="app.js" defer></script>
@@ -53,7 +68,7 @@
       <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">RUN IT LOCALLY</div><h2>从本地运行开始</h2></div></div><div class="code-panel"><div class="code-tabs"><button data-code="install" class="active">环境与启动</button><button data-code="python">直接调用模块</button><button data-code="mcp">MCP 配置</button><button id="copy-code" class="copy-button">复制代码</button></div><pre><code id="code-content"></code></pre></div><p class="small-note">真实 MP 查询需在本地设置 MP_API_KEY。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。</p></section>
       <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">WHAT COMES NEXT</div><h2>下一步工程路线</h2></div></div><div class="roadmap"><div><span>01</span><h3>连接 MCP 与适配器</h3><p>用现有模块替换查询入口的占位返回，补齐缓存与错误处理。</p></div><div><span>02</span><h3>补全量子数据目录</h3><p>实现 QCArchive 与本地索引，保留理论级别和数据许可。</p></div><div><span>03</span><h3>完成训练集导出</h3><p>实现 ASE / extxyz 与来源清单，通过端到端验证后再开放导出。</p></div></div></section>
     </section>
-    <footer><a class="footer-brand" href="#resources">ChemDB Atlas<span>计算化学，循图而行。</span></a><span>基于提供的讲解版源文件与 chemdb-agent 制作<br>目录版本 2026.10.27 · 收藏保存在当前浏览器</span><a href="#main">回到顶部 ↑</a></footer>
+    <footer><a class="footer-brand" href="#resources">ChemDB Atlas<span>计算化学，循图而行。</span></a><span>基于提供的讲解版源文件与 chemdb-agent 制作<br>目录版本 2026.10.27 · 收藏保存在当前浏览器</span><a href="../guide/index.html">讲解静态版 ↗</a><a href="#main">回到顶部 ↑</a></footer>
   </main>
 </div>
 <dialog id="resource-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><span class="eyebrow">RESOURCE NOTES</span><button class="icon-button" id="close-dialog" aria-label="关闭资源详情">×</button></div><div id="dialog-body"></div></dialog><div id="toast" class="toast" role="status" aria-live="polite"></div>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>查一个化合物要过四道门，这本册子把每道门的门牌号都标好了 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="原册开篇有一句容易滑过去的话：“数据本身并不稀缺，稀缺的是知道去哪一层找。”这正是全册的骨架：103 条资源按工种分成 11 类——从综合门户、量子基准、材料与生物结构，一路到软件与社区。本讲解版不按原文顺序复述，而是先给分层逻辑，再逐类点评每一家的适用面与坑，最后附本机工程的接入实测：导航册这次…">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p01-intro.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="查一个化合物要过四道门，这本册子把每道门的门牌号都标好了 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="原册开篇有一句容易滑过去的话：“数据本身并不稀缺，稀缺的是知道去哪一层找。”这正是全册的骨架：103 条资源按工种分成 11 类——从综合门户、量子基准、材料与生物结构，一路到软件与社区。本讲解版不按原文顺序复述，而是先给分层逻辑，再逐类点评每一家的适用面与坑，最后附本机工程的接入实测：导航册这次…">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p01-intro.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"查一个化合物要过四道门，这本册子把每道门的门牌号都标好了","description":"原册开篇有一句容易滑过去的话：“数据本身并不稀缺，稀缺的是知道去哪一层找。”这正是全册的骨架：103 条资源按工种分成 11 类——从综合门户、量子基准、材料与生物结构，一路到软件与社区。本讲解版不按原文顺序复述，而是先给分层逻辑，再逐类点评每一家的适用面与坑，最后附本机工程的接入实测：导航册这次…","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p01-intro.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"三分钟导读","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p01-intro.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html" aria-current="page"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>三分钟导读</span></nav><a href="../atlas/index.html#guide/p01-intro">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+
+  <div class="chap">
+    <div class="num">00<small>READING MAP</small></div>
+    <div class="tt">
+      <div class="kicker">先说结论：这是一张分层地图，不是一份排行榜</div>
+      <h1>查一个化合物要过四道门，<br>这本册子把每道门的门牌号都标好了</h1>
+      <div class="en">A layered map of where chemical data lives — and which layer answers which question.</div>
+    </div>
+  </div>
+
+  <p class="lead">原册开篇有一句容易滑过去的话：“数据本身并不稀缺，稀缺的是知道去哪一层找。”这正是全册的骨架：103 条资源按工种分成 11 类——从综合门户、量子基准、材料与生物结构，一路到软件与社区。本讲解版不按原文顺序复述，而是先给分层逻辑，再逐类点评每一家的适用面与坑，最后附本机工程的接入实测：导航册这次不只被讲解，还被真的接进了代码。</p>
+
+  <div class="callout">
+    <div class="lbl">一句话总结</div>
+    <p>遇到任何“查数据”的问题，先定层再选库：定身份去综合类（01），定结构去材料/生物类（03/04），定“算得准不准”去基准类（02/09），定活性去药物类（05）；程序化访问优先 OPTIMADE 与开放 API，订阅库只做人工核对，不进自动化管线。</p>
+  </div>
+
+  <h2>三分钟速览</h2>
+  <ul class="bul">
+    <li><strong>规模：</strong>103 条、11 类、15 页；每条带一句话定位、链接与访问标签（免费/注册/学术免费/机构订阅/商业），核验日期 2026-10-27。</li>
+    <li><strong>重心：</strong>材料与晶体（03 类，15 条）与软件平台（10 类，20 条）合计占三分之一——这本册子写给“要动手算”的人，不是文献检索手册。</li>
+    <li><strong>隐含立场：</strong>免费与开放 API 的条目排布密度最高；订阅库（CAS、ICSD、CSD）被如实标价签，不假装可及。</li>
+    <li><strong>与本机的关系：</strong>讲解期间，册中 9 条已被真实接入 chemdb-agent：PubChem、Materials Project、Basis Set Exchange、ChEMBL 四个适配器，加 AFLOW、COD、NOMAD、JARVIS、Materials Cloud 五家 OPTIMADE。</li>
+    <li><strong>实测纠偏：</strong>OQMD 的 OPTIMADE 端点当前 502；Materials Cloud 要查其 MC3D 子库而非本体；NOMAD 检索须带周期性过滤——这些都不在原册里，是接入时踩出来的。</li>
+  </ul>
+
+  <div class="callout callout--ink">
+    <div class="lbl">怎么读这本讲解版</div>
+    <p>赶时间：只读本页 + 全景页 + 接入实况页。选库时：按问题定类，翻到对应分类页看表末的“讲解”。做工程：直接看最后三页（接入实况、细读质疑、附录），里面有端点实测状态与复现清单。</p>
+  </div>
+
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p00-cover.html"><small>← 上一章</small>封面与阅读地图</a><a href="p02-panorama.html"><small>下一章 →</small>全景与分层逻辑</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

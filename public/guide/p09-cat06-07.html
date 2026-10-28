@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>代谢物、天然产物与反应通路 · 计算化学数据库中文讲解 · ChemResearch Hub</title>
+  <meta name="description" content="代谢与反应是化学信息的“动态面”：HMDB/MetaboLights 管代谢物与组学原始数据，COCONUT 管天然产物结构，KEGG 与 Reactome 管通路拓扑，USPTO 与 Pistachio 管反应记录本身。">
+  <meta name="theme-color" content="#173f34">
+  <!-- seo:start -->
+  <link rel="canonical" href="https://felixjiashengfu.github.io/chem-research-hub/guide/p09-cat06-07.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:title" content="代谢物、天然产物与反应通路 · 计算化学数据库中文讲解 · ChemResearch Hub">
+  <meta property="og:description" content="代谢与反应是化学信息的“动态面”：HMDB/MetaboLights 管代谢物与组学原始数据，COCONUT 管天然产物结构，KEGG 与 Reactome 管通路拓扑，USPTO 与 Pistachio 管反应记录本身。">
+  <meta property="og:url" content="https://felixjiashengfu.github.io/chem-research-hub/guide/p09-cat06-07.html">
+  <meta property="og:image" content="https://felixjiashengfu.github.io/chem-research-hub/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"代谢物、天然产物与反应通路","description":"代谢与反应是化学信息的“动态面”：HMDB/MetaboLights 管代谢物与组学原始数据，COCONUT 管天然产物结构，KEGG 与 Reactome 管通路拓扑，USPTO 与 Pistachio 管反应记录本身。","inLanguage":"zh-CN","datePublished":"2026-10-27","dateModified":"2026-10-28","isPartOf":{"@type":"WebSite","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"},"mainEntityOfPage":"https://felixjiashengfu.github.io/chem-research-hub/guide/p09-cat06-07.html","image":"https://felixjiashengfu.github.io/chem-research-hub/og.png","publisher":{"@type":"Organization","name":"ChemResearch Hub","url":"https://felixjiashengfu.github.io/chem-research-hub/"}},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://felixjiashengfu.github.io/chem-research-hub/"},{"@type":"ListItem","position":2,"name":"中文讲解","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/"},{"@type":"ListItem","position":3,"name":"06–07 · 代谢与反应通路","item":"https://felixjiashengfu.github.io/chem-research-hub/guide/p09-cat06-07.html"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../theme-auto.css">
+  <link rel="stylesheet" href="../guide/guide.css">
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="atlas">
+<main class="sg">
+<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · 19 章</h2><ol><li><a href="p00-cover.html"><span>01</span>封面与阅读地图</a></li><li><a href="p01-intro.html"><span>02</span>三分钟导读</a></li><li><a href="p02-panorama.html"><span>03</span>全景与分层逻辑</a></li><li><a href="p03-cat01.html"><span>04</span>01 · 综合化合物与化学信息</a></li><li><a href="p04-cat02.html"><span>05</span>02 · 量子化学基准与参数</a></li><li><a href="p05-cat03a.html"><span>06</span>03 · 材料与晶体：计算库</a></li><li><a href="p06-cat03b.html"><span>07</span>03 · 材料与晶体：实验库</a></li><li><a href="p07-cat04.html"><span>08</span>04 · 生物大分子结构</a></li><li><a href="p08-cat05.html"><span>09</span>05 · 药物与化学空间</a></li><li><a href="p09-cat06-07.html" aria-current="page"><span>10</span>06–07 · 代谢与反应通路</a></li><li><a href="p10-cat08.html"><span>11</span>08 · 光谱与波谱</a></li><li><a href="p11-cat09.html"><span>12</span>09 · 机器学习：分子与催化</a></li><li><a href="p11b-cat09b.html"><span>13</span>09 · 机器学习：材料与工具</a></li><li><a href="p12-cat10a.html"><span>14</span>10 · 软件：量化与动力学</a></li><li><a href="p13-cat10b.html"><span>15</span>10 · 软件：分析与工作流</a></li><li><a href="p14-cat11.html"><span>16</span>11 · 社区与中文入口</a></li><li><a href="p15-integration.html"><span>17</span>接入实况与边界</a></li><li><a href="p16-critique.html"><span>18</span>细读质疑与使用提醒</a></li><li><a href="p17-glossary.html"><span>19</span>关键术语与附录</a></li></ol></nav>
+<div class="sg-main">
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>06–07 · 代谢与反应通路</span></nav><a href="../atlas/index.html#guide/p09-cat06-07">在阅读器中打开 ↗</a></div>
+  <article class="guide-article">
+<section class="page">
+  
+  <div class="chap">
+    <div class="num">06–07<small>METABOLISM &amp; REACTIONS</small></div>
+    <div class="tt">
+      <div class="kicker">计算化学数据库与资源导航 2026</div>
+      <h1>代谢物、天然产物与反应通路</h1>
+      <div class="en">Metabolites, natural products &amp; reactions</div>
+    </div>
+  </div>
+  <p class="lead">代谢与反应是化学信息的“动态面”：HMDB/MetaboLights 管代谢物与组学原始数据，COCONUT 管天然产物结构，KEGG 与 Reactome 管通路拓扑，USPTO 与 Pistachio 管反应记录本身。</p>
+  <table class="tbl tbl--tight"><thead><tr><th class="n">编号</th><th>资源</th><th>要点（据原文一句话定位）</th><th>访问</th><th>本机接入</th></tr></thead><tbody>
+<tr><td class="n">053</td><td><b>HMDB</b><br><span class="muted">hmdb.ca</span></td><td>人类代谢组数据库，收录代谢物结构、浓度与疾病关联信息。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">054</td><td><b>METLIN</b><br><span class="muted">metlin.scripps.edu</span></td><td>Scripps 的代谢物质谱数据库，支持 MS/MS 谱图匹配与代谢物鉴定。</td><td>注册</td><td class="hi"></td></tr>
+<tr><td class="n">055</td><td><b>MassBank</b><br><span class="muted">massbank.eu</span></td><td>开放质谱数据库，汇总多台仪器的正、负离子实测谱图。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">056</td><td><b>COCONUT</b><br><span class="muted">coconut.naturalproducts.net</span></td><td>天然产物化学结构数据库，适合天然产物虚拟筛选与化学空间分析。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">057</td><td><b>Open Reaction Database</b><br><span class="muted">open-reaction-database.org</span></td><td>开放反应数据库，标准化存储反应条件与实验结果，并提供 API。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">058</td><td><b>USPTO 反应数据集</b><br><span class="muted">figshare.com/articles/dataset/Chemical_reactions_from_US_patents_1976-Sep2016_/5104873</span></td><td>Lowe 整理的美国专利反应数据（1976–2016），反应预测机器学习模型的经典训练集。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">059</td><td><b>Chemotion Repository</b><br><span class="muted">chemotion-repository.net</span></td><td>开源电子实验记录与反应数据仓库，可发布可引用的实验数据集。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">060</td><td><b>Rhea</b><br><span class="muted">www.rhea-db.org</span></td><td>生化反应数据库，提供酶催化的反应方程式与层级分类。</td><td>免费</td><td class="hi"></td></tr>
+<tr><td class="n">061</td><td><b>BRENDA</b><br><span class="muted">www.brenda-enzymes.org</span></td><td>酶功能与动力学数据库，含 Km、kcat、抑制剂与生物来源信息。</td><td>学术免费</td><td class="hi"></td></tr>
+<tr><td class="n">062</td><td><b>KEGG</b><br><span class="muted">www.kegg.jp</span></td><td>京都基因与基因组百科，提供代谢通路、酶与化合物之间的关联。</td><td>学术免费</td><td class="hi"></td></tr>
+</tbody></table>
+  
+  <div class="callout">
+    <div class="lbl">讲解</div>
+    <p>先分清三层：<b>分子层</b>（053 HMDB、055 COCONUT）查一个代谢物/天然产物是什么；<b>通路层</b>（060 KEGG、061 Reactome）查它在哪条通路上；<b>反应层</b>（057 USPTO 专利反应、058 Pistachio）是逆合成与反应预测模型的训练粮。KEGG 的程序化访问要订阅（原文标“学术免费”指网页学术使用），自动化抓取前先看清条款——这是本册里最容易踩的许可点之一。</p>
+  </div>
+  
+</section>
+
+  </article>
+  <nav class="sg-pager" aria-label="翻页"><a href="p08-cat05.html"><small>← 上一章</small>05 · 药物与化学空间</a><a href="p10-cat08.html"><small>下一章 →</small>08 · 光谱与波谱</a></nav>
+</div>
+<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 2026-10-27。全文、更新日期与使用许可以各资源原站为准。</footer>
+</main>
+</body>
+</html>

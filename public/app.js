@@ -16,9 +16,20 @@
   const format = n => n.toLocaleString('zh-CN');
   const sourceNames = i => i.sourceIds.map(id=>sources.get(id)?.name||id);
   function toast(message) { $('toast').textContent=message; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2800); }
+  // 自然语言问句逐字匹配常常为 0：退回到「英文词 + 中文双字 / 三字片段」的相关度打分。
+  const STOP=new Set(['怎么','如何','什么','哪些','可以','用什','有哪','一下','请问','the','and','for','how','what','with']);
+  function grams(q){const out=new Set(q.match(/[a-z0-9][a-z0-9+#.\-]{1,}/g)||[]);for(const run of q.match(/[㐀-鿿]+/g)||[]){if(run.length<=2)out.add(run);for(let i=0;i+2<=run.length;i++)out.add(run.slice(i,i+2));for(let i=0;i+3<=run.length;i++)out.add(run.slice(i,i+3));}return [...out].filter(t=>!STOP.has(t));}
+  let fuzzy=false;
   function matches() {
     const terms=state.q.toLocaleLowerCase().split(/\s+/).filter(Boolean);
-    const result=items.filter(i=>terms.every(t=>i.searchable.includes(t)) && (!state.source||i.sourceIds.includes(state.source)) && (!state.type||i.type===state.type) && (!state.collection||(state.collection==='saved'?saved.has(i.id):i.origins.includes(state.collection))));
+    const scope=i=>(!state.source||i.sourceIds.includes(state.source)) && (!state.type||i.type===state.type) && (!state.collection||(state.collection==='saved'?saved.has(i.id):i.origins.includes(state.collection)));
+    fuzzy=false;
+    let result=items.filter(i=>terms.every(t=>i.searchable.includes(t)) && scope(i));
+    if(!result.length&&terms.length){
+      const gs=grams(state.q.toLocaleLowerCase()), need=Math.max(2,Math.ceil(gs.length*0.3));
+      const ranked=items.filter(scope).map(i=>{const t=i.title.toLocaleLowerCase();let hit=0,s=0;for(const g of gs){if(i.searchable.includes(g)){hit++;s+=(t.includes(g)?4:1)*(g.length>=3?1.5:1);}}return {i,hit,s};}).filter(x=>x.hit>=need).sort((a,b)=>b.s-a.s);
+      if(ranked.length){fuzzy=true;result=ranked.map(x=>x.i);if(state.sort==='relevance')return result;}
+    }
     const score=i=>terms.reduce((sum,t)=>sum+(i.title.toLocaleLowerCase().includes(t)?5:0)+(i.atlasRecords?.some(r=>r.name.toLocaleLowerCase().includes(t))?3:0),0);
     if(state.sort==='date')result.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
     else if(state.sort==='title')result.sort((a,b)=>a.title.localeCompare(b.title,'zh-CN'));
@@ -33,7 +44,7 @@
   }
   function render() {
     const list=matches(), limit=list.slice(0,state.shown);
-    $('result-count').textContent=`找到 ${format(list.length)} 条资源${state.q?' · 多个关键词同时匹配':''}`;
+    $('result-count').textContent=fuzzy?`没有逐字匹配的结果，按相关度列出 ${format(list.length)} 条近似资源`:`找到 ${format(list.length)} 条资源${state.q?' · 多个关键词同时匹配':''}`;
     $('saved-count').textContent=`收藏 ${saved.size}`;
     $('results').innerHTML=limit.map(i=>`<article class="result-row"><div class="row-kind"><span class="kind-icon" aria-hidden="true">${icons[i.type]||'↗'}</span><span class="kind-name">${esc(labels[i.type]||i.type)}</span></div><div class="row-main"><h3><a href="${esc(safeURL(i.url))}" target="_blank" rel="noopener noreferrer">${esc(i.title)} <span aria-hidden="true">↗</span></a></h3><p class="excerpt">${esc(i.excerpt||i.atlasRecords?.[0]?.description||'原站目录未提供摘要，请点击标题查看原文。')}</p><div class="row-meta">${sourceNames(i).map(name=>`<span class="source-tag">${esc(name)}</span>`).join('')}${i.origins.length>1?'<span class="shared-tag">两站共同收录</span>':''}${i.mirror?'<span>目录交叉引用</span>':''}${i.date?`<time>${esc(i.date)}</time>`:''}${i.category?`<span>${esc(i.category)}</span>`:''}</div></div><div class="row-actions"><button class="save" data-save="${i.id}" aria-label="${saved.has(i.id)?'取消收藏':'收藏'} ${esc(i.title)}" aria-pressed="${saved.has(i.id)}">${saved.has(i.id)?'★':'☆'}</button><small>${esc(new URL(safeURL(i.url),'https://invalid.local').hostname)}</small><button class="detail-link" data-detail="${i.id}">来源与资源说明 ↗</button></div></article>`).join('');
     $('empty').hidden=!!list.length;
@@ -75,3 +86,8 @@
   $('merge-note').textContent=`两站 ${format(data.stats.hubEntries+data.stats.atlasEntries)} 条目录记录，合并 ${data.stats.duplicates} 条重复地址，保留 ${format(data.stats.uniqueEntries)} 条资源及全部出处。`;
   render();
 })();
+/* 「用 AI 回答当前问题」：把搜索框里的问题交给 AI 助手的「问目录」模式。 */
+document.getElementById('ask-ai')?.addEventListener('click', () => {
+  const q = document.getElementById('search').value.trim();
+  window.ChemHub?.loadAI().then((ai) => ai.openDrawer({ mode: 'catalog', question: q, autoSend: !!q })).catch((e) => alert(e.message));
+});
