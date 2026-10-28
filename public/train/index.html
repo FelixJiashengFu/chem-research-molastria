@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="用开源小模型训练自己的化学研究 Agent：2026 年 10 月最新开源小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型的对比与链接，数据构造、LoRA 微调、GRPO 强化学习、评测与本地部署的完整步骤和代码。">
+  <meta name="theme-color" content="#173f34">
+  <title>训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria</title>
+  <!-- seo:start -->
+  <link rel="canonical" href="https://molastria.com/train/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
+  <meta property="og:title" content="训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria">
+  <meta property="og:description" content="用开源小模型训练自己的化学研究 Agent：2026 年 10 月最新开源小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型的对比与链接，数据构造、LoRA 微调、GRPO 强化学习、评测与本地部署的完整步骤和代码。">
+  <meta property="og:url" content="https://molastria.com/train/">
+  <meta property="og:image" content="https://molastria.com/og.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"TechArticle","headline":"用开源小模型训练你自己的化学研究 Agent","inLanguage":"zh-CN","url":"https://molastria.com/train/","datePublished":"2026-10-28","dateModified":"2026-10-28","image":"https://molastria.com/og.png","publisher":{"@type":"Organization","name":"MolAstria","url":"https://molastria.com/"},"about":["small language models","chemistry agents","LoRA","GRPO","RDKit"]},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://molastria.com/"},{"@type":"ListItem","position":2,"name":"训练 Agent","item":"https://molastria.com/train/"}]}]</script>
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="train.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="train.js" defer></script>
+</head>
+<body data-section="train">
+<a class="skip" href="#route">跳到正文</a>
+<div class="tr">
+<nav class="tr-toc" aria-label="本页目录">
+  <b>本页目录</b>
+  <ol>
+    <li><a href="#route">路线总览</a></li>
+    <li><a href="#pick">按显存选模型</a></li>
+    <li><a href="#models">开源小模型</a></li>
+    <li><a href="#moe">低显存 MoE</a></li>
+    <li><a href="#chem">化学专用模型</a></li>
+    <li><a href="#retrieval">检索与分子表示</a></li>
+    <li><a href="#teachers">老师模型</a></li>
+    <li><a href="#data">1 造数据</a></li>
+    <li><a href="#sft">2 LoRA 微调</a></li>
+    <li><a href="#grpo">3 强化学习</a></li>
+    <li><a href="#eval">4 评测</a></li>
+    <li><a href="#deploy">5 部署与接入</a></li>
+    <li><a href="#tools">工具与数据集</a></li>
+    <li><a href="#pitfalls">常见坑</a></li>
+  </ol>
+</nav>
+<main class="tr-main">
+  <header class="hero">
+    <p class="eyebrow">TRAIN YOUR OWN CHEMISTRY AGENT</p>
+    <h1>用开源小模型，<br><em>训练你自己的化学研究 Agent。</em></h1>
+    <p class="lead">一个 2–9B 的小模型，学会调用 RDKit、PubChem 和计算平台这些工具，再用可验证的化学规则做强化学习，就能在一张消费级显卡甚至笔记本上运行，数据不出本机。这份指南给出选型、数据构造、LoRA 微调、GRPO 强化学习、评测和部署的完整步骤，代码可以直接复制。</p>
+    <div class="stamp"><span>更新于 <b>2026-10-28</b></span><span>模型信息核对自 Hugging Face 官方模型卡</span><span>所有链接已逐一检查</span></div>
+  </header>
+
+  <section id="route" aria-labelledby="route-h">
+    <h2 id="route-h"><span class="n">00</span>路线总览</h2>
+    <p>先让大模型（老师）带着工具把任务做对，把做对的过程记下来，教给小模型；再用程序能自动判分的化学任务做强化学习；最后在本机部署，接入 MolAstria 的 AI 助手和 AI 实验室。</p>
+    <ol class="route">
+      <li><a href="#data"><b>定任务与工具</b><small>写清要回答的问题和要调用的工具：RDKit、PubChem、Rowan、文献检索</small></a></li>
+      <li><a href="#pick"><b>选底座模型</b><small>按显存与许可证挑 2–9B 的小模型</small></a></li>
+      <li><a href="#data"><b>造数据</b><small>老师模型生成工具调用轨迹，RDKit 校验，只留做对的</small></a></li>
+      <li><a href="#sft"><b>LoRA 微调</b><small>单卡几小时，让小模型学会格式与工具</small></a></li>
+      <li><a href="#grpo"><b>强化学习</b><small>GRPO + 可验证奖励：结构合法、约束满足</small></a></li>
+      <li><a href="#deploy"><b>评测与部署</b><small>ChemBench 与自建测试集；vLLM / Ollama 本地服务</small></a></li>
+    </ol>
+    <p class="note">只想先体验：装好 <a href="https://ollama.com/download" target="_blank" rel="noopener">Ollama</a> 后运行 <code>ollama run qwen3.5:4b</code>，再按<a href="#deploy">第 5 步</a>把它接入本站的 AI 助手，不需要训练就能用本地模型问目录、提候选分子。</p>
+  </section>
+
+  <section id="pick" aria-labelledby="pick-h">
+    <h2 id="pick-h"><span class="n">01</span>按你的显存选模型</h2>
+    <p>选择显存和要做的事，下方表格会标出放得下的模型。显存是按参数量粗略估算的（4-bit 推理约 0.6 GB/十亿参数 + 1.5 GB；QLoRA 微调约 1 GB/十亿参数 + 4 GB；GRPO 约为微调的 1.6 倍），实际还取决于序列长度和批大小。</p>
+    <div class="picker" role="group" aria-label="按显存筛选">
+      <label>显存 / 内存<select id="vram"><option value="0">不限</option><option value="6">6 GB 或 Mac 8 GB</option><option value="8">8 GB</option><option value="12">12 GB</option><option value="16" selected>16 GB</option><option value="24">24 GB</option><option value="48">48 GB 或多卡</option><option value="80">80 GB 以上</option></select></label>
+      <label>要做的事<select id="goal"><option value="infer">本地推理</option><option value="sft" selected>LoRA / QLoRA 微调</option><option value="grpo">GRPO 强化学习</option></select></label>
+      <output id="pick-out" aria-live="polite"></output>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>显存</th><th>能做什么</th><th>推荐</th></tr></thead>
+      <tbody>
+        <tr><td class="num">无独显 / Mac 16 GB</td><td>推理 ≤4B；用 MLX-LM 做 ≤2B 的 LoRA</td><td>LFM3-1.7B、Qwen3.5-2B、Gemma 4 E2B</td></tr>
+        <tr><td class="num">8 GB</td><td>4-bit 推理 ≤9B；QLoRA ≤2B</td><td>推理 Qwen3.5-9B；微调 LFM3-1.7B、MiniCPM5-2B</td></tr>
+        <tr><td class="num">12–16 GB</td><td>QLoRA 4–9B；GRPO ≤3B</td><td>Qwen3.5-4B（推荐起步）、Granite 4.2 8B、Gemma 4 E4B</td></tr>
+        <tr><td class="num">24 GB</td><td>QLoRA ≤14B；GRPO 4–8B；4-bit 跑 ether0</td><td>Qwen3.5-9B、Gemma 4 12B、Intern-S1-mini、Ministral 3 14B</td></tr>
+        <tr><td class="num">48 GB+ / 多卡</td><td>MoE 微调、多卡 RL（verl）</td><td>gpt-oss-20b、Qwen3.6-35B-A3B、Nemotron 3.5 Lightning</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="models" aria-labelledby="models-h">
+    <h2 id="models-h"><span class="n">02</span>开源小模型（底座候选）</h2>
+    <p>以下是 2026 年 10 月可下载的主要小模型。点任意一行或它的“介绍”按钮，可以展开这个模型的优势、在化学 Agent 里适合做什么、注意事项和启动命令。</p>
+    <div class="filters" role="group" aria-label="筛选模型">
+      <button type="button" data-filter="all" aria-pressed="true">全部</button>
+      <button type="button" data-filter="pick" aria-pressed="false">推荐起步</button>
+      <button type="button" data-filter="new" aria-pressed="false">近两个月新发布</button>
+      <button type="button" data-filter="tool" aria-pressed="false">工具调用 / Agent</button>
+      <button type="button" data-filter="vision" aria-pressed="false">能看图</button>
+      <button type="button" data-filter="edge" aria-pressed="false">端侧 ≤4B</button>
+      <button type="button" data-filter="commercial" aria-pressed="false">Apache / MIT 可商用</button>
+      <button type="button" class="expand-all" aria-pressed="false">全部展开</button>
+    </div>
+    <div class="table-wrap"><table class="models">
+      <thead><tr><th>模型</th><th>参数</th><th>许可证</th><th>发布</th><th>一句话</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr data-p="1.73" data-tags="new tool edge"><td class="m">LFM3-1.7B <span class="tag new">新</span><small>Liquid AI</small></td><td class="num">1.7B</td><td>LFM Open License 1.0</td><td class="num">2026-10-23</td><td>专为本地 Agent 和单卡微调设计，4-bit 约 1 GB</td><td><a href="https://huggingface.co/LiquidAI/LFM3-1.7B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>官方针对 Hermes Agent、Pi、OpenClaw 等 Agent 框架做了后训练，工具调用和结构化输出是主打能力。</li><li>256K 上下文；4-bit 约 1 GB 内存，手机和笔记本都能跑。</li><li>模型卡明确写着“为领域微调而设计”，单张显卡几十分钟就能完成一轮 LoRA。</li><li>同系列还有 LFM3-VL-2B（图像和视频，带思考模式）、LFM3-Omni-2B、LFM3-Audio-2B。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>做“调度员”：把用户问题拆成 RDKit、PubChem、Rowan 调用，返回 JSON；成本最低的微调起点。</p><h4>注意</h4><p>官方说明不适合复杂多步推理和写代码类 Agent，知识型问题要配检索。许可证是 LFM Open License 1.0，不是 Apache，商用前先读条款。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run lfm3:1.7b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="1.92" data-tags="new vision edge"><td class="m">LFM3-VL-2B <span class="tag new">新</span><small>Liquid AI</small></td><td class="num">1.9B</td><td>LFM Open License 1.0</td><td class="num">2026-10-19</td><td>端侧看图看视频，回答前先思考</td><td><a href="https://huggingface.co/LiquidAI/LFM3-VL-2B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>输入文本、图像和视频（原生分辨率，视频按 2 fps 采样），是 LFM 第一个能看视频的模型。</li><li>带思考模式，对图表、数学和多步视觉问题更稳。</li><li>1.73B 语言模型 + 164M 视觉编码器，体量适合手机和工控机。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>读谱图截图、结构式照片、仪器屏幕和实验录像，把看到的内容转成文字或结构化记录再交给工具。</p><h4>注意</h4><p>小模型看图会出错，识别出的结构必须再用 RDKit 校验。许可证同 LFM3。</p></div>
+          <div><h4>跑起来</h4><p>在 Hugging Face 下载 <code>LiquidAI/LFM3-VL-2B</code>，或使用官方 GGUF / MLX 版本。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="0.87" data-tags="vision edge commercial"><td class="m">Qwen3.5-0.8B / 2B<small>阿里通义</small></td><td class="num">0.9B / 2.3B</td><td>Apache-2.0</td><td class="num">2026-02-28</td><td>最小的 Qwen，适合原型和教学</td><td><a href="https://huggingface.co/Qwen/Qwen3.5-0.8B" target="_blank" rel="noopener">0.8B ↗</a> <a href="https://huggingface.co/Qwen/Qwen3.5-2B" target="_blank" rel="noopener">2B ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>与 4B、9B 同一架构：原生视觉-语言统一训练、201 种语言、原生 262K 上下文。</li><li>Apache-2.0，商用无门槛。</li><li>下载量大、教程多，出问题容易查到答案。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>快速验证数据格式和训练流程：先在 0.8B 上把整条流水线跑通，再换大模型。</p><h4>注意</h4><p>化学知识有限，必须配工具和检索使用。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run qwen3.5:2b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="4.66" data-tags="pick tool vision commercial"><td class="m">Qwen3.5-4B <span class="tag pick">推荐起步</span><small>阿里通义</small></td><td class="num">4.7B</td><td>Apache-2.0</td><td class="num">2026-02-27</td><td>同尺寸里工具调用最强的一档，16 GB 显卡可微调</td><td><a href="https://huggingface.co/Qwen/Qwen3.5-4B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>官方在大规模 Agent 环境里做了强化学习，工具调用和多步任务明显强于上一代 Qwen3。</li><li>原生视觉-语言模型：一个模型同时处理文字和图片。</li><li>201 种语言，中文表现好；原生 262K 上下文，可扩展到约 100 万 token。</li><li>Apache-2.0。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>通用的化学 Agent 底座：读文献摘要、调用工具、生成 SMILES 候选并解释理由。第一次训练推荐从它开始。</p><h4>注意</h4><p>它是多模态架构，用 TRL / Unsloth 微调时按模型卡选择加载方式；思考模式输出较长，Agent 循环里注意 token 预算。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run qwen3.5:4b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="9.65" data-tags="pick tool vision commercial"><td class="m">Qwen3.5-9B <span class="tag pick">推荐</span><small>阿里通义</small></td><td class="num">9.7B</td><td>Apache-2.0</td><td class="num">2026-02-27</td><td>10B 以内综合最强档之一，官方给出 vLLM 工具调用参数</td><td><a href="https://huggingface.co/Qwen/Qwen3.5-9B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>与 4B 同一套训练，但容量更大，复杂多步推理和长文档更稳。</li><li>模型卡直接给出 vLLM / SGLang 的工具调用与推理解析参数，部署成 OpenAI 兼容服务最省心。</li><li>可用 <code>--language-model-only</code> 跳过视觉编码器，把显存留给 KV 缓存。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>正式使用的主力 Agent：多工具编排、读长篇 SI、规划计算流程。24 GB 显卡可做 QLoRA。</p><h4>注意</h4><p>GRPO 需要更多显存（约 24 GB 以上）；思考模式下回复很长。</p></div>
+          <div><h4>跑起来</h4><pre><code>vllm serve Qwen/Qwen3.5-9B --port 8000 --reasoning-parser qwen3 --enable-auto-tool-choice --tool-call-parser qwen3_coder</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="5.12" data-tags="tool vision edge commercial"><td class="m">Gemma 4 E2B / E4B<small>Google DeepMind</small></td><td class="num">有效 2B / 4B</td><td>Apache-2.0</td><td class="num">2026-03-02</td><td>端侧多模态：文字、图片、视频、语音</td><td><a href="https://huggingface.co/google/gemma-4-E2B-it" target="_blank" rel="noopener">E2B ↗</a> <a href="https://huggingface.co/google/gemma-4-E4B-it" target="_blank" rel="noopener">E4B ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>专为笔记本和手机优化，原生支持音频输入（E2B、E4B、12B）。</li><li>可配置的思考模式，原生函数调用，适合做 Agent。</li><li>128K 上下文；Gemma 4 起改为 Apache-2.0，比以往的 Gemma 条款宽松。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>实验室里的语音 / 拍照助手：念出试剂名查性质，拍下谱图问峰的归属，再交给工具核对。</p><h4>注意</h4><p>“有效 2B / 4B” 指计算量，下载的总参数约 5.1B / 8.0B，显存按总参数估算。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run gemma4:e4b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="11.96" data-tags="tool vision commercial"><td class="m">Gemma 4 12B<small>Google DeepMind</small></td><td class="num">12B</td><td>Apache-2.0</td><td class="num">2026-05-23</td><td>15B 以内最强的一档，消费级显卡可跑</td><td><a href="https://huggingface.co/google/gemma-4-12B-it" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>与 E2B / E4B 一样支持文字、图像、视频和音频输入，能力更强。</li><li>官方定位为消费级显卡和工作站部署；第三方对比把它列为 15B 以内的首选之一。</li><li>官方提供 QAT 量化版本（4-bit 精度损失小）。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>需要较强推理又要本地运行的场景：读论文图表、比较方法、写计算输入文件。</p><h4>注意</h4><p>QLoRA 约需 16–24 GB 显存。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run gemma4:12b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="8.0" data-tags="new tool edge"><td class="m">Nemotron 3.5 Bolt-E4B <span class="tag new">新</span><small>NVIDIA</small></td><td class="num">有效 4B</td><td>OpenMDW-1.1</td><td class="num">2026-10-05</td><td>NVIDIA 在 Gemma 4 E4B 上继续后训练，提供 4 GB 量化版</td><td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-BF16" target="_blank" rel="noopener">BF16 ↗</a> <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB" target="_blank" rel="noopener">4GB ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>继承 Gemma 4 E4B 的对话能力，并由 NVIDIA 进一步后训练；可用聊天模板开关思考，并设置思考预算。</li><li>输入、输出各最多 64K token。</li><li>Nemotron 系列公开权重、训练数据和训练配方，便于复现和二次训练。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>NVIDIA 显卡上的本地助手和嵌入式设备（如 Jetson）上的实验室终端。</p><h4>注意</h4><p>官方定位偏向语音和设备助手；许可证为 OpenMDW-1.1，使用前阅读条款。</p></div>
+          <div><h4>跑起来</h4><p>按模型卡用 vLLM 部署（卡里附有完整命令和 DFlash 推测解码配置）。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="8.79" data-tags="new tool commercial"><td class="m">Granite 4.2 3B / 8B<small>IBM</small></td><td class="num">3.7B / 8.8B</td><td>Apache-2.0</td><td class="num">2026-08-07</td><td>企业级工具调用与 Agent，测试过中文</td><td><a href="https://huggingface.co/ibm-granite/granite-4.2-3b" target="_blank" rel="noopener">3B ↗</a> <a href="https://huggingface.co/ibm-granite/granite-4.2-8b" target="_blank" rel="noopener">8B ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>模型卡写明最适合推理、写代码、工具调用和 Agent 工作流；内置思维链。</li><li>原生 128K 上下文，可扩展到 512K。</li><li>官方测试过 12 种语言（含中文）；纯文本模型，结构简单，微调兼容性好。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>稳定的企业环境：内部电子实验记录本（ELN）问答、标准化报告、按模板调用计算平台。</p><h4>注意</h4><p>不能看图；8B 的 KV 缓存较大，长上下文时要留足显存。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run granite4.2:8b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="2.52" data-tags="new tool edge commercial"><td class="m">MiniCPM5-2B<small>OpenBMB / 面壁</small></td><td class="num">2.5B</td><td>Apache-2.0</td><td class="num">2026-09-06</td><td>2B 级综合最强之一，训练数据开放</td><td><a href="https://huggingface.co/openbmb/MiniCPM5-2B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>官方对比中达到 2B 级开源最好成绩，整体接近 4B 级模型，代码和数学推理优势明显。</li><li>为本地助手、编程 Agent 和工具调用流程设计。</li><li>同时开放了训练数据（UltraData 系列，含 Agent SFT 数据），可以直接参考它的数据格式来造自己的化学 Agent 数据。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>8 GB 显卡上的可微调底座；学习“Agent 训练数据长什么样”的好范本。</p><h4>注意</h4><p>纯文本；知识量受 2B 体量限制。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 提供 GGUF、MLX 和 GPTQ 版本，可直接导入 Ollama 或 llama.cpp。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="8.92" data-tags="tool vision commercial"><td class="m">Ministral 3（3B / 8B / 14B）<small>Mistral AI</small></td><td class="num">3.8B–14B</td><td>Apache-2.0</td><td class="num">2025-12</td><td>原生函数调用与 JSON 输出，另有推理版</td><td><a href="https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512" target="_blank" rel="noopener">8B ↗</a> <a href="https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512" target="_blank" rel="noopener">14B 推理 ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>原生函数调用和 JSON 输出，带视觉能力，支持中文等数十种语言。</li><li>14B 官方称与 Mistral Small 3.2（24B）相当，量化后 24 GB 以内能跑；推理版专攻数学、代码和理工科问题。</li><li>化学推理模型 ether0 正是基于 Mistral 系列训练的，路线可参考。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>需要严格 JSON 输出的流水线（例如把文献实验步骤抽成结构化反应记录）。</p><h4>注意</h4><p>2025 年发布，比 Qwen3.5、Gemma 4 早一代。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 有官方 GGUF 版本（<code>…-2512-GGUF</code>），可直接用 llama.cpp 或 Ollama 加载。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="3.84" data-tags="tool edge commercial"><td class="m">Phi-4-mini（instruct / reasoning）<small>Microsoft</small></td><td class="num">3.8B</td><td>MIT</td><td class="num">2025</td><td>MIT 许可最宽松，数学和逻辑推理强</td><td><a href="https://huggingface.co/microsoft/Phi-4-mini-instruct" target="_blank" rel="noopener">instruct ↗</a> <a href="https://huggingface.co/microsoft/Phi-4-mini-reasoning" target="_blank" rel="noopener">reasoning ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>用高质量合成数据训练，侧重推理密集型任务，数学和逻辑表现突出。</li><li>128K 上下文，有专门的函数调用格式。</li><li>MIT 许可，几乎没有使用限制。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>计算题与单位换算、化学计量、热力学推导这类需要严谨推理的子任务。</p><h4>注意</h4><p>2025 年发布，已不是同尺寸最强；中文能力弱于 Qwen。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 下载，或在 Ollama 搜索 <code>phi4-mini</code>。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="3.08" data-tags="edge commercial"><td class="m">SmolLM3-3B<small>Hugging Face</small></td><td class="num">3.1B</td><td>Apache-2.0</td><td class="num">2025-07</td><td>训练数据和配方完全公开</td><td><a href="https://huggingface.co/HuggingFaceTB/SmolLM3-3B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>完全开放：预训练数据、中期训练和后训练配方都公开，是学习“从头到尾怎么训一个模型”的最佳教材。</li><li>双模式推理（思考 / 不思考）；64K 上下文，YaRN 可到 128K。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>课程、复现实验，以及需要完全可审计训练来源的研究。</p><h4>注意</h4><p>原生只支持 6 种欧洲语言，<b>不含中文</b>；中文场景请选 Qwen、MiniCPM 或 Granite。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 下载，Transformers / vLLM / llama.cpp 均支持。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="7.3" data-tags="commercial"><td class="m">Olmo 3 7B（Instruct / Think）<small>Ai2</small></td><td class="num">7.3B</td><td>Apache-2.0</td><td class="num">2025-11</td><td>每个训练阶段的检查点都公开</td><td><a href="https://huggingface.co/allenai/Olmo-3-7B-Instruct" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>完全开放的数据与训练流程，SFT → DPO → RLVR（可验证奖励强化学习）每一步的模型都单独发布。</li><li>有长思维链的 Think 版本，数学和代码推理更强。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>研究“强化学习到底改变了什么”：对比 SFT、DPO、RLVR 各阶段在化学任务上的差异。</p><h4>注意</h4><p>Ai2 把预期用途定为研究和教育；中文能力一般。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 下载，vLLM 直接支持。</p><p class="est"></p></div>
+        </div></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="moe" aria-labelledby="moe-h">
+    <h2 id="moe-h"><span class="n">03</span>低显存 MoE：总参数大，每次只激活一小部分</h2>
+    <p>混合专家（MoE）模型每个 token 只用到少量参数，推理快、能力强，但显存按总参数算。适合当本地“老师”来造数据，或者在 24–80 GB 上做更强的 Agent。</p>
+    <div class="table-wrap"><table class="models">
+      <thead><tr><th>模型</th><th>总参数 / 激活</th><th>许可证</th><th>发布</th><th>一句话</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr data-p="20.91" data-tags="tool commercial"><td class="m">gpt-oss-20b<small>OpenAI</small></td><td class="num">21B / 3.6B</td><td>Apache-2.0</td><td class="num">2025-08</td><td>16 GB 内存可跑，推理强度可调</td><td><a href="https://huggingface.co/openai/gpt-oss-20b" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>MoE 权重用 MXFP4 后训练，整个模型在 16 GB 内存内运行。</li><li>推理强度分低 / 中 / 高三档，原生支持函数调用、结构化输出和 Python 执行。</li><li>官方说明可以针对具体用途做参数微调。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>本地老师模型：在自己机器上批量生成工具调用轨迹，数据不出本机。</p><h4>注意</h4><p>使用 harmony 对话格式，自己写推理代码时按官方说明处理。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run gpt-oss:20b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="35.95" data-tags="tool vision commercial"><td class="m">Qwen3.6-35B-A3B<small>阿里通义</small></td><td class="num">36B / 约 3B</td><td>Apache-2.0</td><td class="num">2026-04-15</td><td>Agent 编程能力强，长上下文</td><td><a href="https://huggingface.co/Qwen/Qwen3.6-35B-A3B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>官方强调 Agent 编程和仓库级推理；新增“保留思考上下文”选项，迭代任务更省 token。</li><li>原生 262K 上下文，可扩展到约 100 万；能看图。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>写和改计算脚本（ORCA / Gaussian 输入、RDKit 流程）的编程型 Agent，或作为本地老师。</p><h4>注意</h4><p>显存按 36B 总参数估算，4-bit 约需 24 GB。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run qwen3.6:35b-a3b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="25.81" data-tags="tool vision commercial"><td class="m">Gemma 4 26B-A4B<small>Google DeepMind</small></td><td class="num">26B / 约 4B</td><td>Apache-2.0</td><td class="num">2026-03-11</td><td>Gemma 4 的 MoE 版本，速度接近 4B</td><td><a href="https://huggingface.co/google/gemma-4-26B-A4B-it" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>面向消费级显卡和工作站，能力接近大模型、速度接近小模型。</li><li>图像输入、可配置思考、原生函数调用。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>24 GB 显卡上的主力 Agent。</p><h4>注意</h4><p>不支持音频输入（音频只在 E2B、E4B、12B 上）。</p></div>
+          <div><h4>跑起来</h4><pre><code>ollama run gemma4:26b</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="31.58" data-tags="new tool"><td class="m">Nemotron 3.5 Lightning-30B-A3B<small>NVIDIA</small></td><td class="num">31.6B / 约 3B</td><td>OpenMDW-1.1</td><td class="num">2026-08-01</td><td>官方定位就是“拿来再训练”</td><td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>模型卡写明最适合定制：SFT、强化学习、蒸馏、领域适配。</li><li>Mamba-2 + MoE + 注意力的混合架构，上下文最长 100 万 token；思考可开关。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>有多卡资源的课题组做领域继续训练（把化学文献、内部数据灌进去）。</p><h4>注意</h4><p>中文不在官方支持语言里；训练需要较大显存。</p></div>
+          <div><h4>跑起来</h4><p>按模型卡用 vLLM 或 SGLang 部署，卡内有各硬件的验证配置。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="23.97" data-tags="new tool"><td class="m">LFM2.5-24B-A2B<small>Liquid AI</small></td><td class="num">24B / 约 2B</td><td>LFM Open License 1.0</td><td class="num">2026-10-12</td><td>激活参数极少，CPU 也能跑得动</td><td><a href="https://huggingface.co/LiquidAI/LFM2.5-24B-A2B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>每个 token 只激活约 2B 参数，在内存足够的笔记本 CPU 上也有可用速度。</li><li>官方提供 GGUF、MLX 和 FP8 版本。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>没有独显但内存大（32 GB+）的机器上运行较强的本地 Agent。</p><h4>注意</h4><p>LFM 许可证；显存 / 内存按 24B 总参数估算。</p></div>
+          <div><h4>跑起来</h4><p>下载官方 GGUF 用 llama.cpp 运行。</p><p class="est"></p></div>
+        </div></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="chem" aria-labelledby="chem-h">
+    <h2 id="chem-h"><span class="n">04</span>化学专用模型</h2>
+    <p>已经在化学数据上继续训练或强化学习过的模型，可以直接用，也可以作为你继续微调的起点。</p>
+    <div class="table-wrap"><table class="models">
+      <thead><tr><th>模型</th><th>参数</th><th>许可证</th><th>发布</th><th>一句话</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr data-p="23.57" data-tags="chem commercial"><td class="m">ether0<small>FutureHouse</small></td><td class="num">24B</td><td>Apache-2.0</td><td class="num">2025-06</td><td>用强化学习训练的化学推理模型，输出 SMILES</td><td><a href="https://huggingface.co/futurehouse/ether0" target="_blank" rel="noopener">HF ↗</a> <a href="https://arxiv.org/abs/2506.17238" target="_blank" rel="noopener">论文 ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>在 Mistral-Small-24B 上经微调和强化学习，用英文推理、最后给出一个分子（SMILES）。</li><li>擅长：由分子式 + 官能团约束写出结构、按目标 LogS 修改溶解度、匹配或调节 pKa、反应预测等。</li><li>训练代码、奖励函数和基准全部开源（<a href="https://github.com/Future-House/ether0" target="_blank" rel="noopener">GitHub</a>、<a href="https://huggingface.co/datasets/futurehouse/ether0-benchmark" target="_blank" rel="noopener">ether0-benchmark</a>），是“化学 RL 怎么做”的标准参考。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>分子设计子任务：给出约束，让它提出候选结构，再交给 RDKit 和计算平台验证。和本站 AI 实验室的思路一致。</p><h4>注意</h4><p>只用英文提问；它的输出是分子而不是长篇对话，不适合当通用助手。4-bit 约需 16 GB。</p></div>
+          <div><h4>跑起来</h4><pre><code>vllm serve futurehouse/ether0 --port 8000</code></pre><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="8.54" data-tags="chem vision commercial pick"><td class="m">Intern-S1-mini <span class="tag pick">化学底座</span><small>上海 AI 实验室</small></td><td class="num">8.5B</td><td>Apache-2.0</td><td class="num">2025-08</td><td>科学多模态，分词器原生认识分子式</td><td><a href="https://huggingface.co/internlm/Intern-S1-mini" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>8B 语言模型（Qwen3）+ 0.3B 视觉编码器，在 5T token 上继续预训练，其中超过 2.5T 是科学领域数据。</li><li>动态分词器原生理解分子式和蛋白质序列。</li><li>能看图，适合谱图、晶体结构图和论文插图。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>想要“懂化学的通用底座”时的首选：在它上面做 LoRA，比从通用模型开始需要的化学数据更少。</p><h4>注意</h4><p>2025 年 8 月发布；多模态模型的微调按模型卡的处理器（processor）加载。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 有 GGUF 和 FP8 版本（<code>Intern-S1-mini-GGUF</code>）。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="14.77" data-tags="chem"><td class="m">ChemDFM-R-14B<small>OpenDFM / 上海交大</small></td><td class="num">14.8B</td><td>AGPL-3.0</td><td class="num">2025-10</td><td>原子级化学知识增强的推理模型</td><td><a href="https://huggingface.co/OpenDFM/ChemDFM-R-14B" target="_blank" rel="noopener">HF ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>先标注分子中的官能团及其在反应中的变化，再做化学领域强化学习，推理过程用标签包裹、可检查。</li><li>配套的官能团识别工具 ChemFG-Tool 已在 GitHub 开源。</li><li>同团队的 ChemDFM-v2.0-14B 是更通用的化学对话模型（基于 Qwen2.5-14B）。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>分子描述、反应解释、官能团层面的推理；也可以当老师模型生成化学推理数据。</p><h4>注意</h4><p><b>AGPL-3.0</b>：修改后通过网络对外提供服务，需要公开源代码。商用前务必评估。</p></div>
+          <div><h4>跑起来</h4><p>Hugging Face 下载，用 Transformers 或 vLLM 加载（14B，4-bit 约 10 GB）。</p><p class="est"></p></div>
+        </div></td></tr>
+
+        <tr data-p="9.24" data-tags="chem"><td class="m">TxGemma（2B / 9B / 27B）<small>Google</small></td><td class="num">2.6B–27B</td><td>HAI-DEF 条款（需同意）</td><td class="num">2025-03</td><td>药物性质预测与治疗学对话</td><td><a href="https://huggingface.co/google/txgemma-9b-chat" target="_blank" rel="noopener">9B chat ↗</a> <a href="https://huggingface.co/google/txgemma-2b-predict" target="_blank" rel="noopener">2B predict ↗</a></td></tr>
+        <tr class="detail" hidden><td colspan="6"><div class="d">
+          <div><h4>优势</h4><ul><li>predict 版直接输出性质预测（毒性、吸收、结合等治疗学任务），chat 版能解释理由。</li><li>2B 到 27B 多个尺寸。</li></ul></div>
+          <div><h4>在化学 Agent 里适合</h4><p>药物化学方向：给候选分子快速打 ADMET 类预测分，作为 Agent 的一个工具。</p><h4>注意</h4><p>需在 Hugging Face 上同意 Health AI Developer Foundations 条款后才能下载；基于上一代 Gemma 2。</p></div>
+          <div><h4>跑起来</h4><p>同意条款后用 Transformers 加载。</p><p class="est"></p></div>
+        </div></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="retrieval" aria-labelledby="ret-h">
+    <h2 id="ret-h"><span class="n">05</span>检索、重排与分子表示</h2>
+    <p>小模型记不住全部化学知识，要配检索（RAG）：把论文、SI、组内笔记切块向量化，回答前先查。分子表示模型则把 SMILES 变成向量，用来做相似性搜索和性质预测。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>模型</th><th>用途</th><th>许可证</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="m"><a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B" target="_blank" rel="noopener">Qwen3-Embedding 0.6B</a> / <a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B" target="_blank" rel="noopener">4B</a></td><td>文本向量</td><td>Apache-2.0</td><td>多语言，中文文献检索首选；0.6B 可在 CPU 上跑</td></tr>
+        <tr><td class="m"><a href="https://huggingface.co/nvidia/Nemotron-3.5-Embed-1B-BF16" target="_blank" rel="noopener">Nemotron-3.5-Embed-1B</a> <span class="tag new">新</span></td><td>文档页面向量</td><td>OpenMDW-1.1</td><td>2026-10 发布，直接对 PDF 页面图像做检索，图表、谱图、表格不用先转文字</td></tr>
+        <tr><td class="m"><a href="https://huggingface.co/nvidia/Nemotron-3.5-Rerank-8B-BF16" target="_blank" rel="noopener">Nemotron-3.5-Rerank-8B</a> <span class="tag new">新</span></td><td>重排</td><td>OpenMDW-1.1</td><td>2026-10 发布，对初检结果重新排序，提高引用准确率</td></tr>
+        <tr><td class="m"><a href="https://huggingface.co/BAAI/bge-m3" target="_blank" rel="noopener">bge-m3</a> + <a href="https://huggingface.co/BAAI/bge-reranker-v2-m3" target="_blank" rel="noopener">bge-reranker-v2-m3</a></td><td>文本向量 + 重排</td><td>MIT / Apache-2.0</td><td>经典多语言组合，资料最多</td></tr>
+        <tr><td class="m"><a href="https://huggingface.co/ibm-research/MoLFormer-XL-both-10pct" target="_blank" rel="noopener">MoLFormer-XL</a></td><td>SMILES 向量</td><td>Apache-2.0</td><td>IBM 在大规模 PubChem / ZINC 分子上预训练，用作性质预测特征</td></tr>
+        <tr><td class="m"><a href="https://huggingface.co/DeepChem/ChemBERTa-77M-MTR" target="_blank" rel="noopener">ChemBERTa-77M-MTR</a></td><td>SMILES 向量</td><td>见模型卡</td><td>DeepChem 社区模型，多任务回归预训练，轻量</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="teachers" aria-labelledby="teach-h">
+    <h2 id="teach-h"><span class="n">06</span>老师模型：用来造训练数据</h2>
+    <p>小模型的训练数据最好来自更强的模型带着工具把任务做对的过程。下面的老师可以通过 API 调用，部分也有开放权重。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>老师</th><th>怎么用</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="m">DeepSeek V4.1 Flash / V4 Pro</td><td>API：<code>deepseek-flash</code>、<code>deepseek-v4-pro</code>；开放权重 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash" target="_blank" rel="noopener">HF ↗</a></td><td>价格低、支持工具调用和思考强度调节；本站 AI 助手已接入</td></tr>
+        <tr><td class="m">Meta Muse Spark / Wonder</td><td>Meta Model API：<code>muse-spark-1.3</code>、<code>muse-wonder-1.0</code>；开放权重 <a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B" target="_blank" rel="noopener">Muse Spark Open ↗</a></td><td>Wonder 是本站 AI 实验室推荐的“化学家”；开放权重版 816B，需申请，适合有集群的团队</td></tr>
+        <tr><td class="m">Intern-S1-Pro</td><td>开放权重 <a href="https://huggingface.co/internlm/Intern-S1-Pro" target="_blank" rel="noopener">HF ↗</a></td><td>科学领域大模型（Apache-2.0），化学知识强，可做离线老师</td></tr>
+        <tr><td class="m">gpt-oss-20b、Qwen3.6-35B-A3B</td><td>本机运行（见上表）</td><td>数据完全不出本机的本地老师</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">用 API 输出训练模型前，先确认该服务的使用条款允许这样做；生成的数据一律用工具校验后再入库。</p>
+  </section>
+
+  <section id="data" aria-labelledby="data-h">
+    <h2 id="data-h"><span class="n">07</span>第 1 步：造数据——老师带工具做题，只留做对的</h2>
+    <p>写一份任务清单（<code>tasks.txt</code>，每行一个问题，例如“给出 3 个含两个 F、不超过 12 个重原子的碳酸酯溶剂并核对分子式”），让老师模型在真实工具环境里作答，把完整的对话和工具调用记下来。<b>只保留能被程序验证为正确的轨迹</b>（拒绝采样），这样小模型学到的是“正确地用工具”，而不是老师的幻觉。</p>
+    <div class="code"><div class="code-bar"><span>make_traces.py</span><button type="button" data-copy>复制</button></div><pre><code># pip install openai rdkit
+# Generate tool-use trajectories with a teacher model and keep only the ones RDKit can verify.
+import json, os
+from openai import OpenAI
+from rdkit import Chem
+from rdkit.Chem import Descriptors, rdMolDescriptors
+
+teacher = OpenAI(base_url="https://api.deepseek.com", api_key=os.environ["DEEPSEEK_API_KEY"])
+TOOLS = [{
+    "type": "function",
+    "function": {
+        "name": "describe_molecule",
+        "description": "Validate a SMILES string and return its canonical form, formula, weight and heavy-atom count.",
+        "parameters": {"type": "object", "properties": {"smiles": {"type": "string"}}, "required": ["smiles"]},
+    },
+}]
+
+def describe_molecule(smiles: str) -> dict:
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        return {"valid": False}
+    return {"valid": True, "canonical": Chem.MolToSmiles(mol), "formula": rdMolDescriptors.CalcMolFormula(mol),
+            "mw": round(Descriptors.MolWt(mol), 2), "heavy_atoms": mol.GetNumHeavyAtoms()}
+
+def run(task: str, max_steps: int = 6) -> list[dict]:
+    messages = [{"role": "system", "content": "You are a careful chemist. Check every structure with the tool before answering."},
+                {"role": "user", "content": task}]
+    for _ in range(max_steps):
+        msg = teacher.chat.completions.create(model="deepseek-flash", messages=messages, tools=TOOLS).choices[0].message
+        turn = msg.model_dump(exclude_none=True)
+        turn.pop("reasoning_content", None)          # keep the visible answer and tool calls only
+        messages.append(turn)
+        if not msg.tool_calls:
+            return messages
+        for call in msg.tool_calls:
+            result = describe_molecule(**json.loads(call.function.arguments))
+            messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)})
+    return messages
+
+def verified(messages: list[dict]) -> bool:
+    # Keep a trace only if the tool was used, every structure it saw was valid, and the run ended with an answer.
+    results = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
+    return bool(results) and all(r["valid"] for r in results) and messages[-1]["role"] == "assistant"
+
+with open("traces.jsonl", "w", encoding="utf-8") as out:
+    for task in open("tasks.txt", encoding="utf-8"):
+        trace = run(task.strip())
+        if verified(trace):
+            out.write(json.dumps({"messages": trace, "tools": TOOLS}, ensure_ascii=False) + "\n")</code></pre></div>
+    <div class="grid2">
+      <div class="box"><h3>数据从哪来</h3><ul class="tight">
+        <li>自己组里的真实问题：组会记录、常被问的计算设置、合成路线讨论。</li>
+        <li>公开指令数据：<a href="https://huggingface.co/datasets/osunlp/SMolInstruct" target="_blank" rel="noopener">SMolInstruct</a>、<a href="https://huggingface.co/datasets/zjunlp/Mol-Instructions" target="_blank" rel="noopener">Mol-Instructions</a>（CC-BY-4.0）。</li>
+        <li>可自动判分的任务：<a href="https://huggingface.co/datasets/futurehouse/ether0-benchmark" target="_blank" rel="noopener">ether0-benchmark</a> 的题型很适合改写成强化学习任务。</li>
+        <li>本站 AI 实验室导出的候选与计算结果（CSV / JSON），可以直接变成“提出 → 校验 → 解释”的训练样本。</li>
+      </ul></div>
+      <div class="box"><h3>经验</h3><ul class="tight">
+        <li>500–2,000 条高质量轨迹就能让小模型学会工具格式；质量比数量重要。</li>
+        <li>按 InChIKey 给分子去重，并把同一分子只放进训练集或测试集之一，避免泄漏。</li>
+        <li>保留一部分“工具报错、模型改正”的轨迹，小模型才学得会纠错。</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section id="sft" aria-labelledby="sft-h">
+    <h2 id="sft-h"><span class="n">08</span>第 2 步：LoRA 微调——让小模型学会格式与工具</h2>
+    <p>用 TRL + PEFT 做 LoRA：只训练少量附加参数，单卡几小时完成。想更快、更省显存可以换成 <a href="https://docs.unsloth.ai/" target="_blank" rel="noopener">Unsloth</a>；不想写代码可以用 <a href="https://github.com/hiyouga/LlamaFactory" target="_blank" rel="noopener">LlamaFactory</a> 的网页界面。</p>
+    <div class="code"><div class="code-bar"><span>train_sft.py</span><button type="button" data-copy>复制</button></div><pre><code># pip install "trl>=0.20" peft datasets accelerate
+# LoRA fine-tuning on the verified traces. A 2–4B model fits on one 16–24 GB GPU.
+from datasets import load_dataset
+from peft import LoraConfig
+from trl import SFTConfig, SFTTrainer
+
+BASE = "LiquidAI/LFM3-1.7B"   # or ibm-granite/granite-4.2-3b; for multimodal bases (Qwen3.5, Gemma 4) follow their model card
+data = load_dataset("json", data_files="traces.jsonl", split="train").train_test_split(test_size=0.05, seed=0)
+
+trainer = SFTTrainer(
+    model=BASE,
+    train_dataset=data["train"],
+    eval_dataset=data["test"],
+    peft_config=LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, target_modules="all-linear", task_type="CAUSAL_LM"),
+    args=SFTConfig(
+        output_dir="chem-agent-lora",
+        num_train_epochs=2,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=8,
+        learning_rate=1e-4,
+        max_length=4096,
+        gradient_checkpointing=True,
+        bf16=True,
+        logging_steps=10,
+        eval_strategy="steps",
+        eval_steps=100,
+    ),
+)
+trainer.train()
+trainer.save_model("chem-agent-lora")</code></pre></div>
+    <div class="code"><div class="code-bar"><span>merge_lora.py</span><button type="button" data-copy>复制</button></div><pre><code># Merge the adapter into the base weights so vLLM / llama.cpp can load a single model.
+from peft import AutoPeftModelForCausalLM
+from transformers import AutoTokenizer
+
+model = AutoPeftModelForCausalLM.from_pretrained("chem-agent-lora")
+model.merge_and_unload().save_pretrained("chem-agent-merged")
+AutoTokenizer.from_pretrained("chem-agent-lora").save_pretrained("chem-agent-merged")</code></pre></div>
+    <p class="muted small">Mac 用户：<a href="https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/LORA.md" target="_blank" rel="noopener">MLX-LM 的 LoRA 教程</a>可以在 Apple 芯片上微调 ≤4B 的模型。</p>
+  </section>
+
+  <section id="grpo" aria-labelledby="grpo-h">
+    <h2 id="grpo-h"><span class="n">09</span>第 3 步：强化学习——用化学规则当裁判</h2>
+    <p>GRPO（<a href="https://arxiv.org/abs/2402.03300" target="_blank" rel="noopener">DeepSeekMath 提出</a>）让模型对同一题生成多个答案，按奖励比较优劣，不需要单独的奖励模型。化学特别适合这种“可验证奖励”：结构合不合法、元素和大小是否满足约束、性质是否落在目标范围，都能用 RDKit 或计算平台自动判断。ether0 就是这样训练出来的。</p>
+    <div class="code"><div class="code-bar"><span>train_grpo.py</span><button type="button" data-copy>复制</button></div><pre><code># pip install "trl>=0.20" rdkit datasets
+# GRPO with a verifiable chemistry reward: RDKit grades every answer, no reward model needed.
+import re
+from datasets import Dataset
+from rdkit import Chem, RDLogger
+from trl import GRPOConfig, GRPOTrainer
+
+RDLogger.DisableLog("rdApp.*")
+ALLOWED = {"C", "H", "O", "F"}
+TASK = ("Propose one lithium-battery electrolyte solvent containing only C, H, O and F, "
+        "with at most 12 heavy atoms and at least two fluorine atoms. Answer as <smiles>...</smiles>.")
+prompts = Dataset.from_list([{"prompt": [{"role": "user", "content": TASK}]}] * 256)   # use many varied tasks in practice
+
+def text_of(completion):
+    return completion[-1]["content"] if isinstance(completion, list) else completion
+
+def chemistry_reward(completions, **kwargs):
+    rewards = []
+    for completion in completions:
+        found = re.search(r"<smiles>(.*?)</smiles>", text_of(completion), re.S)
+        mol = Chem.MolFromSmiles(found.group(1).strip()) if found else None
+        if mol is None:
+            rewards.append(-1.0)                      # no answer or an invalid structure
+            continue
+        symbols = [a.GetSymbol() for a in mol.GetAtoms()]
+        score = 0.2                                   # a valid structure
+        score += 0.4 if set(symbols) <= ALLOWED else -0.4
+        score += 0.2 if mol.GetNumHeavyAtoms() <= 12 else -0.2
+        score += 0.2 if symbols.count("F") >= 2 else 0.0
+        rewards.append(score)
+    return rewards
+
+trainer = GRPOTrainer(
+    model="chem-agent-merged",                        # start from the SFT model
+    reward_funcs=chemistry_reward,
+    train_dataset=prompts,
+    args=GRPOConfig(output_dir="chem-agent-grpo", num_generations=8, max_completion_length=512,
+                    per_device_train_batch_size=8, gradient_accumulation_steps=4,
+                    learning_rate=5e-6, bf16=True, logging_steps=5),
+)
+trainer.train()
+trainer.save_model("chem-agent-grpo")</code></pre></div>
+    <div class="grid2">
+      <div class="box"><h3>好奖励的样子</h3><ul class="tight">
+        <li>能自动、确定地算出来：RDKit 解析、元素与原子数、官能团 SMARTS、分子量、相似度。</li>
+        <li>分层给分：先奖励“结构合法”，再奖励“满足约束”，最后奖励“性质达标”。</li>
+        <li>贵的打分（UMA、DFT）只用在少量样本上，或先离线算好再查表。</li>
+      </ul></div>
+      <div class="box"><h3>多卡与大规模</h3><ul class="tight">
+        <li><a href="https://github.com/verl-project/verl" target="_blank" rel="noopener">verl</a>：多卡、多节点的强化学习框架，支持多轮工具调用的 Agent RL。</li>
+        <li><a href="https://huggingface.co/docs/trl/grpo_trainer" target="_blank" rel="noopener">TRL GRPO 文档</a>：奖励函数、vLLM 加速生成等参数说明。</li>
+        <li><a href="https://docs.unsloth.ai/" target="_blank" rel="noopener">Unsloth</a>：单卡 GRPO 更省显存。</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section id="eval" aria-labelledby="eval-h">
+    <h2 id="eval-h"><span class="n">10</span>第 4 步：评测——训练前后都要量</h2>
+    <ul class="tight">
+      <li><b>通用化学能力</b>：<a href="https://chembench.lamalab.org/" target="_blank" rel="noopener">ChemBench</a>（<a href="https://github.com/lamalab-org/chembench" target="_blank" rel="noopener">代码</a>、<a href="https://huggingface.co/datasets/jablonkagroup/ChemBench" target="_blank" rel="noopener">数据</a>），确认微调没有让基础化学知识退化。</li>
+      <li><b>你的任务</b>：留出 10–20% 自建任务做测试，统计 SMILES 合法率、约束满足率、工具调用成功率、最终答案正确率。</li>
+      <li><b>对比三个版本</b>：原始底座、SFT 后、GRPO 后，同一测试集、同一采样参数。</li>
+      <li><b>人工抽查</b>：每轮随机看 30 条完整轨迹，找出“答对了但理由错”的情况。</li>
+    </ul>
+  </section>
+
+  <section id="deploy" aria-labelledby="deploy-h">
+    <h2 id="deploy-h"><span class="n">11</span>第 5 步：部署，并接入 MolAstria</h2>
+    <p>把模型跑成 OpenAI 兼容的本地服务，然后在本站右上角 <b>AI 助手 → 设置 → 其他兼容接口</b> 里填上地址，AI 助手和 AI 实验室就会使用你自己的模型。请求只在你的浏览器和你的电脑之间往返。</p>
+    <div class="grid2">
+      <div class="code"><div class="code-bar"><span>vLLM（Linux / WSL，NVIDIA 显卡）</span><button type="button" data-copy>复制</button></div><pre><code># Serve the trained model with tool calling (pick the parser your base model's card recommends)
+vllm serve ./chem-agent-grpo --served-model-name chem-agent --port 8000 \
+  --enable-auto-tool-choice --tool-call-parser hermes
+# MolAstria settings: address http://localhost:8000/v1, model chem-agent, key: any text</code></pre></div>
+      <div class="code"><div class="code-bar"><span>Ollama（Windows / macOS / Linux）</span><button type="button" data-copy>复制</button></div><pre><code># 1) Convert to GGUF with llama.cpp, then register it with Ollama
+python llama.cpp/convert_hf_to_gguf.py chem-agent-grpo --outfile chem-agent.gguf
+echo "FROM ./chem-agent.gguf" > Modelfile
+ollama create chem-agent -f Modelfile
+# 2) Allow molastria.com to call your local Ollama, then start it
+OLLAMA_ORIGINS=https://molastria.com ollama serve
+#    Windows PowerShell: $env:OLLAMA_ORIGINS="https://molastria.com"; ollama serve
+# MolAstria settings: address http://localhost:11434/v1, model chem-agent, key: any text</code></pre></div>
+    </div>
+    <p class="muted small">浏览器第一次从网页访问本机服务时，可能弹出“允许访问本地网络设备”的提示，选择允许即可。<code>OLLAMA_ORIGINS</code> 的说明见 <a href="https://docs.ollama.com/faq" target="_blank" rel="noopener">Ollama 文档</a>，OpenAI 兼容接口见 <a href="https://docs.ollama.com/api/openai-compatibility" target="_blank" rel="noopener">这里</a>；vLLM 的工具调用参数见 <a href="https://docs.vllm.ai/en/latest/features/tool_calling.html" target="_blank" rel="noopener">vLLM 文档</a>。</p>
+    <h3>把化学工具做成 MCP 服务</h3>
+    <p>用 <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">MCP</a> 把 RDKit 等工具包装一次，你的小模型、Claude、以及其他支持 MCP 的客户端都能直接调用。</p>
+    <div class="code"><div class="code-bar"><span>chem_tools_mcp.py</span><button type="button" data-copy>复制</button></div><pre><code># pip install mcp rdkit
+from mcp.server.fastmcp import FastMCP
+from rdkit import Chem
+from rdkit.Chem import Descriptors, rdMolDescriptors
+
+mcp = FastMCP("chem-tools")
+
+@mcp.tool()
+def describe_molecule(smiles: str) -> dict:
+    """Validate a SMILES string and return canonical SMILES, formula, weight and heavy-atom count."""
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        return {"valid": False}
+    return {"valid": True, "canonical": Chem.MolToSmiles(mol), "formula": rdMolDescriptors.CalcMolFormula(mol),
+            "mw": round(Descriptors.MolWt(mol), 2), "heavy_atoms": mol.GetNumHeavyAtoms()}
+
+if __name__ == "__main__":
+    mcp.run()</code></pre></div>
+  </section>
+
+  <section id="tools" aria-labelledby="tools-h">
+    <h2 id="tools-h"><span class="n">12</span>工具、框架与数据集</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>类别</th><th>项目</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>微调</td><td><a href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener">Unsloth</a> · <a href="https://github.com/huggingface/trl" target="_blank" rel="noopener">TRL</a> · <a href="https://github.com/huggingface/peft" target="_blank" rel="noopener">PEFT</a> · <a href="https://github.com/hiyouga/LlamaFactory" target="_blank" rel="noopener">LlamaFactory</a> · <a href="https://github.com/axolotl-ai-cloud/axolotl" target="_blank" rel="noopener">Axolotl</a></td><td>LoRA / QLoRA、SFT、DPO、GRPO；LlamaFactory 有网页界面</td></tr>
+        <tr><td>强化学习</td><td><a href="https://github.com/verl-project/verl" target="_blank" rel="noopener">verl</a> · <a href="https://huggingface.co/docs/trl/grpo_trainer" target="_blank" rel="noopener">TRL GRPO</a></td><td>多卡 Agent RL；单卡 GRPO</td></tr>
+        <tr><td>推理服务</td><td><a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">vLLM</a> · <a href="https://github.com/sgl-project/sglang" target="_blank" rel="noopener">SGLang</a> · <a href="https://github.com/ollama/ollama" target="_blank" rel="noopener">Ollama</a> · <a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener">llama.cpp</a> · <a href="https://github.com/ml-explore/mlx-lm" target="_blank" rel="noopener">MLX-LM</a></td><td>OpenAI 兼容接口、量化、Apple 芯片</td></tr>
+        <tr><td>Agent 框架</td><td><a href="https://github.com/huggingface/smolagents" target="_blank" rel="noopener">smolagents</a> · <a href="https://github.com/langchain-ai/langgraph" target="_blank" rel="noopener">LangGraph</a> · <a href="https://github.com/openai/openai-agents-python" target="_blank" rel="noopener">OpenAI Agents SDK</a> · <a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank" rel="noopener">MCP Python SDK</a></td><td>多步工具调用、状态管理、工具标准化</td></tr>
+        <tr><td>化学工具</td><td><a href="https://www.rdkit.org/docs/" target="_blank" rel="noopener">RDKit</a> · <a href="https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest" target="_blank" rel="noopener">PubChem PUG REST</a> · <a href="https://github.com/rowansci/rowan-python" target="_blank" rel="noopener">rowan-python</a> · <a href="https://github.com/facebookresearch/fairchem" target="_blank" rel="noopener">fairchem（UMA）</a> · <a href="https://github.com/deepchem/deepchem" target="_blank" rel="noopener">DeepChem</a></td><td>结构校验、数据库查询、云端量化计算、机器学习势</td></tr>
+        <tr><td>参考工作</td><td><a href="https://arxiv.org/abs/2304.05376" target="_blank" rel="noopener">ChemCrow</a>（<a href="https://github.com/ur-whitelab/chemcrow-public" target="_blank" rel="noopener">代码</a>）· <a href="https://arxiv.org/abs/2506.17238" target="_blank" rel="noopener">ether0</a>（<a href="https://github.com/Future-House/ether0" target="_blank" rel="noopener">代码</a>）</td><td>化学工具 Agent 的早期代表；化学推理强化学习</td></tr>
+        <tr><td>数据与评测</td><td><a href="https://huggingface.co/datasets/jablonkagroup/ChemBench" target="_blank" rel="noopener">ChemBench</a> · <a href="https://huggingface.co/datasets/futurehouse/ether0-benchmark" target="_blank" rel="noopener">ether0-benchmark</a> · <a href="https://huggingface.co/datasets/osunlp/SMolInstruct" target="_blank" rel="noopener">SMolInstruct</a> · <a href="https://huggingface.co/datasets/zjunlp/Mol-Instructions" target="_blank" rel="noopener">Mol-Instructions</a> · <a href="https://huggingface.co/datasets/facebook/OMol25" target="_blank" rel="noopener">OMol25</a>（需申请）</td><td>评测、指令数据、可验证任务、分子量子化学数据</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="pitfalls" aria-labelledby="pit-h">
+    <h2 id="pit-h"><span class="n">13</span>常见坑</h2>
+    <div class="grid2">
+      <div class="box"><h3>结果可信度</h3><ul class="tight">
+        <li>小模型会编造 SMILES、CAS 号和文献；所有结构一律过 RDKit，所有数据一律回到数据库核对。</li>
+        <li>不要让模型直接给数值性质（沸点、电位）当结论；数值来自计算或数据库，模型负责调度和解释。</li>
+        <li>训练集和测试集按分子去重，否则分数虚高。</li>
+      </ul></div>
+      <div class="box"><h3>许可证与安全</h3><ul class="tight">
+        <li>商用优先 Apache-2.0 / MIT；LFM（LFM Open License）、ChemDFM（AGPL-3.0）、TxGemma（HAI-DEF）、Nemotron（OpenMDW）都要先读条款。</li>
+        <li>微调可能削弱底座原有的安全行为；涉及危险物质合成的请求要在工具层拦截。</li>
+        <li>API 老师的服务条款可能限制用输出训练模型，使用前确认。</li>
+      </ul></div>
+    </div>
+    <p class="foot">模型名称、参数量、许可证与发布日期核对自各模型的 Hugging Face 官方页面（2026-10-28）；工具仓库核对自 GitHub。显存数字为粗略估算。新模型发布很快，使用前请以模型卡为准。相关页面：<a href="../lab/index.html">AI 实验室</a> · <a href="../atlas/index.html#agent">Agent 工程</a> · <a href="../resources/index.html">资源目录</a></p>
+  </section>
+</main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

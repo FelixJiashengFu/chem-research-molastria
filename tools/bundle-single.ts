@@ -16,6 +16,7 @@ const PAGES: Record<string, { file: string; title: string }> = {
   atlas: { file: "atlas/index.html", title: "中文讲解与数据库" },
   hub: { file: "hub/index.html", title: "论文与社区" },
   lab: { file: "lab/index.html", title: "AI 实验室" },
+  train: { file: "train/index.html", title: "训练 Agent" },
 };
 const DATA_FILES = new Set(["merged-data.js", "hub/data.js"]);
 const read = (path: string) => Deno.readTextFile(new URL(path, pub));

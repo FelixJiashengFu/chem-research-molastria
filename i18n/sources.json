@@ -214,6 +214,7 @@
  "Agent 工程": [
   "index.html",
   "atlas/index.html",
+  "train/index.html",
   "shared-nav.js",
   "atlas/app.js"
  ],
@@ -226,6 +227,7 @@
  "AI 实验室": [
   "index.html",
   "hub/index.html",
+  "train/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -242,6 +244,9 @@
   "index.html"
  ],
  "中文讲解 19 章": [
+  "index.html"
+ ],
+ "训练化学 Agent": [
   "index.html"
  ],
  "站点地图": [
@@ -485,6 +490,7 @@
   "atlas/index.html",
   "hub/index.html",
   "hub/network.html",
+  "train/index.html",
   "app.js",
   "atlas/app.js",
   "tools/build-seo.ts"
@@ -524,6 +530,7 @@
  ],
  "说明": [
   "atlas/index.html",
+  "train/index.html",
   "atlas/app.js"
  ],
  "资源目录检索": [
@@ -610,6 +617,15 @@
   "atlas/index.html"
  ],
  "下一步工程路线": [
+  "atlas/index.html"
+ ],
+ "想用开源小模型训练自己的化学 Agent？看": [
+  "atlas/index.html"
+ ],
+ "训练指南": [
+  "atlas/index.html"
+ ],
+ "：最新小模型对比、数据构造、LoRA 与 GRPO 代码。": [
   "atlas/index.html"
  ],
  "连接 MCP 与适配器": [
@@ -1241,7 +1257,8 @@
   "lab/index.html"
  ],
  "全部": [
-  "lab/index.html"
+  "lab/index.html",
+  "train/index.html"
  ],
  "通过": [
   "lab/index.html",
@@ -1669,6 +1686,1114 @@
  "筛选卡片": [
   "lab/index.html"
  ],
+ "训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria": [
+  "train/index.html"
+ ],
+ "跳到正文": [
+  "train/index.html"
+ ],
+ "本页目录": [
+  "train/index.html"
+ ],
+ "路线总览": [
+  "train/index.html"
+ ],
+ "按显存选模型": [
+  "train/index.html"
+ ],
+ "开源小模型": [
+  "train/index.html"
+ ],
+ "低显存 MoE": [
+  "train/index.html"
+ ],
+ "化学专用模型": [
+  "train/index.html"
+ ],
+ "检索与分子表示": [
+  "train/index.html"
+ ],
+ "老师模型": [
+  "train/index.html"
+ ],
+ "1 造数据": [
+  "train/index.html"
+ ],
+ "2 LoRA 微调": [
+  "train/index.html"
+ ],
+ "3 强化学习": [
+  "train/index.html"
+ ],
+ "4 评测": [
+  "train/index.html"
+ ],
+ "5 部署与接入": [
+  "train/index.html"
+ ],
+ "工具与数据集": [
+  "train/index.html"
+ ],
+ "常见坑": [
+  "train/index.html"
+ ],
+ "用开源小模型，": [
+  "train/index.html"
+ ],
+ "训练你自己的化学研究 Agent。": [
+  "train/index.html"
+ ],
+ "一个 2–9B 的小模型，学会调用 RDKit、PubChem 和计算平台这些工具，再用可验证的化学规则做强化学习，就能在一张消费级显卡甚至笔记本上运行，数据不出本机。这份指南给出选型、数据构造、LoRA 微调、GRPO 强化学习、评测和部署的完整步骤，代码可以直接复制。": [
+  "train/index.html"
+ ],
+ "更新于": [
+  "train/index.html"
+ ],
+ "模型信息核对自 Hugging Face 官方模型卡": [
+  "train/index.html"
+ ],
+ "所有链接已逐一检查": [
+  "train/index.html"
+ ],
+ "先让大模型（老师）带着工具把任务做对，把做对的过程记下来，教给小模型；再用程序能自动判分的化学任务做强化学习；最后在本机部署，接入 MolAstria 的 AI 助手和 AI 实验室。": [
+  "train/index.html"
+ ],
+ "定任务与工具": [
+  "train/index.html"
+ ],
+ "写清要回答的问题和要调用的工具：RDKit、PubChem、Rowan、文献检索": [
+  "train/index.html"
+ ],
+ "选底座模型": [
+  "train/index.html"
+ ],
+ "按显存与许可证挑 2–9B 的小模型": [
+  "train/index.html"
+ ],
+ "造数据": [
+  "train/index.html"
+ ],
+ "老师模型生成工具调用轨迹，RDKit 校验，只留做对的": [
+  "train/index.html"
+ ],
+ "LoRA 微调": [
+  "train/index.html"
+ ],
+ "单卡几小时，让小模型学会格式与工具": [
+  "train/index.html"
+ ],
+ "强化学习": [
+  "train/index.html"
+ ],
+ "GRPO + 可验证奖励：结构合法、约束满足": [
+  "train/index.html"
+ ],
+ "评测与部署": [
+  "train/index.html"
+ ],
+ "ChemBench 与自建测试集；vLLM / Ollama 本地服务": [
+  "train/index.html"
+ ],
+ "只想先体验：装好": [
+  "train/index.html"
+ ],
+ "后运行": [
+  "train/index.html"
+ ],
+ "，再按": [
+  "train/index.html"
+ ],
+ "第 5 步": [
+  "train/index.html"
+ ],
+ "把它接入本站的 AI 助手，不需要训练就能用本地模型问目录、提候选分子。": [
+  "train/index.html"
+ ],
+ "按你的显存选模型": [
+  "train/index.html"
+ ],
+ "选择显存和要做的事，下方表格会标出放得下的模型。显存是按参数量粗略估算的（4-bit 推理约 0.6 GB/十亿参数 + 1.5 GB；QLoRA 微调约 1 GB/十亿参数 + 4 GB；GRPO 约为微调的 1.6 倍），实际还取决于序列长度和批大小。": [
+  "train/index.html"
+ ],
+ "显存 / 内存": [
+  "train/index.html"
+ ],
+ "不限": [
+  "train/index.html"
+ ],
+ "6 GB 或 Mac 8 GB": [
+  "train/index.html"
+ ],
+ "48 GB 或多卡": [
+  "train/index.html"
+ ],
+ "80 GB 以上": [
+  "train/index.html"
+ ],
+ "要做的事": [
+  "train/index.html"
+ ],
+ "本地推理": [
+  "train/index.html",
+  "train/train.js"
+ ],
+ "LoRA / QLoRA 微调": [
+  "train/index.html"
+ ],
+ "GRPO 强化学习": [
+  "train/index.html",
+  "train/train.js"
+ ],
+ "显存": [
+  "train/index.html"
+ ],
+ "能做什么": [
+  "train/index.html"
+ ],
+ "推荐": [
+  "train/index.html",
+  "ai/ai.js"
+ ],
+ "无独显 / Mac 16 GB": [
+  "train/index.html"
+ ],
+ "推理 ≤4B；用 MLX-LM 做 ≤2B 的 LoRA": [
+  "train/index.html"
+ ],
+ "4-bit 推理 ≤9B；QLoRA ≤2B": [
+  "train/index.html"
+ ],
+ "推理 Qwen3.5-9B；微调 LFM3-1.7B、MiniCPM5-2B": [
+  "train/index.html"
+ ],
+ "Qwen3.5-4B（推荐起步）、Granite 4.2 8B、Gemma 4 E4B": [
+  "train/index.html"
+ ],
+ "QLoRA ≤14B；GRPO 4–8B；4-bit 跑 ether0": [
+  "train/index.html"
+ ],
+ "48 GB+ / 多卡": [
+  "train/index.html"
+ ],
+ "MoE 微调、多卡 RL（verl）": [
+  "train/index.html"
+ ],
+ "开源小模型（底座候选）": [
+  "train/index.html"
+ ],
+ "以下是 2026 年 10 月可下载的主要小模型。点任意一行或它的“介绍”按钮，可以展开这个模型的优势、在化学 Agent 里适合做什么、注意事项和启动命令。": [
+  "train/index.html"
+ ],
+ "推荐起步": [
+  "train/index.html"
+ ],
+ "近两个月新发布": [
+  "train/index.html"
+ ],
+ "工具调用 / Agent": [
+  "train/index.html"
+ ],
+ "能看图": [
+  "train/index.html"
+ ],
+ "端侧 ≤4B": [
+  "train/index.html"
+ ],
+ "Apache / MIT 可商用": [
+  "train/index.html"
+ ],
+ "全部展开": [
+  "train/index.html",
+  "train/train.js"
+ ],
+ "模型": [
+  "train/index.html",
+  "ai/ai.js"
+ ],
+ "参数": [
+  "train/index.html"
+ ],
+ "许可证": [
+  "train/index.html"
+ ],
+ "发布": [
+  "train/index.html"
+ ],
+ "一句话": [
+  "train/index.html"
+ ],
+ "链接": [
+  "train/index.html"
+ ],
+ "新": [
+  "train/index.html",
+  "shared-nav.js"
+ ],
+ "专为本地 Agent 和单卡微调设计，4-bit 约 1 GB": [
+  "train/index.html"
+ ],
+ "优势": [
+  "train/index.html"
+ ],
+ "官方针对 Hermes Agent、Pi、OpenClaw 等 Agent 框架做了后训练，工具调用和结构化输出是主打能力。": [
+  "train/index.html"
+ ],
+ "256K 上下文；4-bit 约 1 GB 内存，手机和笔记本都能跑。": [
+  "train/index.html"
+ ],
+ "模型卡明确写着“为领域微调而设计”，单张显卡几十分钟就能完成一轮 LoRA。": [
+  "train/index.html"
+ ],
+ "同系列还有 LFM3-VL-2B（图像和视频，带思考模式）、LFM3-Omni-2B、LFM3-Audio-2B。": [
+  "train/index.html"
+ ],
+ "在化学 Agent 里适合": [
+  "train/index.html"
+ ],
+ "做“调度员”：把用户问题拆成 RDKit、PubChem、Rowan 调用，返回 JSON；成本最低的微调起点。": [
+  "train/index.html"
+ ],
+ "注意": [
+  "train/index.html"
+ ],
+ "官方说明不适合复杂多步推理和写代码类 Agent，知识型问题要配检索。许可证是 LFM Open License 1.0，不是 Apache，商用前先读条款。": [
+  "train/index.html"
+ ],
+ "跑起来": [
+  "train/index.html"
+ ],
+ "端侧看图看视频，回答前先思考": [
+  "train/index.html"
+ ],
+ "输入文本、图像和视频（原生分辨率，视频按 2 fps 采样），是 LFM 第一个能看视频的模型。": [
+  "train/index.html"
+ ],
+ "带思考模式，对图表、数学和多步视觉问题更稳。": [
+  "train/index.html"
+ ],
+ "1.73B 语言模型 + 164M 视觉编码器，体量适合手机和工控机。": [
+  "train/index.html"
+ ],
+ "读谱图截图、结构式照片、仪器屏幕和实验录像，把看到的内容转成文字或结构化记录再交给工具。": [
+  "train/index.html"
+ ],
+ "小模型看图会出错，识别出的结构必须再用 RDKit 校验。许可证同 LFM3。": [
+  "train/index.html"
+ ],
+ "在 Hugging Face 下载": [
+  "train/index.html"
+ ],
+ "，或使用官方 GGUF / MLX 版本。": [
+  "train/index.html"
+ ],
+ "阿里通义": [
+  "train/index.html"
+ ],
+ "最小的 Qwen，适合原型和教学": [
+  "train/index.html"
+ ],
+ "与 4B、9B 同一架构：原生视觉-语言统一训练、201 种语言、原生 262K 上下文。": [
+  "train/index.html"
+ ],
+ "Apache-2.0，商用无门槛。": [
+  "train/index.html"
+ ],
+ "下载量大、教程多，出问题容易查到答案。": [
+  "train/index.html"
+ ],
+ "快速验证数据格式和训练流程：先在 0.8B 上把整条流水线跑通，再换大模型。": [
+  "train/index.html"
+ ],
+ "化学知识有限，必须配工具和检索使用。": [
+  "train/index.html"
+ ],
+ "同尺寸里工具调用最强的一档，16 GB 显卡可微调": [
+  "train/index.html"
+ ],
+ "官方在大规模 Agent 环境里做了强化学习，工具调用和多步任务明显强于上一代 Qwen3。": [
+  "train/index.html"
+ ],
+ "原生视觉-语言模型：一个模型同时处理文字和图片。": [
+  "train/index.html"
+ ],
+ "201 种语言，中文表现好；原生 262K 上下文，可扩展到约 100 万 token。": [
+  "train/index.html"
+ ],
+ "通用的化学 Agent 底座：读文献摘要、调用工具、生成 SMILES 候选并解释理由。第一次训练推荐从它开始。": [
+  "train/index.html"
+ ],
+ "它是多模态架构，用 TRL / Unsloth 微调时按模型卡选择加载方式；思考模式输出较长，Agent 循环里注意 token 预算。": [
+  "train/index.html"
+ ],
+ "10B 以内综合最强档之一，官方给出 vLLM 工具调用参数": [
+  "train/index.html"
+ ],
+ "与 4B 同一套训练，但容量更大，复杂多步推理和长文档更稳。": [
+  "train/index.html"
+ ],
+ "模型卡直接给出 vLLM / SGLang 的工具调用与推理解析参数，部署成 OpenAI 兼容服务最省心。": [
+  "train/index.html"
+ ],
+ "可用": [
+  "train/index.html"
+ ],
+ "跳过视觉编码器，把显存留给 KV 缓存。": [
+  "train/index.html"
+ ],
+ "正式使用的主力 Agent：多工具编排、读长篇 SI、规划计算流程。24 GB 显卡可做 QLoRA。": [
+  "train/index.html"
+ ],
+ "GRPO 需要更多显存（约 24 GB 以上）；思考模式下回复很长。": [
+  "train/index.html"
+ ],
+ "有效 2B / 4B": [
+  "train/index.html"
+ ],
+ "端侧多模态：文字、图片、视频、语音": [
+  "train/index.html"
+ ],
+ "专为笔记本和手机优化，原生支持音频输入（E2B、E4B、12B）。": [
+  "train/index.html"
+ ],
+ "可配置的思考模式，原生函数调用，适合做 Agent。": [
+  "train/index.html"
+ ],
+ "128K 上下文；Gemma 4 起改为 Apache-2.0，比以往的 Gemma 条款宽松。": [
+  "train/index.html"
+ ],
+ "实验室里的语音 / 拍照助手：念出试剂名查性质，拍下谱图问峰的归属，再交给工具核对。": [
+  "train/index.html"
+ ],
+ "“有效 2B / 4B” 指计算量，下载的总参数约 5.1B / 8.0B，显存按总参数估算。": [
+  "train/index.html"
+ ],
+ "15B 以内最强的一档，消费级显卡可跑": [
+  "train/index.html"
+ ],
+ "与 E2B / E4B 一样支持文字、图像、视频和音频输入，能力更强。": [
+  "train/index.html"
+ ],
+ "官方定位为消费级显卡和工作站部署；第三方对比把它列为 15B 以内的首选之一。": [
+  "train/index.html"
+ ],
+ "官方提供 QAT 量化版本（4-bit 精度损失小）。": [
+  "train/index.html"
+ ],
+ "需要较强推理又要本地运行的场景：读论文图表、比较方法、写计算输入文件。": [
+  "train/index.html"
+ ],
+ "QLoRA 约需 16–24 GB 显存。": [
+  "train/index.html"
+ ],
+ "有效 4B": [
+  "train/index.html"
+ ],
+ "NVIDIA 在 Gemma 4 E4B 上继续后训练，提供 4 GB 量化版": [
+  "train/index.html"
+ ],
+ "继承 Gemma 4 E4B 的对话能力，并由 NVIDIA 进一步后训练；可用聊天模板开关思考，并设置思考预算。": [
+  "train/index.html"
+ ],
+ "输入、输出各最多 64K token。": [
+  "train/index.html"
+ ],
+ "Nemotron 系列公开权重、训练数据和训练配方，便于复现和二次训练。": [
+  "train/index.html"
+ ],
+ "NVIDIA 显卡上的本地助手和嵌入式设备（如 Jetson）上的实验室终端。": [
+  "train/index.html"
+ ],
+ "官方定位偏向语音和设备助手；许可证为 OpenMDW-1.1，使用前阅读条款。": [
+  "train/index.html"
+ ],
+ "按模型卡用 vLLM 部署（卡里附有完整命令和 DFlash 推测解码配置）。": [
+  "train/index.html"
+ ],
+ "企业级工具调用与 Agent，测试过中文": [
+  "train/index.html"
+ ],
+ "模型卡写明最适合推理、写代码、工具调用和 Agent 工作流；内置思维链。": [
+  "train/index.html"
+ ],
+ "原生 128K 上下文，可扩展到 512K。": [
+  "train/index.html"
+ ],
+ "官方测试过 12 种语言（含中文）；纯文本模型，结构简单，微调兼容性好。": [
+  "train/index.html"
+ ],
+ "稳定的企业环境：内部电子实验记录本（ELN）问答、标准化报告、按模板调用计算平台。": [
+  "train/index.html"
+ ],
+ "不能看图；8B 的 KV 缓存较大，长上下文时要留足显存。": [
+  "train/index.html"
+ ],
+ "OpenBMB / 面壁": [
+  "train/index.html"
+ ],
+ "2B 级综合最强之一，训练数据开放": [
+  "train/index.html"
+ ],
+ "官方对比中达到 2B 级开源最好成绩，整体接近 4B 级模型，代码和数学推理优势明显。": [
+  "train/index.html"
+ ],
+ "为本地助手、编程 Agent 和工具调用流程设计。": [
+  "train/index.html"
+ ],
+ "同时开放了训练数据（UltraData 系列，含 Agent SFT 数据），可以直接参考它的数据格式来造自己的化学 Agent 数据。": [
+  "train/index.html"
+ ],
+ "8 GB 显卡上的可微调底座；学习“Agent 训练数据长什么样”的好范本。": [
+  "train/index.html"
+ ],
+ "纯文本；知识量受 2B 体量限制。": [
+  "train/index.html"
+ ],
+ "Hugging Face 提供 GGUF、MLX 和 GPTQ 版本，可直接导入 Ollama 或 llama.cpp。": [
+  "train/index.html"
+ ],
+ "原生函数调用与 JSON 输出，另有推理版": [
+  "train/index.html"
+ ],
+ "14B 推理 ↗": [
+  "train/index.html"
+ ],
+ "原生函数调用和 JSON 输出，带视觉能力，支持中文等数十种语言。": [
+  "train/index.html"
+ ],
+ "14B 官方称与 Mistral Small 3.2（24B）相当，量化后 24 GB 以内能跑；推理版专攻数学、代码和理工科问题。": [
+  "train/index.html"
+ ],
+ "化学推理模型 ether0 正是基于 Mistral 系列训练的，路线可参考。": [
+  "train/index.html"
+ ],
+ "需要严格 JSON 输出的流水线（例如把文献实验步骤抽成结构化反应记录）。": [
+  "train/index.html"
+ ],
+ "2025 年发布，比 Qwen3.5、Gemma 4 早一代。": [
+  "train/index.html"
+ ],
+ "Hugging Face 有官方 GGUF 版本（": [
+  "train/index.html"
+ ],
+ "），可直接用 llama.cpp 或 Ollama 加载。": [
+  "train/index.html"
+ ],
+ "MIT 许可最宽松，数学和逻辑推理强": [
+  "train/index.html"
+ ],
+ "用高质量合成数据训练，侧重推理密集型任务，数学和逻辑表现突出。": [
+  "train/index.html"
+ ],
+ "128K 上下文，有专门的函数调用格式。": [
+  "train/index.html"
+ ],
+ "MIT 许可，几乎没有使用限制。": [
+  "train/index.html"
+ ],
+ "计算题与单位换算、化学计量、热力学推导这类需要严谨推理的子任务。": [
+  "train/index.html"
+ ],
+ "2025 年发布，已不是同尺寸最强；中文能力弱于 Qwen。": [
+  "train/index.html"
+ ],
+ "Hugging Face 下载，或在 Ollama 搜索": [
+  "train/index.html"
+ ],
+ "训练数据和配方完全公开": [
+  "train/index.html"
+ ],
+ "完全开放：预训练数据、中期训练和后训练配方都公开，是学习“从头到尾怎么训一个模型”的最佳教材。": [
+  "train/index.html"
+ ],
+ "双模式推理（思考 / 不思考）；64K 上下文，YaRN 可到 128K。": [
+  "train/index.html"
+ ],
+ "课程、复现实验，以及需要完全可审计训练来源的研究。": [
+  "train/index.html"
+ ],
+ "原生只支持 6 种欧洲语言，": [
+  "train/index.html"
+ ],
+ "不含中文": [
+  "train/index.html"
+ ],
+ "；中文场景请选 Qwen、MiniCPM 或 Granite。": [
+  "train/index.html"
+ ],
+ "Hugging Face 下载，Transformers / vLLM / llama.cpp 均支持。": [
+  "train/index.html"
+ ],
+ "每个训练阶段的检查点都公开": [
+  "train/index.html"
+ ],
+ "完全开放的数据与训练流程，SFT → DPO → RLVR（可验证奖励强化学习）每一步的模型都单独发布。": [
+  "train/index.html"
+ ],
+ "有长思维链的 Think 版本，数学和代码推理更强。": [
+  "train/index.html"
+ ],
+ "研究“强化学习到底改变了什么”：对比 SFT、DPO、RLVR 各阶段在化学任务上的差异。": [
+  "train/index.html"
+ ],
+ "Ai2 把预期用途定为研究和教育；中文能力一般。": [
+  "train/index.html"
+ ],
+ "Hugging Face 下载，vLLM 直接支持。": [
+  "train/index.html"
+ ],
+ "低显存 MoE：总参数大，每次只激活一小部分": [
+  "train/index.html"
+ ],
+ "混合专家（MoE）模型每个 token 只用到少量参数，推理快、能力强，但显存按总参数算。适合当本地“老师”来造数据，或者在 24–80 GB 上做更强的 Agent。": [
+  "train/index.html"
+ ],
+ "总参数 / 激活": [
+  "train/index.html"
+ ],
+ "16 GB 内存可跑，推理强度可调": [
+  "train/index.html"
+ ],
+ "MoE 权重用 MXFP4 后训练，整个模型在 16 GB 内存内运行。": [
+  "train/index.html"
+ ],
+ "推理强度分低 / 中 / 高三档，原生支持函数调用、结构化输出和 Python 执行。": [
+  "train/index.html"
+ ],
+ "官方说明可以针对具体用途做参数微调。": [
+  "train/index.html"
+ ],
+ "本地老师模型：在自己机器上批量生成工具调用轨迹，数据不出本机。": [
+  "train/index.html"
+ ],
+ "使用 harmony 对话格式，自己写推理代码时按官方说明处理。": [
+  "train/index.html"
+ ],
+ "36B / 约 3B": [
+  "train/index.html"
+ ],
+ "Agent 编程能力强，长上下文": [
+  "train/index.html"
+ ],
+ "官方强调 Agent 编程和仓库级推理；新增“保留思考上下文”选项，迭代任务更省 token。": [
+  "train/index.html"
+ ],
+ "原生 262K 上下文，可扩展到约 100 万；能看图。": [
+  "train/index.html"
+ ],
+ "写和改计算脚本（ORCA / Gaussian 输入、RDKit 流程）的编程型 Agent，或作为本地老师。": [
+  "train/index.html"
+ ],
+ "显存按 36B 总参数估算，4-bit 约需 24 GB。": [
+  "train/index.html"
+ ],
+ "26B / 约 4B": [
+  "train/index.html"
+ ],
+ "Gemma 4 的 MoE 版本，速度接近 4B": [
+  "train/index.html"
+ ],
+ "面向消费级显卡和工作站，能力接近大模型、速度接近小模型。": [
+  "train/index.html"
+ ],
+ "图像输入、可配置思考、原生函数调用。": [
+  "train/index.html"
+ ],
+ "24 GB 显卡上的主力 Agent。": [
+  "train/index.html"
+ ],
+ "不支持音频输入（音频只在 E2B、E4B、12B 上）。": [
+  "train/index.html"
+ ],
+ "31.6B / 约 3B": [
+  "train/index.html"
+ ],
+ "官方定位就是“拿来再训练”": [
+  "train/index.html"
+ ],
+ "模型卡写明最适合定制：SFT、强化学习、蒸馏、领域适配。": [
+  "train/index.html"
+ ],
+ "Mamba-2 + MoE + 注意力的混合架构，上下文最长 100 万 token；思考可开关。": [
+  "train/index.html"
+ ],
+ "有多卡资源的课题组做领域继续训练（把化学文献、内部数据灌进去）。": [
+  "train/index.html"
+ ],
+ "中文不在官方支持语言里；训练需要较大显存。": [
+  "train/index.html"
+ ],
+ "按模型卡用 vLLM 或 SGLang 部署，卡内有各硬件的验证配置。": [
+  "train/index.html"
+ ],
+ "24B / 约 2B": [
+  "train/index.html"
+ ],
+ "激活参数极少，CPU 也能跑得动": [
+  "train/index.html"
+ ],
+ "每个 token 只激活约 2B 参数，在内存足够的笔记本 CPU 上也有可用速度。": [
+  "train/index.html"
+ ],
+ "官方提供 GGUF、MLX 和 FP8 版本。": [
+  "train/index.html"
+ ],
+ "没有独显但内存大（32 GB+）的机器上运行较强的本地 Agent。": [
+  "train/index.html"
+ ],
+ "LFM 许可证；显存 / 内存按 24B 总参数估算。": [
+  "train/index.html"
+ ],
+ "下载官方 GGUF 用 llama.cpp 运行。": [
+  "train/index.html"
+ ],
+ "已经在化学数据上继续训练或强化学习过的模型，可以直接用，也可以作为你继续微调的起点。": [
+  "train/index.html"
+ ],
+ "用强化学习训练的化学推理模型，输出 SMILES": [
+  "train/index.html"
+ ],
+ "论文 ↗": [
+  "train/index.html"
+ ],
+ "在 Mistral-Small-24B 上经微调和强化学习，用英文推理、最后给出一个分子（SMILES）。": [
+  "train/index.html"
+ ],
+ "擅长：由分子式 + 官能团约束写出结构、按目标 LogS 修改溶解度、匹配或调节 pKa、反应预测等。": [
+  "train/index.html"
+ ],
+ "训练代码、奖励函数和基准全部开源（": [
+  "train/index.html"
+ ],
+ "），是“化学 RL 怎么做”的标准参考。": [
+  "train/index.html"
+ ],
+ "分子设计子任务：给出约束，让它提出候选结构，再交给 RDKit 和计算平台验证。和本站 AI 实验室的思路一致。": [
+  "train/index.html"
+ ],
+ "只用英文提问；它的输出是分子而不是长篇对话，不适合当通用助手。4-bit 约需 16 GB。": [
+  "train/index.html"
+ ],
+ "化学底座": [
+  "train/index.html"
+ ],
+ "上海 AI 实验室": [
+  "train/index.html"
+ ],
+ "科学多模态，分词器原生认识分子式": [
+  "train/index.html"
+ ],
+ "8B 语言模型（Qwen3）+ 0.3B 视觉编码器，在 5T token 上继续预训练，其中超过 2.5T 是科学领域数据。": [
+  "train/index.html"
+ ],
+ "动态分词器原生理解分子式和蛋白质序列。": [
+  "train/index.html"
+ ],
+ "能看图，适合谱图、晶体结构图和论文插图。": [
+  "train/index.html"
+ ],
+ "想要“懂化学的通用底座”时的首选：在它上面做 LoRA，比从通用模型开始需要的化学数据更少。": [
+  "train/index.html"
+ ],
+ "2025 年 8 月发布；多模态模型的微调按模型卡的处理器（processor）加载。": [
+  "train/index.html"
+ ],
+ "Hugging Face 有 GGUF 和 FP8 版本（": [
+  "train/index.html"
+ ],
+ "OpenDFM / 上海交大": [
+  "train/index.html"
+ ],
+ "原子级化学知识增强的推理模型": [
+  "train/index.html"
+ ],
+ "先标注分子中的官能团及其在反应中的变化，再做化学领域强化学习，推理过程用标签包裹、可检查。": [
+  "train/index.html"
+ ],
+ "配套的官能团识别工具 ChemFG-Tool 已在 GitHub 开源。": [
+  "train/index.html"
+ ],
+ "同团队的 ChemDFM-v2.0-14B 是更通用的化学对话模型（基于 Qwen2.5-14B）。": [
+  "train/index.html"
+ ],
+ "分子描述、反应解释、官能团层面的推理；也可以当老师模型生成化学推理数据。": [
+  "train/index.html"
+ ],
+ "：修改后通过网络对外提供服务，需要公开源代码。商用前务必评估。": [
+  "train/index.html"
+ ],
+ "Hugging Face 下载，用 Transformers 或 vLLM 加载（14B，4-bit 约 10 GB）。": [
+  "train/index.html"
+ ],
+ "HAI-DEF 条款（需同意）": [
+  "train/index.html"
+ ],
+ "药物性质预测与治疗学对话": [
+  "train/index.html"
+ ],
+ "predict 版直接输出性质预测（毒性、吸收、结合等治疗学任务），chat 版能解释理由。": [
+  "train/index.html"
+ ],
+ "2B 到 27B 多个尺寸。": [
+  "train/index.html"
+ ],
+ "药物化学方向：给候选分子快速打 ADMET 类预测分，作为 Agent 的一个工具。": [
+  "train/index.html"
+ ],
+ "需在 Hugging Face 上同意 Health AI Developer Foundations 条款后才能下载；基于上一代 Gemma 2。": [
+  "train/index.html"
+ ],
+ "同意条款后用 Transformers 加载。": [
+  "train/index.html"
+ ],
+ "检索、重排与分子表示": [
+  "train/index.html"
+ ],
+ "小模型记不住全部化学知识，要配检索（RAG）：把论文、SI、组内笔记切块向量化，回答前先查。分子表示模型则把 SMILES 变成向量，用来做相似性搜索和性质预测。": [
+  "train/index.html"
+ ],
+ "用途": [
+  "train/index.html"
+ ],
+ "文本向量": [
+  "train/index.html"
+ ],
+ "多语言，中文文献检索首选；0.6B 可在 CPU 上跑": [
+  "train/index.html"
+ ],
+ "文档页面向量": [
+  "train/index.html"
+ ],
+ "2026-10 发布，直接对 PDF 页面图像做检索，图表、谱图、表格不用先转文字": [
+  "train/index.html"
+ ],
+ "重排": [
+  "train/index.html"
+ ],
+ "2026-10 发布，对初检结果重新排序，提高引用准确率": [
+  "train/index.html"
+ ],
+ "文本向量 + 重排": [
+  "train/index.html"
+ ],
+ "经典多语言组合，资料最多": [
+  "train/index.html"
+ ],
+ "SMILES 向量": [
+  "train/index.html"
+ ],
+ "IBM 在大规模 PubChem / ZINC 分子上预训练，用作性质预测特征": [
+  "train/index.html"
+ ],
+ "见模型卡": [
+  "train/index.html"
+ ],
+ "DeepChem 社区模型，多任务回归预训练，轻量": [
+  "train/index.html"
+ ],
+ "老师模型：用来造训练数据": [
+  "train/index.html"
+ ],
+ "小模型的训练数据最好来自更强的模型带着工具把任务做对的过程。下面的老师可以通过 API 调用，部分也有开放权重。": [
+  "train/index.html"
+ ],
+ "老师": [
+  "train/index.html"
+ ],
+ "怎么用": [
+  "train/index.html"
+ ],
+ "；开放权重": [
+  "train/index.html"
+ ],
+ "价格低、支持工具调用和思考强度调节；本站 AI 助手已接入": [
+  "train/index.html"
+ ],
+ "Wonder 是本站 AI 实验室推荐的“化学家”；开放权重版 816B，需申请，适合有集群的团队": [
+  "train/index.html"
+ ],
+ "开放权重": [
+  "train/index.html"
+ ],
+ "科学领域大模型（Apache-2.0），化学知识强，可做离线老师": [
+  "train/index.html"
+ ],
+ "本机运行（见上表）": [
+  "train/index.html"
+ ],
+ "数据完全不出本机的本地老师": [
+  "train/index.html"
+ ],
+ "用 API 输出训练模型前，先确认该服务的使用条款允许这样做；生成的数据一律用工具校验后再入库。": [
+  "train/index.html"
+ ],
+ "第 1 步：造数据——老师带工具做题，只留做对的": [
+  "train/index.html"
+ ],
+ "写一份任务清单（": [
+  "train/index.html"
+ ],
+ "，每行一个问题，例如“给出 3 个含两个 F、不超过 12 个重原子的碳酸酯溶剂并核对分子式”），让老师模型在真实工具环境里作答，把完整的对话和工具调用记下来。": [
+  "train/index.html"
+ ],
+ "只保留能被程序验证为正确的轨迹": [
+  "train/index.html"
+ ],
+ "（拒绝采样），这样小模型学到的是“正确地用工具”，而不是老师的幻觉。": [
+  "train/index.html"
+ ],
+ "复制": [
+  "train/index.html",
+  "train/train.js"
+ ],
+ "数据从哪来": [
+  "train/index.html"
+ ],
+ "自己组里的真实问题：组会记录、常被问的计算设置、合成路线讨论。": [
+  "train/index.html"
+ ],
+ "公开指令数据：": [
+  "train/index.html"
+ ],
+ "可自动判分的任务：": [
+  "train/index.html"
+ ],
+ "的题型很适合改写成强化学习任务。": [
+  "train/index.html"
+ ],
+ "本站 AI 实验室导出的候选与计算结果（CSV / JSON），可以直接变成“提出 → 校验 → 解释”的训练样本。": [
+  "train/index.html"
+ ],
+ "经验": [
+  "train/index.html"
+ ],
+ "500–2,000 条高质量轨迹就能让小模型学会工具格式；质量比数量重要。": [
+  "train/index.html"
+ ],
+ "按 InChIKey 给分子去重，并把同一分子只放进训练集或测试集之一，避免泄漏。": [
+  "train/index.html"
+ ],
+ "保留一部分“工具报错、模型改正”的轨迹，小模型才学得会纠错。": [
+  "train/index.html"
+ ],
+ "第 2 步：LoRA 微调——让小模型学会格式与工具": [
+  "train/index.html"
+ ],
+ "用 TRL + PEFT 做 LoRA：只训练少量附加参数，单卡几小时完成。想更快、更省显存可以换成": [
+  "train/index.html"
+ ],
+ "；不想写代码可以用": [
+  "train/index.html"
+ ],
+ "的网页界面。": [
+  "train/index.html"
+ ],
+ "Mac 用户：": [
+  "train/index.html"
+ ],
+ "MLX-LM 的 LoRA 教程": [
+  "train/index.html"
+ ],
+ "可以在 Apple 芯片上微调 ≤4B 的模型。": [
+  "train/index.html"
+ ],
+ "第 3 步：强化学习——用化学规则当裁判": [
+  "train/index.html"
+ ],
+ "DeepSeekMath 提出": [
+  "train/index.html"
+ ],
+ "）让模型对同一题生成多个答案，按奖励比较优劣，不需要单独的奖励模型。化学特别适合这种“可验证奖励”：结构合不合法、元素和大小是否满足约束、性质是否落在目标范围，都能用 RDKit 或计算平台自动判断。ether0 就是这样训练出来的。": [
+  "train/index.html"
+ ],
+ "好奖励的样子": [
+  "train/index.html"
+ ],
+ "能自动、确定地算出来：RDKit 解析、元素与原子数、官能团 SMARTS、分子量、相似度。": [
+  "train/index.html"
+ ],
+ "分层给分：先奖励“结构合法”，再奖励“满足约束”，最后奖励“性质达标”。": [
+  "train/index.html"
+ ],
+ "贵的打分（UMA、DFT）只用在少量样本上，或先离线算好再查表。": [
+  "train/index.html"
+ ],
+ "多卡与大规模": [
+  "train/index.html"
+ ],
+ "：多卡、多节点的强化学习框架，支持多轮工具调用的 Agent RL。": [
+  "train/index.html"
+ ],
+ "TRL GRPO 文档": [
+  "train/index.html"
+ ],
+ "：奖励函数、vLLM 加速生成等参数说明。": [
+  "train/index.html"
+ ],
+ "：单卡 GRPO 更省显存。": [
+  "train/index.html"
+ ],
+ "第 4 步：评测——训练前后都要量": [
+  "train/index.html"
+ ],
+ "通用化学能力": [
+  "train/index.html"
+ ],
+ "代码": [
+  "train/index.html"
+ ],
+ "数据": [
+  "train/index.html"
+ ],
+ "），确认微调没有让基础化学知识退化。": [
+  "train/index.html"
+ ],
+ "你的任务": [
+  "train/index.html"
+ ],
+ "：留出 10–20% 自建任务做测试，统计 SMILES 合法率、约束满足率、工具调用成功率、最终答案正确率。": [
+  "train/index.html"
+ ],
+ "对比三个版本": [
+  "train/index.html"
+ ],
+ "：原始底座、SFT 后、GRPO 后，同一测试集、同一采样参数。": [
+  "train/index.html"
+ ],
+ "人工抽查": [
+  "train/index.html"
+ ],
+ "：每轮随机看 30 条完整轨迹，找出“答对了但理由错”的情况。": [
+  "train/index.html"
+ ],
+ "第 5 步：部署，并接入 MolAstria": [
+  "train/index.html"
+ ],
+ "把模型跑成 OpenAI 兼容的本地服务，然后在本站右上角": [
+  "train/index.html"
+ ],
+ "AI 助手 → 设置 → 其他兼容接口": [
+  "train/index.html"
+ ],
+ "里填上地址，AI 助手和 AI 实验室就会使用你自己的模型。请求只在你的浏览器和你的电脑之间往返。": [
+  "train/index.html"
+ ],
+ "vLLM（Linux / WSL，NVIDIA 显卡）": [
+  "train/index.html"
+ ],
+ "浏览器第一次从网页访问本机服务时，可能弹出“允许访问本地网络设备”的提示，选择允许即可。": [
+  "train/index.html"
+ ],
+ "的说明见": [
+  "train/index.html"
+ ],
+ "Ollama 文档": [
+  "train/index.html"
+ ],
+ "，OpenAI 兼容接口见": [
+  "train/index.html"
+ ],
+ "这里": [
+  "train/index.html"
+ ],
+ "；vLLM 的工具调用参数见": [
+  "train/index.html"
+ ],
+ "vLLM 文档": [
+  "train/index.html"
+ ],
+ "把化学工具做成 MCP 服务": [
+  "train/index.html"
+ ],
+ "用": [
+  "train/index.html"
+ ],
+ "把 RDKit 等工具包装一次，你的小模型、Claude、以及其他支持 MCP 的客户端都能直接调用。": [
+  "train/index.html"
+ ],
+ "工具、框架与数据集": [
+  "train/index.html"
+ ],
+ "类别": [
+  "train/index.html"
+ ],
+ "项目": [
+  "train/index.html"
+ ],
+ "微调": [
+  "train/index.html"
+ ],
+ "LoRA / QLoRA、SFT、DPO、GRPO；LlamaFactory 有网页界面": [
+  "train/index.html"
+ ],
+ "多卡 Agent RL；单卡 GRPO": [
+  "train/index.html"
+ ],
+ "推理服务": [
+  "train/index.html"
+ ],
+ "OpenAI 兼容接口、量化、Apple 芯片": [
+  "train/index.html"
+ ],
+ "Agent 框架": [
+  "train/index.html"
+ ],
+ "多步工具调用、状态管理、工具标准化": [
+  "train/index.html"
+ ],
+ "化学工具": [
+  "train/index.html"
+ ],
+ "结构校验、数据库查询、云端量化计算、机器学习势": [
+  "train/index.html"
+ ],
+ "参考工作": [
+  "train/index.html"
+ ],
+ "化学工具 Agent 的早期代表；化学推理强化学习": [
+  "train/index.html"
+ ],
+ "数据与评测": [
+  "train/index.html"
+ ],
+ "（需申请）": [
+  "train/index.html"
+ ],
+ "评测、指令数据、可验证任务、分子量子化学数据": [
+  "train/index.html"
+ ],
+ "结果可信度": [
+  "train/index.html"
+ ],
+ "小模型会编造 SMILES、CAS 号和文献；所有结构一律过 RDKit，所有数据一律回到数据库核对。": [
+  "train/index.html"
+ ],
+ "不要让模型直接给数值性质（沸点、电位）当结论；数值来自计算或数据库，模型负责调度和解释。": [
+  "train/index.html"
+ ],
+ "训练集和测试集按分子去重，否则分数虚高。": [
+  "train/index.html"
+ ],
+ "许可证与安全": [
+  "train/index.html"
+ ],
+ "商用优先 Apache-2.0 / MIT；LFM（LFM Open License）、ChemDFM（AGPL-3.0）、TxGemma（HAI-DEF）、Nemotron（OpenMDW）都要先读条款。": [
+  "train/index.html"
+ ],
+ "微调可能削弱底座原有的安全行为；涉及危险物质合成的请求要在工具层拦截。": [
+  "train/index.html"
+ ],
+ "API 老师的服务条款可能限制用输出训练模型，使用前确认。": [
+  "train/index.html"
+ ],
+ "模型名称、参数量、许可证与发布日期核对自各模型的 Hugging Face 官方页面（2026-10-28）；工具仓库核对自 GitHub。显存数字为粗略估算。新模型发布很快，使用前请以模型卡为准。相关页面：": [
+  "train/index.html"
+ ],
+ "按显存筛选": [
+  "train/index.html"
+ ],
+ "筛选模型": [
+  "train/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -1676,10 +2801,11 @@
  "中文讲解与数据库": [
   "shared-nav.js"
  ],
- "计算化学研究导航": [
-  "shared-nav.js"
+ "训练 Agent": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
  ],
- "新": [
+ "计算化学研究导航": [
   "shared-nav.js"
  ],
  "全站导航": [
@@ -3109,9 +4235,6 @@
  "用什么": [
   "ai/ai.js"
  ],
- "推荐": [
-  "ai/ai.js"
- ],
  "的是": [
   "ai/ai.js"
  ],
@@ -3131,9 +4254,6 @@
   "ai/ai.js"
  ],
  "服务商": [
-  "ai/ai.js"
- ],
- "模型": [
   "ai/ai.js"
  ],
  "思考强度": [
@@ -3307,6 +4427,39 @@
  "（已停止）": [
   "ai/ai.js"
  ],
+ "介绍 ▾": [
+  "train/train.js"
+ ],
+ "显存估算：4-bit 推理约 {0}，QLoRA 微调约 {1}，GRPO 约 {2}。": [
+  "train/train.js"
+ ],
+ "收起 ▴": [
+  "train/train.js"
+ ],
+ "全部收起": [
+  "train/train.js"
+ ],
+ "QLoRA 微调": [
+  "train/train.js"
+ ],
+ "选择显存后，放得下的模型会以绿色标出。": [
+  "train/train.js"
+ ],
+ "等": [
+  "train/train.js"
+ ],
+ "{0} GB 做{1}，大约放得下 {2} 个：{3}{4}。": [
+  "train/train.js"
+ ],
+ "{0} GB 做{1}比较吃紧，可以换成本地推理，或选更小的模型。": [
+  "train/train.js"
+ ],
+ "已复制": [
+  "train/train.js"
+ ],
+ "请手动复制": [
+  "train/train.js"
+ ],
  "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。": [
   "tools/build-seo.ts"
  ],
@@ -3411,6 +4564,9 @@
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
+  "tools/build-seo.ts"
+ ],
+ "用开源小模型训练你自己的化学研究 Agent": [
   "tools/build-seo.ts"
  ],
  "闭环电解液分子发现 · AI 实验室": [

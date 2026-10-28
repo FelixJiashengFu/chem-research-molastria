@@ -10,7 +10,8 @@
     ['network', 'hub/network.html', '网状查询'],
     ['atlas', 'atlas/index.html#guide', '中文讲解与数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
-    ['lab', 'lab/index.html', 'AI 实验室', true],
+    ['lab', 'lab/index.html', 'AI 实验室'],
+    ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']
   ];
   // MolAstria mark: a benzene ring on an electron orbit, with a four-point star. Monochrome, inverts with the theme.

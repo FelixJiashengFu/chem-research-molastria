@@ -14,7 +14,6 @@
     { id: 'contour', zh: '势能面', en: 'Energy landscape' },
     { id: 'orbital', zh: '电子云', en: 'Electron clouds' },
     { id: 'stars', zh: '分子星图', en: 'Molecular constellations' },
-    { id: 'ink', zh: '水墨山岚', en: 'Ink-wash mountains' },
     { id: 'aurora', zh: '极光', en: 'Aurora' },
     { id: 'rice', zh: '宣纸', en: 'Rice paper' },
     { id: 'spectrum', zh: '光谱', en: 'Spectral lines' }
@@ -132,26 +131,6 @@
     }
     return svg(W, H, `<path class="bg-milky" d="M${-W * 0.1},${H * 0.95}Q${W * 0.45},${H * 0.35} ${W * 1.1},${H * 0.05}"/>${s}${c}`);
   }
-  /** Ink-wash ridgelines by midpoint displacement, fading into mist, under a pale sun. */
-  function ink(W, H, d) {
-    const r = rng(9), id = `ink${++uid}`;
-    const ridge = (base, rough, seedShift) => {
-      const n = 65, ys = new Array(n).fill(0);
-      ys[0] = base + (r() - 0.5) * rough; ys[n - 1] = base + (r() - 0.5) * rough;
-      const split = (a, b, amp) => { if (b - a < 2) return; const m = (a + b) >> 1; ys[m] = (ys[a] + ys[b]) / 2 + (r() - 0.5) * amp; split(a, m, amp * 0.55); split(m, b, amp * 0.55); };
-      split(0, n - 1, rough * 1.6 + seedShift);
-      const pts = ys.map((y, i) => [(i / (n - 1)) * W, y * H]);
-      let p = `M0,${H}L${f1(pts[0][0])},${f1(pts[0][1])}`;
-      for (let i = 1; i < pts.length; i++) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; p += `Q${f1(x0)},${f1(y0)} ${f1((x0 + x1) / 2)},${f1((y0 + y1) / 2)}`; }
-      return p + `L${W},${H}Z`;
-    };
-    const layers = [[0.5, 0.16, 0.05, 1], [0.6, 0.14, 0.03, 2], [0.72, 0.12, 0.02, 3], [0.84, 0.08, 0.01, 4]];
-    const defs = layers.map(([, , , n]) => `<linearGradient id="${id}g${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="bg-ink-top${n}"/><stop offset="1" class="bg-ink-bot"/></linearGradient>`).join('');
-    const hills = layers.map(([base, rough, extra, n]) => `<path d="${ridge(base, rough, extra)}" fill="url(#${id}g${n})"/>`).join('');
-    const birds = d > 0.5 ? [[0.66, 0.2], [0.69, 0.18], [0.71, 0.23], [0.64, 0.24]].map(([x, y], i) => `<path class="bg-bird" d="M${f1(x * W)},${f1(y * H)}q${7 - i},-6 ${14 - i},0q${7 - i},-6 ${14 - i},0"/>`).join('') : '';
-    const seal = d > 0.5 ? `<g class="bg-seal" transform="translate(${f1(W - 120)} ${f1(H - 150)}) rotate(-4)"><rect width="58" height="58" rx="6"/><text x="29" y="27">格</text><text x="29" y="50">物</text></g>` : '';
-    return svg(W, H, `<defs>${defs}</defs><circle class="bg-sun" cx="${f1(W * 0.76)}" cy="${f1(H * 0.2)}" r="${d > 0.5 ? 64 : 22}"/>${birds}${hills}<rect class="bg-mist" x="0" y="${f1(H * 0.62)}" width="${W}" height="${f1(H * 0.1)}"/>${seal}`);
-  }
   function rice(W, H, d) {
     const id = `rc${++uid}`, r = rng(5);
     let fibers = '';
@@ -173,7 +152,7 @@
     const id = `sp${++uid}`;
     return svg(W, H, `<defs><linearGradient id="${id}">${stops}</linearGradient><linearGradient id="${id}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}m"><rect width="100%" height="${band}" fill="url(#${id}f)"/></mask></defs><rect class="bg-spec" width="100%" height="${band}" fill="url(#${id})" mask="url(#${id}m)"/>${absorb}${balmer}<line class="bg-axis" x1="0" x2="${W}" y1="${H - band * 0.9}" y2="${H - band * 0.9}"/>`);
   }
-  const GEN = { hex, lattice, contour, orbital, stars, ink, rice, spectrum };
+  const GEN = { hex, lattice, contour, orbital, stars, rice, spectrum };
   const CSS_ONLY = new Set(['grid', 'aurora']);
 
   // ── layer ───────────────────────────────────────────────────────────────
@@ -184,7 +163,7 @@
     layer.innerHTML = id === 'paper' ? '' : CSS_ONLY.has(id) ? '<i class="b1"></i><i class="b2"></i>' : GEN[id](1600, 1000, 1);
   }
   function apply(id, persist = true) {
-    if (!BGS.some((b) => b.id === id)) id = 'paper';
+    if (!BGS.some((b) => b.id === id)) id = DEFAULT; // a removed background falls back to the default
     root.dataset.bg = id;
     render(id);
     if (persist) store.set('chemhub-bg', id);
@@ -211,7 +190,7 @@
     picker.innerHTML = `<div class="cr-bgpick-head"><b>${zh() ? '背景' : 'Background'}</b><button type="button" class="cr-bgpick-x" aria-label="${zh() ? '关闭' : 'Close'}">×</button></div>
       <div class="cr-bgpick-grid">${BGS.map((b) => `<button type="button" data-bg-id="${b.id}" aria-pressed="${b.id === current}"><span class="cr-bg cr-bg-mini" data-kind="${b.id}">${b.id === 'paper' ? '' : CSS_ONLY.has(b.id) ? '<i class="b1"></i><i class="b2"></i>' : GEN[b.id](320, 200, 0)}</span><span class="cr-bgpick-name">${zh() ? b.zh : b.en}</span></button>`).join('')}</div>
       <label class="cr-bgpick-row">${zh() ? '浓淡' : 'Strength'}<input type="range" min="0.15" max="1" step="0.05" value="${getComputedStyle(root).getPropertyValue('--bg-strength').trim() || 0.7}"></label>
-      <label class="cr-bgpick-row cr-bgpick-check"><input type="checkbox" ${root.dataset.bgMotion !== 'off' ? 'checked' : ''}>${zh() ? '动态效果（星光、极光、云雾）' : 'Motion (twinkle, aurora, mist)'}</label>`;
+      <label class="cr-bgpick-row cr-bgpick-check"><input type="checkbox" ${root.dataset.bgMotion !== 'off' ? 'checked' : ''}>${zh() ? '动态效果（星光、极光）' : 'Motion (twinkle, aurora)'}</label>`;
     document.body.append(picker);
     picker.addEventListener('click', (e) => {
       const b = e.target.closest('[data-bg-id]');

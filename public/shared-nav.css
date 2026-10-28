@@ -103,11 +103,6 @@ html{background:var(--paper)}
 .cr-bg .bg-node{fill:var(--gold)}
 .cr-bg .bg-const{fill:none;stroke:color-mix(in srgb,var(--gold) 60%,transparent);stroke-width:1}
 .cr-bg .bg-milky{fill:none;stroke:color-mix(in srgb,var(--accent-2) 10%,transparent);stroke-width:260;stroke-linecap:round;filter:blur(30px);vector-effect:none}
-.cr-bg .bg-ink-top1{stop-color:var(--ink);stop-opacity:.06}.cr-bg .bg-ink-top2{stop-color:var(--ink);stop-opacity:.1}.cr-bg .bg-ink-top3{stop-color:var(--ink);stop-opacity:.15}.cr-bg .bg-ink-top4{stop-color:var(--ink);stop-opacity:.22}
-.cr-bg .bg-ink-bot{stop-color:var(--ink);stop-opacity:0}
-.cr-bg .bg-sun{fill:color-mix(in srgb,var(--danger) 30%,transparent)}
-.cr-bg .bg-bird{fill:none;stroke:var(--ink);stroke-width:1.4;opacity:.5}
-.cr-bg .bg-mist{fill:var(--paper);opacity:.5;filter:blur(18px)}
 .cr-bg .bg-seal rect{fill:none;stroke:color-mix(in srgb,var(--danger) 70%,transparent);stroke-width:2.5}
 .cr-bg .bg-seal text{fill:color-mix(in srgb,var(--danger) 75%,transparent);font:700 21px var(--font-serif);text-anchor:middle}
 .cr-bg .bg-grain{fill:var(--ink);opacity:.35}
@@ -124,10 +119,8 @@ html{background:var(--paper)}
 .cr-bg[data-kind=aurora] .b2{background:repeating-linear-gradient(115deg,transparent 0 46px,color-mix(in srgb,var(--paper) 18%,transparent) 46px 48px)}
 :root[data-bg-motion=on] .cr-bg[data-kind=aurora]:not(.cr-bg-mini) .b1{animation:cr-aurora 38s ease-in-out infinite alternate}
 :root[data-bg-motion=on] .cr-bg:not(.cr-bg-mini) .bg-star.tw{animation:cr-twinkle 5s ease-in-out infinite}
-:root[data-bg-motion=on] .cr-bg:not(.cr-bg-mini) .bg-mist{animation:cr-mist 40s ease-in-out infinite alternate}
 @keyframes cr-aurora{0%{transform:translate(0,0) scale(1) rotate(0)}50%{transform:translate(3%,-2%) scale(1.08) rotate(4deg)}100%{transform:translate(-3%,3%) scale(1.02) rotate(-3deg)}}
 @keyframes cr-twinkle{0%,100%{opacity:.55}50%{opacity:.08}}
-@keyframes cr-mist{from{transform:translateX(-4%)}to{transform:translateX(4%)}}
 @media(prefers-reduced-motion:reduce){.cr-bg *{animation:none!important}}
 @media print{.cr-bg,.cr-bgpick{display:none!important}}
 

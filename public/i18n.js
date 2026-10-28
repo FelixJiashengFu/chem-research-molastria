@@ -34,8 +34,10 @@
         if (i % 2) { re += '([\\s\\S]*?)'; order.push(Number(p)); } else { re += p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); literal += p; }
       });
       if ((literal.match(new RegExp(HAN.source, 'g')) || []).length < 2) continue;
-      const anchor = literal.split(/\s+/).filter((x) => HAN.test(x)).sort((a, b) => b.length - a.length)[0] || '';
-      patterns.push({ re: new RegExp(re + '$'), order, en: v, weight: literal.length, anchor: anchor.replace(/[^㐀-鿿]/g, '').slice(0, 2) });
+      // Anchor: the longest unbroken run of Chinese inside one literal piece (never spliced across a slot).
+      const runs = parts.filter((_, i) => i % 2 === 0).flatMap((p) => p.match(/[㐀-鿿]+/g) || []);
+      const anchor = runs.sort((a, b) => b.length - a.length)[0] || '';
+      patterns.push({ re: new RegExp(re + '$'), order, en: v, weight: literal.length, anchor: anchor.slice(0, 2) });
     }
     patterns.sort((a, b) => b.weight - a.weight);
     // Pieces for text that scripts glue together with `+`: longest first, Chinese keys only.
@@ -58,7 +60,7 @@
         break;
       }
     }
-    if (out === undefined && depth === 0) out = glue(core);
+    if (out === undefined) out = glue(core); // also for slot captures, e.g. a list followed by "等"
     return out === undefined ? raw : lead + out + trail;
   }
   /** Replace known pieces inside a string; accepted only when no Chinese is left over. */
