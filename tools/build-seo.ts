@@ -249,8 +249,14 @@ await write("resources/index.html", page({
 }));
 
 // ── main pages ───────────────────────────────────────────────────────────
+const datasetDescription = `${items.length} 条计算化学研究资源的标题级索引，涵盖数据库、软件、中文教程、学术论文与开源项目。条目保留名称、简短说明、原始网址、来源、分类和主题标签，可用于资源检索与导航。数据来自项目保存的目录快照，完整内容及使用许可请以各原始网站为准。`;
+// Google Dataset requires a description containing 50–5000 characters.
+const datasetDescriptionLength = Array.from(datasetDescription).length;
+if (datasetDescriptionLength < 50 || datasetDescriptionLength > 5000) {
+  throw new Error(`Dataset description must contain 50–5000 characters; got ${datasetDescriptionLength}`);
+}
 const mains = [
-  await injectHead("index.html", "", { jsonld: [website, { "@context": "https://schema.org", "@type": "Dataset", name: "ChemResearch Hub 计算化学资源目录", description: `${items.length} 条计算化学数据库、软件、教程、论文与开源项目的标题级索引，保留原始来源与链接。`, url: SITE, inLanguage: "zh-CN", dateModified: cfg.dataDate, isAccessibleForFree: true, creator: { "@type": "Organization", name: NAME, url: SITE }, distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: SITE + "merged-data.json" }] }] }),
+  await injectHead("index.html", "", { jsonld: [website, { "@context": "https://schema.org", "@type": "Dataset", name: "ChemResearch Hub 计算化学资源目录", description: datasetDescription, url: SITE, inLanguage: "zh-CN", dateModified: cfg.dataDate, isAccessibleForFree: true, creator: { "@type": "Organization", name: NAME, url: SITE }, distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: SITE + "merged-data.json" }] }] }),
   await injectHead("atlas/index.html", "atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "ChemDB Atlas 计算化学数据库导航", inLanguage: "zh-CN", url: SITE + "atlas/" }] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
