@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://felixjiashengfu.github.io/chem-research-hub/sitemap.xml
+Sitemap: https://molastria.com/sitemap.xml

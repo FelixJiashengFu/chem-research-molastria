@@ -51,12 +51,12 @@ $env:DEEPSEEK_API_KEY = "<你的 key>"; deno run --allow-net --allow-env --allow
 
 ## 上线到 GitHub Pages 并提交 Google
 
-1. 在 `site.config.json` 里确认正式网址 `siteUrl`（默认 `https://felixjiashengfu.github.io/chem-research-hub/`）。
+1. 在 `site.config.json` 里确认正式网址 `siteUrl`（正式网址 `https://molastria.com/`）。
 2. 推送到 GitHub 仓库的 `main` 分支，在仓库 Settings → Pages 里把 Source 设为 **GitHub Actions**。`.github/workflows/pages.yml` 会跑测试、重新生成 SEO 页面和 sitemap，然后发布 `public/`。
 3. 打开 [Google Search Console](https://search.google.com/search-console)，添加“网址前缀”资源，填正式网址。验证方式选 **HTML 标记**，把 `content="…"` 里的值填进 `site.config.json` 的 `googleSiteVerification`，推送后点验证。
 4. 在 Search Console →「站点地图」提交 `sitemap.xml`，再用「网址检查」对首页和 `lab/`、`resources/`、`guide/` 请求编入索引。
 
-说明：项目站点（`用户名.github.io/仓库名/`）的 `robots.txt` 不在域名根目录，Google 不会读取它，所以 sitemap 要在 Search Console 里手动提交。以后换成自定义域名时，改 `siteUrl` 重新构建即可。
+正式网站：https://molastria.com/ 。自定义域名使 robots.txt 位于域名根目录；Search Console 可用 DNS TXT 验证「网域」资源，再提交 https://molastria.com/sitemap.xml。
 
 SEO 内容由 `tools/build-seo.ts` 生成：每页 canonical、Open Graph / Twitter 卡片、JSON-LD（WebSite、Dataset、TechArticle、BreadcrumbList、WebApplication），19 个讲解章节和 14 个资源目录静态页，`sitemap.xml`、`robots.txt`、`404.html`。分享图 `public/og.png` 由 `tools/og.html` 渲染。
 
