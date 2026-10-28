@@ -1,0 +1,14 @@
+{
+  "resource_records_preserved": 1487,
+  "unique_resources": 1465,
+  "guide_chapters": 19,
+  "local_references_verified": 43,
+  "browser_checks": [
+    "Unified search, empty state, collection filters, provenance modal",
+    "Atlas guide navigation and chapters",
+    "Network graph and 103-item Atlas filter",
+    "Hub source dashboard, keyword filtering, update instructions",
+    "390px responsive layout: no horizontal overflow"
+  ],
+  "verification_limit": "Browser tool permits HTTP/HTTPS only, so direct file:// rendering was not tested. All pages use bundled script data without backend APIs."
+}

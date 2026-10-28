@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>论文与社区 · ChemResearch Hub / ChemVis Hub</title>
+<meta name="description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、arXiv、Crossref、GitHub 与官方软件数据库目录的真实标题与链接">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../shared-nav.css">
+<script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="hub">
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="ChemVis Hub 首页">
+    <span class="brand-mark" aria-hidden="true">◈</span>
+    <span><strong>ChemVis Hub</strong><small>ChemResearch Hub · 论文与社区</small></span>
+  </a>
+  <nav class="nav" aria-label="主导航">
+    <a href="#overview">总览</a><a href="#explore">探索</a><a href="network.html">网状查询</a><a href="#fresh">最新论文</a>
+    <a href="#open">开源与官网</a><a href="#literature">文献频道</a><a href="#resources">软件资源</a><a href="#method">方法与合规</a>
+  </nav>
+  <div class="top-actions">
+    <span id="generatedAt" class="muted small">加载中…</span>
+    <button id="refreshBtn" class="btn primary" type="button" aria-controls="refreshMsg" aria-expanded="false">更新数据说明</button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">REAL CONTENT · NOT DEMO DATA</p>
+      <h1>把计算化学的真实资源<br><span class="grad">装进一个可视化枢纽</span></h1>
+      <p class="lead">本页所有条目都来自真实页面与官方 API：论坛、博客、文献平台、预印本、期刊元数据、开源仓库与软件官网，
+      这里展示随合并包保存的标题、短摘要与原文链接快照；日期与接入状态对应采集时刻。使用上方「统一搜索」也可以同时检索数据库导航。</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#explore">开始探索 ↓</a>
+        <a class="btn ghost" href="network.html">🕸 网状查询：所有数据库 →</a>
+        <a class="btn ghost" href="#method">数据是怎么来的？</a>
+      </div>
+      <p id="refreshMsg" class="small muted" role="status"></p>
+    </div>
+    <div class="hero-stats" id="heroStats" aria-label="关键统计"></div>
+  </section>
+
+  <section id="overview" class="section">
+    <div class="section-head"><h2>📡 快照中的来源接入状态</h2><p>以下状态对应数据采集时刻；更新时被人机验证拦截的来源会保留缓存或交叉引用。</p></div>
+    <div id="sourceCards" class="source-grid"></div>
+    <div class="charts-grid">
+      <article class="panel"><h3>条目来源构成</h3><div id="donutChart" class="chart"></div><div id="donutLegend" class="legend"></div><p class="small muted">每段颜色对应下方同色来源，段长表示该来源占快照条目总数的比例；数字是条目数。</p></article>
+      <article class="panel"><h3>主题分布 Top 10（真实标题关键词）</h3><div id="tagBars" class="bars"></div></article>
+      <article class="panel"><h3>内容类型分布</h3><div id="typeBars" class="bars"></div></article>
+      <article class="panel"><h3>Sobereva 博文编号分布（/1 – /1000）</h3><div id="histChart" class="chart"></div><p class="small muted">编号越新越大；可看出博客长期的持续更新密度。</p></article>
+    </div>
+  </section>
+
+  <section id="explore" class="section">
+    <div class="section-head"><h2>🔍 探索真实内容库</h2><p id="resultInfo">加载中…</p></div>
+    <div class="filters" role="search">
+      <label class="searchbox"><span>搜索</span><input id="q" type="search" placeholder="如：Multiwfn 报错 / 静电势 / ORCA / 招聘…" autocomplete="off"></label>
+      <label><span>来源</span><select id="fSource"><option value="">全部来源</option></select></label>
+      <label><span>类型</span><select id="fType"><option value="">全部类型</option></select></label>
+      <label><span>主题</span><select id="fTag"><option value="">全部主题</option></select></label>
+      <label><span>排序</span><select id="fSort">
+        <option value="recent">最新 / 编号倒序</option><option value="date">有日期优先</option>
+        <option value="title">标题 A–Z</option><option value="source">按来源</option></select></label>
+      <button id="clearFilters" class="btn ghost" type="button">清空筛选</button>
+    </div>
+    <div id="cards" class="cards"></div>
+    <div class="center"><button id="loadMore" class="btn" type="button">加载更多</button></div>
+  </section>
+
+  <section id="latest" class="section">
+    <div class="section-head"><h2>📰 最新长文（带日期与摘要）</h2><p>来自 Sobereva 首页与分类页的最新文章元数据，点卡片直达原文。</p></div>
+    <div id="latestCards" class="cards"></div>
+  </section>
+
+  <section id="mesh" class="section">
+    <div class="section-head"><h2>🕸 网状查询 · 合并资源图谱</h2><p>数据库导航已与社区、文献及开源索引合并到同一张网：点节点跨库查询，点某个软件官网可查找相关条目。</p></div>
+    <div class="panel" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <p style="margin:0;color:#c3cfe9;line-height:1.75;max-width:820px">例如点主题「Multiwfn」看全库相关长文，或点数据库「Basis Set Exchange」再用关键词缩小范围——关系与连线粗细都由真实条目数算出，不是示意图。</p>
+      <a class="btn primary" href="network.html">打开网状查询页 →</a>
+    </div>
+  </section>
+
+  <section id="fresh" class="section">
+    <div class="section-head"><h2>🆕 快照中的论文与预印本</h2><p>来自 arXiv 化学物理/计算物理与 Crossref 期刊的官方 API 元数据快照，按收录日期排列；点击 DOI/arXiv 链接访问原站。</p></div>
+    <div id="freshCards" class="cards"></div>
+  </section>
+
+  <section id="open" class="section">
+    <div class="section-head"><h2>🛠 开源项目与官方软件</h2><p>GitHub 计算化学开源仓库（按 Star）+ 主流软件官网与权威数据库目录——逐站实测可达才收录，点卡片直达官网/仓库。</p></div>
+    <div id="openCards" class="cards compact"></div>
+  </section>
+
+  <section id="literature" class="section">
+    <div class="section-head"><h2>📚 文献与学科频道 · X-MOL</h2><p id="xmolNote">X-MOL 学科频道与平台工具入口（原站直达）。</p></div>
+    <div id="xmolCards" class="cards compact"></div>
+  </section>
+
+  <section id="resources" class="section">
+    <div class="section-head"><h2>🧰 软件、归档与资源 · CCL</h2><p>CCL 的软件归档、邮件列表归档、招聘与会议等真实索引条目。</p></div>
+    <div id="cclCards" class="cards compact"></div>
+  </section>
+
+  <section id="method" class="section panel method">
+    <h2>⚖️ 方法、边界与刷新方式</h2>
+    <div class="method-grid">
+      <div><h3>只搬标题，不搬全文</h3><p>每条只保留标题、≤180 字短摘要与原文链接，并标注来源。阅读全文请点「原文」回到原站——流量与版权都归原作者。</p></div>
+      <div><h3>不绕过人机验证</h3><p>计算化学公社（阿里云 WAF）与 X-MOL 深层页会触发真人验证，本站<strong>不做任何绕过</strong>。公社内容改用 Sobereva 官方博文目录中公开的交叉引用（真实帖标题 + 真实 thread 链接），并打「目录镜像」标签；X-MOL 用同日抓取的真实首页快照解析学科频道。</p></div>
+      <div><h3>尊重 robots 与频率</h3><p>同站请求间隔 ≥1.1 秒；不抓各站 robots 禁止的搜索/订阅路径；X-MOL 每次刷新只请求一次首页。某站失败时保留上次缓存，绝不用空数据冒充。</p></div>
+      <div><h3>新来源同样守规矩</h3><p>arXiv、Crossref、GitHub 走<strong>官方 API</strong>；官方软件目录逐站抓首页标题与 meta 描述，抓不到就跳过。小木虫论坛帖被其 robots.txt 明确禁止抓取，故不收录；ChemRxiv、Materials Project 被 Cloudflare 拦截，同样不绕过、仅在 README 中说明。</p></div>
+      <div><h3>如何更新这份快照</h3><p>浏览本包无需安装依赖。需要重新采集时，在包根目录的 <code>maintenance</code> 内创建 Python 虚拟环境，安装 <code>requirements.txt</code>，再运行 <code>refresh_data.py</code>。它会更新社区数据、离线数据脚本及统一搜索索引；具体命令见包内 <code>README.md</code>。</p></div>
+    </div>
+    <p class="small muted" id="complianceLine"></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>ChemVis Hub · 数据来自下方各来源站点与官方 API，版权归原作者与原站所有，本站仅做标题级聚合索引。</span>
+  <span id="footSources"></span>
+</footer>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

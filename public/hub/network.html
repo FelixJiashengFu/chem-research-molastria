@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网状查询 · ChemResearch Hub 计算化学研究导航</title>
+<meta name="description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="network.css">
+<link rel="stylesheet" href="../shared-nav.css">
+</head>
+<body data-section="network">
+<a class="network-skip" href="#netQ">跳到跨库查询</a>
+<header class="topbar">
+  <a class="brand" href="../index.html" aria-label="返回 ChemResearch Hub 首页">
+    <span class="brand-mark" aria-hidden="true">◈</span>
+    <span><strong>ChemResearch Hub</strong><small>计算化学研究导航 · 网状查询</small></span>
+  </a>
+  <nav class="nav" aria-label="主导航">
+    <a href="index.html#overview">总览</a><a href="index.html#explore">探索</a>
+    <a href="network.html" aria-current="page">网状查询</a>
+    <a href="index.html#fresh">最新论文</a><a href="index.html#open">开源与官网</a><a href="#directory">数据库总表</a>
+  </nav>
+  <div class="top-actions"><span id="generatedAt" class="muted small">加载中…</span>
+  <a class="btn ghost" href="index.html">← 返回首页</a></div>
+</header>
+
+<main id="top">
+  <section class="net-hero">
+    <p class="eyebrow">MESH QUERY · ALL DATABASES</p>
+    <h1>资源与主题，<span class="grad">织成一张可查询的网</span></h1>
+    <p class="lead">节点 = 数据源 / 主题 / 数据库与软件官网；连线 = 真实条目算出的归属与共现关系。
+    <strong>点任意节点即跨库查询</strong>：点主题看所有库里带这个主题的条目，点某个软件官网看它在各库中的相关条目。
+    也可以直接输入关键词全库检索。全部结果来自合并后的资源快照，保留标题、来源与原文链接；解压后即可离线查询。</p>
+    <div id="netStats" class="net-stats" aria-label="网状查询统计"></div>
+  </section>
+
+  <section class="section net-controls-panel">
+    <div class="filters net-controls" role="search">
+      <label class="searchbox"><span>跨库关键词查询（标题 / 摘要 / 标签 / 分类）</span>
+        <input id="netQ" type="search" placeholder="如：Multiwfn / ORCA / 静电势 / 基组 / molecular dynamics…" autocomplete="off"></label>
+      <label><span>只看来源</span><select id="netSource"><option value="">全部来源</option></select></label>
+      <label><span>节点显示</span><select id="netKind">
+        <option value="">全部节点</option><option value="source">数据源</option>
+        <option value="tag">主题</option><option value="category">数据库分类</option><option value="db">数据库/官网</option>
+      </select></label>
+      <label class="node-picker"><span>选择节点（支持键盘）</span><select id="nodeSelect"><option value="">全部资源</option></select></label>
+      <button id="netReset" class="btn ghost" type="button">重置视图与查询</button>
+    </div>
+    <div class="preset-row"><span class="muted small">快捷查询：</span><span id="presetChips"></span>
+      <span id="netMsg" class="small muted" role="status"></span></div>
+  </section>
+
+  <section class="net-layout" aria-label="网状图与查询结果">
+    <article class="panel net-graph-panel">
+      <div class="net-graph-head">
+        <h2>网状关系图</h2>
+        <div class="net-tools">
+          <button id="pauseBtn" class="btn ghost small-btn" type="button">暂停布局</button>
+          <button id="relayoutBtn" class="btn ghost small-btn" type="button">重新布局</button>
+        </div>
+      </div>
+      <p id="graphDescription" class="small muted net-hint">拖动节点可挪位 · 拖空白处平移 · 滚轮缩放 · 单击节点查询 · 双击空白复位。来源与主题节点越大，关联条目越多；官网节点大小仅用于布局。也可用上方节点选择框完成查询。</p>
+      <div id="graphWrap" class="graph-wrap">
+        <canvas id="graph" role="img" aria-label="数据源、主题与数据库网状关系图" aria-describedby="graphDescription">使用上方的节点选择框或下方的目录按钮，可完成与图中点击相同的查询。</canvas>
+        <div id="tooltip" class="graph-tooltip" hidden></div>
+      </div>
+      <div class="legend net-legend">
+        <span><i style="background:#22d3ee"></i>数据源（颜色随各源品牌色）</span>
+        <span><i style="background:#a78bfa"></i>主题标签</span>
+        <span><i style="background:#2dd4bf"></i>数据库分类</span>
+        <span><i style="background:#34d399"></i>数据库 / 软件官网</span>
+        <span><i style="background:#fbbf24"></i>中心枢纽</span>
+      </div>
+      <div id="selectedInfo" class="selected-info" role="status">正在加载真实数据…</div>
+    </article>
+
+    <aside class="panel net-results-panel" aria-label="跨库查询结果">
+      <h2 id="resultTitle">跨库查询结果</h2>
+      <div id="breakdown" class="breakdown"></div>
+      <div id="netResults" class="net-results"></div>
+      <div class="center"><button id="netMore" class="btn" type="button">加载更多结果</button></div>
+    </aside>
+  </section>
+
+  <section id="directory" class="section">
+    <div class="section-head"><h2>🗄 所有数据库与软件官网总表</h2>
+    <p>下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。相同网址已合并，来源关系仍保留。
+    点「在网中定位」回到图上看它与各主题、各来源的关系；点「访问」直达原站。</p></div>
+    <div id="dbDirectory"></div>
+  </section>
+
+  <section class="section panel method">
+    <h2>这张网是怎么算出来的（不藏算法）</h2>
+    <div class="method-grid">
+      <div><h3>节点从哪来</h3><p>数据源节点来自合并数据保留的全部来源；主题节点选取条目中出现次数最多的 24 个标签；数据库节点包含 Atlas 的资源目录和 Hub 的官方软件与数据库，按原有分类归组。页面顶部数量由当前数据自动计算。</p></div>
+      <div><h3>连线从哪来</h3><p>来源—主题连线按该来源下带此标签的条目数加权（每源只连最强的几条，避免糊成一团）；主题—主题连线是同一条目里共同出现的标签共现（达到阈值才连）；分类—数据库是目录归属。线越粗，对应关系的条目数越多。一个网址可能属于多个来源，因此按来源统计的数量可能相加后大于去重条目总数。</p></div>
+      <div><h3>点节点查什么</h3><p>点来源 = 该来源全部条目；点主题 = 所有来源里带该标签的条目；点分类 = 该类全部官网；点某个数据库/官网 = 先给它本身，再跨库找标题、标签、分类、摘要里提到它的条目（如点 ORCA 会带出各源的 ORCA 相关真实条目）。关键词查询同理跨全部条目检索。</p></div>
+      <div><h3>边界照旧</h3><p>结果仍只展示标题、短摘要与原文链接，全文回原站；Atlas 目录可保留受访问限制的网站入口，但不表示本站已抓取其内部内容；Hub 的抓取状态与镜像来源仍保留。图中的连线表示目录归属或标签共现，不代表科学因果关系。</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>ChemResearch Hub 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。</span>
+  <span><a href="../index.html">返回统一首页</a></span>
+</footer>
+<script src="../shared-nav.js"></script>
+<script src="../merged-data.js"></script>
+<script src="network.js"></script>
+</body>
+</html>

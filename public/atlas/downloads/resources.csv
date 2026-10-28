@@ -1,0 +1,104 @@
+﻿number,name,description,url,category_code,category,access,integration,detail
+1,PubChem,全球最大的公开化学信息库，可按名称、结构或 CAS 号检索化合物性质、生物活性与文献。,https://pubchem.ncbi.nlm.nih.gov,01,综合化合物与化学信息,免费,adapter,chemdb_agent.adapters.pubchem
+2,ChemSpider,英国皇家化学会（RSC）维护的结构数据库，聚合数百万化合物的性质与外部来源链接。,https://www.chemspider.com,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+3,CAS Common Chemistry,CAS 官方免费子库，适合用 CAS 号快速核对常用化学品的基础性质。,https://commonchemistry.cas.org,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+4,NIST Chemistry WebBook,NIST 热化学、热物理与光谱数据总入口，气相离子热化学数据尤其实用。,https://webbook.nist.gov/chemistry,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+5,ChEBI,EBI 的化学本体数据库，提供化合物本体注释及其与生物医学实体的关联。,https://www.ebi.ac.uk/chebi,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+6,Reaxys,Elsevier 的反应与物质性质检索平台，支持逆合成分析与文献实验数据回溯。,https://www.reaxys.com,01,综合化合物与化学信息,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
+7,SciFinder-n,CAS 旗舰检索平台，覆盖文献、物质、反应与专利，适合系统查新与专利检索。,https://scifinder-n.cas.org,01,综合化合物与化学信息,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
+8,NIST CCCBDB,计算化学基准数据库，汇集实验与计算的几何、能量、振动频率等，可直接对比方法误差。,https://cccbdb.nist.gov,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+9,GMTKN55,Grimme 组的主族热化学与反应能基准集，DFT 方法评测的事实标准之一。,https://www.chemie.uni-bonn.de/grimme/de/software/gmtkn/gmtkn55,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+10,Minnesota Databases,Truhlar 组维护的多样基准库集合（M06、S22、MGCDB84 等），含几何与能量数据。,https://comp.chem.umn.edu/db/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+11,ATcT,Active Thermochemical Tables，通过网络化评估给出高精度生成焓与键能。,https://atct.anl.gov,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+12,NIST-JANAF,经典热力学函数表，提供物质在宽温区内的 Cp、S、H 以及平衡常数。,https://janaf.nist.gov,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+13,Burcat 热化学库,NASA 多项式热化学数据库，燃烧与反应机理建模的常用参数来源。,http://garfield.chem.elte.hu/Burcat/burcat.html,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+14,ReSpecTh,燃烧反应机理与实验数据平台，含点火延迟、火焰速度等模型验证数据。,http://respecth.hu,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+15,NIST Kinetics,气相化学动力学实验数据检索库，可按反应物或产物查速率常数。,https://kinetics.nist.gov,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+16,IUPAC 气相动力学,IUPAC 气相动力学数据评估项目（现由 AERIS 托管），提供经评审的速率常数与光解数据。,https://iupac.aeris-data.fr/en/home-english/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+17,Basis Set Exchange,基组与赝势的一站式检索、下载平台，支持主流量化程序格式转换。,https://www.basissetexchange.org,02,量子化学基准与基础参数,免费,adapter,chemdb_agent.adapters.basis
+18,SSSP,Materials Cloud 的标准固体赝势库，为可复现的固体 DFT 计算提供推荐设置。,https://www.materialscloud.org/discover/sssp,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+19,libxc,开源交换-相关泛函库，被主流量化与固体电子结构程序广泛调用。,https://libxc.gitlab.io,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+20,Materials Project,美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。,https://materialsproject.org,03,材料与晶体结构,注册,adapter,chemdb_agent.adapters.materials_project
+21,OQMD,开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。,https://www.oqmd.org,03,材料与晶体结构,免费,catalog,OPTIMADE 端点 2026-10-27 实测 502，待恢复后接入
+22,AFLOW,高通量材料计算平台，提供结构原型、热力学与电子性质等大规模数据。,https://aflow.org,03,材料与晶体结构,免费,optimade,provider=aflow
+23,NOMAD,欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。,https://nomad-lab.eu,03,材料与晶体结构,免费,optimade,provider=nomad
+24,JARVIS,NIST 的材料与分子数据平台，含 DFT 性质、力场与机器学习工具。,https://jarvis.nist.gov,03,材料与晶体结构,免费,optimade,provider=jarvis
+25,Materials Cloud,EPFL 托管的开放材料数据与工具门户，含二维材料、SSSP 与 AiiDA 工作流。,https://www.materialscloud.org,03,材料与晶体结构,免费,optimade,provider=materialscloud (MC3D-PBE-v1)
+26,C2DB,二维材料计算数据库，提供数百种单层材料的结构稳定性与电子、磁性质。,https://cmr.fysik.dtu.dk/c2db/c2db.html,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+27,ICSD,无机晶体结构数据库，收录实验测定的晶体结构，通常需机构订阅。,https://icsd.fiz-karlsruhe.de,03,材料与晶体结构,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
+28,Cambridge Structural Database,剑桥结构数据库（CSD），有机与金属有机晶体结构的权威来源。,https://www.ccdc.cam.ac.uk,03,材料与晶体结构,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
+29,Crystallography Open Database,开放晶体学数据库，免费提供数十万条晶体结构 CIF 文件。,https://www.crystallography.net/cod,03,材料与晶体结构,免费,optimade,provider=cod
+30,AMCSD,矿物与相关固体的晶体结构库，适合矿物学与地球化学研究。,https://www.rruff.net/amcsd/,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+31,Bilbao Crystallographic Server,晶体学对称性服务器，可查空间群、不可约表示与相变对称性。,https://www.cryst.ehu.es,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+32,Catalysis-Hub,催化表面吸附能与反应能数据库，汇总多个研究组的 DFT 计算结果。,https://www.catalysis-hub.org,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+33,Matbench,材料机器学习基准套件，含 13 个性质预测任务与固定数据划分。,https://matbench.materialsproject.org,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+34,Matbench Discovery,材料发现专用基准，评估机器学习势函数在稳定材料筛选中的实际表现。,https://matbench-discovery.materialsproject.org,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+35,Protein Data Bank,实验测定的蛋白质与核酸三维结构总库，结构生物学与分子对接的起点。,https://www.rcsb.org,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+36,AlphaFold DB,AlphaFold 预测的蛋白结构库，覆盖数百万物种的蛋白质组。,https://alphafold.ebi.ac.uk,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+37,EMDB,冷冻电镜密度图数据库，与 PDB 中的原子模型互相补充。,https://www.ebi.ac.uk/emdb,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+38,UniProt,蛋白序列与功能注释的权威数据库，可直接下载 FASTA 用于建模。,https://www.uniprot.org,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+39,BMRB,生物大分子核磁共振数据银行，收录化学位移、结构约束与弛豫数据。,https://bmrb.io,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+40,PDBbind+,蛋白-配体复合物结合亲和力数据集，广泛用于打分函数开发与机器学习训练。,https://www.pdbbind-plus.org.cn,04,生物大分子与结构,学术免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+41,BindingDB,公开的结合亲和力数据库，可按靶点或化合物检索 Ki、Kd 与 IC50。,https://www.bindingdb.org,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+42,PLINDER,大规模蛋白-配体相互作用数据集，提供高质量结构、界面标注与划分。,https://www.plinder.sh,04,生物大分子与结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+43,ChEMBL,EBI 的生物活性数据库，整合药物、靶点与测定数据，是药物机器学习首选。,https://www.ebi.ac.uk/chembl,05,药物、生物活性与化学空间,免费,adapter,chemdb_agent.adapters.chembl
+44,DrugBank,药物与靶点知识库，含已上市及在研药物信息，学术访问免费。,https://go.drugbank.com,05,药物、生物活性与化学空间,学术免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+45,ZINC,可购买化合物的虚拟筛选库，提供多种预处理格式与三维构象。,https://zinc.docking.org,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+46,Enamine REAL,超大规模可合成化合物库，适合按需订购与十亿级虚拟筛选。,https://enamine.net/compound-collections/real-compounds,05,药物、生物活性与化学空间,商业,catalog,需机构订阅或商业授权，无公开 API 接入
+47,Guide to Pharmacology,IUPHAR 的受体、离子通道与配体数据库，人工注释质量高。,https://www.guidetopharmacology.org,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+48,DUDE-Z,分子对接评测的诱饵分子集，用于检验虚拟筛选方法的富集能力。,https://dudez.docking.org,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+49,Tox21,美国联邦毒理研究计划数据门户，提供 21 世纪毒理学测试数据。,https://tox21.gov,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+50,EPA CompTox,美国 EPA 化学品仪表盘，整合毒性、暴露与化学性质数据。,https://comptox.epa.gov/dashboard,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+51,ADMETlab 3.0,在线 ADMET 性质预测平台，输入 SMILES 即可获得成药性与安全性评估。,https://admetlab3.scbdd.com,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+52,Therapeutics Data Commons,治疗数据共享平台，汇集药物发现相关的机器学习数据集与基准。,https://tdcommons.ai,05,药物、生物活性与化学空间,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+53,HMDB,人类代谢组数据库，收录代谢物结构、浓度与疾病关联信息。,https://hmdb.ca,06,代谢物、天然产物与质谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+54,METLIN,Scripps 的代谢物质谱数据库，支持 MS/MS 谱图匹配与代谢物鉴定。,https://metlin.scripps.edu,06,代谢物、天然产物与质谱,注册,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+55,MassBank,开放质谱数据库，汇总多台仪器的正、负离子实测谱图。,https://massbank.eu,06,代谢物、天然产物与质谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+56,COCONUT,天然产物化学结构数据库，适合天然产物虚拟筛选与化学空间分析。,https://coconut.naturalproducts.net,06,代谢物、天然产物与质谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+57,Open Reaction Database,开放反应数据库，标准化存储反应条件与实验结果，并提供 API。,https://open-reaction-database.org,07,反应、合成与生化通路,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+58,USPTO 反应数据集,Lowe 整理的美国专利反应数据（1976–2016），反应预测机器学习模型的经典训练集。,https://figshare.com/articles/dataset/Chemical_reactions_from_US_patents_1976-Sep2016_/5104873,07,反应、合成与生化通路,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+59,Chemotion Repository,开源电子实验记录与反应数据仓库，可发布可引用的实验数据集。,https://chemotion-repository.net,07,反应、合成与生化通路,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+60,Rhea,生化反应数据库，提供酶催化的反应方程式与层级分类。,https://www.rhea-db.org,07,反应、合成与生化通路,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+61,BRENDA,酶功能与动力学数据库，含 Km、kcat、抑制剂与生物来源信息。,https://www.brenda-enzymes.org,07,反应、合成与生化通路,学术免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+62,KEGG,京都基因与基因组百科，提供代谢通路、酶与化合物之间的关联。,https://www.kegg.jp,07,反应、合成与生化通路,学术免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+63,HITRAN,高分辨率分子光谱数据库，大气探测与燃烧诊断的标准谱线来源。,https://hitran.org,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+64,ExoMol,系外行星与高温分子谱线库，覆盖大量小分子的完整 rovibronic 谱线。,https://www.exomol.com,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+65,JPL Molecular Spectroscopy,JPL 微波、毫米波分子谱线目录，射电天文与气相光谱研究常用。,https://spec.jpl.nasa.gov,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+66,CDMS,科隆分子光谱数据库，提供气相分子的转动与振动谱线数据。,https://cdms.astro.uni-koeln.de,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+67,SDBS,日本 AIST 谱图数据库，可检索 IR、Raman、NMR 与 MS 实测谱。,https://sdbs.db.aist.go.jp,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+68,NIST Atomic Spectra Database,NIST 原子光谱数据库，提供原子能级、谱线与跃迁概率。,https://www.nist.gov/pml/atomic-spectra-database,08,光谱与波谱,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+69,QM9,13.4 万个小有机分子的量子化学性质（几何、能量、振动等），分子机器学习入门标配。,https://figshare.com/articles/dataset/Quantum_mechanics_properties_of_organic_molecules/978904,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+70,QM7 / QM7b / MD17,经典分子机器学习数据集族，含库仑矩阵表示与分子动力学轨迹的能量、受力数据。,http://quantum-machine.org/datasets,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+71,ANI-1,约两千万个小分子构象的 DFT 能量数据集，ANI 系列机器学习势函数的训练基础。,https://github.com/isayev/ANI1_dataset,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+72,OC20 / OC22,Open Catalyst 项目的大规模催化表面吸附数据集，用于训练通用机器学习势函数。,https://opencatalystproject.org,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+73,PubChemQC,基于 PubChem 的大规模电子结构数据库，含 2.2 亿分子的 PM6 与 8600 万分子的 B3LYP 数据。,https://nakatamaho.riken.jp/pubchemqc.riken.jp/,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+74,Alexandria,百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。,https://alexandria.icams.rub.de,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+75,tmQM,过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。,https://github.com/uiocompcat/tmQM,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+76,QCArchive,MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。,https://qcarchive.molssi.org,09,机器学习数据集与势函数,免费,stub,chemdb_agent.adapters.qcarchive（阶段2占位）
+77,Open Graph Benchmark,图神经网络基准套件，包含分子图性质预测等任务与标准划分。,https://ogb.stanford.edu,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+78,DeepChem / MoleculeNet,DeepChem 生态的分子机器学习数据集与 MoleculeNet 基准合集。,https://deepchem.io,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+79,NIST Interatomic Potentials,NIST 原子间势函数库，收录 EAM、MEAM 等经典势参数与评估工具。,https://www.ctcms.nist.gov/potentials/,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+80,ORCA,学术免费的高效量子化学程序，DFT、MP2、CCSD(T) 与多参考方法齐全。,https://www.faccts.de/orca,10,软件、平台与计算入口,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+81,Gaussian,商业量子化学软件的标杆，方法覆盖广、生态成熟、教程与文献极多。,https://gaussian.com,10,软件、平台与计算入口,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+82,Q-Chem,商业量子化学程序，擅长激发态、溶剂化与高端电子结构方法。,https://www.q-chem.com,10,软件、平台与计算入口,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+83,Psi4,开源量子化学程序，适合脚本化工作流、方法开发与教学。,https://psicode.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+84,NWChem,开源大规模并行量子化学程序，适合集群上的大体系计算。,https://nwchemgit.github.io,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+85,GAMESS,经典开源量子化学程序，方法齐全、教程与社区资源丰富。,https://www.msg.chem.iastate.edu/gamess,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+86,CP2K,开源固体与液体 DFT、分子动力学程序，擅长大规模周期体系。,https://www.cp2k.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+87,Quantum ESPRESSO,开源平面波 DFT 程序，固体与赝势计算的标准工具之一。,https://www.quantum-espresso.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+88,VASP,商业平面波 DFT 程序，材料科学与表面催化领域使用极广。,https://www.vasp.at,10,软件、平台与计算入口,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+89,LAMMPS,开源分子动力学引擎，擅长大规模体系、粗粒化模型与自定义势函数。,https://www.lammps.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+90,GROMACS,开源生物分子分子动力学程序，性能与生态俱佳。,https://www.gromacs.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+91,OpenMM,GPU 加速的分子动力学工具包，适合自定义力场与 Python 工作流。,https://openmm.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+92,AutoDock Vina,开源分子对接程序，速度与精度平衡，常用于虚拟筛选与结合模式预测。,https://vina.scripps.edu,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+93,RDKit,开源化学信息学工具包，分子读写、描述符计算与构象生成必备。,https://www.rdkit.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+94,ASE,原子模拟环境，统一封装多种 DFT 与分子动力学程序，适合高通量筛选。,https://ase-lib.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+95,AiiDA,材料计算工作流与数据管理平台，强调可复现性与数据溯源。,https://aiida.net,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+96,Avogadro,跨平台分子建模与可视化工具，适合搭建与检查初始结构。,https://avogadro.cc,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+97,MolSSI,分子科学软件研究所，提供软件、数据集、标准与培训资源。,https://molssi.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+98,Multiwfn,波函数分析与可视化程序，支持电子密度、EDA、NCI、激发态等分析，中文教程完善。,http://sobereva.com/multiwfn,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+99,Rowan,云端量子化学平台，可通过网页或 API 提交任务，适合快速获得可靠性质。,https://rowansci.com,10,软件、平台与计算入口,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+100,计算化学公社,中文计算化学社区，教程、答疑与软件资源丰富，适合入门与查错。,http://bbs.keinsci.com,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
+101,Sobereva 思想家公社,Sobereva 的博客，含大量量子化学入门、Multiwfn 与实用技巧长文。,http://sobereva.com,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
+102,X-MOL,中文化学与材料文献平台，可跟踪期刊、主题与最新研究进展。,https://www.x-mol.com,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
+103,CCL,Computational Chemistry List，国际计算化学邮件列表与资源索引。,http://www.ccl.net/chemistry,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航

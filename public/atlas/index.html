@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="103 条计算化学资源，11 个研究主题。搜索数据库、阅读中文讲解，了解 chemdb-agent 的接入进展。">
+  <meta name="theme-color" content="#183e35">
+  <title>ChemDB Atlas · ChemResearch Hub 计算化学资源导航</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../shared-nav.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="content.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-section="atlas">
+<a class="skip-link" href="#main">跳到主要内容</a>
+<aside class="sidebar" aria-label="主导航">
+  <a class="brand" href="#resources" aria-label="ChemDB Atlas 首页"><span class="brand-mark">C<span>·</span></span><span>ChemDB <b>Atlas</b><small>计算化学资源导航</small></span></a>
+  <span class="side-label">ChemResearch Hub · 数据库与讲解</span>
+  <nav class="main-nav">
+    <button data-view="resources" class="nav-item active"><span class="nav-icon">▦</span>资源导航<span class="nav-count">103</span></button>
+    <button data-view="guide" class="nav-item"><span class="nav-icon">▤</span>中文讲解<span class="nav-count">19</span></button>
+    <button data-view="agent" class="nav-item"><span class="nav-icon">⌘</span>Agent 工程<span class="tiny-dot"></span></button>
+  </nav>
+  <div class="category-nav"><span class="side-label">按研究主题浏览</span><nav id="category-nav" aria-label="资源分类"></nav></div>
+  <div class="sidebar-bottom"><div class="edition"><span class="tiny-dot"></span>2026 研究资源版</div><p>先确定问题所在的层，<br>再找到合适的数据库。</p><a href="downloads/resources.csv" download>下载资源目录 <span>↗</span></a></div>
+</aside>
+<div class="workspace">
+  <header class="topbar"><div class="breadcrumb">研究工作台 <span>/</span> <b id="breadcrumb">资源导航</b></div><div class="topbar-right"><span class="date-label">材料版本 · 2026.10.27</span><button class="text-link" data-view="guide">阅读指南 <span>↗</span></button></div></header>
+  <main id="main" tabindex="-1">
+    <section id="view-resources" class="view">
+      <div class="hero">
+        <div class="hero-copy"><div class="eyebrow"><span></span>A FIELD GUIDE TO COMPUTATIONAL CHEMISTRY</div><h1>从化学问题，<br>到<span class="serif-accent">可靠数据。</span></h1><p>数据库很多，找对入口才是第一步。<br>在一张地图里，探索结构、性质、基准与计算工具。</p><div class="hero-actions"><a class="primary-button" href="#catalog">探索资源 <span>↗</span></a><button class="hero-secondary" data-view="guide">从三分钟导读开始 <span>→</span></button></div></div>
+        <figure class="hero-art" aria-label="从化学结构到统一数据的概念示意图">
+          <svg viewBox="0 0 440 350" role="img" aria-labelledby="lattice-title"><title id="lattice-title">晶体结构与数据节点的概念示意，非真实分子模型</title><defs><pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".75" fill="#b6c4b7" opacity=".7"/></pattern><linearGradient id="sphere" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e7e5aa"/><stop offset="1" stop-color="#8eaa73"/></linearGradient></defs><rect width="440" height="350" fill="url(#dots)"/><g fill="none" stroke="#a3b19e" stroke-width="1.2"><path d="M93 103 220 45 348 111 348 246 220 308 93 241Z"/><path d="M93 103 220 171 348 111M220 171V308M220 45V171M93 241 220 171 348 246"/><path d="M93 103V241M220 45 220 171" stroke-dasharray="4 5"/></g><g fill="none" stroke="#496e58" stroke-width="3"><path d="m143 126 77-37 79 42-79 41-77-46v91l77 43 79-45V131M220 172v88M143 217l77-45 79 43M220 89v83"/></g><g fill="url(#sphere)" stroke="#e7eddf" stroke-width="3"><circle cx="143" cy="126" r="15"/><circle cx="220" cy="89" r="11"/><circle cx="299" cy="131" r="15"/><circle cx="143" cy="217" r="12"/><circle cx="299" cy="215" r="12"/><circle cx="220" cy="260" r="15"/></g><circle cx="220" cy="172" r="20" fill="#234c3e" stroke="#c9d3b5" stroke-width="5"/><g font-family="monospace" font-size="10" fill="#52715e"><text x="19" y="80">STRUCTURE</text><path d="M80 83h29l20 25" fill="none" stroke="#7b9480"/><text x="318" y="285">UNIFIED DATA</text><path d="m302 277-28-21" fill="none" stroke="#7b9480"/><text x="19" y="329">[ 01 / 11 ]</text><text x="321" y="28">CHEM / ATLAS</text></g></svg>
+          <figcaption><span class="figure-dot"></span>结构 × 数据 × 方法 <span>概念示意</span></figcaption>
+        </figure>
+      </div>
+      <div class="metrics"><div><strong>103<span>条</span></strong><p>数据库与研究资源</p></div><div><strong>11<span>类</span></strong><p>从化合物到计算工具</p></div><div><strong>9<span>个</span></strong><p>已有数据源接入模块</p></div><a href="#agent" class="metric-note"><span class="status-icon">↗</span><span>让导航走进代码<small>查看 Agent 的真实接入进展</small></span><b>→</b></a></div>
+      <section id="catalog" class="catalog" aria-labelledby="catalog-title"><div class="section-heading"><div><div class="eyebrow muted">THE RESOURCE COLLECTION</div><h2 id="catalog-title">找到你的研究入口<span> / 资源图谱</span></h2></div><button class="text-link" id="export-filter">导出当前结果 <span>↓</span></button></div>
+        <div class="search-row"><div class="searchbox"><span aria-hidden="true">⌕</span><label class="sr-only" for="search">搜索资源名称、用途或关键词</label><input id="search" type="search" placeholder="搜索名称、用途或关键词，例如：晶体、PubChem、基组…" autocomplete="off"><kbd>Ctrl K</kbd></div><label class="sr-only" for="category-select">筛选研究主题</label><select id="category-select"><option value="">全部研究主题</option></select></div>
+        <div class="filter-row"><div class="filter-tabs" role="group" aria-label="资源筛选"><button class="filter active" data-filter="all">全部资源 <span>103</span></button><button class="filter" data-filter="integrated">已有接入模块 <span>9</span></button><button class="filter" data-filter="free">免费资源</button><button class="filter" data-filter="saved">我的收藏 <span id="saved-count">0</span></button></div><span id="results-count" role="status" aria-live="polite"></span></div>
+        <div id="active-category" class="active-category" hidden></div><div id="resource-grid" class="resource-grid"></div><div id="empty-state" class="empty-state" hidden><span>⌕</span><h3>还没有找到匹配的资源</h3><p>换一个关键词，或清除筛选后再试。</p><button class="secondary-button" id="reset-filters">清除筛选</button></div><div class="load-area"><button class="secondary-button" id="load-more">加载更多资源 <span>↓</span></button><span id="load-note"></span></div>
+        <div class="source-note"><span>i</span><p>目录与接入状态来自你提供的成果包（2026-10-27），本页未重新测试外部端点。<b>“已有接入模块”表示代码中有实现；在线服务和 MCP 工具是否可用，请查看 Agent 工程页。</b></p></div>
+      </section>
+      <section class="reading-banner"><div><div class="eyebrow">BEFORE YOU SEARCH</div><h2>这是一张分层地图，<br>也是一本可以读懂的指南。</h2><p>不知道选哪个库？从问题出发，读懂每一层数据的用途与边界。</p><button class="primary-button" data-view="guide">阅读中文讲解 <span>→</span></button></div><div class="reading-topics"><button data-open-guide="3"><i>01</i>化合物身份与性质<b>↗</b></button><button data-open-guide="5"><i>03</i>材料与晶体结构<b>↗</b></button><button data-open-guide="11"><i>09</i>机器学习与训练数据<b>↗</b></button><button data-open-guide="16"><i>12</i>接入实况与工程边界<b>↗</b></button></div></section>
+    </section>
+    <section id="view-guide" class="view" hidden><div class="page-intro"><div class="eyebrow">THE READING ROOM</div><h1>中文讲解手册<span>读懂资源，也读懂边界。</span></h1><p>将提供的 19 页讲解材料重新排版，适合在电脑与手机上连续阅读。</p></div><div class="guide-layout"><nav id="guide-toc" class="guide-toc" aria-label="讲解目录"></nav><div class="guide-body"><div class="reader-toolbar"><span id="reader-progress"></span><button class="text-link" id="print-guide">打印当前章节 ↗</button></div><article id="guide-article" class="guide-article"></article><div class="reader-pagination"><button class="secondary-button" id="guide-prev">← 上一章</button><button class="secondary-button" id="guide-next">下一章 →</button></div></div></div></section>
+    <section id="view-agent" class="view" hidden><div class="page-intro"><div class="eyebrow">FROM ATLAS TO AGENT</div><h1>让资源地图，走进研究流程。</h1><p>chemdb-agent 是一个计算化学 MCP 服务器。这里呈现源码的实际能力、使用方式与下一步工程路径。</p></div><div class="agent-intro"><div><span class="pill">Python 3.11+ · v0.1.0</span><h2>先找到数据，<br>再让数据可以比较。</h2><p>目标是跨库检索晶体与分子，统一单位、理论级别与来源记录，最终导出用于机器学习的训练集。</p><a class="primary-button" href="downloads/chemdb-agent.zip" download>下载项目源码 <span>↓</span></a></div><div class="agent-flow"><span>资源目录<small>103 条 · 已实现</small></span><i>↓</i><span>数据源适配器<small>4 个独立模块 + 5 家 OPTIMADE</small></span><i>↓</i><span>统一记录与单位换算<small>源码已有实现</small></span><i>↓</i><span class="planned">MCP 查询编排 → 训练集导出<small>仍需接线与实现</small></span></div></div>
+      <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">IMPLEMENTATION, HONESTLY</div><h2>当前能做什么</h2></div><span class="pill pale">按提供的源码核对</span></div><div class="status-table"><div class="status-table-head"><span>能力层</span><span>当前状态</span><span>说明</span></div><div><strong>资源目录检索</strong><span class="state ready">已实现</span><p>search_resources 支持关键词、类别和接入状态检索；catalog_status 返回目录信息。</p></div><div><strong>数据源模块</strong><span class="state ready">已有代码</span><p>PubChem、BSE、Materials Project、ChEMBL，以及 5 家 OPTIMADE。历史验证见讲解手册。</p></div><div><strong>统一模型与单位</strong><span class="state ready">已有代码</span><p>UnifiedRecord、能量/长度/力/应力换算与理论级别标识。</p></div><div><strong>MCP 查询工具</strong><span class="state pending">待接线</span><p>search_structures、get_record、search_molecules、get_basis 等入口仍返回占位状态。</p></div><div><strong>量子数据与分片下载</strong><span class="state pending">待实现</span><p>QCArchive、本地目录及 fetch_dataset_shard 尚未完成。</p></div><div><strong>训练集导出</strong><span class="state pending">待实现</span><p>export_training_set 与 export.py 为占位；当前网页不提供真实训练集生成。</p></div></div></section>
+      <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">PLAN YOUR NEXT QUERY</div><h2>按研究任务选一条路径</h2></div></div><div class="planner"><div class="task-tabs" role="group" aria-label="选择研究任务"><button data-task="molecule" class="active">分子身份与结构</button><button data-task="crystal">晶体与材料性质</button><button data-task="basis">量化计算基组</button></div><div id="plan-result"></div><p class="planner-caption">选择任务后，这里会更新推荐数据源与操作步骤。这是研究路径说明，未执行联网查询。</p></div></section>
+      <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">RUN IT LOCALLY</div><h2>从本地运行开始</h2></div></div><div class="code-panel"><div class="code-tabs"><button data-code="install" class="active">环境与启动</button><button data-code="python">直接调用模块</button><button data-code="mcp">MCP 配置</button><button id="copy-code" class="copy-button">复制代码</button></div><pre><code id="code-content"></code></pre></div><p class="small-note">真实 MP 查询需在本地设置 MP_API_KEY。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。</p></section>
+      <section class="agent-section"><div class="section-heading"><div><div class="eyebrow muted">WHAT COMES NEXT</div><h2>下一步工程路线</h2></div></div><div class="roadmap"><div><span>01</span><h3>连接 MCP 与适配器</h3><p>用现有模块替换查询入口的占位返回，补齐缓存与错误处理。</p></div><div><span>02</span><h3>补全量子数据目录</h3><p>实现 QCArchive 与本地索引，保留理论级别和数据许可。</p></div><div><span>03</span><h3>完成训练集导出</h3><p>实现 ASE / extxyz 与来源清单，通过端到端验证后再开放导出。</p></div></div></section>
+    </section>
+    <footer><a class="footer-brand" href="#resources">ChemDB Atlas<span>计算化学，循图而行。</span></a><span>基于提供的讲解版源文件与 chemdb-agent 制作<br>目录版本 2026.10.27 · 收藏保存在当前浏览器</span><a href="#main">回到顶部 ↑</a></footer>
+  </main>
+</div>
+<dialog id="resource-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><span class="eyebrow">RESOURCE NOTES</span><button class="icon-button" id="close-dialog" aria-label="关闭资源详情">×</button></div><div id="dialog-body"></div></dialog><div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+

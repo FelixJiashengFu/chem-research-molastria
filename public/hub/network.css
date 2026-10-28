@@ -1,0 +1,75 @@
+.net-hero{padding:44px 0 8px}
+.net-hero h1{font-size:38px;line-height:1.2;margin:10px 0 12px}
+.net-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+.net-controls-panel{padding-top:18px}
+.net-controls{align-items:end}
+.small-btn{padding:6px 12px;font-size:12.5px}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 2px 0}
+.preset-row .chip{font-size:12.5px;padding:5px 12px}
+.net-layout{display:grid;grid-template-columns:1.55fr .95fr;gap:14px;align-items:start;padding-top:10px}
+.net-graph-panel{position:sticky;top:76px}
+.net-graph-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.net-graph-head h3{margin:0}
+.net-tools{display:flex;gap:8px}
+.net-hint{margin:8px 0 10px}
+.graph-wrap{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:radial-gradient(600px 360px at 70% 0%, #1d2f6655, transparent 60%),#0a1327}
+#graph{display:block;width:100%;height:680px;cursor:grab}
+#graph:active{cursor:grabbing}
+.graph-tooltip{position:absolute;pointer-events:none;background:#0b1530f2;border:1px solid #3b5aa0;color:var(--text);
+  border-radius:10px;padding:8px 11px;font-size:12.5px;line-height:1.6;max-width:280px;z-index:5;box-shadow:var(--shadow)}
+.net-legend{margin-top:12px}
+.selected-info{margin-top:12px;border:1px dashed #3b5aa0;border-radius:12px;padding:12px 14px;color:#c3cfe9;
+  font-size:13.5px;line-height:1.7;background:#38bdf80d}
+.selected-info b{color:var(--text)}
+.net-results-panel{max-height:calc(100vh - 96px);display:flex;flex-direction:column;position:sticky;top:76px}
+.net-results-panel h3{margin:0 0 10px}
+.breakdown{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.breakdown .bd{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted)}
+.breakdown .bd b{color:var(--text)}
+.net-results{overflow:auto;display:grid;gap:10px;padding-right:4px}
+.net-item{border:1px solid var(--line);border-radius:14px;padding:12px 13px;background:#0d1730}
+.net-item:hover{border-color:#3b5aa0}
+.net-item h4{margin:6px 0 5px;font-size:14.5px;line-height:1.55}
+.net-item h4 a{color:var(--text);text-decoration:none}
+.net-item h4 a:hover{color:#9fd8ff;text-decoration:underline}
+.net-item p{margin:0;color:#b9c6e4;font-size:12.8px;line-height:1.65}
+.net-item .card-foot{margin-top:9px}
+.db-group{margin-bottom:22px}
+.db-group h3{margin:0 0 10px;font-size:18px;color:#c4b5fd}
+.db-table{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.db-cell{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.db-cell h4{margin:0 0 5px;font-size:15.5px}
+.db-cell p{margin:0 0 10px;color:var(--muted);font-size:12.8px;line-height:1.65;min-height:42px}
+.db-actions{display:flex;gap:8px;flex-wrap:wrap}
+.db-actions .btn{padding:6px 12px;font-size:12.5px}
+@media (max-width:1080px){
+  .net-layout{grid-template-columns:1fr}
+  .net-graph-panel,.net-results-panel{position:static;max-height:none}
+  .net-stats{grid-template-columns:repeat(2,1fr)}
+  .db-table{grid-template-columns:repeat(2,1fr)}
+  #graph{height:560px}
+}
+@media (max-width:640px){
+  .net-stats,.db-table{grid-template-columns:1fr}
+  .net-hero h1{font-size:29px}
+  #graph{height:480px}
+}
+
+/* 合并站点共享导航位于工具栏上方。 */
+.topbar{position:static}
+.network-skip{position:fixed;left:12px;top:-100px;z-index:9999;background:#fff;color:#17352c;padding:12px 18px}
+.network-skip:focus{top:12px}
+.net-graph-head h2,.net-results-panel h2{margin:0;font-size:18px}
+.net-results-panel h2{margin-bottom:10px;line-height:1.5}
+.net-graph-panel,.net-results-panel{top:86px}
+.node-picker{min-width:180px;max-width:100%}
+.node-picker select{max-width:280px;width:100%}
+#graph{touch-action:none}
+.graph-tooltip{max-width:min(280px,calc(100% - 16px))}
+:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}
+.card-top{flex-wrap:wrap}
+.net-controls{display:flex;flex-wrap:wrap}
+.net-controls>*{min-width:0}
+@media(max-width:1080px){.net-graph-panel,.net-results-panel{position:static}}
+@media(max-width:640px){.net-graph-head{align-items:flex-start;flex-wrap:wrap}.net-tools{flex-wrap:wrap}.node-picker,.node-picker select{max-width:100%;width:100%}.net-hero{padding-top:24px}.net-item h4{overflow-wrap:anywhere}}

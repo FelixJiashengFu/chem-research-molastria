@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="计算化学研究资源统一入口：数据库、论文、中文教程与开源工具，配合关系图谱、19章讲解和Agent工程说明。">
+  <meta name="theme-color" content="#173f34">
+  <title>ChemResearch Hub · 计算化学研究导航</title>
+  <link rel="icon" href="atlas/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="shared-nav.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="merged-data.js" defer></script>
+  <script src="shared-nav.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-section="search">
+<a class="skip" href="#search">跳到统一搜索</a>
+<main>
+  <section class="intro">
+    <div class="intro-copy"><p class="eyebrow">CHEMDB ATLAS × CHEMVIS HUB</p><h1>找数据，读方法。<br><em>研究，从这里连起来。</em></h1><p class="intro-text">把数据库地图与论文、社区、开源工具放在同一张书桌上。<br>从一个关键词出发，找到原始资源，也读懂它的用途与边界。</p><div class="intro-actions"><a class="button primary" href="#catalog">搜索全部资源 <span>↓</span></a><a class="button" href="atlas/index.html#guide">阅读中文讲解 <span>↗</span></a></div><p class="snapshot">目录快照 <span id="snapshot-date">2026.10.27</span> · 支持解压后离线浏览</p></div>
+    <aside class="field-note" aria-label="合并内容说明"><div class="note-top">研究笔记 <span>01 / 03</span></div><svg viewBox="0 0 400 200" role="img" aria-labelledby="map-title"><title id="map-title">数据库、文献和方法经统一检索连接的功能示意，并非条目统计关系图</title><g fill="none" stroke="#b6c3b2" stroke-width="1.5"><path d="M72 57 200 101 324 49M72 151 200 101 330 149M200 101V22"/><circle cx="200" cy="101" r="51" stroke-dasharray="3 6"/></g><g fill="#e1e6d2" stroke="#647e65"><circle cx="72" cy="57" r="11"/><circle cx="72" cy="151" r="8"/><circle cx="324" cy="49" r="9"/><circle cx="330" cy="149" r="11"/><circle cx="200" cy="22" r="6"/></g><circle cx="200" cy="101" r="22" fill="#204f3d"/><g fill="#fff" font-size="12" text-anchor="middle"><text x="200" y="106">检索</text></g><g fill="#49634d" font-size="12"><text x="22" y="30">数据库</text><text x="297" y="26">论文</text><text x="20" y="181">教程</text><text x="300" y="182">工具</text></g></svg><h2>一处检索，多条研究路径。</h2><p>在统一目录里找入口，在网状查询中发现关联，在中文手册里补全背景。</p><a href="hub/network.html">打开可交互关系图 <span>↗</span></a><small>上图为功能示意；实际关系图根据条目标签与归属生成。</small></aside>
+  </section>
+  <section class="metrics" aria-label="合并统计"><div><strong id="stat-total">—</strong><span>去重后的资源</span></div><div><strong id="stat-atlas">103</strong><span>数据库与研究资源目录条目</span></div><div><strong id="stat-hub">1,384</strong><span>论文、教程与社区条目</span></div><div><strong>19</strong><span>章中文讲解</span></div></section>
+  <section id="catalog" class="catalog" aria-labelledby="catalog-title">
+    <div class="section-title"><div><p class="eyebrow">ONE CATALOGUE, MORE CONNECTIONS</p><h2 id="catalog-title">统一资源检索</h2></div><button id="export" class="text-button">导出筛选结果 ↓</button></div>
+    <div class="searchbar"><label for="search" class="search-label">⌕ <span class="sr-only">搜索名称、摘要、分类与关键词</span><input id="search" type="search" autocomplete="off" placeholder="搜索 PubChem、ORCA、晶体、静电势…"><kbd>Ctrl K</kbd></label><a id="network-query" class="button primary" href="hub/network.html">在图谱中搜索 ↗</a></div>
+    <div class="filterbar"><label>内容范围<select id="collection"><option value="">全部内容</option><option value="atlas">数据库与研究资源目录</option><option value="hub">论文、教程与社区</option><option value="saved">我的收藏</option></select></label><label>来源<select id="source"><option value="">全部来源</option></select></label><label>类型<select id="type"><option value="">全部类型</option></select></label><label>排序<select id="sort"><option value="relevance">默认 / 关键词相关</option><option value="date">日期从新到旧</option><option value="title">名称 A–Z</option></select></label><button class="button reset" id="reset">清除筛选</button></div>
+    <div class="quick-topics" aria-label="快捷关键词"><span>试着搜索</span><button data-query="基组">基组</button><button data-query="Multiwfn">Multiwfn</button><button data-query="分子动力学">分子动力学</button><button data-query="机器学习">机器学习</button><button data-query="PubChem">PubChem</button></div>
+    <div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
+    <div id="results" class="results"></div>
+    <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以换用英文名称、缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
+    <div class="more"><button id="more" class="button">显示更多资源 ↓</button><p id="page-count"></p></div>
+  </section>
+  <section class="paths" aria-label="进一步探索"><a href="atlas/index.html#guide"><span>01 / 读懂背景</span><h2>中文讲解手册 <b>↗</b></h2><p>从三分钟导读开始，理解化学数据的分层、用途与边界。</p></a><a href="hub/index.html#overview"><span>02 / 回到来源</span><h2>论文与社区看板 <b>↗</b></h2><p>查看各来源的内容分布、接入状态、论文与教程快照。</p></a><a href="atlas/index.html#agent"><span>03 / 连接流程</span><h2>Agent 工程 <b>↗</b></h2><p>查看适配器、MCP 工具与源码下载，区分已实现和待完成能力。</p></a></section>
+  <footer><strong>ChemResearch Hub<small>由 ChemDB Atlas 与 ChemVis Hub 合并</small></strong><p id="merge-note">保留原始来源与原文链接，重复地址合并展示。</p><p>数据为原项目保存的快照，合并时未重新测试外部网站。<br>全文、更新日期与使用许可请以原站为准。收藏保存在当前浏览器。</p></footer>
+</main>
+<dialog id="details" aria-labelledby="detail-title"><button id="close-details" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p>本地资源检索需要启用 JavaScript。请使用现代浏览器打开。</p></noscript>
+</body>
+</html>
