@@ -25,7 +25,7 @@ load("atlas/content.js");
 load("merged-data.js");
 const content = (globalThis as any).CHEMDB_CONTENT;
 const data = (globalThis as any).CHEMRESEARCH_DATA;
-const THEME_BOOT = '<script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>';
+const THEME_BOOT = '<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>';
 
 // ── head blocks ──────────────────────────────────────────────────────────
 function seoHead(o: { path: string; title: string; description: string; type?: string; jsonld?: unknown[] }) {
@@ -74,6 +74,8 @@ function page(o: { rel: string; path: string; title: string; description: string
   ${seoHead({ path: o.path, title: o.title, description: o.description, jsonld: o.jsonld, type: o.type })}
   <link rel="icon" href="${o.rel}favicon.svg" type="image/svg+xml">
   ${THEME_BOOT}
+  <script src="${o.rel}i18n.js" defer></script>
+  <script src="${o.rel}backdrop.js" defer></script>
   <link rel="stylesheet" href="${o.rel}shared-nav.css">
   ${o.css.map((c) => `<link rel="stylesheet" href="${o.rel}${c}">`).join("\n  ")}
   <script src="${o.rel}shared-nav.js" defer></script>
@@ -164,12 +166,13 @@ for (const [i, g] of guides.entries()) {
 ${toc(i)}
 <div class="sg-main">
   <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../atlas/index.html#guide/${esc(g.id)}">在阅读器中打开 ↗</a></div>
+  <p class="en-only" translate="no">This chapter is written in Chinese. Your browser’s translate feature gives a full English version.</p>
   <article class="guide-article">
 ${html}
   </article>
   <nav class="sg-pager" aria-label="翻页">${prev ? `<a href="${esc(prev.id)}.html"><small>← 上一章</small>${esc(LABELS[i - 1] || prev.title)}</a>` : "<span></span>"}${next ? `<a href="${esc(next.id)}.html"><small>下一章 →</small>${esc(LABELS[i + 1] || next.title)}</a>` : ""}</nav>
 </div>
-<footer class="sg-foot">ChemResearch Hub · 计算化学数据库与资源导航中文讲解，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
+<footer class="sg-foot">MolAstria · 计算化学数据库与资源导航中文讲解，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
 </main>`;
   await write(path, page({
     rel: "../", path, title, description, section: "atlas", css: ["theme-auto.css", "guide/guide.css"], body, type: "article",
@@ -233,8 +236,8 @@ for (const t of typeOrder) {
   await write(path, page({
     rel: "../", path, section: "search", css: ["resources/resources.css"],
     title: `计算化学${TYPES[t]}（${list.length} 条）· ${NAME}`,
-    description: clip(`ChemResearch Hub 收录的 ${list.length} 条计算化学${TYPES[t]}，按分类列出标题、来源与原文链接，例如：${examples}。`, 155),
-    body: `<main class="rs"><nav class="rs-crumbs" aria-label="位置"><a href="../index.html">首页</a> / <a href="index.html">资源目录</a> / ${esc(TYPES[t])}</nav><h1>计算化学${esc(TYPES[t])} · ${list.length} 条</h1><p class="lead">数据快照日期 ${esc(cfg.dataDate)}。只列标题、来源与短摘要，阅读全文请访问原站。也可以回到 <a href="../index.html?q=">统一搜索</a> 按关键词筛选，或用 AI 助手带出处地提问。</p>${[...groups.entries()].map(([g, arr]) => `<h2>${esc(g)} <small class="muted">${arr.length}</small></h2><ul class="rs-list">${arr.map(entry).join("")}</ul>`).join("")}<p class="rs-foot">ChemResearch Hub 只做标题级聚合索引，版权归原作者与原站所有。</p></main>`,
+    description: clip(`MolAstria 收录的 ${list.length} 条计算化学${TYPES[t]}，按分类列出标题、来源与原文链接，例如：${examples}。`, 155),
+    body: `<main class="rs"><nav class="rs-crumbs" aria-label="位置"><a href="../index.html">首页</a> / <a href="index.html">资源目录</a> / ${esc(TYPES[t])}</nav><h1>计算化学${esc(TYPES[t])} · ${list.length} 条</h1><p class="lead">数据快照日期 ${esc(cfg.dataDate)}。只列标题、来源与短摘要，阅读全文请访问原站。也可以回到 <a href="../index.html?q=">统一搜索</a> 按关键词筛选，或用 AI 助手带出处地提问。</p>${[...groups.entries()].map(([g, arr]) => `<h2>${esc(g)} <small class="muted">${arr.length}</small></h2><ul class="rs-list">${arr.map(entry).join("")}</ul>`).join("")}<p class="rs-foot">MolAstria 只做标题级聚合索引，版权归原作者与原站所有。</p></main>`,
     jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: `计算化学${TYPES[t]}`, inLanguage: "zh-CN", url: SITE + path, numberOfItems: list.length }, crumbs([["首页", ""], ["资源目录", "resources/"], [TYPES[t], path]])],
   }));
 }
@@ -256,7 +259,7 @@ if (datasetDescriptionLength < 50 || datasetDescriptionLength > 5000) {
   throw new Error(`Dataset description must contain 50–5000 characters; got ${datasetDescriptionLength}`);
 }
 const mains = [
-  await injectHead("index.html", "", { jsonld: [website, { "@context": "https://schema.org", "@type": "Dataset", name: "ChemResearch Hub 计算化学资源目录", description: datasetDescription, url: SITE, inLanguage: "zh-CN", dateModified: cfg.dataDate, isAccessibleForFree: true, creator: { "@type": "Organization", name: NAME, url: SITE }, distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: SITE + "merged-data.json" }] }] }),
+  await injectHead("index.html", "", { jsonld: [website, { "@context": "https://schema.org", "@type": "Dataset", name: "MolAstria 计算化学资源目录", description: datasetDescription, url: SITE, inLanguage: "zh-CN", dateModified: cfg.dataDate, isAccessibleForFree: true, creator: { "@type": "Organization", name: NAME, url: SITE }, distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: SITE + "merged-data.json" }] }] }),
   await injectHead("atlas/index.html", "atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "ChemDB Atlas 计算化学数据库导航", inLanguage: "zh-CN", url: SITE + "atlas/" }] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
@@ -273,6 +276,8 @@ await write("404.html", `<!doctype html>
   <meta name="robots" content="noindex">
   <link rel="icon" href="${SITE}favicon.svg" type="image/svg+xml">
   ${THEME_BOOT}
+  <script src="${SITE}i18n.js" defer></script>
+  <script src="${SITE}backdrop.js" defer></script>
   <link rel="stylesheet" href="${SITE}shared-nav.css">
   <link rel="stylesheet" href="${SITE}resources/resources.css">
   <script src="${SITE}shared-nav.js" defer></script>

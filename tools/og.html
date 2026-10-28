@@ -1,27 +1,34 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><title>og</title>
 <style>
-html,body{margin:0;width:1200px;height:630px;background:#f6f5ee;font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:#1c3a2f}
-.wrap{position:relative;width:1200px;height:630px;box-sizing:border-box;padding:72px 80px;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:center;background:radial-gradient(circle at 1px 1px,#d8dfd2 1px,transparent 0) 0 0/24px 24px}
-.brand{display:flex;align-items:center;gap:16px;font-size:26px;letter-spacing:-.3px}
-.brand b{font-weight:700}
-.eyebrow{font:700 15px/1 Segoe UI,sans-serif;letter-spacing:4px;color:#5f6f63;margin:44px 0 18px}
-h1{font-size:64px;line-height:1.25;margin:0;letter-spacing:-2px;font-weight:700}
-h1 em{font-style:normal;font-family:"Songti SC",SimSun,serif;font-weight:500;color:#4b704f}
-.tags{display:flex;gap:10px;margin-top:34px;flex-wrap:wrap}
-.tags span{font-size:19px;padding:7px 14px;border:1.5px solid #b9c7b4;border-radius:5px;background:#fdfcf8}
-.tags span.gold{border-color:#a67d42;color:#7c5a28;background:#f3ead9}
-.card{background:#fdfcf8;border:1.5px solid #d8dfd2;border-radius:10px;padding:26px;box-shadow:0 18px 40px rgb(28 58 47/.1)}
-.stat{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #d8dfd2;padding:12px 0}
-.stat:last-child{border:0}
-.stat b{font:400 44px Georgia,serif}
-.stat span{font-size:18px;color:#5f6f63}
+html,body{margin:0;width:1200px;height:630px;background:#0e100f;color:#f3f1ea;font-family:"Microsoft YaHei","PingFang SC",sans-serif;overflow:hidden}
+.wrap{position:relative;width:1200px;height:630px;box-sizing:border-box;padding:84px 92px}
+svg.sky{position:absolute;inset:0}
+.mark{display:flex;align-items:center;gap:26px}
+.word{font:400 104px/1 Georgia,"Times New Roman",serif;letter-spacing:1px}
+.word i{letter-spacing:2px}
+.sub{margin:30px 0 0;font-size:30px;letter-spacing:6px;color:#cfccc2}
+.en{margin:10px 0 0;font:italic 24px Georgia,serif;color:#9d9a90;letter-spacing:1px}
+.rule{width:120px;height:1px;background:#f3f1ea;opacity:.5;margin:42px 0 28px}
+.tags{display:flex;gap:28px;font-size:22px;color:#e6e3da;letter-spacing:2px}
+.tags span::before{content:"✦";margin-right:10px;color:#d6b06b;font-size:16px;vertical-align:3px}
 </style></head><body><div class="wrap">
-<div>
-<div class="brand"><svg width="56" height="56" viewBox="0 0 40 40"><rect width="40" height="40" rx="7" fill="#204f3d"/><path d="M20 7.5 30.8 13.75v12.5L20 32.5 9.2 26.25v-12.5Z" fill="none" stroke="#d9e3b8" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 7.5V20m0 0 10.8 6.25M20 20 9.2 26.25" stroke="#d9e3b8" stroke-width="1.4" opacity=".55"/><circle cx="20" cy="20" r="4.2" fill="#d6b06b"/></svg><span>ChemResearch <b>Hub</b> · 计算化学研究导航</span></div>
-<p class="eyebrow">DATABASES · METHODS · AI SCIENTIST</p>
-<h1>找数据，读方法。<br><em>让 AI 一起做研究。</em></h1>
-<div class="tags"><span>数据库与软件</span><span>中文讲解</span><span>论文与社区</span><span class="gold">闭环 AI 实验室</span></div>
+<svg class="sky" viewBox="0 0 1200 630" id="sky"></svg>
+<div class="mark"><svg width="112" height="112" viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#f3f1ea"/><g fill="none" stroke="#111311" stroke-linejoin="round"><ellipse cx="19" cy="21" rx="15" ry="5.6" transform="rotate(-28 19 21)" stroke-width=".75" opacity=".7"/><path d="M19 11.2 27.5 16.1v9.8L19 30.8l-8.5-4.9v-9.8Z" stroke-width="1.7"/><circle cx="19" cy="21" r="4.9" stroke-width="1"/></g><g fill="#111311"><circle cx="5.7" cy="26" r="1.3"/><path d="M30.6 5.2c.45 2.9 1.5 3.95 4.4 4.4-2.9.45-3.95 1.5-4.4 4.4-.45-2.9-1.5-3.95-4.4-4.4 2.9-.45 3.95-1.5 4.4-4.4Z"/><circle cx="35" cy="17.5" r=".7"/></g></svg><div class="word">Mol<i>Astria</i></div></div>
+<p class="sub">计算化学研究导航</p>
+<p class="en">A computational chemistry atlas — databases, methods and an AI lab</p>
+<div class="rule"></div>
+<div class="tags"><span>1,465 条资源</span><span>19 章中文讲解</span><span>闭环 AI 实验室</span><span>DeepSeek · Muse</span></div>
 </div>
-<div class="card"><div class="stat"><b>1,465</b><span>条去重资源</span></div><div class="stat"><b>103</b><span>个数据库入口</span></div><div class="stat"><b>19</b><span>章中文讲解</span></div><div class="stat"><b>DeepSeek</b><span>· Muse</span></div></div>
-</div></body></html>
+<script>
+// Deterministic star field with a benzene-ring constellation on the right.
+let s = 11; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+let g = '';
+for (let i = 0; i < 260; i++) g += `<circle cx="${(r() * 1200).toFixed(1)}" cy="${(r() * 630).toFixed(1)}" r="${(0.4 + r() * 1.3).toFixed(2)}" fill="#f3f1ea" opacity="${(0.15 + r() * 0.5).toFixed(2)}"/>`;
+const cx = 1010, cy = 236, R = 104, pts = [...Array(6)].map((_, i) => [cx + R * Math.cos(Math.PI / 3 * i - Math.PI / 2), cy + R * Math.sin(Math.PI / 3 * i - Math.PI / 2)]);
+g += `<path d="${pts.map((p, i) => (i ? 'L' : 'M') + p.join(',')).join('')}Z" fill="none" stroke="#d6b06b" stroke-opacity=".55" stroke-width="1.3"/>`;
+g += `<circle cx="${cx}" cy="${cy}" r="64" fill="none" stroke="#d6b06b" stroke-opacity=".35" stroke-width="1"/>`;
+g += `<ellipse cx="${cx}" cy="${cy}" rx="230" ry="80" transform="rotate(-28 ${cx} ${cy})" fill="none" stroke="#f3f1ea" stroke-opacity=".18" stroke-width="1"/>`;
+g += pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#f3f1ea"/>`).join('');
+document.getElementById('sky').innerHTML = g;
+</script></body></html>

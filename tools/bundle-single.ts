@@ -8,7 +8,7 @@ const repo = new URL("../", import.meta.url);
 const pub = new URL("public/", repo);
 const cfg = JSON.parse(await Deno.readTextFile(new URL("site.config.json", repo)));
 const SITE: string = cfg.siteUrl.endsWith("/") ? cfg.siteUrl : cfg.siteUrl + "/";
-const out = Deno.args[0] ?? decodeURIComponent(new URL("dist/ChemResearchHub-单文件版.html", repo).pathname).replace(/^\/([A-Za-z]:)/, "$1");
+const out = Deno.args[0] ?? decodeURIComponent(new URL("dist/MolAstria-单文件版.html", repo).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 
 const PAGES: Record<string, { file: string; title: string }> = {
   search: { file: "index.html", title: "统一搜索" },
@@ -111,27 +111,30 @@ for (const [key, p] of Object.entries(PAGES)) pages[key] = await bundlePage(p.fi
 const json = (path: string, name: string) => read(path).then((js) => js.replace(new RegExp(`^\\s*window\\.${name}\\s*=\\s*`), "").replace(/;\s*$/, ""));
 const merged = await json("merged-data.js", "CHEMRESEARCH_DATA");
 const hub = await json("hub/data.js", "CHEMVIS_DATA");
-JSON.parse(merged); JSON.parse(hub);
+const english = (await read("i18n/en.js")).replace(/^\/\*[\s\S]*?\*\/\s*window\.CHEMHUB_I18N_EN\s*=\s*/, "").replace(/;\s*$/, "");
+JSON.parse(merged); JSON.parse(hub); JSON.parse(english);
 const embed = (s: string) => s.replace(/<\//g, "<\\/");
 
 const wrapper = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="ChemResearch Hub 单文件版：1,465 条计算化学资源、网状查询、19 章中文讲解与 AI 实验室，一个文件即可离线打开。">
-<title>ChemResearch Hub · 单文件版</title>
+<meta name="description" content="MolAstria 单文件版：1,465 条计算化学资源、网状查询、19 章中文讲解与 AI 实验室，一个文件即可离线打开。">
+<title>MolAstria · 单文件版</title>
 <link rel="icon" href="${favicon}" type="image/svg+xml">
 <style>html,body{margin:0;width:100%;height:100%;background:#f6f5ee}#site{border:0;width:100%;height:100%;display:block}#loading{position:fixed;inset:0;display:grid;place-items:center;font:16px "Microsoft YaHei",sans-serif;color:#204f3d;background:#f6f5ee}@media (prefers-color-scheme:dark){html,body,#loading{background:#101613;color:#9fd0aa}}</style></head>
 <body><div id="loading" role="status">正在打开计算化学研究导航…</div><iframe id="site" title="计算化学研究导航" allow="clipboard-write"></iframe><noscript>请在浏览器中启用 JavaScript 后重新打开此文件。</noscript>
 <script type="application/json" id="data-merged">${embed(merged)}</script>
 <script type="application/json" id="data-hub">${embed(hub)}</script>
+<script type="application/json" id="data-en">${embed(english)}</script>
 <script>
 window.CHEMRESEARCH_DATA=JSON.parse(document.getElementById('data-merged').textContent);
 window.CHEMVIS_DATA=JSON.parse(document.getElementById('data-hub').textContent);
+window.CHEMHUB_I18N_EN=JSON.parse(document.getElementById('data-en').textContent);
 const CHEM_PAGES=${JSON.stringify(pages).replace(/<\//g, "<\\/")};
 const TITLES=${JSON.stringify(Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, v.title])))};
 const frame=document.getElementById('site');
 function decodeRoute(){const p=new URLSearchParams(location.hash.slice(1));const page=p.get('page')||'search';return {page:CHEM_PAGES[page]?page:'search',search:p.get('query')||'',hash:p.get('anchor')||''};}
 function encodeRoute(route){const p=new URLSearchParams({page:route.page});if(route.search)p.set('query',route.search);if(route.hash)p.set('anchor',route.hash);return '#'+p;}
-function render(route){frame.srcdoc=CHEM_PAGES[route.page].replace('__CHEM_CONFIG_PLACEHOLDER__',JSON.stringify(route).replace(/</g,'\\\\u003c'));document.title=TITLES[route.page]+' · ChemResearch Hub 单文件版';}
+function render(route){frame.srcdoc=CHEM_PAGES[route.page].replace('__CHEM_CONFIG_PLACEHOLDER__',JSON.stringify(route).replace(/</g,'\\\\u003c'));document.title=TITLES[route.page]+' · MolAstria 单文件版';}
 window.addEventListener('message',event=>{if(event.source!==frame.contentWindow)return;const m=event.data;if(!m||!['chem-nav','chem-state'].includes(m.type)||!CHEM_PAGES[m.route?.page])return;const r={page:m.route.page,search:String(m.route.search||''),hash:String(m.route.hash||'')};if(m.type==='chem-state'){history.replaceState(null,'',encodeRoute(r));}else{const next=encodeRoute(r);if(location.hash===next)render(r);else location.hash=next;}});
 window.addEventListener('hashchange',()=>render(decodeRoute()));
 frame.addEventListener('load',()=>document.getElementById('loading').style.display='none');

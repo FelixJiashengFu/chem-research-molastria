@@ -81,7 +81,7 @@
     $$('.view').forEach(s=>s.hidden = s.id !== `view-${view}`);
     $$('.main-nav [data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.setAttribute('aria-current',b.dataset.view===view?'page':'false');});
     $('#breadcrumb').textContent = ({resources:'资源导航',guide:'中文讲解',agent:'Agent 工程'})[view];
-    document.title = `${$('#breadcrumb').textContent} · ChemResearch Hub / ChemDB Atlas`;
+    document.title = `${$('#breadcrumb').textContent} · MolAstria`;
     if(view==='guide')renderGuide();
     if(location.hash.split('/')[0] !== `#${view}`)history.replaceState(null,'',`#${view}`);
     if(scroll)window.scrollTo({top:0,behavior:'smooth'});

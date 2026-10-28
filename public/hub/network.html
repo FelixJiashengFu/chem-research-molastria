@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>网状查询 · ChemResearch Hub 计算化学研究导航</title>
+<title>网状查询 · MolAstria 计算化学研究导航</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/hub/network.html">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
-  <meta property="og:title" content="网状查询 · ChemResearch Hub 计算化学研究导航">
+  <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
+  <meta property="og:title" content="网状查询 · MolAstria 计算化学研究导航">
   <meta property="og:description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
   <meta property="og:url" content="https://molastria.com/hub/network.html">
   <meta property="og:image" content="https://molastria.com/og.png">
@@ -18,7 +18,9 @@
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
-<script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+<script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
 <link rel="stylesheet" href="../shared-nav.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="network.css">
@@ -116,7 +118,7 @@
 </main>
 
 <footer class="footer">
-  <span>ChemResearch Hub 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。</span>
+  <span>MolAstria 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。</span>
   <span><a href="../index.html">返回统一首页</a> · <a href="../resources/index.html">资源目录</a> · <a href="../guide/index.html">中文讲解</a></span>
 </footer>
 <script src="../shared-nav.js"></script>

@@ -1,4 +1,4 @@
-/* ChemResearch Hub 网状查询：节点/连线全部由 data.json 真实条目计算，点节点跨库查询 */
+/* MolAstria 网状查询：节点/连线全部由 data.json 真实条目计算，点节点跨库查询 */
 const TYPE_LABEL = {tutorial:"深度教程", qa:"论坛帖", discipline:"学科频道", tool:"平台工具",
   software:"软件/官网", archive:"邮件归档", resource:"资源索引", job:"学术招聘", conference:"学术会议", announcement:"公告",
   preprint:"预印本", paper:"期刊论文", repo:"开源仓库", database:"数据库"};
@@ -33,7 +33,7 @@ function buildGraph(){
     edges.push({a, b, w, kind}); neighbors.get(a).add(b); neighbors.get(b).add(a);
   };
   const addNodeRaw = addNode;
-  addNodeRaw({id:"hub", kind:"hub", label:"ChemResearch Hub", sub:"全部真实条目", count:ITEMS.length, color:"#a67d42", r:26});
+  addNodeRaw({id:"hub", kind:"hub", label:"MolAstria", sub:"全部真实条目", count:ITEMS.length, color:"#a67d42", r:26});
 
   const srcCount = {};
   ITEMS.forEach((i) => itemSources(i).forEach((id) => srcCount[id] = (srcCount[id] || 0) + 1));

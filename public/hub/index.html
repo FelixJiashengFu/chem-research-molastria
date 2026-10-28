@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>论文与社区 · ChemResearch Hub / ChemVis Hub</title>
+<title>论文与社区 · MolAstria</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/hub/">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
-  <meta property="og:title" content="论文与社区 · ChemResearch Hub / ChemVis Hub">
+  <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
+  <meta property="og:title" content="论文与社区 · MolAstria">
   <meta property="og:description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、arXiv、Crossref、GitHub 与官方软件数据库目录的真实标题与链接">
   <meta property="og:url" content="https://molastria.com/hub/">
   <meta property="og:image" content="https://molastria.com/og.png">
@@ -19,16 +19,18 @@
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、arXiv、Crossref、GitHub 与官方软件数据库目录的真实标题与链接">
-<script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+<script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
 <link rel="stylesheet" href="../shared-nav.css">
 <link rel="stylesheet" href="styles.css">
 <script src="../shared-nav.js" defer></script>
 </head>
 <body data-section="hub">
 <header class="topbar">
-  <a class="brand" href="#top" aria-label="ChemVis Hub 首页">
+  <a class="brand" href="#top" aria-label="论文与社区">
     <span class="brand-mark" aria-hidden="true">❖</span>
-    <span><strong>ChemVis Hub</strong><small>ChemResearch Hub · 论文与社区</small></span>
+    <span><strong>论文与社区</strong><small>MolAstria · 来源快照</small></span>
   </a>
   <nav class="nav" aria-label="主导航">
     <a href="#overview">总览</a><a href="#explore">探索</a><a href="network.html">网状查询</a><a href="#fresh">最新论文</a>
@@ -80,6 +82,7 @@
         <option value="title">标题 A–Z</option><option value="source">按来源</option></select></label>
       <button id="clearFilters" class="btn ghost" type="button">清空筛选</button>
     </div>
+    <p class="en-only" translate="no">Entries come from Chinese forums, blogs and journals and keep their original titles.</p>
     <div id="cards" class="cards"></div>
     <div class="center"><button id="loadMore" class="btn" type="button">加载更多</button></div>
   </section>
@@ -131,7 +134,7 @@
 </main>
 
 <footer class="footer">
-  <span>ChemVis Hub · 数据来自下方各来源站点与官方 API，版权归原作者与原站所有，本站仅做标题级聚合索引。</span>
+  <span>MolAstria · 数据来自下方各来源站点与官方 API，版权归原作者与原站所有，本站仅做标题级聚合索引。</span>
   <span id="footSources"></span>
   <span><a href="../resources/index.html">资源目录</a> · <a href="../guide/index.html">中文讲解</a> · <a href="../lab/index.html">AI 实验室</a></span>
 </footer>

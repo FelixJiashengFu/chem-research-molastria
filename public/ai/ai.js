@@ -465,13 +465,16 @@
   const HISTORY = 'chemhub-ai-history';
   let history = safe(() => JSON.parse(sessionStorage.getItem(HISTORY) || 'null'), null) || { catalog: [], free: [] };
   const persist = () => safe(() => sessionStorage.setItem(HISTORY, JSON.stringify({ catalog: history.catalog.slice(-20), free: history.free.slice(-20) })));
+  // Answers follow the page language; the catalogue itself is mostly Chinese, so English answers translate titles.
+  const T = (s) => window.ChemI18n?.t(s) ?? s;
+  const LANG_NOTE = () => document.documentElement.lang === 'en' ? '\n\nThe reader is using the English version of the site: answer in English (translate Chinese resource titles into English, keeping the [n] citations).' : '';
   const SUGGEST = {
     catalog: ['分析分子静电势用什么软件，有哪些教程？', '想查晶体结构，应该从哪些数据库开始？', '机器学习势函数有哪些开源训练数据集？', 'ORCA 计算激发态的入门资料'],
     free: ['电解液溶剂的氧化稳定性和 HOMO 有什么关系？', '解释 ωB97M-V 与 r²SCAN-3c 的差别和适用场景', '为什么 SCE 电位要换算到 Li/Li⁺？怎么换算？', '帮我写一段 RDKit 代码：按 InChIKey 去重 SMILES 列表']
   };
   const SYSTEM = {
-    catalog: '你是 ChemResearch Hub（计算化学研究导航）的研究助手。用户提问后，系统会附上从本站目录检索到的条目，编号为 [1]、[2]…。\n规则：\n1. 推荐资源、教程、数据库、软件时，只能引用附上的条目，并在句末用 [编号] 标注出处；不要编造链接或条目。\n2. 附上的条目不足以回答时直接说明“本站目录里没有直接对应的条目”，可以补充一般性知识，但要标明“（目录外的一般知识）”。\n3. 用简体中文，先给结论，再分点说明；保持简洁，不超过 300 字，除非用户要求详细。',
-    free: '你是一位严谨的计算化学与电化学研究助手，服务于 ChemResearch Hub 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。'
+    catalog: '你是 MolAstria（计算化学研究导航）的研究助手。用户提问后，系统会附上从本站目录检索到的条目，编号为 [1]、[2]…。\n规则：\n1. 推荐资源、教程、数据库、软件时，只能引用附上的条目，并在句末用 [编号] 标注出处；不要编造链接或条目。\n2. 附上的条目不足以回答时直接说明“本站目录里没有直接对应的条目”，可以补充一般性知识，但要标明“（目录外的一般知识）”。\n3. 用简体中文，先给结论，再分点说明；保持简洁，不超过 300 字，除非用户要求详细。',
+    free: '你是一位严谨的计算化学与电化学研究助手，服务于 MolAstria 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。'
   };
 
   function buildDrawer() {
@@ -518,7 +521,7 @@
     drawer.querySelector('[data-hint]').textContent = mode === 'catalog' ? '先检索本站目录，再由 AI 作答并标注出处' : '直接与模型对话，不检索目录';
     const log = drawer.querySelector('.cai-log');
     const ready = isReady();
-    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,465 条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(q)}">${esc(q)}</button>`).join('')}</div></div>`;
+    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,465 条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
     log.innerHTML = history[mode].length ? history[mode].map(renderMsg).join('') : welcome;
     log.scrollTop = log.scrollHeight;
   }
@@ -532,7 +535,7 @@
     if (m.error) return `<div class="cai-err">${esc(m.error)}${m.code === 'no-key' ? ' <button type="button" class="cai-btn" data-act="settings" style="margin-left:6px;height:28px">去设置</button>' : ''}</div>`;
     const cited = new Set([...String(m.content).matchAll(/\[(\d{1,2}(?:\s*[,，]\s*\d{1,2})*)\]/g)].flatMap((x) => x[1].split(/[,，]/).map((n) => Number(n.trim()))));
     const refs = (m.refs || []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => cited.has(r.n));
-    return `<div class="cai-msg bot"><div class="cai-who">${m.refs ? `检索到 ${m.refs.length} 条目录资源` : 'AI'}${m.pending ? ' · 生成中…' : ''}</div>${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div>${esc(m.reasoning)}</div></details>` : ''}${markdown(m.content || (m.pending ? '…' : ''), m.refs)}${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}${usageLine(m)}</div>`;
+    return `<div class="cai-msg bot"><div class="cai-who">${m.refs ? `检索到 ${m.refs.length} 条目录资源` : 'AI'}${m.pending ? ' · 生成中…' : ''}</div>${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}${usageLine(m)}</div>`;
   }
   async function ask(question) {
     if (busy) return;
@@ -550,14 +553,23 @@
     try {
       let messages;
       if (mode === 'catalog') {
-        const refs = await retrieve(question, 12);
+        // The catalogue is mostly Chinese: an English question first gets bilingual search keywords.
+        let query = question;
+        if (!/[㐀-鿿]/.test(question)) {
+          try {
+            const k = await chat({ json: true, effort: 'off', maxTokens: 300, signal: controller.signal, messages: [{ role: 'system', content: 'Return JSON {"keywords":[...]} with 4-10 short search keywords for a Chinese computational-chemistry resource catalogue: Chinese terms plus English software/method names. No other text.' }, { role: 'user', content: question }] });
+            const kw = parseJSON(k.text).keywords;
+            if (Array.isArray(kw)) query = `${question} ${kw.join(' ')}`;
+          } catch (e) { if (e.name === 'AbortError') throw e; }
+        }
+        const refs = await retrieve(query, 12);
         bot.refs = refs;
         const context = refs.length ? refs.map((r, i) => `[${i + 1}] ${r.title}\n来源：${r.sources.join(' / ')}${r.date ? ` · ${r.date}` : ''}\n链接：${r.url}\n摘要：${r.excerpt}`).join('\n\n') : '（没有检索到相关条目）';
         const prior = list.slice(0, -2).filter((m) => !m.error).slice(-6).map((m) => ({ role: m.role, content: m.content }));
-        messages = [{ role: 'system', content: SYSTEM.catalog }, ...prior, { role: 'user', content: `问题：${question}\n\n本站目录检索结果：\n${context}` }];
+        messages = [{ role: 'system', content: SYSTEM.catalog + LANG_NOTE() }, ...prior, { role: 'user', content: `问题：${question}\n\n本站目录检索结果：\n${context}` }];
       } else {
         const prior = list.slice(0, -1).filter((m) => !m.error && !m.pending).slice(-10).map((m) => ({ role: m.role, content: m.content }));
-        messages = [{ role: 'system', content: SYSTEM.free }, ...prior];
+        messages = [{ role: 'system', content: SYSTEM.free + LANG_NOTE() }, ...prior];
       }
       const r = await chat({ messages, signal: controller.signal, maxTokens: 4096, onDelta: (_, full) => { bot.content = full; paint(); }, onReasoning: (_, full) => { bot.reasoning = full; paint(); } });
       Object.assign(bot, { content: r.text || '（模型没有返回正文，可以把思考强度调低后重试）', reasoning: r.reasoning, usage: r.usage, cost: r.cost, model: r.model, ms: r.ms });

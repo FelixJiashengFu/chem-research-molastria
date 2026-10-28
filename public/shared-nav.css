@@ -1,4 +1,4 @@
-/* ChemResearch Hub 全站基础：颜色与字体变量（浅色 / 深色）、顶栏、AI 抽屉入口。 */
+/* MolAstria 全站基础：颜色与字体变量（浅色 / 深色）、顶栏、AI 抽屉入口。 */
 :root{
   color-scheme:light;
   --paper:#f6f5ee;--surface:#fdfcf8;--surface-2:#eef1e6;--surface-3:#e4eadb;
@@ -40,8 +40,14 @@ html{background:var(--paper)}
 .cr-header{box-sizing:border-box;position:sticky;top:0;z-index:60;min-height:64px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(1.2) blur(12px);-webkit-backdrop-filter:saturate(1.2) blur(12px);color:var(--ink);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:10px 28px;font-family:var(--font-sans);line-height:1.3;isolation:isolate}
 .cr-header *{box-sizing:border-box}
 .cr-brand{display:flex!important;align-items:center;gap:11px;color:var(--ink)!important;text-decoration:none!important;white-space:nowrap;font-size:15px!important;letter-spacing:-.2px}
-.cr-mark{width:36px;height:36px;flex:none;display:block}
-.cr-brand b{font-weight:600}
+.cr-mark{width:38px;height:38px;flex:none;display:block}
+.cr-mark .m-tile{fill:var(--ink)}
+.cr-mark .m-line,.cr-mark .m-thin,.cr-mark .m-hair{fill:none;stroke:var(--paper);stroke-linejoin:round}
+.cr-mark .m-line{stroke-width:1.7}.cr-mark .m-thin{stroke-width:1}.cr-mark .m-hair{stroke-width:.75;opacity:.7}
+.cr-mark .m-star,.cr-mark .m-dot{fill:var(--paper)}
+.cr-word{display:block;font:400 21px/1 var(--font-num);letter-spacing:.2px;color:var(--ink)}
+.cr-word i{font-style:italic;letter-spacing:.4px}
+.cr-lang{font:700 12px/1 var(--font-sans);letter-spacing:.5px}
 .cr-brand small{display:block!important;font-size:10px!important;letter-spacing:1.6px;color:var(--muted)!important;margin-top:3px}
 .cr-links{display:flex;align-items:center;justify-content:center;gap:2px;flex:1;flex-wrap:wrap}
 .cr-links a{position:relative;display:block;color:var(--muted)!important;padding:9px 12px;text-decoration:none!important;white-space:nowrap;font-size:13px;font-weight:600;border-radius:4px;transition:color .15s,background .15s}
@@ -72,3 +78,79 @@ html{background:var(--paper)}
 }
 @media print{.cr-header,.cr-drawer,.cr-fab{display:none!important}}
 @media(prefers-reduced-motion:reduce){.cr-header *,.cr-drawer{transition:none!important}}
+
+/* ── 背景层（backdrop.js 生成）：固定在内容之下，颜色取自主题变量 ── */
+:root[data-bg]:not([data-bg=paper]) body{background:transparent!important}
+.cr-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;opacity:var(--bg-strength,.7);color:var(--ink)}
+.cr-bg>svg{position:absolute;inset:0;width:100%;height:100%}
+.cr-bg>i{position:absolute;inset:0;display:block}
+.cr-bg svg *{vector-effect:non-scaling-stroke}
+.cr-bg .bg-stroke{fill:none;stroke:color-mix(in srgb,var(--accent-2) 26%,transparent);stroke-width:1}
+.cr-bg .bg-ring{fill:none;stroke:color-mix(in srgb,var(--gold) 55%,transparent);stroke-width:1.2}
+.cr-bg .bg-fill{fill:color-mix(in srgb,var(--accent-2) 9%,transparent)}
+.cr-bg .bg-face1{fill:color-mix(in srgb,var(--accent-2) 3%,transparent)}
+.cr-bg .bg-face2{fill:color-mix(in srgb,var(--accent-2) 7%,transparent)}
+.cr-bg .bg-face3{fill:color-mix(in srgb,var(--accent-2) 12%,transparent)}
+.cr-bg .bg-iso{fill:none;stroke:color-mix(in srgb,var(--accent-2) 30%,transparent);stroke-width:.8}
+.cr-bg .bg-iso2{fill:none;stroke:color-mix(in srgb,var(--accent-2) 55%,transparent);stroke-width:1.3}
+.cr-bg .bg-mep{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:7 6}
+.cr-bg .bg-min{fill:var(--gold)}
+.cr-bg .bg-label{fill:var(--gold);font:600 22px var(--font-num);text-anchor:middle}
+.cr-bg .bg-psi-pos{fill:none;stroke:color-mix(in srgb,var(--accent-2) 60%,transparent);stroke-linecap:round;vector-effect:none}
+.cr-bg .bg-psi-neg{fill:none;stroke:color-mix(in srgb,var(--gold) 70%,transparent);stroke-linecap:round;vector-effect:none}
+.cr-bg .bg-nucleus{fill:var(--ink)}
+.cr-bg .bg-star{fill:var(--ink);opacity:.55}
+.cr-bg .bg-node{fill:var(--gold)}
+.cr-bg .bg-const{fill:none;stroke:color-mix(in srgb,var(--gold) 60%,transparent);stroke-width:1}
+.cr-bg .bg-milky{fill:none;stroke:color-mix(in srgb,var(--accent-2) 10%,transparent);stroke-width:260;stroke-linecap:round;filter:blur(30px);vector-effect:none}
+.cr-bg .bg-ink-top1{stop-color:var(--ink);stop-opacity:.06}.cr-bg .bg-ink-top2{stop-color:var(--ink);stop-opacity:.1}.cr-bg .bg-ink-top3{stop-color:var(--ink);stop-opacity:.15}.cr-bg .bg-ink-top4{stop-color:var(--ink);stop-opacity:.22}
+.cr-bg .bg-ink-bot{stop-color:var(--ink);stop-opacity:0}
+.cr-bg .bg-sun{fill:color-mix(in srgb,var(--danger) 30%,transparent)}
+.cr-bg .bg-bird{fill:none;stroke:var(--ink);stroke-width:1.4;opacity:.5}
+.cr-bg .bg-mist{fill:var(--paper);opacity:.5;filter:blur(18px)}
+.cr-bg .bg-seal rect{fill:none;stroke:color-mix(in srgb,var(--danger) 70%,transparent);stroke-width:2.5}
+.cr-bg .bg-seal text{fill:color-mix(in srgb,var(--danger) 75%,transparent);font:700 21px var(--font-serif);text-anchor:middle}
+.cr-bg .bg-grain{fill:var(--ink);opacity:.35}
+.cr-bg .bg-fiber{fill:none;stroke:color-mix(in srgb,var(--ink) 9%,transparent);stroke-width:.7}
+.cr-bg .bg-stain1{fill:color-mix(in srgb,var(--gold) 16%,transparent)}
+.cr-bg .bg-stain2{fill:color-mix(in srgb,var(--accent-2) 12%,transparent)}
+.cr-bg .bg-spec{opacity:.32}
+.cr-bg .bg-absorb{fill:var(--ink);opacity:.4}
+.cr-bg .bg-emit{opacity:.55;filter:drop-shadow(0 0 6px currentColor)}
+.cr-bg .bg-axis{stroke:var(--line-strong);stroke-width:1}
+.cr-bg[data-kind=grid] .b1{background-image:linear-gradient(color-mix(in srgb,var(--accent-2) 10%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--accent-2) 10%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--accent-2) 20%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--accent-2) 20%,transparent) 1px,transparent 1px);background-size:24px 24px,24px 24px,120px 120px,120px 120px}
+.cr-bg[data-kind=grid] .b2{left:64px;right:auto;width:1.5px;background:color-mix(in srgb,var(--danger) 30%,transparent)}
+.cr-bg[data-kind=aurora] .b1{inset:-15%;filter:blur(50px);background:radial-gradient(38% 45% at 18% 22%,color-mix(in srgb,var(--accent-2) 45%,transparent),transparent 70%),radial-gradient(34% 42% at 82% 14%,color-mix(in srgb,var(--gold) 40%,transparent),transparent 70%),radial-gradient(42% 50% at 72% 82%,color-mix(in srgb,var(--info) 38%,transparent),transparent 70%),radial-gradient(38% 46% at 16% 88%,color-mix(in srgb,var(--violet) 34%,transparent),transparent 70%)}
+.cr-bg[data-kind=aurora] .b2{background:repeating-linear-gradient(115deg,transparent 0 46px,color-mix(in srgb,var(--paper) 18%,transparent) 46px 48px)}
+:root[data-bg-motion=on] .cr-bg[data-kind=aurora]:not(.cr-bg-mini) .b1{animation:cr-aurora 38s ease-in-out infinite alternate}
+:root[data-bg-motion=on] .cr-bg:not(.cr-bg-mini) .bg-star.tw{animation:cr-twinkle 5s ease-in-out infinite}
+:root[data-bg-motion=on] .cr-bg:not(.cr-bg-mini) .bg-mist{animation:cr-mist 40s ease-in-out infinite alternate}
+@keyframes cr-aurora{0%{transform:translate(0,0) scale(1) rotate(0)}50%{transform:translate(3%,-2%) scale(1.08) rotate(4deg)}100%{transform:translate(-3%,3%) scale(1.02) rotate(-3deg)}}
+@keyframes cr-twinkle{0%,100%{opacity:.55}50%{opacity:.08}}
+@keyframes cr-mist{from{transform:translateX(-4%)}to{transform:translateX(4%)}}
+@media(prefers-reduced-motion:reduce){.cr-bg *{animation:none!important}}
+@media print{.cr-bg,.cr-bgpick{display:none!important}}
+
+/* 背景选择面板 */
+.cr-bgpick{position:fixed;z-index:85;width:min(372px,calc(100vw - 16px));max-height:calc(100vh - 90px);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);padding:14px;font:13px/1.5 var(--font-sans);display:none}
+.cr-bgpick[data-open=true]{display:block}
+.cr-bgpick-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cr-bgpick-head b{font-size:14px}
+.cr-bgpick-x{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;width:30px;height:30px;border-radius:4px}
+.cr-bgpick-x:hover{background:var(--surface-2)}
+.cr-bgpick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cr-bgpick-grid button{border:1px solid var(--line);border-radius:6px;background:var(--paper);padding:0;cursor:pointer;overflow:hidden;text-align:left;color:var(--ink)}
+.cr-bgpick-grid button:hover{border-color:var(--line-strong)}
+.cr-bgpick-grid button[aria-pressed=true]{border-color:var(--accent-2);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-2) 40%,transparent)}
+.cr-bgpick-grid button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.cr-bg-mini[data-kind=aurora] .b1{inset:-30%;filter:blur(7px)}
+.cr-bg-mini{position:relative;display:block;height:62px;inset:auto;z-index:auto;opacity:1;background:var(--paper)}
+.cr-bgpick-name{display:block;padding:5px 7px 6px;font-size:11.5px;font-weight:600;border-top:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-bgpick-row{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--muted)}
+.cr-bgpick-row input[type=range]{flex:1;accent-color:var(--accent-2)}
+.cr-bgpick-check input{accent-color:var(--accent-2)}
+
+/* 英文模式：词典载入前先隐藏正文，避免中英文闪烁（最多 3 秒）。 */
+:root[data-i18n=pending] body{visibility:hidden}
+.en-only{display:none}
+:root[lang=en] .en-only{display:block;margin:10px 0;padding:9px 12px;border-left:3px solid var(--gold);background:var(--gold-soft);color:var(--ink-2);font:13px/1.6 var(--font-sans)}

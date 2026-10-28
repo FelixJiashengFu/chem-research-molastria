@@ -338,7 +338,7 @@
   /** Tier-2 follows the redox_potential.py example quoted in the plan; tier-1/3 helpers mirror the same API family. */
   function rowanScript(tier, molecules, cfg) {
     const rows = molecules.map((m) => `    (${py(m.label || m.key)}, ${py(m.smiles)}),`).join('\n');
-    const head = `# 由 ChemResearch Hub · AI 实验室生成。运行前：pip install rowan-python，并设置环境变量 ROWAN_API_KEY。
+    const head = `# 由 MolAstria · AI 实验室生成。运行前：pip install rowan-python，并设置环境变量 ROWAN_API_KEY。
 # 函数名来自 rowan-python 官方示例；参数请以当前版本文档为准。先用 is_draft=True + dispatch_info() 估价，再正式提交。
 import json
 import rowan

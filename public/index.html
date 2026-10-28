@@ -5,22 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="计算化学研究资源统一入口：数据库、论文、中文教程与开源工具，配合关系图谱、19章讲解和Agent工程说明。">
   <meta name="theme-color" content="#173f34">
-  <title>ChemResearch Hub · 计算化学研究导航</title>
+  <title>MolAstria · 计算化学研究导航</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ChemResearch Hub · 计算化学研究导航">
-  <meta property="og:title" content="ChemResearch Hub · 计算化学研究导航">
+  <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
+  <meta property="og:title" content="MolAstria · 计算化学研究导航">
   <meta property="og:description" content="计算化学研究资源统一入口：数据库、论文、中文教程与开源工具，配合关系图谱、19章讲解和Agent工程说明。">
   <meta property="og:url" content="https://molastria.com/">
   <meta property="og:image" content="https://molastria.com/og.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
   <meta property="og:locale" content="zh_CN">
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"ChemResearch Hub","alternateName":"计算化学研究导航","url":"https://molastria.com/","inLanguage":"zh-CN","description":"计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。"},{"@context":"https://schema.org","@type":"Dataset","name":"ChemResearch Hub 计算化学资源目录","description":"1465 条计算化学研究资源的标题级索引，涵盖数据库、软件、中文教程、学术论文与开源项目。条目保留名称、简短说明、原始网址、来源、分类和主题标签，可用于资源检索与导航。数据来自项目保存的目录快照，完整内容及使用许可请以各原始网站为准。","url":"https://molastria.com/","inLanguage":"zh-CN","dateModified":"2026-10-27","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"ChemResearch Hub","url":"https://molastria.com/"},"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://molastria.com/merged-data.json"}]}]</script>
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","name":"MolAstria","alternateName":"计算化学研究导航","url":"https://molastria.com/","inLanguage":"zh-CN","description":"计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。"},{"@context":"https://schema.org","@type":"Dataset","name":"MolAstria 计算化学资源目录","description":"1465 条计算化学研究资源的标题级索引，涵盖数据库、软件、中文教程、学术论文与开源项目。条目保留名称、简短说明、原始网址、来源、分类和主题标签，可用于资源检索与导航。数据来自项目保存的目录快照，完整内容及使用许可请以各原始网站为准。","url":"https://molastria.com/","inLanguage":"zh-CN","dateModified":"2026-10-27","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MolAstria","url":"https://molastria.com/"},"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://molastria.com/merged-data.json"}]}]</script>
   <!-- seo:end -->
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <script>try{var t=localStorage.getItem("chemhub-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="i18n.js" defer></script>
+  <script src="backdrop.js" defer></script>
   <link rel="stylesheet" href="shared-nav.css">
   <link rel="stylesheet" href="theme-auto.css">
   <link rel="stylesheet" href="styles.css">
@@ -32,7 +34,7 @@
 <a class="skip" href="#search">跳到统一搜索</a>
 <main>
   <section class="intro">
-    <div class="intro-copy"><p class="eyebrow">CHEMDB ATLAS × CHEMVIS HUB</p><h1>找数据，读方法。<br><em>研究，从这里连起来。</em></h1><p class="intro-text">把数据库地图与论文、社区、开源工具放在同一张书桌上。<br>从一个关键词出发，找到原始资源，也读懂它的用途与边界。</p><div class="intro-actions"><a class="button primary" href="#catalog">搜索全部资源 <span>↓</span></a><a class="button" href="atlas/index.html#guide">阅读中文讲解 <span>↗</span></a></div><p class="snapshot">目录快照 <span id="snapshot-date">2026.10.27</span> · 支持解压后离线浏览</p></div>
+    <div class="intro-copy"><p class="eyebrow">MOLASTRIA · A COMPUTATIONAL CHEMISTRY ATLAS</p><h1>找数据，读方法。<br><em>研究，从这里连起来。</em></h1><p class="intro-text">把数据库地图与论文、社区、开源工具放在同一张书桌上。<br>从一个关键词出发，找到原始资源，也读懂它的用途与边界。</p><div class="intro-actions"><a class="button primary" href="#catalog">搜索全部资源 <span>↓</span></a><a class="button" href="atlas/index.html#guide">阅读中文讲解 <span>↗</span></a></div><p class="snapshot">目录快照 <span id="snapshot-date">2026.10.27</span> · 支持解压后离线浏览</p></div>
     <aside class="field-note" aria-label="合并内容说明"><div class="note-top">研究笔记 <span>01 / 03</span></div><svg viewBox="0 0 400 200" role="img" aria-labelledby="map-title"><title id="map-title">数据库、文献和方法经统一检索连接的功能示意，并非条目统计关系图</title><g fill="none" stroke="#b6c3b2" stroke-width="1.5"><path d="M72 57 200 101 324 49M72 151 200 101 330 149M200 101V22"/><circle cx="200" cy="101" r="51" stroke-dasharray="3 6"/></g><g fill="#e1e6d2" stroke="#647e65"><circle cx="72" cy="57" r="11"/><circle cx="72" cy="151" r="8"/><circle cx="324" cy="49" r="9"/><circle cx="330" cy="149" r="11"/><circle cx="200" cy="22" r="6"/></g><circle cx="200" cy="101" r="22" fill="#204f3d"/><g fill="#fff" font-size="12" text-anchor="middle"><text x="200" y="106">检索</text></g><g fill="#49634d" font-size="12"><text x="22" y="30">数据库</text><text x="297" y="26">论文</text><text x="20" y="181">教程</text><text x="300" y="182">工具</text></g></svg><h2>一处检索，多条研究路径。</h2><p>在统一目录里找入口，在网状查询中发现关联，在中文手册里补全背景。</p><a href="hub/network.html">打开可交互关系图 <span>↗</span></a><small>上图为功能示意；实际关系图根据条目标签与归属生成。</small></aside>
   </section>
   <section class="metrics" aria-label="合并统计"><div><strong id="stat-total">—</strong><span>去重后的资源</span></div><div><strong id="stat-atlas">103</strong><span>数据库与研究资源目录条目</span></div><div><strong id="stat-hub">1,384</strong><span>论文、教程与社区条目</span></div><div><strong>19</strong><span>章中文讲解</span></div></section>
@@ -42,13 +44,13 @@
     <div class="filterbar"><label>内容范围<select id="collection"><option value="">全部内容</option><option value="atlas">数据库与研究资源目录</option><option value="hub">论文、教程与社区</option><option value="saved">我的收藏</option></select></label><label>来源<select id="source"><option value="">全部来源</option></select></label><label>类型<select id="type"><option value="">全部类型</option></select></label><label>排序<select id="sort"><option value="relevance">默认 / 关键词相关</option><option value="date">日期从新到旧</option><option value="title">名称 A–Z</option></select></label><button class="button reset" id="reset">清除筛选</button></div>
     <div class="ask-ai"><span aria-hidden="true">✦</span><span><b>想要一段带出处的回答？</b> AI 助手会先在本站目录里检索，再用 DeepSeek 或 Muse 作答，并标出引用的条目。</span><button class="button" type="button" id="ask-ai">用 AI 回答当前问题 →</button></div>
     <div class="quick-topics" aria-label="快捷关键词"><span>试着搜索</span><button data-query="基组">基组</button><button data-query="Multiwfn">Multiwfn</button><button data-query="分子动力学">分子动力学</button><button data-query="机器学习">机器学习</button><button data-query="PubChem">PubChem</button></div>
-    <div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
+    <p class="en-only" translate="no">Titles and excerpts appear as each source published them, so many are in Chinese. The AI assistant can answer in English with citations.</p><div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
     <div id="results" class="results"></div>
     <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以换用英文名称、缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
     <div class="more"><button id="more" class="button">显示更多资源 ↓</button><p id="page-count"></p></div>
   </section>
   <section class="paths" aria-label="进一步探索"><a href="atlas/index.html#guide"><span>01 / 读懂背景</span><h2>中文讲解手册 <b>↗</b></h2><p>从三分钟导读开始，理解化学数据的分层、用途与边界。</p></a><a href="hub/index.html#overview"><span>02 / 回到来源</span><h2>论文与社区看板 <b>↗</b></h2><p>查看各来源的内容分布、接入状态、论文与教程快照。</p></a><a href="atlas/index.html#agent"><span>03 / 连接流程</span><h2>Agent 工程 <b>↗</b></h2><p>查看适配器、MCP 工具与源码下载，区分已实现和待完成能力。</p></a><a class="lab-path" href="lab/index.html"><span>04 / 闭环发现 · 新</span><h2>AI 实验室 <b>↗</b></h2><p>让 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，按可靠性分配 DFT 验证。</p></a></section>
-  <footer><strong>ChemResearch Hub<small>由 ChemDB Atlas 与 ChemVis Hub 合并</small></strong><p id="merge-note">保留原始来源与原文链接，重复地址合并展示。</p><p class="site-links"><a href="resources/index.html">资源目录（静态页）</a> · <a href="guide/index.html">中文讲解 19 章</a> · <a href="lab/index.html">AI 实验室</a> · <a href="sitemap.xml">站点地图</a></p><p>数据为原项目保存的快照，合并时未重新测试外部网站。<br>全文、更新日期与使用许可请以原站为准。收藏保存在当前浏览器。</p></footer>
+  <footer><strong>MolAstria<small>由 ChemDB Atlas 与 ChemVis Hub 合并而来</small></strong><p id="merge-note">保留原始来源与原文链接，重复地址合并展示。</p><p class="site-links"><a href="resources/index.html">资源目录（静态页）</a> · <a href="guide/index.html">中文讲解 19 章</a> · <a href="lab/index.html">AI 实验室</a> · <a href="sitemap.xml">站点地图</a></p><p>数据为原项目保存的快照，合并时未重新测试外部网站。<br>全文、更新日期与使用许可请以原站为准。收藏保存在当前浏览器。</p></footer>
 </main>
 <dialog id="details" aria-labelledby="detail-title"><button id="close-details" class="dialog-close" aria-label="关闭详情">×</button><div id="detail-body"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>

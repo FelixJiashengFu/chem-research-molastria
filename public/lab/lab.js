@@ -195,7 +195,7 @@
 目标：为锂电池找到新的溶剂分子，同时具备强抗氧化性（高绝热电离能 IP）、强抗还原性（低绝热电子亲和能 EA）、与 Li⁺ 的结合能落在常用溶剂的范围内。
 硬约束：只含 C、H、O、F${extraEl}；不超过 ${c.maxHeavy} 个重原子；中性闭壳层的单个分子；不含过氧、叠氮、重氮、酰卤、环氧等不稳定或危险基团；结构简单、可合成；不要重复已评估过的分子，也不要只换写法。
 每个分子给出一句化学上的设计理由（为什么会改善目标性质）。
-只输出一个 JSON 对象，不要任何额外文字：{"candidates":[{"smiles":"…","name":"中文或英文名","rationale":"不超过 40 字的设计理由","target":"oxidation|reduction|solvation|balance"}]}`;
+只输出一个 JSON 对象，不要任何额外文字：{"candidates":[{"smiles":"…","name":"中文或英文名","rationale":"不超过 40 字的设计理由","target":"oxidation|reduction|solvation|balance"}]}${document.documentElement.lang === 'en' ? '\nThe reader uses the English site: write "name" and "rationale" in English.' : ''}`;
     const seen = active().map((m) => m.canonical || m.smiles);
     const last = project.rounds[project.rounds.length - 1];
     const rejected = last ? all().filter((m) => m.round === last.n && m.filter && !m.filter.pass).map((m) => `- ${m.smiles}：${m.filter.reasons.join('；')}`) : [];
@@ -693,7 +693,7 @@
     const front = L.paretoFront(d, c);
     const cal = L.calibrate(active());
     const line = (m) => { const p = m.props, r = rel(m), v = L.verdict(m, c); return `| ${m.label} | \`${m.canonical || m.smiles}\` | ${f2(p.ip_s)} | ${f2(p.ea_s)} | ${f2(p.li_s)} | ${LEVEL[r.level][0]} (${r.doubt}) | ${v ? (v.confirmed ? '确认' : '推翻') : '—'} | ${m.pubchem?.status === 'listed' ? `CID ${m.pubchem.cid}` : m.pubchem?.status === 'new' ? '未收录' : '—'} |`; };
-    const md = `# 闭环电解液溶剂发现 · 结果报告\n\n生成于 ${new Date().toLocaleString('zh-CN')}，ChemResearch Hub AI 实验室。${project.demo ? '\n\n> **注意：本报告基于合成演示数据，数值不是计算结果。**' : ''}\n\n- 轮次：${project.rounds.length}；通过过滤的分子：${active().length}；有 Tier 1 结果：${d.length}\n- 先验误差：IP ${c.priorIP} eV，EA ${c.priorEA} eV；模型分歧阈值 IP ${c.disagreeIP} / EA ${c.disagreeEA} eV\n${cal.ip ? `- UMA-S 对 DFT 的 IP 误差：MAE ${cal.ip.mae} eV（n = ${cal.ip.n}，ρ = ${cal.ip.rho ?? '—'}）\n` : ''}${cal.ea ? `- UMA-S 对 DFT 的 EA 误差：MAE ${cal.ea.mae} eV（n = ${cal.ea.n}，ρ = ${cal.ea.rho ?? '—'}）\n` : ''}\n## Pareto 前沿（差距小于先验误差视为并列）\n\n| 名称 | SMILES | IP | EA | Li⁺ | 可靠性 | DFT | PubChem |\n|---|---|---|---|---|---|---|---|\n${front.map(line).join('\n')}\n\n## 已验证的候选\n\n| 名称 | SMILES | IP | EA | Li⁺ | 可靠性 | DFT | PubChem |\n|---|---|---|---|---|---|---|---|\n${d.filter((m) => L.verdict(m, c)).map(line).join('\n') || '| — |'}\n\n## 局限\n\n- 电位工作流的溶剂固定为乙腈，只适合相对排序。\n- 忽略阴离子与电极界面；不考虑黏度、熔点、闪点、电导率。\n- 合成可及性为启发式分数，没有实验验证；PubChem 未收录只说明新，不说明好或可合成。\n`;
+    const md = `# 闭环电解液溶剂发现 · 结果报告\n\n生成于 ${new Date().toLocaleString('zh-CN')}，MolAstria AI 实验室。${project.demo ? '\n\n> **注意：本报告基于合成演示数据，数值不是计算结果。**' : ''}\n\n- 轮次：${project.rounds.length}；通过过滤的分子：${active().length}；有 Tier 1 结果：${d.length}\n- 先验误差：IP ${c.priorIP} eV，EA ${c.priorEA} eV；模型分歧阈值 IP ${c.disagreeIP} / EA ${c.disagreeEA} eV\n${cal.ip ? `- UMA-S 对 DFT 的 IP 误差：MAE ${cal.ip.mae} eV（n = ${cal.ip.n}，ρ = ${cal.ip.rho ?? '—'}）\n` : ''}${cal.ea ? `- UMA-S 对 DFT 的 EA 误差：MAE ${cal.ea.mae} eV（n = ${cal.ea.n}，ρ = ${cal.ea.rho ?? '—'}）\n` : ''}\n## Pareto 前沿（差距小于先验误差视为并列）\n\n| 名称 | SMILES | IP | EA | Li⁺ | 可靠性 | DFT | PubChem |\n|---|---|---|---|---|---|---|---|\n${front.map(line).join('\n')}\n\n## 已验证的候选\n\n| 名称 | SMILES | IP | EA | Li⁺ | 可靠性 | DFT | PubChem |\n|---|---|---|---|---|---|---|---|\n${d.filter((m) => L.verdict(m, c)).map(line).join('\n') || '| — |'}\n\n## 局限\n\n- 电位工作流的溶剂固定为乙腈，只适合相对排序。\n- 忽略阴离子与电极界面；不考虑黏度、熔点、闪点、电导率。\n- 合成可及性为启发式分数，没有实验验证；PubChem 未收录只说明新，不说明好或可合成。\n`;
     download('chemhub-report.md', md, 'text/markdown');
   });
 
