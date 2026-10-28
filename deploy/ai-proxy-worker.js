@@ -5,7 +5,7 @@
      npx wrangler deploy deploy/ai-proxy-worker.js --name chemhub-ai --compatibility-date 2026-10-01
      npx wrangler secret put DEEPSEEK_API_KEY --name chemhub-ai     # 可选
      npx wrangler secret put MUSE_API_KEY --name chemhub-ai         # 可选，Meta Model API key
-     npx wrangler secret put ALLOWED_ORIGINS --name chemhub-ai      # 例如 https://felixjiashengfu.github.io
+     npx wrangler secret put ALLOWED_ORIGINS --name chemhub-ai      # 例如 https://molastria.com,https://www.molastria.com
    然后把 Worker 地址填进 public/ai/config.js 的 proxy。
 
    可选变量：ALLOWED_MODELS（逗号分隔）、MAX_TOKENS（默认 12000）、MAX_BODY（默认 200000 字节）。
