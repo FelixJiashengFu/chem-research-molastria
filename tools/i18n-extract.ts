@@ -114,8 +114,8 @@ function fromJS(src: string, from: string) {
 
 // ── sources ─────────────────────────────────────────────────────────────
 const read = (p: string) => Deno.readTextFile(new URL(p, pub));
-for (const f of ["index.html", "atlas/index.html", "hub/index.html", "hub/network.html", "lab/index.html", "train/index.html"]) fromHTML(await read(f), f);
-for (const f of ["shared-nav.js", "app.js", "atlas/app.js", "hub/app.js", "hub/network.js", "lab/lab.js", "lab/chem.js", "ai/ai.js", "train/train.js"]) fromJS(await read(f), f);
+for (const f of ["index.html", "atlas/index.html", "hub/index.html", "hub/network.html", "lab/index.html", "train/index.html", "pro/index.html", "pro/success.html", "pro/terms.html", "pro/refund.html", "pro/privacy.html", "download/index.html"]) fromHTML(await read(f), f);
+for (const f of ["shared-nav.js", "app.js", "atlas/app.js", "hub/app.js", "hub/network.js", "lab/lab.js", "lab/chem.js", "ai/ai.js", "train/train.js", "pro/pro.js"]) fromJS(await read(f), f);
 fromJS(await Deno.readTextFile(new URL("tools/build-seo.ts", repo)), "tools/build-seo.ts");
 
 const g = globalThis as any;

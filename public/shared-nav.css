@@ -147,3 +147,14 @@ html{background:var(--paper)}
 :root[data-i18n=pending] body{visibility:hidden}
 .en-only{display:none}
 :root[lang=en] .en-only{display:block;margin:10px 0;padding:9px 12px;border-left:3px solid var(--gold);background:var(--gold-soft);color:var(--ink-2);font:13px/1.6 var(--font-sans)}
+
+/* Pro 入口：桌面在右侧工具区，手机在导航行末尾 */
+.cr-pro{display:inline-flex;align-items:center;height:36px;padding:0 13px;border-radius:99px;background:linear-gradient(135deg,var(--gold),color-mix(in srgb,var(--gold) 70%,var(--danger)));color:#fff!important;font:700 12.5px/1 var(--font-sans);letter-spacing:.5px;text-decoration:none!important;box-shadow:0 2px 8px color-mix(in srgb,var(--gold) 35%,transparent)}
+.cr-pro:hover{filter:brightness(1.06)}
+:root[data-theme] body[data-section=pro] .cr-pro,body[data-section=pro] .cr-pro{outline:2px solid color-mix(in srgb,var(--gold) 45%,transparent);outline-offset:2px}
+.cr-links .cr-pro-link{display:none}
+@media(max-width:760px){.cr-tools .cr-pro{display:none}.cr-links .cr-pro-link{display:block;color:var(--gold)!important;font-weight:700}}
+/* 中等宽度：导航保持一行 */
+@media(max-width:1440px){.cr-header{gap:14px;padding:10px 20px}.cr-links a{padding:9px 9px;font-size:12.5px}.cr-tools{gap:5px}}
+@media(max-width:1300px){.cr-brand small{display:none!important}.cr-word{font-size:19px}.cr-ai-btn span.cr-label{display:none}}
+@media(max-width:1180px) and (min-width:761px){.cr-links{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.cr-links::-webkit-scrollbar{display:none}.cr-links a{padding:9px 7px}}

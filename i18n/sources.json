@@ -249,6 +249,10 @@
  "训练化学 Agent": [
   "index.html"
  ],
+ "下载桌面版": [
+  "index.html",
+  "pro/success.html"
+ ],
  "站点地图": [
   "index.html"
  ],
@@ -1258,7 +1262,8 @@
  ],
  "全部": [
   "lab/index.html",
-  "train/index.html"
+  "train/index.html",
+  "pro/index.html"
  ],
  "通过": [
   "lab/index.html",
@@ -2794,6 +2799,635 @@
  "筛选模型": [
   "train/index.html"
  ],
+ "MolAstria Pro · 价格与套餐": [
+  "pro/index.html"
+ ],
+ "跳到套餐": [
+  "pro/index.html"
+ ],
+ "核心功能永久免费。": [
+  "pro/index.html"
+ ],
+ "Pro 让你少配置、多做研究。": [
+  "pro/index.html"
+ ],
+ "搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：不用自己配 key 的 AI 额度、跨设备同步、每周精选和持续更新的工作流库。": [
+  "pro/index.html"
+ ],
+ "早鸟预售中 · 锁定早鸟价": [
+  "pro/index.html"
+ ],
+ "年付": [
+  "pro/index.html"
+ ],
+ "省 43%": [
+  "pro/index.html"
+ ],
+ "月付": [
+  "pro/index.html"
+ ],
+ "免费": [
+  "pro/index.html",
+  "atlas/app.js",
+  "atlas data"
+ ],
+ "永久": [
+  "pro/index.html"
+ ],
+ "每个人都能用的完整研究导航。": [
+  "pro/index.html"
+ ],
+ "开始使用": [
+  "pro/index.html"
+ ],
+ "统一搜索 1,465 条资源与网状查询": [
+  "pro/index.html"
+ ],
+ "19 章中文讲解与资源目录": [
+  "pro/index.html"
+ ],
+ "AI 助手（自带 DeepSeek / Muse key）": [
+  "pro/index.html"
+ ],
+ "AI 实验室：RDKit 过滤、可靠性层、Pareto 前沿": [
+  "pro/index.html"
+ ],
+ "训练你自己的化学 Agent 指南": [
+  "pro/index.html"
+ ],
+ "Windows / macOS 桌面版": [
+  "pro/index.html"
+ ],
+ "最受欢迎": [
+  "pro/index.html"
+ ],
+ "/ 年": [
+  "pro/index.html",
+  "pro/pro.js"
+ ],
+ "给每天都在用的研究者。早鸟价续费不涨。": [
+  "pro/index.html"
+ ],
+ "预订 Pro 早鸟": [
+  "pro/index.html"
+ ],
+ "包含免费版全部功能": [
+  "pro/index.html"
+ ],
+ "AI 托管额度：免配 key，每月 300 次带出处问答": [
+  "pro/index.html"
+ ],
+ "开发中": [
+  "pro/index.html"
+ ],
+ "云同步：收藏、笔记、AI 对话与实验室项目": [
+  "pro/index.html"
+ ],
+ "每周精选推送：8 个来源的新内容精选与解读": [
+  "pro/index.html"
+ ],
+ "深度工作流库：输入模板、参数解释、报错对照": [
+  "pro/index.html"
+ ],
+ "新功能优先内测与需求投票": [
+  "pro/index.html",
+  "pro/pro.js"
+ ],
+ "开通即享": [
+  "pro/index.html"
+ ],
+ "早鸟预售：现在付款锁定价格，以上功能上线后自动开通，无需另付。付款后 14 天内无理由全额退款。": [
+  "pro/index.html"
+ ],
+ "课题组": [
+  "pro/index.html"
+ ],
+ "/ 年 · 5 席位": [
+  "pro/index.html"
+ ],
+ "让组内的模板、经验和计算记录不随人员流动而流失。": [
+  "pro/index.html"
+ ],
+ "购买课题组版": [
+  "pro/index.html"
+ ],
+ "5 个 Pro 席位": [
+  "pro/index.html"
+ ],
+ "，可加购": [
+  "pro/index.html"
+ ],
+ "组内共享资料库与实验室项目": [
+  "pro/index.html"
+ ],
+ "成员角色（PI / 成员 / 只读）与用量看板": [
+  "pro/index.html"
+ ],
+ "对公付款与发票（Stripe 收据可用于报销）": [
+  "pro/index.html"
+ ],
+ "支持作者": [
+  "pro/index.html"
+ ],
+ "随心": [
+  "pro/index.html"
+ ],
+ "一次性": [
+  "pro/index.html",
+  "pro/pro.js"
+ ],
+ "觉得 MolAstria 有用，可以请作者喝杯咖啡，帮忙支付服务器和 AI 测试费用。": [
+  "pro/index.html"
+ ],
+ "支持一下": [
+  "pro/index.html"
+ ],
+ "金额由你决定": [
+  "pro/index.html"
+ ],
+ "全部用于维护和开发": [
+  "pro/index.html"
+ ],
+ "桌面版：离线浏览，接本地模型更方便": [
+  "pro/index.html"
+ ],
+ "完整的目录、讲解和 AI 实验室装进一个应用；在应用里调用本机的 Ollama / vLLM 不受浏览器跨域限制。免费下载。": [
+  "pro/index.html"
+ ],
+ "下载 Windows 版": [
+  "pro/index.html",
+  "download/index.html"
+ ],
+ "Windows 10 / 11 · 64 位": [
+  "pro/index.html"
+ ],
+ "下载 Mac 版": [
+  "pro/index.html",
+  "download/index.html"
+ ],
+ "macOS 11+ · Apple 芯片与 Intel 通用": [
+  "pro/index.html"
+ ],
+ "安装说明、校验与离线单文件版 →": [
+  "pro/index.html"
+ ],
+ "套餐对比": [
+  "pro/index.html"
+ ],
+ "功能": [
+  "pro/index.html"
+ ],
+ "统一搜索、网状查询、资源目录": [
+  "pro/index.html"
+ ],
+ "19 章中文讲解、训练 Agent 指南": [
+  "pro/index.html"
+ ],
+ "AI 助手（自带 key，直连服务商）": [
+  "pro/index.html"
+ ],
+ "✓ 永久免费": [
+  "pro/index.html"
+ ],
+ "AI 实验室（RDKit、可靠性层、Pareto）": [
+  "pro/index.html"
+ ],
+ "桌面版（Windows / macOS）": [
+  "pro/index.html"
+ ],
+ "AI 托管额度（免配 key）": [
+  "pro/index.html"
+ ],
+ "每月 300 次": [
+  "pro/index.html"
+ ],
+ "每席位 300 次": [
+  "pro/index.html"
+ ],
+ "云同步：收藏、笔记、对话、实验室项目": [
+  "pro/index.html"
+ ],
+ "本机浏览器": [
+  "pro/index.html"
+ ],
+ "跨设备": [
+  "pro/index.html"
+ ],
+ "跨设备 + 组内共享": [
+  "pro/index.html"
+ ],
+ "每周精选推送": [
+  "pro/index.html"
+ ],
+ "标题列表": [
+  "pro/index.html"
+ ],
+ "精选与解读": [
+  "pro/index.html"
+ ],
+ "深度工作流库（模板、参数、报错）": [
+  "pro/index.html"
+ ],
+ "样例": [
+  "pro/index.html"
+ ],
+ "成员管理、用量看板、对公发票": [
+  "pro/index.html"
+ ],
+ "“开发中”的功能会按上面的顺序陆续上线；上线时我们会给付款邮箱发通知。": [
+  "pro/index.html"
+ ],
+ "常见问题": [
+  "pro/index.html"
+ ],
+ "付款安全吗？": [
+  "pro/index.html"
+ ],
+ "付款在 Stripe 的托管结账页完成，卡号和支付账户信息由 Stripe 处理，MolAstria 的网站和服务器都接触不到。Stripe 会把收据发到你填写的邮箱。": [
+  "pro/index.html"
+ ],
+ "支持哪些付款方式？": [
+  "pro/index.html"
+ ],
+ "银行卡（Visa、Mastercard、American Express 等）、Apple Pay、Google Pay；支付宝和微信支付以结账页实际显示为准。": [
+  "pro/index.html"
+ ],
+ "可以退款吗？": [
+  "pro/index.html"
+ ],
+ "付款后 14 天内无理由全额退款；早鸟预售期间，如果你订阅的功能迟迟没有上线，任何时候都可以申请退还未使用部分。详见": [
+  "pro/index.html"
+ ],
+ "退款政策": [
+  "pro/index.html",
+  "pro/terms.html",
+  "pro/refund.html",
+  "pro/privacy.html"
+ ],
+ "免费版以后会变少吗？": [
+  "pro/index.html"
+ ],
+ "不会。现有的免费功能会一直免费，自带 key 使用 AI 也永久免费。Pro 只增加需要服务器和人工维护的新功能。": [
+  "pro/index.html"
+ ],
+ "学生有优惠吗？": [
+  "pro/index.html"
+ ],
+ "早鸟价已经按学生预算定价。课题组版适合整个组一起用，人均更便宜。": [
+  "pro/index.html"
+ ],
+ "能开发票或用于报销吗？": [
+  "pro/index.html"
+ ],
+ "Stripe 会自动发送收据。课题组版支持对公付款，需要正式发票请通过下方联系方式说明单位抬头。": [
+  "pro/index.html"
+ ],
+ "怎么取消订阅？": [
+  "pro/index.html"
+ ],
+ "Stripe 收据邮件里有管理订阅的链接，可以随时取消，当前周期结束后不再续费。": [
+  "pro/index.html"
+ ],
+ "服务条款": [
+  "pro/index.html",
+  "pro/terms.html",
+  "pro/refund.html",
+  "pro/privacy.html"
+ ],
+ "隐私政策": [
+  "pro/index.html",
+  "pro/terms.html",
+  "pro/refund.html",
+  "pro/privacy.html"
+ ],
+ "联系我们": [
+  "pro/index.html",
+  "pro/success.html"
+ ],
+ "价格以结账页显示为准。": [
+  "pro/index.html"
+ ],
+ "席位数": [
+  "pro/index.html"
+ ],
+ "5 席位起；加购席位在结账页调整数量。": [
+  "pro/index.html"
+ ],
+ "收据邮箱（可选，会预填到结账页）": [
+  "pro/index.html"
+ ],
+ "我已阅读并同意": [
+  "pro/index.html"
+ ],
+ "与": [
+  "pro/index.html"
+ ],
+ "取消": [
+  "pro/index.html",
+  "ai/ai.js"
+ ],
+ "前往安全支付 ↗": [
+  "pro/index.html"
+ ],
+ "付款由 Stripe 安全处理，本站不接触你的卡号。": [
+  "pro/index.html"
+ ],
+ "结账需要启用 JavaScript。": [
+  "pro/index.html"
+ ],
+ "付费周期": [
+  "pro/index.html"
+ ],
+ "套餐": [
+  "pro/index.html"
+ ],
+ "关闭": [
+  "pro/index.html",
+  "ai/ai.js"
+ ],
+ "支付方式": [
+  "pro/index.html"
+ ],
+ "付款成功 · MolAstria": [
+  "pro/success.html"
+ ],
+ "付款成功，谢谢你的支持": [
+  "pro/success.html"
+ ],
+ "接下来": [
+  "pro/success.html"
+ ],
+ "Stripe 会把收据发到你在结账页填写的邮箱，请保留，用于报销或退款。": [
+  "pro/success.html"
+ ],
+ "Pro 功能会用这个邮箱开通；每上线一项，都会给你发通知。": [
+  "pro/success.html"
+ ],
+ "付款后 14 天内可以无理由全额退款，直接回复收据邮件或通过下面的联系方式说明即可。": [
+  "pro/success.html"
+ ],
+ "有任何问题，": [
+  "pro/success.html"
+ ],
+ "回到 MolAstria": [
+  "pro/success.html"
+ ],
+ "服务条款 · MolAstria": [
+  "pro/terms.html"
+ ],
+ "生效日期：2026-10-28 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
+  "pro/terms.html"
+ ],
+ "1. 服务内容": [
+  "pro/terms.html"
+ ],
+ "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、中文讲解、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
+  "pro/terms.html"
+ ],
+ "2. 早鸟预售": [
+  "pro/terms.html"
+ ],
+ "价格页中标注为“开发中”的功能处于预售阶段。你在预售期间付款，即锁定当时的早鸟价格；这些功能上线后会自动为你的账户开通，不另收费。我们会通过你付款时填写的邮箱通知上线进度。如果你对进度不满意，可以按退款政策申请退款。": [
+  "pro/terms.html"
+ ],
+ "3. 付款、续费与取消": [
+  "pro/terms.html"
+ ],
+ "付款由第三方支付服务商 Stripe 处理，适用其服务条款；MolAstria 不保存你的卡号或支付账户信息。": [
+  "pro/terms.html"
+ ],
+ "年付与月付套餐会在每个周期结束时自动续费，续费价格与首次付款价格相同，除非我们提前至少 30 天通过邮件通知调整。": [
+  "pro/terms.html"
+ ],
+ "你可以随时通过收据邮件中的链接取消订阅，取消后当前周期内仍可使用，到期后不再扣费。": [
+  "pro/terms.html"
+ ],
+ "价格以结账页显示为准；可能产生的税费由支付服务商按你所在地计算。": [
+  "pro/terms.html"
+ ],
+ "4. AI 与计算结果": [
+  "pro/terms.html"
+ ],
+ "AI 助手、AI 实验室和训练指南给出的内容（包括分子结构、性质估计、电位与能量数值）是模型或程序的估计，可能出错，不构成实验建议或专业意见。用于研究、发表或生产之前，请自行用实验、数据库或更高精度的计算核实。不要将本服务用于设计或制造危险、违禁物质。": [
+  "pro/terms.html"
+ ],
+ "5. 资源与知识产权": [
+  "pro/terms.html"
+ ],
+ "目录中的资源归各原始网站与作者所有，MolAstria 只收录标题、短摘要与原文链接。MolAstria 原创的讲解、代码与界面受著作权保护；仓库中注明开源许可的部分按其许可使用。付费账户仅供购买者本人（课题组版为授权成员）使用，请勿转售或共享账户。": [
+  "pro/terms.html"
+ ],
+ "6. 自带 key 与第三方服务": [
+  "pro/terms.html"
+ ],
+ "使用自带 key 调用 DeepSeek、Meta Muse 或其他服务时，费用由你与该服务商结算，并适用该服务商的条款。key 保存在你的浏览器或设备中，MolAstria 不会收集。": [
+  "pro/terms.html"
+ ],
+ "7. 服务变更与中断": [
+  "pro/terms.html"
+ ],
+ "我们会尽力保持服务可用，但不保证不中断。功能可能调整或下线；若付费功能下线，我们会按剩余期限比例退款。": [
+  "pro/terms.html"
+ ],
+ "8. 责任限制": [
+  "pro/terms.html"
+ ],
+ "在法律允许的范围内，MolAstria 对因使用或无法使用本服务造成的间接损失不承担责任；任何情况下的赔偿总额不超过你在过去 12 个月内为本服务支付的金额。": [
+  "pro/terms.html"
+ ],
+ "9. 条款更新与联系": [
+  "pro/terms.html"
+ ],
+ "条款更新会在本页公布，重大变化会邮件通知付费用户。问题与反馈请通过": [
+  "pro/terms.html"
+ ],
+ "或收据邮件联系我们。相关文件：": [
+  "pro/terms.html"
+ ],
+ "退款政策 · MolAstria": [
+  "pro/refund.html"
+ ],
+ "生效日期：2026-10-28": [
+  "pro/refund.html",
+  "pro/privacy.html"
+ ],
+ "一句话：": [
+  "pro/refund.html"
+ ],
+ "Pro 与课题组版付款后 14 天内，无需理由，全额退款。": [
+  "pro/refund.html"
+ ],
+ "订阅（Pro、课题组版）": [
+  "pro/refund.html"
+ ],
+ "14 天无理由退款：": [
+  "pro/refund.html"
+ ],
+ "首次付款或续费后 14 天内申请，全额退还该笔款项。": [
+  "pro/refund.html"
+ ],
+ "早鸟预售期间：": [
+  "pro/refund.html"
+ ],
+ "如果你付款时标注“开发中”的功能尚未上线，你可以在任何时候申请退还当前周期未使用部分的费用。": [
+  "pro/refund.html"
+ ],
+ "功能下线：": [
+  "pro/refund.html"
+ ],
+ "若付费功能停止提供，按剩余期限比例退款。": [
+  "pro/refund.html"
+ ],
+ "超过以上情形的，取消订阅后当前周期仍可使用，到期不再扣费，已付款项不予退还。": [
+  "pro/refund.html"
+ ],
+ "赞助": [
+  "pro/refund.html"
+ ],
+ "赞助是对开发的自愿支持，不对应具体服务。如果是误操作或金额填错，请在 14 天内联系我们，我们会全额退还。": [
+  "pro/refund.html"
+ ],
+ "怎么申请": [
+  "pro/refund.html"
+ ],
+ "回复 Stripe 发来的收据邮件，或通过": [
+  "pro/refund.html"
+ ],
+ "联系（不要在公开 Issue 里贴订单号以外的个人信息）。": [
+  "pro/refund.html"
+ ],
+ "写明付款邮箱与订单参考号。": [
+  "pro/refund.html"
+ ],
+ "我们会在 3 个工作日内处理，款项按原支付方式退回，到账时间取决于银行或支付平台。": [
+  "pro/refund.html"
+ ],
+ "相关文件：": [
+  "pro/refund.html"
+ ],
+ "隐私政策 · MolAstria": [
+  "pro/privacy.html"
+ ],
+ "我们不收集什么": [
+  "pro/privacy.html"
+ ],
+ "MolAstria 网站是静态页面，目前不设账号，不使用广告或跨站追踪。你的搜索、收藏、AI 实验室项目、界面偏好（语言、主题、背景）都只保存在你自己的浏览器（localStorage / sessionStorage）里，我们看不到。": [
+  "pro/privacy.html"
+ ],
+ "AI 与 API key": [
+  "pro/privacy.html"
+ ],
+ "你填写的 DeepSeek、Meta Muse 或其他服务的 API key 只保存在你的浏览器中，请求从你的浏览器直接发往你选择的服务商，适用该服务商的隐私政策。若站点启用了托管代理，对话内容会经过代理转发给服务商，代理不保存对话内容。": [
+  "pro/privacy.html"
+ ],
+ "付款": [
+  "pro/privacy.html"
+ ],
+ "付款在 Stripe 的托管结账页完成。Stripe 会收集完成付款所需的信息（邮箱、支付方式、账单国家等），并按其": [
+  "pro/privacy.html"
+ ],
+ "处理。我们只会从 Stripe 后台看到你的邮箱、所购套餐、金额与付款状态，用于开通服务、发送上线通知和处理退款，不会出售或转让给第三方。": [
+  "pro/privacy.html"
+ ],
+ "托管与第三方资源": [
+  "pro/privacy.html"
+ ],
+ "网站托管在 GitHub Pages，访问时 GitHub 可能按其政策记录访问日志。部分页面会从 cdn.jsdelivr.net 加载 RDKit.js，从 PubChem 查询分子信息；这些请求由你的浏览器直接发出。": [
+  "pro/privacy.html"
+ ],
+ "你的权利": [
+  "pro/privacy.html"
+ ],
+ "你可以随时清除浏览器数据来删除本地保存的内容；也可以联系我们查询、更正或删除我们因付款而持有的邮箱与订单记录（法律要求保留的财务记录除外）。": [
+  "pro/privacy.html"
+ ],
+ "联系": [
+  "pro/privacy.html"
+ ],
+ "请通过": [
+  "pro/privacy.html"
+ ],
+ "或回复收据邮件联系我们。相关文件：": [
+  "pro/privacy.html"
+ ],
+ "下载 MolAstria 桌面版 · Windows 与 macOS": [
+  "download/index.html"
+ ],
+ "下载 MolAstria 桌面版": [
+  "download/index.html"
+ ],
+ "完整的资源目录、19 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
+  "download/index.html"
+ ],
+ "发布页": [
+  "download/index.html"
+ ],
+ "Windows 10 / 11 · 64 位 · 安装包 .exe": [
+  "download/index.html"
+ ],
+ "macOS 11 及以上 · Apple 芯片与 Intel 通用 · .dmg": [
+  "download/index.html"
+ ],
+ "离线单文件版（一个 HTML 文件，任何浏览器打开）": [
+  "download/index.html"
+ ],
+ "全部版本与更新说明": [
+  "download/index.html"
+ ],
+ "第一次打开": [
+  "download/index.html"
+ ],
+ "安装包暂未做代码签名，Windows 可能提示“Windows 已保护你的电脑”。点": [
+  "download/index.html"
+ ],
+ "更多信息 → 仍要运行": [
+  "download/index.html"
+ ],
+ "即可。应用会装在当前用户目录，不需要管理员权限；Windows 11 已自带所需的 WebView2，Windows 10 若缺少会自动下载。": [
+  "download/index.html"
+ ],
+ "应用暂未经过 Apple 公证。打开 .dmg，把 MolAstria 拖进“应用程序”；第一次打开若提示无法验证开发者，到": [
+  "download/index.html"
+ ],
+ "系统设置 → 隐私与安全性": [
+  "download/index.html"
+ ],
+ "，在页面下方点": [
+  "download/index.html"
+ ],
+ "仍要打开": [
+  "download/index.html"
+ ],
+ "桌面版能做什么": [
+  "download/index.html"
+ ],
+ "离线浏览目录、讲解和训练指南；AI 实验室的 RDKit 与 AI 调用需要联网。": [
+  "download/index.html"
+ ],
+ "AI 助手设置里选“其他兼容接口”，填": [
+  "download/index.html"
+ ],
+ "（Ollama）或": [
+  "download/index.html"
+ ],
+ "（vLLM）即可使用本机模型。": [
+  "download/index.html"
+ ],
+ "收藏、偏好和实验室项目保存在本机，和浏览器里的数据互不影响；可以用“导出项目”在两边迁移。": [
+  "download/index.html"
+ ],
+ "从源码构建": [
+  "download/index.html"
+ ],
+ "桌面版用": [
+  "download/index.html"
+ ],
+ "打包，源码在仓库的": [
+  "download/index.html"
+ ],
+ "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
+  "download/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -2817,6 +3451,9 @@
  "中": [
   "shared-nav.js",
   "ai/ai.js"
+ ],
+ "MolAstria Pro 与桌面版下载": [
+  "shared-nav.js"
  ],
  "更换背景": [
   "shared-nav.js"
@@ -3088,10 +3725,6 @@
  ],
  "收藏资源 ☆": [
   "atlas/app.js"
- ],
- "免费": [
-  "atlas/app.js",
-  "atlas data"
  ],
  "共 {0} 条资源": [
   "atlas/app.js"
@@ -4277,9 +4910,6 @@
  "清除 key": [
   "ai/ai.js"
  ],
- "取消": [
-  "ai/ai.js"
- ],
  "保存": [
   "ai/ai.js"
  ],
@@ -4362,9 +4992,6 @@
   "ai/ai.js"
  ],
  "清空对话": [
-  "ai/ai.js"
- ],
- "关闭": [
   "ai/ai.js"
  ],
  "提问方式": [
@@ -4459,6 +5086,78 @@
  ],
  "请手动复制": [
   "train/train.js"
+ ],
+ "MolAstria Pro · 年付早鸟": [
+  "pro/pro.js"
+ ],
+ "MolAstria Pro · 月付": [
+  "pro/pro.js"
+ ],
+ "MolAstria 课题组版 · 年付": [
+  "pro/pro.js"
+ ],
+ "支持 MolAstria": [
+  "pro/pro.js"
+ ],
+ "锁定早鸟价，续费不涨价": [
+  "pro/pro.js"
+ ],
+ "AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通": [
+  "pro/pro.js"
+ ],
+ "14 天内无理由全额退款": [
+  "pro/pro.js"
+ ],
+ "随时取消，当前周期结束后不再续费": [
+  "pro/pro.js"
+ ],
+ "5 个 Pro 席位起，可加购": [
+  "pro/pro.js"
+ ],
+ "组内共享资料库与实验室项目：上线后自动开通": [
+  "pro/pro.js"
+ ],
+ "Stripe 收据可用于报销；需要正式发票请联系我们": [
+  "pro/pro.js"
+ ],
+ "金额在结账页自行填写": [
+  "pro/pro.js"
+ ],
+ "全部用于服务器、AI 测试与持续开发": [
+  "pro/pro.js"
+ ],
+ "银行卡": [
+  "pro/pro.js"
+ ],
+ "支付宝": [
+  "pro/pro.js"
+ ],
+ "微信支付": [
+  "pro/pro.js"
+ ],
+ "/ 月": [
+  "pro/pro.js"
+ ],
+ "自定金额": [
+  "pro/pro.js"
+ ],
+ "· {0} 席位起": [
+  "pro/pro.js"
+ ],
+ "收款通道正在开通，暂时还不能付款。可以先通过页面底部的“联系我们”预约。": [
+  "pro/pro.js"
+ ],
+ "请先勾选同意服务条款与退款政策。": [
+  "pro/pro.js"
+ ],
+ "收款链接格式不对，请联系站长。": [
+  "pro/pro.js"
+ ],
+ "邮箱格式不对。": [
+  "pro/pro.js"
+ ],
+ "已在新窗口打开安全结账页。付款完成后会回到本站的确认页，收据会发到你的邮箱。": [
+  "pro/pro.js"
  ],
  "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。": [
   "tools/build-seo.ts"

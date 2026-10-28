@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>付款成功 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="pro.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+</head>
+<body data-section="pro">
+<main class="doc">
+  <div class="big-check" aria-hidden="true">✓</div>
+  <h1>付款成功，谢谢你的支持</h1>
+  <p class="meta" id="order"></p>
+  <div class="box">
+    <p><b>接下来</b></p>
+    <ol>
+      <li>Stripe 会把收据发到你在结账页填写的邮箱，请保留，用于报销或退款。</li>
+      <li>Pro 功能会用这个邮箱开通；每上线一项，都会给你发通知。</li>
+      <li>付款后 14 天内可以无理由全额退款，直接回复收据邮件或通过下面的联系方式说明即可。</li>
+    </ol>
+  </div>
+  <p>有任何问题，<a id="contact" href="https://github.com/FelixJiashengFu/chem-research-molastria/issues" target="_blank" rel="noopener">联系我们</a>。</p>
+  <p><a class="btn primary" href="../index.html">回到 MolAstria</a> <a class="btn" href="../download/index.html">下载桌面版</a></p>
+</main>
+<script>
+  // Shows the plan and a short reference from the Stripe redirect (?plan=…&session_id=…).
+  addEventListener('DOMContentLoaded', () => {
+    const q = new URLSearchParams(location.search);
+    const names = { pro_year: 'MolAstria Pro · 年付', pro_month: 'MolAstria Pro · 月付', team_year: '课题组版 · 年付', sponsor: '支持作者' };
+    const plan = names[q.get('plan')] || '';
+    const ref = (q.get('session_id') || '').slice(-10);
+    document.getElementById('order').textContent = [plan, ref ? `订单参考号 …${ref}` : ''].filter(Boolean).join(' · ');
+    const pay = window.MOLASTRIA_PAY || {};
+    if (pay.contactEmail) { const a = document.getElementById('contact'); a.href = `mailto:${pay.contactEmail}`; a.removeAttribute('target'); }
+  });
+</script>
+</body>
+</html>

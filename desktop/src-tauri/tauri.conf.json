@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MolAstria",
+  "version": "0.1.0",
+  "identifier": "com.molastria.desktop",
+  "build": {
+    "frontendDist": "../../public"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "MolAstria",
+    "homepage": "https://molastria.com/",
+    "category": "Education",
+    "copyright": "MolAstria",
+    "shortDescription": "A computational chemistry atlas",
+    "longDescription": "MolAstria: search computational-chemistry databases, software, tutorials and papers, read the guide, and run the closed-loop AI lab — offline-capable, with easy access to local Ollama or vLLM models.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    },
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "11.0"
+    }
+  }
+}

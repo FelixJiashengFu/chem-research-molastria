@@ -1,0 +1,106 @@
+/* 价格页与结账窗口：只用 shared-nav.css 的变量。 */
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--font-sans)}
+a{color:var(--accent-text)}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.skip{position:fixed;top:-100px;left:16px;background:var(--accent);color:var(--accent-ink);padding:10px 14px;z-index:100}
+.skip:focus{top:8px}
+.pro{max-width:1200px;margin:0 auto;padding:0 32px 60px}
+.eyebrow{font-size:10.5px;letter-spacing:2px;font-weight:700;color:var(--muted);margin:0 0 12px}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.pro-hero{padding:56px 0 24px;text-align:center}
+.pro-hero h1{font-size:clamp(28px,3.4vw,46px);line-height:1.3;letter-spacing:-1px;margin:0 0 16px;font-weight:600}
+.pro-hero h1 em{font-style:normal;font-family:var(--font-serif);font-weight:500;color:var(--accent-2)}
+.lead{color:var(--muted);font-size:15.5px;line-height:1.9;max-width:70ch;margin:0 auto 22px}
+.hero-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.badge-early{font-size:12.5px;font-weight:700;color:#fff;background:var(--gold);border-radius:99px;padding:5px 12px}
+.billing{display:inline-flex;border:1px solid var(--line-strong);border-radius:99px;padding:3px;background:var(--surface)}
+.billing button{font:600 13px var(--font-sans);border:0;background:transparent;color:var(--muted);border-radius:99px;padding:6px 16px;cursor:pointer}
+.billing button small{color:var(--gold);font-weight:700;margin-left:4px}
+.billing button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
+.billing button[aria-pressed=true] small{color:#ffe5b0}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 36px;align-items:start}
+.plan{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px 20px 20px;display:flex;flex-direction:column;gap:8px}
+.plan.featured{border:2px solid var(--accent-2);box-shadow:var(--shadow);transform:translateY(-6px)}
+.ribbon{position:absolute;top:-12px;left:20px;margin:0;background:var(--accent);color:var(--accent-ink);font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:99px}
+.plan h2{margin:0;font-size:18px}
+.price{margin:2px 0 0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.price b{font:400 34px/1.1 var(--font-num)}
+.price span{color:var(--muted);font-size:13px}
+.price s{color:var(--faint);font-size:14px}
+.pitch{margin:0 0 6px;font-size:13.5px;color:var(--muted);min-height:44px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:9px 16px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink);text-decoration:none;font:600 14px var(--font-sans);cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--surface-2);border-color:var(--accent-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:var(--accent-hover)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.feat{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px;font-size:13.5px}
+.feat li{position:relative;padding-left:22px;line-height:1.6}
+.feat li::before{content:"✓";position:absolute;left:0;top:0;color:var(--accent-2);font-weight:700}
+.st{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:3px;vertical-align:1px;white-space:nowrap}
+.st.dev{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.st.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.fine{font-size:12px;color:var(--faint);margin:10px 0 0;line-height:1.7}
+.download-band{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px 26px;margin:10px 0 36px}
+.download-band h2{margin:0 0 6px;font-size:21px}
+.download-band p{margin:0}
+.download-band .fine{grid-column:1/-1;margin-top:-8px}
+.dl-buttons{display:grid;gap:10px}
+.dl{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);text-decoration:none;transition:border-color .15s,background .15s}
+.dl:hover{border-color:var(--accent-2);background:var(--surface-2)}
+.dl.mine{border:2px solid var(--accent-2);background:var(--accent-soft)}
+.dl svg{width:26px;height:26px;flex:none}
+.dl b{display:block;font-size:15px}
+.dl small{display:block;color:var(--muted);font-size:12px}
+.compare h2,.faq h2{font-size:22px;margin:0 0 12px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left}
+thead th{background:var(--surface-2);font-size:12.5px;color:var(--muted)}
+td:not(:first-child),th:not(:first-child){text-align:center;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+.compare{margin-bottom:36px}
+.faq details{border-bottom:1px solid var(--line);padding:12px 0}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{margin:8px 0 0;color:var(--ink-2);font-size:14px}
+.pro-foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:30px;padding-top:16px;font-size:12.5px}
+/* checkout dialog */
+.checkout{border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,calc(100vw - 20px));max-height:calc(100vh - 24px)}
+.checkout::backdrop{background:rgb(8 14 11/.55);backdrop-filter:blur(3px)}
+.checkout form{padding:24px 26px 20px;display:grid;gap:12px;position:relative}
+.checkout h2{margin:-6px 0 0;font-size:22px}
+.co-x{position:absolute;right:12px;top:10px;border:0;background:none;font-size:22px;color:var(--muted);cursor:pointer;width:34px;height:34px;border-radius:6px}
+.co-x:hover{background:var(--surface-2)}
+.co-price b{font:400 30px var(--font-num)}
+.co-price span{color:var(--muted);margin-left:6px}
+.co-items{list-style:none;margin:0;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;display:grid;gap:6px;font-size:13px}
+.co-items li{display:flex;gap:8px}
+.co-items li::before{content:"✓";color:var(--accent-2);font-weight:700}
+.co-field,.co-row label{display:grid;gap:5px;font-size:12.5px;color:var(--muted)}
+.co-field input,.co-row input{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:6px;padding:9px 11px;min-height:42px}
+.co-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.co-row input{width:110px}
+.co-methods{display:flex;flex-wrap:wrap;gap:6px}
+.co-methods span{font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:3px 8px;color:var(--ink-2)}
+.co-agree{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-2)}
+.co-agree input{margin-top:4px;accent-color:var(--accent-2)}
+.co-msg{margin:0;font-size:13px;min-height:18px}
+.co-msg.err{color:var(--danger)}
+.co-msg.ok{color:var(--ok)}
+.co-actions{display:flex;justify-content:flex-end;gap:8px}
+.co-secure{margin:0;font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
+@media(max-width:1060px){.plans{grid-template-columns:1fr 1fr}.plan.featured{transform:none}}
+@media(max-width:720px){.pro{padding:0 16px 48px}.plans{grid-template-columns:1fr}.download-band{grid-template-columns:1fr}.pitch{min-height:0}}
+/* 条款、成功页与下载页 */
+.doc{max-width:780px;margin:0 auto;padding:48px 24px 64px}
+.doc h1{font-size:clamp(26px,3vw,36px);letter-spacing:-.6px;margin:0 0 8px}
+.doc h2{font-size:18px;margin:28px 0 8px}
+.doc p,.doc li{font-size:14.5px;line-height:1.85;color:var(--ink-2)}
+.doc ul,.doc ol{padding-left:22px}
+.doc .meta{color:var(--muted);font-size:12.5px;margin-bottom:24px}
+.doc .box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:16px 0}
+.doc .big-check{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);font-size:28px;margin-bottom:12px}
+.doc code{font-family:var(--font-mono);font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:3px}
+.dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+@media(max-width:640px){.dl-grid{grid-template-columns:1fr}}

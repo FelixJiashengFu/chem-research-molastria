@@ -1,0 +1,14 @@
+{
+  "name": "molastria-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "MolAstria desktop app: the static site in public/ wrapped with Tauri.",
+  "scripts": {
+    "tauri": "tauri",
+    "icons": "tauri icon app-icon.png",
+    "build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.4"
+  }
+}

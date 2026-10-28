@@ -263,6 +263,11 @@ const mains = [
   await injectHead("atlas/index.html", "atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "ChemDB Atlas 计算化学数据库导航", inLanguage: "zh-CN", url: SITE + "atlas/" }] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
+  await injectHead("pro/index.html", "pro/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "MolAstria Pro", inLanguage: "zh-CN", url: SITE + "pro/" }] }),
+  await injectHead("download/index.html", "download/", { jsonld: [{ "@context": "https://schema.org", "@type": "SoftwareApplication", name: "MolAstria Desktop", applicationCategory: "EducationalApplication", operatingSystem: "Windows 10, Windows 11, macOS 11+", url: SITE + "download/", downloadUrl: "https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } }] }),
+  await injectHead("pro/terms.html", "pro/terms.html"),
+  await injectHead("pro/refund.html", "pro/refund.html"),
+  await injectHead("pro/privacy.html", "pro/privacy.html"),
   await injectHead("train/index.html", "train/", { type: "article", jsonld: [{ "@context": "https://schema.org", "@type": "TechArticle", headline: "用开源小模型训练你自己的化学研究 Agent", inLanguage: "zh-CN", url: SITE + "train/", datePublished: "2026-10-28", dateModified: TODAY, image: SITE + "og.png", publisher: { "@type": "Organization", name: NAME, url: SITE }, about: ["small language models", "chemistry agents", "LoRA", "GRPO", "RDKit"] }, crumbs([["首页", ""], ["训练 Agent", "train/"]])] }),
   await injectHead("lab/index.html", "lab/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "闭环电解液分子发现 · AI 实验室", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "lab/", isAccessibleForFree: true, description: "用 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层分配 DFT 验证。" }] }),
 ];
@@ -289,7 +294,7 @@ await write("404.html", `<!doctype html>
 </html>
 `);
 const urls = [
-  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["train/", "0.9", "weekly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
+  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["train/", "0.9", "weekly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
   ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];
