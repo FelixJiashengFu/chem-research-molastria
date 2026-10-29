@@ -27,6 +27,8 @@ jobs:
           deno-version: v2.x
       - name: Lab logic tests
         run: node --test tools/lab-test.mjs
+      - name: Account service tests
+        run: deno run --allow-read tools/account-test.ts
       - name: Rebuild SEO pages and sitemap
         run: deno run --allow-read --allow-write tools/build-seo.ts
       - uses: actions/configure-pages@v5

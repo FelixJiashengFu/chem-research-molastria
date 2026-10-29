@@ -21,12 +21,16 @@
   const sun = '<svg class="cr-theme-light" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>';
   const spark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z"/></svg>';
 
+  // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
+  const readAccount = () => { try { return localStorage.getItem('molastria-session') ? JSON.parse(localStorage.getItem('molastria-account') || 'null') : null; } catch { return null; } };
+  const proHref = () => link(readAccount()?.pro ? 'pro/account.html' : 'pro/index.html');
+
   const nav = document.createElement('header');
   nav.className = 'cr-header';
   const en = document.documentElement.lang === 'en';
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
-    + `<nav class="cr-links" aria-label="全站导航">${links.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}<a class="cr-pro-link" href="${link('pro/index.html')}" data-id="pro">Pro</a></nav>`
-    + `<div class="cr-tools"><a class="cr-pro" href="${link('pro/index.html')}" title="MolAstria Pro 与桌面版下载"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
+    + `<nav class="cr-links" aria-label="全站导航">${links.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
+    + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-bg" aria-label="更换背景" title="更换背景" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-theme" aria-label="切换浅色 / 深色">${moon}${sun}</button>`
     + `<button class="cr-ai-btn" type="button" id="cr-ai" aria-haspopup="dialog">${spark}<span class="cr-label">AI 助手</span><span class="cr-dot" aria-hidden="true"></span></button></div>`;
@@ -85,6 +89,7 @@
   const refreshDot = () => {
     let ready = false;
     try { const s = JSON.parse(localStorage.getItem('chemhub-ai') || 'null'); ready = !!(s && (s.provider === 'proxy' || s.keys?.[s.provider])); } catch {}
+    if (!ready) ready = !!readAccount()?.pro;
     if (!ready) try { ready = !!sessionStorage.getItem('chemhub-ai-key'); } catch {}
     if (!ready && window.CHEMHUB_AI_CONFIG?.proxy) ready = true;
     aiButton.dataset.ready = String(ready);
@@ -92,6 +97,22 @@
   };
   refreshDot();
   document.addEventListener('chemhub:ai-config', refreshDot);
+  const paintPro = () => {
+    nav.querySelectorAll('.cr-pro, .cr-pro-link').forEach((a) => { a.href = proHref(); });
+    nav.querySelector('.cr-pro').title = readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载';
+    refreshDot();
+  };
+  document.addEventListener('molastria:account', paintPro);
+  // Re-check the subscription once per browser session, so lapsed plans and this month's quota stay current.
+  try {
+    if (readAccount() && !sessionStorage.getItem('molastria-account-checked') && !window.__CHEM_LOCATION__) {
+      sessionStorage.setItem('molastria-account-checked', '1');
+      (window.MOLASTRIA_PAY ? Promise.resolve() : addScript('pay/config.js'))
+        .then(() => window.MolAstriaAccount || addScript('pay/account.js'))
+        .then(() => window.MolAstriaAccount.refresh())
+        .catch(() => {});
+    }
+  } catch {}
   aiButton.addEventListener('click', () => loadAI().then((ai) => ai.openDrawer()).catch((e) => alert(e.message)));
   window.ChemHub = Object.assign(window.ChemHub || {}, { link, loadAI, isDark });
 

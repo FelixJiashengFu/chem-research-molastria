@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>我的账号 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="pro.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="../pay/account.js" defer></script>
+  <script src="account-page.js" defer></script>
+</head>
+<body data-section="pro">
+<main class="doc acct">
+  <p class="eyebrow">MOLASTRIA PRO</p>
+  <h1>我的账号</h1>
+  <p class="meta">Pro 权益绑定在付款邮箱上。换设备或换浏览器时，用这个邮箱收验证码登录即可。</p>
+
+  <section class="acct-card" id="acct-off" hidden>
+    <h2>账号服务正在开通</h2>
+    <p>已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效，我们也会发邮件通知你。</p>
+    <p class="acct-fine"><a href="index.html">返回 Pro 页面</a></p>
+  </section>
+
+  <section class="acct-card" id="acct-login" hidden aria-labelledby="login-h">
+    <h2 id="login-h">用付款邮箱登录</h2>
+    <p class="acct-sub">我们会给这个邮箱发一个 6 位验证码，不需要密码。</p>
+    <form id="login-form" class="acct-form" novalidate>
+      <label class="co-field">邮箱<input type="email" id="login-email" autocomplete="email" placeholder="付款时填写的邮箱" required></label>
+      <label class="co-field" id="code-field" hidden>验证码<input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 位数字"></label>
+      <p class="co-msg" id="login-msg" role="status" aria-live="polite"></p>
+      <div class="acct-actions"><button type="button" class="btn" id="login-back" hidden>换个邮箱</button><button type="submit" class="btn primary" id="login-btn">发送验证码</button></div>
+    </form>
+    <p class="acct-fine">还没有 Pro？<a href="index.html">查看套餐</a></p>
+  </section>
+
+  <section id="acct-main" hidden>
+    <div class="acct-card acct-plan">
+      <div class="acct-head"><span class="acct-badge" id="plan-badge">Pro</span><span class="acct-email" id="acct-email"></span></div>
+      <p class="acct-line" id="plan-line"></p>
+      <p class="acct-fine" id="manage"><a id="manage-link" href="#" target="_blank" rel="noopener">管理订阅、付款方式与发票 ↗</a><span id="manage-text" hidden>需要取消或修改订阅时，打开 Stripe 收据邮件里的“管理订阅”链接。</span></p>
+    </div>
+
+    <div class="acct-card" id="quota-card">
+      <h2>AI 托管额度</h2>
+      <div class="acct-meter" id="quota-meter" role="meter" aria-label="本月已用 AI 托管额度" aria-valuemin="0"><span id="quota-bar"></span></div>
+      <p class="acct-line"><b id="quota-used">0</b> / <span id="quota-limit">300</span> 次 · 每月 1 日重置</p>
+      <p class="acct-sub">在 AI 助手的设置里选择“MolAstria Pro”，不用自备 key。每次带出处的问答计 1 次；关键词提取、连接测试这类短调用不计入。</p>
+      <button type="button" class="btn primary" id="open-ai">打开 AI 助手</button>
+    </div>
+
+    <div class="acct-card" id="team-card" hidden>
+      <h2>管理成员</h2>
+      <p class="acct-sub" id="team-line"></p>
+      <ul class="acct-members" id="member-list"></ul>
+      <form id="member-form" class="acct-add" novalidate><input type="email" id="member-email" placeholder="成员邮箱" aria-label="成员邮箱" autocomplete="off"><button class="btn" type="submit">添加成员</button></form>
+      <p class="co-msg" id="member-msg" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="acct-card" id="lapsed-card" hidden>
+      <h2>这个邮箱没有有效的 Pro 订阅</h2>
+      <p>订阅可能已经到期或取消。重新订阅后，用同一个邮箱登录即可恢复。</p>
+      <p><a class="btn primary" href="index.html">查看套餐</a></p>
+    </div>
+
+    <p class="acct-foot"><button type="button" class="btn" id="signout">退出登录</button><span id="synced"></span></p>
+  </section>
+</main>
+</body>
+</html>

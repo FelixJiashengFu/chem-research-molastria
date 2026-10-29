@@ -1,7 +1,7 @@
 # 开通收款 · Turning on payments
 
-网站的价格页（`/pro/`）和结账窗口已经上线；只差你的收款链接。整个过程大约 20 分钟，不需要服务器。
-The pricing page and checkout window are live; they only need your payment links. No server is required.
+网站的价格页（`/pro/`）和结账窗口已经上线；只差你的收款链接。收款本身不需要服务器（第 1–3 节，约 20 分钟）；第 4 节的 Pro 账号服务用一个免费的 Cloudflare Worker。
+The pricing page and checkout window are live; they only need your payment links. Payments need no server (sections 1–3); Pro accounts in section 4 run on a free Cloudflare Worker.
 
 ## 1. 开通 Stripe 账户 · Create a Stripe account
 
@@ -61,8 +61,41 @@ plans: {
 `price`、`list`、`seatPrice` 只用于展示，单位是人民币，必须与 Stripe 里的价格一致。英文页显示 `CN¥` 价格并附美元约数，汇率在 `usdPerCny`。
 推送到 `main` 后约一分钟生效。填了链接的套餐，结账按钮立刻可以付款；没填的仍显示“收款通道正在开通”。
 
-## 4. 之后 · Afterwards
+## 4. 开通 Pro 账号服务 · Turn on Pro accounts
 
-- 顾客、订阅、退款都在 Stripe 后台管理；收据和续费提醒由 Stripe 自动发送。
-- “开发中”的 Pro 功能上线后，用 Stripe 后台的顾客邮箱为付费用户开通。
+账号服务是一个 Cloudflare Worker（`deploy/account-worker.js`，数据存在 Cloudflare D1）。开通后：付款回到本站自动登录；换设备用付款邮箱收 6 位验证码登录；Pro 每月 300 次免配 key 的 AI 托管额度；课题组购买者在账号页添加成员。谁付了款以 Stripe 为准，Worker 直接向 Stripe 查询，**不需要 webhook**。没开通之前，账号页显示“账号服务正在开通”，其余功能照常。
+
+需要三个账户：Cloudflare（免费套餐即可）、[Resend](https://resend.com)（发验证码邮件，免费额度够起步）、DeepSeek（托管额度的模型费用从这里扣）。
+
+1. **把 molastria.com 的 DNS 搬到 Cloudflare（推荐）。** `workers.dev` 地址在中国大陆通常打不开，用 `api.molastria.com` 需要域名在 Cloudflare 上。Cloudflare 后台 → **Add a domain** → `molastria.com` → Free；它会导入现有记录。GitHub Pages 的 A / AAAA 记录和 `www` CNAME 设为 **DNS only（灰色云朵）**，再到 Porkbun 把 nameserver 换成 Cloudflare 给的两个。网站不会中断。（跳过这一步也能用，地址是 `https://molastria-account.<你的子域>.workers.dev`，只是大陆访问不稳。）
+2. **Resend 发信。** 注册后 **Domains → Add domain → molastria.com**，把它给的几条 DNS 记录加到 Cloudflare（或 Porkbun），验证通过后 **API Keys → Create**（Sending access）。发件地址默认 `login@molastria.com`，可在 `deploy/wrangler.toml` 的 `MAIL_FROM` 修改。
+3. **Stripe 只读受限密钥。** Stripe 后台 **Developers → API keys → Create restricted key**，名字填 MolAstria account，权限只开三项 **Read**：Customers、Checkout Sessions、Subscriptions，其余保持 None。正式环境建正式密钥（`rk_live_…`），测试环境的测试链接配测试密钥（`rk_test_…`）。**这个密钥只粘贴进下面的命令，不要发给任何人，也不要放进仓库。**
+4. **部署**（在仓库的 `deploy` 目录打开终端）：
+   ```bash
+   npx wrangler login
+   npx wrangler d1 create molastria                       # 把输出里的 database_id 填进 wrangler.toml
+   npx wrangler d1 execute molastria --remote --file schema.sql
+   npx wrangler secret put STRIPE_KEY                     # 粘贴第 3 步的受限密钥
+   npx wrangler secret put RESEND_API_KEY
+   npx wrangler secret put DEEPSEEK_API_KEY
+   npx wrangler deploy
+   ```
+   做了第 1 步的话，部署前把 `wrangler.toml` 末尾 `routes` 那一行的 `#` 去掉，服务地址就是 `https://api.molastria.com`。打开这个地址，看到 `{"ok":true,"service":"molastria-account"}` 即部署成功。
+5. **客户门户登录链接。** Stripe **Settings → Billing → Customer portal** 里复制登录链接（`https://billing.stripe.com/p/login/…`），账号页的“管理订阅”按钮会用它。
+6. **填进网站。** 编辑 `public/pay/config.js`：
+   ```js
+   accountApi: 'https://api.molastria.com',
+   portalUrl: 'https://billing.stripe.com/p/login/…',
+   ```
+   推送后，价格页的“AI 托管额度”变成“开通即享”，确认页会自动登录。已经付过款的人打开 `/pro/account.html` 用付款邮箱登录即可。
+7. **桌面版**内置的是打包时的网页，发一个新版本（`desktop-v0.1.2`）后桌面版才有账号页和托管额度。
+
+可调的设置在 `wrangler.toml` 的 `[vars]`：`MONTHLY_ASKS`（每席位每月次数，默认 300）、`HOSTED_MODELS`（托管额度可用的模型）。改完重新 `npx wrangler deploy`。
+
+本地测试：`deno run --allow-read tools/account-test.ts` 跑接口测试（假 Stripe、假邮件）；`tools/account-local.ts` 起一个带假 Stripe 的本地服务，用来在浏览器里走完整流程（说明在文件开头）。
+
+## 5. 之后 · Afterwards
+
+- 顾客、订阅、退款都在 Stripe 后台管理；收据和续费提醒由 Stripe 自动发送。退款或取消后，账号服务最多 6 小时内同步，Pro 权益随之结束。
+- 其余“开发中”的 Pro 功能上线时接到账号服务上（以 `/me` 返回的 `pro` 为准），付费用户自动获得，不用逐个开通。
 - 换用其他平台（Lemon Squeezy、Paddle、爱发电等）时，把 `provider` 改成平台名，`checkoutUrl` 填该平台的结账链接即可。

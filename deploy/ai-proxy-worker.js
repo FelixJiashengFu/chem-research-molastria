@@ -11,15 +11,15 @@
    可选变量：ALLOWED_MODELS（逗号分隔）、MAX_TOKENS（默认 12000）、MAX_BODY（默认 200000 字节）。
    限流：在 wrangler.toml 绑定 Rate Limiting（binding 名 RATE_LIMITER），每个 IP 按设定频率放行。 */
 
-const UPSTREAMS = {
+export const UPSTREAMS = {
   deepseek: { url: 'https://api.deepseek.com/chat/completions', secret: 'DEEPSEEK_API_KEY', models: ['deepseek-flash', 'deepseek-v4-pro'] },
   muse: { url: 'https://api.meta.ai/v1/chat/completions', secret: 'MUSE_API_KEY', models: ['muse-spark-1.3', 'muse-wonder-1.0', 'muse-spark-1.2'] }
 };
 const PASS_THROUGH = ['temperature', 'top_p', 'response_format', 'reasoning_effort', 'thinking', 'stream_options'];
 
-const list = (v) => String(v || '').split(',').map((s) => s.trim()).filter(Boolean);
+export const list = (v) => String(v || '').split(',').map((s) => s.trim()).filter(Boolean);
 
-function reply(status, message, headers) {
+export function reply(status, message, headers) {
   return new Response(JSON.stringify({ error: { message } }), { status, headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8' } });
 }
 
@@ -49,30 +49,35 @@ export default {
     let body;
     try { body = JSON.parse(raw); } catch { return reply(400, '请求不是合法的 JSON', cors); }
 
-    const provider = body.provider === 'muse' ? 'muse' : 'deepseek';
-    const upstream = UPSTREAMS[provider];
-    const key = env[upstream.secret];
-    if (!key) return reply(503, `站点没有配置 ${provider === 'muse' ? 'Muse' : 'DeepSeek'} 的 key`, cors);
-    const models = list(env.ALLOWED_MODELS).length ? list(env.ALLOWED_MODELS) : upstream.models;
-    if (!models.includes(body.model)) return reply(400, `代理不允许模型 ${body.model}`, cors);
-    if (!Array.isArray(body.messages) || !body.messages.length) return reply(400, '缺少 messages', cors);
-
-    const payload = {
-      model: body.model,
-      messages: body.messages,
-      stream: body.stream === true,
-      max_tokens: Math.min(Number(body.max_tokens) || 4096, Number(env.MAX_TOKENS || 12000))
-    };
-    for (const k of PASS_THROUGH) if (body[k] !== undefined) payload[k] = body[k];
-
-    const res = await fetch(upstream.url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify(payload)
-    });
-    const headers = new Headers(cors);
-    headers.set('Content-Type', res.headers.get('Content-Type') || 'application/json');
-    headers.set('Cache-Control', 'no-store');
-    return new Response(res.body, { status: res.status, headers });
+    return forward(body, env, cors);
   }
 };
+
+/** Checks a parsed chat request and streams it to DeepSeek or Muse with the site's key.
+    `models` limits which models may be used (default: ALLOWED_MODELS, else every model of the provider). */
+export async function forward(body, env, cors, models = list(env.ALLOWED_MODELS)) {
+  const provider = body.provider === 'muse' ? 'muse' : 'deepseek';
+  const upstream = UPSTREAMS[provider];
+  const key = env[upstream.secret];
+  if (!key) return reply(503, `站点没有配置 ${provider === 'muse' ? 'Muse' : 'DeepSeek'} 的 key`, cors);
+  if (!(models.length ? models : upstream.models).includes(body.model)) return reply(400, `代理不允许模型 ${body.model}`, cors);
+  if (!Array.isArray(body.messages) || !body.messages.length) return reply(400, '缺少 messages', cors);
+
+  const payload = {
+    model: body.model,
+    messages: body.messages,
+    stream: body.stream === true,
+    max_tokens: Math.min(Number(body.max_tokens) || 4096, Number(env.MAX_TOKENS || 12000))
+  };
+  for (const k of PASS_THROUGH) if (body[k] !== undefined) payload[k] = body[k];
+
+  const res = await fetch(upstream.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify(payload)
+  });
+  const headers = new Headers(cors);
+  headers.set('Content-Type', res.headers.get('Content-Type') || 'application/json');
+  headers.set('Cache-Control', 'no-store');
+  return new Response(res.body, { status: res.status, headers });
+}

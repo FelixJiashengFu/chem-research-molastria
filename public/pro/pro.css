@@ -105,3 +105,44 @@ tbody tr:last-child td{border-bottom:0}
 .doc code{font-family:var(--font-mono);font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:3px}
 .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
 @media(max-width:640px){.dl-grid{grid-template-columns:1fr}}
+
+/* account page */
+.acct{max-width:640px}
+.acct .eyebrow{margin-bottom:8px}
+.acct-card{position:relative;margin:14px 0;padding:20px 22px;border:1px solid color-mix(in srgb,var(--line-strong) 70%,transparent);border-radius:14px;background:linear-gradient(160deg,color-mix(in srgb,var(--surface) 92%,transparent),color-mix(in srgb,var(--surface-2) 70%,transparent));-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),var(--shadow)}
+:root[data-theme=dark] .acct-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),var(--shadow)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .acct-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),var(--shadow)}}
+.acct-card h2{margin:0 0 6px;font-size:17px}
+.acct-card p{margin:0 0 10px}
+.acct .acct-sub{font-size:13px;color:var(--muted);line-height:1.75}
+.acct .acct-fine{margin:12px 0 0;font-size:12.5px;color:var(--muted)}
+.acct-form{display:grid;gap:12px;margin-top:14px}
+.acct-form input[readonly]{color:var(--muted);background:var(--surface-2)}
+#login-code{font:500 20px var(--font-mono);letter-spacing:.35em}
+.acct-actions{display:flex;justify-content:flex-end;gap:8px}
+.acct-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.acct-badge{display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:99px;color:#fff;font:650 12px/1 var(--font-sans);letter-spacing:.04em;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 80%,transparent),color-mix(in srgb,var(--accent) 94%,transparent));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 8px color-mix(in srgb,var(--accent) 30%,transparent)}
+.acct-badge[data-role=free]{color:var(--muted);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.acct-email{font-weight:600;color:var(--ink);word-break:break-all}
+.acct .acct-line{color:var(--ink-2);font-size:14px}
+.acct .acct-line.warn{color:var(--warn)}
+.acct-meter{height:10px;margin:12px 0 10px;border-radius:99px;background:color-mix(in srgb,var(--line) 70%,transparent);overflow:hidden}
+.acct-meter span{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .5s ease}
+.acct-meter[data-level=low] span{background:linear-gradient(90deg,var(--gold),var(--warn))}
+.acct-meter[data-level=out] span{background:var(--danger)}
+.acct-line b{font:400 22px var(--font-num);color:var(--ink)}
+.doc .acct-members{list-style:none;margin:12px 0;padding:0;display:grid;gap:6px}
+.acct-members li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 14px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-size:13.5px}
+.acct-members li span{word-break:break-all}
+.acct-members .acct-empty{color:var(--muted);justify-content:flex-start}
+.acct-remove{border:0;background:none;color:var(--danger);font:600 12.5px var(--font-sans);padding:4px 8px;border-radius:6px;cursor:pointer}
+.acct-remove:hover{background:color-mix(in srgb,var(--danger) 10%,transparent)}
+.acct-add{display:flex;gap:8px}
+.acct-add input{flex:1;min-width:0;font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:6px;padding:9px 11px;min-height:42px}
+.acct-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.acct-foot span{font-size:12.5px;color:var(--warn)}
+.hero-login{font-size:13px;font-weight:600;text-decoration:none}
+.hero-login:hover{text-decoration:underline}
+@media(max-width:520px){.acct-card{padding:18px 16px}.acct-add{flex-direction:column}}
+.doc .activate.ok{border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 8%,var(--surface))}
+.doc .activate.warn{border-color:color-mix(in srgb,var(--warn) 45%,transparent)}

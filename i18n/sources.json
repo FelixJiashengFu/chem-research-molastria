@@ -2827,9 +2827,13 @@
  "月付": [
   "pro/index.html"
  ],
+ "已购买？登录账号 →": [
+  "pro/index.html"
+ ],
  "免费": [
   "pro/index.html",
   "atlas/app.js",
+  "pro/account-page.js",
   "atlas data"
  ],
  "永久": [
@@ -2895,13 +2899,15 @@
   "pro/pro.js"
  ],
  "开通即享": [
-  "pro/index.html"
+  "pro/index.html",
+  "pro/pro.js"
  ],
  "早鸟预售：现在付款锁定价格，以上功能上线后自动开通，无需另付。付款后 14 天内无理由全额退款。": [
   "pro/index.html"
  ],
  "课题组": [
-  "pro/index.html"
+  "pro/index.html",
+  "pro/account-page.js"
  ],
  "/ 年 · 5 席位": [
   "pro/index.html"
@@ -3083,6 +3089,19 @@
  "Stripe 会自动发送收据。课题组版支持对公付款，需要正式发票请通过下方联系方式说明单位抬头。": [
   "pro/index.html"
  ],
+ "买了以后在哪里用？": [
+  "pro/index.html"
+ ],
+ "付款完成回到本站时，这台设备会自动登录。换电脑、换浏览器或在桌面版里，打开": [
+  "pro/index.html"
+ ],
+ "账号页": [
+  "pro/index.html",
+  "pro/success.html"
+ ],
+ "，用付款邮箱收 6 位验证码登录即可，不需要密码。登录后 AI 助手的设置里会出现“MolAstria Pro”，不用自备 key。": [
+  "pro/index.html"
+ ],
  "怎么取消订阅？": [
   "pro/index.html"
  ],
@@ -3155,7 +3174,10 @@
  "Stripe 会把收据发到你在结账页填写的邮箱，请保留，用于报销或退款。": [
   "pro/success.html"
  ],
- "Pro 功能会用这个邮箱开通；每上线一项，都会给你发通知。": [
+ "Pro 权益绑定在这个邮箱上。换设备或换浏览器时，在": [
+  "pro/success.html"
+ ],
+ "用它收验证码登录。还在开发中的功能上线后自动开通，并发邮件通知你。": [
   "pro/success.html"
  ],
  "付款后 14 天内可以无理由全额退款，直接回复收据邮件或通过下面的联系方式说明即可。": [
@@ -3167,6 +3189,94 @@
  "回到 MolAstria": [
   "pro/success.html"
  ],
+ "我的账号 · MolAstria": [
+  "pro/account.html"
+ ],
+ "我的账号": [
+  "pro/account.html"
+ ],
+ "Pro 权益绑定在付款邮箱上。换设备或换浏览器时，用这个邮箱收验证码登录即可。": [
+  "pro/account.html"
+ ],
+ "账号服务正在开通": [
+  "pro/account.html"
+ ],
+ "已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效，我们也会发邮件通知你。": [
+  "pro/account.html"
+ ],
+ "返回 Pro 页面": [
+  "pro/account.html"
+ ],
+ "用付款邮箱登录": [
+  "pro/account.html"
+ ],
+ "我们会给这个邮箱发一个 6 位验证码，不需要密码。": [
+  "pro/account.html"
+ ],
+ "邮箱": [
+  "pro/account.html"
+ ],
+ "验证码": [
+  "pro/account.html"
+ ],
+ "换个邮箱": [
+  "pro/account.html"
+ ],
+ "发送验证码": [
+  "pro/account.html",
+  "pro/account-page.js"
+ ],
+ "还没有 Pro？": [
+  "pro/account.html"
+ ],
+ "查看套餐": [
+  "pro/account.html"
+ ],
+ "管理订阅、付款方式与发票 ↗": [
+  "pro/account.html"
+ ],
+ "需要取消或修改订阅时，打开 Stripe 收据邮件里的“管理订阅”链接。": [
+  "pro/account.html"
+ ],
+ "AI 托管额度": [
+  "pro/account.html"
+ ],
+ "次 · 每月 1 日重置": [
+  "pro/account.html"
+ ],
+ "在 AI 助手的设置里选择“MolAstria Pro”，不用自备 key。每次带出处的问答计 1 次；关键词提取、连接测试这类短调用不计入。": [
+  "pro/account.html"
+ ],
+ "打开 AI 助手": [
+  "pro/account.html"
+ ],
+ "管理成员": [
+  "pro/account.html"
+ ],
+ "添加成员": [
+  "pro/account.html"
+ ],
+ "这个邮箱没有有效的 Pro 订阅": [
+  "pro/account.html"
+ ],
+ "订阅可能已经到期或取消。重新订阅后，用同一个邮箱登录即可恢复。": [
+  "pro/account.html"
+ ],
+ "退出登录": [
+  "pro/account.html"
+ ],
+ "付款时填写的邮箱": [
+  "pro/account.html"
+ ],
+ "6 位数字": [
+  "pro/account.html"
+ ],
+ "本月已用 AI 托管额度": [
+  "pro/account.html"
+ ],
+ "成员邮箱": [
+  "pro/account.html"
+ ],
  "服务条款 · MolAstria": [
   "pro/terms.html"
  ],
@@ -3177,6 +3287,9 @@
   "pro/terms.html"
  ],
  "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、中文讲解、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
+  "pro/terms.html"
+ ],
+ "付费权益绑定在付款邮箱上，用邮箱验证码登录使用。AI 托管额度按自然月计算，未用完的次数不累计到下个月，并设有防滥用的频率限制。课题组版每个席位单独计算额度，购买者可以在账号页添加或移除成员，成员被移除后立即失去付费权益。": [
   "pro/terms.html"
  ],
  "2. 早鸟预售": [
@@ -3243,8 +3356,7 @@
   "pro/refund.html"
  ],
  "生效日期：2026-10-28": [
-  "pro/refund.html",
-  "pro/privacy.html"
+  "pro/refund.html"
  ],
  "一句话：": [
   "pro/refund.html"
@@ -3303,10 +3415,13 @@
  "隐私政策 · MolAstria": [
   "pro/privacy.html"
  ],
+ "生效日期：2026-10-28 · 更新：2026-10-29（新增 Pro 账号）": [
+  "pro/privacy.html"
+ ],
  "我们不收集什么": [
   "pro/privacy.html"
  ],
- "MolAstria 网站是静态页面，目前不设账号，不使用广告或跨站追踪。你的搜索、收藏、AI 实验室项目、界面偏好（语言、主题、背景）都只保存在你自己的浏览器（localStorage / sessionStorage）里，我们看不到。": [
+ "MolAstria 网站是静态页面，免费功能不需要账号，不使用广告或跨站追踪。你的搜索、收藏、AI 实验室项目、界面偏好（语言、主题、背景）都只保存在你自己的浏览器（localStorage / sessionStorage）里，我们看不到。": [
   "pro/privacy.html"
  ],
  "AI 与 API key": [
@@ -3324,6 +3439,15 @@
  "处理。我们只会从 Stripe 后台看到你的邮箱、所购套餐、金额与付款状态，用于开通服务、发送上线通知和处理退款，不会出售或转让给第三方。": [
   "pro/privacy.html"
  ],
+ "Pro 账号": [
+  "pro/privacy.html"
+ ],
+ "购买 Pro 或课题组版后，账号服务（运行在 Cloudflare 上）会保存：你的付款邮箱；从 Stripe 查到的订阅状态（套餐、席位数、续费或到期时间）；登录会话（只保存不可逆的摘要）；每月 AI 托管额度的使用次数；课题组购买者添加的成员邮箱。登录验证码和课题组邀请通过 Resend 发送到你的邮箱。": [
+  "pro/privacy.html"
+ ],
+ "使用 AI 托管额度时，对话内容经账号服务转发给 DeepSeek 等模型服务商并适用其隐私政策；账号服务只计次数，不保存对话内容。登录令牌只存在你的设备上，退出登录即在服务端作废。": [
+  "pro/privacy.html"
+ ],
  "托管与第三方资源": [
   "pro/privacy.html"
  ],
@@ -3333,7 +3457,7 @@
  "你的权利": [
   "pro/privacy.html"
  ],
- "你可以随时清除浏览器数据来删除本地保存的内容；也可以联系我们查询、更正或删除我们因付款而持有的邮箱与订单记录（法律要求保留的财务记录除外）。": [
+ "你可以随时清除浏览器数据来删除本地保存的内容；也可以联系我们查询、更正或删除我们因付款与 Pro 账号而持有的邮箱、订单与用量记录（法律要求保留的财务记录除外）。": [
   "pro/privacy.html"
  ],
  "联系": [
@@ -3440,15 +3564,18 @@
  "全站导航": [
   "shared-nav.js"
  ],
+ "我的 Pro 账号": [
+  "shared-nav.js"
+ ],
+ "MolAstria Pro 与桌面版下载": [
+  "shared-nav.js"
+ ],
  "切换到中文": [
   "shared-nav.js"
  ],
  "中": [
   "shared-nav.js",
   "ai/ai.js"
- ],
- "MolAstria Pro 与桌面版下载": [
-  "shared-nav.js"
  ],
  "更换背景": [
   "shared-nav.js"
@@ -4860,6 +4987,12 @@
  "由服务商决定": [
   "ai/ai.js"
  ],
+ "免配 key · 本月剩余 {0} 次": [
+  "ai/ai.js"
+ ],
+ "免配 key": [
+  "ai/ai.js"
+ ],
  "接口地址必须是 https:// 开头（本机调试可用 http://localhost）": [
   "ai/ai.js"
  ],
@@ -4924,6 +5057,9 @@
   "ai/ai.js"
  ],
  "选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。": [
+  "ai/ai.js"
+ ],
+ "MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次带出处的问答计 1 次，每月 1 日重置。": [
   "ai/ai.js"
  ],
  "服务商": [
@@ -5142,16 +5278,25 @@
  "支持 MolAstria": [
   "pro/pro.js"
  ],
- "锁定早鸟价，续费不涨价": [
+ "AI 托管额度每月 300 次，付款后立即可用": [
+  "pro/pro.js"
+ ],
+ "云同步、每周精选、深度工作流库：上线后自动开通": [
   "pro/pro.js"
  ],
  "AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通": [
+  "pro/pro.js"
+ ],
+ "锁定早鸟价，续费不涨价": [
   "pro/pro.js"
  ],
  "14 天内无理由全额退款": [
   "pro/pro.js"
  ],
  "随时取消，当前周期结束后不再续费": [
+  "pro/pro.js"
+ ],
+ "成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度": [
   "pro/pro.js"
  ],
  "组内共享资料库与实验室项目：上线后自动开通": [
@@ -5203,10 +5348,191 @@
   "pro/pro.js"
  ],
  "邮箱格式不对。": [
-  "pro/pro.js"
+  "pro/pro.js",
+  "pro/account-page.js"
  ],
  "已在新窗口打开安全结账页。付款完成后会回到本站的确认页，收据会发到你的邮箱。": [
   "pro/pro.js"
+ ],
+ "免费账号": [
+  "pro/account-page.js"
+ ],
+ "由 {0} 的课题组版提供": [
+  "pro/account-page.js"
+ ],
+ "课题组版 · {0} 席位": [
+  "pro/account-page.js"
+ ],
+ "Pro · 月付": [
+  "pro/account-page.js"
+ ],
+ "Pro · 年付": [
+  "pro/account-page.js"
+ ],
+ "续费扣款失败，请在订阅管理里更新付款方式": [
+  "pro/account-page.js"
+ ],
+ "已取消续费，{0} 到期": [
+  "pro/account-page.js"
+ ],
+ "试用中，{0} 开始扣费": [
+  "pro/account-page.js"
+ ],
+ "{0} 自动续费": [
+  "pro/account-page.js"
+ ],
+ "课题组成员": [
+  "pro/account-page.js"
+ ],
+ "已用 {0} / {1} 个席位（含你自己），每位成员每月 {2} 次 AI 托管额度。成员用自己的邮箱在本页登录。": [
+  "pro/account-page.js"
+ ],
+ "移除": [
+  "pro/account-page.js"
+ ],
+ "还没有添加成员。": [
+  "pro/account-page.js"
+ ],
+ "登录": [
+  "pro/account-page.js"
+ ],
+ "如果这个邮箱有有效的 Pro 订阅，验证码会在一分钟内送达。没收到请看看垃圾邮件，或确认是付款时填写的邮箱。": [
+  "pro/account-page.js"
+ ],
+ "请输入邮件里的 6 位验证码。": [
+  "pro/account-page.js"
+ ],
+ "已退出登录。": [
+  "pro/account-page.js"
+ ],
+ "已添加 {0}，我们给 TA 发了一封邀请邮件。": [
+  "pro/account-page.js"
+ ],
+ "移除 {0}？TA 将立即失去 Pro 权益。": [
+  "pro/account-page.js"
+ ],
+ "已移除 {0}。": [
+  "pro/account-page.js"
+ ],
+ "登录已过期，请重新登录。": [
+  "pro/account-page.js"
+ ],
+ "暂时连不上账号服务，这里显示的是上次同步的信息。": [
+  "pro/account-page.js"
+ ],
+ "账号服务正在开通，请稍后再试。": [
+  "pay/account.js"
+ ],
+ "请先登录。": [
+  "pay/account.js"
+ ],
+ "连不上账号服务，请检查网络后重试。": [
+  "pay/account.js"
+ ],
+ "请求失败（{0}）": [
+  "pay/account.js"
+ ],
+ "账号服务还没有配置 Stripe 密钥": [
+  "deploy/account-worker.js"
+ ],
+ "暂时连不上付款平台，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "付款平台返回错误（{0}）：{1}": [
+  "deploy/account-worker.js"
+ ],
+ "请先登录 MolAstria Pro": [
+  "deploy/account-worker.js"
+ ],
+ "登录已过期，请重新登录": [
+  "deploy/account-worker.js"
+ ],
+ "账号服务还没有配置发信": [
+  "deploy/account-worker.js"
+ ],
+ "邮件发送失败，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "MolAstria 登录验证码：{0}": [
+  "deploy/account-worker.js"
+ ],
+ "你的 MolAstria 登录验证码是 {0} {1} 分钟内有效。如果不是你本人操作，忽略这封邮件即可。 https://molastria.com/": [
+  "deploy/account-worker.js"
+ ],
+ "MolAstria 课题组邀请 · Team invitation": [
+  "deploy/account-worker.js"
+ ],
+ "{0} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。 打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。 {1} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.": [
+  "deploy/account-worker.js"
+ ],
+ "请求内容过大": [
+  "deploy/account-worker.js"
+ ],
+ "请求不是合法的 JSON": [
+  "deploy/account-worker.js"
+ ],
+ "订单参考号格式不对": [
+  "deploy/account-worker.js"
+ ],
+ "请求太频繁，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "没有找到这笔订单": [
+  "deploy/account-worker.js"
+ ],
+ "这笔订单还没有完成付款": [
+  "deploy/account-worker.js"
+ ],
+ "确认页链接已过期，请用付款邮箱登录": [
+  "deploy/account-worker.js"
+ ],
+ "订单里没有邮箱，请联系我们": [
+  "deploy/account-worker.js"
+ ],
+ "邮箱格式不对": [
+  "deploy/account-worker.js"
+ ],
+ "验证码发送太频繁，请一小时后再试": [
+  "deploy/account-worker.js"
+ ],
+ "请填写邮箱和 6 位验证码": [
+  "deploy/account-worker.js"
+ ],
+ "验证码已过期，请重新获取": [
+  "deploy/account-worker.js"
+ ],
+ "尝试次数太多，请重新获取验证码": [
+  "deploy/account-worker.js"
+ ],
+ "验证码不对": [
+  "deploy/account-worker.js"
+ ],
+ "只有课题组版的购买者可以管理成员": [
+  "deploy/account-worker.js"
+ ],
+ "你自己已经占用 1 个席位，不用再添加": [
+  "deploy/account-worker.js"
+ ],
+ "这个邮箱已经在另一个课题组里": [
+  "deploy/account-worker.js"
+ ],
+ "席位已满：共 {0} 席，你自己占 1 席。可以在订阅管理里增加席位。": [
+  "deploy/account-worker.js"
+ ],
+ "这个账号目前没有有效的 Pro 订阅": [
+  "deploy/account-worker.js"
+ ],
+ "本月 {0} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。": [
+  "deploy/account-worker.js"
+ ],
+ "没有这个接口": [
+  "deploy/account-worker.js"
+ ],
+ "这个网站没有使用账号服务的权限": [
+  "deploy/account-worker.js"
+ ],
+ "账号服务出错了，请稍后再试": [
+  "deploy/account-worker.js"
  ],
  "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。": [
   "tools/build-seo.ts"

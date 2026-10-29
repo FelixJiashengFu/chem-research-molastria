@@ -1,5 +1,6 @@
 /* ChemAI — DeepSeek / Meta Muse / OpenAI 兼容接口的浏览器端接入层与「AI 研究助手」抽屉。
-   API key 只保存在当前浏览器（默认仅本次会话），请求直接发往所选服务商；配置了站点代理时改发代理。
+   API key 只保存在当前浏览器（默认仅本次会话），请求直接发往所选服务商；配置了站点代理时改发代理；
+   登录了 MolAstria Pro（pay/account.js）时多一个「MolAstria Pro」服务商，走账号服务的托管额度。
    Public API: ChemAI.chat(), ChemAI.retrieve(), ChemAI.openDrawer(), ChemAI.openSettings(), ChemAI.isReady(). */
 (() => {
   'use strict';
@@ -31,20 +32,45 @@
   // ── settings ────────────────────────────────────────────────────────────
   const STORE = 'chemhub-ai';
   const safe = (fn, fallback) => { try { return fn(); } catch { return fallback; } };
+  // Hosted quota for signed-in Pro accounts; follows sign-in and sign-out without a reload.
+  const proToken = () => safe(() => localStorage.getItem('molastria-session'), '') || '';
+  const proAccount = () => (proToken() ? safe(() => JSON.parse(localStorage.getItem('molastria-account') || 'null'), null) : null);
+  function syncHosted() {
+    const a = proAccount();
+    if (!a?.pro || !a.api) { delete PROVIDERS.hosted; return; }
+    const names = Object.fromEntries([...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models]);
+    const models = (a.models || ['deepseek-flash']).map((id) => [id, names[id] || id]);
+    PROVIDERS.hosted = { label: 'MolAstria Pro', base: `${a.api}/ai/chat`, models, efforts: ['off', 'low', 'high'], json: models.every(([id]) => id.startsWith('deepseek')), proxy: true, hosted: true, usage: a.usage };
+  }
+  syncHosted();
+  document.addEventListener('molastria:account', syncHosted);
+  // The account service reports "used/limit" after each hosted call; keep the cached account in step.
+  function noteUsage(header) {
+    const [asks, limit] = header.split('/').map(Number);
+    const a = proAccount();
+    if (!a || !Number.isFinite(asks) || !Number.isFinite(limit)) return;
+    a.usage = { ...(a.usage || {}), asks, limit };
+    safe(() => localStorage.setItem('molastria-account', JSON.stringify(a)));
+    if (PROVIDERS.hosted) PROVIDERS.hosted.usage = a.usage;
+  }
+  const hostedLine = () => { const u = PROVIDERS.hosted?.usage; return u ? `免配 key · 本月剩余 ${Math.max(0, u.limit - u.asks)} 次` : '免配 key'; };
   function settings() {
     const saved = safe(() => JSON.parse(localStorage.getItem(STORE) || 'null'), null) || {};
-    const provider = PROVIDERS[saved.provider] ? saved.provider : (SITE.proxy ? 'proxy' : (PROVIDERS[SITE.defaultProvider] ? SITE.defaultProvider : 'deepseek'));
-    return {
+    const provider = PROVIDERS[saved.provider] ? saved.provider : (PROVIDERS.hosted ? 'hosted' : SITE.proxy ? 'proxy' : (PROVIDERS[SITE.defaultProvider] ? SITE.defaultProvider : 'deepseek'));
+    const s = {
       provider,
-      models: Object.assign({ deepseek: 'deepseek-flash', muse: 'muse-spark-1.3', custom: '', proxy: 'deepseek-flash' }, saved.models || {}),
+      models: Object.assign({ deepseek: 'deepseek-flash', muse: 'muse-spark-1.3', custom: '', proxy: 'deepseek-flash', hosted: 'deepseek-flash' }, saved.models || {}),
       customBase: saved.customBase || '',
-      effort: Object.assign({ deepseek: 'low', muse: 'low', custom: 'auto', proxy: 'low' }, saved.effort || {}),
+      effort: Object.assign({ deepseek: 'low', muse: 'low', custom: 'auto', proxy: 'low', hosted: 'low' }, saved.effort || {}),
       remember: !!saved.remember,
       keys: saved.remember ? Object.assign({}, saved.keys || {}) : {}
     };
+    // A Pro account beats a provider that has no key yet.
+    if (PROVIDERS.hosted && s.provider !== 'hosted' && !isReady(s)) s.provider = 'hosted';
+    return s;
   }
   function keyFor(s, provider = s.provider) {
-    if (provider === 'proxy') return '';
+    if (PROVIDERS[provider]?.proxy) return '';
     return s.keys[provider] || safe(() => sessionStorage.getItem(`${STORE}-key:${provider}`), '') || '';
   }
   function save(s, keyUpdates = {}) {
@@ -60,7 +86,7 @@
     safe(() => isReady(s) ? sessionStorage.setItem(`${STORE}-key`, '1') : sessionStorage.removeItem(`${STORE}-key`));
     document.dispatchEvent(new Event('chemhub:ai-config'));
   }
-  const isReady = (s = settings()) => s.provider === 'proxy' || (!!keyFor(s) && (s.provider !== 'custom' || (!!s.customBase && !!s.models.custom)));
+  const isReady = (s = settings()) => !!PROVIDERS[s.provider]?.proxy || (!!keyFor(s) && (s.provider !== 'custom' || (!!s.customBase && !!s.models.custom)));
   const modelOf = (s) => s.models[s.provider] || PROVIDERS[s.provider].models[0]?.[0] || '';
   function priceOf(model) {
     for (const p of Object.values(PROVIDERS)) if (p.prices?.[model]) return p.prices[model];
@@ -81,7 +107,7 @@
     return /\/chat\/completions$/.test(base) ? base : `${base}/chat/completions`;
   }
   function effortParams(provider, effort) {
-    if (provider === 'deepseek' || provider === 'proxy') {
+    if (provider === 'deepseek' || provider === 'proxy' || provider === 'hosted') {
       if (effort === 'off') return { thinking: { type: 'disabled' } };
       return { reasoning_effort: effort === 'medium' ? 'high' : (['low', 'high', 'max'].includes(effort) ? effort : 'low') };
     }
@@ -136,7 +162,7 @@
     if (o.json && PROVIDERS[provider].json) optional.response_format = { type: 'json_object' };
     if (PROVIDERS[provider].proxy) body.provider = model.startsWith('muse') ? 'muse' : 'deepseek';
     const headers = { 'Content-Type': 'application/json' };
-    const key = keyFor(conf);
+    const key = PROVIDERS[provider].hosted ? proToken() : keyFor(conf);
     if (key) headers.Authorization = `Bearer ${key}`;
     const url = endpoint(conf);
     const started = performance.now();
@@ -147,8 +173,13 @@
     }
     if (!response.ok) {
       const detail = await response.json().catch(() => null);
-      throw Object.assign(new Error(friendly(response.status, detail?.error?.message || detail?.message || '')), { status: response.status });
+      const message = detail?.error?.message || detail?.message || '';
+      // The account service writes its own plain-language errors (quota used up, signed out…).
+      if (PROVIDERS[provider].hosted && message) throw Object.assign(new Error(T(message)), { status: response.status });
+      throw Object.assign(new Error(friendly(response.status, message)), { status: response.status });
     }
+    const used = response.headers.get('X-MolAstria-Usage');
+    if (used) noteUsage(used);
     let text = '', reasoning = '', usage = null, served = model;
     const type = response.headers.get('content-type') || '';
     if (!type.includes('event-stream')) {
@@ -388,10 +419,11 @@
       dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
     }
     const s = settings();
-    const providerCards = Object.entries(PROVIDERS).map(([id, p]) => `<label><input type="radio" name="provider" value="${id}" ${id === s.provider ? 'checked' : ''}><b>${esc(p.label)}</b><small>${id === 'deepseek' ? 'V4 Flash / V4 Pro' : id === 'muse' ? 'Spark / Wonder' : id === 'proxy' ? '无需自备 key' : '填写接口地址'}</small></label>`).join('');
+    const providerCards = Object.entries(PROVIDERS).map(([id, p]) => `<label><input type="radio" name="provider" value="${id}" ${id === s.provider ? 'checked' : ''}><b>${esc(p.label)}</b><small>${id === 'deepseek' ? 'V4 Flash / V4 Pro' : id === 'muse' ? 'Spark / Wonder' : id === 'hosted' ? hostedLine() : id === 'proxy' ? '无需自备 key' : '填写接口地址'}</small></label>`).join('');
     dialog.innerHTML = `<form method="dialog" novalidate>
       <div><h2 id="cai-settings-title">AI 设置</h2></div>
-      <p class="cai-note">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
+      <p class="cai-note" data-note="own">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
+      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次带出处的问答计 1 次，每月 1 日重置。</p>
       <fieldset class="cai-prov" style="border:0;padding:0;margin:0"><legend class="cai-field" style="margin-bottom:6px">服务商</legend>${providerCards}</fieldset>
       <div class="cai-two">
         <label class="cai-field">模型<select name="model"></select></label>
@@ -415,7 +447,10 @@
       f.model.disabled = !p.models.length;
       f.effort.innerHTML = p.efforts.map((e) => `<option value="${e}" ${e === s.effort[id] ? 'selected' : ''}>${EFFORT_LABEL[e]}</option>`).join('');
       dialog.querySelectorAll('[data-for=custom]').forEach((el) => { el.hidden = id !== 'custom'; });
-      dialog.querySelectorAll('[data-for=key]').forEach((el) => { el.hidden = id === 'proxy'; });
+      dialog.querySelectorAll('[data-for=key]').forEach((el) => { el.hidden = !!p.proxy; });
+      dialog.querySelector('[data-act=clear]').hidden = !!p.proxy;
+      dialog.querySelector('[data-note=own]').hidden = !!p.hosted;
+      dialog.querySelector('[data-note=hosted]').hidden = !p.hosted;
       f.key.value = keyFor(s, id);
       f.key.placeholder = p.keyHint || '';
       const a = dialog.querySelector('[data-keyurl]');
@@ -429,7 +464,7 @@
       if (id === 'custom') { s.customBase = f.customBase.value.trim(); s.models.custom = f.customModel.value.trim(); }
       s.effort[id] = f.effort.value;
       s.remember = f.remember.checked;
-      return { [id]: id === 'proxy' ? '' : f.key.value.trim() };
+      return { [id]: PROVIDERS[id].proxy ? '' : f.key.value.trim() };
     };
     f.addEventListener('change', (e) => { if (e.target.name === 'provider') { collect(); sync(); } });
     sync();
@@ -457,7 +492,7 @@
       refreshDrawer();
     });
     dialog.showModal();
-    (current() === 'proxy' ? f.model : f.key).focus();
+    (PROVIDERS[current()].proxy ? f.model : f.key).focus();
   }
 
   // ── drawer ──────────────────────────────────────────────────────────────

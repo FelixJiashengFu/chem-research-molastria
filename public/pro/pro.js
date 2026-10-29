@@ -18,10 +18,13 @@
     sponsor: () => 'sponsor'
   };
   const TITLE = { pro_year: 'MolAstria Pro · 年付早鸟', pro_month: 'MolAstria Pro · 月付', team_year: 'MolAstria 课题组版 · 年付', sponsor: '支持 MolAstria' };
+  // Once the account service is configured, the hosted AI quota works right after payment.
+  const LIVE = !!PAY.accountApi;
+  const SOON = LIVE ? ['AI 托管额度每月 300 次，付款后立即可用', '云同步、每周精选、深度工作流库：上线后自动开通'] : ['AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通'];
   const ITEMS = {
-    pro_year: ['锁定早鸟价，续费不涨价', 'AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通', '新功能优先内测与需求投票', '14 天内无理由全额退款'],
-    pro_month: ['随时取消，当前周期结束后不再续费', 'AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通', '14 天内无理由全额退款'],
-    team_year: ['组内共享资料库与实验室项目：上线后自动开通', 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
+    pro_year: ['锁定早鸟价，续费不涨价', ...SOON, '新功能优先内测与需求投票', '14 天内无理由全额退款'],
+    pro_month: ['随时取消，当前周期结束后不再续费', ...SOON, '14 天内无理由全额退款'],
+    team_year: [...(LIVE ? ['成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度'] : []), '组内共享资料库与实验室项目：上线后自动开通', 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
     sponsor: ['金额在结账页自行填写', '全部用于服务器、AI 测试与持续开发']
   };
   const METHOD = { card: '银行卡', applepay: 'Apple Pay', googlepay: 'Google Pay', alipay: '支付宝', wechat: '微信支付', paypal: 'PayPal' };
@@ -51,6 +54,8 @@
     document.querySelectorAll('[data-billing]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     paintPrices();
   }));
+
+  if (LIVE) document.querySelectorAll('[data-live]').forEach((el) => { el.className = 'st ok'; el.textContent = T('开通即享'); });
 
   // Contact link.
   const contact = $('contact-link');

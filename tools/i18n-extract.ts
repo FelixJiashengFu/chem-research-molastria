@@ -114,8 +114,10 @@ function fromJS(src: string, from: string) {
 
 // ── sources ─────────────────────────────────────────────────────────────
 const read = (p: string) => Deno.readTextFile(new URL(p, pub));
-for (const f of ["index.html", "atlas/index.html", "hub/index.html", "hub/network.html", "lab/index.html", "train/index.html", "pro/index.html", "pro/success.html", "pro/terms.html", "pro/refund.html", "pro/privacy.html", "download/index.html"]) fromHTML(await read(f), f);
-for (const f of ["shared-nav.js", "app.js", "atlas/app.js", "hub/app.js", "hub/network.js", "lab/lab.js", "lab/chem.js", "ai/ai.js", "train/train.js", "pro/pro.js"]) fromJS(await read(f), f);
+for (const f of ["index.html", "atlas/index.html", "hub/index.html", "hub/network.html", "lab/index.html", "train/index.html", "pro/index.html", "pro/success.html", "pro/account.html", "pro/terms.html", "pro/refund.html", "pro/privacy.html", "download/index.html"]) fromHTML(await read(f), f);
+for (const f of ["shared-nav.js", "app.js", "atlas/app.js", "hub/app.js", "hub/network.js", "lab/lab.js", "lab/chem.js", "ai/ai.js", "train/train.js", "pro/pro.js", "pro/account-page.js", "pay/account.js"]) fromJS(await read(f), f);
+// Error messages the account service sends back are shown as-is, so they need translations too.
+fromJS(await Deno.readTextFile(new URL("deploy/account-worker.js", repo)), "deploy/account-worker.js");
 fromJS(await Deno.readTextFile(new URL("tools/build-seo.ts", repo)), "tools/build-seo.ts");
 
 const g = globalThis as any;
