@@ -1,7 +1,8 @@
 // Run deploy/account-worker.js locally with a fake Stripe, for trying the Pro pages end to end.
 //   deno run --allow-net --allow-env --allow-read --allow-write tools/account-local.ts [port] [allowed-origin]
 // Fake customers: pro@example.com (Pro, yearly) and pi@example.com (Group edition, 5 seats); fake paid checkout
-// sessions cs_test_localpro and cs_test_localteam. Sign-in codes are returned to the page instead of mailed.
+// sessions cs_test_localpro and cs_test_localteam; admin@example.com is the site admin (permanent Pro, issues VIP cards).
+// Sign-in codes are returned to the page instead of mailed.
 // Hosted AI calls go to the real DeepSeek with DEEPSEEK_API_KEY from this process's environment.
 // Point the site at it by setting accountApi in public/pay/config.js to http://127.0.0.1:<port> (do not commit that).
 import worker from "../deploy/account-worker.js";
@@ -9,6 +10,7 @@ import { d1 } from "./d1-sqlite.ts";
 
 const port = Number(Deno.args[0] ?? 8832);
 const { DB } = await d1();
+await DB.prepare("INSERT INTO grants (email, source, expires, created) VALUES (?1, 'admin', NULL, ?2)").bind("admin@example.com", Math.floor(Date.now() / 1000)).run();
 const now = () => Math.floor(Date.now() / 1000);
 const sub = (quantity: number, interval: string) => ({ status: "active", cancel_at_period_end: false, items: { data: [{ quantity, current_period_end: now() + 300 * 86400, price: { recurring: { interval } } }] } });
 const customers = [{ id: "cus_local_pro", email: "pro@example.com" }, { id: "cus_local_team", email: "pi@example.com" }];

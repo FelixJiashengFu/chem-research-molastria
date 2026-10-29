@@ -90,6 +90,21 @@ plans: {
    推送后，价格页的“AI 托管额度”变成“开通即享”，确认页会自动登录。已经付过款的人打开 `/pro/account.html` 用付款邮箱登录即可。
 7. **桌面版**内置的是打包时的网页，发一个新版本（`desktop-v0.1.2`）后桌面版才有账号页和托管额度。
 
+### 站长账号与 VIP 卡 · Admin account and VIP cards
+
+站长本人永久免费使用 Pro，并且可以在账号页生成 VIP 卡送给朋友。站长身份只能用命令写进数据库，网站上没有任何接口能授予（在 `deploy` 目录运行，把邮箱换成你自己的；有几个邮箱就各运行一次）：
+
+```bash
+npx wrangler d1 execute molastria --remote --command "INSERT INTO grants (email, source, expires, created) VALUES ('你的邮箱', 'admin', NULL, unixepoch())"
+```
+
+之后用这个邮箱在 `/pro/account.html` 收验证码登录，账号页显示“站长 · 永久 Pro”，下面多出“发 VIP 卡”：选数量（1–50）、有效期（永久 / 1 年 / 3 个月 / 1 个月 / 7 天）和只有你看得到的备注，点“生成”。每张卡旁边的“复制邀请”会复制一段带链接的邀请文字（`/pro/account.html?card=VIP-…`），朋友打开后填自己的邮箱、收验证码就开通了，不需要付款。
+
+- 一张卡只能用一次；在验证码填对之前卡不算用掉。
+- 同一个人兑换多张有期限的卡，有效期首尾相接；永久卡让 Pro 变成永久。
+- 点“收回”后这张卡作废；已经兑换的人只失去这张卡带来的时长，他兑换的其他卡照常有效。
+- 取消站长身份：`npx wrangler d1 execute molastria --remote --command "DELETE FROM grants WHERE email = '你的邮箱'"`。
+
 可调的设置在 `wrangler.toml` 的 `[vars]`：`MONTHLY_ASKS`（每席位每月次数，默认 300）、`HOSTED_MODELS`（托管额度可用的模型）。改完重新 `npx wrangler deploy`。
 
 本地测试：`deno run --allow-read tools/account-test.ts` 跑接口测试（假 Stripe、假邮件）；`tools/account-local.ts` 起一个带假 Stripe 的本地服务，用来在浏览器里走完整流程（说明在文件开头）。

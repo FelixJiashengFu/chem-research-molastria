@@ -110,13 +110,15 @@
  ],
  "我的收藏": [
   "index.html",
-  "atlas/index.html"
+  "atlas/index.html",
+  "radar/app/app.js"
  ],
  "来源": [
   "index.html",
   "hub/index.html",
   "lab/index.html",
-  "app.js"
+  "app.js",
+  "radar/app/app.js"
  ],
  "全部来源": [
   "index.html",
@@ -137,7 +139,8 @@
  ],
  "排序": [
   "index.html",
-  "hub/index.html"
+  "hub/index.html",
+  "radar/app/app.js"
  ],
  "默认 / 关键词相关": [
   "index.html"
@@ -176,7 +179,8 @@
  ],
  "机器学习": [
   "index.html",
-  "hub/network.js"
+  "hub/network.js",
+  "radar/app/app.js"
  ],
  "正在载入本地目录…": [
   "index.html"
@@ -255,7 +259,8 @@
  ],
  "下载桌面版": [
   "index.html",
-  "pro/success.html"
+  "pro/success.html",
+  "radar/app/app.js"
  ],
  "站点地图": [
   "index.html"
@@ -795,7 +800,8 @@
   "hub/index.html"
  ],
  "搜索": [
-  "hub/index.html"
+  "hub/index.html",
+  "radar/app/app.js"
  ],
  "主题": [
   "hub/index.html",
@@ -804,7 +810,8 @@
  ],
  "全部主题": [
   "hub/index.html",
-  "hub/app.js"
+  "hub/app.js",
+  "radar/app/app.js"
  ],
  "最新 / 编号倒序": [
   "hub/index.html"
@@ -822,7 +829,8 @@
   "hub/index.html"
  ],
  "加载更多": [
-  "hub/index.html"
+  "hub/index.html",
+  "radar/app/app.js"
  ],
  "最新长文（带日期与摘要）": [
   "hub/index.html"
@@ -845,7 +853,7 @@
  "快照中的论文与预印本": [
   "hub/index.html"
  ],
- "来自 arXiv 化学物理/计算物理与 Crossref 期刊的官方 API 元数据快照，按收录日期排列；点击 DOI/arXiv 链接访问原站。": [
+ "来自 arXiv 化学物理/计算物理、ChemRxiv 理论与计算化学和 Crossref 期刊的官方 API 元数据快照，按收录日期排列；点击 DOI/arXiv 链接访问原站。": [
   "hub/index.html"
  ],
  "开源项目与官方软件": [
@@ -1267,7 +1275,8 @@
  "全部": [
   "lab/index.html",
   "train/index.html",
-  "pro/index.html"
+  "pro/index.html",
+  "radar/app/app.js"
  ],
  "通过": [
   "lab/index.html",
@@ -1825,7 +1834,8 @@
   "train/index.html"
  ],
  "不限": [
-  "train/index.html"
+  "train/index.html",
+  "radar/app/app.js"
  ],
  "6 GB 或 Mac 8 GB": [
   "train/index.html"
@@ -1858,7 +1868,8 @@
  ],
  "推荐": [
   "train/index.html",
-  "ai/ai.js"
+  "ai/ai.js",
+  "radar/app/app.js"
  ],
  "无独显 / Mac 16 GB": [
   "train/index.html"
@@ -2648,7 +2659,8 @@
   "train/index.html"
  ],
  "数据": [
-  "train/index.html"
+  "train/index.html",
+  "radar/app/app.js"
  ],
  "），确认微调没有让基础化学知识退化。": [
   "train/index.html"
@@ -2837,7 +2849,9 @@
   "atlas data"
  ],
  "永久": [
-  "pro/index.html"
+  "pro/index.html",
+  "pro/account.html",
+  "pro/account-page.js"
  ],
  "每个人都能用的完整研究导航。": [
   "pro/index.html"
@@ -2845,7 +2859,7 @@
  "开始使用": [
   "pro/index.html"
  ],
- "统一搜索 1,465 条资源与网状查询": [
+ "统一搜索 1,500 多条资源与网状查询": [
   "pro/index.html"
  ],
  "19 章中文讲解与资源目录": [
@@ -3157,7 +3171,8 @@
  ],
  "关闭": [
   "pro/index.html",
-  "ai/ai.js"
+  "ai/ai.js",
+  "radar/app/app.js"
  ],
  "支付方式": [
   "pro/index.html"
@@ -3208,12 +3223,17 @@
   "pro/account.html"
  ],
  "用付款邮箱登录": [
-  "pro/account.html"
+  "pro/account.html",
+  "pro/account-page.js"
  ],
  "我们会给这个邮箱发一个 6 位验证码，不需要密码。": [
-  "pro/account.html"
+  "pro/account.html",
+  "pro/account-page.js"
  ],
  "邮箱": [
+  "pro/account.html"
+ ],
+ "VIP 卡号": [
   "pro/account.html"
  ],
  "验证码": [
@@ -3230,6 +3250,9 @@
   "pro/account.html"
  ],
  "查看套餐": [
+  "pro/account.html"
+ ],
+ "我有 VIP 卡": [
   "pro/account.html"
  ],
  "管理订阅、付款方式与发票 ↗": [
@@ -3256,6 +3279,46 @@
  "添加成员": [
   "pro/account.html"
  ],
+ "发 VIP 卡": [
+  "pro/account.html"
+ ],
+ "生成卡号送给朋友。朋友在本页填邮箱和卡号、收到验证码后即开通 Pro。一张卡只能用一次；收回后，这张卡带来的 Pro 时长立即作废。": [
+  "pro/account.html"
+ ],
+ "数量": [
+  "pro/account.html",
+  "lab/lab.js"
+ ],
+ "有效期": [
+  "pro/account.html"
+ ],
+ "1 年": [
+  "pro/account.html"
+ ],
+ "3 个月": [
+  "pro/account.html"
+ ],
+ "1 个月": [
+  "pro/account.html"
+ ],
+ "7 天": [
+  "pro/account.html"
+ ],
+ "备注（只有你看得到）": [
+  "pro/account.html"
+ ],
+ "生成": [
+  "pro/account.html"
+ ],
+ "兑换 VIP 卡": [
+  "pro/account.html"
+ ],
+ "有朋友送的 VIP 卡？填卡号兑换，Pro 立即生效；有期限的卡会在当前有效期之后顺延。": [
+  "pro/account.html"
+ ],
+ "兑换": [
+  "pro/account.html"
+ ],
  "这个邮箱没有有效的 Pro 订阅": [
   "pro/account.html"
  ],
@@ -3266,7 +3329,8 @@
   "pro/account.html"
  ],
  "付款时填写的邮箱": [
-  "pro/account.html"
+  "pro/account.html",
+  "pro/account-page.js"
  ],
  "6 位数字": [
   "pro/account.html"
@@ -3275,6 +3339,9 @@
   "pro/account.html"
  ],
  "成员邮箱": [
+  "pro/account.html"
+ ],
+ "例如：送给课题组的同学": [
   "pro/account.html"
  ],
  "服务条款 · MolAstria": [
@@ -3547,6 +3614,23 @@
  "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
   "download/index.html"
  ],
+ "预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria": [
+  "radar/index.html"
+ ],
+ "预印本雷达需要启用 JavaScript。": [
+  "radar/index.html"
+ ],
+ "预印本雷达": [
+  "radar/index.html",
+  "radar/app/index.html",
+  "shared-nav.js"
+ ],
+ "预印本雷达 · MolAstria": [
+  "radar/app/index.html"
+ ],
+ "苟日新，日日新": [
+  "radar/app/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -3791,7 +3875,8 @@
  ],
  "收藏": [
   "app.js",
-  "atlas/app.js"
+  "atlas/app.js",
+  "radar/app/app.js"
  ],
  "来源与资源说明 ↗": [
   "app.js"
@@ -3849,11 +3934,13 @@
  ],
  "已取消收藏": [
   "app.js",
-  "atlas/app.js"
+  "atlas/app.js",
+  "radar/app/app.js"
  ],
  "名称": [
   "app.js",
-  "lab/lab.js"
+  "lab/lab.js",
+  "radar/app/app.js"
  ],
  "原文链接": [
   "app.js"
@@ -4142,7 +4229,8 @@
   "lab/lab.js"
  ],
  "篇": [
-  "hub/app.js"
+  "hub/app.js",
+  "radar/app/app.js"
  ],
  "博文编号分布直方图": [
   "hub/app.js"
@@ -4648,9 +4736,6 @@
  "任务": [
   "lab/lab.js"
  ],
- "数量": [
-  "lab/lab.js"
- ],
  "每个 credits": [
   "lab/lab.js"
  ],
@@ -5087,7 +5172,8 @@
   "ai/ai.js"
  ],
  "保存": [
-  "ai/ai.js"
+  "ai/ai.js",
+  "radar/app/app.js"
  ],
  "费用由你的服务商账户结算。参考价（美元 / 百万 token，输入 / 输出）：Muse Wonder 1.0 为 4 / 20，Muse Spark 1.3 为 1.25 / 4.25；DeepSeek 以官方价目为准。实验室里的「提出候选」每轮约 1 万 token。": [
   "ai/ai.js"
@@ -5164,6 +5250,12 @@
  "发送": [
   "ai/ai.js"
  ],
+ "拖动调整宽度": [
+  "ai/ai.js"
+ ],
+ "拖动调整宽度，双击恢复默认": [
+  "ai/ai.js"
+ ],
  "切换服务商或模型": [
   "ai/ai.js"
  ],
@@ -5194,7 +5286,7 @@
  "问目录": [
   "ai/ai.js"
  ],
- "从 1,465 条资源里找出处，再让 AI 组织回答。": [
+ "从 1,500 多条资源里找出处，再让 AI 组织回答。": [
   "ai/ai.js"
  ],
  "直接向模型提问，适合概念与方法问题。": [
@@ -5357,6 +5449,15 @@
  "免费账号": [
   "pro/account-page.js"
  ],
+ "站长 · 永久 Pro": [
+  "pro/account-page.js"
+ ],
+ "VIP 卡 · {0} 到期": [
+  "pro/account-page.js"
+ ],
+ "VIP 卡 · 永久有效": [
+  "pro/account-page.js"
+ ],
  "由 {0} 的课题组版提供": [
   "pro/account-page.js"
  ],
@@ -5384,6 +5485,9 @@
  "课题组成员": [
   "pro/account-page.js"
  ],
+ "站长": [
+  "pro/account-page.js"
+ ],
  "已用 {0} / {1} 个席位（含你自己），每位成员每月 {2} 次 AI 托管额度。成员用自己的邮箱在本页登录。": [
   "pro/account-page.js"
  ],
@@ -5393,13 +5497,31 @@
  "还没有添加成员。": [
   "pro/account-page.js"
  ],
+ "用 VIP 卡开通 Pro": [
+  "pro/account-page.js"
+ ],
+ "填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。": [
+  "pro/account-page.js"
+ ],
+ "你的邮箱": [
+  "pro/account-page.js"
+ ],
  "登录": [
+  "pro/account-page.js"
+ ],
+ "请填写 VIP 卡号。": [
+  "pro/account-page.js"
+ ],
+ "验证码已发到你的邮箱，填进来后 VIP 卡立即生效。没收到请看看垃圾邮件。": [
   "pro/account-page.js"
  ],
  "如果这个邮箱有有效的 Pro 订阅，验证码会在一分钟内送达。没收到请看看垃圾邮件，或确认是付款时填写的邮箱。": [
   "pro/account-page.js"
  ],
  "请输入邮件里的 6 位验证码。": [
+  "pro/account-page.js"
+ ],
+ "VIP 卡兑换成功，Pro 已开通。": [
   "pro/account-page.js"
  ],
  "已退出登录。": [
@@ -5412,6 +5534,58 @@
   "pro/account-page.js"
  ],
  "已移除 {0}。": [
+  "pro/account-page.js"
+ ],
+ "年": [
+  "pro/account-page.js"
+ ],
+ "个月": [
+  "pro/account-page.js"
+ ],
+ "天": [
+  "pro/account-page.js",
+  "radar/app/app.js"
+ ],
+ "送你一张 MolAstria VIP 卡（Pro {0}）：{1} 打开 {2}?card={3} ，填你的邮箱，收到验证码填进去就开通了。": [
+  "pro/account-page.js"
+ ],
+ "已收回": [
+  "pro/account-page.js"
+ ],
+ "已兑换 · {0} · {1}": [
+  "pro/account-page.js"
+ ],
+ "未使用": [
+  "pro/account-page.js"
+ ],
+ "复制邀请": [
+  "pro/account-page.js"
+ ],
+ "收回": [
+  "pro/account-page.js"
+ ],
+ "还没有发过 VIP 卡。": [
+  "pro/account-page.js"
+ ],
+ "一次可以生成 1–50 张。": [
+  "pro/account-page.js"
+ ],
+ "已生成 {0} 张，点“复制邀请”发给朋友。": [
+  "pro/account-page.js"
+ ],
+ "已复制 {0} 的邀请文字。": [
+  "pro/account-page.js"
+ ],
+ "复制下面的邀请文字：": [
+  "pro/account-page.js"
+ ],
+ "收回 {0}？{1} 会立即失去这张卡带来的 Pro 时长。": [
+  "pro/account-page.js"
+ ],
+ "收回 {0}？收回后这张卡不能再兑换。": [
+  "pro/account-page.js"
+ ],
+ "已收回 {0}。": [
   "pro/account-page.js"
  ],
  "登录已过期，请重新登录。": [
@@ -5430,7 +5604,854 @@
   "pay/account.js"
  ],
  "请求失败（{0}）": [
-  "pay/account.js"
+  "pay/account.js",
+  "radar/app/app.js"
+ ],
+ "日一二三四五六": [
+  "radar/app/app.js"
+ ],
+ "今天": [
+  "radar/app/app.js"
+ ],
+ "昨天": [
+  "radar/app/app.js"
+ ],
+ "明天": [
+  "radar/app/app.js"
+ ],
+ "{0}月{1}日 周{2}": [
+  "radar/app/app.js"
+ ],
+ "马上开始": [
+  "radar/app/app.js"
+ ],
+ "{0} 分钟后": [
+  "radar/app/app.js"
+ ],
+ "{0} 小时{1}后": [
+  "radar/app/app.js"
+ ],
+ "{0} 天后": [
+  "radar/app/app.js"
+ ],
+ "分钟": [
+  "radar/app/app.js"
+ ],
+ "小时": [
+  "radar/app/app.js"
+ ],
+ "已暂停": [
+  "radar/app/app.js"
+ ],
+ "每天 {0}": [
+  "radar/app/app.js"
+ ],
+ "自动推荐": [
+  "radar/app/app.js"
+ ],
+ "手动推荐": [
+  "radar/app/app.js"
+ ],
+ "从托盘推荐": [
+  "radar/app/app.js"
+ ],
+ "合并PDF": [
+  "radar/app/app.js"
+ ],
+ "逐篇PDF": [
+  "radar/app/app.js"
+ ],
+ "摘要清单": [
+  "radar/app/app.js"
+ ],
+ "每日简报": [
+  "radar/app/app.js"
+ ],
+ "（PDF 需在浏览器中下载）": [
+  "radar/app/app.js"
+ ],
+ "常用": [
+  "radar/app/app.js"
+ ],
+ "arXiv、ChemRxiv、bioRxiv 等常用来源": [
+  "radar/app/app.js"
+ ],
+ "化学物理": [
+  "radar/app/app.js"
+ ],
+ "材料科学": [
+  "radar/app/app.js"
+ ],
+ "软物质": [
+  "radar/app/app.js"
+ ],
+ "计算物理": [
+  "radar/app/app.js"
+ ],
+ "生物物理": [
+  "radar/app/app.js"
+ ],
+ "生物分子": [
+  "radar/app/app.js"
+ ],
+ "定量生物方法": [
+  "radar/app/app.js"
+ ],
+ "人工智能": [
+  "radar/app/app.js"
+ ],
+ "统计学习": [
+  "radar/app/app.js"
+ ],
+ "量子物理": [
+  "radar/app/app.js"
+ ],
+ "统计力学": [
+  "radar/app/app.js"
+ ],
+ "原子分子物理": [
+  "radar/app/app.js"
+ ],
+ "应用物理": [
+  "radar/app/app.js"
+ ],
+ "AI × 化学": [
+  "radar/app/app.js"
+ ],
+ "有机合成方法学": [
+  "radar/app/app.js"
+ ],
+ "有机反应机理": [
+  "radar/app/app.js"
+ ],
+ "催化与能源材料": [
+  "radar/app/app.js"
+ ],
+ "计算化学 / DFT": [
+  "radar/app/app.js"
+ ],
+ "化学生物学 / 药物发现": [
+  "radar/app/app.js"
+ ],
+ "未知原因": [
+  "radar/app/app.js"
+ ],
+ "推荐失败：{0}": [
+  "radar/app/app.js"
+ ],
+ "新推荐 {0} 篇": [
+  "radar/app/app.js"
+ ],
+ "这次没有新的匹配文章": [
+  "radar/app/app.js"
+ ],
+ "兴趣主题": [
+  "radar/app/app.js"
+ ],
+ "导出记录": [
+  "radar/app/app.js"
+ ],
+ "设置": [
+  "radar/app/app.js"
+ ],
+ "正在推荐…": [
+  "radar/app/app.js"
+ ],
+ "自动推荐已暂停": [
+  "radar/app/app.js"
+ ],
+ "等待添加兴趣主题": [
+  "radar/app/app.js"
+ ],
+ "自动推荐 · {0}": [
+  "radar/app/app.js"
+ ],
+ "下次：{0}": [
+  "radar/app/app.js"
+ ],
+ "网页版 ·": [
+  "radar/app/app.js"
+ ],
+ "正在整理…": [
+  "radar/app/app.js"
+ ],
+ "正在下载 PDF：{0}/{1}": [
+  "radar/app/app.js"
+ ],
+ "ChemRxiv 只允许浏览器下载 PDF：已在浏览器中打开 {0} 篇，请在每个标签页点「下载」或按 Ctrl+S 存到下载文件夹，": [
+  "radar/app/app.js"
+ ],
+ "这里会自动收取（还会等 {0} 分钟）。": [
+  "radar/app/app.js"
+ ],
+ "正在生成 PDF…": [
+  "radar/app/app.js"
+ ],
+ "已导出": [
+  "radar/app/app.js"
+ ],
+ "导出失败": [
+  "radar/app/app.js"
+ ],
+ "不等了，先导出": [
+  "radar/app/app.js"
+ ],
+ "再次下载": [
+  "radar/app/app.js"
+ ],
+ "打开文件夹": [
+  "radar/app/app.js"
+ ],
+ "打开 PDF": [
+  "radar/app/app.js"
+ ],
+ "在文件夹中显示": [
+  "radar/app/app.js"
+ ],
+ "{0} … {1}（{2} 位作者）": [
+  "radar/app/app.js"
+ ],
+ "相关度（0–100）": [
+  "radar/app/app.js"
+ ],
+ "（没有摘要）": [
+  "radar/app/app.js"
+ ],
+ "{0}本地PDF": [
+  "radar/app/app.js"
+ ],
+ "用本机的 PDF 阅读器打开已下载的文件": [
+  "radar/app/app.js"
+ ],
+ "已收藏": [
+  "radar/app/app.js"
+ ],
+ "展开摘要": [
+  "radar/app/app.js"
+ ],
+ "{0}相关": [
+  "radar/app/app.js"
+ ],
+ "{0}不相关": [
+  "radar/app/app.js"
+ ],
+ "选中后可批量导出 PDF": [
+  "radar/app/app.js"
+ ],
+ "相关：以后多推荐类似的": [
+  "radar/app/app.js"
+ ],
+ "不相关：以后少推荐类似的": [
+  "radar/app/app.js"
+ ],
+ "收起摘要": [
+  "radar/app/app.js"
+ ],
+ "记下了：以后会多推荐类似的文章": [
+  "radar/app/app.js"
+ ],
+ "记下了：以后会少推荐类似的文章": [
+  "radar/app/app.js"
+ ],
+ "请拖入 PDF 文件": [
+  "radar/app/app.js"
+ ],
+ "已关联这篇的 PDF，导出时会直接使用": [
+  "radar/app/app.js"
+ ],
+ "已选": [
+  "radar/app/app.js"
+ ],
+ "{0}导出为一个PDF": [
+  "radar/app/app.js"
+ ],
+ "目录 + 全文，带书签": [
+  "radar/app/app.js"
+ ],
+ "取消选择": [
+  "radar/app/app.js"
+ ],
+ "搜索：{0}": [
+  "radar/app/app.js"
+ ],
+ "推荐精选": [
+  "radar/app/app.js"
+ ],
+ "文献合集": [
+  "radar/app/app.js"
+ ],
+ "请先选择文章": [
+  "radar/app/app.js"
+ ],
+ "开始导出 {0} 篇（{1}）": [
+  "radar/app/app.js"
+ ],
+ "已经在推荐中…": [
+  "radar/app/app.js"
+ ],
+ "正在从各预印本平台获取新文章…": [
+  "radar/app/app.js"
+ ],
+ "按你的兴趣主题筛选并打分，通常需要 10–60 秒": [
+  "radar/app/app.js"
+ ],
+ "失败（{0}）": [
+  "radar/app/app.js"
+ ],
+ "新增 {0} 篇": [
+  "radar/app/app.js"
+ ],
+ "上次 {0}：{1}": [
+  "radar/app/app.js"
+ ],
+ "还没有推荐过": [
+  "radar/app/app.js"
+ ],
+ "下次自动推荐：{0}": [
+  "radar/app/app.js"
+ ],
+ "先启用一个兴趣主题": [
+  "radar/app/app.js"
+ ],
+ "· 网页版只在本页开着时推荐，关掉后再打开会自动补上": [
+  "radar/app/app.js"
+ ],
+ "{0}修改频率": [
+  "radar/app/app.js"
+ ],
+ "· {0} 篇未读": [
+  "radar/app/app.js"
+ ],
+ "全选本批": [
+  "radar/app/app.js"
+ ],
+ "{0}导出本批PDF": [
+  "radar/app/app.js"
+ ],
+ "先告诉我你关注什么": [
+  "radar/app/app.js"
+ ],
+ "选一个模板马上开始（之后可以改关键词），或者自己新建一个兴趣主题。": [
+  "radar/app/app.js"
+ ],
+ "{0}自定义主题": [
+  "radar/app/app.js"
+ ],
+ "还没有推荐": [
+  "radar/app/app.js"
+ ],
+ "点「立即推荐」马上抓取一次，或等待下次自动推荐。": [
+  "radar/app/app.js"
+ ],
+ "加载更早的推荐": [
+  "radar/app/app.js"
+ ],
+ "推荐 {0}": [
+  "radar/app/app.js"
+ ],
+ "按你的兴趣主题，从 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台自动挑选的新文章": [
+  "radar/app/app.js"
+ ],
+ "{0}全部标为已读": [
+  "radar/app/app.js"
+ ],
+ "{0}立即推荐": [
+  "radar/app/app.js"
+ ],
+ "逐篇 PDF": [
+  "radar/app/app.js"
+ ],
+ "每篇一个文件，放在同一个文件夹": [
+  "radar/app/app.js"
+ ],
+ "摘要清单 PDF": [
+  "radar/app/app.js"
+ ],
+ "标题、作者、链接和摘要，不含全文": [
+  "radar/app/app.js"
+ ],
+ "本批全部标为已读": [
+  "radar/app/app.js"
+ ],
+ "最近 7 天": [
+  "radar/app/app.js"
+ ],
+ "最近 30 天": [
+  "radar/app/app.js"
+ ],
+ "最近 3 个月": [
+  "radar/app/app.js"
+ ],
+ "最近 1 年": [
+  "radar/app/app.js"
+ ],
+ "标题 + 摘要": [
+  "radar/app/app.js"
+ ],
+ "仅标题": [
+  "radar/app/app.js"
+ ],
+ "作者": [
+  "radar/app/app.js"
+ ],
+ "最新优先": [
+  "radar/app/app.js"
+ ],
+ "相关度优先": [
+  "radar/app/app.js"
+ ],
+ "实时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台；勾选结果即可一键导出 PDF": [
+  "radar/app/app.js"
+ ],
+ "{0}搜索": [
+  "radar/app/app.js"
+ ],
+ "时间": [
+  "radar/app/app.js"
+ ],
+ "范围": [
+  "radar/app/app.js"
+ ],
+ "{0}语法": [
+  "radar/app/app.js"
+ ],
+ "空格 = 且：两个词都要出现": [
+  "radar/app/app.js"
+ ],
+ "引号 = 完整短语（C–H、C-H 写法都能匹配）": [
+  "radar/app/app.js"
+ ],
+ "逗号 /": [
+  "radar/app/app.js"
+ ],
+ "/ 换行 = 或": [
+  "radar/app/app.js"
+ ],
+ "星号 = 前缀（catalyst、catalysis、catalytic…）": [
+  "radar/app/app.js"
+ ],
+ "减号或": [
+  "radar/app/app.js"
+ ],
+ "= 排除": [
+  "radar/app/app.js"
+ ],
+ "只在标题 / 作者里找": [
+  "radar/app/app.js"
+ ],
+ "括号组合条件": [
+  "radar/app/app.js"
+ ],
+ "请输入关键词": [
+  "radar/app/app.js"
+ ],
+ "至少选择一个来源": [
+  "radar/app/app.js"
+ ],
+ "{0} 个预印本平台": [
+  "radar/app/app.js"
+ ],
+ "正在检索 {0}…": [
+  "radar/app/app.js"
+ ],
+ "解析为：": [
+  "radar/app/app.js"
+ ],
+ "· 已加载 {0} 篇": [
+  "radar/app/app.js"
+ ],
+ "全选结果": [
+  "radar/app/app.js"
+ ],
+ "{0}保存为兴趣主题": [
+  "radar/app/app.js"
+ ],
+ "没有找到匹配的文章": [
+  "radar/app/app.js"
+ ],
+ "试试放宽时间范围，或减少关键词。": [
+  "radar/app/app.js"
+ ],
+ "已添加主题「{0}」，几秒后开始推荐…": [
+  "radar/app/app.js"
+ ],
+ "已启用": [
+  "radar/app/app.js"
+ ],
+ "已停用": [
+  "radar/app/app.js"
+ ],
+ "（不限关键词）": [
+  "radar/app/app.js"
+ ],
+ "解析为：{0}": [
+  "radar/app/app.js"
+ ],
+ "{0}编辑": [
+  "radar/app/app.js"
+ ],
+ "{0}预览近 7 天": [
+  "radar/app/app.js"
+ ],
+ "删除": [
+  "radar/app/app.js"
+ ],
+ "从模板添加": [
+  "radar/app/app.js"
+ ],
+ "从一个模板开始": [
+  "radar/app/app.js"
+ ],
+ "点一下就会添加，之后可以随时修改关键词和分类。": [
+  "radar/app/app.js"
+ ],
+ "自动推荐按这些主题筛选新文章；在文章上点「相关 / 不相关」，排序会越来越贴合你": [
+  "radar/app/app.js"
+ ],
+ "{0}新建主题": [
+  "radar/app/app.js"
+ ],
+ "删除主题「{0}」？已推荐的文章会保留。": [
+  "radar/app/app.js"
+ ],
+ "已删除": [
+  "radar/app/app.js"
+ ],
+ "已启用「{0}」": [
+  "radar/app/app.js"
+ ],
+ "已停用「{0}」": [
+  "radar/app/app.js"
+ ],
+ "编辑主题": [
+  "radar/app/app.js"
+ ],
+ "新建兴趣主题": [
+  "radar/app/app.js"
+ ],
+ "关键词（英文）": [
+  "radar/app/app.js"
+ ],
+ "例：": [
+  "radar/app/app.js"
+ ],
+ "或": [
+  "radar/app/app.js"
+ ],
+ "（点选；arXiv 还可以按下面的分类订阅）": [
+  "radar/app/app.js"
+ ],
+ "arXiv 分类": [
+  "radar/app/app.js"
+ ],
+ "（可选；不选 = 在全部分类里按关键词找）": [
+  "radar/app/app.js"
+ ],
+ "「预览」会用最近 7 天的新文章试一试，不会保存": [
+  "radar/app/app.js"
+ ],
+ "{0}预览": [
+  "radar/app/app.js"
+ ],
+ "例如：AI × 化学": [
+  "radar/app/app.js"
+ ],
+ "其他分类代码，逗号分隔，如 cond-mat.supr-con": [
+  "radar/app/app.js"
+ ],
+ "关键词为空时，只按 arXiv 分类订阅（ChemRxiv 需要关键词）": [
+  "radar/app/app.js"
+ ],
+ "正在用最近 7 天的新文章预览…": [
+  "radar/app/app.js"
+ ],
+ "预览": [
+  "radar/app/app.js"
+ ],
+ "（显示前 {0} 篇）": [
+  "radar/app/app.js"
+ ],
+ "最近 7 天匹配 {0} 篇{1}": [
+  "radar/app/app.js"
+ ],
+ "没有匹配的文章。可以放宽关键词，或者加上 * 前缀匹配。": [
+  "radar/app/app.js"
+ ],
+ "已保存": [
+  "radar/app/app.js"
+ ],
+ "已保存，几秒后按新主题推荐…": [
+  "radar/app/app.js"
+ ],
+ "全选": [
+  "radar/app/app.js"
+ ],
+ "还没有收藏": [
+  "radar/app/app.js"
+ ],
+ "在推荐或搜索结果里点「收藏」。": [
+  "radar/app/app.js"
+ ],
+ "在任意文章上点「收藏」，就会出现在这里": [
+  "radar/app/app.js"
+ ],
+ "{0} 篇未含 PDF": [
+  "radar/app/app.js"
+ ],
+ "文件已移动或删除": [
+  "radar/app/app.js"
+ ],
+ "打开": [
+  "radar/app/app.js"
+ ],
+ "还没有导出过": [
+  "radar/app/app.js"
+ ],
+ "勾选文章，在底部点「导出为一个PDF」。": [
+  "radar/app/app.js"
+ ],
+ "导出文件与简报保存在": [
+  "radar/app/app.js"
+ ],
+ "{0}打开导出文件夹": [
+  "radar/app/app.js"
+ ],
+ "添加并启用兴趣主题后开始": [
+  "radar/app/app.js"
+ ],
+ "正在生成…": [
+  "radar/app/app.js"
+ ],
+ "已关闭": [
+  "radar/app/app.js"
+ ],
+ "马上生成（今天的还没写）": [
+  "radar/app/app.js"
+ ],
+ "每天生成一份": [
+  "radar/app/app.js"
+ ],
+ "把上一次简报之后的新推荐整理成一页 HTML，存进导出文件夹；用浏览器打开后按 Ctrl+P 就能存成 PDF": [
+  "radar/app/app.js"
+ ],
+ "生成时间": [
+  "radar/app/app.js"
+ ],
+ "到点就生成；电脑关机的时候会开机后补上，不会漏": [
+  "radar/app/app.js"
+ ],
+ "{0}现在生成一份": [
+  "radar/app/app.js"
+ ],
+ "下一份": [
+  "radar/app/app.js"
+ ],
+ "上一份": [
+  "radar/app/app.js"
+ ],
+ "导出文件夹": [
+  "radar/app/app.js"
+ ],
+ "选择…": [
+  "radar/app/app.js"
+ ],
+ "推荐后自动导出": [
+  "radar/app/app.js"
+ ],
+ "每次自动推荐出新文章后，自动生成 PDF 放进导出文件夹": [
+  "radar/app/app.js"
+ ],
+ "不自动导出": [
+  "radar/app/app.js"
+ ],
+ "合并为一个PDF（含目录）": [
+  "radar/app/app.js"
+ ],
+ "逐篇PDF（文件夹）": [
+  "radar/app/app.js"
+ ],
+ "摘要清单PDF": [
+  "radar/app/app.js"
+ ],
+ "需浏览器下载的 PDF": [
+  "radar/app/app.js"
+ ],
+ "ChemRxiv、SSRN、ESS Open Archive、Authorea、engrXiv 只允许浏览器下载 PDF。导出时程序会在浏览器里打开它们，你保存到下载文件夹后会被自动收取；也可以把 PDF 直接拖到文章卡片上": [
+  "radar/app/app.js"
+ ],
+ "导出时自动在浏览器中打开": [
+  "radar/app/app.js"
+ ],
+ "浏览器下载文件夹": [
+  "radar/app/app.js"
+ ],
+ "桌面通知": [
+  "radar/app/app.js"
+ ],
+ "自动推荐出新文章时弹出 Windows 通知": [
+  "radar/app/app.js"
+ ],
+ "{0}发送测试通知": [
+  "radar/app/app.js"
+ ],
+ "开机自动启动": [
+  "radar/app/app.js"
+ ],
+ "登录 Windows 后在托盘里后台运行，按时推荐": [
+  "radar/app/app.js"
+ ],
+ "需要用打包好的 PreprintRadar.exe 运行": [
+  "radar/app/app.js"
+ ],
+ "主窗口": [
+  "radar/app/app.js"
+ ],
+ "关闭窗口后程序仍在托盘里继续运行；托盘菜单里可以退出": [
+  "radar/app/app.js"
+ ],
+ "Edge 应用窗口": [
+  "radar/app/app.js"
+ ],
+ "Chrome 应用窗口": [
+  "radar/app/app.js"
+ ],
+ "默认浏览器标签页": [
+  "radar/app/app.js"
+ ],
+ "版本": [
+  "radar/app/app.js"
+ ],
+ "网页版": [
+  "radar/app/app.js"
+ ],
+ "预印本雷达 v{0} · {1} · {2}": [
+  "radar/app/app.js"
+ ],
+ "数据文件夹": [
+  "radar/app/app.js"
+ ],
+ "数据库、PDF 缓存和日志": [
+  "radar/app/app.js"
+ ],
+ "PDF 导出": [
+  "radar/app/app.js"
+ ],
+ "通知与启动": [
+  "radar/app/app.js"
+ ],
+ "关于": [
+  "radar/app/app.js"
+ ],
+ "浏览器通知": [
+  "radar/app/app.js"
+ ],
+ "浏览器已禁止本站通知，请在地址栏左侧的网站设置里允许": [
+  "radar/app/app.js"
+ ],
+ "本页开着时（可以最小化），自动推荐出新文章会弹出通知": [
+  "radar/app/app.js"
+ ],
+ "{0}测试通知": [
+  "radar/app/app.js"
+ ],
+ "主题、推荐和收藏只保存在你这台电脑的浏览器里（localStorage），不会上传；换浏览器或清除网站数据后会丢失": [
+  "radar/app/app.js"
+ ],
+ "网页版的限制": [
+  "radar/app/app.js"
+ ],
+ "只在本页开着时定时推荐；导出时只有 arXiv 的全文能直接打包进 PDF，其他平台给出链接": [
+  "radar/app/app.js"
+ ],
+ "下载 Windows 桌面版": [
+  "radar/app/app.js"
+ ],
+ "{0}（后台定时推荐 · 所有平台的 PDF 自动下载 · 系统通知）": [
+  "radar/app/app.js"
+ ],
+ "GitHub 源代码": [
+  "radar/app/app.js"
+ ],
+ "预印本雷达 v{0} · {1}": [
+  "radar/app/app.js"
+ ],
+ "通知": [
+  "radar/app/app.js"
+ ],
+ "关于网页版": [
+  "radar/app/app.js"
+ ],
+ "本页开着时按下面的频率自动抓取、筛选；关掉页面后，下次打开会自动补上错过的推荐": [
+  "radar/app/app.js"
+ ],
+ "程序开着（包括只在托盘里）时，按下面的频率自动抓取、筛选并通知你": [
+  "radar/app/app.js"
+ ],
+ "频率": [
+  "radar/app/app.js"
+ ],
+ "arXiv 每个工作日晚上（北美东部时间）更新一次；其他平台全天陆续发布": [
+  "radar/app/app.js"
+ ],
+ "每隔": [
+  "radar/app/app.js"
+ ],
+ "每天": [
+  "radar/app/app.js"
+ ],
+ "下次推荐": [
+  "radar/app/app.js"
+ ],
+ "{0}立即推荐一次": [
+  "radar/app/app.js"
+ ],
+ "每次最多推荐": [
+  "radar/app/app.js"
+ ],
+ "回看天数": [
+  "radar/app/app.js"
+ ],
+ "每次检查最近几天发布的文章；推荐过的不会重复出现": [
+  "radar/app/app.js"
+ ],
+ "相关度门槛": [
+  "radar/app/app.js"
+ ],
+ "0–100；低于这个分数的文章不推荐": [
+  "radar/app/app.js"
+ ],
+ "改完点底部的「保存设置」": [
+  "radar/app/app.js"
+ ],
+ "推荐内容": [
+  "radar/app/app.js"
+ ],
+ "保存设置": [
+  "radar/app/app.js"
+ ],
+ "正在整理简报…": [
+  "radar/app/app.js"
+ ],
+ "请在弹出的窗口中选择文件夹": [
+  "radar/app/app.js"
+ ],
+ "选择文件夹": [
+  "radar/app/app.js"
+ ],
+ "已发送测试通知": [
+  "radar/app/app.js"
+ ],
+ "浏览器没有允许通知": [
+  "radar/app/app.js"
+ ],
+ "已发送测试通知，看看屏幕右下角": [
+  "radar/app/app.js"
+ ],
+ "通知发送失败，请检查 Windows 的通知设置": [
+  "radar/app/app.js"
+ ],
+ "设置已保存": [
+  "radar/app/app.js"
  ],
  "账号服务还没有配置 Stripe 密钥": [
   "deploy/account-worker.js"
@@ -5439,6 +6460,15 @@
   "deploy/account-worker.js"
  ],
  "付款平台返回错误（{0}）：{1}": [
+  "deploy/account-worker.js"
+ ],
+ "VIP 卡无效或已经被使用": [
+  "deploy/account-worker.js"
+ ],
+ "这张 VIP 卡刚刚被别人用掉了": [
+  "deploy/account-worker.js"
+ ],
+ "只有站长可以管理 VIP 卡": [
   "deploy/account-worker.js"
  ],
  "请先登录 MolAstria Pro": [
@@ -5495,6 +6525,9 @@
  "验证码发送太频繁，请一小时后再试": [
   "deploy/account-worker.js"
  ],
+ "VIP 卡号格式不对，应该像 VIP-XXXX-XXXX-XXXX": [
+  "deploy/account-worker.js"
+ ],
  "请填写邮箱和 6 位验证码": [
   "deploy/account-worker.js"
  ],
@@ -5517,6 +6550,18 @@
   "deploy/account-worker.js"
  ],
  "席位已满：共 {0} 席，你自己占 1 席。可以在订阅管理里增加席位。": [
+  "deploy/account-worker.js"
+ ],
+ "尝试太频繁，请一小时后再试": [
+  "deploy/account-worker.js"
+ ],
+ "一次可以生成 1–50 张": [
+  "deploy/account-worker.js"
+ ],
+ "有效期应为 1–3650 天，或留空表示永久": [
+  "deploy/account-worker.js"
+ ],
+ "没有这张 VIP 卡": [
   "deploy/account-worker.js"
  ],
  "这个账号目前没有有效的 Pro 订阅": [
@@ -6141,6 +7186,12 @@
   "sources"
  ],
  "化学物理/计算物理最新预印本（arXiv 官方 API，按提交时间倒序）": [
+  "sources"
+ ],
+ "ChemRxiv 计算化学": [
+  "sources"
+ ],
+ "ChemRxiv 理论与计算化学最新预印本（Crossref 官方元数据，按标题与摘要筛选，DOI 直达）": [
   "sources"
  ],
  "最新期刊论文 · Crossref": [

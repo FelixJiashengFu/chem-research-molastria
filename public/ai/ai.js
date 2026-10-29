@@ -324,8 +324,13 @@
 
   // ── styles ──────────────────────────────────────────────────────────────
   const CSS = `
-.cai-drawer{position:fixed;top:0;right:0;bottom:0;z-index:80;width:min(460px,100vw);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-left:1px solid var(--line);box-shadow:-18px 0 48px rgb(0 0 0/.12);font:14px/1.7 var(--font-sans);transform:translateX(102%);transition:transform .22s ease;visibility:hidden}
+.cai-drawer{position:fixed;top:0;right:0;bottom:0;z-index:80;width:min(var(--cai-w,460px),100vw);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-left:1px solid var(--line);box-shadow:-18px 0 48px rgb(0 0 0/.12);font:14px/1.7 var(--font-sans);transform:translateX(102%);transition:transform .22s ease;visibility:hidden}
 .cai-drawer[data-open=true]{transform:none;visibility:visible}
+.cai-drawer[data-resizing]{transition:none;user-select:none}
+.cai-grip{position:absolute;left:-6px;top:0;bottom:0;width:12px;cursor:ew-resize;touch-action:none;z-index:1}
+.cai-grip::after{content:"";position:absolute;left:4px;top:50%;width:4px;height:48px;margin-top:-24px;border-radius:3px;background:var(--line-strong);opacity:0;transition:opacity .15s}
+.cai-grip:hover::after,.cai-grip:focus-visible::after,.cai-drawer[data-resizing] .cai-grip::after{opacity:1}
+.cai-grip:focus-visible{outline:none}
 .cai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
 .cai-head h2{margin:0;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .cai-chip{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;background:var(--paper);cursor:pointer;font-family:inherit}
@@ -396,7 +401,7 @@
 .cai-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .cai-actions .cai-sp{flex:1}
 .cai-fineprint{font-size:11.5px;color:var(--faint);line-height:1.7;border-top:1px solid var(--line);padding-top:12px}
-@media(max-width:560px){.cai-two{grid-template-columns:1fr}.cai-drawer{width:100vw}}
+@media(max-width:560px){.cai-two{grid-template-columns:1fr}.cai-drawer{width:100vw}.cai-grip{display:none}}
 @media(prefers-reduced-motion:reduce){.cai-drawer{transition:none}}
 `;
   function installStyles() {
@@ -519,11 +524,12 @@
     drawer.setAttribute('role', 'dialog');
     drawer.setAttribute('aria-modal', 'false');
     drawer.setAttribute('aria-labelledby', 'cai-title');
-    drawer.innerHTML = `<div class="cai-head"><h2 id="cai-title"><span aria-hidden="true" style="color:var(--gold)">✦</span>AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"></button><span class="cai-sp"></span><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">⟲</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">⚙</button><button type="button" class="cai-ib" data-act="close" aria-label="关闭">×</button></div>
+    drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><h2 id="cai-title"><span aria-hidden="true" style="color:var(--gold)">✦</span>AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"></button><span class="cai-sp"></span><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">⟲</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">⚙</button><button type="button" class="cai-ib" data-act="close" aria-label="关闭">×</button></div>
       <div class="cai-modes" role="tablist" aria-label="提问方式"><button type="button" role="tab" data-mode="catalog">问目录（带出处）</button><button type="button" role="tab" data-mode="free">自由提问</button></div>
       <div class="cai-log" aria-live="polite"></div>
       <form class="cai-compose"><label class="sr-only" for="cai-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">输入问题</label><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行"></textarea><div class="cai-row"><small data-hint></small><button type="button" class="cai-btn danger" data-act="stop" hidden>停止</button><button type="submit" class="cai-btn primary">发送</button></div></form>`;
     document.body.append(drawer);
+    setupGrip(drawer.querySelector('.cai-grip'));
     drawer.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'close') closeDrawer();
@@ -542,6 +548,46 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) closeDrawer(); });
     document.addEventListener('chemhub:ai-config', refreshDrawer);
   }
+  // Drag the left edge (or use ←/→ on it) to change the drawer's width; double-click restores 460 px.
+  const WIDTH_KEY = 'chemhub-ai-width', DEFAULT_W = 460, MIN_W = 340;
+  function setupGrip(grip) {
+    const maxW = () => Math.max(MIN_W, Math.min(1100, innerWidth - 120));
+    const apply = (w, keep) => {
+      w = Math.round(Math.min(maxW(), Math.max(MIN_W, w)));
+      drawer.style.setProperty('--cai-w', `${w}px`);
+      grip.setAttribute('aria-valuenow', String(w));
+      if (keep) safe(() => w === DEFAULT_W ? localStorage.removeItem(WIDTH_KEY) : localStorage.setItem(WIDTH_KEY, String(w)));
+      return w;
+    };
+    grip.setAttribute('aria-valuemin', String(MIN_W));
+    grip.setAttribute('aria-valuemax', String(maxW()));
+    apply(Number(safe(() => localStorage.getItem(WIDTH_KEY), 0)) || DEFAULT_W);
+    grip.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      grip.setPointerCapture(e.pointerId);
+      drawer.dataset.resizing = '';
+      const move = (ev) => apply(innerWidth - ev.clientX);
+      const end = (ev) => {
+        grip.removeEventListener('pointermove', move);
+        grip.removeEventListener('pointerup', end);
+        grip.removeEventListener('pointercancel', end);
+        delete drawer.dataset.resizing;
+        apply(innerWidth - ev.clientX, true);
+      };
+      grip.addEventListener('pointermove', move);
+      grip.addEventListener('pointerup', end);
+      grip.addEventListener('pointercancel', end);
+    });
+    grip.addEventListener('dblclick', () => apply(DEFAULT_W, true));
+    grip.addEventListener('keydown', (e) => {
+      const step = e.shiftKey ? 120 : 40, now = drawer.getBoundingClientRect().width;
+      if (e.key === 'ArrowLeft') apply(now + step, true);
+      else if (e.key === 'ArrowRight') apply(now - step, true);
+      else return;
+      e.preventDefault();
+    });
+  }
   function refreshDrawer() {
     if (!drawer) return;
     const s = settings();
@@ -556,7 +602,7 @@
     drawer.querySelector('[data-hint]').textContent = mode === 'catalog' ? '先检索本站目录，再由 AI 作答并标注出处' : '直接与模型对话，不检索目录';
     const log = drawer.querySelector('.cai-log');
     const ready = isReady();
-    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,465 条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
+    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,500 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
     log.innerHTML = history[mode].length ? history[mode].map(renderMsg).join('') : welcome;
     log.scrollTop = log.scrollHeight;
   }

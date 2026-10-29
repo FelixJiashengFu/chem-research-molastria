@@ -4,12 +4,18 @@
 
    接口（JSON；登录后用 Authorization: Bearer <令牌>）：
      POST /auth/checkout {session_id}   付款确认页自动登录（Stripe Checkout Session 24 小时内有效）
-     POST /auth/start {email, lang}     给有订阅的邮箱发 6 位验证码（对任何邮箱都回答 ok，不泄露谁买过）
+     POST /auth/start {email, lang, card?}  给有订阅的邮箱发 6 位验证码（对任何邮箱都回答 ok，不泄露谁买过）；
+                                        带上未使用的 VIP 卡时也发，验证通过后卡才算兑换
      POST /auth/verify {email, code}    用验证码换登录令牌
      POST /auth/signout                 退出这台设备
      GET  /me                           订阅、额度、课题组成员
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
+     POST /cards/redeem {code}          已登录时兑换 VIP 卡
+     GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需 Pro
+
+   赠送的 Pro：grants 表里 source = admin 的是站长本人（永久 Pro，可以发 VIP 卡），这一行用 wrangler d1 execute
+   手动写入（见 PAYMENTS.md），不经过任何接口；兑换了 VIP 卡的人直接按 cards 表里的兑换记录算有效期。
 
    部署步骤见 PAYMENTS.md 第 4 节；本地测试：deno run -A tools/account-test.ts */
 
@@ -112,10 +118,25 @@ async function account(env, email, { fresh = false, known = [] } = {}) {
   return row;
 }
 
-/** What this email may use: its own subscription, or a seat in someone's team. */
+/** A gift of Pro that is still valid: a grants row (the site admin), or the VIP cards this email redeemed.
+    Cards stack in the order they were redeemed; a permanent one makes the whole gift permanent. */
+async function grantOf(env, email) {
+  const t = now();
+  const row = await env.DB.prepare('SELECT source, expires FROM grants WHERE email = ?1 AND (expires IS NULL OR expires > ?2)').bind(email, t).first();
+  if (row) return row;
+  const cards = (await env.DB.prepare('SELECT days, redeemed_at FROM cards WHERE redeemed_by = ?1 AND revoked = 0 ORDER BY redeemed_at, code').bind(email).all()).results;
+  if (!cards.length) return null;
+  if (cards.some((c) => c.days == null)) return { source: 'card', expires: null };
+  const expires = cards.reduce((end, c) => Math.max(end, c.redeemed_at) + c.days * 86400, 0);
+  return expires > t ? { source: 'card', expires } : null;
+}
+
+/** What this email may use: its own subscription, a gift of Pro, or a seat in someone's team. */
 async function access(env, email) {
   const own = await account(env, email);
-  if (own.plan !== 'free') return { ...own, pro: true, role: own.plan === 'team' ? 'owner' : 'pro' };
+  const grant = await grantOf(env, email);
+  if (own.plan !== 'free') return { ...own, pro: true, role: own.plan === 'team' ? 'owner' : 'pro', grant };
+  if (grant) return { ...own, plan: 'pro', seats: 1, cycle: '', renews: grant.expires || 0, status: 'active', pro: true, role: 'pro', grant };
   const m = await env.DB.prepare('SELECT owner FROM members WHERE member = ?1').bind(email).first();
   if (m) {
     const team = await account(env, m.owner);
@@ -133,7 +154,41 @@ async function view(env, a) {
   };
   if (a.role === 'member') out.owner = a.owner;
   if (a.role === 'owner') out.members = (await env.DB.prepare('SELECT member FROM members WHERE owner = ?1 ORDER BY added').bind(a.email).all()).results.map((r) => r.member);
+  if (a.grant) out.grant = { source: a.grant.source, expires: a.grant.expires ?? null };
+  if (a.grant?.source === 'admin') out.admin = true;
   return out;
+}
+
+// ── VIP cards ───────────────────────────────────────────────────────────
+// Codes look like VIP-7KQ2-M9XD-4HTP: 12 characters without 0/O, 1/I/L or U, about 59 bits.
+const CARD_ALPHABET = '23456789ABCDEFGHJKMNPQRSTVWXYZ';
+function newCard() {
+  const r = crypto.getRandomValues(new Uint8Array(12));
+  const s = [...r].map((b) => CARD_ALPHABET[b % CARD_ALPHABET.length]).join('');
+  return `VIP-${s.slice(0, 4)}-${s.slice(4, 8)}-${s.slice(8)}`;
+}
+function normCard(v) {
+  const s = String(v || '').toUpperCase().replace(/[^0-9A-Z]/g, '').replace(/^VIP/, '');
+  return s.length === 12 && [...s].every((c) => CARD_ALPHABET.includes(c)) ? `VIP-${s.slice(0, 4)}-${s.slice(4, 8)}-${s.slice(8)}` : '';
+}
+/** A card this email may still redeem (unused, or already redeemed by this same email). */
+async function usableCard(env, code, email) {
+  const card = await env.DB.prepare('SELECT * FROM cards WHERE code = ?1').bind(code).first();
+  if (!card || card.revoked || (card.redeemed_by && card.redeemed_by !== email)) throw fail(404, 'VIP 卡无效或已经被使用');
+  return card;
+}
+/** Marks the card as used by this email; grantOf() turns the redeemed cards into Pro. */
+async function redeem(env, email, code) {
+  const card = await usableCard(env, code, email);
+  if (card.redeemed_by === email) return;
+  const taken = await env.DB.prepare('UPDATE cards SET redeemed_by = ?1, redeemed_at = ?2 WHERE code = ?3 AND redeemed_by IS NULL AND revoked = 0 RETURNING code').bind(email, now(), code).first();
+  if (!taken) throw fail(409, '这张 VIP 卡刚刚被别人用掉了');
+}
+const cardList = async (env) => (await env.DB.prepare('SELECT code, days, note, created, redeemed_by, redeemed_at, revoked FROM cards ORDER BY created DESC, code LIMIT 500').all()).results;
+async function signedInAdmin(env, request) {
+  const me = await signedIn(env, request);
+  if ((await grantOf(env, me))?.source !== 'admin') throw fail(403, '只有站长可以管理 VIP 卡');
+  return me;
 }
 
 // ── sessions ────────────────────────────────────────────────────────────
@@ -215,13 +270,20 @@ async function route(request, env, cors) {
     const email = normEmail(body.email);
     if (!email) throw fail(400, '邮箱格式不对');
     if (!(await allow(env, `start-ip:${ip}`, 20, 3600)) || !(await allow(env, `start:${email}`, 5, 3600))) throw fail(429, '验证码发送太频繁，请一小时后再试');
+    // A VIP card makes any email eligible; it is only marked used once the code from the email is entered.
+    let card = null;
+    if (body.card) {
+      card = normCard(body.card);
+      if (!card) throw fail(400, 'VIP 卡号格式不对，应该像 VIP-XXXX-XXXX-XXXX');
+      await usableCard(env, card, email);
+    }
     await account(env, email, { fresh: true }); // someone who just paid must not wait for the 6-hour cache
     const a = await access(env, email);
     const out = { ok: true };
-    if (a.pro) {
+    if (a.pro || card) {
       const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, '0');
-      await env.DB.prepare('INSERT INTO codes (email, hash, expires, tries) VALUES (?1, ?2, ?3, 0) ON CONFLICT(email) DO UPDATE SET hash = ?2, expires = ?3, tries = 0')
-        .bind(email, await sha256(`${email}:${code}`), now() + CODE_MINUTES * 60).run();
+      await env.DB.prepare('INSERT INTO codes (email, hash, expires, tries, card) VALUES (?1, ?2, ?3, 0, ?4) ON CONFLICT(email) DO UPDATE SET hash = ?2, expires = ?3, tries = 0, card = ?4')
+        .bind(email, await sha256(`${email}:${code}`), now() + CODE_MINUTES * 60, card).run();
       const [subject, text] = codeMail(code, body.lang === 'en');
       await sendMail(env, email, subject, text);
       if (env.DEV_SHOW_CODE === '1') out.devCode = code; // local testing only
@@ -240,6 +302,7 @@ async function route(request, env, cors) {
       await env.DB.prepare('UPDATE codes SET tries = tries + 1 WHERE email = ?1').bind(email).run();
       throw fail(400, '验证码不对');
     }
+    if (row.card) await redeem(env, email, row.card);
     await env.DB.prepare('DELETE FROM codes WHERE email = ?1').bind(email).run();
     const token = await createSession(env, email);
     return json({ token, account: await view(env, await access(env, email)) }, cors);
@@ -272,6 +335,41 @@ async function route(request, env, cors) {
       }
     }
     return json(await view(env, await access(env, me)), cors);
+  }
+
+  if (key === 'POST /cards/redeem') {
+    const me = await signedIn(env, request);
+    const code = normCard(body.code);
+    if (!code) throw fail(400, 'VIP 卡号格式不对，应该像 VIP-XXXX-XXXX-XXXX');
+    if (!(await allow(env, `redeem:${me}`, 10, 3600))) throw fail(429, '尝试太频繁，请一小时后再试');
+    await redeem(env, me, code);
+    return json(await view(env, await access(env, me)), cors);
+  }
+
+  if (path === '/admin/cards') {
+    const me = await signedInAdmin(env, request);
+    if (request.method === 'POST') {
+      const count = Math.floor(Number(body.count) || 1);
+      if (count < 1 || count > 50) throw fail(400, '一次可以生成 1–50 张');
+      const days = body.days == null || body.days === '' ? null : Math.floor(Number(body.days));
+      if (days !== null && !(days >= 1 && days <= 3650)) throw fail(400, '有效期应为 1–3650 天，或留空表示永久');
+      const note = String(body.note || '').trim().slice(0, 80);
+      const t = now(), created = [];
+      while (created.length < count) {
+        const code = newCard();
+        const row = await env.DB.prepare('INSERT INTO cards (code, days, note, created, created_by) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(code) DO NOTHING RETURNING code').bind(code, days, note, t, me).first();
+        if (row) created.push(code);
+      }
+      return json({ created, cards: await cardList(env) }, cors);
+    }
+    if (request.method === 'DELETE') {
+      const code = normCard(body.code);
+      // The redeemer loses exactly this card's days (their other cards still count).
+      const row = code && await env.DB.prepare('UPDATE cards SET revoked = 1 WHERE code = ?1 RETURNING code').bind(code).first();
+      if (!row) throw fail(404, '没有这张 VIP 卡');
+      return json({ cards: await cardList(env) }, cors);
+    }
+    if (request.method === 'GET') return json({ cards: await cardList(env) }, cors);
   }
 
   if (key === 'POST /ai/chat') {

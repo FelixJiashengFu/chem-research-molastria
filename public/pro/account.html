@@ -30,14 +30,15 @@
 
   <section class="acct-card" id="acct-login" hidden aria-labelledby="login-h">
     <h2 id="login-h">用付款邮箱登录</h2>
-    <p class="acct-sub">我们会给这个邮箱发一个 6 位验证码，不需要密码。</p>
+    <p class="acct-sub" id="login-sub">我们会给这个邮箱发一个 6 位验证码，不需要密码。</p>
     <form id="login-form" class="acct-form" novalidate>
       <label class="co-field">邮箱<input type="email" id="login-email" autocomplete="email" placeholder="付款时填写的邮箱" required></label>
+      <label class="co-field" id="card-field" hidden>VIP 卡号<input id="login-card" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VIP-XXXX-XXXX-XXXX"></label>
       <label class="co-field" id="code-field" hidden>验证码<input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 位数字"></label>
       <p class="co-msg" id="login-msg" role="status" aria-live="polite"></p>
       <div class="acct-actions"><button type="button" class="btn" id="login-back" hidden>换个邮箱</button><button type="submit" class="btn primary" id="login-btn">发送验证码</button></div>
     </form>
-    <p class="acct-fine">还没有 Pro？<a href="index.html">查看套餐</a></p>
+    <p class="acct-fine">还没有 Pro？<a href="index.html">查看套餐</a> · <button type="button" class="acct-link" id="card-toggle">我有 VIP 卡</button></p>
   </section>
 
   <section id="acct-main" hidden>
@@ -61,6 +62,26 @@
       <ul class="acct-members" id="member-list"></ul>
       <form id="member-form" class="acct-add" novalidate><input type="email" id="member-email" placeholder="成员邮箱" aria-label="成员邮箱" autocomplete="off"><button class="btn" type="submit">添加成员</button></form>
       <p class="co-msg" id="member-msg" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="acct-card" id="admin-card" hidden aria-labelledby="admin-h">
+      <h2 id="admin-h">发 VIP 卡</h2>
+      <p class="acct-sub">生成卡号送给朋友。朋友在本页填邮箱和卡号、收到验证码后即开通 Pro。一张卡只能用一次；收回后，这张卡带来的 Pro 时长立即作废。</p>
+      <form id="card-form" class="acct-cardgen" novalidate>
+        <label class="co-field">数量<input type="number" id="card-count" min="1" max="50" value="1" inputmode="numeric"></label>
+        <label class="co-field">有效期<select id="card-days"><option value="">永久</option><option value="365">1 年</option><option value="90">3 个月</option><option value="30">1 个月</option><option value="7">7 天</option></select></label>
+        <label class="co-field acct-note">备注（只有你看得到）<input id="card-note" maxlength="80" placeholder="例如：送给课题组的同学"></label>
+        <button class="btn primary" type="submit">生成</button>
+      </form>
+      <p class="co-msg" id="card-msg" role="status" aria-live="polite"></p>
+      <ul class="acct-cardlist" id="card-list"></ul>
+    </div>
+
+    <div class="acct-card" id="redeem-card" hidden aria-labelledby="redeem-h">
+      <h2 id="redeem-h">兑换 VIP 卡</h2>
+      <p class="acct-sub" id="redeem-sub">有朋友送的 VIP 卡？填卡号兑换，Pro 立即生效；有期限的卡会在当前有效期之后顺延。</p>
+      <form id="redeem-form" class="acct-add" novalidate><input id="redeem-code" placeholder="VIP-XXXX-XXXX-XXXX" aria-label="VIP 卡号" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn" type="submit">兑换</button></form>
+      <p class="co-msg" id="redeem-msg" role="status" aria-live="polite"></p>
     </div>
 
     <div class="acct-card" id="lapsed-card" hidden>

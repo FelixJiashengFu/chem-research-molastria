@@ -129,8 +129,9 @@ function renderAll(){
   if (state.tag) $("fTag").value = state.tag;
   /* 分区 */
   renderCards($("latestCards"), dated.slice(0, 9));
-  renderCards($("freshCards"), items.filter((i) => i.source === "arxiv" || i.source === "crossref")
-    .sort((a,b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 18));
+  /* 每个论文来源各取最新 6 篇，避免更新最勤的来源占满整栏 */
+  const byDate = (a,b) => String(b.date || "").localeCompare(String(a.date || ""));
+  renderCards($("freshCards"), ["arxiv", "chemrxiv", "crossref"].flatMap((id) => items.filter((i) => i.source === id).sort(byDate).slice(0, 6)).sort(byDate));
   renderCards($("openCards"), items.filter((i) => i.source === "github" || i.source === "resdir").slice(0, 24));
   renderCards($("xmolCards"), items.filter((i) => i.source === "xmol").slice(0, 24));
   renderCards($("cclCards"), items.filter((i) => i.source === "ccl").slice(0, 24));

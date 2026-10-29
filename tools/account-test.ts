@@ -199,6 +199,90 @@ await test("sign-out ends the session", async () => {
   eq((await call("GET", "/me", undefined, piToken)).status, 401);
 });
 
+// ── gifts of Pro: the site admin and VIP cards ──────────────────────────
+async function signIn(email: string, card?: string) {
+  const s = await call("POST", "/auth/start", card ? { email, card } : { email });
+  if (s.status !== 200) return s;
+  return call("POST", "/auth/verify", { email, code: codeFor(email) });
+}
+let adminToken = "", friendToken = "", cards: string[] = [];
+
+await test("admin: a grant row gives permanent Pro without Stripe", async () => {
+  sqlite.prepare("INSERT INTO grants (email, source, expires, created) VALUES ('boss@molastria.com', 'admin', NULL, ?)").run(nowS());
+  const r = await signIn("boss@molastria.com");
+  eq(r.status, 200);
+  adminToken = r.data.token;
+  eq([r.data.account.pro, r.data.account.plan, r.data.account.admin, r.data.account.grant], [true, "pro", true, { source: "admin", expires: null }]);
+});
+
+await test("VIP cards: only the admin can issue and list them", async () => {
+  eq((await call("POST", "/admin/cards", { count: 1 }, memberToken)).status, 403);
+  eq((await call("GET", "/admin/cards")).status, 401);
+  eq((await call("POST", "/admin/cards", { count: 51 }, adminToken)).status, 400);
+  const r = await call("POST", "/admin/cards", { count: 3, days: 30, note: "组会" }, adminToken);
+  eq(r.status, 200);
+  cards = r.data.created;
+  eq(cards.length, 3);
+  if (!cards.every((c) => /^VIP-[2-9A-HJKMNP-TV-Z]{4}-[2-9A-HJKMNP-TV-Z]{4}-[2-9A-HJKMNP-TV-Z]{4}$/.test(c))) throw new Error(`bad codes ${cards}`);
+  eq(r.data.cards.filter((c: any) => c.note === "组会" && c.days === 30).length, 3);
+});
+
+await test("VIP cards: a new email signs in with a card and gets Pro for its days", async () => {
+  eq((await call("POST", "/auth/start", { email: "friend@uni.edu", card: "VIP-0000" })).status, 400);
+  eq((await call("POST", "/auth/start", { email: "friend@uni.edu", card: "VIP-2222-2222-2222" })).status, 404);
+  const typed = cards[0].toLowerCase().replace(/-/g, " "); // pasted loosely
+  const r = await signIn("friend@uni.edu", typed);
+  eq(r.status, 200);
+  friendToken = r.data.token;
+  const a = r.data.account;
+  eq([a.pro, a.plan, a.grant.source], [true, "pro", "card"]);
+  const days = Math.round((a.grant.expires - nowS()) / 86400);
+  eq(days, 30, "days");
+  const list = (await call("GET", "/admin/cards", undefined, adminToken)).data.cards;
+  eq(list.find((c: any) => c.code === cards[0]).redeemed_by, "friend@uni.edu");
+});
+
+await test("VIP cards: a used card cannot be used by someone else", async () => {
+  eq((await call("POST", "/auth/start", { email: "other@uni.edu", card: cards[0] })).status, 404);
+});
+
+await test("VIP cards: a card is only spent when the emailed code is entered", async () => {
+  await call("POST", "/auth/start", { email: "slow@uni.edu", card: cards[2] });
+  const list = (await call("GET", "/admin/cards", undefined, adminToken)).data.cards;
+  eq(list.find((c: any) => c.code === cards[2]).redeemed_by, null);
+});
+
+await test("VIP cards: redeeming a second card while signed in adds its days", async () => {
+  const r = await call("POST", "/cards/redeem", { code: cards[1] }, friendToken);
+  eq(r.status, 200);
+  eq(Math.round((r.data.grant.expires - nowS()) / 86400), 60, "days");
+  eq((await call("POST", "/cards/redeem", { code: cards[1] }, friendToken)).status, 200, "same card again is a no-op");
+});
+
+await test("VIP cards: revoking one of two stacked cards takes off only its days", async () => {
+  await call("DELETE", "/admin/cards", { code: cards[0] }, adminToken);
+  eq(Math.round(((await call("GET", "/me", undefined, friendToken)).data.grant.expires - nowS()) / 86400), 30, "days left");
+});
+
+await test("VIP cards: cards run out; a permanent card makes Pro permanent", async () => {
+  sqlite.prepare("UPDATE cards SET redeemed_at = redeemed_at - 31 * 86400 WHERE redeemed_by = 'friend@uni.edu'").run();
+  const me = await call("GET", "/me", undefined, friendToken);
+  eq([me.data.pro, me.data.role], [false, "free"]);
+  const perm = (await call("POST", "/admin/cards", { count: 1, days: null }, adminToken)).data.created[0];
+  const r = await call("POST", "/cards/redeem", { code: perm }, friendToken);
+  eq([r.data.pro, r.data.grant], [true, { source: "card", expires: null }]);
+});
+
+await test("VIP cards: revoking a redeemed card ends that Pro", async () => {
+  const code = (await call("POST", "/admin/cards", { count: 1, days: 7 }, adminToken)).data.created[0];
+  const r = await signIn("pal@uni.edu", code);
+  eq(r.data.account.pro, true);
+  const del = await call("DELETE", "/admin/cards", { code }, adminToken);
+  eq(del.data.cards.find((c: any) => c.code === code).revoked, 1);
+  eq((await call("GET", "/me", undefined, r.data.token)).data.pro, false);
+  eq((await call("POST", "/auth/start", { email: "pal@uni.edu", card: code })).status, 404);
+});
+
 await test("unknown routes and bad JSON", async () => {
   eq((await call("GET", "/nope")).status, 404);
   const res = await worker.fetch(new Request("https://api.test/auth/start", { method: "POST", headers: { Origin: "https://molastria.com" }, body: "{" }), env);

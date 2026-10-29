@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。">
+  <meta name="theme-color" content="#173f34">
+  <title>预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <style>
+    html, body { height: 100%; }
+    body.radar-page { display: flex; flex-direction: column; height: 100dvh; margin: 0; overflow: hidden; }
+    .radar-frame { flex: 1; display: block; width: 100%; min-height: 0; border: 0; background: var(--paper); }
+    .radar-page noscript p { padding: 24px; }
+  </style>
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="radar" class="radar-page">
+<!-- 预印本雷达 PreprintRadar（https://github.com/FelixJiashengFu/PreprintRadar）的网页版，由 tools/vendor-radar.ts 复制到 app/。
+     它在浏览器里直接查询 DataCite 和 Crossref，主题、推荐和收藏只保存在访问者自己的浏览器里。 -->
+<iframe class="radar-frame" id="radar-frame" title="预印本雷达" allow="clipboard-write"></iframe>
+<noscript><p>预印本雷达需要启用 JavaScript。</p></noscript>
+<script>
+  // The frame follows the site's language on load and its light/dark switch live.
+  (function () {
+    var frame = document.getElementById('radar-frame'), root = document.documentElement;
+    frame.src = 'app/index.html' + (root.lang === 'en' ? '?lang=en' : '');
+    function sync() {
+      try {
+        var r = frame.contentDocument && frame.contentDocument.documentElement;
+        if (!r) return;
+        if (root.dataset.theme) r.dataset.theme = root.dataset.theme; else delete r.dataset.theme;
+      } catch (e) {}
+    }
+    frame.addEventListener('load', sync);
+    document.addEventListener('chemhub:theme', sync);
+    // Desktop app: its link script may only run in the top page, so papers and PDFs opened inside the
+    // frame are handed to the system browser from here (skipped if the script did reach the frame).
+    frame.addEventListener('load', function () {
+      var w = frame.contentWindow, ipc = window.__TAURI_INTERNALS__;
+      if (!window.__MOLASTRIA_DESKTOP__ || !ipc || !w || w.__MOLASTRIA_DESKTOP__) return;
+      function outside(href) {
+        try { var u = new URL(href, w.location.href); return /^https?:$/.test(u.protocol) && u.origin !== w.location.origin ? u.href : null; } catch (e) { return null; }
+      }
+      function open(url) { ipc.invoke('plugin:opener|open_url', { url: url }); }
+      w.document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[href]') : null, url = a && outside(a.getAttribute('href'));
+        if (url && !e.defaultPrevented) { e.preventDefault(); open(url); }
+      }, true);
+      var native = w.open;
+      w.open = function (href) { var url = href && outside(String(href)); if (url) { open(url); return null; } return native.apply(w, arguments); };
+    });
+  })();
+</script>
+</body>
+</html>

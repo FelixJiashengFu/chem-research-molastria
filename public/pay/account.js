@@ -1,7 +1,8 @@
 /* MolAstria Pro 账号（浏览器端）：付款后自动登录、邮箱验证码登录、订阅与 AI 托管额度。
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
-   Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember()} */
+   Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
+     redeemCard(), and for the site admin cards(), createCards(), revokeCard()} */
 (() => {
   'use strict';
   if (window.MolAstriaAccount) return;
@@ -49,11 +50,15 @@
     get enabled() { return !!api(); },
     token, cached,
     refresh: () => call('/me').then(updated),
-    start: (email) => call('/auth/start', { method: 'POST', auth: false, body: { email, lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
+    start: (email, card) => call('/auth/start', { method: 'POST', auth: false, body: { email, card: card || undefined, lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
     verify: (email, code) => call('/auth/verify', { method: 'POST', auth: false, body: { email, code } }).then((r) => signedIn(r)),
     fromCheckout: (sessionId) => call('/auth/checkout', { method: 'POST', auth: false, body: { session_id: sessionId } }).then((r) => signedIn(r)),
     signOut: () => (token() ? call('/auth/signout', { method: 'POST' }).catch(() => {}) : Promise.resolve()).finally(clear),
     addMember: (email) => call('/team/members', { method: 'POST', body: { email } }).then(updated),
-    removeMember: (email) => call('/team/members', { method: 'DELETE', body: { email } }).then(updated)
+    removeMember: (email) => call('/team/members', { method: 'DELETE', body: { email } }).then(updated),
+    redeemCard: (code) => call('/cards/redeem', { method: 'POST', body: { code } }).then(updated),
+    cards: () => call('/admin/cards'),
+    createCards: (count, days, note) => call('/admin/cards', { method: 'POST', body: { count, days, note } }),
+    revokeCard: (code) => call('/admin/cards', { method: 'DELETE', body: { code } })
   };
 })();
