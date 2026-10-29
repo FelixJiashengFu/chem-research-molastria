@@ -51,7 +51,7 @@
     if (!a || !Number.isFinite(asks) || !Number.isFinite(limit)) return;
     a.usage = { ...(a.usage || {}), asks, limit };
     safe(() => localStorage.setItem('molastria-account', JSON.stringify(a)));
-    if (PROVIDERS.hosted) PROVIDERS.hosted.usage = a.usage;
+    document.dispatchEvent(new CustomEvent('molastria:account', { detail: a })); // the account page's meter follows
   }
   const hostedLine = () => { const u = PROVIDERS.hosted?.usage; return u ? `免配 key · 本月剩余 ${Math.max(0, u.limit - u.asks)} 次` : '免配 key'; };
   function settings() {
@@ -622,6 +622,8 @@
   function openDrawer(opts = {}) {
     if (!drawer) buildDrawer();
     if (opts.mode) mode = opts.mode;
+    // e.g. the account page's quota card asks for the hosted quota even when an own key is saved
+    if (PROVIDERS[opts.provider]) { const s = settings(); if (s.provider !== opts.provider) { s.provider = opts.provider; save(s); } }
     lastFocus = document.activeElement;
     drawer.dataset.open = 'true';
     refreshDrawer();

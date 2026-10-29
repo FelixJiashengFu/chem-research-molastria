@@ -108,7 +108,8 @@
   $('login-back').addEventListener('click', () => { codeStep(false); say(msg, ''); $('login-email').focus(); });
 
   // ── signed in ─────────────────────────────────────────────────────────
-  $('open-ai').addEventListener('click', () => window.ChemHub?.loadAI().then((ai) => ai.openDrawer()).catch((e) => alert(e.message)));
+  $('open-ai').addEventListener('click', () => window.ChemHub?.loadAI().then((ai) => ai.openDrawer({ provider: 'hosted' })).catch((e) => alert(e.message)));
+  document.addEventListener('molastria:account', (e) => { if (account && e.detail) paint(e.detail); }); // e.g. quota used in the AI drawer
   $('signout').addEventListener('click', async () => {
     await A.signOut();
     account = null;
