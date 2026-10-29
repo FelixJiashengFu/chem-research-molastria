@@ -11,7 +11,7 @@ window.MOLASTRIA_PAY = {
   contactUrl: 'https://github.com/FelixJiashengFu/chem-research-molastria/issues',
   methods: ['card', 'applepay', 'googlepay'],   // 只列你在 Stripe 后台真正开通的方式；开通后可加 'alipay'、'wechat'
   // Pro 账号服务（deploy/account-worker.js，见 PAYMENTS.md 第 4 节）。填上地址后：付款后自动登录、AI 托管额度、课题组成员管理生效。
-  accountApi: '',              // 例如 'https://api.molastria.com'
+  accountApi: 'https://api.molastria.com',
   portalUrl: '',               // Stripe 客户门户登录链接（Settings → Billing → Customer portal），形如 https://billing.stripe.com/p/login/…
   // 价格单位是人民币（CNY），与 Stripe 里的价格一致。英文页另附美元约数，只用于展示，按下面的汇率换算。
   usdPerCny: 0.15,             // 2026-10-28 汇率约 0.150
