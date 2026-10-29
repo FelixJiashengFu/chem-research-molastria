@@ -80,7 +80,7 @@ plans: {
    npx wrangler secret put DEEPSEEK_API_KEY
    npx wrangler deploy
    ```
-   做了第 1 步的话，部署前把 `wrangler.toml` 末尾 `routes` 那一行的 `#` 去掉，服务地址就是 `https://api.molastria.com`。打开这个地址，看到 `{"ok":true,"service":"molastria-account"}` 即部署成功。
+   `wrangler.toml` 顶部的 `routes` 把服务地址设为 `https://api.molastria.com`（需要第 1 步）；跳过第 1 步的话，删掉 `routes` 那一行，并把 `workers_dev` 改成 `true`。打开服务地址，看到 `{"ok":true,"service":"molastria-account"}` 即部署成功。
 5. **客户门户登录链接。** Stripe **Settings → Billing → Customer portal** 里复制登录链接（`https://billing.stripe.com/p/login/…`），账号页的“管理订阅”按钮会用它。
 6. **填进网站。** 编辑 `public/pay/config.js`：
    ```js

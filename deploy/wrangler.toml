@@ -4,10 +4,15 @@ name = "molastria-account"
 main = "account-worker.js"
 compatibility_date = "2026-10-01"
 
+# 服务地址用 molastria.com 的子域名（DNS 托管在 Cloudflare；workers.dev 在中国大陆通常打不开）。
+# 顶层设置必须写在下面的 [[d1_databases]] / [vars] 之前，否则会被归进那些段里。
+routes = [{ pattern = "api.molastria.com", custom_domain = true }]
+workers_dev = false
+
 [[d1_databases]]
 binding = "DB"
 database_name = "molastria"
-database_id = "REPLACE_WITH_D1_ID"   # npx wrangler d1 create molastria 输出的 database_id
+database_id = "2833d0b9-d3d6-45d9-8881-4384a6b41296"
 
 [vars]
 ALLOWED_ORIGINS = "https://molastria.com,https://www.molastria.com,tauri://localhost,http://tauri.localhost,https://tauri.localhost"
@@ -19,6 +24,3 @@ HOSTED_MODELS = "deepseek-flash,deepseek-v4-pro"   # 托管额度可用的模型
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions
 #   RESEND_API_KEY    Resend 发信密钥（molastria.com 需在 Resend 验证）
 #   DEEPSEEK_API_KEY  托管额度使用的 DeepSeek key
-
-# molastria.com 的 DNS 托管到 Cloudflare 之后，可以改用自己的子域名（workers.dev 在中国大陆通常打不开）：
-# routes = [{ pattern = "api.molastria.com", custom_domain = true }]
