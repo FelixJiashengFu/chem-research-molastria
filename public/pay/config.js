@@ -13,9 +13,9 @@ window.MOLASTRIA_PAY = {
   // 价格单位是人民币（CNY），与 Stripe 里的价格一致。英文页另附美元约数，只用于展示，按下面的汇率换算。
   usdPerCny: 0.15,             // 2026-10-28 汇率约 0.150
   plans: {
-    pro_year:  { price: 199,  list: 299, period: 'year',  checkoutUrl: '' },   // 测试链接形如 https://buy.stripe.com/test_…
-    pro_month: { price: 29,   period: 'month', checkoutUrl: '' },
-    team_year: { price: 1490, seatPrice: 298, seats: 5, period: 'year', checkoutUrl: '' },   // Stripe 里按席位 ¥298/年，数量最少 5
-    sponsor:   { price: null, checkoutUrl: '' }                     // Stripe 里设为“顾客自定金额”
+    pro_year:  { price: 199,  list: 299, period: 'year',  checkoutUrl: 'https://buy.stripe.com/00wfZb7EA0V070jbp48Zq00' },   // 测试链接形如 https://buy.stripe.com/test_…
+    pro_month: { price: 29,   period: 'month', checkoutUrl: 'https://buy.stripe.com/cNidR3bUQ6fk1FZ78O8Zq01' },
+    team_year: { price: 1490, seatPrice: 298, seats: 5, period: 'year', checkoutUrl: 'https://buy.stripe.com/3cI14h8IEdHMfwP8cS8Zq04' },   // Stripe 里按席位 ¥298/年，数量最少 5
+    sponsor:   { price: null, checkoutUrl: 'https://buy.stripe.com/bJe00d0c89rwbgzgJo8Zq03' }                     // Stripe 里设为“顾客自定金额”
   }
 };
