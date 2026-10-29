@@ -98,4 +98,47 @@
   const measure = () => root.style.setProperty('--cr-nav-height', `${nav.offsetHeight}px`);
   measure();
   new ResizeObserver(measure).observe(nav);
+
+  // Desktop app only: offer the newer version published on GitHub Releases. The app checks the signed feed
+  // once per launch (cached for the session); "稍后" hides the prompt for that version for three days.
+  const ipc = window.__TAURI_INTERNALS__;
+  if (window.__MOLASTRIA_DESKTOP__ && ipc) {
+    const SEEN = 'molastria-update', SNOOZE = 'molastria-update-snooze';
+    const read = (area, key) => { try { return JSON.parse(area.getItem(key) || 'null'); } catch { return null; } };
+    const write = (area, key, v) => { try { area.setItem(key, JSON.stringify(v)); } catch {} };
+    const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const offer = (u) => {
+      const snooze = read(localStorage, SNOOZE);
+      if (snooze && snooze.version === u.version && snooze.until > Date.now()) return;
+      const box = document.createElement('div');
+      box.className = 'cr-update';
+      box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-label', '软件更新');
+      box.innerHTML = `<b>MolAstria 有新版本 v${esc(u.version)}</b>`
+        + `<p><span>当前 v${esc(u.currentVersion)}</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/releases/tag/desktop-v${esc(u.version)}">更新内容</a></p>`
+        + '<p>更新后应用会自动重启，设置都会保留。</p><p class="cr-update-msg" role="status"></p>'
+        + '<div class="cr-update-actions"><button type="button" class="cr-update-later">稍后</button><button type="button" class="cr-update-go">立即更新</button></div>';
+      document.body.append(box);
+      const msg = box.querySelector('.cr-update-msg'), go = box.querySelector('.cr-update-go'), later = box.querySelector('.cr-update-later');
+      later.addEventListener('click', () => { write(localStorage, SNOOZE, { version: u.version, until: Date.now() + 3 * 864e5 }); box.remove(); });
+      go.addEventListener('click', () => {
+        go.disabled = later.disabled = true;
+        go.textContent = '正在下载…';
+        msg.textContent = '';
+        const timer = setInterval(() => ipc.invoke('update_progress').then(([done, total]) => {
+          if (total) go.textContent = done >= total ? '正在安装…' : `正在下载 ${Math.floor((done / total) * 100)}%`;
+        }).catch(() => {}), 300);
+        ipc.invoke('install_update').catch((e) => {
+          clearInterval(timer);
+          go.disabled = later.disabled = false;
+          go.textContent = '重试';
+          const why = /signature/i.test(e) ? '安装包签名校验失败' : /network|connect|dns|timed? ?out|request|status/i.test(e) ? '网络连接失败' : esc(e);
+          msg.innerHTML = `<span>更新没有完成：${why}</span><br><a href="https://molastria.com/download/">到下载页手动安装</a>`;
+        });
+      });
+    };
+    const known = read(sessionStorage, SEEN);
+    if (known) { if (known.version) offer(known); }
+    else ipc.invoke('check_update').then((u) => { write(sessionStorage, SEEN, u || {}); if (u) offer(u); }).catch(() => {});
+  }
 })();

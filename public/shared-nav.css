@@ -163,3 +163,16 @@ html{background:var(--paper)}
 @media(max-width:1440px){.cr-header{gap:14px;padding:10px 20px}.cr-links a{padding:9px 9px;font-size:12.5px}.cr-tools{gap:5px}}
 @media(max-width:1300px){.cr-brand small{display:none!important}.cr-word{font-size:19px}.cr-ai-btn span.cr-label{display:none}}
 @media(max-width:1180px) and (min-width:761px){.cr-links{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.cr-links::-webkit-scrollbar{display:none}.cr-links a{padding:9px 7px}}
+/* Desktop app: update prompt (shared-nav.js) */
+.cr-update{position:fixed;right:18px;bottom:18px;z-index:80;box-sizing:border-box;width:min(330px,calc(100vw - 32px));padding:14px 16px 12px;border:1px solid var(--line-strong);border-radius:12px;background:color-mix(in srgb,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:var(--shadow);color:var(--ink);font:13px/1.55 var(--font-sans);animation:cr-update-in .25s ease-out}
+.cr-update b{display:block;margin-bottom:2px;font-size:14px}
+.cr-update p{margin:0;color:var(--muted)}
+.cr-update a{color:var(--accent-text)}
+.cr-update .cr-update-msg{margin-top:6px;color:var(--danger)}
+.cr-update-msg:empty{display:none}
+.cr-update-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.cr-update button{height:32px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;background:transparent;color:var(--ink);font:600 12.5px/1 var(--font-sans);cursor:pointer}
+.cr-update button.cr-update-go{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.cr-update button:disabled{cursor:default;opacity:.75}
+@keyframes cr-update-in{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){.cr-update{animation:none}}

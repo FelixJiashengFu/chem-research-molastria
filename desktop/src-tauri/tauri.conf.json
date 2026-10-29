@@ -36,6 +36,18 @@
     "macOS": {
       "signingIdentity": "-",
       "minimumSystemVersion": "11.0"
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDYwMjc0RTJBN0ZBNEQ5NDEKUldSQjJhUi9LazRuWUpSa0NFVFNUK2cvV0lqb3VMdEE2aEpnS0gvdUN1Y0hWRU0vQ1RDVVZYcjYK",
+      "endpoints": [
+        "https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     }
   }
 }
