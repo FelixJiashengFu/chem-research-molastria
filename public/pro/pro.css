@@ -29,6 +29,8 @@ a{color:var(--accent-text)}
 .price b{font:400 34px/1.1 var(--font-num)}
 .price span{color:var(--muted);font-size:13px}
 .price s{color:var(--faint);font-size:14px}
+.price .fx{flex-basis:100%;color:var(--muted);font-size:12px}
+.price .fx:empty{display:none}
 .pitch{margin:0 0 6px;font-size:13.5px;color:var(--muted);min-height:44px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:9px 16px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink);text-decoration:none;font:600 14px var(--font-sans);cursor:pointer;transition:background .15s,border-color .15s}
 .btn:hover{background:var(--surface-2);border-color:var(--accent-2)}
@@ -77,10 +79,8 @@ tbody tr:last-child td{border-bottom:0}
 .co-items{list-style:none;margin:0;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;display:grid;gap:6px;font-size:13px}
 .co-items li{display:flex;gap:8px}
 .co-items li::before{content:"✓";color:var(--accent-2);font-weight:700}
-.co-field,.co-row label{display:grid;gap:5px;font-size:12.5px;color:var(--muted)}
-.co-field input,.co-row input{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:6px;padding:9px 11px;min-height:42px}
-.co-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
-.co-row input{width:110px}
+.co-field{display:grid;gap:5px;font-size:12.5px;color:var(--muted)}
+.co-field input{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:6px;padding:9px 11px;min-height:42px}
 .co-methods{display:flex;flex-wrap:wrap;gap:6px}
 .co-methods span{font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:3px 8px;color:var(--ink-2)}
 .co-agree{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-2)}
@@ -88,6 +88,7 @@ tbody tr:last-child td{border-bottom:0}
 .co-msg{margin:0;font-size:13px;min-height:18px}
 .co-msg.err{color:var(--danger)}
 .co-msg.ok{color:var(--ok)}
+.co-msg.warn{color:var(--warn)}
 .co-actions{display:flex;justify-content:flex-end;gap:8px}
 .co-secure{margin:0;font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
 @media(max-width:1060px){.plans{grid-template-columns:1fr 1fr}.plan.featured{transform:none}}

@@ -6,7 +6,10 @@
   const $ = (id) => document.getElementById(id);
   const en = () => document.documentElement.lang === 'en';
   const T = (s) => window.ChemI18n?.t(s) ?? s;
-  const money = (p) => (p == null ? '' : en() ? `US$${p.usd}` : `¥${Number(p.cny).toLocaleString('zh-CN')}`);
+  // Prices are in yuan, as charged by Stripe. English pages mark them CN¥ and add a rough US$ figure.
+  const money = (n) => (n == null ? '' : `${en() ? 'CN¥' : '¥'}${Number(n).toLocaleString(en() ? 'en-US' : 'zh-CN')}`);
+  const approx = (n) => (en() && n && PAY.usdPerCny ? `≈ US$${Math.round(n * PAY.usdPerCny)}` : '');
+  const seatLine = (p) => T(`${p.seats} 个 Pro 席位起，每加 1 席 ${money(p.seatPrice)} / 年，席位数在结账页调整`);
   let billing = 'year';
 
   const PLANS = {
@@ -18,7 +21,7 @@
   const ITEMS = {
     pro_year: ['锁定早鸟价，续费不涨价', 'AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通', '新功能优先内测与需求投票', '14 天内无理由全额退款'],
     pro_month: ['随时取消，当前周期结束后不再续费', 'AI 托管额度、云同步、每周精选、深度工作流库：上线后自动开通', '14 天内无理由全额退款'],
-    team_year: ['5 个 Pro 席位起，可加购', '组内共享资料库与实验室项目：上线后自动开通', 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
+    team_year: ['组内共享资料库与实验室项目：上线后自动开通', 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
     sponsor: ['金额在结账页自行填写', '全部用于服务器、AI 测试与持续开发']
   };
   const METHOD = { card: '银行卡', applepay: 'Apple Pay', googlepay: 'Google Pay', alipay: '支付宝', wechat: '微信支付', paypal: 'PayPal' };
@@ -31,10 +34,17 @@
       set('[data-price="pro"]', money(pro.price));
       set('[data-period="pro"]', T(billing === 'year' ? '/ 年' : '/ 月'));
       set('[data-list="pro"]', billing === 'year' && pro.list ? money(pro.list) : '');
+      set('[data-fx="pro"]', approx(pro.price));
     }
     const team = PAY.plans.team_year;
-    if (team) set('[data-price="team"]', money(team.price));
-    set('[data-price="free"]', en() ? 'US$0' : '¥0');
+    if (team) {
+      set('[data-price="team"]', money(team.price));
+      set('[data-fx="team"]', approx(team.price));
+      document.querySelectorAll('[data-seats="team"]').forEach((li) => {
+        li.innerHTML = `<b>${T(`${team.seats} 个 Pro 席位起`)}</b>${T(`，每加 1 席 ${money(team.seatPrice)} / 年`)}`;
+      });
+    }
+    set('[data-price="free"]', money(0));
   }
   document.querySelectorAll('[data-billing]').forEach((b) => b.addEventListener('click', () => {
     billing = b.dataset.billing;
@@ -54,14 +64,21 @@
     const plan = PAY.plans[current] || {};
     $('co-title').textContent = T(TITLE[current]);
     $('co-price').textContent = plan.price ? money(plan.price) : T('自定金额');
+    const fx = approx(plan.price);
+    $('co-fx').hidden = !fx;
+    $('co-fx').textContent = fx ? `${fx}. Charged in Chinese yuan (CNY); your bank converts it.` : '';
     $('co-period').textContent = plan.period ? T(plan.period === 'year' ? '/ 年' : '/ 月') + (plan.seats ? T(` · ${plan.seats} 席位起`) : '') : T('一次性');
-    $('co-items').innerHTML = ITEMS[current].map((s) => `<li>${T(s)}</li>`).join('');
-    $('co-team').hidden = current !== 'team_year';
+    const items = ITEMS[current].map(T);
+    if (plan.seats) items.unshift(seatLine(plan));
+    $('co-items').innerHTML = items.map((s) => `<li>${s}</li>`).join('');
     $('co-methods').innerHTML = (PAY.methods || []).map((m) => `<span>${T(METHOD[m] || m)}</span>`).join('');
     $('co-agree').checked = false;
     const live = !!plan.checkoutUrl;
+    const test = live && /\/test_/.test(plan.checkoutUrl); // Stripe test-mode links: no real charge
     $('co-pay').disabled = !live;
-    msg(live ? '' : T('收款通道正在开通，暂时还不能付款。可以先通过页面底部的“联系我们”预约。'), live ? '' : 'err');
+    if (!live) msg(T('收款通道正在开通，暂时还不能付款。可以先通过页面底部的“联系我们”预约。'), 'err');
+    else if (test) msg(T('测试模式：不会真实扣款，可用测试卡 4242 4242 4242 4242 体验付款流程。'), 'warn');
+    else msg('');
     dlg.showModal();
     (live ? $('co-email') : dlg.querySelector('[data-close]')).focus();
   }

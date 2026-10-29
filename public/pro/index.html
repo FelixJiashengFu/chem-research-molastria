@@ -61,7 +61,7 @@
     <article class="plan featured" data-plan="pro">
       <p class="ribbon">最受欢迎</p>
       <h2>Pro</h2>
-      <p class="price"><b data-price="pro">¥199</b><span data-period="pro">/ 年</span><s data-list="pro">¥299</s></p>
+      <p class="price"><b data-price="pro">¥199</b><span data-period="pro">/ 年</span><s data-list="pro">¥299</s><small class="fx" data-fx="pro"></small></p>
       <p class="pitch">给每天都在用的研究者。早鸟价续费不涨。</p>
       <button type="button" class="btn primary" data-checkout="pro">预订 Pro 早鸟</button>
       <ul class="feat">
@@ -77,11 +77,11 @@
 
     <article class="plan" data-plan="team">
       <h2>课题组</h2>
-      <p class="price"><b data-price="team">¥1,490</b><span>/ 年 · 5 席位</span></p>
+      <p class="price"><b data-price="team">¥1,490</b><span>/ 年 · 5 席位</span><small class="fx" data-fx="team"></small></p>
       <p class="pitch">让组内的模板、经验和计算记录不随人员流动而流失。</p>
       <button type="button" class="btn" data-checkout="team">购买课题组版</button>
       <ul class="feat">
-        <li><b>5 个 Pro 席位</b>，可加购</li>
+        <li data-seats="team"><b>5 个 Pro 席位起</b>，每加 1 席 ¥298 / 年</li>
         <li>组内共享资料库与实验室项目 <span class="st dev">开发中</span></li>
         <li>成员角色（PI / 成员 / 只读）与用量看板 <span class="st dev">开发中</span></li>
         <li>对公付款与发票（Stripe 收据可用于报销） <span class="st ok">开通即享</span></li>
@@ -152,8 +152,8 @@
     <p class="eyebrow">CHECKOUT</p>
     <h2 id="co-title"></h2>
     <div class="co-price"><b id="co-price"></b><span id="co-period"></span></div>
+    <p id="co-fx" class="muted small" hidden></p>
     <ul id="co-items" class="co-items"></ul>
-    <div id="co-team" class="co-row" hidden><label>席位数<input type="number" id="co-seats" min="5" max="200" value="5"></label><span class="muted small" id="co-seat-note">5 席位起；加购席位在结账页调整数量。</span></div>
     <label class="co-field">收据邮箱（可选，会预填到结账页）<input type="email" id="co-email" autocomplete="email" placeholder="you@university.edu"></label>
     <div class="co-methods" id="co-methods" aria-label="支付方式"></div>
     <label class="co-agree"><input type="checkbox" id="co-agree"> 我已阅读并同意 <a href="terms.html" target="_blank" rel="noopener">服务条款</a> 与 <a href="refund.html" target="_blank" rel="noopener">退款政策</a></label>

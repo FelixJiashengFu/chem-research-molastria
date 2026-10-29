@@ -36,8 +36,10 @@
     const q = new URLSearchParams(location.search);
     const names = { pro_year: 'MolAstria Pro · 年付', pro_month: 'MolAstria Pro · 月付', team_year: '课题组版 · 年付', sponsor: '支持作者' };
     const plan = names[q.get('plan')] || '';
-    const ref = (q.get('session_id') || '').slice(-10);
-    document.getElementById('order').textContent = [plan, ref ? `订单参考号 …${ref}` : ''].filter(Boolean).join(' · ');
+    const sid = q.get('session_id') || '';
+    const ref = sid.slice(-10);
+    const test = sid.startsWith('cs_test_') ? '测试订单，未真实扣款' : '';
+    document.getElementById('order').textContent = [plan, ref ? `订单参考号 …${ref}` : '', test].filter(Boolean).join(' · ');
     const pay = window.MOLASTRIA_PAY || {};
     if (pay.contactEmail) { const a = document.getElementById('contact'); a.href = `mailto:${pay.contactEmail}`; a.removeAttribute('target'); }
   });
