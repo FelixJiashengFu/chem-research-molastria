@@ -36,7 +36,7 @@ git tag -a desktop-v0.1.4 -m "Desktop 0.1.4: 这个版本改了什么" origin/ma
 git -c credential.helper= -c "credential.helper=!gh auth git-credential" push origin desktop-v0.1.4
 ```
 
-版本号来自标签。CI 大约 15 分钟。完成后 `node tools/e2e/live.mjs` 会核对更新清单和 Release 是否一致。已安装的应用下次启动时提示更新。
+版本号来自标签。CI 大约 6–8 分钟。完成后 `node tools/e2e/live.mjs` 会核对更新清单和 Release 是否一致。已安装的应用下次启动时提示更新。
 
 本地构建（不发布）：`cd desktop && npm ci && npx tauri build --bundles nsis`。
 
@@ -119,6 +119,8 @@ npx.cmd wrangler secret put DEEPSEEK_API_KEY
 | 显示“会送达”但没收到 | 这个邮箱没有订阅（按设计不发），或进了垃圾箱，或 Resend 当天超过 100 封 |
 | AI 没走托管额度 | 浏览器里存了自己的 key；在 AI 设置选 MolAstria Pro，或从账号页的按钮打开 |
 | 托管 AI 报错 | DeepSeek 余额用完，或本月额度用完 |
+| 一次提问扣了不止 1 次 | 正常：`deepseek-v4-pro` 按 3 倍计，AI 实验室一轮计 3 次，内容特别长时按长度多计（`ARCHITECTURE.md`） |
+| 用户说被退出登录了 | 同一账号最多 5 台设备同时登录，超过时最早的那台会退出 |
 | 退款或取消后还是 Pro | 账号服务最多 6 小时后才和 Stripe 同步 |
 | wrangler 报 7403 | 偶发，重试 |
 | wrangler 要注册 workers.dev 子域名 | `wrangler.toml` 顶层设置写到了 `[vars]` 后面 |

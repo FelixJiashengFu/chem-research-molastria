@@ -35,7 +35,7 @@
   <header class="pro-hero">
     <p class="eyebrow">MOLASTRIA PRO</p>
     <h1>核心功能永久免费。<br><em>Pro 让你少配置、多做研究。</em></h1>
-    <p class="lead">搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：不用自己配 key 的 AI 额度、跨设备同步、每周精选和持续更新的工作流库。</p>
+    <p class="lead">搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：现在可用的是不用自己配 key 的 AI 额度；跨设备同步、每周精选和工作流库正在开发，上线后自动开通。</p>
     <div class="hero-row">
       <span class="badge-early">早鸟预售中 · 锁定早鸟价</span>
       <div class="billing" role="group" aria-label="付费周期"><button type="button" data-billing="year" aria-pressed="true">年付 <small>省 43%</small></button><button type="button" data-billing="month" aria-pressed="false">月付</button></div>
@@ -60,32 +60,34 @@
     </article>
 
     <article class="plan featured" data-plan="pro">
-      <p class="ribbon">最受欢迎</p>
+      <p class="ribbon">推荐</p>
       <h2>Pro</h2>
       <p class="price"><b data-price="pro">¥199</b><span data-period="pro">/ 年</span><s data-list="pro">¥299</s><small class="fx" data-fx="pro"></small></p>
       <p class="pitch">给每天都在用的研究者。早鸟价续费不涨。</p>
-      <button type="button" class="btn primary" data-checkout="pro">预订 Pro 早鸟</button>
+      <button type="button" class="btn primary" data-checkout="pro">开通 Pro（早鸟价）</button>
       <ul class="feat">
         <li><b>包含免费版全部功能</b></li>
         <li>AI 托管额度：免配 key，每月 300 次带出处问答 <span class="st dev" data-live="hosted">开发中</span></li>
         <li>云同步：收藏、笔记、AI 对话与实验室项目 <span class="st dev">开发中</span></li>
         <li>每周精选推送：8 个来源的新内容精选与解读 <span class="st dev">开发中</span></li>
         <li>深度工作流库：输入模板、参数解释、报错对照 <span class="st dev">开发中</span></li>
-        <li>新功能优先内测与需求投票 <span class="st ok">开通即享</span></li>
+        <li>新功能优先内测与需求投票 <span class="st dev">开发中</span></li>
       </ul>
-      <p class="fine">早鸟预售：现在付款锁定价格，以上功能上线后自动开通，无需另付。付款后 14 天内无理由全额退款。</p>
+      <p class="fine">早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（deepseek-v4-pro 和 AI 实验室会多计次数）；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。</p>
     </article>
 
     <article class="plan" data-plan="team">
       <h2>课题组</h2>
       <p class="price"><b data-price="team">¥1,490</b><span>/ 年 · 5 席位</span><small class="fx" data-fx="team"></small></p>
-      <p class="pitch">让组内的模板、经验和计算记录不随人员流动而流失。</p>
+      <p class="pitch">一次开通多个席位，组内成员用自己的邮箱登录，各用各的 AI 额度。</p>
       <button type="button" class="btn" data-checkout="team">购买课题组版</button>
       <ul class="feat">
         <li data-seats="team"><b>5 个 Pro 席位起</b>，每加 1 席 ¥298 / 年</li>
+        <li>每个席位每月 300 次 AI 托管额度 <span class="st dev" data-live="team-quota">开发中</span></li>
+        <li>在账号页添加、移除成员 <span class="st dev" data-live="team-members">开发中</span></li>
+        <li>Stripe 收据可用于报销 <span class="st ok">开通即享</span></li>
         <li>组内共享资料库与实验室项目 <span class="st dev">开发中</span></li>
         <li>成员角色（PI / 成员 / 只读）与用量看板 <span class="st dev">开发中</span></li>
-        <li>对公付款与发票（Stripe 收据可用于报销） <span class="st ok">开通即享</span></li>
       </ul>
     </article>
 
@@ -121,23 +123,24 @@
         <tr><td>AI 实验室（RDKit、可靠性层、Pareto）</td><td>✓</td><td>✓</td><td>✓</td></tr>
         <tr><td>桌面版（Windows / macOS）</td><td>✓</td><td>✓</td><td>✓</td></tr>
         <tr><td>AI 托管额度（免配 key）</td><td>—</td><td>每月 300 次</td><td>每席位 300 次</td></tr>
-        <tr><td>云同步：收藏、笔记、对话、实验室项目</td><td>本机浏览器</td><td>跨设备</td><td>跨设备 + 组内共享</td></tr>
-        <tr><td>每周精选推送</td><td>标题列表</td><td>精选与解读</td><td>精选与解读</td></tr>
-        <tr><td>深度工作流库（模板、参数、报错）</td><td>样例</td><td>全部</td><td>全部</td></tr>
-        <tr><td>成员管理、用量看板、对公发票</td><td>—</td><td>—</td><td>✓</td></tr>
+        <tr><td>成员管理（添加、移除成员）</td><td>—</td><td>—</td><td>✓</td></tr>
+        <tr><td>云同步：收藏、笔记、对话、实验室项目 <span class="st dev">开发中</span></td><td>本机浏览器</td><td>跨设备</td><td>跨设备 + 组内共享</td></tr>
+        <tr><td>每周精选推送 <span class="st dev">开发中</span></td><td>—</td><td>精选与解读</td><td>精选与解读</td></tr>
+        <tr><td>深度工作流库（模板、参数、报错） <span class="st dev">开发中</span></td><td>—</td><td>全部</td><td>全部</td></tr>
+        <tr><td>成员角色、用量看板 <span class="st dev">开发中</span></td><td>—</td><td>—</td><td>✓</td></tr>
       </tbody>
     </table></div>
-    <p class="fine">“开发中”的功能会按上面的顺序陆续上线；上线时我们会给付款邮箱发通知。</p>
+    <p class="fine">“开发中”的功能暂无确定日期，上线后自动开通，这张表的状态也会同步更新。</p>
   </section>
 
   <section class="faq" aria-labelledby="faq-h">
     <h2 id="faq-h">常见问题</h2>
     <details><summary>付款安全吗？</summary><p>付款在 Stripe 的托管结账页完成，卡号和支付账户信息由 Stripe 处理，MolAstria 的网站和服务器都接触不到。Stripe 会把收据发到你填写的邮箱。</p></details>
-    <details><summary>支持哪些付款方式？</summary><p>银行卡（Visa、Mastercard、American Express 等）、Apple Pay、Google Pay；支付宝和微信支付以结账页实际显示为准。</p></details>
+    <details><summary>支持哪些付款方式？</summary><p>银行卡（Visa、Mastercard、American Express 等）、Apple Pay、Google Pay。暂时还不支持支付宝和微信支付。</p></details>
     <details><summary>可以退款吗？</summary><p>付款后 14 天内无理由全额退款；早鸟预售期间，如果你订阅的功能迟迟没有上线，任何时候都可以申请退还未使用部分。详见 <a href="refund.html">退款政策</a>。</p></details>
     <details><summary>免费版以后会变少吗？</summary><p>不会。现有的免费功能会一直免费，自带 key 使用 AI 也永久免费。Pro 只增加需要服务器和人工维护的新功能。</p></details>
     <details><summary>学生有优惠吗？</summary><p>早鸟价已经按学生预算定价。课题组版适合整个组一起用，人均更便宜。</p></details>
-    <details><summary>能开发票或用于报销吗？</summary><p>Stripe 会自动发送收据。课题组版支持对公付款，需要正式发票请通过下方联系方式说明单位抬头。</p></details>
+    <details><summary>能开发票或用于报销吗？</summary><p>Stripe 会自动发送收据，可以用于报销。暂不支持对公转账；需要正式发票请通过下方联系方式说明单位抬头。</p></details>
     <details><summary>买了以后在哪里用？</summary><p>付款完成回到本站时，这台设备会自动登录。换电脑、换浏览器或在桌面版里，打开 <a href="account.html">账号页</a>，用付款邮箱收 6 位验证码登录即可，不需要密码。登录后 AI 助手的设置里会出现“MolAstria Pro”，不用自备 key。</p></details>
     <details><summary>怎么取消订阅？</summary><p>Stripe 收据邮件里有管理订阅的链接，可以随时取消，当前周期结束后不再续费。</p></details>
   </section>

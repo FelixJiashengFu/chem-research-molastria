@@ -14,12 +14,12 @@ a{color:var(--accent-text)}
 .pro-hero h1 em{font-style:normal;font-family:var(--font-serif);font-weight:500;color:var(--accent-2)}
 .lead{color:var(--muted);font-size:15.5px;line-height:1.9;max-width:70ch;margin:0 auto 22px}
 .hero-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
-.badge-early{font-size:12.5px;font-weight:700;color:#fff;background:var(--gold);border-radius:99px;padding:5px 12px}
+.badge-early{font-size:12.5px;font-weight:700;color:var(--ink);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold);border-radius:99px;padding:5px 12px}
 .billing{display:inline-flex;border:1px solid var(--line-strong);border-radius:99px;padding:3px;background:var(--surface)}
 .billing button{font:600 13px var(--font-sans);border:0;background:transparent;color:var(--muted);border-radius:99px;padding:6px 16px;cursor:pointer}
 .billing button small{color:var(--gold);font-weight:700;margin-left:4px}
 .billing button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
-.billing button[aria-pressed=true] small{color:#ffe5b0}
+.billing button[aria-pressed=true] small{color:var(--accent-ink)}
 .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 36px;align-items:start}
 .plan{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px 20px 20px;display:flex;flex-direction:column;gap:8px}
 .plan.featured{border:2px solid var(--accent-2);box-shadow:var(--shadow);transform:translateY(-6px)}
@@ -28,7 +28,7 @@ a{color:var(--accent-text)}
 .price{margin:2px 0 0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
 .price b{font:400 34px/1.1 var(--font-num)}
 .price span{color:var(--muted);font-size:13px}
-.price s{color:var(--faint);font-size:14px}
+.price s{color:var(--muted);font-size:14px}
 .price .fx{flex-basis:100%;color:var(--muted);font-size:12px}
 .price .fx:empty{display:none}
 .pitch{margin:0 0 6px;font-size:13.5px;color:var(--muted);min-height:44px}
@@ -40,10 +40,10 @@ a{color:var(--accent-text)}
 .feat{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px;font-size:13.5px}
 .feat li{position:relative;padding-left:22px;line-height:1.6}
 .feat li::before{content:"✓";position:absolute;left:0;top:0;color:var(--accent-2);font-weight:700}
-.st{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:3px;vertical-align:1px;white-space:nowrap}
-.st.dev{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
-.st.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
-.fine{font-size:12px;color:var(--faint);margin:10px 0 0;line-height:1.7}
+.st{display:inline-block;font-size:11.5px;font-weight:700;padding:0 6px;border-radius:3px;vertical-align:1px;white-space:nowrap}
+.st.dev{background:color-mix(in srgb,var(--warn) 15%,transparent);color:color-mix(in srgb,var(--warn) 70%,var(--ink))}
+.st.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:color-mix(in srgb,var(--ok) 70%,var(--ink))}
+.fine{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7}
 .download-band{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px 26px;margin:10px 0 36px}
 .download-band h2{margin:0 0 6px;font-size:21px}
 .download-band p{margin:0}
@@ -55,6 +55,7 @@ a{color:var(--accent-text)}
 .dl svg{width:26px;height:26px;flex:none}
 .dl b{display:block;font-size:15px}
 .dl small{display:block;color:var(--muted);font-size:12px}
+.dl.mine small{color:var(--ink-2)}
 .compare h2,.faq h2{font-size:22px;margin:0 0 12px}
 .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}

@@ -105,7 +105,7 @@ npx wrangler d1 execute molastria --remote --command "INSERT INTO grants (email,
 - 点“收回”后这张卡作废；已经兑换的人只失去这张卡带来的时长，他兑换的其他卡照常有效。
 - 取消站长身份：`npx wrangler d1 execute molastria --remote --command "DELETE FROM grants WHERE email = '你的邮箱'"`。
 
-可调的设置在 `wrangler.toml` 的 `[vars]`：`MONTHLY_ASKS`（每席位每月次数，默认 300）、`HOSTED_MODELS`（托管额度可用的模型）。改完重新 `npx wrangler deploy`。
+可调的设置在 `wrangler.toml` 的 `[vars]`：`MONTHLY_ASKS`（每席位每月次数，默认 300）、`HOSTED_MODELS`（托管额度可用的模型）、`HOSTED_MODEL_WEIGHTS`（调用一次某模型计几次）。改完重新 `npx wrangler deploy`。
 
 本地测试：`deno run --allow-read tools/account-test.ts` 跑接口测试（假 Stripe、假邮件）；`tools/account-local.ts` 起一个带假 Stripe 的本地服务，用来在浏览器里走完整流程（说明在文件开头）。
 

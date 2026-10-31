@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Browser checks in the installed Chrome. See docs/RUNBOOK.md.",
   "devDependencies": {
+    "axe-core": "4.10.2",
     "playwright-core": "1.49.1"
   }
 }

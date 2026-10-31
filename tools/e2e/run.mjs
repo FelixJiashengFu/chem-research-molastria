@@ -77,6 +77,9 @@ check('pricing page shows the hosted quota as available', async () => {
   const p = await open();
   await go(p, '/pro/index.html');
   assert.match(await text(p, '[data-live="hosted"]'), /开通即享/);
+  // Everything marked as available has to exist; update this list when a feature really ships.
+  const live = await p.$$eval('.plan .st.ok', (els) => els.map((e) => e.parentElement.textContent.replace(e.textContent, '').trim()));
+  assert.deepEqual(live, ['AI 托管额度：免配 key，每月 300 次带出处问答', '每个席位每月 300 次 AI 托管额度', '在账号页添加、移除成员', 'Stripe 收据可用于报销']);
   await finish(p);
 });
 
@@ -105,8 +108,58 @@ check('hosted AI: the quota button switches away from a saved own key, and the m
   await p.fill('#cai-input', '推荐一个分子动力学软件');
   await p.press('#cai-input', 'Enter');
   await p.waitForFunction(() => Number(document.getElementById('quota-used').textContent) >= 1, null, { timeout: 20000 });
+  assert.equal(await text(p, '#quota-used'), '1', 'a normal question counts once');
   assert.ok(calls.length && calls.every((u) => u.startsWith(API)), `AI calls went to ${calls}`);
   await finish(p);
+});
+
+check('hosted AI: a long conversation sends less history and still counts once', async () => {
+  const p = await open();
+  const sent = [];
+  p.on('request', (r) => { if (r.url().endsWith('/ai/chat') && r.method() === 'POST') sent.push(JSON.parse(r.postData()).messages); });
+  await go(p, '/pro/account.html');
+  await signIn(p, 'admin@example.com');
+  await p.click('#open-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  const before = Number(await text(p, '#quota-used'));
+  await p.evaluate(() => window.ChemAI.chat({ provider: 'hosted', maxTokens: 4096, messages: [
+    { role: 'system', content: 'system prompt' },
+    { role: 'user', content: 'old question' }, { role: 'assistant', content: 'x'.repeat(9000) },
+    { role: 'user', content: 'newer question' }, { role: 'assistant', content: 'y'.repeat(9000) },
+    { role: 'user', content: 'newest question' },
+  ] }));
+  await p.waitForFunction((n) => Number(document.getElementById('quota-used').textContent) > n, before);
+  assert.equal(Number(await text(p, '#quota-used')), before + 1);
+  const [messages] = sent;
+  assert.equal(messages[0].content, 'system prompt');
+  assert.equal(messages.at(-1).content, 'newest question');
+  assert.ok(messages.reduce((n, m) => n + m.content.length, 0) <= 12000, 'history trimmed');
+  assert.ok(messages.some((m) => m.content.startsWith('y')), 'the most recent answer is kept');
+  await finish(p);
+});
+
+check('Pro pages: no serious accessibility problems in light or dark', async () => {
+  const problems = [];
+  for (const colorScheme of ['light', 'dark']) {
+    const p = await open({ colorScheme });
+    const scan = async (name) => {
+      await p.waitForTimeout(400); // colour transitions finish
+      await p.addScriptTag({ path: fileURLToPath(new URL('./node_modules/axe-core/axe.min.js', import.meta.url)) });
+      const found = await p.evaluate(async () => (await window.axe.run(document, { resultTypes: ['violations'] })).violations
+        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .flatMap((v) => v.nodes.map((n) => `${v.id} ${n.target[0]} ${n.any[0]?.data?.contrastRatio ?? ''} ${n.any[0]?.data?.fgColor ?? ''} on ${n.any[0]?.data?.bgColor ?? ''}`)));
+      problems.push(...found.map((f) => `${colorScheme} ${name}: ${f}`));
+    };
+    await go(p, '/pro/index.html');
+    await scan('pricing');
+    await go(p, '/pro/account.html');
+    await scan('sign-in');
+    await signIn(p, 'admin@example.com');
+    await p.waitForSelector('#card-list li');
+    await scan('account');
+    await p.context().close();
+  }
+  assert.deepEqual(problems, []);
 });
 
 check('email code sign-in and group members', async () => {
@@ -266,7 +319,7 @@ try {
   for (const [name, fn] of checks) {
     if (only && !name.toLowerCase().includes(only.toLowerCase())) continue;
     try { await fn(); console.log(`ok   ${name}`); }
-    catch (e) { failed++; console.log(`FAIL ${name}\n     ${String(e.message).split('\n').slice(0, 6).join('\n     ')}`); }
+    catch (e) { failed++; console.log(`FAIL ${name}\n     ${String(e.message).split('\n').slice(0, 24).join('\n     ')}`); }
   }
 } finally {
   await browser?.close();

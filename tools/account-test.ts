@@ -12,6 +12,7 @@ const subs: Record<string, any[]> = {};
 const sessions: Record<string, any> = {};
 const mails: { to: string; subject: string; text: string }[] = [];
 let upstreamStatus = 200;
+let lastUpstream: any = null;
 let stripeCalls = 0;
 function addCustomer(id: string, email: string, sub?: { quantity?: number; status?: string; interval?: string; cancel?: boolean }) {
   customers[id] = { id, email };
@@ -38,6 +39,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (url.hostname === "api.resend.com") { const b = await req.json(); mails.push({ to: b.to[0], subject: b.subject, text: b.text }); return ok({ id: "m1" }); }
   if (url.hostname === "api.deepseek.com") {
     const b = await req.json();
+    lastUpstream = b;
     if (upstreamStatus !== 200) return ok({ error: { message: "upstream down" } }, upstreamStatus);
     return ok({ model: b.model, choices: [{ message: { content: "ok" } }], usage: { total_tokens: 5 } });
   }
@@ -281,6 +283,70 @@ await test("VIP cards: revoking a redeemed card ends that Pro", async () => {
   eq(del.data.cards.find((c: any) => c.code === code).revoked, 1);
   eq((await call("GET", "/me", undefined, r.data.token)).data.pro, false);
   eq((await call("POST", "/auth/start", { email: "pal@uni.edu", card: code })).status, 404);
+});
+
+// ── what one hosted AI request can cost ─────────────────────────────────
+const asked = (o: Record<string, unknown> = {}) => call("POST", "/ai/chat", { provider: "deepseek", model: "deepseek-flash", messages: [{ role: "user", content: "hi" }], max_tokens: 4096, ...o }, adminToken);
+const usage = () => sqlite.prepare("SELECT asks, aux FROM usage WHERE email = 'boss@molastria.com'").get() as { asks: number; aux: number } ?? { asks: 0, aux: 0 };
+const longText = (n: number) => [{ role: "user", content: "x".repeat(n) }];
+
+await test("hosted AI limits: long requests, the stronger model and large outputs count for more", async () => {
+  env.MONTHLY_ASKS = "100";
+  sqlite.prepare("DELETE FROM usage").run();
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'ai:%'").run();
+  const spend = async (o: Record<string, unknown>) => { const before = usage().asks; eq((await asked(o)).status, 200); return usage().asks - before; };
+  eq(await spend({}), 1, "normal answer");
+  eq(await spend({ messages: longText(12000) }), 1, "exactly one unit of input");
+  eq(await spend({ messages: longText(12001) }), 2, "just over one unit of input");
+  eq(await spend({ max_tokens: 12000 }), 3, "lab-sized output");
+  eq(await spend({ model: "deepseek-v4-pro" }), 3, "stronger model");
+  eq(await spend({ model: "deepseek-v4-pro", messages: longText(24001) }), 9, "both multiply");
+  eq(await spend({ max_tokens: 99999 }), 3, "output above the cap counts at the cap");
+  eq(lastUpstream.max_tokens, 12000, "output capped upstream");
+});
+
+await test("hosted AI limits: a short call must really be short", async () => {
+  sqlite.prepare("DELETE FROM usage").run();
+  await asked({ max_tokens: 300, messages: longText(2000) });
+  eq(usage(), { asks: 0, aux: 1 }, "short call");
+  await asked({ max_tokens: 300, messages: longText(2001) });
+  eq(usage(), { asks: 1, aux: 1 }, "long input with a small max_tokens is an answer");
+  await asked({ max_tokens: 300, model: "deepseek-v4-pro" });
+  eq(usage(), { asks: 1, aux: 4 }, "stronger model counts in the short allowance too");
+});
+
+await test("hosted AI limits: oversized and non-text requests are refused and not counted", async () => {
+  sqlite.prepare("DELETE FROM usage").run();
+  eq((await asked({ messages: longText(48001) })).status, 413, "too long");
+  eq((await asked({ messages: [{ role: "user", content: [{ type: "image_url", image_url: { url: "https://x/y.png" } }] }] })).status, 400, "not text");
+  eq((await asked({ messages: "hi" })).status, 400, "no message list");
+  eq(usage(), { asks: 0, aux: 0 });
+});
+
+await test("hosted AI limits: a request bigger than what is left says so and is not counted", async () => {
+  sqlite.prepare("DELETE FROM usage").run();
+  env.MONTHLY_ASKS = "2";
+  await asked();
+  const r = await asked({ model: "deepseek-v4-pro" });
+  eq(r.status, 429);
+  if (!/还剩 1 次/.test(r.data.error.message)) throw new Error(r.data.error.message);
+  eq(usage().asks, 1, "refused request not counted");
+  eq((await asked()).status, 200, "the last answer still works");
+  upstreamStatus = 503;
+  sqlite.prepare("DELETE FROM usage").run();
+  env.MONTHLY_ASKS = "100";
+  await asked({ model: "deepseek-v4-pro" });
+  upstreamStatus = 200;
+  eq(usage().asks, 0, "a failed weighted call is fully refunded");
+  env.MONTHLY_ASKS = "3";
+});
+
+await test("at most five devices stay signed in; the oldest is signed out", async () => {
+  sessions.cs_test_devices = { ...sessions.cs_test_paid, id: "cs_test_devices" };
+  const tokens: string[] = [];
+  for (let i = 0; i < 6; i++) tokens.push((await call("POST", "/auth/checkout", { session_id: "cs_test_devices" })).data.token);
+  eq((await call("GET", "/me", undefined, tokens[0])).status, 401, "oldest device");
+  for (const t of tokens.slice(1)) eq((await call("GET", "/me", undefined, t)).status, 200, "newer devices");
 });
 
 await test("unknown routes and bad JSON", async () => {

@@ -49,6 +49,19 @@ sequenceDiagram
 
 一个邮箱的权限按这个顺序判断（`access()`）：自己的 Stripe 订阅 → `grants` 里的站长 → 兑换过的 VIP 卡 → 别人课题组的席位 → 免费。
 
+## 托管 AI 怎么计次
+
+| 请求 | 计几次 |
+| --- | --- |
+| 普通问答（输入 ≤ 12,000 字，输出上限 ≤ 4,096 token） | 1 |
+| 更长的输入或更高的输出上限（如 AI 实验室一轮，输出上限 12,000） | 按比例向上取整 |
+| `deepseek-v4-pro` | 以上再乘 3 |
+| 短调用（输出上限 ≤ 400 且输入 ≤ 2,000 字） | 单独计数，额度是正式问答的 2 倍；模型倍数同样适用 |
+| 输入超过 48,000 字，或含非文字内容 | 拒绝，不计 |
+| 上游失败 | 退回 |
+
+每席每月 300 次（`MONTHLY_ASKS`）。这些规则在 `deploy/account-worker.js`，倍数在 `wrangler.toml` 的 `HOSTED_MODEL_WEIGHTS`。
+
 ## 账号服务接口
 
 `deploy/account-worker.js` 开头有完整列表。所有接口返回 JSON，登录后带 `Authorization: Bearer <令牌>`。

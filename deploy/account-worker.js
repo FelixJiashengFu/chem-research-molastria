@@ -25,12 +25,19 @@ const DEFAULT_ORIGINS = 'https://molastria.com,https://www.molastria.com,tauri:/
 const ACTIVE = ['active', 'trialing', 'past_due'];
 const RECHECK = 6 * 3600;          // re-read a subscription from Stripe after this many seconds
 const SESSION_DAYS = 90;
+const MAX_SESSIONS = 5;            // devices signed in at once per email; the oldest is signed out
 const CODE_MINUTES = 10;
+// Hosted AI is counted in answers, so a request that can cost more counts for more. A normal cited answer fits in one unit.
+const UNIT_CHARS = 12000, UNIT_TOKENS = 4096;  // one answer: this much input, this much output allowed
+const AUX_CHARS = 2000, AUX_TOKENS = 400;      // a short call (search keywords, connection test) must fit both
+const MAX_INPUT_CHARS = 48000;
 
 const now = () => Math.floor(Date.now() / 1000);
 const monthKey = () => new Date().toISOString().slice(0, 7);
 const quota = (env) => Number(env.MONTHLY_ASKS || 300);
 const hostedModels = (env) => (list(env.HOSTED_MODELS).length ? list(env.HOSTED_MODELS) : ['deepseek-flash', 'deepseek-v4-pro']);
+/** How many answers one call to this model counts as: "deepseek-v4-pro:3,other-model:2". */
+const modelWeight = (env, model) => Number(list(env.HOSTED_MODEL_WEIGHTS ?? 'deepseek-v4-pro:3').map((w) => w.split(':')).find(([m]) => m === model)?.[1]) || 1;
 const normEmail = (v) => {
   const e = String(v || '').trim().toLowerCase();
   return e.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : '';
@@ -197,7 +204,8 @@ async function createSession(env, email) {
   const t = now();
   await env.DB.batch([
     env.DB.prepare('DELETE FROM sessions WHERE expires < ?1').bind(t),
-    env.DB.prepare('INSERT INTO sessions (hash, email, created, expires) VALUES (?1, ?2, ?3, ?4)').bind(await sha256(token), email, t, t + SESSION_DAYS * 86400)
+    env.DB.prepare('INSERT INTO sessions (hash, email, created, expires) VALUES (?1, ?2, ?3, ?4)').bind(await sha256(token), email, t, t + SESSION_DAYS * 86400),
+    env.DB.prepare('DELETE FROM sessions WHERE email = ?1 AND hash NOT IN (SELECT hash FROM sessions WHERE email = ?1 ORDER BY created DESC, rowid DESC LIMIT ?2)').bind(email, MAX_SESSIONS)
   ]);
   return token;
 }
@@ -377,19 +385,28 @@ async function route(request, env, cors) {
     const a = await access(env, me);
     if (!a.pro) throw fail(403, '这个账号目前没有有效的 Pro 订阅');
     if (!(await allow(env, `ai:${me}`, 30, 60))) throw fail(429, '请求太频繁，请稍后再试');
-    // Short calls (search keywords, connection tests) get their own, larger allowance.
-    const aux = Number(body.max_tokens) > 0 && Number(body.max_tokens) <= 400;
+    const messages = Array.isArray(body.messages) ? body.messages : [];
+    if (messages.some((m) => typeof m?.content !== 'string')) throw fail(400, '托管额度只支持文字内容');
+    const chars = messages.reduce((n, m) => n + m.content.length, 0);
+    if (chars > MAX_INPUT_CHARS) throw fail(413, `内容太长：这次约 ${chars} 字，托管额度一次最多 ${MAX_INPUT_CHARS} 字。可以清空对话或缩短内容后重试。`);
+    const tokens = Math.min(Number(body.max_tokens) || UNIT_TOKENS, Number(env.MAX_TOKENS || 12000));
+    const weight = modelWeight(env, body.model);
+    // Short calls get their own, larger allowance; anything longer counts as answers, in proportion to what it can cost.
+    const aux = Number(body.max_tokens) > 0 && tokens <= AUX_TOKENS && chars <= AUX_CHARS;
+    const units = aux ? weight : weight * Math.max(1, Math.ceil(chars / UNIT_CHARS), Math.ceil(tokens / UNIT_TOKENS));
     const limit = quota(env), month = monthKey();
     const counted = (n) => env.DB.prepare(
       'INSERT INTO usage (email, month, asks, aux) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(email, month) DO UPDATE SET asks = asks + ?3, aux = aux + ?4 RETURNING asks, aux'
     ).bind(me, month, aux ? 0 : n, aux ? n : 0).first();
-    const u = await counted(1);
+    const u = await counted(units);
     if (aux ? u.aux > limit * 2 : u.asks > limit) {
-      await counted(-1);
+      await counted(-units);
+      const left = aux ? 0 : limit - (u.asks - units);
+      if (left > 0) throw fail(429, `本月 AI 托管额度还剩 ${left} 次，这次请求要计 ${units} 次（长内容、deepseek-v4-pro 和 AI 实验室会多计）。可以缩短内容、换成 deepseek-flash，或在 AI 设置里换成自己的 key。`);
       throw fail(429, `本月 ${limit} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。`);
     }
     const res = await forward(body, env, cors, hostedModels(env));
-    if (!res.ok) { await counted(-1); return res; }
+    if (!res.ok) { await counted(-units); return res; }
     res.headers.set('X-MolAstria-Usage', `${u.asks}/${limit}`);
     return res;
   }

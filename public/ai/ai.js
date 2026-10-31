@@ -143,6 +143,15 @@
     }
   }
 
+  // The hosted quota counts a long request as several answers (see deploy/account-worker.js), so a long
+  // conversation sends only as much of its history as one answer allows. The system prompt and the newest message stay.
+  function fitHosted(messages, maxChars = 12000) {
+    const kept = [...messages];
+    const size = () => kept.reduce((n, m) => n + String(m.content).length, 0);
+    while (size() > maxChars && kept.length > 2) kept.splice(kept[0].role === 'system' ? 1 : 0, 1);
+    return kept;
+  }
+
   /**
    * One chat completion, streamed.
    * @param {object} o - {messages, json, effort, maxTokens, temperature, signal, onDelta(text, full), onReasoning(text, full), provider, model}
@@ -156,7 +165,8 @@
     if (!isReady(conf)) throw Object.assign(new Error('还没有配置 API key。点右上角「AI 助手」→ 设置，填入 DeepSeek 或 Muse 的 key。'), { code: 'no-key' });
     const model = o.model || modelOf(conf);
     const effort = o.effort || s.effort[provider];
-    const body = { model, messages: o.messages, stream: true, stream_options: { include_usage: true }, max_tokens: o.maxTokens || 4096 };
+    const messages = PROVIDERS[provider].hosted ? fitHosted(o.messages) : o.messages;
+    const body = { model, messages, stream: true, stream_options: { include_usage: true }, max_tokens: o.maxTokens || 4096 };
     if (o.temperature !== undefined) body.temperature = o.temperature;
     const optional = { ...effortParams(provider, effort) };
     if (o.json && PROVIDERS[provider].json) optional.response_format = { type: 'json_object' };
@@ -428,7 +438,7 @@
     dialog.innerHTML = `<form method="dialog" novalidate>
       <div><h2 id="cai-settings-title">AI 设置</h2></div>
       <p class="cai-note" data-note="own">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
-      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次带出处的问答计 1 次，每月 1 日重置。</p>
+      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次问答计 1 次，每月 1 日重置；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
       <fieldset class="cai-prov" style="border:0;padding:0;margin:0"><legend class="cai-field" style="margin-bottom:6px">服务商</legend>${providerCards}</fieldset>
       <div class="cai-two">
         <label class="cai-field">模型<select name="model"></select></label>

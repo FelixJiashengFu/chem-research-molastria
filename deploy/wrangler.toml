@@ -19,6 +19,7 @@ ALLOWED_ORIGINS = "https://molastria.com,https://www.molastria.com,tauri://local
 MAIL_FROM = "MolAstria <login@molastria.com>"
 MONTHLY_ASKS = "300"                               # 每个 Pro 席位每月的正式问答次数
 HOSTED_MODELS = "deepseek-flash,deepseek-v4-pro"   # 托管额度可用的模型；加 Muse 模型前先配置 MUSE_API_KEY
+HOSTED_MODEL_WEIGHTS = "deepseek-v4-pro:3"         # 调用一次这个模型计几次；价格差很多的模型要写在这里
 
 # 密钥不要写在这里，用 npx wrangler secret put <名字> 逐个填入：
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions
