@@ -17,7 +17,7 @@
 
   const CJK = /[㐀-鿿！-～、-〿]/;
   const HAN = /[㐀-鿿]/;
-  const SKIP = 'script,style,code,pre,textarea,[translate=no],.paper .title,.paper .authors,.paper .abstract,.paper .tag,.cai-msg.user,.cai-body,.cai-refs span,.guide-article,.smi,.why,.row-main h3,.excerpt,.card h3,.net-item h4,.net-item p,.rs-list,.cr-bgpick-name,.mcard h4';
+  const SKIP = 'script,style,code,pre,textarea,[translate=no],.paper .title,.paper .authors,.paper .abstract,.paper .tag,.acct-digest,#digest-overview,.digest-preview li,.cai-msg.user,.cai-body,.cai-refs span,.guide-article,.smi,.why,.row-main h3,.excerpt,.card h3,.net-item h4,.net-item p,.rs-list,.cr-bgpick-name,.mcard h4';
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
   const norm = (s) => s.replace(/\s+/g, ' ').trim();
 

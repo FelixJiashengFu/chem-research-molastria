@@ -26,7 +26,21 @@ npx wrangler deploy
 
 **改表结构：** 新表写进 `schema.sql` 后运行 `npx wrangler d1 execute molastria --remote --file schema.sql`（可重复执行）。给已有的表加列要单独跑 `ALTER TABLE`，并在 `schema.sql` 留注释。顺序是先迁移，再部署，再推网站。
 
-看线上请求：`npx wrangler tail molastria-account`。
+看线上请求：`npx wrangler tail molastria-account`；过去的日志和定时任务记录在 Cloudflare 控制台的 Worker → Observability。
+
+## 每周精选
+
+每周一自动生成并分批发送（`ARCHITECTURE.md`）。站长可以在账号页点“重新生成本期”。在 `deploy/` 里查看：
+
+```bash
+npx wrangler d1 execute molastria --remote --command "SELECT week, created, length(body) FROM digests ORDER BY created DESC LIMIT 4"
+npx wrangler d1 execute molastria --remote --command "SELECT count(*) FROM digest_subs"
+npx wrangler d1 execute molastria --remote --command "SELECT week, sent, count(*) FROM digest_sends GROUP BY week, sent ORDER BY week DESC LIMIT 6"
+```
+
+`digest_sends.sent` 是发送时间；0 表示这个人已不是 Pro，跳过了。
+
+要加一个来源：改 `deploy/digest.js` 的来源列表，并先用真实接口确认返回大小（一次调用的 CPU 时间很有限，每个来源只取 20 条）。
 
 ## 发布桌面版
 
@@ -122,6 +136,9 @@ npx.cmd wrangler secret put DEEPSEEK_API_KEY
 | 一次提问扣了不止 1 次 | 正常：`deepseek-v4-pro` 按 3 倍计，AI 实验室一轮计 3 次，内容特别长时按长度多计（`ARCHITECTURE.md`） |
 | 用户说被退出登录了 | 同一账号最多 5 台设备同时登录，超过时最早的那台会退出 |
 | 退款或取消后还是 Pro | 账号服务最多 6 小时后才和 Stripe 同步 |
+| 周一过后没有这一期 | 看 Observability 的定时任务记录；论文接口和 DeepSeek 都挂了才会没有。在账号页点“重新生成本期” |
+| 订阅了但没收到每周精选 | 每 15 分钟只发 5 封，每天最多 80 封，人多时要等；再看垃圾箱和 Resend 控制台 |
+| 解读是空的 | 模型失败或选出不足 3 篇，发的是不带解读的列表；可以重新生成 |
 | wrangler 报 7403 | 偶发，重试 |
 | wrangler 要注册 workers.dev 子域名 | `wrangler.toml` 顶层设置写到了 `[vars]` 后面 |
 | PowerShell 说禁止运行脚本 | 用 `npx.cmd` |

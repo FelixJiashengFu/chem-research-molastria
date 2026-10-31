@@ -2,7 +2,7 @@
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
    Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
-     redeemCard(), and for the site admin cards(), createCards(), revokeCard()} */
+     redeemCard(), digest(), digestSubscribe(), digestSendMe(), and for the site admin cards(), createCards(), revokeCard(), digestBuild()} */
 (() => {
   'use strict';
   if (window.MolAstriaAccount) return;
@@ -59,6 +59,10 @@
     redeemCard: (code) => call('/cards/redeem', { method: 'POST', body: { code } }).then(updated),
     cards: () => call('/admin/cards'),
     createCards: (count, days, note) => call('/admin/cards', { method: 'POST', body: { count, days, note } }),
-    revokeCard: (code) => call('/admin/cards', { method: 'DELETE', body: { code } })
+    revokeCard: (code) => call('/admin/cards', { method: 'DELETE', body: { code } }),
+    digest: () => call('/digest/latest'),
+    digestSubscribe: (on) => call('/digest/subscribe', { method: on ? 'POST' : 'DELETE', body: { lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
+    digestSendMe: () => call('/digest/send-me', { method: 'POST', body: { lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
+    digestBuild: () => call('/admin/digest/build', { method: 'POST', body: {} })
   };
 })();

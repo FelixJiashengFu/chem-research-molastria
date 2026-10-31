@@ -79,7 +79,7 @@ check('pricing page shows the hosted quota as available', async () => {
   assert.match(await text(p, '[data-live="hosted"]'), /开通即享/);
   // Everything marked as available has to exist; update this list when a feature really ships.
   const live = await p.$$eval('.plan .st.ok', (els) => els.map((e) => e.parentElement.textContent.replace(e.textContent, '').trim()));
-  assert.deepEqual(live, ['AI 托管额度：免配 key，每月 300 次带出处问答', '每个席位每月 300 次 AI 托管额度', '在账号页添加、移除成员', 'Stripe 收据可用于报销']);
+  assert.deepEqual(live, ['AI 托管额度：免配 key，每月 300 次带出处问答', '每周精选：ChemRxiv、arXiv 和计算化学期刊的新论文，附解读和邮件推送', '每个席位每月 300 次 AI 托管额度', '在账号页添加、移除成员', 'Stripe 收据可用于报销']);
   await finish(p);
 });
 
@@ -111,6 +111,67 @@ check('hosted AI: the quota button switches away from a saved own key, and the m
   assert.equal(await text(p, '#quota-used'), '1', 'a normal question counts once');
   assert.ok(calls.length && calls.every((u) => u.startsWith(API)), `AI calls went to ${calls}`);
   await finish(p);
+});
+
+check('weekly picks: the admin builds an issue, Pro reads and subscribes, visitors see titles', async () => {
+  const admin = await open();
+  await go(admin, '/pro/account.html');
+  await signIn(admin, 'admin@example.com');
+  await admin.waitForSelector('#digest-empty:not([hidden])');
+  await admin.click('#digest-build');
+  await admin.waitForSelector('#digest-list li');
+  assert.equal(await admin.$$eval('#digest-list li', (l) => l.length), 3);
+  assert.match(await text(admin, '#digest-list li:first-child p'), /解读 0/);
+  await admin.click('#digest-toggle');
+  await admin.waitForFunction(() => document.getElementById('digest-toggle').textContent === '退订邮件');
+  await admin.reload({ waitUntil: 'networkidle' });
+  await admin.waitForFunction(() => document.getElementById('digest-toggle').textContent === '退订邮件');
+  await admin.click('#digest-toggle');
+  await admin.waitForFunction(() => document.getElementById('digest-toggle').textContent === '订阅邮件');
+  await finish(admin);
+
+  const visitor = await open();
+  await go(visitor, '/pro/index.html');
+  await visitor.waitForSelector('#digest-preview:not([hidden]) li');
+  assert.equal(await visitor.$$eval('#digest-preview li p', (l) => l.length), 0, 'no comments for visitors');
+  await finish(visitor);
+
+  const english = await open();
+  await go(english, '/pro/success.html?session_id=cs_test_localpro&plan=pro_year&lang=en');
+  await english.waitForSelector('#activate.ok');
+  await go(english, '/pro/account.html?lang=en');
+  await english.waitForSelector('#digest-list li');
+  assert.match(await text(english, '#digest-list li:first-child p'), /Why 0/);
+  assert.match(await text(english, '#digest-overview'), /This week/);
+  assert.equal(await text(english, '#digest-toggle'), 'Subscribe by email');
+  await finish(english);
+});
+
+check('search: Chinese finds English entries, and few results offer a next step', async () => {
+  const p = await open();
+  await go(p, '/index.html');
+  await p.fill('input[type=search]', '电解液');
+  await p.waitForFunction(() => document.querySelectorAll('.result-row').length > 0);
+  assert.ok((await p.$$eval('.result-row h3', (h) => h.map((x) => x.textContent))).some((t) => /electrolyte/i.test(t)), 'an electrolyte paper');
+  await p.fill('input[type=search]', 'zzqqxxyy');
+  await p.waitForSelector('#empty:not([hidden])');
+  assert.equal(await p.isVisible('#search-next'), true);
+  assert.match(await p.getAttribute('#next-radar', 'href'), /radar\/index\.html\?q=zzqqxxyy/);
+  await p.click('#next-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  assert.equal(await p.inputValue('#cai-input'), 'zzqqxxyy');
+  await finish(p);
+  const many = await open();
+  await go(many, '/index.html?q=Multiwfn');
+  await many.waitForSelector('.result-row');
+  assert.equal(await many.isVisible('#search-next'), false, 'plenty of results: no panel');
+  await finish(many);
+  const radar = await open();
+  await go(radar, '/radar/index.html?q=lithium%20electrolyte');
+  const f = radar.frame({ url: /radar\/app\/index\.html/ });
+  await f.waitForSelector('#sq');
+  await f.waitForFunction(() => document.getElementById('sq').value === 'lithium electrolyte');
+  await finish(radar);
 });
 
 check('hosted AI: a long conversation sends less history and still counts once', async () => {

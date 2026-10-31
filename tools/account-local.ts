@@ -25,7 +25,14 @@ const sessions: Record<string, unknown> = {
 const realFetch = globalThis.fetch;
 globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
-  if (url.hostname === "api.deepseek.com" && Deno.env.get("FAKE_AI")) { // tools/e2e: no key, no cost, a fixed streamed answer
+  const fake = Deno.env.get("FAKE_AI");
+  const reply = (data: unknown) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
+  if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
+  if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
+  if (fake && url.hostname === "api.deepseek.com" && JSON.parse(String(init?.body ?? "{}")).response_format && !JSON.parse(String(init?.body ?? "{}")).stream) {
+    return reply({ choices: [{ message: { content: JSON.stringify({ overview_zh: "本周概览", overview_en: "This week", picks: [0, 1, 2].map((i) => ({ i, why_zh: `解读 ${i}`, why_en: `Why ${i}` })) }) } }] });
+  }
+  if (url.hostname === "api.deepseek.com" && fake) { // tools/e2e: no key, no cost, a fixed streamed answer
     const events = [{ choices: [{ delta: { content: "测试回答。" } }] }, { choices: [], usage: { prompt_tokens: 1, completion_tokens: 1 } }];
     const body = events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join("") + "data: [DONE]\n\n";
     return new Response(body, { headers: { "Content-Type": "text/event-stream" } });

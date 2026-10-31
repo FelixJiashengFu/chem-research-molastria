@@ -26,3 +26,5 @@
 @keyframes nm-flow{to{stroke-dashoffset:-31}}
 @keyframes nm-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.note-map *{animation:none!important}}
+
+.search-next{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0;padding:14px 16px;border:1px dashed var(--line-strong);border-radius:8px}.search-next p{margin:0;flex-basis:100%;color:var(--muted);font-size:14px}.search-next .button{min-height:36px;padding:7px 14px}

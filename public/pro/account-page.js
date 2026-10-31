@@ -8,7 +8,7 @@
   const PAY = window.MOLASTRIA_PAY || {};
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const date = (s) => new Date(s * 1000).toLocaleDateString(en() ? 'en-CA' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set();
+  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
   // Pro that comes from a VIP card or the admin grant rather than a Stripe subscription
@@ -69,6 +69,9 @@
     // A card can be redeemed by a free account, or to extend a card that runs out.
     $('redeem-card').hidden = !(a.role === 'free' || (gifted(a) && a.grant.source === 'card' && a.grant.expires));
     $('admin-card').hidden = !a.admin;
+    $('digest-card').hidden = !a.pro;
+    $('digest-build').hidden = !a.admin;
+    if (a.pro && !digestAsked) { digestAsked = true; loadDigest(); }
     if (a.admin && !cardsLoaded) { cardsLoaded = true; loadCards(); }
 
     $('team-card').hidden = a.role !== 'owner';
@@ -141,6 +144,8 @@
   $('signout').addEventListener('click', async () => {
     await A.signOut();
     account = null;
+    digestState = null;
+    digestAsked = false;
     show('acct-login');
     say(msg, T('已退出登录。'), 'ok');
   });
@@ -161,6 +166,44 @@
     const email = b.dataset.member;
     if (!confirm(T(`移除 ${email}？TA 将立即失去 Pro 权益。`))) return;
     try { paint(await A.removeMember(email)); say(mmsg, T(`已移除 ${email}。`), 'ok'); } catch (err) { say(mmsg, err.message, 'err'); }
+  });
+
+  // ── weekly picks ──────────────────────────────────────────────────────
+  const dmsg = $('digest-msg');
+  function renderDigest() {
+    const { digest: d, subscribed } = digestState;
+    $('digest-toggle').textContent = T(subscribed ? '退订邮件' : '订阅邮件');
+    $('digest-toggle').className = subscribed ? 'btn' : 'btn primary';
+    $('digest-mail').hidden = !d;
+    $('digest-empty').hidden = !!d;
+    $('digest-body').hidden = !d;
+    if (!d) return;
+    $('digest-week').textContent = T(`${d.week} 这一期`);
+    $('digest-overview').textContent = (en() ? d.overview_en : d.overview_zh) || '';
+    $('digest-list').innerHTML = d.items.map((it) => {
+      const why = (en() ? it.why_en : it.why_zh) || '';
+      const meta = [it.source, it.date, it.authors].filter(Boolean).join(' · ');
+      return `<li><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a><small>${esc(meta)}</small>${why ? `<p>${esc(why)}</p>` : ''}</li>`;
+    }).join('');
+  }
+  function loadDigest() { A.digest().then((r) => { digestState = r; renderDigest(); }).catch((err) => say(dmsg, err.message, 'err')); }
+  $('digest-toggle').addEventListener('click', async () => {
+    try {
+      const r = await A.digestSubscribe(!digestState.subscribed);
+      digestState.subscribed = r.subscribed;
+      renderDigest();
+      say(dmsg, r.subscribed ? T(`已订阅，每周一发到 ${account.email}。如果本周这一期已经生成，15 分钟内也会寄出。`) : T('已退订邮件，这里仍然可以看。'), 'ok');
+    } catch (err) { say(dmsg, err.message, 'err'); }
+  });
+  $('digest-mail').addEventListener('click', async () => {
+    try { await A.digestSendMe(); say(dmsg, T(`已发到 ${account.email}，没看到的话看看垃圾邮件。`), 'ok'); } catch (err) { say(dmsg, err.message, 'err'); }
+  });
+  $('digest-build').addEventListener('click', async (e) => {
+    e.currentTarget.disabled = true;
+    say(dmsg, T('正在生成，大约需要一分钟……'));
+    try { digestState.digest = (await A.digestBuild()).digest; renderDigest(); say(dmsg, T('本期已重新生成。'), 'ok'); }
+    catch (err) { say(dmsg, err.message, 'err'); }
+    finally { $('digest-build').disabled = false; }
   });
 
   // ── VIP cards ─────────────────────────────────────────────────────────
@@ -241,5 +284,5 @@
   }
   init();
   // Re-render dates and labels when the language switches without a reload.
-  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (!$('card-field').hidden) cardMode(true); });
+  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
 })();

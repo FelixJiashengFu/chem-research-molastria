@@ -21,16 +21,17 @@
   function grams(q){const out=new Set(q.match(/[a-z0-9][a-z0-9+#.\-]{1,}/g)||[]);for(const run of q.match(/[㐀-鿿]+/g)||[]){if(run.length<=2)out.add(run);for(let i=0;i+2<=run.length;i++)out.add(run.slice(i,i+2));for(let i=0;i+3<=run.length;i++)out.add(run.slice(i,i+3));}return [...out].filter(t=>!STOP.has(t));}
   let fuzzy=false;
   function matches() {
-    const terms=state.q.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const T=window.MolAstriaTerms, terms=T?T.tokens(state.q):state.q.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const found=(text,t)=>T?T.matchesToken(text,t):text.includes(t);
     const scope=i=>(!state.source||i.sourceIds.includes(state.source)) && (!state.type||i.type===state.type) && (!state.collection||(state.collection==='saved'?saved.has(i.id):i.origins.includes(state.collection)));
     fuzzy=false;
-    let result=items.filter(i=>terms.every(t=>i.searchable.includes(t)) && scope(i));
+    let result=items.filter(i=>terms.every(t=>found(i.searchable,t)) && scope(i));
     if(!result.length&&terms.length){
-      const gs=grams(state.q.toLocaleLowerCase()), need=Math.max(2,Math.ceil(gs.length*0.3));
-      const ranked=items.filter(scope).map(i=>{const t=i.title.toLocaleLowerCase();let hit=0,s=0;for(const g of gs){if(i.searchable.includes(g)){hit++;s+=(t.includes(g)?4:1)*(g.length>=3?1.5:1);}}return {i,hit,s};}).filter(x=>x.hit>=need).sort((a,b)=>b.s-a.s);
+      const gs=grams(state.q.toLocaleLowerCase()), groups=T?T.groupsIn(state.q):[], need=groups.length?2:Math.max(2,Math.ceil(gs.length*0.3));
+      const ranked=items.filter(scope).map(i=>{const t=i.title.toLocaleLowerCase();let hit=0,s=0;for(const g of gs){if(i.searchable.includes(g)){hit++;s+=(t.includes(g)?4:1)*(g.length>=3?1.5:1);}}for(const g of groups){if(g.some(x=>T.has(i.searchable,x))){hit+=2;s+=g.some(x=>T.has(t,x))?6:2;}}return {i,hit,s};}).filter(x=>x.hit>=need).sort((a,b)=>b.s-a.s);
       if(ranked.length){fuzzy=true;result=ranked.map(x=>x.i);if(state.sort==='relevance')return result;}
     }
-    const score=i=>terms.reduce((sum,t)=>sum+(i.title.toLocaleLowerCase().includes(t)?5:0)+(i.atlasRecords?.some(r=>r.name.toLocaleLowerCase().includes(t))?3:0),0);
+    const score=i=>terms.reduce((sum,t)=>sum+(found(i.title.toLocaleLowerCase(),t)?5:0)+(i.atlasRecords?.some(r=>r.name.toLocaleLowerCase().includes(t))?3:0),0);
     if(state.sort==='date')result.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
     else if(state.sort==='title')result.sort((a,b)=>a.title.localeCompare(b.title,'zh-CN'));
     else if(terms.length)result.sort((a,b)=>score(b)-score(a));
@@ -48,6 +49,9 @@
     $('saved-count').textContent=`收藏 ${saved.size}`;
     $('results').innerHTML=limit.map(i=>`<article class="result-row"><div class="row-kind"><span class="kind-icon" aria-hidden="true">${icons[i.type]||'↗'}</span><span class="kind-name">${esc(labels[i.type]||i.type)}</span></div><div class="row-main"><h3><a href="${esc(safeURL(i.url))}" target="_blank" rel="noopener noreferrer">${esc(i.title)} <span aria-hidden="true">↗</span></a></h3><p class="excerpt">${esc(i.excerpt||i.atlasRecords?.[0]?.description||'原站目录未提供摘要，请点击标题查看原文。')}</p><div class="row-meta">${sourceNames(i).map(name=>`<span class="source-tag">${esc(name)}</span>`).join('')}${i.origins.length>1?'<span class="shared-tag">两站共同收录</span>':''}${i.mirror?'<span>目录交叉引用</span>':''}${i.date?`<time>${esc(i.date)}</time>`:''}${i.category?`<span>${esc(i.category)}</span>`:''}</div></div><div class="row-actions"><button class="save" data-save="${i.id}" aria-label="${saved.has(i.id)?'取消收藏':'收藏'} ${esc(i.title)}" aria-pressed="${saved.has(i.id)}">${saved.has(i.id)?'★':'☆'}</button><small>${esc(new URL(safeURL(i.url),'https://invalid.local').hostname)}</small><button class="detail-link" data-detail="${i.id}">来源与资源说明 ↗</button></div></article>`).join('');
     $('empty').hidden=!!list.length;
+    $('search-next').hidden=!state.q||list.length>=5;
+    $('next-network').href='hub/network.html?q='+encodeURIComponent(state.q);
+    $('next-radar').href='radar/index.html?q='+encodeURIComponent(state.q);
     $('more').hidden=list.length<=state.shown;
     $('page-count').textContent=list.length?`已显示 ${format(Math.min(state.shown,list.length))} / ${format(list.length)} 条`:'';
     syncURL();
@@ -73,6 +77,7 @@
   for(const k of ['collection','source','type','sort']) {if(![...$(k).options].some(o=>o.value===state[k]))state[k]='';$(k).value=state[k];$(k).addEventListener('change',()=>{state[k]=$(k).value;state.shown=24;render();});}
   $('search').value=state.q;
   $('search').addEventListener('input',()=>{state.q=$('search').value.trim();state.shown=24;render();});
+  $('next-ai').onclick=()=>window.ChemHub?.loadAI().then(ai=>ai.openDrawer({mode:'free',question:state.q})).catch(e=>alert(e.message));
   $('reset').onclick=reset;$('empty-reset').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
   document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('search').focus();$('catalog').scrollIntoView();}});
   $('export').onclick=()=>{

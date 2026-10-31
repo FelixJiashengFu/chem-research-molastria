@@ -262,11 +262,14 @@
       for (let i = 0; i + 2 <= run.length; i++) out.add(run.slice(i, i + 2));
       if (run.length >= 3) for (let i = 0; i + 3 <= run.length; i++) out.add(run.slice(i, i + 3));
     }
+    // Known terms also search in the other language; short Latin synonyms such as “md” are too noisy here.
+    for (const g of window.MolAstriaTerms?.groupsIn(q) || []) for (const t of g) if (t.length > 3 || /[㐀-鿿]/.test(t)) out.add(t);
     const stop = new Set(['怎么', '如何', '什么', '哪些', '可以', '一个', '我们', '用什么', '推荐', '的是', '是什', '有哪', 'the', 'and', 'for', 'how', 'what', 'with']);
     return [...out].filter((t) => !stop.has(t));
   }
   async function retrieve(query, k = 12) {
     const data = await ensureCatalog();
+    if (!window.MolAstriaTerms) await loadScript(link('search-terms.js')).catch(() => {}); // optional: search still works without it
     if (!index) index = buildIndex(data);
     const ts = terms(query);
     if (!ts.length) return [];

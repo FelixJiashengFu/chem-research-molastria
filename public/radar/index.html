@@ -15,12 +15,15 @@
     body.radar-page { display: flex; flex-direction: column; height: 100dvh; margin: 0; overflow: hidden; }
     .radar-frame { flex: 1; display: block; width: 100%; min-height: 0; border: 0; background: var(--paper); }
     .radar-page noscript p { padding: 24px; }
+    .radar-about { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
   <script src="../shared-nav.js" defer></script>
 </head>
 <body data-section="radar" class="radar-page">
 <!-- 预印本雷达 PreprintRadar（https://github.com/FelixJiashengFu/PreprintRadar）的网页版，由 tools/vendor-radar.ts 复制到 app/。
      它在浏览器里直接查询 DataCite 和 Crossref，主题、推荐和收藏只保存在访问者自己的浏览器里。 -->
+<h1 class="radar-about">预印本雷达</h1>
+<p class="radar-about">同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。</p>
 <iframe class="radar-frame" id="radar-frame" title="预印本雷达" allow="clipboard-write"></iframe>
 <noscript><p>预印本雷达需要启用 JavaScript。</p></noscript>
 <script>
@@ -36,6 +39,17 @@
       } catch (e) {}
     }
     frame.addEventListener('load', sync);
+    // radar/index.html?q=… opens the radar's search with that query (the home search links here).
+    var query = new URLSearchParams(location.search).get('q');
+    if (query) frame.addEventListener('load', function () {
+      var w = frame.contentWindow, tries = 0;
+      w.location.hash = '#/search';
+      (function run() {
+        var box = w.document.getElementById('sq'), form = w.document.getElementById('sform');
+        if (box && form) { box.value = query; form.requestSubmit(); }
+        else if (tries++ < 50) setTimeout(run, 100);
+      })();
+    }, { once: true });
     document.addEventListener('chemhub:theme', sync);
     // Desktop app: its link script may only run in the top page, so papers and PDFs opened inside the
     // frame are handed to the system browser from here (skipped if the script did reach the frame).

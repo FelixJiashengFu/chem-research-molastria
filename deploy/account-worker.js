@@ -13,6 +13,13 @@
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需 Pro
+     GET  /digest/preview               每周精选的标题预览，公开
+     GET  /digest/latest                每周精选全文和订阅状态，需 Pro
+     POST /digest/subscribe {lang}      订阅邮件，需 Pro；DELETE 同一路径退订
+     POST /digest/send-me               把最新一期发到自己的邮箱，需 Pro，每天 3 次
+     POST /admin/digest/build           站长：重新生成本周精选
+     GET、POST /digest/unsubscribe?t=   邮件里的退订链接，不需要登录
+   定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js）。
 
    赠送的 Pro：grants 表里 source = admin 的是站长本人（永久 Pro，可以发 VIP 卡），这一行用 wrangler d1 execute
    手动写入（见 PAYMENTS.md），不经过任何接口；兑换了 VIP 卡的人直接按 cards 表里的兑换记录算有效期。
@@ -20,6 +27,7 @@
    部署步骤见 PAYMENTS.md 第 4 节；本地测试：deno run -A tools/account-test.ts */
 
 import { forward, list, reply } from './ai-proxy-worker.js';
+import { buildDigest, digestMail, latestDigest, mailFor, previewOf, sendPending, unsubscribe } from './digest.js';
 
 const DEFAULT_ORIGINS = 'https://molastria.com,https://www.molastria.com,tauri://localhost,http://tauri.localhost,https://tauri.localhost';
 const ACTIVE = ['active', 'trialing', 'past_due'];
@@ -219,19 +227,19 @@ async function signedIn(env, request) {
 }
 
 // ── mail (Resend) ───────────────────────────────────────────────────────
-async function sendMail(env, to, subject, text) {
+async function sendMail(env, to, subject, text, extra = {}) {
   if (!env.RESEND_API_KEY) {
     if (env.DEV_SHOW_CODE === '1') return;
     throw fail(503, '账号服务还没有配置发信');
   }
-  const html = `<div style="font:15px/1.7 -apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2a24;max-width:520px">${text
+  const html = extra.html || `<div style="font:15px/1.7 -apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2a24;max-width:520px">${text
     .split('\n').map((l) => (l ? `<p style="margin:0 0 10px">${l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\b(\d{6})\b/, '<b style="font-size:26px;letter-spacing:4px">$1</b>')}</p>` : '')).join('')}</div>`;
   let res;
   try {
     res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: env.MAIL_FROM || 'MolAstria <login@molastria.com>', to: [to], subject, text, html })
+      body: JSON.stringify({ from: env.MAIL_FROM || 'MolAstria <login@molastria.com>', to: [to], subject, text, html, ...(extra.headers ? { headers: extra.headers } : {}) })
     });
   } catch { res = null; }
   if (!res?.ok) throw fail(502, '邮件发送失败，请稍后再试');
@@ -380,6 +388,45 @@ async function route(request, env, cors) {
     if (request.method === 'GET') return json({ cards: await cardList(env) }, cors);
   }
 
+  if (key === 'GET /digest/preview') {
+    return new Response(JSON.stringify(previewOf(await latestDigest(env)) || { items: [], total: 0 }), { headers: { ...cors, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+  }
+
+  if (path.startsWith('/digest/')) {
+    const me = await signedIn(env, request);
+    if (!(await access(env, me)).pro) throw fail(403, '每周精选是 Pro 功能');
+    const sub = () => env.DB.prepare('SELECT token, lang FROM digest_subs WHERE email = ?1').bind(me).first();
+    const lang = body.lang === 'en' ? 'en' : 'zh';
+    if (key === 'GET /digest/latest') {
+      const s = await sub();
+      return json({ digest: await latestDigest(env), subscribed: !!s }, cors);
+    }
+    if (key === 'POST /digest/subscribe') {
+      await env.DB.prepare('INSERT INTO digest_subs (email, token, lang, created) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(email) DO UPDATE SET lang = ?3').bind(me, randomToken(), lang, now()).run();
+      return json({ subscribed: true }, cors);
+    }
+    if (key === 'DELETE /digest/subscribe') {
+      await env.DB.batch([env.DB.prepare('DELETE FROM digest_subs WHERE email = ?1').bind(me), env.DB.prepare('DELETE FROM digest_sends WHERE email = ?1').bind(me)]);
+      return json({ subscribed: false }, cors);
+    }
+    if (key === 'POST /digest/send-me') {
+      if (!(await allow(env, `digest-me:${me}`, 3, 86400))) throw fail(429, '今天发得太多了，明天再试');
+      const d = await latestDigest(env);
+      if (!d) throw fail(404, '第一期还没有生成');
+      const s = await sub();
+      const m = s ? mailFor(env, d, { token: s.token, lang }) : digestMail(d, { en: lang === 'en', unsubscribeUrl: 'https://molastria.com/pro/account.html' });
+      await sendMail(env, me, m.subject, m.text, { html: m.html, headers: s ? m.headers : undefined });
+      return json({ ok: true }, cors);
+    }
+  }
+
+  if (key === 'POST /admin/digest/build') {
+    await signedInAdmin(env, request);
+    const d = await buildDigest(env, { force: true });
+    if (!d) throw fail(502, '这周的新论文太少，或者论文接口暂时不可用');
+    return json({ digest: d }, cors);
+  }
+
   if (key === 'POST /ai/chat') {
     const me = await signedIn(env, request);
     const a = await access(env, me);
@@ -414,8 +461,19 @@ async function route(request, env, cors) {
   throw fail(404, '没有这个接口');
 }
 
+const BUILD_CRON = '0 12-20 * * 1'; // hourly on Mondays, so a failed run gets another chance; it only builds once a week
+
 export default {
+  async scheduled(event, env) {
+    try {
+      if (event.cron === BUILD_CRON) await buildDigest(env);
+      else await sendPending(env, { access, sendMail });
+    } catch (e) { console.error('scheduled task failed', event.cron, e); }
+  },
+
   async fetch(request, env) {
+    // Linked from emails and posted to by mail apps, so it comes before the check of which sites may call this service.
+    if (new URL(request.url).pathname.replace(/\/+$/, '') === '/digest/unsubscribe' && ['GET', 'POST'].includes(request.method)) return unsubscribe(request, env);
     const origin = request.headers.get('Origin') || '';
     const allowed = list(env.ALLOWED_ORIGINS || DEFAULT_ORIGINS);
     const originOk = !origin || allowed.includes('*') || allowed.includes(origin);

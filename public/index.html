@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="theme-auto.css">
   <link rel="stylesheet" href="styles.css">
   <script src="merged-data.js" defer></script>
+  <script src="search-terms.js" defer></script>
   <script src="shared-nav.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -46,7 +47,8 @@
     <div class="quick-topics" aria-label="快捷关键词"><span>试着搜索</span><button data-query="基组">基组</button><button data-query="Multiwfn">Multiwfn</button><button data-query="分子动力学">分子动力学</button><button data-query="机器学习">机器学习</button><button data-query="PubChem">PubChem</button></div>
     <p class="en-only" translate="no">Titles and excerpts appear as each source published them, so many are in Chinese. The AI assistant can answer in English with citations.</p><div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
     <div id="results" class="results"></div>
-    <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以换用英文名称、缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
+    <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
+    <div id="search-next" class="search-next" hidden><p>目录里的结果不多，还可以：</p><button class="button" type="button" id="next-ai">问 AI 助手</button><a class="button" id="next-radar" href="radar/index.html">在预印本雷达里搜最新论文</a><a class="button" id="next-network" href="hub/network.html">用网状查询看相关主题</a></div>
     <div class="more"><button id="more" class="button">显示更多资源 ↓</button><p id="page-count"></p></div>
   </section>
   <section class="paths" aria-label="进一步探索"><a href="atlas/index.html#guide"><span>01 / 读懂背景</span><h2>中文讲解手册 <b>↗</b></h2><p>从三分钟导读开始，理解化学数据的分层、用途与边界。</p></a><a href="hub/index.html#overview"><span>02 / 回到来源</span><h2>论文与社区看板 <b>↗</b></h2><p>查看各来源的内容分布、接入状态、论文与教程快照。</p></a><a href="atlas/index.html#agent"><span>03 / 连接流程</span><h2>Agent 工程 <b>↗</b></h2><p>查看适配器、MCP 工具与源码下载，区分已实现和待完成能力。</p></a><a class="lab-path" href="lab/index.html"><span>04 / 闭环发现 · 新</span><h2>AI 实验室 <b>↗</b></h2><p>让 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，按可靠性分配 DFT 验证。</p></a></section>

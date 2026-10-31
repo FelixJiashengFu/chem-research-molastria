@@ -64,6 +64,19 @@
       <p class="co-msg" id="member-msg" role="status" aria-live="polite"></p>
     </div>
 
+    <div class="acct-card" id="digest-card" hidden aria-labelledby="digest-h">
+      <h2 id="digest-h">每周精选</h2>
+      <p class="acct-sub">每周一从 ChemRxiv、arXiv 和计算化学期刊里选出值得读的新论文，每篇附一句解读，可以在这里看，也可以订阅邮件。解读由 AI 根据标题和摘要生成，请以原文为准。</p>
+      <div class="acct-digest-actions"><button type="button" class="btn primary" id="digest-toggle">订阅邮件</button><button type="button" class="btn" id="digest-mail" hidden>发一份到我的邮箱</button><button type="button" class="btn" id="digest-build" hidden>重新生成本期</button></div>
+      <p class="co-msg" id="digest-msg" role="status" aria-live="polite"></p>
+      <p class="acct-sub" id="digest-empty" hidden>第一期还没有生成，每周一更新。</p>
+      <div id="digest-body" hidden>
+        <h3 id="digest-week"></h3>
+        <p class="acct-line" id="digest-overview"></p>
+        <ol class="acct-digest" id="digest-list"></ol>
+      </div>
+    </div>
+
     <div class="acct-card" id="admin-card" hidden aria-labelledby="admin-h">
       <h2 id="admin-h">发 VIP 卡</h2>
       <p class="acct-sub">生成卡号送给朋友。朋友在本页填邮箱和卡号、收到验证码后即开通 Pro。一张卡只能用一次；收回后，这张卡带来的 Pro 时长立即作废。</p>

@@ -9,6 +9,14 @@ compatibility_date = "2026-10-01"
 routes = [{ pattern = "api.molastria.com", custom_domain = true }]
 workers_dev = false
 
+[triggers]
+# 周一 12:00–20:00 UTC 每小时检查一次本周精选（生成过就跳过）；每 15 分钟发一小批邮件。改生成时间要同步改 account-worker.js 的 BUILD_CRON。
+crons = ["0 12-20 * * 1", "*/15 * * * *"]
+
+# 线上日志，在 Cloudflare 后台或 npx wrangler tail 查看。
+[observability]
+enabled = true
+
 [[d1_databases]]
 binding = "DB"
 database_name = "molastria"

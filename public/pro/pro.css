@@ -121,6 +121,13 @@ tbody tr:last-child td{border-bottom:0}
 .acct-form input[readonly]{color:var(--muted);background:var(--surface-2)}
 #login-code{font:500 20px var(--font-mono);letter-spacing:.35em}
 .acct-actions{display:flex;justify-content:flex-end;gap:8px}
+.acct-digest-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+#digest-week{margin:14px 0 4px;font-size:14px}
+.doc .acct-digest{margin:10px 0 0;padding-left:22px;display:grid;gap:12px}
+.acct-digest li{font-size:14px;line-height:1.6}
+.acct-digest a{font-weight:600}
+.acct-digest small{display:block;color:var(--muted);font-size:12px}
+.doc .acct-digest p{margin:3px 0 0;color:var(--ink-2);font-size:14px;line-height:1.6}
 .acct-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .acct-badge{display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:99px;color:#fff;font:650 12px/1 var(--font-sans);letter-spacing:.04em;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 80%,transparent),color-mix(in srgb,var(--accent) 94%,transparent));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 8px color-mix(in srgb,var(--accent) 30%,transparent)}
 .acct-badge[data-role=free]{color:var(--muted);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-strong)}
@@ -163,3 +170,8 @@ tbody tr:last-child td{border-bottom:0}
 @media(max-width:520px){.acct-card{padding:18px 16px}.acct-add{flex-direction:column}.acct-cardgen{grid-template-columns:1fr 1fr}.acct-cardgen .acct-note,.acct-cardgen .btn{grid-column:1/-1}.acct-cardlist li{grid-template-columns:1fr}.acct-cardlist .acct-cardbtns{grid-row:auto;grid-column:1;margin-top:6px}}
 .doc .activate.ok{border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 8%,var(--surface))}
 .doc .activate.warn{border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.digest-preview{margin:36px 0}
+.digest-preview h2{margin:0 0 6px}
+.digest-preview ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.digest-preview li{padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:14px;line-height:1.55}
+.digest-preview small{display:block;color:var(--muted);font-size:12px}

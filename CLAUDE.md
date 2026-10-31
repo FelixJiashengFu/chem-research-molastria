@@ -15,7 +15,7 @@ MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源�
 
 ```text
 public/               发布目录，推到 main 就上线
-  index.html, app.js  统一搜索
+  index.html, app.js  统一搜索；search-terms.js 是中英术语表
   shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口；新栏目在这里加导航
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
   ai/ai.js            AI 助手：服务商、托管额度、可拖宽窗口
@@ -24,7 +24,7 @@ public/               发布目录，推到 main 就上线
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面；app/ 是复制来的，不要手改
   hub/data.*, merged-data.*   目录快照
-deploy/               账号服务：account-worker.js、schema.sql、wrangler.toml（Cloudflare Worker + D1）
+deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置 public/
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
@@ -95,11 +95,12 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **`wrangler.toml`：** `routes`、`workers_dev` 这类顶层设置必须写在 `[[d1_databases]]`、`[vars]` 之前，否则会被算进那些段里。
 - **D1 偶发 403（code 7403）：** 一段时间没用后的第一个请求常失败，重试就好，不是权限问题。
 - **D1 迁移：** `schema.sql` 只有 `CREATE TABLE IF NOT EXISTS`，加列要另外跑 `ALTER TABLE`，并在 `schema.sql` 留注释。
+- **Worker 免费版：** 每次调用的 CPU 时间很短，本地测不出来。定时任务里解析的响应要小（每个来源 20 条），改动后在线上跑一次（`docs/RUNBOOK.md`）。
 - **页面缓存：** GitHub Pages 让浏览器缓存文件 10 分钟，刚上线时要 Ctrl+F5。测线上时给网址加查询参数。
 - **ChemRxiv：** 官网对程序返回 Cloudflare 验证，不要绕过；用 Crossref（前缀 10.26434）。Crossref 里没有学科字段，靠关键词筛。
 - **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
-- **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。
+- **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。

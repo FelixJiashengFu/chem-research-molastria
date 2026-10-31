@@ -14,13 +14,14 @@ flowchart TB
   V -->|AI 实验室| JS["jsDelivr（RDKit.js）"]
   W --> D1["Cloudflare D1"]
   W -->|只读查订阅| SA["Stripe API"]
-  W -->|发验证码| RS["Resend"]
+  W -->|验证码、每周精选邮件| RS["Resend"]
+  W -->|每周精选取论文| CR
   W -->|站点 key| DS["DeepSeek API"]
   PB["Porkbun 域名"] --> DNS["Cloudflare DNS"]
 ```
 
 - **网站**是静态文件：搜索、关系网、讲解、实验室、雷达都在访客浏览器里运行。
-- **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI。
+- **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选。
 - **桌面版**（Tauri）内置同一套网页，只多了检查更新。
 - 网站不接触卡号；AI 对话内容不保存。
 
@@ -62,6 +63,17 @@ sequenceDiagram
 
 每席每月 300 次（`MONTHLY_ASKS`）。这些规则在 `deploy/account-worker.js`，倍数在 `wrangler.toml` 的 `HOSTED_MODEL_WEIGHTS`。
 
+## 每周精选怎么运行
+
+代码在 `deploy/digest.js`，定时任务写在 `wrangler.toml`。
+
+| 步骤 | 什么时候 | 做什么 |
+| --- | --- | --- |
+| 生成 | 周一 12:00–20:00（UTC）每小时试一次，本周已有就跳过 | 从 Crossref（ChemRxiv、JCTC、JCP、PCCP、JPCL）和 DataCite（arXiv physics.chem-ph）取新论文，`deepseek-flash` 选题并写中英解读；失败时存不带解读的列表 |
+| 发送 | 每 15 分钟 | 给还没收到本周这一期的订阅者发最多 5 封，每天最多 80 封；已不是 Pro 的人记为跳过 |
+
+论文标题公开（`GET /digest/preview`，Pro 页显示）；完整内容和邮件要 Pro。邮件里的退订链接带每人一个的随机令牌，退订时删除订阅和发送记录。
+
 ## 账号服务接口
 
 `deploy/account-worker.js` 开头有完整列表。所有接口返回 JSON，登录后带 `Authorization: Bearer <令牌>`。
@@ -80,6 +92,9 @@ sequenceDiagram
 | `cards` | VIP 卡和兑换记录 |
 | `usage` | 每人每月的 AI 次数 |
 | `throttle` | 频率限制计数 |
+| `digests` | 每周精选的内容，每周一条 |
+| `digest_subs` | 订阅者：邮箱、退订令牌、语言 |
+| `digest_sends` | 哪一期发给了谁，用来分批和续发 |
 
 ## 数据和密钥放在哪
 
@@ -98,14 +113,16 @@ sequenceDiagram
 | --- | --- | --- |
 | Porkbun | 域名 | 约 US$11/年 |
 | Stripe | 收款 | 2.9% + C$0.30；境外卡 +0.8%；换汇 +2%；订阅 +0.7% |
-| DeepSeek | 托管 AI、补译 | 按 token；flash 每百万 $0.30 / $1.20（高峰，非高峰减半） |
+| DeepSeek | 托管 AI、每周精选、补译 | 按 token；flash 每百万 $0.30 / $1.20（高峰，非高峰减半） |
 | Cloudflare Workers | 账号服务 | 免费：每天 10 万次请求；超出后 Workers Paid US$5/月起 |
 | Cloudflare D1 | 数据库 | 免费：每天读 500 万行、写 10 万行，5 GB |
 | Cloudflare DNS | 解析 | 免费 |
-| Resend | 验证码邮件 | 免费：每天 100 封、每月 3000 封；超出后 Pro US$20/月 |
+| Resend | 验证码和每周精选邮件 | 免费：每天 100 封、每月 3000 封；超出后 Pro US$20/月 |
 | GitHub Pages | 网站 | 免费：1 GB，带宽软上限 100 GB/月 |
 | GitHub Actions、Releases | 构建、发布 | 公开仓库免费 |
 | Crossref、DataCite、arXiv、jsDelivr | 数据和 CDN | 免费 |
+
+每周精选每周调用一次 `deepseek-flash`（最多 3,000 token 输出），费用不到一分钱量级；主要限制是 Resend 的每日封数。
 
 ## 自动运行的东西
 
@@ -114,3 +131,4 @@ sequenceDiagram
 | `.github/workflows/pages.yml` | 推到 `main` | 测试、生成 SEO 页、发布网站 |
 | `.github/workflows/desktop.yml` | 推 `desktop-v*` 标签 | 构建 Win/Mac，签名，发布 Release 和 `latest.json` |
 | `.github/workflows/health.yml` | 每周一，以及推到 `main` 时 | 浏览器端到端测试；定时运行时还检查线上。失败时 GitHub 发邮件 |
+| Worker 定时任务（`wrangler.toml`） | 周一 12:00–20:00（UTC）每小时；每 15 分钟 | 生成每周精选；发送每周精选 |

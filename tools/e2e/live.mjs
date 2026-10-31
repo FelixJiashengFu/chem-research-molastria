@@ -32,6 +32,16 @@ check('desktop update feed matches the latest release', async () => {
   console.log(`     desktop ${latest.version}`);
 });
 
+check('weekly picks: the preview is public and has no comments, the full issue needs an account', async () => {
+  const r = await fetch(`${API}/digest/preview`);
+  assert.equal(r.status, 200);
+  const d = await r.json();
+  assert.ok(Array.isArray(d.items));
+  assert.ok(d.items.every((it) => it.title && !it.why_zh && !it.why_en));
+  assert.equal((await fetch(`${API}/digest/latest`)).status, 401);
+  console.log(`     ${d.week || 'no issue yet'}, ${d.total} papers`);
+});
+
 let browser;
 async function page(path) {
   const p = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
@@ -53,6 +63,14 @@ check('PreprintRadar opens in its frame', async () => {
   const f = p.frame({ url: /radar\/app/ });
   await f.waitForSelector('#nav a', { timeout: 20000 });
   assert.deepEqual(p.errors, []);
+});
+
+check('search: a Chinese term finds English entries, and the pricing page loads', async () => {
+  const p = await page('/index.html?q=' + encodeURIComponent('电解液'));
+  await p.waitForSelector('.result-row');
+  assert.deepEqual(p.errors, []);
+  const pro = await page('/pro/index.html');
+  assert.deepEqual(pro.errors, []);
 });
 
 check('catalogue page lists its sources, ChemRxiv among them', async () => {

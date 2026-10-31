@@ -4,7 +4,8 @@
 
 ## 现在
 
-- 上线 AI 托管限额和 Pro 页修正：代码已改好，等 `/ship-worker`，然后 `/ship-site`。
+- 每周精选第一期（周一）发出后看一眼：邮件显示、进垃圾箱没有、DeepSeek 花了多少。
+- 商业邮件合规：加拿大 CASL 一般要求邮件里有发件人的联系方式（如邮寄地址），每周精选现在只有网址和退订链接；要确认是否适用、放什么。
 - 售后邮箱：在 Porkbun 设 `support@molastria.com` 转发，再填进 `public/pay/config.js` 的 `contactEmail`（现在售后只能去公开的 GitHub Issues）。
 - 发信记录：在 Cloudflare DNS 加 `_dmarc` TXT 记录 `v=DMARC1; p=none`。
 - 接上“管理订阅”按钮：把 Stripe 客户门户登录链接填进 `public/pay/config.js` 的 `portalUrl`（等用户提供链接）。
@@ -14,15 +15,14 @@
 
 收入：
 - 支付宝和微信支付：Stripe 支持加拿大商户，但不支持自动续费。做“一次性买一年”，有效期沿用 VIP 卡的计算方式。
-- 每周精选推送：用雷达查询、Crossref、DeepSeek、Resend 和 Worker 定时任务。之后做云同步。
+- 云同步：下一个 Pro 功能；工作流库在它之后。
 - 价格页更突出年付：月付单笔手续费约 11%，年付约 7%。
 
 增长：
-- 站内搜索：中英同义词（现在搜“电解液”0 条，但有英文 electrolyte 条目）；没结果时引导去问 AI 或用雷达。
 - 目录数据：定时自动刷新；把 arXiv、Crossref 期刊等快照也改成不依赖 Python；补上缺失的日期和占位摘要。
-- 搜索引擎：生成英文静态页（`?lang=en` 和中文页 HTML 相同，没有 hreflang）；雷达页加静态介绍；做主题合集页；到 Search Console 确认收录。
+- 搜索引擎：生成英文静态页（`?lang=en` 和中文页 HTML 相同，没有 hreflang）；做主题合集页；到 Search Console 确认收录。
 - 用大陆网络实测访问速度和百度收录（GitHub Pages 在这两方面都有风险）。
-- 使用数据：Cloudflare Web Analytics（先更新隐私政策）、Worker 日志（`[observability]`）、统计没有结果的搜索词。
+- 使用数据：Cloudflare Web Analytics（先更新隐私政策）、统计没有结果的搜索词（用来补 `public/search-terms.js`）。
 
 ## 以后再说
 
@@ -34,6 +34,8 @@
 
 ## 已完成
 
+- 2026-10-31 每周精选（账号页、邮件、Pro 页标题预览）；站内搜索中英术语互查和“还可以”面板；雷达 `?q=` 直达搜索；Worker 日志。
+- 2026-10-31 托管 AI 按花费计次、5 台设备上限、Pro 页文字修正。
 - 2026-10-31 项目系统化：`CLAUDE.md`、`docs/`、项目命令、端到端测试、每周健康检查、使用说明书。
 - 2026-10-29 桌面版 0.1.3；VIP 卡、站长永久 Pro、可拖宽的 AI 窗口、ChemRxiv 来源、预印本雷达。
 - 2026-10-29 Pro 账号上线：付款后自动登录、邮箱验证码、AI 托管额度、课题组席位。

@@ -20,7 +20,7 @@
   const TITLE = { pro_year: 'MolAstria Pro · 年付早鸟', pro_month: 'MolAstria Pro · 月付', team_year: 'MolAstria 课题组版 · 年付', sponsor: '支持 MolAstria' };
   // Once the account service is configured, the hosted AI quota works right after payment.
   const LIVE = !!PAY.accountApi;
-  const SOON = LIVE ? ['AI 托管额度每月 300 次，付款后立即可用', '云同步、每周精选、深度工作流库：开发中，上线后自动开通，暂无确定日期'] : ['AI 托管额度、云同步、每周精选、深度工作流库：开发中，上线后自动开通，暂无确定日期'];
+  const SOON = LIVE ? ['AI 托管额度每月 300 次和每周精选，付款后立即可用', '云同步、深度工作流库：开发中，上线后自动开通，暂无确定日期'] : ['AI 托管额度、云同步、每周精选、深度工作流库：开发中，上线后自动开通，暂无确定日期'];
   const ITEMS = {
     pro_year: ['锁定早鸟价，续费不涨价', ...SOON, '14 天内无理由全额退款'],
     pro_month: ['随时取消，当前周期结束后不再续费', ...SOON, '14 天内无理由全额退款'],
@@ -56,6 +56,13 @@
   }));
 
   if (LIVE) document.querySelectorAll('[data-live]').forEach((el) => { el.className = 'st ok'; el.textContent = T('开通即享'); });
+  // This week's titles, when there is an issue yet; nothing shows if the account service cannot be reached.
+  if (LIVE) fetch(`${String(PAY.accountApi).replace(/\/+$/, '')}/digest/preview`).then((r) => r.json()).then((d) => {
+    if (!d.items?.length) return;
+    const h = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
+    document.getElementById('digest-preview-list').innerHTML = d.items.map((it) => `<li><a href="${h(it.url)}" target="_blank" rel="noopener">${h(it.title)}</a><small>${h(it.source)}${it.date ? ` · ${h(it.date)}` : ''}</small></li>`).join('');
+    document.getElementById('digest-preview').hidden = false;
+  }).catch(() => {});
 
   // Contact link.
   const contact = $('contact-link');

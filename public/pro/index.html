@@ -35,7 +35,7 @@
   <header class="pro-hero">
     <p class="eyebrow">MOLASTRIA PRO</p>
     <h1>核心功能永久免费。<br><em>Pro 让你少配置、多做研究。</em></h1>
-    <p class="lead">搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：现在可用的是不用自己配 key 的 AI 额度；跨设备同步、每周精选和工作流库正在开发，上线后自动开通。</p>
+    <p class="lead">搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：现在可用的是不用自己配 key 的 AI 额度和每周精选；跨设备同步和工作流库正在开发，上线后自动开通。</p>
     <div class="hero-row">
       <span class="badge-early">早鸟预售中 · 锁定早鸟价</span>
       <div class="billing" role="group" aria-label="付费周期"><button type="button" data-billing="year" aria-pressed="true">年付 <small>省 43%</small></button><button type="button" data-billing="month" aria-pressed="false">月付</button></div>
@@ -69,11 +69,11 @@
         <li><b>包含免费版全部功能</b></li>
         <li>AI 托管额度：免配 key，每月 300 次带出处问答 <span class="st dev" data-live="hosted">开发中</span></li>
         <li>云同步：收藏、笔记、AI 对话与实验室项目 <span class="st dev">开发中</span></li>
-        <li>每周精选推送：8 个来源的新内容精选与解读 <span class="st dev">开发中</span></li>
+        <li>每周精选：ChemRxiv、arXiv 和计算化学期刊的新论文，附解读和邮件推送 <span class="st dev" data-live="digest">开发中</span></li>
         <li>深度工作流库：输入模板、参数解释、报错对照 <span class="st dev">开发中</span></li>
         <li>新功能优先内测与需求投票 <span class="st dev">开发中</span></li>
       </ul>
-      <p class="fine">早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（deepseek-v4-pro 和 AI 实验室会多计次数）；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。</p>
+      <p class="fine">早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（deepseek-v4-pro 和 AI 实验室会多计次数）和每周精选；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。</p>
     </article>
 
     <article class="plan" data-plan="team">
@@ -103,6 +103,12 @@
     </article>
   </section>
 
+  <section class="digest-preview" id="digest-preview" hidden aria-labelledby="dp-h">
+    <h2 id="dp-h">本周精选预览</h2>
+    <p class="muted">每周一从 ChemRxiv、arXiv 和计算化学期刊里选新论文。这里可以看标题；Pro 还有每篇的解读和邮件推送。</p>
+    <ul id="digest-preview-list"></ul>
+  </section>
+
   <section class="download-band" aria-labelledby="dl-h">
     <div><p class="eyebrow">DESKTOP</p><h2 id="dl-h">桌面版：离线浏览，接本地模型更方便</h2><p class="muted">完整的目录、讲解和 AI 实验室装进一个应用；在应用里调用本机的 Ollama / vLLM 不受浏览器跨域限制。免费下载。</p></div>
     <div class="dl-buttons">
@@ -125,7 +131,7 @@
         <tr><td>AI 托管额度（免配 key）</td><td>—</td><td>每月 300 次</td><td>每席位 300 次</td></tr>
         <tr><td>成员管理（添加、移除成员）</td><td>—</td><td>—</td><td>✓</td></tr>
         <tr><td>云同步：收藏、笔记、对话、实验室项目 <span class="st dev">开发中</span></td><td>本机浏览器</td><td>跨设备</td><td>跨设备 + 组内共享</td></tr>
-        <tr><td>每周精选推送 <span class="st dev">开发中</span></td><td>—</td><td>精选与解读</td><td>精选与解读</td></tr>
+        <tr><td>每周精选</td><td>标题预览</td><td>解读 + 邮件推送</td><td>解读 + 邮件推送</td></tr>
         <tr><td>深度工作流库（模板、参数、报错） <span class="st dev">开发中</span></td><td>—</td><td>全部</td><td>全部</td></tr>
         <tr><td>成员角色、用量看板 <span class="st dev">开发中</span></td><td>—</td><td>—</td><td>✓</td></tr>
       </tbody>

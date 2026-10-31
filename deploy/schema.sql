@@ -79,3 +79,27 @@ CREATE TABLE IF NOT EXISTS throttle (
   n INTEGER NOT NULL,
   reset INTEGER NOT NULL
 );
+
+-- 每周精选。week 是那一周周一的日期，body 是 JSON（deploy/digest.js）。
+CREATE TABLE IF NOT EXISTS digests (
+  week TEXT PRIMARY KEY,
+  created INTEGER NOT NULL,
+  body TEXT NOT NULL
+);
+
+-- 每周精选的邮件订阅。退订时整行删除。token 用于邮件里的退订链接。
+CREATE TABLE IF NOT EXISTS digest_subs (
+  email TEXT PRIMARY KEY,
+  token TEXT NOT NULL UNIQUE,
+  lang TEXT NOT NULL DEFAULT 'zh',
+  created INTEGER NOT NULL
+);
+
+-- 哪一期发给了谁。sent = 0 表示当时已不是 Pro，跳过了。
+CREATE TABLE IF NOT EXISTS digest_sends (
+  week TEXT NOT NULL,
+  email TEXT NOT NULL,
+  sent INTEGER NOT NULL,
+  PRIMARY KEY (week, email)
+);
+CREATE INDEX IF NOT EXISTS digest_sends_sent ON digest_sends (sent);
