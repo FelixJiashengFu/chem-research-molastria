@@ -68,6 +68,8 @@ deno run --allow-read --allow-write tools/bundle-single.ts         # 单文件�
 deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts   # 刷新快照里的 ChemRxiv 计算化学预印本 · refresh ChemRxiv in the snapshot
 deno run --allow-read --allow-write tools/vendor-radar.ts         # 复制预印本雷达网页版（先在 ../PreprintRadar 运行 deno task web）· copy in PreprintRadar
 node --test tools/lab-test.mjs                                     # 实验室逻辑测试 · lab logic tests
+node tools/e2e/run.mjs                                             # 浏览器端到端测试（先 npm ci --prefix tools/e2e）· browser end-to-end checks
+node tools/e2e/live.mjs                                            # 线上只读检查 · read-only checks of the live site
 ```
 
 **桌面版新版本 · Desktop releases.** 推送标签 `desktop-v0.1.2` 这样的版本号，`.github/workflows/desktop.yml` 会以标签里的版本号构建 Win 安装包和 Mac 磁盘镜像，用仓库密钥 `TAURI_SIGNING_PRIVATE_KEY` 给更新文件签名，并发布 `latest.json`。已安装的桌面版每次启动都会读取它，发现新版本就在右下角提示“立即更新”，下载、校验签名、安装并重启。签名私钥只存在站长电脑（`~/.tauri/molastria-updater.key`）和这个仓库密钥里，请另外备份；丢了它，旧版本就再也收不到更新。<br>Push a tag such as `desktop-v0.1.2`: the workflow builds both installers with that version, signs the update files with the `TAURI_SIGNING_PRIVATE_KEY` secret and publishes `latest.json`. Installed apps read it on every launch and offer "Update now", which downloads, verifies, installs and restarts. Back up the private key; without it, installed apps can never be updated again.
@@ -95,6 +97,8 @@ PAYMENTS.md                  开通收款步骤 · how to turn on payments
 deploy/ai-proxy-worker.js    可选 AI 代理 · optional AI proxy
 deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENTS.md 第 4 节）· Pro accounts
 tools/                       构建、翻译、测试脚本 · build, translation and test scripts
+docs/                        维护文档：结构、操作手册、决定记录、路线图 · maintainer docs
+CLAUDE.md                    给 Claude Code 的项目说明 · project notes for Claude Code
 maintenance/                 数据更新工具（Python）· data refresh tools (Python)
 site.config.json             正式网址与站名 · site URL and name
 ```

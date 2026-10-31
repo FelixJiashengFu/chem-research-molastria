@@ -1,0 +1,9 @@
+{
+  "name": "molastria-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Browser checks in the installed Chrome. See docs/RUNBOOK.md.",
+  "devDependencies": {
+    "playwright-core": "1.49.1"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "molastria",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["run", "--allow-net", "--allow-read", "tools/serve.ts", "8830"],
+      "port": 8830
+    }
+  ]
+}

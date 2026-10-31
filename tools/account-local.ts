@@ -3,7 +3,8 @@
 // Fake customers: pro@example.com (Pro, yearly) and pi@example.com (Group edition, 5 seats); fake paid checkout
 // sessions cs_test_localpro and cs_test_localteam; admin@example.com is the site admin (permanent Pro, issues VIP cards).
 // Sign-in codes are returned to the page instead of mailed.
-// Hosted AI calls go to the real DeepSeek with DEEPSEEK_API_KEY from this process's environment.
+// Hosted AI calls go to the real DeepSeek with DEEPSEEK_API_KEY from this process's environment,
+// or get a fixed answer when FAKE_AI is set (tools/e2e/run.mjs).
 // Point the site at it by setting accountApi in public/pay/config.js to http://127.0.0.1:<port> (do not commit that).
 import worker from "../deploy/account-worker.js";
 import { d1 } from "./d1-sqlite.ts";
@@ -24,6 +25,11 @@ const sessions: Record<string, unknown> = {
 const realFetch = globalThis.fetch;
 globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
+  if (url.hostname === "api.deepseek.com" && Deno.env.get("FAKE_AI")) { // tools/e2e: no key, no cost, a fixed streamed answer
+    const events = [{ choices: [{ delta: { content: "测试回答。" } }] }, { choices: [], usage: { prompt_tokens: 1, completion_tokens: 1 } }];
+    const body = events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join("") + "data: [DONE]\n\n";
+    return new Response(body, { headers: { "Content-Type": "text/event-stream" } });
+  }
   if (url.hostname !== "api.stripe.com") return realFetch(input, init);
   const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
   const p = url.pathname.replace("/v1/", "");
@@ -38,7 +44,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
 
 const env = {
   DB, STRIPE_KEY: "rk_test_local", DEV_SHOW_CODE: "1",
-  DEEPSEEK_API_KEY: Deno.env.get("DEEPSEEK_API_KEY") ?? "",
+  DEEPSEEK_API_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("DEEPSEEK_API_KEY") ?? "",
   ALLOWED_ORIGINS: Deno.args[1] ?? "http://localhost:8830,http://127.0.0.1:8830",
   MONTHLY_ASKS: "300",
 };

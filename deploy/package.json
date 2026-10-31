@@ -1,0 +1,8 @@
+{
+  "name": "molastria-account-deploy",
+  "private": true,
+  "description": "Pins the wrangler version used to deploy the account service. See docs/RUNBOOK.md.",
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}

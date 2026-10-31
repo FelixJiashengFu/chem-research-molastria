@@ -1,0 +1,39 @@
+{
+  "autoMemoryDirectory": "~/.claude/projects/D--ChemDraw/memory",
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git fetch*)",
+      "Bash(gh run list*)",
+      "Bash(gh run view*)",
+      "Bash(gh run watch*)",
+      "Bash(gh release view*)",
+      "Bash(deno run --allow-read tools/account-test.ts*)",
+      "Bash(node --test tools/lab-test.mjs*)",
+      "Bash(node tools/e2e/run.mjs*)",
+      "Bash(node tools/e2e/live.mjs*)"
+    ],
+    "deny": [
+      "Read(~/.tauri/**)",
+      "Read(**/*.key)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.mjs\""
+          }
+        ]
+      }
+    ]
+  }
+}

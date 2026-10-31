@@ -70,7 +70,7 @@ plans: {
 1. **把 molastria.com 的 DNS 搬到 Cloudflare（推荐）。** `workers.dev` 地址在中国大陆通常打不开，用 `api.molastria.com` 需要域名在 Cloudflare 上。Cloudflare 后台 → **Add a domain** → `molastria.com` → Free；它会导入现有记录。GitHub Pages 的 A / AAAA 记录和 `www` CNAME 设为 **DNS only（灰色云朵）**，再到 Porkbun 把 nameserver 换成 Cloudflare 给的两个。网站不会中断。（跳过这一步也能用，地址是 `https://molastria-account.<你的子域>.workers.dev`，只是大陆访问不稳。）
 2. **Resend 发信。** 注册后 **Domains → Add domain → molastria.com**，把它给的几条 DNS 记录加到 Cloudflare（或 Porkbun），验证通过后 **API Keys → Create**（Sending access）。发件地址默认 `login@molastria.com`，可在 `deploy/wrangler.toml` 的 `MAIL_FROM` 修改。
 3. **Stripe 只读受限密钥。** Stripe 后台 **Developers → API keys → Create restricted key**，名字填 MolAstria account，权限只开三项 **Read**：Customers、Checkout Sessions、Subscriptions，其余保持 None。正式环境建正式密钥（`rk_live_…`），测试环境的测试链接配测试密钥（`rk_test_…`）。**这个密钥只粘贴进下面的命令，不要发给任何人，也不要放进仓库。**
-4. **部署**（在仓库的 `deploy` 目录打开终端）：
+4. **部署**（在仓库的 `deploy` 目录打开终端，先运行 `npm ci`；Windows PowerShell 里把 `npx` 写成 `npx.cmd`。已完成，以后的操作见 `docs/RUNBOOK.md`）：
    ```bash
    npx wrangler login
    npx wrangler d1 create molastria                       # 把输出里的 database_id 填进 wrangler.toml
