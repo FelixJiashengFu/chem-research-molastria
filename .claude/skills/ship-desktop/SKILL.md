@@ -13,6 +13,6 @@ argument-hint: "<版本号，如 0.1.4>"
 4. 打标签并推送：
    `git tag -a desktop-v$ARGUMENTS -m "Desktop $ARGUMENTS: 一句话说明" origin/main`
    `git -c credential.helper= -c "credential.helper=!gh auth git-credential" push origin desktop-v$ARGUMENTS`
-5. 把 `gh run watch <运行编号> --repo FelixJiashengFu/chem-research-molastria --exit-status` 放到后台（约 15 分钟），等通知，不要轮询。
+5. 把 `gh run watch <运行编号> --repo FelixJiashengFu/chem-research-molastria --exit-status` 放到后台（约 6–8 分钟），等通知，不要轮询。
 6. 完成后：`gh release view desktop-v$ARGUMENTS --repo FelixJiashengFu/chem-research-molastria --json assets`，再跑 `node tools/e2e/live.mjs`（它会核对 `latest.json` 和 Release 一致）。
 7. 不要在用户的 MolAstria 开着时再启动一个实例。告诉用户：彻底退出再打开，应该弹出更新提示。

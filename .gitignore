@@ -19,3 +19,6 @@ tools/e2e/node_modules/
 tools/e2e/shots/
 # Claude Code: personal settings stay on this machine
 .claude/settings.local.json
+
+# Intermediate file of the manual build
+docs/manual/manual.html

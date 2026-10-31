@@ -37,6 +37,7 @@
 
 ## 文档索引
 
+- [`manual/MolAstria-使用说明书.pdf`](manual/MolAstria-使用说明书.pdf)：给人看的完整使用说明（`node docs/manual/build.mjs` 重新生成）
 - [`../CLAUDE.md`](../CLAUDE.md)：每次会话自动读取的规则和命令
 - [`ROADMAP.md`](ROADMAP.md)：要做的事
 - [`DECISIONS.md`](DECISIONS.md)：做过的决定和原因
