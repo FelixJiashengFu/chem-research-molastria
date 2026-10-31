@@ -42,6 +42,13 @@ npx wrangler d1 execute molastria --remote --command "SELECT week, sent, count(*
 
 要加一个来源：改 `deploy/digest.js` 的来源列表，并先用真实接口确认返回大小（一次调用的 CPU 时间很有限，每个来源只取 20 条）。
 
+**在线上试跑一次生成：** Workers 免费版每次调用限 10 ms CPU，本地测不出来。2026-10-31 实测生成一期用了 8 ms，余量不多，加来源或改解析后要重测：
+
+1. 确认 `digest_subs` 是空的或可以收到邮件；本周已有一期时先删掉那一行，否则会跳过生成。
+2. 临时把 `wrangler.toml` 的 `crons` 第一项和 `account-worker.js` 的 `BUILD_CRON` 都改成 `*/2 * * * *`，然后 `npx wrangler deploy`。
+3. `npx wrangler tail molastria-account --format json` 看定时任务的 `outcome` 和 `cpuTime`；`exceededCpu` 就是超了。
+4. `git checkout -- deploy/account-worker.js deploy/wrangler.toml`，再部署一次，确认输出里是 `schedule: 0 12-20 * * 1`。
+
 ## 发布桌面版
 
 ```bash
@@ -140,7 +147,7 @@ npx.cmd wrangler secret put DEEPSEEK_API_KEY
 | 订阅了但没收到每周精选 | 每 15 分钟只发 5 封，每天最多 80 封，人多时要等；再看垃圾箱和 Resend 控制台 |
 | 解读是空的 | 模型失败或选出不足 3 篇，发的是不带解读的列表；可以重新生成 |
 | wrangler 报 7403 | 偶发，重试 |
-| wrangler 要注册 workers.dev 子域名 | `wrangler.toml` 顶层设置写到了 `[vars]` 后面 |
+| wrangler 要注册 workers.dev 子域名 | `wrangler.toml` 顶层设置写到了 `[vars]` 后面。另外，定时任务要求账号有这个子域名：已注册 `molastria.workers.dev`，`workers_dev = false`，所以账号服务不在上面。换 Cloudflare 账号时要重新开，打开控制台的 Workers 页面会自动创建 |
 | PowerShell 说禁止运行脚本 | 用 `npx.cmd` |
 | Deno 报 `UnknownIssuer` | Norton 拦截 HTTPS，加 `DENO_TLS_CA_STORE=system` |
 | 桌面版没提示更新 | 启动时才检查，要彻底退出再打开；用户点过“稍后”的话 3 天内不再提示 |

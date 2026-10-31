@@ -95,7 +95,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **`wrangler.toml`：** `routes`、`workers_dev` 这类顶层设置必须写在 `[[d1_databases]]`、`[vars]` 之前，否则会被算进那些段里。
 - **D1 偶发 403（code 7403）：** 一段时间没用后的第一个请求常失败，重试就好，不是权限问题。
 - **D1 迁移：** `schema.sql` 只有 `CREATE TABLE IF NOT EXISTS`，加列要另外跑 `ALTER TABLE`，并在 `schema.sql` 留注释。
-- **Worker 免费版：** 每次调用的 CPU 时间很短，本地测不出来。定时任务里解析的响应要小（每个来源 20 条），改动后在线上跑一次（`docs/RUNBOOK.md`）。
+- **Worker 免费版：** 每次调用限 10 ms CPU，本地测不出来；生成一期实测 8 ms（2026-10-31）。定时任务里解析的响应要小（每个来源 20 条），改动后在线上跑一次（`docs/RUNBOOK.md`）。
 - **页面缓存：** GitHub Pages 让浏览器缓存文件 10 分钟，刚上线时要 Ctrl+F5。测线上时给网址加查询参数。
 - **ChemRxiv：** 官网对程序返回 Cloudflare 验证，不要绕过；用 Crossref（前缀 10.26434）。Crossref 里没有学科字段，靠关键词筛。
 - **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。
