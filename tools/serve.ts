@@ -1,8 +1,10 @@
 // Local static preview of public/: deno run --allow-net --allow-read tools/serve.ts [port]
 import { serveDir } from "jsr:@std/http@1.0.9/file-server";
+import { fileURLToPath } from "node:url";
 
 const port = Number(Deno.args[0] ?? 8830);
-const root = new URL("../public", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+// fileURLToPath, not .pathname: the checkout path may contain non-ASCII characters, which .pathname leaves percent-encoded.
+const root = fileURLToPath(new URL("../public", import.meta.url));
 
 Deno.serve({ port, hostname: "127.0.0.1" }, async (req) => {
   const res = await serveDir(req, { fsRoot: root, quiet: true });

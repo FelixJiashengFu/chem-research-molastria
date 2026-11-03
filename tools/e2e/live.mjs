@@ -65,6 +65,13 @@ check('PreprintRadar opens in its frame', async () => {
   assert.deepEqual(p.errors, []);
 });
 
+check('QChem Web opens in its frame and computes a quantum dot', async () => {
+  const p = await page('/qchem/#qd');
+  const f = p.frame({ url: /qchem\/app/ });
+  await f.waitForFunction(() => /eV/.test(document.getElementById('qdCards')?.textContent || ''), null, { timeout: 20000 });
+  assert.deepEqual(p.errors, []);
+});
+
 check('search: a Chinese term finds English entries, and the pricing page loads', async () => {
   const p = await page('/index.html?q=' + encodeURIComponent('电解液'));
   await p.waitForSelector('.result-row');

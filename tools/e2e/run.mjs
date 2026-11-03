@@ -65,7 +65,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -336,6 +336,24 @@ check('PreprintRadar: loads in its frame and follows the site theme', async () =
   await finish(p);
 });
 
+check('QChem Web: loads in its frame, computes a quantum dot, and follows the site language', async () => {
+  const p = await open();
+  await go(p, '/qchem/index.html#qd');
+  assert.equal(await p.getAttribute('.cr-links a[data-id=qchem]', 'aria-current'), 'page');
+  const f = p.frame({ url: /qchem\/app\/index\.html/ });
+  await f.waitForSelector('#tabs button');
+  assert.deepEqual(await f.$$eval('#tabs button', (b) => b.map((x) => x.textContent.trim())), ['电子结构', '量子计算', '量子点', '对拍与说明']);
+  // embed=1 hides the frame's own language switch; the site's switch is the only one.
+  assert.equal(await f.isVisible('#langBtn'), false);
+  await f.waitForFunction(() => /eV/.test(document.getElementById('qdCards').textContent), null, { timeout: 10000 });
+  await go(p, '/qchem/index.html?lang=en#qd');
+  const en = p.frame({ url: /qchem\/app\/index\.html\?embed=1&lang=en/ });
+  await en.waitForFunction(() => /eV/.test(document.getElementById('qdCards').textContent), null, { timeout: 10000 });
+  const left = await en.evaluate(() => (document.getElementById('tabs').innerText + document.getElementById('view-qd').innerText).match(/[^\n]*[㐀-鿿][^\n]*/g));
+  assert.equal(left, null, `Chinese left in the English frame: ${left}`);
+  await finish(p);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');
@@ -364,7 +382,7 @@ check('English: account page and radar are translated, paper-free UI has no Chin
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html']) {
+  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

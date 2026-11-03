@@ -3675,12 +3675,30 @@
  "苟日新，日日新": [
   "radar/app/index.html"
  ],
+ "量子化学计算 · HF/DFT、CCSD(T)、VQE 与量子点 · MolAstria": [
+  "qchem/index.html"
+ ],
+ "量子化学计算": [
+  "qchem/index.html"
+ ],
+ "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。": [
+  "qchem/index.html",
+  "tools/build-seo.ts"
+ ],
+ "量子化学计算需要启用 JavaScript。": [
+  "qchem/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "中文讲解与数据库": [
   "shared-nav.js"
+ ],
+ "量子化学": [
+  "shared-nav.js",
+  "tags",
+  "categories"
  ],
  "训练 Agent": [
   "shared-nav.js",
@@ -6780,6 +6798,9 @@
  "同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。": [
   "tools/build-seo.ts"
  ],
+ "量子化学计算 QChem Web": [
+  "tools/build-seo.ts"
+ ],
  "闭环电解液分子发现 · AI 实验室": [
   "tools/build-seo.ts"
  ],
@@ -7333,10 +7354,6 @@
  ],
  "振动与频率": [
   "tags"
- ],
- "量子化学": [
-  "tags",
-  "categories"
  ],
  "软件归档": [
   "tags"
