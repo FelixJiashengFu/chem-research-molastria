@@ -66,8 +66,9 @@ check('PreprintRadar opens in its frame', async () => {
 });
 
 check('QChem Web opens in its frame and computes a quantum dot', async () => {
-  const p = await page('/qchem/#qd');
+  const p = await page('/qchem/'); // page() appends ?v=…, which would land inside a #hash
   const f = p.frame({ url: /qchem\/app/ });
+  await f.click('#tabs button[data-v=qd]', { timeout: 20000 });
   await f.waitForFunction(() => /eV/.test(document.getElementById('qdCards')?.textContent || ''), null, { timeout: 20000 });
   assert.deepEqual(p.errors, []);
 });
