@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 里的 Meta 技术：用 Muse Spark 从图片识别分子结构并经 RDKit 校验，生成在自己电脑上运行 UMA 的 fairchem 脚本，以及 FAIR Chemistry 开放的 UMA、OMol25、OMat24、OC25、OPoly26 等模型与数据集。">
+  <meta name="theme-color" content="#173f34">
+  <title>Meta × 化学 · Muse 识图、UMA 脚本与开放数据集 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="meta.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../ai/config.js" defer></script>
+  <script src="../ai/ai.js" defer></script>
+  <script src="../lab/chem.js" defer></script>
+  <script src="meta.js" defer></script>
+</head>
+<body data-section="meta">
+<a class="skip" href="#vision">跳到工具</a>
+<main>
+  <section class="mx-hero">
+    <div>
+      <p class="eyebrow">META OPEN SCIENCE × MOLASTRIA</p>
+      <h1>Meta 的模型与数据，<br><em>在这里接成一条研究流程。</em></h1>
+      <p class="lead">Muse 负责读图和提出想法，UMA 负责快速计算，OMol25 的基准告诉我们结果什么时候可信。这一页汇总 MolAstria 用到的 Meta 技术、两个可以直接上手的工具，以及 FAIR Chemistry 开放的模型和数据集。</p>
+      <div class="actions"><a class="button primary" href="#vision">用 Muse 识图</a><a class="button" href="#uma">生成 UMA 脚本</a><a class="button ghost" href="#open">浏览开放资源 ↓</a></div>
+      <p class="fine">MolAstria 是独立项目，与 Meta 没有隶属关系。Muse、UMA、OMol25 等名称归 Meta 所有；数据集和模型请按各自的许可证使用。</p>
+    </div>
+    <figure class="mx-stack" aria-labelledby="stack-cap">
+      <figcaption id="stack-cap">MolAstria 里的 Meta</figcaption>
+      <ol>
+        <li><span class="mx-k">Muse Wonder 1.0</span><b>AI 实验室的化学家</b><small>每轮提出电解液溶剂分子和设计理由，被 DFT 推翻的判断会反馈给它。</small><a href="../lab/index.html#workbench">打开 AI 实验室 →</a></li>
+        <li><span class="mx-k">Muse Spark 1.3</span><b>全站 AI 助手与识图</b><small>先检索本站目录再作答；能看图，本页用它把结构图转成 SMILES。</small><a href="#vision">试试识图 →</a></li>
+        <li><span class="mx-k">UMA-S / UMA-M</span><b>机器学习势筛选</b><small>AI 实验室的 Tier 1 在 Rowan 云端跑 UMA；也可以用本页生成的脚本在自己的 GPU 上跑。</small><a href="#uma">生成脚本 →</a></li>
+        <li><span class="mx-k">OMol25</span><b>可靠性先验与 DFT 约定</b><small>UMA 的训练数据；DFT 验证沿用它的 ωB97M-V/def2-TZVPD，误差先验来自 OMol25 系列模型的基准。</small><a href="../lab/index.html#method">看方法说明 →</a></li>
+      </ol>
+    </figure>
+  </section>
+
+  <section class="mx-facts" aria-label="关键数字">
+    <div><strong>1 亿+</strong><span>OMol25 的 DFT 计算，ωB97M-V/def2-TZVPD</span></div>
+    <div><strong>83</strong><span>OMol25 覆盖的元素</span></div>
+    <div><strong>7</strong><span>UMA 任务头：分子、材料、催化、MOF、分子晶体</span></div>
+    <div><strong>10</strong><span>本页收录的 FAIR Chemistry 开放数据集</span></div>
+  </section>
+
+  <section id="vision" class="mx-tool" aria-labelledby="vision-h">
+    <div class="mx-head">
+      <p class="eyebrow">TOOL 01 · MUSE SPARK VISION</p>
+      <h2 id="vision-h">Muse 识图：从一张图得到可计算的结构</h2>
+      <p class="muted">把文献截图、ChemDraw 截图或手绘结构交给 Muse Spark，它给出名称和 SMILES；浏览器里的 RDKit 再逐个校验，画出结构、算出分子式。校验不过的会标出来，不会悄悄当成正确答案。</p>
+    </div>
+    <div class="mx-split">
+      <div class="mx-card">
+        <label class="mx-drop" id="v-drop" tabindex="0">
+          <input type="file" id="v-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+          
+          <span id="v-drop-text"><b>拖入、点选或粘贴图片</b><small>PNG / JPG / WebP，过大的图片会先在浏览器里缩小</small></span>
+        </label>
+        <div class="mx-row">
+          <label>模型<select id="v-model"><option value="muse-spark-1.3">Muse Spark 1.3</option><option value="muse-spark-1.2">Muse Spark 1.2</option></select></label>
+          <button class="button primary" type="button" id="v-run" disabled>识别结构</button>
+          <button class="text-button" type="button" id="v-sample">用示例图片</button>
+        </div>
+        <p class="mx-note" id="v-key-note">识图用你自己的 Meta Model API key（在右上角「AI 助手」→ 设置里填），图片直接发给 Meta，本站不保存。</p>
+      </div>
+      <div class="mx-card mx-out" aria-live="polite">
+        <div id="v-status" class="muted">识别结果会显示在这里。</div>
+        <div id="v-results" class="mx-mols"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="uma" class="mx-tool" aria-labelledby="uma-h">
+    <div class="mx-head">
+      <p class="eyebrow">TOOL 02 · UMA ON YOUR OWN GPU</p>
+      <h2 id="uma-h">UMA 脚本生成器：在自己的电脑上跑 Meta 的原子模型</h2>
+      <p class="muted">UMA 需要 PyTorch 和 GPU，不能在网页里运行。这里按你的分子和计算目的生成一份完整的 fairchem + ASE 脚本：RDKit 生成三维结构，UMA 优化和计算，结果写成文件。IP / EA 的输出可以直接导入 AI 实验室。</p>
+    </div>
+    <div class="mx-split mx-gen">
+      <div class="mx-card">
+        <div class="mx-mol-in">
+          <div class="mx-art" id="u-art" aria-hidden="true"></div>
+          <div class="mx-fields">
+            <label>SMILES<input type="text" id="u-smiles" value="O=C1OCC(F)O1" spellcheck="false" autocomplete="off"></label>
+            <label>名称（用于文件名）<input type="text" id="u-name" value="FEC" spellcheck="false" autocomplete="off"></label>
+            <p class="mx-check" id="u-check" role="status"></p>
+          </div>
+        </div>
+        <label class="mx-wide">计算<select id="u-job">
+          <option value="ipea">绝热电离能与电子亲和能（可导入 AI 实验室）</option>
+          <option value="opt">几何优化与能量</option>
+          <option value="conf">构象搜索：20 个构象全部优化，取能量最低</option>
+          <option value="md">分子动力学：300 K，1 ps</option>
+        </select></label>
+        <div class="mx-row wrap">
+          <label>模型<select id="u-model">
+            <option value="uma-s-1p2p1">uma-s-1p2p1 · 最新小模型（推荐）</option>
+            <option value="uma-s-1p2p1-ft-d4rev">uma-s-1p2p1-ft-d4rev · ωB97M-D4rev 微调</option>
+            <option value="uma-m-1p1">uma-m-1p1 · 最准，较慢</option>
+          </select></label>
+          <label>设备<select id="u-device"><option value="cuda">GPU（cuda）</option><option value="cpu">CPU</option></select></label>
+          <label>电荷<input type="number" id="u-charge" value="0" step="1" min="-4" max="4"></label>
+          <label>自旋多重度<input type="number" id="u-spin" value="1" step="1" min="1" max="7"></label>
+        </div>
+        <label class="mx-checkbox" id="u-m-wrap"><input type="checkbox" id="u-m" checked> 再用 uma-m-1p1 在同一几何上算单点（AI 实验室用 S / M 的分歧判断结果是否可疑）</label>
+        <ol class="mx-run">
+          <li>安装：<code>pip install fairchem-core rdkit</code></li>
+          <li>申请模型访问： <a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">huggingface.co/facebook/UMA</a>，通过后运行 <code>huggingface-cli login</code></li>
+          <li>运行：<code id="u-cmd">python uma_FEC_ipea.py</code></li>
+        </ol>
+      </div>
+      <div class="mx-code">
+        <div class="mx-code-bar"><span id="u-file">uma_FEC_ipea.py</span><span><button type="button" class="text-button" id="u-copy">复制</button><button type="button" class="text-button" id="u-download">下载</button></span></div>
+        <pre tabindex="0" aria-label="生成的 Python 脚本"><code id="u-code"></code></pre>
+      </div>
+    </div>
+    <details class="mx-tasks">
+      <summary>UMA 的 7 个任务头：换体系时改 <code>task_name</code></summary>
+      <div class="mx-table"><table>
+        <thead><tr><th>task_name</th><th>适用体系</th><th>训练数据</th></tr></thead>
+        <tbody>
+          <tr><td><code>omol</code></td><td>分子与聚合物（本页脚本使用），支持电荷和自旋</td><td>OMol25 · ωB97M-V/def2-TZVPD</td></tr>
+          <tr><td><code>omat</code></td><td>无机材料、晶体弛豫</td><td>OMat24</td></tr>
+          <tr><td><code>oc20</code></td><td>表面吸附与催化</td><td>OC20</td></tr>
+          <tr><td><code>oc22</code></td><td>氧化物催化（UMA 1.2 起）</td><td>OC22</td></tr>
+          <tr><td><code>oc25</code></td><td>固–液界面与电催化（UMA 1.2 起）</td><td>OC25</td></tr>
+          <tr><td><code>odac</code></td><td>MOF 与气体吸附</td><td>ODAC</td></tr>
+          <tr><td><code>omc</code></td><td>分子晶体</td><td>OMC25</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted small">来源：fairchem README 与 UMA 更新记录（2026-10）。uma-s-1p2p1-ft-d4rev 只有 <code>omol</code> 任务。默认推理模式 UMA Nitro 需要 Ampere 及更新的 NVIDIA GPU，其他设备会自动退回普通模式。</p>
+    </details>
+  </section>
+
+  <section id="open" class="mx-open" aria-labelledby="open-h">
+    <div class="mx-head">
+      <p class="eyebrow">FAIR CHEMISTRY · OPEN MODELS AND DATA</p>
+      <h2 id="open-h">Meta 开放的化学模型、数据集与工具</h2>
+      <p class="muted">数字取自各论文摘要和 fairchem 文档（2026-11 核对）。标着「本站在用」的，是 MolAstria 已经接入的部分。</p>
+    </div>
+    <div class="mx-filter" role="toolbar" aria-label="按类型筛选">
+      <button type="button" data-kind="" aria-pressed="true">全部</button>
+      <button type="button" data-kind="model" aria-pressed="false">原子模型</button>
+      <button type="button" data-kind="llm" aria-pressed="false">语言模型</button>
+      <button type="button" data-kind="data" aria-pressed="false">数据集</button>
+      <button type="button" data-kind="tool" aria-pressed="false">工具与应用</button>
+      <label class="mx-search"><span class="sr-only">搜索资源</span><input type="search" id="o-q" placeholder="搜索名称、体系、方法…" autocomplete="off"></label>
+    </div>
+    <div class="mx-grid" id="o-grid">
+      <article class="mx-item" data-kind="model"><p class="mx-meta"><span class="mx-tag">原子模型</span>2025 · 2026-10 更新<span class="mx-tag used">本站在用</span></p><h3>UMA · Universal Models for Atoms</h3><p>一个模型覆盖分子、材料、催化、MOF 和分子晶体，用任务头切换。UMA-S 1.2.1 激活 660 万、总计 2.9 亿参数；UMA-M 1.1 激活 5000 万、总计 14 亿参数。</p><p class="mx-lic">许可：FAIR Chemistry License，需在 Hugging Face 申请</p><p class="mx-links"><a href="https://arxiv.org/abs/2506.23971" target="_blank" rel="noopener">论文</a><a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">Hugging Face</a><a href="https://facebookresearch.github.io/fairchem/" target="_blank" rel="noopener">文档</a></p></article>
+      <article class="mx-item" data-kind="model"><p class="mx-meta"><span class="mx-tag">原子模型</span>2026-10</p><h3>UMA-S 1.2.1 微调版</h3><p>uma-s-1p2p1-ft-d4rev 用约 400 万个按 ωB97M-D4rev 重算的 OMol25 结构微调，只用于分子；uma-s-1p2p1-ft-r2scan 用 r²SCAN 数据（MAD-1.6）训练，只用于无机材料。</p><p class="mx-lic">许可：FAIR Chemistry License</p><p class="mx-links"><a href="https://facebookresearch.github.io/fairchem/uma#uma-s-1p2p1-fine-tunes" target="_blank" rel="noopener">说明与局限</a></p></article>
+      <article class="mx-item" data-kind="model"><p class="mx-meta"><span class="mx-tag">原子模型</span>2025</p><h3>eSEN</h3><p>平滑、能量守恒的原子间势，在热导率、声子和材料稳定性预测上表现突出。OMol25 发布时同时给出了 eSEN 系列模型。</p><p class="mx-links"><a href="https://arxiv.org/abs/2502.12147" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="model"><p class="mx-meta"><span class="mx-tag">原子模型</span>2023</p><h3>EquiformerV2</h3><p>等变 Transformer。用 OMat24 训练的版本在 Matbench Discovery 上 F1 超过 0.9。</p><p class="mx-links"><a href="https://arxiv.org/abs/2306.12059" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="llm"><p class="mx-meta"><span class="mx-tag">语言模型</span>Meta Model API<span class="mx-tag used">本站在用</span></p><h3>Muse Wonder 1.0</h3><p>Muse 系列里推理最强的模型。AI 实验室推荐用它当“化学家”，每轮提出分子并写出设计理由。参考价：每百万 token 输入 4 美元、输出 20 美元。</p><p class="mx-links"><a href="https://dev.meta.ai/" target="_blank" rel="noopener">申请 API key</a><a href="../lab/index.html#workbench">在 AI 实验室里用</a></p></article>
+      <article class="mx-item" data-kind="llm"><p class="mx-meta"><span class="mx-tag">语言模型</span>Meta Model API<span class="mx-tag used">本站在用</span></p><h3>Muse Spark 1.3</h3><p>通用模型，能读图片。全站 AI 助手可以选它，本页的识图也用它。参考价：每百万 token 输入 1.25 美元、输出 4.25 美元。</p><p class="mx-links"><a href="https://dev.meta.ai/" target="_blank" rel="noopener">申请 API key</a><a href="#vision">在本页识图</a></p></article>
+      <article class="mx-item" data-kind="llm"><p class="mx-meta"><span class="mx-tag">语言模型</span>开放权重</p><h3>Muse Spark Open 816B-A42B</h3><p>Muse Spark 的开放权重版本，总参数 8160 亿、每个 token 激活 420 亿，需要申请，适合有集群的团队离线部署或当训练小模型的老师。</p><p class="mx-links"><a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B" target="_blank" rel="noopener">Hugging Face</a><a href="../train/index.html#teachers">训练 Agent 页的用法</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2025<span class="mx-tag used">本站在用</span></p><h3>OMol25 · Open Molecules 2025</h3><p>超过 1 亿次 ωB97M-V/def2-TZVPD 计算，83 种元素，约 8300 万个分子体系，最大 350 个原子；包含显式溶剂、不同电荷与自旋、构象和反应结构。</p><p class="mx-lic">许可：CC BY 4.0</p><p class="mx-links"><a href="https://arxiv.org/abs/2505.08762" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2024</p><h3>OMat24 · Open Materials 2024</h3><p>超过 1.1 亿次无机材料 DFT 计算，强调结构和组成的多样性。与 Materials Project 的能量设置不兼容，比较形成能时要注意。</p><p class="mx-lic">许可：CC BY 4.0</p><p class="mx-links"><a href="https://arxiv.org/abs/2410.12771" target="_blank" rel="noopener">论文</a><a href="https://huggingface.co/datasets/facebook/OMAT24" target="_blank" rel="noopener">Hugging Face</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2025</p><h3>OMC25 · Open Molecular Crystals 2025</h3><p>超过 2700 万个分子晶体结构，12 种元素，每个晶胞最多 300 个原子，来自 23 万多个结构的含色散校正 DFT 弛豫轨迹。</p><p class="mx-lic">许可：CC BY 4.0</p><p class="mx-links"><a href="https://arxiv.org/abs/2508.02651" target="_blank" rel="noopener">论文</a><a href="https://huggingface.co/datasets/facebook/OMC25" target="_blank" rel="noopener">Hugging Face</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2026 · 与 LLNL 合作</p><h3>OPoly26 · Open Polymers 2026</h3><p>超过 657 万次聚合物团簇 DFT 计算，合计 12 亿多个原子，覆盖单体组成、聚合度、链结构和溶剂环境的变化。</p><p class="mx-links"><a href="https://arxiv.org/abs/2512.23117" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2025</p><h3>OC25 · Open Catalyst 2025</h3><p>7,801,261 次计算、1,511,270 个显式溶剂环境、88 种元素，是目前最大的固–液界面数据集，面向电催化。</p><p class="mx-links"><a href="https://arxiv.org/abs/2509.17862" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2022</p><h3>OC22 · Open Catalyst 2022</h3><p>62,331 条氧化物表面的 DFT 弛豫（约 985 万个单点），面向析氧反应（OER）催化剂。</p><p class="mx-links"><a href="https://arxiv.org/abs/2206.08917" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2020</p><h3>OC20 · Open Catalyst 2020</h3><p>1,281,040 条 DFT 弛豫（约 2.65 亿个单点），覆盖不同材料、表面和吸附物，是 Open Catalyst Project 的起点。</p><p class="mx-links"><a href="https://arxiv.org/abs/2010.09990" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2025</p><h3>ODAC25 · Open DAC 2025</h3><p>近 6000 万次 DFT 计算：CO₂、H₂O、N₂、O₂ 在 15,000 个 MOF 中的吸附，包括官能化和人工生成的框架，用于直接空气捕集。</p><p class="mx-links"><a href="https://arxiv.org/abs/2508.03162" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2023</p><h3>ODAC23 · Open DAC 2023</h3><p>超过 3800 万次 DFT 计算，8,400 多种 MOF 吸附 CO₂ 和 / 或 H₂O。</p><p class="mx-links"><a href="https://arxiv.org/abs/2311.00341" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="data"><p class="mx-meta"><span class="mx-tag">数据集</span>2024 · 实验 + 计算</p><h3>OCx24 · Open Catalyst Experiments 2024</h3><p>572 个合成样品、441 个气体扩散电极的 CO₂ 还原和析氢测试，配合约 2 万种材料的 DFT 校验吸附能，把实验和模型连起来。</p><p class="mx-links"><a href="https://arxiv.org/abs/2411.11783" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>开源 · MIT<span class="mx-tag used">本站在用</span></p><h3>fairchem</h3><p>FAIR Chemistry 的代码库：ASE 计算器、训练、多 GPU 推理和 LAMMPS 接口。本页的 UMA 脚本就是基于它生成的。</p><p class="mx-links"><a href="https://github.com/facebookresearch/fairchem" target="_blank" rel="noopener">GitHub</a><a href="https://facebookresearch.github.io/fairchem/" target="_blank" rel="noopener">文档</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>2026-06</p><h3>UMA Playground</h3><p>Meta 的交互式教学演示，不用安装就能在浏览器里体验 UMA。</p><p class="mx-links"><a href="https://aidemos.atmeta.com/uma" target="_blank" rel="noopener">打开演示</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>持续更新</p><h3>FAIR Chemistry 排行榜</h3><p>OMol25 等基准上各原子模型的公开排行，选模型前先看这里。</p><p class="mx-links"><a href="https://huggingface.co/spaces/facebook/fairchem_leaderboard" target="_blank" rel="noopener">Hugging Face Space</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>2025</p><h3>FastCSP</h3><p>随机生成结构，再用 UMA 弛豫并计算自由能，加速分子晶体结构预测：几十张 GPU、几小时得到一个体系的结果。</p><p class="mx-links"><a href="https://arxiv.org/abs/2508.02641" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>2022</p><h3>AdsorbML</h3><p>用机器学习势筛选吸附构型，吸附能计算提速约 2000 倍，准确率 87%。</p><p class="mx-links"><a href="https://arxiv.org/abs/2211.16486" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>2024</p><h3>CatTSunami</h3><p>加速过渡态能量计算，枚举反应网络时提速约 1500 倍。</p><p class="mx-links"><a href="https://arxiv.org/abs/2405.02078" target="_blank" rel="noopener">论文</a></p></article>
+      <article class="mx-item" data-kind="tool"><p class="mx-meta"><span class="mx-tag">工具与应用</span>2026-09</p><h3>酶催化的量子精度模拟</h3><p>用机器学习势在量子化学精度上模拟酶催化反应，示例是 NDPK 催化 ATP 转为 ADP。</p><p class="mx-links"><a href="https://arxiv.org/abs/2609.09293" target="_blank" rel="noopener">论文</a></p></article>
+    </div>
+    <p class="mx-empty" id="o-empty" hidden>没有匹配的资源，换个关键词试试。</p>
+  </section>
+
+  <section class="mx-live" aria-labelledby="live-h">
+    <div>
+      <p class="eyebrow">LIVE · GITHUB AND HUGGING FACE</p>
+      <h2 id="live-h">fairchem 最近的版本</h2>
+      <p class="muted small">打开页面时从 GitHub 和 Hugging Face 读取，一小时内不重复请求。</p>
+    </div>
+    <ul id="live-list" class="mx-releases"><li class="muted">正在读取…</li></ul>
+  </section>
+
+  <footer class="mx-foot">
+    <strong>MolAstria · Meta × 化学</strong>
+    <p>识图请求用你自己的 Meta Model API key 直接发给 Meta，费用由你的账户结算。UMA 脚本在你自己的电脑上运行，本站不接触计算数据。MolAstria 与 Meta 没有隶属关系。</p>
+  </footer>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

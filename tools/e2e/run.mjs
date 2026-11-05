@@ -65,7 +65,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -354,6 +354,55 @@ check('QChem Web: loads in its frame, computes a quantum dot, and follows the si
   await finish(p);
 });
 
+check('Meta page: Muse reads a sample image, RDKit checks it, and the UMA script follows', async () => {
+  // A saved Muse key and a faked Meta Model API reply: one valid and one broken SMILES.
+  const p = await open({ init: () => { try { localStorage.setItem('chemhub-ai', JSON.stringify({ provider: 'muse', remember: true, keys: { muse: 'test-key' } })); } catch {} } });
+  let sent = null;
+  await p.context().route('https://api.meta.ai/**', async (route) => {
+    sent = route.request().postDataJSON();
+    const content = JSON.stringify({ molecules: [{ name: 'vinylene carbonate', smiles: 'O=C1OC=CO1', confidence: 0.95, note: '' }, { name: 'broken', smiles: 'C1CC(', confidence: 0.2, note: 'cropped' }] });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: 'muse-spark-1.3', choices: [{ message: { content } }], usage: { prompt_tokens: 1200, completion_tokens: 80 } }) });
+  });
+  await p.context().route('https://api.github.com/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{ name: 'fairchem-core-9.9.9', html_url: 'https://github.com/facebookresearch/fairchem/releases/tag/x', published_at: '2026-10-27T00:00:00Z' }]) }));
+  await p.context().route('https://huggingface.co/api/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ lastModified: '2026-10-27T14:58:57.000Z' }) }));
+  await go(p, '/meta/index.html');
+  assert.equal(await p.getAttribute('.cr-links a[data-id=meta]', 'aria-current'), 'page');
+  // The generator fills in once RDKit has loaded: FEC, IP / EA with the UMA-M single points.
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
+  let code = await text(p, '#u-code');
+  for (const s of ['get_predict_unit(MODEL', 'task_name="omol"', '"ip_uma_s"', 'uma-m-1p1', 'CATION_SPIN, ANION_SPIN = 2, 2']) assert.ok(code.includes(s), `script lacks ${s}`);
+  await p.selectOption('#u-job', 'md');
+  code = await text(p, '#u-code');
+  assert.ok(code.includes('Langevin(') && !code.includes('csv'), 'md script');
+  assert.equal(await p.isVisible('#u-m-wrap'), false);
+  // A radical: one unpaired electron gives a doublet by default.
+  await p.fill('#u-smiles', 'C[CH2]');
+  await p.waitForFunction(() => document.getElementById('u-spin').value === '2');
+  assert.equal(await p.getAttribute('#u-check', 'data-bad'), 'false');
+  await p.fill('#u-spin', '1');
+  await p.dispatchEvent('#u-spin', 'input');
+  assert.equal(await p.getAttribute('#u-check', 'data-bad'), 'true');
+  // Vision: the sample image goes to Muse as an image part; the broken SMILES is flagged, not trusted.
+  await p.click('#v-sample');
+  await p.waitForSelector('#v-drop img');
+  await p.click('#v-run');
+  await p.waitForSelector('.mx-mol');
+  assert.equal(sent.model, 'muse-spark-1.3');
+  assert.ok(sent.messages[1].content.some((c) => c.type === 'image_url' && /^data:image\/(png|jpeg);base64,/.test(c.image_url.url)), 'image part');
+  const tags = await p.$$eval('.mx-mol .tag:first-child', (t) => t.map((x) => x.className));
+  assert.deepEqual(tags, ['tag ok', 'tag bad']);
+  await p.click('.mx-mol [data-act=uma]');
+  assert.equal(await p.inputValue('#u-name'), ''); // a name with spaces is not used as a file name
+  await p.waitForFunction(() => /C3H2O3/.test(document.getElementById('u-check').textContent));
+  // Catalogue filter and the live release list.
+  await p.click('.mx-filter button[data-kind=data]');
+  assert.ok(await p.$$eval('#o-grid .mx-item:not([hidden])', (a) => a.length >= 10 && a.every((x) => x.dataset.kind === 'data')));
+  await p.fill('#o-q', 'OPoly26');
+  assert.equal(await p.$$eval('#o-grid .mx-item:not([hidden])', (a) => a.length), 1);
+  await p.waitForFunction(() => /fairchem-core-9\.9\.9/.test(document.getElementById('live-list').textContent));
+  await finish(p);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');
@@ -382,7 +431,7 @@ check('English: account page and radar are translated, paper-free UI has no Chin
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

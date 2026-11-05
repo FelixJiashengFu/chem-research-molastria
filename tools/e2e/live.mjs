@@ -81,6 +81,13 @@ check('search: a Chinese term finds English entries, and the pricing page loads'
   assert.deepEqual(pro.errors, []);
 });
 
+check('Meta page: the UMA script builds once RDKit loads', async () => {
+  const p = await page('/meta/');
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check')?.textContent || ''), null, { timeout: 30000 });
+  assert.ok((await p.textContent('#u-code')).includes('FAIRChemCalculator'));
+  assert.deepEqual(p.errors, []);
+});
+
 check('catalogue page lists its sources, ChemRxiv among them', async () => {
   const p = await page('/hub/');
   await p.waitForSelector('#sourceCards .source-card');

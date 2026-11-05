@@ -19,7 +19,7 @@ public/               发布目录，推到 main 就上线
   shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口；新栏目在这里加导航
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
   ai/ai.js            AI 助手：服务商、托管额度、可拖宽窗口
-  atlas/ hub/ lab/ train/ download/   各栏目
+  atlas/ hub/ lab/ meta/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面；app/ 是复制来的，不要手改

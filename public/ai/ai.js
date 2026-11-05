@@ -18,7 +18,7 @@
     },
     muse: {
       label: 'Meta Muse', base: 'https://api.meta.ai/v1', keyUrl: 'https://dev.meta.ai/', keyHint: 'Meta Model API key',
-      models: [['muse-spark-1.3', 'Muse Spark 1.3 · 通用'], ['muse-wonder-1.0', 'Muse Wonder 1.0 · 化学家（最强）'], ['muse-spark-1.2', 'Muse Spark 1.2']],
+      models: [['muse-spark-1.3', 'Muse Spark 1.3 · 通用，能看图'], ['muse-wonder-1.0', 'Muse Wonder 1.0 · 化学家（最强）'], ['muse-spark-1.2', 'Muse Spark 1.2']],
       efforts: ['off', 'low', 'medium', 'high', 'xhigh', 'max'], json: false,
       prices: { 'muse-wonder-1.0': [4, 20], 'muse-spark-1.3': [1.25, 4.25], 'muse-spark-1.2': [1.25, 4.25] }
     },

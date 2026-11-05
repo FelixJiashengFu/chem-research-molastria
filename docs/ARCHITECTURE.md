@@ -11,7 +11,8 @@ flowchart TB
   V -->|桌面版更新| R["GitHub Releases"]
   V -->|访客自己的 key| AI["DeepSeek / Meta Muse"]
   V -->|预印本雷达| CR["Crossref · DataCite · arXiv"]
-  V -->|AI 实验室| JS["jsDelivr（RDKit.js）"]
+  V -->|AI 实验室、Meta 页| JS["jsDelivr（RDKit.js）"]
+  V -->|Meta 页：fairchem 版本| GH["GitHub API · Hugging Face API"]
   W --> D1["Cloudflare D1"]
   W -->|只读查订阅| SA["Stripe API"]
   W -->|验证码、每周精选邮件| RS["Resend"]
@@ -20,7 +21,7 @@ flowchart TB
   PB["Porkbun 域名"] --> DNS["Cloudflare DNS"]
 ```
 
-- **网站**是静态文件：搜索、关系网、讲解、实验室、雷达、量子化学计算都在访客浏览器里运行。
+- **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。
 - **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选。
 - **桌面版**（Tauri）内置同一套网页，只多了检查更新。
 - 网站不接触卡号；AI 对话内容不保存。

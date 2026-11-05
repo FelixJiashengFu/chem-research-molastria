@@ -47,7 +47,8 @@
   "tools/build-seo.ts"
  ],
  "论文": [
-  "index.html"
+  "index.html",
+  "meta/index.html"
  ],
  "教程": [
   "index.html"
@@ -254,6 +255,15 @@
  "让 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，按可靠性分配 DFT 验证。": [
   "index.html"
  ],
+ "05 / Meta × 化学 · 新": [
+  "index.html"
+ ],
+ "Muse 从图片识别分子结构、生成在自己 GPU 上跑 UMA 的脚本，以及 FAIR Chemistry 开放的模型和数据集": [
+  "index.html"
+ ],
+ "打开 ↗": [
+  "index.html"
+ ],
  "由 ChemDB Atlas 与 ChemVis Hub 合并而来": [
   "index.html"
  ],
@@ -265,6 +275,13 @@
  ],
  "中文讲解 19 章": [
   "index.html"
+ ],
+ "Meta × 化学": [
+  "index.html"
+ ],
+ "量子化学计算": [
+  "index.html",
+  "qchem/index.html"
  ],
  "训练化学 Agent": [
   "index.html"
@@ -1286,6 +1303,7 @@
  ],
  "全部": [
   "lab/index.html",
+  "meta/index.html",
   "train/index.html",
   "pro/index.html",
   "radar/app/app.js"
@@ -1342,6 +1360,15 @@
   "lab/index.html"
  ],
  "下载 CSV 模板": [
+  "lab/index.html"
+ ],
+ "没有 Rowan？": [
+  "lab/index.html"
+ ],
+ "用 Meta × 化学页的 UMA 脚本": [
+  "lab/index.html"
+ ],
+ "在自己的 GPU 上算出 IP / EA 和 UMA-S / M 对照，再把 CSV 导入这里。": [
   "lab/index.html"
  ],
  "列说明": [
@@ -1713,6 +1740,401 @@
  "筛选卡片": [
   "lab/index.html"
  ],
+ "Meta × 化学 · Muse 识图、UMA 脚本与开放数据集 · MolAstria": [
+  "meta/index.html"
+ ],
+ "跳到工具": [
+  "meta/index.html"
+ ],
+ "Meta 的模型与数据，": [
+  "meta/index.html"
+ ],
+ "在这里接成一条研究流程。": [
+  "meta/index.html"
+ ],
+ "Muse 负责读图和提出想法，UMA 负责快速计算，OMol25 的基准告诉我们结果什么时候可信。这一页汇总 MolAstria 用到的 Meta 技术、两个可以直接上手的工具，以及 FAIR Chemistry 开放的模型和数据集。": [
+  "meta/index.html"
+ ],
+ "用 Muse 识图": [
+  "meta/index.html"
+ ],
+ "生成 UMA 脚本": [
+  "meta/index.html"
+ ],
+ "浏览开放资源 ↓": [
+  "meta/index.html"
+ ],
+ "MolAstria 是独立项目，与 Meta 没有隶属关系。Muse、UMA、OMol25 等名称归 Meta 所有；数据集和模型请按各自的许可证使用。": [
+  "meta/index.html"
+ ],
+ "MolAstria 里的 Meta": [
+  "meta/index.html"
+ ],
+ "AI 实验室的化学家": [
+  "meta/index.html"
+ ],
+ "每轮提出电解液溶剂分子和设计理由，被 DFT 推翻的判断会反馈给它。": [
+  "meta/index.html"
+ ],
+ "打开 AI 实验室 →": [
+  "meta/index.html"
+ ],
+ "全站 AI 助手与识图": [
+  "meta/index.html"
+ ],
+ "先检索本站目录再作答；能看图，本页用它把结构图转成 SMILES。": [
+  "meta/index.html"
+ ],
+ "试试识图 →": [
+  "meta/index.html"
+ ],
+ "机器学习势筛选": [
+  "meta/index.html"
+ ],
+ "AI 实验室的 Tier 1 在 Rowan 云端跑 UMA；也可以用本页生成的脚本在自己的 GPU 上跑。": [
+  "meta/index.html"
+ ],
+ "生成脚本 →": [
+  "meta/index.html"
+ ],
+ "可靠性先验与 DFT 约定": [
+  "meta/index.html"
+ ],
+ "UMA 的训练数据；DFT 验证沿用它的 ωB97M-V/def2-TZVPD，误差先验来自 OMol25 系列模型的基准。": [
+  "meta/index.html"
+ ],
+ "看方法说明 →": [
+  "meta/index.html"
+ ],
+ "1 亿+": [
+  "meta/index.html"
+ ],
+ "OMol25 的 DFT 计算，ωB97M-V/def2-TZVPD": [
+  "meta/index.html"
+ ],
+ "OMol25 覆盖的元素": [
+  "meta/index.html"
+ ],
+ "UMA 任务头：分子、材料、催化、MOF、分子晶体": [
+  "meta/index.html"
+ ],
+ "本页收录的 FAIR Chemistry 开放数据集": [
+  "meta/index.html"
+ ],
+ "Muse 识图：从一张图得到可计算的结构": [
+  "meta/index.html"
+ ],
+ "把文献截图、ChemDraw 截图或手绘结构交给 Muse Spark，它给出名称和 SMILES；浏览器里的 RDKit 再逐个校验，画出结构、算出分子式。校验不过的会标出来，不会悄悄当成正确答案。": [
+  "meta/index.html"
+ ],
+ "拖入、点选或粘贴图片": [
+  "meta/index.html"
+ ],
+ "PNG / JPG / WebP，过大的图片会先在浏览器里缩小": [
+  "meta/index.html"
+ ],
+ "模型": [
+  "meta/index.html",
+  "train/index.html",
+  "ai/ai.js"
+ ],
+ "识别结构": [
+  "meta/index.html"
+ ],
+ "用示例图片": [
+  "meta/index.html"
+ ],
+ "识图用你自己的 Meta Model API key（在右上角「AI 助手」→ 设置里填），图片直接发给 Meta，本站不保存。": [
+  "meta/index.html"
+ ],
+ "识别结果会显示在这里。": [
+  "meta/index.html"
+ ],
+ "UMA 脚本生成器：在自己的电脑上跑 Meta 的原子模型": [
+  "meta/index.html"
+ ],
+ "UMA 需要 PyTorch 和 GPU，不能在网页里运行。这里按你的分子和计算目的生成一份完整的 fairchem + ASE 脚本：RDKit 生成三维结构，UMA 优化和计算，结果写成文件。IP / EA 的输出可以直接导入 AI 实验室。": [
+  "meta/index.html"
+ ],
+ "名称（用于文件名）": [
+  "meta/index.html"
+ ],
+ "计算": [
+  "meta/index.html"
+ ],
+ "绝热电离能与电子亲和能（可导入 AI 实验室）": [
+  "meta/index.html"
+ ],
+ "几何优化与能量": [
+  "meta/index.html"
+ ],
+ "构象搜索：20 个构象全部优化，取能量最低": [
+  "meta/index.html"
+ ],
+ "分子动力学：300 K，1 ps": [
+  "meta/index.html"
+ ],
+ "uma-s-1p2p1 · 最新小模型（推荐）": [
+  "meta/index.html"
+ ],
+ "uma-s-1p2p1-ft-d4rev · ωB97M-D4rev 微调": [
+  "meta/index.html"
+ ],
+ "uma-m-1p1 · 最准，较慢": [
+  "meta/index.html"
+ ],
+ "设备": [
+  "meta/index.html"
+ ],
+ "电荷": [
+  "meta/index.html"
+ ],
+ "自旋多重度": [
+  "meta/index.html"
+ ],
+ "再用 uma-m-1p1 在同一几何上算单点（AI 实验室用 S / M 的分歧判断结果是否可疑）": [
+  "meta/index.html"
+ ],
+ "安装：": [
+  "meta/index.html"
+ ],
+ "申请模型访问：": [
+  "meta/index.html"
+ ],
+ "，通过后运行": [
+  "meta/index.html"
+ ],
+ "运行：": [
+  "meta/index.html"
+ ],
+ "复制": [
+  "meta/index.html",
+  "train/index.html",
+  "train/train.js"
+ ],
+ "下载": [
+  "meta/index.html"
+ ],
+ "UMA 的 7 个任务头：换体系时改": [
+  "meta/index.html"
+ ],
+ "适用体系": [
+  "meta/index.html"
+ ],
+ "训练数据": [
+  "meta/index.html"
+ ],
+ "分子与聚合物（本页脚本使用），支持电荷和自旋": [
+  "meta/index.html"
+ ],
+ "无机材料、晶体弛豫": [
+  "meta/index.html"
+ ],
+ "表面吸附与催化": [
+  "meta/index.html"
+ ],
+ "氧化物催化（UMA 1.2 起）": [
+  "meta/index.html"
+ ],
+ "固–液界面与电催化（UMA 1.2 起）": [
+  "meta/index.html"
+ ],
+ "MOF 与气体吸附": [
+  "meta/index.html"
+ ],
+ "分子晶体": [
+  "meta/index.html"
+ ],
+ "来源：fairchem README 与 UMA 更新记录（2026-10）。uma-s-1p2p1-ft-d4rev 只有": [
+  "meta/index.html"
+ ],
+ "任务。默认推理模式 UMA Nitro 需要 Ampere 及更新的 NVIDIA GPU，其他设备会自动退回普通模式。": [
+  "meta/index.html"
+ ],
+ "Meta 开放的化学模型、数据集与工具": [
+  "meta/index.html"
+ ],
+ "数字取自各论文摘要和 fairchem 文档（2026-11 核对）。标着「本站在用」的，是 MolAstria 已经接入的部分。": [
+  "meta/index.html"
+ ],
+ "原子模型": [
+  "meta/index.html"
+ ],
+ "语言模型": [
+  "meta/index.html"
+ ],
+ "数据集": [
+  "meta/index.html"
+ ],
+ "工具与应用": [
+  "meta/index.html"
+ ],
+ "搜索资源": [
+  "meta/index.html"
+ ],
+ "2025 · 2026-10 更新": [
+  "meta/index.html"
+ ],
+ "本站在用": [
+  "meta/index.html"
+ ],
+ "一个模型覆盖分子、材料、催化、MOF 和分子晶体，用任务头切换。UMA-S 1.2.1 激活 660 万、总计 2.9 亿参数；UMA-M 1.1 激活 5000 万、总计 14 亿参数。": [
+  "meta/index.html"
+ ],
+ "许可：FAIR Chemistry License，需在 Hugging Face 申请": [
+  "meta/index.html"
+ ],
+ "文档": [
+  "meta/index.html"
+ ],
+ "UMA-S 1.2.1 微调版": [
+  "meta/index.html"
+ ],
+ "uma-s-1p2p1-ft-d4rev 用约 400 万个按 ωB97M-D4rev 重算的 OMol25 结构微调，只用于分子；uma-s-1p2p1-ft-r2scan 用 r²SCAN 数据（MAD-1.6）训练，只用于无机材料。": [
+  "meta/index.html"
+ ],
+ "许可：FAIR Chemistry License": [
+  "meta/index.html"
+ ],
+ "说明与局限": [
+  "meta/index.html"
+ ],
+ "平滑、能量守恒的原子间势，在热导率、声子和材料稳定性预测上表现突出。OMol25 发布时同时给出了 eSEN 系列模型。": [
+  "meta/index.html"
+ ],
+ "等变 Transformer。用 OMat24 训练的版本在 Matbench Discovery 上 F1 超过 0.9。": [
+  "meta/index.html"
+ ],
+ "Muse 系列里推理最强的模型。AI 实验室推荐用它当“化学家”，每轮提出分子并写出设计理由。参考价：每百万 token 输入 4 美元、输出 20 美元。": [
+  "meta/index.html"
+ ],
+ "申请 API key": [
+  "meta/index.html"
+ ],
+ "在 AI 实验室里用": [
+  "meta/index.html"
+ ],
+ "通用模型，能读图片。全站 AI 助手可以选它，本页的识图也用它。参考价：每百万 token 输入 1.25 美元、输出 4.25 美元。": [
+  "meta/index.html"
+ ],
+ "在本页识图": [
+  "meta/index.html"
+ ],
+ "开放权重": [
+  "meta/index.html",
+  "train/index.html"
+ ],
+ "Muse Spark 的开放权重版本，总参数 8160 亿、每个 token 激活 420 亿，需要申请，适合有集群的团队离线部署或当训练小模型的老师。": [
+  "meta/index.html"
+ ],
+ "训练 Agent 页的用法": [
+  "meta/index.html"
+ ],
+ "超过 1 亿次 ωB97M-V/def2-TZVPD 计算，83 种元素，约 8300 万个分子体系，最大 350 个原子；包含显式溶剂、不同电荷与自旋、构象和反应结构。": [
+  "meta/index.html"
+ ],
+ "许可：CC BY 4.0": [
+  "meta/index.html"
+ ],
+ "超过 1.1 亿次无机材料 DFT 计算，强调结构和组成的多样性。与 Materials Project 的能量设置不兼容，比较形成能时要注意。": [
+  "meta/index.html"
+ ],
+ "超过 2700 万个分子晶体结构，12 种元素，每个晶胞最多 300 个原子，来自 23 万多个结构的含色散校正 DFT 弛豫轨迹。": [
+  "meta/index.html"
+ ],
+ "2026 · 与 LLNL 合作": [
+  "meta/index.html"
+ ],
+ "超过 657 万次聚合物团簇 DFT 计算，合计 12 亿多个原子，覆盖单体组成、聚合度、链结构和溶剂环境的变化。": [
+  "meta/index.html"
+ ],
+ "7,801,261 次计算、1,511,270 个显式溶剂环境、88 种元素，是目前最大的固–液界面数据集，面向电催化。": [
+  "meta/index.html"
+ ],
+ "62,331 条氧化物表面的 DFT 弛豫（约 985 万个单点），面向析氧反应（OER）催化剂。": [
+  "meta/index.html"
+ ],
+ "1,281,040 条 DFT 弛豫（约 2.65 亿个单点），覆盖不同材料、表面和吸附物，是 Open Catalyst Project 的起点。": [
+  "meta/index.html"
+ ],
+ "近 6000 万次 DFT 计算：CO₂、H₂O、N₂、O₂ 在 15,000 个 MOF 中的吸附，包括官能化和人工生成的框架，用于直接空气捕集。": [
+  "meta/index.html"
+ ],
+ "超过 3800 万次 DFT 计算，8,400 多种 MOF 吸附 CO₂ 和 / 或 H₂O。": [
+  "meta/index.html"
+ ],
+ "2024 · 实验 + 计算": [
+  "meta/index.html"
+ ],
+ "572 个合成样品、441 个气体扩散电极的 CO₂ 还原和析氢测试，配合约 2 万种材料的 DFT 校验吸附能，把实验和模型连起来。": [
+  "meta/index.html"
+ ],
+ "开源 · MIT": [
+  "meta/index.html"
+ ],
+ "FAIR Chemistry 的代码库：ASE 计算器、训练、多 GPU 推理和 LAMMPS 接口。本页的 UMA 脚本就是基于它生成的。": [
+  "meta/index.html"
+ ],
+ "Meta 的交互式教学演示，不用安装就能在浏览器里体验 UMA。": [
+  "meta/index.html"
+ ],
+ "打开演示": [
+  "meta/index.html"
+ ],
+ "持续更新": [
+  "meta/index.html"
+ ],
+ "FAIR Chemistry 排行榜": [
+  "meta/index.html"
+ ],
+ "OMol25 等基准上各原子模型的公开排行，选模型前先看这里。": [
+  "meta/index.html"
+ ],
+ "随机生成结构，再用 UMA 弛豫并计算自由能，加速分子晶体结构预测：几十张 GPU、几小时得到一个体系的结果。": [
+  "meta/index.html"
+ ],
+ "用机器学习势筛选吸附构型，吸附能计算提速约 2000 倍，准确率 87%。": [
+  "meta/index.html"
+ ],
+ "加速过渡态能量计算，枚举反应网络时提速约 1500 倍。": [
+  "meta/index.html"
+ ],
+ "酶催化的量子精度模拟": [
+  "meta/index.html"
+ ],
+ "用机器学习势在量子化学精度上模拟酶催化反应，示例是 NDPK 催化 ATP 转为 ADP。": [
+  "meta/index.html"
+ ],
+ "没有匹配的资源，换个关键词试试。": [
+  "meta/index.html"
+ ],
+ "fairchem 最近的版本": [
+  "meta/index.html"
+ ],
+ "打开页面时从 GitHub 和 Hugging Face 读取，一小时内不重复请求。": [
+  "meta/index.html"
+ ],
+ "正在读取…": [
+  "meta/index.html"
+ ],
+ "MolAstria · Meta × 化学": [
+  "meta/index.html"
+ ],
+ "识图请求用你自己的 Meta Model API key 直接发给 Meta，费用由你的账户结算。UMA 脚本在你自己的电脑上运行，本站不接触计算数据。MolAstria 与 Meta 没有隶属关系。": [
+  "meta/index.html"
+ ],
+ "关键数字": [
+  "meta/index.html"
+ ],
+ "生成的 Python 脚本": [
+  "meta/index.html"
+ ],
+ "按类型筛选": [
+  "meta/index.html"
+ ],
+ "搜索名称、体系、方法…": [
+  "meta/index.html"
+ ],
  "训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria": [
   "train/index.html"
  ],
@@ -1935,10 +2357,6 @@
  "全部展开": [
   "train/index.html",
   "train/train.js"
- ],
- "模型": [
-  "train/index.html",
-  "ai/ai.js"
  ],
  "参数": [
   "train/index.html"
@@ -2541,9 +2959,6 @@
  "Wonder 是本站 AI 实验室推荐的“化学家”；开放权重版 816B，需申请，适合有集群的团队": [
   "train/index.html"
  ],
- "开放权重": [
-  "train/index.html"
- ],
  "科学领域大模型（Apache-2.0），化学知识强，可做离线老师": [
   "train/index.html"
  ],
@@ -2570,10 +2985,6 @@
  ],
  "（拒绝采样），这样小模型学到的是“正确地用工具”，而不是老师的幻觉。": [
   "train/index.html"
- ],
- "复制": [
-  "train/index.html",
-  "train/train.js"
  ],
  "数据从哪来": [
   "train/index.html"
@@ -2772,6 +3183,9 @@
   "train/index.html"
  ],
  "化学工具": [
+  "train/index.html"
+ ],
+ "脚本生成器": [
   "train/index.html"
  ],
  "结构校验、数据库查询、云端量化计算、机器学习势": [
@@ -3676,9 +4090,6 @@
   "radar/app/index.html"
  ],
  "量子化学计算 · HF/DFT、CCSD(T)、VQE 与量子点 · MolAstria": [
-  "qchem/index.html"
- ],
- "量子化学计算": [
   "qchem/index.html"
  ],
  "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。": [
@@ -4841,7 +5252,8 @@
   "lab/lab.js"
  ],
  "复制 SMILES": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "meta/meta.js"
  ],
  "这个筛选下没有分子。": [
   "lab/lab.js"
@@ -4967,10 +5379,12 @@
   "lab/chem.js"
  ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net）": [
-  "lab/chem.js"
+  "lab/chem.js",
+  "meta/meta.js"
  ],
  "SMILES 无法解析": [
-  "lab/chem.js"
+  "lab/chem.js",
+  "meta/meta.js"
  ],
  "含不允许的元素：{0}": [
   "lab/chem.js"
@@ -5098,13 +5512,92 @@
  "CF3 取代的 DOL，改善 DOL 的抗氧化性": [
   "lab/chem.js"
  ],
+ "已复制": [
+  "meta/meta.js",
+  "train/train.js"
+ ],
+ "图片无法读取": [
+  "meta/meta.js"
+ ],
+ "请选择图片文件": [
+  "meta/meta.js"
+ ],
+ "待识别的图片": [
+  "meta/meta.js"
+ ],
+ "Muse 正在读图…": [
+  "meta/meta.js"
+ ],
+ "图里没有找到化学结构。{0}": [
+  "meta/meta.js"
+ ],
+ "识图需要 Meta Model API key：Muse Spark 能看图，在 AI 设置里选 Meta Muse 并填入 key。": [
+  "meta/meta.js"
+ ],
+ "识图没有完成：{0}": [
+  "meta/meta.js"
+ ],
+ "配置 Muse key": [
+  "meta/meta.js"
+ ],
+ "RDKit 校验通过": [
+  "meta/meta.js"
+ ],
+ "未校验（RDKit 未载入）": [
+  "meta/meta.js"
+ ],
+ "把握 {0}%": [
+  "meta/meta.js"
+ ],
+ "{0} · 精确质量 {1}": [
+  "meta/meta.js"
+ ],
+ "无结构图": [
+  "meta/meta.js"
+ ],
+ "分子 {0}": [
+  "meta/meta.js"
+ ],
+ "生成 UMA 脚本 ↓": [
+  "meta/meta.js"
+ ],
+ "先输入一个 SMILES。": [
+  "meta/meta.js"
+ ],
+ "正在载入 RDKit，载入后会校验 SMILES…": [
+  "meta/meta.js"
+ ],
+ "RDKit 无法解析这个 SMILES，请先修正。": [
+  "meta/meta.js"
+ ],
+ "，与自旋多重度 {0} 不相容": [
+  "meta/meta.js"
+ ],
+ "{0} · {1} 个重原子 · {2} 个电子{3}": [
+  "meta/meta.js"
+ ],
+ "# 先输入一个 RDKit 能解析的 SMILES": [
+  "meta/meta.js"
+ ],
+ "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。": [
+  "meta/meta.js"
+ ],
+ "模型库最近更新 {0}": [
+  "meta/meta.js"
+ ],
+ "暂时读不到 GitHub 和 Hugging Face。": [
+  "meta/meta.js"
+ ],
+ "直接去 GitHub 看 ↗": [
+  "meta/meta.js"
+ ],
  "DeepSeek V4.1 Flash · 快速": [
   "ai/ai.js"
  ],
  "DeepSeek V4 Pro · 深度推理": [
   "ai/ai.js"
  ],
- "Muse Spark 1.3 · 通用": [
+ "Muse Spark 1.3 · 通用，能看图": [
   "ai/ai.js"
  ],
  "Muse Wonder 1.0 · 化学家（最强）": [
@@ -5409,9 +5902,6 @@
   "train/train.js"
  ],
  "{0} GB 做{1}比较吃紧，可以换成本地推理，或选更小的模型。": [
-  "train/train.js"
- ],
- "已复制": [
   "train/train.js"
  ],
  "请手动复制": [
@@ -6799,6 +7289,9 @@
   "tools/build-seo.ts"
  ],
  "量子化学计算 QChem Web": [
+  "tools/build-seo.ts"
+ ],
+ "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [
   "tools/build-seo.ts"
  ],
  "闭环电解液分子发现 · AI 实验室": [
