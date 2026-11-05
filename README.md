@@ -5,9 +5,9 @@
 <p align="center"><b>计算化学研究导航 · A computational chemistry atlas</b><br>
 <a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a></p>
 
-数据库、软件、教程、论文与开源工具一处检索，配 19 章中文讲解、资源关系网，以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色，以及 10 种可切换的艺术背景。
+数据库、软件、教程、论文与开源工具一处检索（1,600 多条，每周四自动更新），配 19 章中文讲解、资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版。
 
-One place to search computational-chemistry databases, software, tutorials, papers and open-source tools, with a 19-chapter guide (in Chinese), a resource network, and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds.
+One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (1,600+ entries, refreshed every Thursday), with a 19-chapter guide (in Chinese), a resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app.
 
 纯静态网站：`public/` 就是发布目录，不需要后端。 · A static site: `public/` is the published folder; no backend is needed.
 
@@ -15,11 +15,12 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 | 栏目 Section | 路径 Path | 说明 What it does |
 | --- | --- | --- |
-| 统一搜索 Search | `public/index.html` | 1,465 条去重资源的多关键词检索、筛选、收藏与 CSV 导出；中文术语能搜到英文条目，问句自动近似匹配，结果少时引导去问 AI、雷达和网状查询。<br>Keyword search, filters, saved items and CSV export over 1,465 deduplicated resources; Chinese terms find English entries, natural-language questions fall back to fuzzy matching, and few results lead on to the AI assistant, PreprintRadar and the network. |
-| 网状查询 Network | `public/hub/network.html` | 来源、主题与数据库的关系图，点节点即跨库查询。<br>A graph of sources, topics and databases; click a node to query across all of them. |
-| 讲解与数据库 Guide & databases | `public/atlas/index.html` | 187 条数据库目录、19 章讲解阅读器、Agent 工程说明。<br>187-entry database catalogue, the 19-chapter guide reader, Agent engineering notes. |
+| 统一搜索 Search | `public/index.html` | 1,600 多条去重资源（每周四自动更新）的多关键词检索、筛选、收藏与 CSV 导出；中文术语能搜到英文条目，问句自动近似匹配，结果少时引导去问 AI、雷达和网状查询。<br>Keyword search, filters, saved items and CSV export over 1,600+ deduplicated resources (refreshed every Thursday); Chinese terms find English entries, natural-language questions fall back to fuzzy matching, and few results lead on to the AI assistant, PreprintRadar and the network. |
+| 网状查询 Network | `public/hub/network.html` | 来源、主题与数据库的关系图，点节点即跨库查询；数据每周四自动更新。<br>A graph of sources, topics and databases; click a node to query across all of them. The data refreshes every Thursday. |
+| 讲解与数据库 Guide & databases | `public/atlas/index.html` | 187 条数据库与研究资源目录（16 类，含量子化学程序、凝聚态第一性原理、波函数分析、量子力学与量子化学课程、量子计算化学）、19 章讲解阅读器、Agent 工程说明。<br>187-entry catalogue of databases and research resources in 16 categories (including quantum chemistry programs, condensed-matter codes, wavefunction analysis, quantum mechanics courses and quantum computing for chemistry), the 19-chapter guide reader, Agent engineering notes. |
 | 论文与社区 Papers & community | `public/hub/index.html` | 来源接入状态、内容分布、论文与教程快照。<br>Source status, content charts, paper and tutorial snapshots. |
 | 预印本雷达 PreprintRadar | `public/radar/` | 同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台，按兴趣主题定时推荐、一键导出 PDF；是独立项目 [PreprintRadar](https://github.com/FelixJiashengFu/PreprintRadar) 的网页版，用 `tools/vendor-radar.ts` 复制进来，跟随本站的深浅色和中英文。<br>Search 12 preprint servers, scheduled recommendations and PDF export: the web build of the separate PreprintRadar project, copied in by `tools/vendor-radar.ts` and following this site's theme and language. |
+| 量子化学 Quantum chemistry | `public/qchem/` | 在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇；每个模块都与 PySCF 逐项对拍。来自独立项目 [QChem Web](https://github.com/FelixJiashengFu/qchem-web)，用 `tools/vendor-qchem.ts` 复制进来。<br>Quantum chemistry and quantum dots in the browser: HF/DFT, MP2, CCSD(T), FCI, excited states, geometry optimisation and frequencies, VQE and phase estimation, and colloidal, graphene and silicon quantum dots, each module checked against PySCF. Copied in from the separate QChem Web project by `tools/vendor-qchem.ts`. |
 | 训练 Agent Train an agent | `public/train/index.html` | 用开源小模型训练化学研究 Agent：2026-10 最新小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型对比，每个模型可展开详细介绍；数据构造、LoRA、GRPO、评测与本地部署代码。<br>Train a chemistry research agent on an open small model: an October 2026 comparison of small and chemistry-specific models with expandable details, plus data, LoRA, GRPO, evaluation and local-deployment code. |
 | Pro 与下载 Pro & downloads | `public/pro/`, `public/download/` | 价格页与结账窗口（Stripe 托管结账，填好 `public/pay/config.js` 的收款链接即可收款，步骤见 [PAYMENTS.md](PAYMENTS.md)），账号页（付款后自动登录、邮箱验证码登录、AI 托管额度、每周精选和邮件推送、课题组成员；站长永久 Pro，可以发 VIP 卡送朋友开通），服务条款、退款与隐私政策；Windows / macOS 桌面版下载。<br>Pricing page and checkout window (hosted Stripe checkout: add your links to `public/pay/config.js`, see PAYMENTS.md), account page (sign-in after payment or by email code, hosted AI quota, weekly picks by email, group members; the site admin has Pro for good and can issue VIP cards that give friends Pro), terms, refund and privacy pages; Windows and macOS downloads. |
 | AI 实验室 AI Lab | `public/lab/index.html` | 闭环电解液分子发现工作台（见下）。<br>Closed-loop electrolyte discovery workbench (below). |
@@ -67,7 +68,9 @@ deno run --allow-read --allow-write tools/i18n-extract.ts          # 抽取界�
 deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate.ts   # 补译并生成 public/i18n/en.js
 deno run --allow-read --allow-write tools/theme.ts                 # 首页与 Atlas 的深色配色 · dark palette
 deno run --allow-read --allow-write tools/bundle-single.ts         # 单文件离线版 · single-file offline build
+python maintenance/refresh_data.py                                # 爬取各来源并重建目录（每周四 Actions 自动跑：gh workflow run refresh-data.yml）· rebuild the catalogue
 deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts   # 刷新快照里的 ChemRxiv 计算化学预印本 · refresh ChemRxiv in the snapshot
+node tools/check-catalogue.mjs                                     # 检查新快照没有缩水 · sanity-check a new snapshot
 deno run --allow-read --allow-write tools/vendor-radar.ts         # 复制预印本雷达网页版（先在 ../PreprintRadar 运行 deno task web）· copy in PreprintRadar
 node --test tools/lab-test.mjs                                     # 实验室逻辑测试 · lab logic tests
 node tools/e2e/run.mjs                                             # 浏览器端到端测试（先 npm ci --prefix tools/e2e）· browser end-to-end checks
@@ -93,6 +96,7 @@ public/                     发布目录 · published site
   meta/                      Meta × 化学：Muse 识图、UMA 脚本、开放资源 · Meta × Chemistry
   atlas/, hub/               讲解与数据库、论文与社区 · guide, papers & community
   radar/                     预印本雷达（app/ 由 tools/vendor-radar.ts 复制）· PreprintRadar
+  qchem/                     量子化学计算（app/ 由 tools/vendor-qchem.ts 复制）· quantum chemistry
   guide/, resources/         生成的静态页 · generated static pages
 i18n/en.json                 英文译文源文件 · English strings (editable)
 desktop/                     Tauri 桌面版（Win + Mac，GitHub Actions 构建）· desktop app
@@ -102,10 +106,11 @@ deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENT
 tools/                       构建、翻译、测试脚本 · build, translation and test scripts
 docs/                        维护文档：结构、操作手册、决定记录、路线图 · maintainer docs
 CLAUDE.md                    给 Claude Code 的项目说明 · project notes for Claude Code
-maintenance/                 数据更新工具（Python）· data refresh tools (Python)
+maintenance/                 目录爬虫与合并（Python，每周四由 .github/workflows/refresh-data.yml 运行）· catalogue crawler
+.devcontainer/               GitHub Codespaces 开发环境 · Codespaces dev container
 site.config.json             正式网址与站名 · site URL and name
 ```
 
 ## 数据与局限 · Data and limits
 
-目录数据为 2026-10-27 快照，未重新抓取外部网站；全文与使用许可以原站为准。实验室的局限：电位工作流溶剂固定为乙腈，只适合相对排序；忽略阴离子与电极界面；不考虑黏度、闪点等宏观性质；合成复杂度是启发式近似。<br>The catalogue is a 2026-10-27 snapshot; full text and licences belong to the original sites. Lab limits: the redox workflow uses acetonitrile, so potentials suit relative ranking only; anions and the electrode interface are ignored; bulk properties such as viscosity and flash point are not considered; synthetic complexity is a heuristic.
+目录数据每周四自动抓取更新（某个来源抓不到时沿用上一周的条目）；只收标题、短摘要和原文链接，全文与使用许可以原站为准。实验室的局限：电位工作流溶剂固定为乙腈，只适合相对排序；忽略阴离子与电极界面；不考虑黏度、闪点等宏观性质；合成复杂度是启发式近似。<br>The catalogue is re-crawled every Thursday (a source that cannot be reached keeps last week's entries); only titles, short excerpts and links are kept, and full text and licences belong to the original sites. Lab limits: the redox workflow uses acetonitrile, so potentials suit relative ranking only; anions and the electrode interface are ignored; bulk properties such as viscosity and flash point are not considered; synthetic complexity is a heuristic.
