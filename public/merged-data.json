@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-05T12:08:44-05:00",
+ "generatedAt": "2026-11-05T17:29:12+00:00",
  "packagedAt": "2026-11-05",
  "sources": [
   {
@@ -10,7 +10,7 @@
    "color": "#2f7f73",
    "status": "mirror",
    "statusLabel": "经 Sobereva 官方目录交叉引用",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 299,
    "usedCache": false
   },
@@ -22,7 +22,7 @@
    "color": "#6e5aa8",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 762,
    "usedCache": false
   },
@@ -34,7 +34,7 @@
    "color": "#3f8a4f",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 65,
    "usedCache": false
   },
@@ -46,7 +46,7 @@
    "color": "#b07a1e",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 99,
    "usedCache": false
   },
@@ -58,7 +58,7 @@
    "color": "#b0414f",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 50,
    "usedCache": false
   },
@@ -70,7 +70,7 @@
    "color": "#c26a2e",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:16:13-05:00",
+   "fetchedAt": "2026-11-05T17:29:52+00:00",
    "itemCount": 50,
    "usedCache": false
   },
@@ -82,7 +82,7 @@
    "color": "#3d6fa8",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 46,
    "usedCache": false
   },
@@ -94,7 +94,7 @@
    "color": "#4c535c",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 40,
    "usedCache": false
   },
@@ -106,7 +106,7 @@
    "color": "#2f7d8c",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 29,
    "usedCache": false
   },
@@ -12165,7 +12165,7 @@
     "电荷与静电势"
    ],
    "sob_id": 769,
-   "views": "9,460",
+   "views": "9,461",
    "keinsci_url": "http://bbs.keinsci.com/thread-58922-1-1.html",
    "origins": [
     "hub"
@@ -12188,7 +12188,7 @@
       "电荷与静电势"
      ],
      "sob_id": 769,
-     "views": "9,460",
+     "views": "9,461",
      "keinsci_url": "http://bbs.keinsci.com/thread-58922-1-1.html"
     }
    ]
@@ -14704,7 +14704,7 @@
     "VASP/第一性原理"
    ],
    "sob_id": 706,
-   "views": "22,171",
+   "views": "22,172",
    "keinsci_url": "http://bbs.keinsci.com/thread-45272-1-1.html",
    "origins": [
     "hub"
@@ -14726,7 +14726,7 @@
       "VASP/第一性原理"
      ],
      "sob_id": 706,
-     "views": "22,171",
+     "views": "22,172",
      "keinsci_url": "http://bbs.keinsci.com/thread-45272-1-1.html"
     }
    ]
@@ -49854,6 +49854,44 @@
    ]
   },
   {
+   "id": "17f342af0ff570ab",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Fractional viscoelasticity in transient unentangled polymer networks",
+   "url": "https://doi.org/10.1063/5.0355300",
+   "excerpt": "Stress relaxation in transient polymer networks often shows extended power-law behavior, G(t) ∼ t−β, where the exponent β frequently departs from the value 1/2 predicted by the sti…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Sachin Shanbhag、Ralm G. Ricarte",
+   "metric": "DOI:10.1063/5.0355300",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "crossref"
+   ],
+   "sourceRecords": [
+    {
+     "id": "ac91259d01fd",
+     "source": "crossref",
+     "type": "paper",
+     "title": "Fractional viscoelasticity in transient unentangled polymer networks",
+     "url": "https://doi.org/10.1063/5.0355300",
+     "excerpt": "Stress relaxation in transient polymer networks often shows extended power-law behavior, G(t) ∼ t−β, where the exponent β frequently departs from the value 1/2 predicted by the sti…",
+     "date": "2026-11-05",
+     "category": "The Journal of Chemical Physics",
+     "tags": [
+      "期刊论文"
+     ],
+     "authors": "Sachin Shanbhag、Ralm G. Ricarte",
+     "metric": "DOI:10.1063/5.0355300"
+    }
+   ]
+  },
+  {
    "id": "510c8981c0062949",
    "source": "crossref",
    "type": "paper",
@@ -49892,6 +49930,82 @@
    ]
   },
   {
+   "id": "5ab5f701d58b656c",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Automatic generation of exchange–correlation response kernels",
+   "url": "https://doi.org/10.1063/5.0358101",
+   "excerpt": "Computing density-functional response properties requires contracting derivatives of the exchange–correlation (xc) energy with perturbed densities on a grid. While the xc functiona…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Susi Lehtola",
+   "metric": "DOI:10.1063/5.0358101",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "crossref"
+   ],
+   "sourceRecords": [
+    {
+     "id": "24f4f910b227",
+     "source": "crossref",
+     "type": "paper",
+     "title": "Automatic generation of exchange–correlation response kernels",
+     "url": "https://doi.org/10.1063/5.0358101",
+     "excerpt": "Computing density-functional response properties requires contracting derivatives of the exchange–correlation (xc) energy with perturbed densities on a grid. While the xc functiona…",
+     "date": "2026-11-05",
+     "category": "The Journal of Chemical Physics",
+     "tags": [
+      "期刊论文"
+     ],
+     "authors": "Susi Lehtola",
+     "metric": "DOI:10.1063/5.0358101"
+    }
+   ]
+  },
+  {
+   "id": "37bfde2507c092b6",
+   "source": "crossref",
+   "type": "paper",
+   "title": "<i>Ab initio</i> -based intermolecular potential for normal hydrogen, orthohydrogen, and parahydrogen: Prediction of thermodynamic behavior",
+   "url": "https://doi.org/10.1063/5.0359709",
+   "excerpt": "An ab initio-based intermolecular potential is reported for normal hydrogen, orthohydrogen, and parahydrogen. Molecular simulations for thermodynamic properties and calculations of…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Ulrich K. Deiters、Richard J. Sadus",
+   "metric": "DOI:10.1063/5.0359709",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "crossref"
+   ],
+   "sourceRecords": [
+    {
+     "id": "9893b2215511",
+     "source": "crossref",
+     "type": "paper",
+     "title": "<i>Ab initio</i> -based intermolecular potential for normal hydrogen, orthohydrogen, and parahydrogen: Prediction of thermodynamic behavior",
+     "url": "https://doi.org/10.1063/5.0359709",
+     "excerpt": "An ab initio-based intermolecular potential is reported for normal hydrogen, orthohydrogen, and parahydrogen. Molecular simulations for thermodynamic properties and calculations of…",
+     "date": "2026-11-05",
+     "category": "The Journal of Chemical Physics",
+     "tags": [
+      "期刊论文"
+     ],
+     "authors": "Ulrich K. Deiters、Richard J. Sadus",
+     "metric": "DOI:10.1063/5.0359709"
+    }
+   ]
+  },
+  {
    "id": "8be12f1186eed7d7",
    "source": "crossref",
    "type": "paper",
@@ -49926,6 +50040,44 @@
      ],
      "authors": "Soumik Ghosh、Jack F. Douglas、Francis W. Starr",
      "metric": "DOI:10.1063/5.0354143"
+    }
+   ]
+  },
+  {
+   "id": "771297f7c318b36f",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Interaction embedding via factorized linear models for multi-element machine learning interatomic potentials",
+   "url": "https://doi.org/10.1063/5.0345011",
+   "excerpt": "Linear machine-learning interatomic potentials, such as the Ultra-Fast Force Field (UF3), deliver near-density functional theory accuracy at low computational cost. Their number of…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Sung Hoon Jung、Ilgar Baghishov、Graeme Henkelman",
+   "metric": "DOI:10.1063/5.0345011",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "crossref"
+   ],
+   "sourceRecords": [
+    {
+     "id": "33fea3e81d9d",
+     "source": "crossref",
+     "type": "paper",
+     "title": "Interaction embedding via factorized linear models for multi-element machine learning interatomic potentials",
+     "url": "https://doi.org/10.1063/5.0345011",
+     "excerpt": "Linear machine-learning interatomic potentials, such as the Ultra-Fast Force Field (UF3), deliver near-density functional theory accuracy at low computational cost. Their number of…",
+     "date": "2026-11-05",
+     "category": "The Journal of Chemical Physics",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Sung Hoon Jung、Ilgar Baghishov、Graeme Henkelman",
+     "metric": "DOI:10.1063/5.0345011"
     }
    ]
   },
@@ -50344,158 +50496,6 @@
      ],
      "authors": "Milan R. Milovanović、Snežana D. Zarić",
      "metric": "DOI:10.1063/5.0355398"
-    }
-   ]
-  },
-  {
-   "id": "883cf5918d69bbc5",
-   "source": "crossref",
-   "type": "paper",
-   "title": "A propagator theory of non-Gaussian diffusion and power-law relaxation in multidimensional disordered media",
-   "url": "https://doi.org/10.1063/5.0357034",
-   "excerpt": "Disordered energy environments generate spatially heterogeneous mobility and persistent deviations from Gaussian diffusion. Such systems are common, and dynamics often provide a ro…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "Gaussian"
-   ],
-   "authors": "Biman Bagchi",
-   "metric": "DOI:10.1063/5.0357034",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "crossref"
-   ],
-   "sourceRecords": [
-    {
-     "id": "7f5aff51149d",
-     "source": "crossref",
-     "type": "paper",
-     "title": "A propagator theory of non-Gaussian diffusion and power-law relaxation in multidimensional disordered media",
-     "url": "https://doi.org/10.1063/5.0357034",
-     "excerpt": "Disordered energy environments generate spatially heterogeneous mobility and persistent deviations from Gaussian diffusion. Such systems are common, and dynamics often provide a ro…",
-     "date": "2026-11-04",
-     "category": "The Journal of Chemical Physics",
-     "tags": [
-      "Gaussian"
-     ],
-     "authors": "Biman Bagchi",
-     "metric": "DOI:10.1063/5.0357034"
-    }
-   ]
-  },
-  {
-   "id": "ff67d5301f47fdc7",
-   "source": "crossref",
-   "type": "paper",
-   "title": "EmbASI: An extensible Pythonic framework for DFT-in-DFT and WF-in-DFT embedding",
-   "url": "https://doi.org/10.1063/5.0349619",
-   "excerpt": "High-level quantum mechanical (QM) simulations are important for understanding chemical and physical systems, but these methods scale unfavorably with system size, and this limits…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "VASP/第一性原理"
-   ],
-   "authors": "Gabriel Bramley、Pavel V. Stishenko、Oscar van Vuren 等",
-   "metric": "DOI:10.1063/5.0349619",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "crossref"
-   ],
-   "sourceRecords": [
-    {
-     "id": "40f10a741e53",
-     "source": "crossref",
-     "type": "paper",
-     "title": "EmbASI: An extensible Pythonic framework for DFT-in-DFT and WF-in-DFT embedding",
-     "url": "https://doi.org/10.1063/5.0349619",
-     "excerpt": "High-level quantum mechanical (QM) simulations are important for understanding chemical and physical systems, but these methods scale unfavorably with system size, and this limits…",
-     "date": "2026-11-04",
-     "category": "The Journal of Chemical Physics",
-     "tags": [
-      "VASP/第一性原理"
-     ],
-     "authors": "Gabriel Bramley、Pavel V. Stishenko、Oscar van Vuren 等",
-     "metric": "DOI:10.1063/5.0349619"
-    }
-   ]
-  },
-  {
-   "id": "dc6bb88c64570a9d",
-   "source": "crossref",
-   "type": "paper",
-   "title": "Cancer-associated histone tail mutations reshape conformational ensembles and DNA-contact states in nucleosomes",
-   "url": "https://doi.org/10.1063/5.0354083",
-   "excerpt": "Cancer-associated histone mutations can perturb chromatin regulation, yet how many noncanonical mutations in intrinsically disordered histone tails alter nucleosome dynamics remain…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "期刊论文"
-   ],
-   "authors": "Liujin Wang、Houfang Zhang、Xupeng Yuan 等",
-   "metric": "DOI:10.1063/5.0354083",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "crossref"
-   ],
-   "sourceRecords": [
-    {
-     "id": "254b75b5c2eb",
-     "source": "crossref",
-     "type": "paper",
-     "title": "Cancer-associated histone tail mutations reshape conformational ensembles and DNA-contact states in nucleosomes",
-     "url": "https://doi.org/10.1063/5.0354083",
-     "excerpt": "Cancer-associated histone mutations can perturb chromatin regulation, yet how many noncanonical mutations in intrinsically disordered histone tails alter nucleosome dynamics remain…",
-     "date": "2026-11-04",
-     "category": "The Journal of Chemical Physics",
-     "tags": [
-      "期刊论文"
-     ],
-     "authors": "Liujin Wang、Houfang Zhang、Xupeng Yuan 等",
-     "metric": "DOI:10.1063/5.0354083"
-    }
-   ]
-  },
-  {
-   "id": "9b90985d169b201a",
-   "source": "crossref",
-   "type": "paper",
-   "title": "Bayesian sampling of structural ensembles: The role of ensemble-counting measures",
-   "url": "https://doi.org/10.1063/5.0349150",
-   "excerpt": "Structural ensemble refinement is widely used to integrate molecular simulations with experimental measurements. While most applications focus on the maximum-a-posteriori ensemble,…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "期刊论文"
-   ],
-   "authors": "Ivan Gilardoni、Giovanni Bussi",
-   "metric": "DOI:10.1063/5.0349150",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "crossref"
-   ],
-   "sourceRecords": [
-    {
-     "id": "ef49a36d8fdd",
-     "source": "crossref",
-     "type": "paper",
-     "title": "Bayesian sampling of structural ensembles: The role of ensemble-counting measures",
-     "url": "https://doi.org/10.1063/5.0349150",
-     "excerpt": "Structural ensemble refinement is widely used to integrate molecular simulations with experimental measurements. While most applications focus on the maximum-a-posteriori ensemble,…",
-     "date": "2026-11-04",
-     "category": "The Journal of Chemical Physics",
-     "tags": [
-      "期刊论文"
-     ],
-     "authors": "Ivan Gilardoni、Giovanni Bussi",
-     "metric": "DOI:10.1063/5.0349150"
     }
    ]
   },
@@ -51814,13 +51814,13 @@
    "title": "lmmentel/awesome-python-chemistry",
    "url": "https://github.com/lmmentel/awesome-python-chemistry",
    "excerpt": "A curated list of Python packages related to chemistry",
-   "date": "2026-11-03",
+   "date": "2026-11-05",
    "category": "开源项目",
    "tags": [
     "开源项目"
    ],
-   "metric": "Star 1450",
-   "stars": 1450,
+   "metric": "Star 1451",
+   "stars": 1451,
    "authors": "lmmentel",
    "origins": [
     "hub"
@@ -51836,13 +51836,13 @@
      "title": "lmmentel/awesome-python-chemistry",
      "url": "https://github.com/lmmentel/awesome-python-chemistry",
      "excerpt": "A curated list of Python packages related to chemistry",
-     "date": "2026-11-03",
+     "date": "2026-11-05",
      "category": "开源项目",
      "tags": [
       "开源项目"
      ],
-     "metric": "Star 1450",
-     "stars": 1450,
+     "metric": "Star 1451",
+     "stars": 1451,
      "authors": "lmmentel"
     }
    ]
@@ -52254,13 +52254,13 @@
    "title": "Mariewelt/OpenChem",
    "url": "https://github.com/Mariewelt/OpenChem",
    "excerpt": "OpenChem: Deep Learning toolkit for Computational Chemistry and Drug Design Research",
-   "date": "2026-11-04",
+   "date": "2026-11-05",
    "category": "Python",
    "tags": [
     "开源项目"
    ],
-   "metric": "Star 760",
-   "stars": 760,
+   "metric": "Star 761",
+   "stars": 761,
    "authors": "Mariewelt",
    "origins": [
     "hub"
@@ -52276,13 +52276,13 @@
      "title": "Mariewelt/OpenChem",
      "url": "https://github.com/Mariewelt/OpenChem",
      "excerpt": "OpenChem: Deep Learning toolkit for Computational Chemistry and Drug Design Research",
-     "date": "2026-11-04",
+     "date": "2026-11-05",
      "category": "Python",
      "tags": [
       "开源项目"
      ],
-     "metric": "Star 760",
-     "stars": 760,
+     "metric": "Star 761",
+     "stars": 761,
      "authors": "Mariewelt"
     }
    ]
@@ -54448,1970 +54448,6 @@
       "数据库与平台"
      ],
      "metric": "OVITO â Scientific data visualization and analysis software"
-    }
-   ]
-  },
-  {
-   "id": "07cf225019598db3",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "A Scoping Review of Diffusion-Based De Novo Molecular Generation: Architectures, Evaluation, and Open Challenges for Computational Drug Discovery",
-   "url": "https://doi.org/10.26434/chemrxiv.15011727/v1",
-   "excerpt": "Diffusion models form the bulk of generative frameworks used in de novo molecular design, yet the literature remains fragmented across model formulations, molecular representations…",
-   "date": "2026-11-05",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习"
-   ],
-   "authors": "Thomas Tsuma、Zaid Amin、Rahma Santhi Zinaida",
-   "metric": "DOI:10.26434/chemrxiv.15011727/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "25d57f96cc6f",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "A Scoping Review of Diffusion-Based De Novo Molecular Generation: Architectures, Evaluation, and Open Challenges for Computational Drug Discovery",
-     "url": "https://doi.org/10.26434/chemrxiv.15011727/v1",
-     "excerpt": "Diffusion models form the bulk of generative frameworks used in de novo molecular design, yet the literature remains fragmented across model formulations, molecular representations…",
-     "date": "2026-11-05",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习"
-     ],
-     "authors": "Thomas Tsuma、Zaid Amin、Rahma Santhi Zinaida",
-     "metric": "DOI:10.26434/chemrxiv.15011727/v1"
-    }
-   ]
-  },
-  {
-   "id": "6555400baa17e872",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Self-Derived Metal/Oxide Interface Engineering via Active Nitrogen Mediation",
-   "url": "https://doi.org/10.26434/chemrxiv.15011718/v1",
-   "excerpt": "Self-derived phase engineering of metal oxides offers a powerful route to create interfaces without introducing foreign metallic elements, yet achieving systematic control over pha…",
-   "date": "2026-11-05",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "量子化学"
-   ],
-   "authors": "Gunjoo Kim、Matteo Quaranta、Hanjun Boo",
-   "metric": "DOI:10.26434/chemrxiv.15011718/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "2dae68758a9c",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Self-Derived Metal/Oxide Interface Engineering via Active Nitrogen Mediation",
-     "url": "https://doi.org/10.26434/chemrxiv.15011718/v1",
-     "excerpt": "Self-derived phase engineering of metal oxides offers a powerful route to create interfaces without introducing foreign metallic elements, yet achieving systematic control over pha…",
-     "date": "2026-11-05",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "量子化学"
-     ],
-     "authors": "Gunjoo Kim、Matteo Quaranta、Hanjun Boo",
-     "metric": "DOI:10.26434/chemrxiv.15011718/v1"
-    }
-   ]
-  },
-  {
-   "id": "e7fbf0d364c5532c",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "The Thiolate Shell as a Dynamic Gold Reservoir: Size-Dependent Thermal Restructuring of Gold Nanoclusters from MACE-Based Machine-Learning Molecular Dynamics",
-   "url": "https://doi.org/10.26434/chemrxiv.15011712/v1",
-   "excerpt": "Atomically precise thiolate-protected gold nanoclusters are used in catalysis, sensing and nanomedicine, where thermal activation, reaction conditions or local heating can change t…",
-   "date": "2026-11-05",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Hoang-Duc Le-Vu、Cuong-Ha Minh、Dominik Domin",
-   "metric": "DOI:10.26434/chemrxiv.15011712/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "d1bef5743893",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "The Thiolate Shell as a Dynamic Gold Reservoir: Size-Dependent Thermal Restructuring of Gold Nanoclusters from MACE-Based Machine-Learning Molecular Dynamics",
-     "url": "https://doi.org/10.26434/chemrxiv.15011712/v1",
-     "excerpt": "Atomically precise thiolate-protected gold nanoclusters are used in catalysis, sensing and nanomedicine, where thermal activation, reaction conditions or local heating can change t…",
-     "date": "2026-11-05",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Hoang-Duc Le-Vu、Cuong-Ha Minh、Dominik Domin",
-     "metric": "DOI:10.26434/chemrxiv.15011712/v1"
-    }
-   ]
-  },
-  {
-   "id": "698399057c2d7561",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Physicochemical Prioritization of Hypothetical Metal–Organic Frameworks for Experimental Synthesis",
-   "url": "https://doi.org/10.26434/chemrxiv.15011707/v1",
-   "excerpt": "The rapid expansion of AI-driven and computationally designed metal–organic frameworks (MOFs) raises a fundamental question: which hypothetical structures are most likely to be exp…",
-   "date": "2026-11-05",
-   "category": "ChemRxiv",
-   "tags": [
-    "量子化学"
-   ],
-   "authors": "Yue Che、Damin Zhang、Wei Hu",
-   "metric": "DOI:10.26434/chemrxiv.15011707/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "92a8152a5071",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Physicochemical Prioritization of Hypothetical Metal–Organic Frameworks for Experimental Synthesis",
-     "url": "https://doi.org/10.26434/chemrxiv.15011707/v1",
-     "excerpt": "The rapid expansion of AI-driven and computationally designed metal–organic frameworks (MOFs) raises a fundamental question: which hypothetical structures are most likely to be exp…",
-     "date": "2026-11-05",
-     "category": "ChemRxiv",
-     "tags": [
-      "量子化学"
-     ],
-     "authors": "Yue Che、Damin Zhang、Wei Hu",
-     "metric": "DOI:10.26434/chemrxiv.15011707/v1"
-    }
-   ]
-  },
-  {
-   "id": "cef78676ef07ff2f",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Spontaneous Ferroelectric Nematic Ordering from an Isotropic Liquid in All-Atom Molecular Dynamics Simulations",
-   "url": "https://doi.org/10.26434/chemrxiv.15008149/v3",
-   "excerpt": "Ferroelectric nematic (N F ) liquid crystals are fluids with macroscopic polar order, yet the molecular pathway by which an isotropic liquid spontaneously develops long-range polar…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学"
-   ],
-   "authors": "Shunsuke Sato、Tetsu Katayama、Saburo Kurihara",
-   "metric": "DOI:10.26434/chemrxiv.15008149/v3",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "ff6882595d4f",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Spontaneous Ferroelectric Nematic Ordering from an Isotropic Liquid in All-Atom Molecular Dynamics Simulations",
-     "url": "https://doi.org/10.26434/chemrxiv.15008149/v3",
-     "excerpt": "Ferroelectric nematic (N F ) liquid crystals are fluids with macroscopic polar order, yet the molecular pathway by which an isotropic liquid spontaneously develops long-range polar…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学"
-     ],
-     "authors": "Shunsuke Sato、Tetsu Katayama、Saburo Kurihara",
-     "metric": "DOI:10.26434/chemrxiv.15008149/v3"
-    }
-   ]
-  },
-  {
-   "id": "4f41392f5da380c2",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Where machine learning for enantioselectivity on polysaccharide chiral stationary phases actually fails: a leave-one-paper-out reappraisal of 10,525 enantiomer pairs",
-   "url": "https://doi.org/10.26434/chemrxiv.15011705/v1",
-   "excerpt": "Machine-learning models for enantioselectivity on polysaccharide chiral stationary phases increasingly report high accuracy, but almost always under random data splits. We re-exami…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习"
-   ],
-   "authors": "Lang Cui",
-   "metric": "DOI:10.26434/chemrxiv.15011705/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "088a5ac41404",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Where machine learning for enantioselectivity on polysaccharide chiral stationary phases actually fails: a leave-one-paper-out reappraisal of 10,525 enantiomer pairs",
-     "url": "https://doi.org/10.26434/chemrxiv.15011705/v1",
-     "excerpt": "Machine-learning models for enantioselectivity on polysaccharide chiral stationary phases increasingly report high accuracy, but almost always under random data splits. We re-exami…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习"
-     ],
-     "authors": "Lang Cui",
-     "metric": "DOI:10.26434/chemrxiv.15011705/v1"
-    }
-   ]
-  },
-  {
-   "id": "164c16a4f494fac0",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Excited-state dynamics and photo-reaction pathways of 4-nitrothiophenol in solution investigated by time-resolved soft X-ray absorption spectroscopy",
-   "url": "https://doi.org/10.26434/chemrxiv.15011701/v1",
-   "excerpt": "Understanding the molecular pathways underlying light-driven reactions is essential for developing efficient and sustainable photochemical processes. Here, we investigate the photo…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "催化与反应"
-   ],
-   "authors": "Leo Cordsmeier、Nicolas Jahn、Wagner Ribeiro da Silva Neto",
-   "metric": "DOI:10.26434/chemrxiv.15011701/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "95e0195fa830",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Excited-state dynamics and photo-reaction pathways of 4-nitrothiophenol in solution investigated by time-resolved soft X-ray absorption spectroscopy",
-     "url": "https://doi.org/10.26434/chemrxiv.15011701/v1",
-     "excerpt": "Understanding the molecular pathways underlying light-driven reactions is essential for developing efficient and sustainable photochemical processes. Here, we investigate the photo…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "催化与反应"
-     ],
-     "authors": "Leo Cordsmeier、Nicolas Jahn、Wagner Ribeiro da Silva Neto",
-     "metric": "DOI:10.26434/chemrxiv.15011701/v1"
-    }
-   ]
-  },
-  {
-   "id": "42b3080364f275b2",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Aggregation-Driven Self-Inhibition of Grignard Reagents: Insights from DFT and Microkinetic Modeling",
-   "url": "https://doi.org/10.26434/chemrxiv.15011700/v1",
-   "excerpt": "A mechanistic DFT study with explicit Et2O microsolvation and microkinetic modeling unveils how organomagnesium reagents (nBuMgX, X = Cl, Br, nBu) undergo structural reorganization…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "量子化学"
-   ],
-   "authors": "Jérémy Leroy、Ludmilla Verrieux、Christophe Boisson",
-   "metric": "DOI:10.26434/chemrxiv.15011700/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "a931b8f88a0e",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Aggregation-Driven Self-Inhibition of Grignard Reagents: Insights from DFT and Microkinetic Modeling",
-     "url": "https://doi.org/10.26434/chemrxiv.15011700/v1",
-     "excerpt": "A mechanistic DFT study with explicit Et2O microsolvation and microkinetic modeling unveils how organomagnesium reagents (nBuMgX, X = Cl, Br, nBu) undergo structural reorganization…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "量子化学"
-     ],
-     "authors": "Jérémy Leroy、Ludmilla Verrieux、Christophe Boisson",
-     "metric": "DOI:10.26434/chemrxiv.15011700/v1"
-    }
-   ]
-  },
-  {
-   "id": "46362089623404c6",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Computational Modeling of Electrolytes and the Solid–Electrolyte Interphase (SEI) in Li-Ion Batteries: A 30-Year Odyssey from DFT/MD/MC to AI–A Comprehensive Review",
-   "url": "https://doi.org/10.26434/chemrxiv.15011695/v1",
-   "excerpt": "The solid electrolyte interphase (SEI)—the passivating nanometric film that forms on anode surfaces in lithium-ion batteries—remains one of the most critical yet least understood c…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Viktor S. Baidyshev",
-   "metric": "DOI:10.26434/chemrxiv.15011695/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "cc2de800e865",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Computational Modeling of Electrolytes and the Solid–Electrolyte Interphase (SEI) in Li-Ion Batteries: A 30-Year Odyssey from DFT/MD/MC to AI–A Comprehensive Review",
-     "url": "https://doi.org/10.26434/chemrxiv.15011695/v1",
-     "excerpt": "The solid electrolyte interphase (SEI)—the passivating nanometric film that forms on anode surfaces in lithium-ion batteries—remains one of the most critical yet least understood c…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Viktor S. Baidyshev",
-     "metric": "DOI:10.26434/chemrxiv.15011695/v1"
-    }
-   ]
-  },
-  {
-   "id": "522dac29e088a49e",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "In Silico Design and Structural Validation ofEpitope-Based Vaccine Candidates Against Feline Calicivirus using Immunoinformatics",
-   "url": "https://doi.org/10.26434/chemrxiv.15011691/v1",
-   "excerpt": "This research aims to utilize bioinformatics methods to identify and analyze potential vaccine epitopes for feline calicivirus (FCV). FCV is a highly contagious pathogen causing re…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "预印本"
-   ],
-   "authors": "Advent Roan Widiyono、Albert Ridwan、Akash Kumar",
-   "metric": "DOI:10.26434/chemrxiv.15011691/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "05c34a5e58c0",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "In Silico Design and Structural Validation ofEpitope-Based Vaccine Candidates Against Feline Calicivirus using Immunoinformatics",
-     "url": "https://doi.org/10.26434/chemrxiv.15011691/v1",
-     "excerpt": "This research aims to utilize bioinformatics methods to identify and analyze potential vaccine epitopes for feline calicivirus (FCV). FCV is a highly contagious pathogen causing re…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "预印本"
-     ],
-     "authors": "Advent Roan Widiyono、Albert Ridwan、Akash Kumar",
-     "metric": "DOI:10.26434/chemrxiv.15011691/v1"
-    }
-   ]
-  },
-  {
-   "id": "c996b31fe1d637d5",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "The Limited Contribution of Structural Information Relative to Language-Model Signal in Data-Limited Cryptic Pocket Prediction",
-   "url": "https://doi.org/10.26434/chemrxiv.15011675/v1",
-   "excerpt": "Cryptic pockets, drug-binding sites absent from a protein’s static structure but exposed through conformational change, expand the scope of druggable targets, yet remain difficult …",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Emmanuel Brown、Phenil Shah",
-   "metric": "DOI:10.26434/chemrxiv.15011675/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "2fc9e0c36007",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "The Limited Contribution of Structural Information Relative to Language-Model Signal in Data-Limited Cryptic Pocket Prediction",
-     "url": "https://doi.org/10.26434/chemrxiv.15011675/v1",
-     "excerpt": "Cryptic pockets, drug-binding sites absent from a protein’s static structure but exposed through conformational change, expand the scope of druggable targets, yet remain difficult …",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Emmanuel Brown、Phenil Shah",
-     "metric": "DOI:10.26434/chemrxiv.15011675/v1"
-    }
-   ]
-  },
-  {
-   "id": "47617c187b03fcc3",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Scaled-Up Production of Graphene Oxide: Design, Simulation, and Analysis of a Stirred Tank Batch Reactor",
-   "url": "https://doi.org/10.26434/chemrxiv.15011668/v1",
-   "excerpt": "Graphene oxide (GO) is an emerging product experiencing exponential growth in popularity and demand. This comprehensive research evaluates the technical and economic feasibility of…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "预印本"
-   ],
-   "authors": "Abu Danish Aiman Bin Abu Sofian、William Raphael Joseph、Yi Jing Chan",
-   "metric": "DOI:10.26434/chemrxiv.15011668/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "f64ca8012390",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Scaled-Up Production of Graphene Oxide: Design, Simulation, and Analysis of a Stirred Tank Batch Reactor",
-     "url": "https://doi.org/10.26434/chemrxiv.15011668/v1",
-     "excerpt": "Graphene oxide (GO) is an emerging product experiencing exponential growth in popularity and demand. This comprehensive research evaluates the technical and economic feasibility of…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "预印本"
-     ],
-     "authors": "Abu Danish Aiman Bin Abu Sofian、William Raphael Joseph、Yi Jing Chan",
-     "metric": "DOI:10.26434/chemrxiv.15011668/v1"
-    }
-   ]
-  },
-  {
-   "id": "f78c37f73b637697",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Achieving Accurate Prediction of Water Adsorption in Mildly Hydrophobic MOFs",
-   "url": "https://doi.org/10.26434/chemrxiv.15011663/v1",
-   "excerpt": "Accurately predicting the steep, S-shaped water adsorption isotherms of mildly hydrophobic MOFs and other hydrophobic porous materials remains challenging. This difficulty stems fr…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Sabrina Grigoletto、Ruben Goeminne、Mohammad Wahiduzzaman",
-   "metric": "DOI:10.26434/chemrxiv.15011663/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "e38ce9112a6b",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Achieving Accurate Prediction of Water Adsorption in Mildly Hydrophobic MOFs",
-     "url": "https://doi.org/10.26434/chemrxiv.15011663/v1",
-     "excerpt": "Accurately predicting the steep, S-shaped water adsorption isotherms of mildly hydrophobic MOFs and other hydrophobic porous materials remains challenging. This difficulty stems fr…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Sabrina Grigoletto、Ruben Goeminne、Mohammad Wahiduzzaman",
-     "metric": "DOI:10.26434/chemrxiv.15011663/v1"
-    }
-   ]
-  },
-  {
-   "id": "0706f9e7c9100d4a",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "A Machine Learning Approach to logBB Prediction Combining Molecular Docking and Quantum-Chemical Descriptors",
-   "url": "https://doi.org/10.26434/chemrxiv.15011661/v1",
-   "excerpt": "Blood–brain barrier (BBB) permeability is a major challenge in the development of drugs targeting the central nervous system (CNS). Computational prediction methods can help priori…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "弱相互作用"
-   ],
-   "authors": "Lilian Rouille",
-   "metric": "DOI:10.26434/chemrxiv.15011661/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "a0246d20d8a5",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "A Machine Learning Approach to logBB Prediction Combining Molecular Docking and Quantum-Chemical Descriptors",
-     "url": "https://doi.org/10.26434/chemrxiv.15011661/v1",
-     "excerpt": "Blood–brain barrier (BBB) permeability is a major challenge in the development of drugs targeting the central nervous system (CNS). Computational prediction methods can help priori…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "弱相互作用"
-     ],
-     "authors": "Lilian Rouille",
-     "metric": "DOI:10.26434/chemrxiv.15011661/v1"
-    }
-   ]
-  },
-  {
-   "id": "c9cf69b796bbc470",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Perspective on the Feasibility of Near-Term Quantum Simulation for Industrially Relevant Catalyst Materials",
-   "url": "https://doi.org/10.26434/chemrxiv.15011047/v2",
-   "excerpt": "Quantum simulation has been proposed as a route to treating strongly correlated electronic structure problems relevant to catalysis, but most existing studies focus on faulttoleran…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "量子化学"
-   ],
-   "authors": "G. Jones、E. Sheridan、A. Khedkar",
-   "metric": "DOI:10.26434/chemrxiv.15011047/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "4feeea908cb6",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Perspective on the Feasibility of Near-Term Quantum Simulation for Industrially Relevant Catalyst Materials",
-     "url": "https://doi.org/10.26434/chemrxiv.15011047/v2",
-     "excerpt": "Quantum simulation has been proposed as a route to treating strongly correlated electronic structure problems relevant to catalysis, but most existing studies focus on faulttoleran…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "量子化学"
-     ],
-     "authors": "G. Jones、E. Sheridan、A. Khedkar",
-     "metric": "DOI:10.26434/chemrxiv.15011047/v2"
-    }
-   ]
-  },
-  {
-   "id": "03bc4262e0a00190",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "How to Discover New Electrolyte Additives for Lithium Batteries: A Computational Roadmap",
-   "url": "https://doi.org/10.26434/chemrxiv.15011654/v1",
-   "excerpt": "Electrolyte additives, present at a few weight percent or less, decide whether a lithium battery forms a stable solidelectrolyte interphase, survives high-voltage operation, tolera…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "量子化学"
-   ],
-   "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Mikhail N. Khrizanforov",
-   "metric": "DOI:10.26434/chemrxiv.15011654/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "175b91f51a24",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "How to Discover New Electrolyte Additives for Lithium Batteries: A Computational Roadmap",
-     "url": "https://doi.org/10.26434/chemrxiv.15011654/v1",
-     "excerpt": "Electrolyte additives, present at a few weight percent or less, decide whether a lithium battery forms a stable solidelectrolyte interphase, survives high-voltage operation, tolera…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "量子化学"
-     ],
-     "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Mikhail N. Khrizanforov",
-     "metric": "DOI:10.26434/chemrxiv.15011654/v1"
-    }
-   ]
-  },
-  {
-   "id": "64e391a3e34dbd7e",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Reproducibility, Benchmarks, and Mechanistic Diversity: Building Trust in Computational Electrocatalysis for the AI Era",
-   "url": "https://doi.org/10.26434/chemrxiv.15011651/v1",
-   "excerpt": "Computational electrocatalysis has contributed significantly to the design of electrocatalysts for energy conversion and storage. Yet three avoidable shortcomings constrain the rel…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "量子化学"
-   ],
-   "authors": "David Hernández-Castillo、Kai S. Exner",
-   "metric": "DOI:10.26434/chemrxiv.15011651/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "62b45ee7f1cd",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Reproducibility, Benchmarks, and Mechanistic Diversity: Building Trust in Computational Electrocatalysis for the AI Era",
-     "url": "https://doi.org/10.26434/chemrxiv.15011651/v1",
-     "excerpt": "Computational electrocatalysis has contributed significantly to the design of electrocatalysts for energy conversion and storage. Yet three avoidable shortcomings constrain the rel…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "量子化学"
-     ],
-     "authors": "David Hernández-Castillo、Kai S. Exner",
-     "metric": "DOI:10.26434/chemrxiv.15011651/v1"
-    }
-   ]
-  },
-  {
-   "id": "990200565c40deb4",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "EnGOAT: An Energy–Geometry Analysis Toolkit for Free-Energy Surfaces of Mobile Species in Crystalline Materials",
-   "url": "https://doi.org/10.26434/chemrxiv.15011643/v1",
-   "excerpt": "The free-energy surface (FES) of a mobile species in a crystalline host governs its behavior within the material, including properties such as adsorption and transport, but reducin…",
-   "date": "2026-11-04",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "弱相互作用"
-   ],
-   "authors": "Matevž Turk、Senja Barthel、Amber Mace",
-   "metric": "DOI:10.26434/chemrxiv.15011643/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "d3d99971d933",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "EnGOAT: An Energy–Geometry Analysis Toolkit for Free-Energy Surfaces of Mobile Species in Crystalline Materials",
-     "url": "https://doi.org/10.26434/chemrxiv.15011643/v1",
-     "excerpt": "The free-energy surface (FES) of a mobile species in a crystalline host governs its behavior within the material, including properties such as adsorption and transport, but reducin…",
-     "date": "2026-11-04",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "弱相互作用"
-     ],
-     "authors": "Matevž Turk、Senja Barthel、Amber Mace",
-     "metric": "DOI:10.26434/chemrxiv.15011643/v1"
-    }
-   ]
-  },
-  {
-   "id": "d965209c3805a70d",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Photoinduced Ligand Exchange and Photoluminescence Dynamics in Tungsten Carbonyl Complexes",
-   "url": "https://doi.org/10.26434/chemrxiv.15011639/v1",
-   "excerpt": "Photoinduced ligand exchange in transition-metal carbonyl complexes couples bond dissociation, coordination rearrangement, and excited-state relaxation, yet the relationship among …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学",
-    "激发态与光谱"
-   ],
-   "authors": "Kamrun N. Keya、Adam Flesche、Yulun Han",
-   "metric": "DOI:10.26434/chemrxiv.15011639/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "96670136ef14",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Photoinduced Ligand Exchange and Photoluminescence Dynamics in Tungsten Carbonyl Complexes",
-     "url": "https://doi.org/10.26434/chemrxiv.15011639/v1",
-     "excerpt": "Photoinduced ligand exchange in transition-metal carbonyl complexes couples bond dissociation, coordination rearrangement, and excited-state relaxation, yet the relationship among …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学",
-      "激发态与光谱"
-     ],
-     "authors": "Kamrun N. Keya、Adam Flesche、Yulun Han",
-     "metric": "DOI:10.26434/chemrxiv.15011639/v1"
-    }
-   ]
-  },
-  {
-   "id": "ac40ebe2be427356",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Thermodynamically informed and balance-preserving neural networks for direct vapor–liquid flash calculations",
-   "url": "https://doi.org/10.26434/chemrxiv.15011589/v2",
-   "excerpt": "Pressure-temperature vapor-liquid equilibrium (PT-VLE) flash calculations are performed repeatedly in compositional-flow simulations and can dominate runtime. To reduce this cost, …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习"
-   ],
-   "authors": "Diego Tavares Volpatto、Fábio Pereira dos Santos、Gustavo Gondran Ribeiro",
-   "metric": "DOI:10.26434/chemrxiv.15011589/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "a4c7796cf590",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Thermodynamically informed and balance-preserving neural networks for direct vapor–liquid flash calculations",
-     "url": "https://doi.org/10.26434/chemrxiv.15011589/v2",
-     "excerpt": "Pressure-temperature vapor-liquid equilibrium (PT-VLE) flash calculations are performed repeatedly in compositional-flow simulations and can dominate runtime. To reduce this cost, …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习"
-     ],
-     "authors": "Diego Tavares Volpatto、Fábio Pereira dos Santos、Gustavo Gondran Ribeiro",
-     "metric": "DOI:10.26434/chemrxiv.15011589/v2"
-    }
-   ]
-  },
-  {
-   "id": "f10799a2fe1eecf3",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Cholesterol Condensation and Phospholipid Convergence in cis-ssPalmO-phe Bilayers: A Molecular Dynamics Study",
-   "url": "https://doi.org/10.26434/chemrxiv.15011622/v1",
-   "excerpt": "Lipid nanoparticles (LNPs) deliver nucleic acids, yet how the ionizable lipid, phospholipid, and cholesterol organise the membrane at the molecular level remains unclear. Here, we …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学",
-    "电荷与静电势"
-   ],
-   "authors": "Anjana Barange、Miteshkumar Moirangthem、Santosh Kumar Meena",
-   "metric": "DOI:10.26434/chemrxiv.15011622/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "f195acbdfb54",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Cholesterol Condensation and Phospholipid Convergence in cis-ssPalmO-phe Bilayers: A Molecular Dynamics Study",
-     "url": "https://doi.org/10.26434/chemrxiv.15011622/v1",
-     "excerpt": "Lipid nanoparticles (LNPs) deliver nucleic acids, yet how the ionizable lipid, phospholipid, and cholesterol organise the membrane at the molecular level remains unclear. Here, we …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学",
-      "电荷与静电势"
-     ],
-     "authors": "Anjana Barange、Miteshkumar Moirangthem、Santosh Kumar Meena",
-     "metric": "DOI:10.26434/chemrxiv.15011622/v1"
-    }
-   ]
-  },
-  {
-   "id": "af761190f7f2ef14",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Automated Static and Dynamic Contact-Angle Analysis with Machine Learning",
-   "url": "https://doi.org/10.26434/chemrxiv.15011593/v1",
-   "excerpt": "We present an autonomous machine-learning model, Conan-MLII, for fast, reproducible contact-angle measurement. The model was trained on >32 million synthetic images generated from …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习"
-   ],
-   "authors": "Daniel G.Shaw、Jianzhong Qi、Joseph D. Berry",
-   "metric": "DOI:10.26434/chemrxiv.15011593/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "880e38c63744",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Automated Static and Dynamic Contact-Angle Analysis with Machine Learning",
-     "url": "https://doi.org/10.26434/chemrxiv.15011593/v1",
-     "excerpt": "We present an autonomous machine-learning model, Conan-MLII, for fast, reproducible contact-angle measurement. The model was trained on >32 million synthetic images generated from …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习"
-     ],
-     "authors": "Daniel G.Shaw、Jianzhong Qi、Joseph D. Berry",
-     "metric": "DOI:10.26434/chemrxiv.15011593/v1"
-    }
-   ]
-  },
-  {
-   "id": "d0a0f078ee0f0f3c",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Evaluating the Dimensionality of Molecular Ensembles Using Deep Neural Network Stochastic Autoencoders",
-   "url": "https://doi.org/10.26434/chemrxiv.15011591/v1",
-   "excerpt": "Stochastic autoencoders (SAEs), which omit the Kullback–Leibler prior-matching term of variational autoencoders and are therefore suited to reconstruction rather than generative sa…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Joseph A. DePaolo-Boisvert、Thitipun Srinarmwong、Aryan Bahl",
-   "metric": "DOI:10.26434/chemrxiv.15011591/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "4357eb436ec6",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Evaluating the Dimensionality of Molecular Ensembles Using Deep Neural Network Stochastic Autoencoders",
-     "url": "https://doi.org/10.26434/chemrxiv.15011591/v1",
-     "excerpt": "Stochastic autoencoders (SAEs), which omit the Kullback–Leibler prior-matching term of variational autoencoders and are therefore suited to reconstruction rather than generative sa…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Joseph A. DePaolo-Boisvert、Thitipun Srinarmwong、Aryan Bahl",
-     "metric": "DOI:10.26434/chemrxiv.15011591/v1"
-    }
-   ]
-  },
-  {
-   "id": "36c01c1de3469bb6",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Conserved recognition and divergent peripheral dynamics of designed statin analogues at human HMG-CoA reductase: ensemble docking and replicated molecular dynamics",
-   "url": "https://doi.org/10.26434/chemrxiv.15011586/v1",
-   "excerpt": "Human 3-hydroxy-3-methylglutaryl coenzyme A reductase (HMGCR) recognizes statins through a conserved polar binding region, while peripheral chemical differences may alter protein–l…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学"
-   ],
-   "authors": "Tyrell Towle",
-   "metric": "DOI:10.26434/chemrxiv.15011586/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "421306aa237e",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Conserved recognition and divergent peripheral dynamics of designed statin analogues at human HMG-CoA reductase: ensemble docking and replicated molecular dynamics",
-     "url": "https://doi.org/10.26434/chemrxiv.15011586/v1",
-     "excerpt": "Human 3-hydroxy-3-methylglutaryl coenzyme A reductase (HMGCR) recognizes statins through a conserved polar binding region, while peripheral chemical differences may alter protein–l…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学"
-     ],
-     "authors": "Tyrell Towle",
-     "metric": "DOI:10.26434/chemrxiv.15011586/v1"
-    }
-   ]
-  },
-  {
-   "id": "a563f2cc39a40186",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Explainable ML force-field for evaluating protein–ligand binding energy using SO3LR",
-   "url": "https://doi.org/10.26434/chemrxiv.15008482/v2",
-   "excerpt": "Accurate estimation of protein-ligand binding affinities remains central to structure-based drug design. Classical force fields neglect important quantum-mechanical effects, while …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Hamza Agha、Sergio Suárez-Dou、Adil Kabylda",
-   "metric": "DOI:10.26434/chemrxiv.15008482/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "8b1f62a41329",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Explainable ML force-field for evaluating protein–ligand binding energy using SO3LR",
-     "url": "https://doi.org/10.26434/chemrxiv.15008482/v2",
-     "excerpt": "Accurate estimation of protein-ligand binding affinities remains central to structure-based drug design. Classical force fields neglect important quantum-mechanical effects, while …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Hamza Agha、Sergio Suárez-Dou、Adil Kabylda",
-     "metric": "DOI:10.26434/chemrxiv.15008482/v2"
-    }
-   ]
-  },
-  {
-   "id": "2d5754ffdcde335f",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Tuning supported Fe-Ag catalysts for selective acetylene hydrogenation: A combined experimental and computational study",
-   "url": "https://doi.org/10.26434/chemrxiv-2026-v13ww/v2",
-   "excerpt": "We report the use of Fe–Ag bimetallic nanoparticles supported on α-Al₂O₃ as tunable highly active and selective catalysts for the semihydrogenation of acetylene in ethylene rich st…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "量子化学"
-   ],
-   "authors": "Hannah Lamers、Bo Zhao、Maxime Boniface",
-   "metric": "DOI:10.26434/chemrxiv-2026-v13ww/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "2fc8aa1a6c89",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Tuning supported Fe-Ag catalysts for selective acetylene hydrogenation: A combined experimental and computational study",
-     "url": "https://doi.org/10.26434/chemrxiv-2026-v13ww/v2",
-     "excerpt": "We report the use of Fe–Ag bimetallic nanoparticles supported on α-Al₂O₃ as tunable highly active and selective catalysts for the semihydrogenation of acetylene in ethylene rich st…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "量子化学"
-     ],
-     "authors": "Hannah Lamers、Bo Zhao、Maxime Boniface",
-     "metric": "DOI:10.26434/chemrxiv-2026-v13ww/v2"
-    }
-   ]
-  },
-  {
-   "id": "91ea338b89dc2fb5",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Surface Reconstruction Activates Bridge Sites of Rutile IrO2(110) for Oxygen Evolution Reaction",
-   "url": "https://doi.org/10.26434/chemrxiv.15011549/v2",
-   "excerpt": "IrO2 is the state-of-the-art catalyst for oxygen evolution reaction (OER) in acid. Previous theoretical investigations are largely based on the (110) surface, with undercoordinated…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学",
-    "催化与反应"
-   ],
-   "authors": "Muhammad Usama、Stephan N. Steinmann、Kai S. Exner",
-   "metric": "DOI:10.26434/chemrxiv.15011549/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "60c74624b2c2",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Surface Reconstruction Activates Bridge Sites of Rutile IrO2(110) for Oxygen Evolution Reaction",
-     "url": "https://doi.org/10.26434/chemrxiv.15011549/v2",
-     "excerpt": "IrO2 is the state-of-the-art catalyst for oxygen evolution reaction (OER) in acid. Previous theoretical investigations are largely based on the (110) surface, with undercoordinated…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学",
-      "催化与反应"
-     ],
-     "authors": "Muhammad Usama、Stephan N. Steinmann、Kai S. Exner",
-     "metric": "DOI:10.26434/chemrxiv.15011549/v2"
-    }
-   ]
-  },
-  {
-   "id": "3dcea1365e3824bf",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Oxidative Nucleophilic Aromatic ipso-Substitution for the Late-Stage Functionalization of Polycyclic Aromatic Hydrocarbons with Five-Membered Rings",
-   "url": "https://doi.org/10.26434/chemrxiv.15011576/v1",
-   "excerpt": "Nanographenes and polycyclic aromatic hydrocarbons (PAHs) are promising materials for advanced organic electronics, but their late-stage functionalization remains challenging. Here…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "量子化学"
-   ],
-   "authors": "Alexander R. Krappe、Lina M. Filla、Friedrich Braune",
-   "metric": "DOI:10.26434/chemrxiv.15011576/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "b08bb05bc326",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Oxidative Nucleophilic Aromatic ipso-Substitution for the Late-Stage Functionalization of Polycyclic Aromatic Hydrocarbons with Five-Membered Rings",
-     "url": "https://doi.org/10.26434/chemrxiv.15011576/v1",
-     "excerpt": "Nanographenes and polycyclic aromatic hydrocarbons (PAHs) are promising materials for advanced organic electronics, but their late-stage functionalization remains challenging. Here…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "量子化学"
-     ],
-     "authors": "Alexander R. Krappe、Lina M. Filla、Friedrich Braune",
-     "metric": "DOI:10.26434/chemrxiv.15011576/v1"
-    }
-   ]
-  },
-  {
-   "id": "bb7995e6efa3fb01",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "In silico cyclic-minipeptides predicting antibody-free early-diagnosis of Ebola virus",
-   "url": "https://doi.org/10.26434/chemrxiv.15011575/v1",
-   "excerpt": "In this work, in silico cyclic-minipeptide candidates were computationally generated aiming to develop antibody-free sandwichbased early-diagnosis of ebola virus (EBOV). Presently …",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "预印本"
-   ],
-   "authors": "Julio Coll",
-   "metric": "DOI:10.26434/chemrxiv.15011575/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "ad6700e298fe",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "In silico cyclic-minipeptides predicting antibody-free early-diagnosis of Ebola virus",
-     "url": "https://doi.org/10.26434/chemrxiv.15011575/v1",
-     "excerpt": "In this work, in silico cyclic-minipeptide candidates were computationally generated aiming to develop antibody-free sandwichbased early-diagnosis of ebola virus (EBOV). Presently …",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "预印本"
-     ],
-     "authors": "Julio Coll",
-     "metric": "DOI:10.26434/chemrxiv.15011575/v1"
-    }
-   ]
-  },
-  {
-   "id": "3b21769dd1768d9d",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Dynamic vacancy redistribution shifts Pd nanoparticle coalescence from orientation-gated to defect-enabled on reduced CeO2(110)",
-   "url": "https://doi.org/10.26434/chemrxiv.15005781/v3",
-   "excerpt": "Sintering deactivates supported catalysts, yet how mobile support defects couple to crystallographic transport anisotropy during nanoparticle coalescence remains poorly understood.…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Shulin Wang、Jilun Song、Liang Cao",
-   "metric": "DOI:10.26434/chemrxiv.15005781/v3",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "658dbf02772d",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Dynamic vacancy redistribution shifts Pd nanoparticle coalescence from orientation-gated to defect-enabled on reduced CeO2(110)",
-     "url": "https://doi.org/10.26434/chemrxiv.15005781/v3",
-     "excerpt": "Sintering deactivates supported catalysts, yet how mobile support defects couple to crystallographic transport anisotropy during nanoparticle coalescence remains poorly understood.…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Shulin Wang、Jilun Song、Liang Cao",
-     "metric": "DOI:10.26434/chemrxiv.15005781/v3"
-    }
-   ]
-  },
-  {
-   "id": "c26584bece03f4f4",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Guest-guest interactions and their impact on molecular mobility: a simulation study of 5-fluorouracil adsorption and diffusion in hydrophobic zeolites",
-   "url": "https://doi.org/10.26434/chemrxiv.15007633/v2",
-   "excerpt": "Zeolites have been proposed as carrier materials for the storage and controlled release of the anticancer drug 5-fluorouracil (5-FU). Containing both hydrogen-bond donor and accept…",
-   "date": "2026-11-03",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学",
-    "催化与反应"
-   ],
-   "authors": "Michael Fischer",
-   "metric": "DOI:10.26434/chemrxiv.15007633/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "ff9866f3e4ed",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Guest-guest interactions and their impact on molecular mobility: a simulation study of 5-fluorouracil adsorption and diffusion in hydrophobic zeolites",
-     "url": "https://doi.org/10.26434/chemrxiv.15007633/v2",
-     "excerpt": "Zeolites have been proposed as carrier materials for the storage and controlled release of the anticancer drug 5-fluorouracil (5-FU). Containing both hydrogen-bond donor and accept…",
-     "date": "2026-11-03",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学",
-      "催化与反应"
-     ],
-     "authors": "Michael Fischer",
-     "metric": "DOI:10.26434/chemrxiv.15007633/v2"
-    }
-   ]
-  },
-  {
-   "id": "02ca8d3afddafb2b",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Revealing Phase-Controlled Surface Structure in PtNi Nanocatalysts via In-situ Gas Cell Transmission Electron Microscopy",
-   "url": "https://doi.org/10.26434/chemrxiv.15011437/v2",
-   "excerpt": "The rational design of catalysts capable of efficiently utilizing CO2 is critical for sustainable chemical processes. The Super-dry reforming of methane (Super-DRM), which couples …",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "催化与反应"
-   ],
-   "authors": "Yuhan Wang、Shiyu Zhen、Jianxiong Zhao",
-   "metric": "DOI:10.26434/chemrxiv.15011437/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "904c2303fd01",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Revealing Phase-Controlled Surface Structure in PtNi Nanocatalysts via In-situ Gas Cell Transmission Electron Microscopy",
-     "url": "https://doi.org/10.26434/chemrxiv.15011437/v2",
-     "excerpt": "The rational design of catalysts capable of efficiently utilizing CO2 is critical for sustainable chemical processes. The Super-dry reforming of methane (Super-DRM), which couples …",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "催化与反应"
-     ],
-     "authors": "Yuhan Wang、Shiyu Zhen、Jianxiong Zhao",
-     "metric": "DOI:10.26434/chemrxiv.15011437/v2"
-    }
-   ]
-  },
-  {
-   "id": "429849f5a06142ac",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Completing the Jacob’s ladder of multiconfiguration pair-density functional theory with a doubly hybrid functional",
-   "url": "https://doi.org/10.26434/chemrxiv.15011559/v1",
-   "excerpt": "Here we introduce MC-xDH5, the first doubly hybrid functional within the multiconfiguration pair-density functional theory (MC-PDFT) framework, completing the top rung of the MC-PD…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "量子化学"
-   ],
-   "authors": "Rulin Feng、Kirk A. Peterson、Igor Ying Zhang",
-   "metric": "DOI:10.26434/chemrxiv.15011559/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "0bb3e8c0967a",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Completing the Jacob’s ladder of multiconfiguration pair-density functional theory with a doubly hybrid functional",
-     "url": "https://doi.org/10.26434/chemrxiv.15011559/v1",
-     "excerpt": "Here we introduce MC-xDH5, the first doubly hybrid functional within the multiconfiguration pair-density functional theory (MC-PDFT) framework, completing the top rung of the MC-PD…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "量子化学"
-     ],
-     "authors": "Rulin Feng、Kirk A. Peterson、Igor Ying Zhang",
-     "metric": "DOI:10.26434/chemrxiv.15011559/v1"
-    }
-   ]
-  },
-  {
-   "id": "9de101ea5a265b93",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Surface-Induced Constraint Release in Confined Polymer Films: A Computational Phenomenological Study",
-   "url": "https://doi.org/10.26434/chemrxiv.15008940/v2",
-   "excerpt": "Thin polymer films exhibit thickness-dependent viscoelastic behavior attributed to enhanced segmental mobility near free surfaces, a phenomenon recently linked to surface-induced c…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "预印本"
-   ],
-   "authors": "Michael Castillo",
-   "metric": "DOI:10.26434/chemrxiv.15008940/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "7ce6364498c4",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Surface-Induced Constraint Release in Confined Polymer Films: A Computational Phenomenological Study",
-     "url": "https://doi.org/10.26434/chemrxiv.15008940/v2",
-     "excerpt": "Thin polymer films exhibit thickness-dependent viscoelastic behavior attributed to enhanced segmental mobility near free surfaces, a phenomenon recently linked to surface-induced c…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "预印本"
-     ],
-     "authors": "Michael Castillo",
-     "metric": "DOI:10.26434/chemrxiv.15008940/v2"
-    }
-   ]
-  },
-  {
-   "id": "b4b87c3818ec2cf4",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "A Ligand-Centered Radical Reveals Orbital-Specific Bonding Differences Between Near-Isoradial Transuranium-Actinide and Lanthanide Complexes",
-   "url": "https://doi.org/10.26434/chemrxiv.15011544/v1",
-   "excerpt": "Understanding how metal-ligand covalency evolves across the actinide series and compared to the lanthanide series remains a central challenge in f-element chemistry because subtle …",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "量子化学"
-   ],
-   "authors": "Daniel J. Lussier、Maria J. Beltrán-Leiva、Josef Tomeček",
-   "metric": "DOI:10.26434/chemrxiv.15011544/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "4baaa033838c",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "A Ligand-Centered Radical Reveals Orbital-Specific Bonding Differences Between Near-Isoradial Transuranium-Actinide and Lanthanide Complexes",
-     "url": "https://doi.org/10.26434/chemrxiv.15011544/v1",
-     "excerpt": "Understanding how metal-ligand covalency evolves across the actinide series and compared to the lanthanide series remains a central challenge in f-element chemistry because subtle …",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "量子化学"
-     ],
-     "authors": "Daniel J. Lussier、Maria J. Beltrán-Leiva、Josef Tomeček",
-     "metric": "DOI:10.26434/chemrxiv.15011544/v1"
-    }
-   ]
-  },
-  {
-   "id": "43ca9f091ec76069",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Design Of Earth-Abundant W(0) Complexes For Near-Infrared Absorbance Via Ligand Optimization",
-   "url": "https://doi.org/10.26434/chemrxiv.15011541/v1",
-   "excerpt": "This work focuses on developing new earth-abundant metal complexes to be used as eAicient near-infrared (NIR) absorbers and photosensitizers for applications in photocatalysis, bio…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "催化与反应"
-   ],
-   "authors": "Victoria Oas、Wenfang Sun、Dmitri Kilin",
-   "metric": "DOI:10.26434/chemrxiv.15011541/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "64a9c2ead445",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Design Of Earth-Abundant W(0) Complexes For Near-Infrared Absorbance Via Ligand Optimization",
-     "url": "https://doi.org/10.26434/chemrxiv.15011541/v1",
-     "excerpt": "This work focuses on developing new earth-abundant metal complexes to be used as eAicient near-infrared (NIR) absorbers and photosensitizers for applications in photocatalysis, bio…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "催化与反应"
-     ],
-     "authors": "Victoria Oas、Wenfang Sun、Dmitri Kilin",
-     "metric": "DOI:10.26434/chemrxiv.15011541/v1"
-    }
-   ]
-  },
-  {
-   "id": "cd87c1c90ae1f45a",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Materials Property Prediction with a Site-Resolved Three-Dimensional Voxel Convolution Neural Network",
-   "url": "https://doi.org/10.26434/chemrxiv.15011524/v1",
-   "excerpt": "Identifying low-energy atomic arrangements is central to the design of multicomponent materials such as high-entropy cathodes and perovskites, but the number of possible arrangemen…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "量子化学"
-   ],
-   "authors": "Juo Kim、Kyoungmin Min",
-   "metric": "DOI:10.26434/chemrxiv.15011524/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "8ce429b04575",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Materials Property Prediction with a Site-Resolved Three-Dimensional Voxel Convolution Neural Network",
-     "url": "https://doi.org/10.26434/chemrxiv.15011524/v1",
-     "excerpt": "Identifying low-energy atomic arrangements is central to the design of multicomponent materials such as high-entropy cathodes and perovskites, but the number of possible arrangemen…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "量子化学"
-     ],
-     "authors": "Juo Kim、Kyoungmin Min",
-     "metric": "DOI:10.26434/chemrxiv.15011524/v1"
-    }
-   ]
-  },
-  {
-   "id": "3dd6b937d962b1f1",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "From a Tight-Binding Hessian to an AMBER Iron-Sulfur Site: A Rubredoxin Stress Test",
-   "url": "https://doi.org/10.26434/chemrxiv.15011523/v1",
-   "excerpt": "Parameterized bonded metal sites represent the lowest cost option for molecular dynamics (MD) studies of metalloproteins. However, their quality depends entirely upon the underlyin…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学"
-   ],
-   "authors": "Devashish Das、Anurag Kumar",
-   "metric": "DOI:10.26434/chemrxiv.15011523/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "d6b241687c70",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "From a Tight-Binding Hessian to an AMBER Iron-Sulfur Site: A Rubredoxin Stress Test",
-     "url": "https://doi.org/10.26434/chemrxiv.15011523/v1",
-     "excerpt": "Parameterized bonded metal sites represent the lowest cost option for molecular dynamics (MD) studies of metalloproteins. However, their quality depends entirely upon the underlyin…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学"
-     ],
-     "authors": "Devashish Das、Anurag Kumar",
-     "metric": "DOI:10.26434/chemrxiv.15011523/v1"
-    }
-   ]
-  },
-  {
-   "id": "82037642740bd45e",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "A Cellular Sheaf Model for Aromaticity in Discrete Molecular Systems",
-   "url": "https://doi.org/10.26434/chemrxiv.15010344/v2",
-   "excerpt": "Aromaticity underpins molecular stability in fields ranging from pharmaceuticals to organic semiconductors, yet existing prediction methods are either too computationally costly fo…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "量子化学"
-   ],
-   "authors": "Roy Han",
-   "metric": "DOI:10.26434/chemrxiv.15010344/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "185bba143abf",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "A Cellular Sheaf Model for Aromaticity in Discrete Molecular Systems",
-     "url": "https://doi.org/10.26434/chemrxiv.15010344/v2",
-     "excerpt": "Aromaticity underpins molecular stability in fields ranging from pharmaceuticals to organic semiconductors, yet existing prediction methods are either too computationally costly fo…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "量子化学"
-     ],
-     "authors": "Roy Han",
-     "metric": "DOI:10.26434/chemrxiv.15010344/v2"
-    }
-   ]
-  },
-  {
-   "id": "dcf25df9712ae9dd",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Making Complete-Basis-Set Extrapolation Visible: A Spreadsheet-Based Activity for Upper-Division Computational Chemistry",
-   "url": "https://doi.org/10.26434/chemrxiv.15011445/v2",
-   "excerpt": "Complete-basis-set (CBS) extrapolation is widely used to estimate electronic energies beyond finite-basis calculations. However, students may encounter it primarily as a formula or…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "预印本"
-   ],
-   "authors": "Olaseni Sode、Yong Ba",
-   "metric": "DOI:10.26434/chemrxiv.15011445/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "a72d4a94cc2a",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Making Complete-Basis-Set Extrapolation Visible: A Spreadsheet-Based Activity for Upper-Division Computational Chemistry",
-     "url": "https://doi.org/10.26434/chemrxiv.15011445/v2",
-     "excerpt": "Complete-basis-set (CBS) extrapolation is widely used to estimate electronic energies beyond finite-basis calculations. However, students may encounter it primarily as a formula or…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "预印本"
-     ],
-     "authors": "Olaseni Sode、Yong Ba",
-     "metric": "DOI:10.26434/chemrxiv.15011445/v2"
-    }
-   ]
-  },
-  {
-   "id": "dcd07b39ee58e81c",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Enantio-Complementary Synthesis of Atropisomeric C–N Biaryl Amines via Imine Reductase-Mediated Dynamic Kinetic Resolution",
-   "url": "https://doi.org/10.26434/chemrxiv.15011520/v1",
-   "excerpt": "C–N axially chiral biaryl amines constitute privileged scaffolds in drug discovery and asymmetric catalysis, yet they remain synthetically challenging due to low rotational barrier…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "分子动力学",
-    "催化与反应"
-   ],
-   "authors": "Yiman Cui、Litong, Chen、Zhi Wang",
-   "metric": "DOI:10.26434/chemrxiv.15011520/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "7be809507eb4",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Enantio-Complementary Synthesis of Atropisomeric C–N Biaryl Amines via Imine Reductase-Mediated Dynamic Kinetic Resolution",
-     "url": "https://doi.org/10.26434/chemrxiv.15011520/v1",
-     "excerpt": "C–N axially chiral biaryl amines constitute privileged scaffolds in drug discovery and asymmetric catalysis, yet they remain synthetically challenging due to low rotational barrier…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "分子动力学",
-      "催化与反应"
-     ],
-     "authors": "Yiman Cui、Litong, Chen、Zhi Wang",
-     "metric": "DOI:10.26434/chemrxiv.15011520/v1"
-    }
-   ]
-  },
-  {
-   "id": "758ee2fa9c0b7e0b",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "PyFMO: A Python Framework for Fragment Molecular Orbital Calculations",
-   "url": "https://doi.org/10.26434/chemrxiv.15011203/v2",
-   "excerpt": "The fragment molecular orbital (FMO) method enables quantum chemical calculations on large biomolecular systems and provides interaction energies between their fragments. Its furth…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "弱相互作用",
-    "量子化学"
-   ],
-   "authors": "Yoshio Okiyama",
-   "metric": "DOI:10.26434/chemrxiv.15011203/v2",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "256e09934961",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "PyFMO: A Python Framework for Fragment Molecular Orbital Calculations",
-     "url": "https://doi.org/10.26434/chemrxiv.15011203/v2",
-     "excerpt": "The fragment molecular orbital (FMO) method enables quantum chemical calculations on large biomolecular systems and provides interaction energies between their fragments. Its furth…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "弱相互作用",
-      "量子化学"
-     ],
-     "authors": "Yoshio Okiyama",
-     "metric": "DOI:10.26434/chemrxiv.15011203/v2"
-    }
-   ]
-  },
-  {
-   "id": "d15f801de435f886",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Incorporating Polarization into ML/MM Endpoint Calculations for Protein–Ligand Affinity Ranking",
-   "url": "https://doi.org/10.26434/chemrxiv.15011517/v1",
-   "excerpt": "Endpoint free-energy calculations combine low computational cost with reasonable accuracy and are widely used to rank protein–ligand affinities, yet describing charge polarization …",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习"
-   ],
-   "authors": "Leshen Zhang、Xujian Wang、Taoyu Niu",
-   "metric": "DOI:10.26434/chemrxiv.15011517/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "349dc4b3fed6",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Incorporating Polarization into ML/MM Endpoint Calculations for Protein–Ligand Affinity Ranking",
-     "url": "https://doi.org/10.26434/chemrxiv.15011517/v1",
-     "excerpt": "Endpoint free-energy calculations combine low computational cost with reasonable accuracy and are widely used to rank protein–ligand affinities, yet describing charge polarization …",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习"
-     ],
-     "authors": "Leshen Zhang、Xujian Wang、Taoyu Niu",
-     "metric": "DOI:10.26434/chemrxiv.15011517/v1"
-    }
-   ]
-  },
-  {
-   "id": "a45c439432d5c394",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "The Evolution of Electronic Structure in Conjugated Molecules Revealed by Mixed-Reference Spin-Flip Time-Dependent Density Functional Theory and Density-Based Analyses: II. Polyacenes",
-   "url": "https://doi.org/10.26434/chemrxiv.15011513/v1",
-   "excerpt": "Large conjugated molecules feature small gaps between occupied and virtual orbital spaces, which results in complex electronic structure patterns in their low-lying states. These o…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "量子化学"
-   ],
-   "authors": "Arnab Chakraborty、Zheng Pei、Yihan Shao",
-   "metric": "DOI:10.26434/chemrxiv.15011513/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "014e828cdae5",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "The Evolution of Electronic Structure in Conjugated Molecules Revealed by Mixed-Reference Spin-Flip Time-Dependent Density Functional Theory and Density-Based Analyses: II. Polyacenes",
-     "url": "https://doi.org/10.26434/chemrxiv.15011513/v1",
-     "excerpt": "Large conjugated molecules feature small gaps between occupied and virtual orbital spaces, which results in complex electronic structure patterns in their low-lying states. These o…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "量子化学"
-     ],
-     "authors": "Arnab Chakraborty、Zheng Pei、Yihan Shao",
-     "metric": "DOI:10.26434/chemrxiv.15011513/v1"
-    }
-   ]
-  },
-  {
-   "id": "1f07c39b69c30f6b",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Literature-Scale Mössbauer Data Enable Prediction, Electronic-State Interpretation, and Chemical Insight in Molecular Iron Chemistry",
-   "url": "https://doi.org/10.26434/chemrxiv.15011512/v1",
-   "excerpt": "Experimental spectroscopy is central to molecular characterization, yet conventional quantitative analysis often compresses rich structural and electronic information into a few ca…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "激发态与光谱",
-    "量子化学"
-   ],
-   "authors": "Zhibo Zhang、Haoran Li、Fang-Wei Lin",
-   "metric": "DOI:10.26434/chemrxiv.15011512/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "51bbda03bf24",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Literature-Scale Mössbauer Data Enable Prediction, Electronic-State Interpretation, and Chemical Insight in Molecular Iron Chemistry",
-     "url": "https://doi.org/10.26434/chemrxiv.15011512/v1",
-     "excerpt": "Experimental spectroscopy is central to molecular characterization, yet conventional quantitative analysis often compresses rich structural and electronic information into a few ca…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "激发态与光谱",
-      "量子化学"
-     ],
-     "authors": "Zhibo Zhang、Haoran Li、Fang-Wei Lin",
-     "metric": "DOI:10.26434/chemrxiv.15011512/v1"
-    }
-   ]
-  },
-  {
-   "id": "0e963b6568523790",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Bringing coupled‑cluster theory to the strong-correlation frontier",
-   "url": "https://doi.org/10.26434/chemrxiv.15011511/v1",
-   "excerpt": "Accurate prediction of molecular electronic energies is essential yet remains challenging for strongly correlated systems, where conventional coupled-cluster (CC) methods break dow…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "催化与反应",
-    "量子化学"
-   ],
-   "authors": "Pengfei Ma、Xiaochuan Ren、Fanhong Han",
-   "metric": "DOI:10.26434/chemrxiv.15011511/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "9f954c49b193",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Bringing coupled‑cluster theory to the strong-correlation frontier",
-     "url": "https://doi.org/10.26434/chemrxiv.15011511/v1",
-     "excerpt": "Accurate prediction of molecular electronic energies is essential yet remains challenging for strongly correlated systems, where conventional coupled-cluster (CC) methods break dow…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "催化与反应",
-      "量子化学"
-     ],
-     "authors": "Pengfei Ma、Xiaochuan Ren、Fanhong Han",
-     "metric": "DOI:10.26434/chemrxiv.15011511/v1"
-    }
-   ]
-  },
-  {
-   "id": "ce70267d38ca60c0",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Construction of a Curated Literature Dataset and Machine Learning-Guided Exploration of Supported Metal Catalysts for Low- to Intermediate-Temperature Reverse Water–Gas Shift Reaction",
-   "url": "https://doi.org/10.26434/chemrxiv.15011499/v1",
-   "excerpt": "Literature-derived results on reverse water–gas shift (RWGS) catalysts contain extensive information about catalyst design, yet their fragmentation makes systematic, data-driven ex…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "催化与反应"
-   ],
-   "authors": "Umi Shin、Shinya Mine、Aritomo Yamaguchi",
-   "metric": "DOI:10.26434/chemrxiv.15011499/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "a109934ae7ed",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Construction of a Curated Literature Dataset and Machine Learning-Guided Exploration of Supported Metal Catalysts for Low- to Intermediate-Temperature Reverse Water–Gas Shift Reaction",
-     "url": "https://doi.org/10.26434/chemrxiv.15011499/v1",
-     "excerpt": "Literature-derived results on reverse water–gas shift (RWGS) catalysts contain extensive information about catalyst design, yet their fragmentation makes systematic, data-driven ex…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "催化与反应"
-     ],
-     "authors": "Umi Shin、Shinya Mine、Aritomo Yamaguchi",
-     "metric": "DOI:10.26434/chemrxiv.15011499/v1"
-    }
-   ]
-  },
-  {
-   "id": "7e5c7c5334fff286",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "A linear-scaling explicitly correlated local natural orbital CCSD(T) approach",
-   "url": "https://doi.org/10.26434/chemrxiv.15011483/v1",
-   "excerpt": "We introduce an integral-direct, linear-scaling, local explicitly correlated (F12) coupled-cluster (CC) singles, doubles, and perturbative triples [CCSD(T)] approach building on ou…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "量子化学"
-   ],
-   "authors": "Mihály Kállay、Péter R. Nagy",
-   "metric": "DOI:10.26434/chemrxiv.15011483/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "100e48c9dc03",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "A linear-scaling explicitly correlated local natural orbital CCSD(T) approach",
-     "url": "https://doi.org/10.26434/chemrxiv.15011483/v1",
-     "excerpt": "We introduce an integral-direct, linear-scaling, local explicitly correlated (F12) coupled-cluster (CC) singles, doubles, and perturbative triples [CCSD(T)] approach building on ou…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "量子化学"
-     ],
-     "authors": "Mihály Kállay、Péter R. Nagy",
-     "metric": "DOI:10.26434/chemrxiv.15011483/v1"
-    }
-   ]
-  },
-  {
-   "id": "578ad965fe05a90a",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Pressure-Induced Formation of Intermetallic CrBi2",
-   "url": "https://doi.org/10.26434/chemrxiv.15011482/v1",
-   "excerpt": "Binary transition-metal bismuth compounds offer a new class of solid-state materials with emergent properties such as magnetism, superconductivity, thermoelectricity and nontrivial…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "量子化学"
-   ],
-   "authors": "Adrish Das、Ayan Datta",
-   "metric": "DOI:10.26434/chemrxiv.15011482/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "9c5943ee2a78",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Pressure-Induced Formation of Intermetallic CrBi2",
-     "url": "https://doi.org/10.26434/chemrxiv.15011482/v1",
-     "excerpt": "Binary transition-metal bismuth compounds offer a new class of solid-state materials with emergent properties such as magnetism, superconductivity, thermoelectricity and nontrivial…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "量子化学"
-     ],
-     "authors": "Adrish Das、Ayan Datta",
-     "metric": "DOI:10.26434/chemrxiv.15011482/v1"
-    }
-   ]
-  },
-  {
-   "id": "2e0b38cdb023cd45",
-   "source": "chemrxiv",
-   "type": "preprint",
-   "title": "Radial Kernel Attention for Long-Range Modeling in Polymer Machine Learning Force Fields",
-   "url": "https://doi.org/10.26434/chemrxiv.15011478/v1",
-   "excerpt": "We introduce Radial Kernel Attention (RKA) for long-range modeling in polymer machine learning force fields. Local neighbor graphs constrain communication across polymer chains and…",
-   "date": "2026-11-02",
-   "category": "ChemRxiv",
-   "tags": [
-    "AI与机器学习",
-    "分子动力学"
-   ],
-   "authors": "Wenbo Fu、Chenghui Mao、Chengwen Hu",
-   "metric": "DOI:10.26434/chemrxiv.15011478/v1",
-   "origins": [
-    "hub"
-   ],
-   "sourceIds": [
-    "chemrxiv"
-   ],
-   "sourceRecords": [
-    {
-     "id": "406973f8190e",
-     "source": "chemrxiv",
-     "type": "preprint",
-     "title": "Radial Kernel Attention for Long-Range Modeling in Polymer Machine Learning Force Fields",
-     "url": "https://doi.org/10.26434/chemrxiv.15011478/v1",
-     "excerpt": "We introduce Radial Kernel Attention (RKA) for long-range modeling in polymer machine learning force fields. Local neighbor graphs constrain communication across polymer chains and…",
-     "date": "2026-11-02",
-     "category": "ChemRxiv",
-     "tags": [
-      "AI与机器学习",
-      "分子动力学"
-     ],
-     "authors": "Wenbo Fu、Chenghui Mao、Chengwen Hu",
-     "metric": "DOI:10.26434/chemrxiv.15011478/v1"
     }
    ]
   },
@@ -61923,6 +59959,1970 @@
      "access": "免费",
      "integration": "catalog",
      "detail": "已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器"
+    }
+   ]
+  },
+  {
+   "id": "4d04bf581a3e5ece",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "A Scoping Review of Diffusion-Based De Novo Molecular Generation: Architectures, Evaluation, and Open Challenges for Computational Drug Discovery",
+   "url": "https://doi.org/10.26434/chemrxiv.15011727/v1",
+   "excerpt": "Diffusion models form the bulk of generative frameworks used in de novo molecular design, yet the literature remains fragmented across model formulations, molecular representations…",
+   "date": "2026-11-05",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Thomas Tsuma、Zaid Amin、Rahma Santhi Zinaida",
+   "metric": "DOI:10.26434/chemrxiv.15011727/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "25d57f96cc6f",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "A Scoping Review of Diffusion-Based De Novo Molecular Generation: Architectures, Evaluation, and Open Challenges for Computational Drug Discovery",
+     "url": "https://doi.org/10.26434/chemrxiv.15011727/v1",
+     "excerpt": "Diffusion models form the bulk of generative frameworks used in de novo molecular design, yet the literature remains fragmented across model formulations, molecular representations…",
+     "date": "2026-11-05",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Thomas Tsuma、Zaid Amin、Rahma Santhi Zinaida",
+     "metric": "DOI:10.26434/chemrxiv.15011727/v1"
+    }
+   ]
+  },
+  {
+   "id": "915234d4463573d9",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Self-Derived Metal/Oxide Interface Engineering via Active Nitrogen Mediation",
+   "url": "https://doi.org/10.26434/chemrxiv.15011718/v1",
+   "excerpt": "Self-derived phase engineering of metal oxides offers a powerful route to create interfaces without introducing foreign metallic elements, yet achieving systematic control over pha…",
+   "date": "2026-11-05",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "量子化学"
+   ],
+   "authors": "Gunjoo Kim、Matteo Quaranta、Hanjun Boo",
+   "metric": "DOI:10.26434/chemrxiv.15011718/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "2dae68758a9c",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Self-Derived Metal/Oxide Interface Engineering via Active Nitrogen Mediation",
+     "url": "https://doi.org/10.26434/chemrxiv.15011718/v1",
+     "excerpt": "Self-derived phase engineering of metal oxides offers a powerful route to create interfaces without introducing foreign metallic elements, yet achieving systematic control over pha…",
+     "date": "2026-11-05",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "量子化学"
+     ],
+     "authors": "Gunjoo Kim、Matteo Quaranta、Hanjun Boo",
+     "metric": "DOI:10.26434/chemrxiv.15011718/v1"
+    }
+   ]
+  },
+  {
+   "id": "556cfd2416ed50ef",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "The Thiolate Shell as a Dynamic Gold Reservoir: Size-Dependent Thermal Restructuring of Gold Nanoclusters from MACE-Based Machine-Learning Molecular Dynamics",
+   "url": "https://doi.org/10.26434/chemrxiv.15011712/v1",
+   "excerpt": "Atomically precise thiolate-protected gold nanoclusters are used in catalysis, sensing and nanomedicine, where thermal activation, reaction conditions or local heating can change t…",
+   "date": "2026-11-05",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Hoang-Duc Le-Vu、Cuong-Ha Minh、Dominik Domin",
+   "metric": "DOI:10.26434/chemrxiv.15011712/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "d1bef5743893",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "The Thiolate Shell as a Dynamic Gold Reservoir: Size-Dependent Thermal Restructuring of Gold Nanoclusters from MACE-Based Machine-Learning Molecular Dynamics",
+     "url": "https://doi.org/10.26434/chemrxiv.15011712/v1",
+     "excerpt": "Atomically precise thiolate-protected gold nanoclusters are used in catalysis, sensing and nanomedicine, where thermal activation, reaction conditions or local heating can change t…",
+     "date": "2026-11-05",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Hoang-Duc Le-Vu、Cuong-Ha Minh、Dominik Domin",
+     "metric": "DOI:10.26434/chemrxiv.15011712/v1"
+    }
+   ]
+  },
+  {
+   "id": "75c8f3c0672f48ea",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Physicochemical Prioritization of Hypothetical Metal–Organic Frameworks for Experimental Synthesis",
+   "url": "https://doi.org/10.26434/chemrxiv.15011707/v1",
+   "excerpt": "The rapid expansion of AI-driven and computationally designed metal–organic frameworks (MOFs) raises a fundamental question: which hypothetical structures are most likely to be exp…",
+   "date": "2026-11-05",
+   "category": "ChemRxiv",
+   "tags": [
+    "量子化学"
+   ],
+   "authors": "Yue Che、Damin Zhang、Wei Hu",
+   "metric": "DOI:10.26434/chemrxiv.15011707/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "92a8152a5071",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Physicochemical Prioritization of Hypothetical Metal–Organic Frameworks for Experimental Synthesis",
+     "url": "https://doi.org/10.26434/chemrxiv.15011707/v1",
+     "excerpt": "The rapid expansion of AI-driven and computationally designed metal–organic frameworks (MOFs) raises a fundamental question: which hypothetical structures are most likely to be exp…",
+     "date": "2026-11-05",
+     "category": "ChemRxiv",
+     "tags": [
+      "量子化学"
+     ],
+     "authors": "Yue Che、Damin Zhang、Wei Hu",
+     "metric": "DOI:10.26434/chemrxiv.15011707/v1"
+    }
+   ]
+  },
+  {
+   "id": "9d6c02b91eb23a1e",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Spontaneous Ferroelectric Nematic Ordering from an Isotropic Liquid in All-Atom Molecular Dynamics Simulations",
+   "url": "https://doi.org/10.26434/chemrxiv.15008149/v3",
+   "excerpt": "Ferroelectric nematic (N F ) liquid crystals are fluids with macroscopic polar order, yet the molecular pathway by which an isotropic liquid spontaneously develops long-range polar…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学"
+   ],
+   "authors": "Shunsuke Sato、Tetsu Katayama、Saburo Kurihara",
+   "metric": "DOI:10.26434/chemrxiv.15008149/v3",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "ff6882595d4f",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Spontaneous Ferroelectric Nematic Ordering from an Isotropic Liquid in All-Atom Molecular Dynamics Simulations",
+     "url": "https://doi.org/10.26434/chemrxiv.15008149/v3",
+     "excerpt": "Ferroelectric nematic (N F ) liquid crystals are fluids with macroscopic polar order, yet the molecular pathway by which an isotropic liquid spontaneously develops long-range polar…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学"
+     ],
+     "authors": "Shunsuke Sato、Tetsu Katayama、Saburo Kurihara",
+     "metric": "DOI:10.26434/chemrxiv.15008149/v3"
+    }
+   ]
+  },
+  {
+   "id": "cedd2cedf0255283",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Where machine learning for enantioselectivity on polysaccharide chiral stationary phases actually fails: a leave-one-paper-out reappraisal of 10,525 enantiomer pairs",
+   "url": "https://doi.org/10.26434/chemrxiv.15011705/v1",
+   "excerpt": "Machine-learning models for enantioselectivity on polysaccharide chiral stationary phases increasingly report high accuracy, but almost always under random data splits. We re-exami…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Lang Cui",
+   "metric": "DOI:10.26434/chemrxiv.15011705/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "088a5ac41404",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Where machine learning for enantioselectivity on polysaccharide chiral stationary phases actually fails: a leave-one-paper-out reappraisal of 10,525 enantiomer pairs",
+     "url": "https://doi.org/10.26434/chemrxiv.15011705/v1",
+     "excerpt": "Machine-learning models for enantioselectivity on polysaccharide chiral stationary phases increasingly report high accuracy, but almost always under random data splits. We re-exami…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Lang Cui",
+     "metric": "DOI:10.26434/chemrxiv.15011705/v1"
+    }
+   ]
+  },
+  {
+   "id": "3a9b6b9ee74afba2",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Excited-state dynamics and photo-reaction pathways of 4-nitrothiophenol in solution investigated by time-resolved soft X-ray absorption spectroscopy",
+   "url": "https://doi.org/10.26434/chemrxiv.15011701/v1",
+   "excerpt": "Understanding the molecular pathways underlying light-driven reactions is essential for developing efficient and sustainable photochemical processes. Here, we investigate the photo…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "催化与反应"
+   ],
+   "authors": "Leo Cordsmeier、Nicolas Jahn、Wagner Ribeiro da Silva Neto",
+   "metric": "DOI:10.26434/chemrxiv.15011701/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "95e0195fa830",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Excited-state dynamics and photo-reaction pathways of 4-nitrothiophenol in solution investigated by time-resolved soft X-ray absorption spectroscopy",
+     "url": "https://doi.org/10.26434/chemrxiv.15011701/v1",
+     "excerpt": "Understanding the molecular pathways underlying light-driven reactions is essential for developing efficient and sustainable photochemical processes. Here, we investigate the photo…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "催化与反应"
+     ],
+     "authors": "Leo Cordsmeier、Nicolas Jahn、Wagner Ribeiro da Silva Neto",
+     "metric": "DOI:10.26434/chemrxiv.15011701/v1"
+    }
+   ]
+  },
+  {
+   "id": "c575de01429cf85c",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Aggregation-Driven Self-Inhibition of Grignard Reagents: Insights from DFT and Microkinetic Modeling",
+   "url": "https://doi.org/10.26434/chemrxiv.15011700/v1",
+   "excerpt": "A mechanistic DFT study with explicit Et2O microsolvation and microkinetic modeling unveils how organomagnesium reagents (nBuMgX, X = Cl, Br, nBu) undergo structural reorganization…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "量子化学"
+   ],
+   "authors": "Jérémy Leroy、Ludmilla Verrieux、Christophe Boisson",
+   "metric": "DOI:10.26434/chemrxiv.15011700/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "a931b8f88a0e",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Aggregation-Driven Self-Inhibition of Grignard Reagents: Insights from DFT and Microkinetic Modeling",
+     "url": "https://doi.org/10.26434/chemrxiv.15011700/v1",
+     "excerpt": "A mechanistic DFT study with explicit Et2O microsolvation and microkinetic modeling unveils how organomagnesium reagents (nBuMgX, X = Cl, Br, nBu) undergo structural reorganization…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "量子化学"
+     ],
+     "authors": "Jérémy Leroy、Ludmilla Verrieux、Christophe Boisson",
+     "metric": "DOI:10.26434/chemrxiv.15011700/v1"
+    }
+   ]
+  },
+  {
+   "id": "ec8d846863c82ac4",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Computational Modeling of Electrolytes and the Solid–Electrolyte Interphase (SEI) in Li-Ion Batteries: A 30-Year Odyssey from DFT/MD/MC to AI–A Comprehensive Review",
+   "url": "https://doi.org/10.26434/chemrxiv.15011695/v1",
+   "excerpt": "The solid electrolyte interphase (SEI)—the passivating nanometric film that forms on anode surfaces in lithium-ion batteries—remains one of the most critical yet least understood c…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Viktor S. Baidyshev",
+   "metric": "DOI:10.26434/chemrxiv.15011695/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "cc2de800e865",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Computational Modeling of Electrolytes and the Solid–Electrolyte Interphase (SEI) in Li-Ion Batteries: A 30-Year Odyssey from DFT/MD/MC to AI–A Comprehensive Review",
+     "url": "https://doi.org/10.26434/chemrxiv.15011695/v1",
+     "excerpt": "The solid electrolyte interphase (SEI)—the passivating nanometric film that forms on anode surfaces in lithium-ion batteries—remains one of the most critical yet least understood c…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Viktor S. Baidyshev",
+     "metric": "DOI:10.26434/chemrxiv.15011695/v1"
+    }
+   ]
+  },
+  {
+   "id": "5fb6da202dffd41d",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "In Silico Design and Structural Validation ofEpitope-Based Vaccine Candidates Against Feline Calicivirus using Immunoinformatics",
+   "url": "https://doi.org/10.26434/chemrxiv.15011691/v1",
+   "excerpt": "This research aims to utilize bioinformatics methods to identify and analyze potential vaccine epitopes for feline calicivirus (FCV). FCV is a highly contagious pathogen causing re…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "预印本"
+   ],
+   "authors": "Advent Roan Widiyono、Albert Ridwan、Akash Kumar",
+   "metric": "DOI:10.26434/chemrxiv.15011691/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "05c34a5e58c0",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "In Silico Design and Structural Validation ofEpitope-Based Vaccine Candidates Against Feline Calicivirus using Immunoinformatics",
+     "url": "https://doi.org/10.26434/chemrxiv.15011691/v1",
+     "excerpt": "This research aims to utilize bioinformatics methods to identify and analyze potential vaccine epitopes for feline calicivirus (FCV). FCV is a highly contagious pathogen causing re…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "预印本"
+     ],
+     "authors": "Advent Roan Widiyono、Albert Ridwan、Akash Kumar",
+     "metric": "DOI:10.26434/chemrxiv.15011691/v1"
+    }
+   ]
+  },
+  {
+   "id": "ec7f9c49e02905ae",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "The Limited Contribution of Structural Information Relative to Language-Model Signal in Data-Limited Cryptic Pocket Prediction",
+   "url": "https://doi.org/10.26434/chemrxiv.15011675/v1",
+   "excerpt": "Cryptic pockets, drug-binding sites absent from a protein’s static structure but exposed through conformational change, expand the scope of druggable targets, yet remain difficult …",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Emmanuel Brown、Phenil Shah",
+   "metric": "DOI:10.26434/chemrxiv.15011675/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "2fc9e0c36007",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "The Limited Contribution of Structural Information Relative to Language-Model Signal in Data-Limited Cryptic Pocket Prediction",
+     "url": "https://doi.org/10.26434/chemrxiv.15011675/v1",
+     "excerpt": "Cryptic pockets, drug-binding sites absent from a protein’s static structure but exposed through conformational change, expand the scope of druggable targets, yet remain difficult …",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Emmanuel Brown、Phenil Shah",
+     "metric": "DOI:10.26434/chemrxiv.15011675/v1"
+    }
+   ]
+  },
+  {
+   "id": "44cd18e4de2f160f",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Scaled-Up Production of Graphene Oxide: Design, Simulation, and Analysis of a Stirred Tank Batch Reactor",
+   "url": "https://doi.org/10.26434/chemrxiv.15011668/v1",
+   "excerpt": "Graphene oxide (GO) is an emerging product experiencing exponential growth in popularity and demand. This comprehensive research evaluates the technical and economic feasibility of…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "预印本"
+   ],
+   "authors": "Abu Danish Aiman Bin Abu Sofian、William Raphael Joseph、Yi Jing Chan",
+   "metric": "DOI:10.26434/chemrxiv.15011668/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "f64ca8012390",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Scaled-Up Production of Graphene Oxide: Design, Simulation, and Analysis of a Stirred Tank Batch Reactor",
+     "url": "https://doi.org/10.26434/chemrxiv.15011668/v1",
+     "excerpt": "Graphene oxide (GO) is an emerging product experiencing exponential growth in popularity and demand. This comprehensive research evaluates the technical and economic feasibility of…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "预印本"
+     ],
+     "authors": "Abu Danish Aiman Bin Abu Sofian、William Raphael Joseph、Yi Jing Chan",
+     "metric": "DOI:10.26434/chemrxiv.15011668/v1"
+    }
+   ]
+  },
+  {
+   "id": "c0e2a6710df2d7a4",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Achieving Accurate Prediction of Water Adsorption in Mildly Hydrophobic MOFs",
+   "url": "https://doi.org/10.26434/chemrxiv.15011663/v1",
+   "excerpt": "Accurately predicting the steep, S-shaped water adsorption isotherms of mildly hydrophobic MOFs and other hydrophobic porous materials remains challenging. This difficulty stems fr…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Sabrina Grigoletto、Ruben Goeminne、Mohammad Wahiduzzaman",
+   "metric": "DOI:10.26434/chemrxiv.15011663/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "e38ce9112a6b",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Achieving Accurate Prediction of Water Adsorption in Mildly Hydrophobic MOFs",
+     "url": "https://doi.org/10.26434/chemrxiv.15011663/v1",
+     "excerpt": "Accurately predicting the steep, S-shaped water adsorption isotherms of mildly hydrophobic MOFs and other hydrophobic porous materials remains challenging. This difficulty stems fr…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Sabrina Grigoletto、Ruben Goeminne、Mohammad Wahiduzzaman",
+     "metric": "DOI:10.26434/chemrxiv.15011663/v1"
+    }
+   ]
+  },
+  {
+   "id": "0f1effae59d7b5c5",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "A Machine Learning Approach to logBB Prediction Combining Molecular Docking and Quantum-Chemical Descriptors",
+   "url": "https://doi.org/10.26434/chemrxiv.15011661/v1",
+   "excerpt": "Blood–brain barrier (BBB) permeability is a major challenge in the development of drugs targeting the central nervous system (CNS). Computational prediction methods can help priori…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "弱相互作用"
+   ],
+   "authors": "Lilian Rouille",
+   "metric": "DOI:10.26434/chemrxiv.15011661/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "a0246d20d8a5",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "A Machine Learning Approach to logBB Prediction Combining Molecular Docking and Quantum-Chemical Descriptors",
+     "url": "https://doi.org/10.26434/chemrxiv.15011661/v1",
+     "excerpt": "Blood–brain barrier (BBB) permeability is a major challenge in the development of drugs targeting the central nervous system (CNS). Computational prediction methods can help priori…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "弱相互作用"
+     ],
+     "authors": "Lilian Rouille",
+     "metric": "DOI:10.26434/chemrxiv.15011661/v1"
+    }
+   ]
+  },
+  {
+   "id": "bf339ff18ef1a7a8",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Perspective on the Feasibility of Near-Term Quantum Simulation for Industrially Relevant Catalyst Materials",
+   "url": "https://doi.org/10.26434/chemrxiv.15011047/v2",
+   "excerpt": "Quantum simulation has been proposed as a route to treating strongly correlated electronic structure problems relevant to catalysis, but most existing studies focus on faulttoleran…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "量子化学"
+   ],
+   "authors": "G. Jones、E. Sheridan、A. Khedkar",
+   "metric": "DOI:10.26434/chemrxiv.15011047/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "4feeea908cb6",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Perspective on the Feasibility of Near-Term Quantum Simulation for Industrially Relevant Catalyst Materials",
+     "url": "https://doi.org/10.26434/chemrxiv.15011047/v2",
+     "excerpt": "Quantum simulation has been proposed as a route to treating strongly correlated electronic structure problems relevant to catalysis, but most existing studies focus on faulttoleran…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "量子化学"
+     ],
+     "authors": "G. Jones、E. Sheridan、A. Khedkar",
+     "metric": "DOI:10.26434/chemrxiv.15011047/v2"
+    }
+   ]
+  },
+  {
+   "id": "68906eb9fd243e7f",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "How to Discover New Electrolyte Additives for Lithium Batteries: A Computational Roadmap",
+   "url": "https://doi.org/10.26434/chemrxiv.15011654/v1",
+   "excerpt": "Electrolyte additives, present at a few weight percent or less, decide whether a lithium battery forms a stable solidelectrolyte interphase, survives high-voltage operation, tolera…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "量子化学"
+   ],
+   "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Mikhail N. Khrizanforov",
+   "metric": "DOI:10.26434/chemrxiv.15011654/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "175b91f51a24",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "How to Discover New Electrolyte Additives for Lithium Batteries: A Computational Roadmap",
+     "url": "https://doi.org/10.26434/chemrxiv.15011654/v1",
+     "excerpt": "Electrolyte additives, present at a few weight percent or less, decide whether a lithium battery forms a stable solidelectrolyte interphase, survives high-voltage operation, tolera…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "量子化学"
+     ],
+     "authors": "Ilya V. Chepkasov、Alexey S. Galushko、Mikhail N. Khrizanforov",
+     "metric": "DOI:10.26434/chemrxiv.15011654/v1"
+    }
+   ]
+  },
+  {
+   "id": "b0d22d8c69443efa",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Reproducibility, Benchmarks, and Mechanistic Diversity: Building Trust in Computational Electrocatalysis for the AI Era",
+   "url": "https://doi.org/10.26434/chemrxiv.15011651/v1",
+   "excerpt": "Computational electrocatalysis has contributed significantly to the design of electrocatalysts for energy conversion and storage. Yet three avoidable shortcomings constrain the rel…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "量子化学"
+   ],
+   "authors": "David Hernández-Castillo、Kai S. Exner",
+   "metric": "DOI:10.26434/chemrxiv.15011651/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "62b45ee7f1cd",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Reproducibility, Benchmarks, and Mechanistic Diversity: Building Trust in Computational Electrocatalysis for the AI Era",
+     "url": "https://doi.org/10.26434/chemrxiv.15011651/v1",
+     "excerpt": "Computational electrocatalysis has contributed significantly to the design of electrocatalysts for energy conversion and storage. Yet three avoidable shortcomings constrain the rel…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "量子化学"
+     ],
+     "authors": "David Hernández-Castillo、Kai S. Exner",
+     "metric": "DOI:10.26434/chemrxiv.15011651/v1"
+    }
+   ]
+  },
+  {
+   "id": "530ce747a3701e60",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "EnGOAT: An Energy–Geometry Analysis Toolkit for Free-Energy Surfaces of Mobile Species in Crystalline Materials",
+   "url": "https://doi.org/10.26434/chemrxiv.15011643/v1",
+   "excerpt": "The free-energy surface (FES) of a mobile species in a crystalline host governs its behavior within the material, including properties such as adsorption and transport, but reducin…",
+   "date": "2026-11-04",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "弱相互作用"
+   ],
+   "authors": "Matevž Turk、Senja Barthel、Amber Mace",
+   "metric": "DOI:10.26434/chemrxiv.15011643/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "d3d99971d933",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "EnGOAT: An Energy–Geometry Analysis Toolkit for Free-Energy Surfaces of Mobile Species in Crystalline Materials",
+     "url": "https://doi.org/10.26434/chemrxiv.15011643/v1",
+     "excerpt": "The free-energy surface (FES) of a mobile species in a crystalline host governs its behavior within the material, including properties such as adsorption and transport, but reducin…",
+     "date": "2026-11-04",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "弱相互作用"
+     ],
+     "authors": "Matevž Turk、Senja Barthel、Amber Mace",
+     "metric": "DOI:10.26434/chemrxiv.15011643/v1"
+    }
+   ]
+  },
+  {
+   "id": "dd5d5bc0b703ae54",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Photoinduced Ligand Exchange and Photoluminescence Dynamics in Tungsten Carbonyl Complexes",
+   "url": "https://doi.org/10.26434/chemrxiv.15011639/v1",
+   "excerpt": "Photoinduced ligand exchange in transition-metal carbonyl complexes couples bond dissociation, coordination rearrangement, and excited-state relaxation, yet the relationship among …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学",
+    "激发态与光谱"
+   ],
+   "authors": "Kamrun N. Keya、Adam Flesche、Yulun Han",
+   "metric": "DOI:10.26434/chemrxiv.15011639/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "96670136ef14",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Photoinduced Ligand Exchange and Photoluminescence Dynamics in Tungsten Carbonyl Complexes",
+     "url": "https://doi.org/10.26434/chemrxiv.15011639/v1",
+     "excerpt": "Photoinduced ligand exchange in transition-metal carbonyl complexes couples bond dissociation, coordination rearrangement, and excited-state relaxation, yet the relationship among …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学",
+      "激发态与光谱"
+     ],
+     "authors": "Kamrun N. Keya、Adam Flesche、Yulun Han",
+     "metric": "DOI:10.26434/chemrxiv.15011639/v1"
+    }
+   ]
+  },
+  {
+   "id": "aa6a7b2e2edcb441",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Thermodynamically informed and balance-preserving neural networks for direct vapor–liquid flash calculations",
+   "url": "https://doi.org/10.26434/chemrxiv.15011589/v2",
+   "excerpt": "Pressure-temperature vapor-liquid equilibrium (PT-VLE) flash calculations are performed repeatedly in compositional-flow simulations and can dominate runtime. To reduce this cost, …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Diego Tavares Volpatto、Fábio Pereira dos Santos、Gustavo Gondran Ribeiro",
+   "metric": "DOI:10.26434/chemrxiv.15011589/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "a4c7796cf590",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Thermodynamically informed and balance-preserving neural networks for direct vapor–liquid flash calculations",
+     "url": "https://doi.org/10.26434/chemrxiv.15011589/v2",
+     "excerpt": "Pressure-temperature vapor-liquid equilibrium (PT-VLE) flash calculations are performed repeatedly in compositional-flow simulations and can dominate runtime. To reduce this cost, …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Diego Tavares Volpatto、Fábio Pereira dos Santos、Gustavo Gondran Ribeiro",
+     "metric": "DOI:10.26434/chemrxiv.15011589/v2"
+    }
+   ]
+  },
+  {
+   "id": "778ea04c39de53a3",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Cholesterol Condensation and Phospholipid Convergence in cis-ssPalmO-phe Bilayers: A Molecular Dynamics Study",
+   "url": "https://doi.org/10.26434/chemrxiv.15011622/v1",
+   "excerpt": "Lipid nanoparticles (LNPs) deliver nucleic acids, yet how the ionizable lipid, phospholipid, and cholesterol organise the membrane at the molecular level remains unclear. Here, we …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学",
+    "电荷与静电势"
+   ],
+   "authors": "Anjana Barange、Miteshkumar Moirangthem、Santosh Kumar Meena",
+   "metric": "DOI:10.26434/chemrxiv.15011622/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "f195acbdfb54",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Cholesterol Condensation and Phospholipid Convergence in cis-ssPalmO-phe Bilayers: A Molecular Dynamics Study",
+     "url": "https://doi.org/10.26434/chemrxiv.15011622/v1",
+     "excerpt": "Lipid nanoparticles (LNPs) deliver nucleic acids, yet how the ionizable lipid, phospholipid, and cholesterol organise the membrane at the molecular level remains unclear. Here, we …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学",
+      "电荷与静电势"
+     ],
+     "authors": "Anjana Barange、Miteshkumar Moirangthem、Santosh Kumar Meena",
+     "metric": "DOI:10.26434/chemrxiv.15011622/v1"
+    }
+   ]
+  },
+  {
+   "id": "9810e63576f2536c",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Automated Static and Dynamic Contact-Angle Analysis with Machine Learning",
+   "url": "https://doi.org/10.26434/chemrxiv.15011593/v1",
+   "excerpt": "We present an autonomous machine-learning model, Conan-MLII, for fast, reproducible contact-angle measurement. The model was trained on >32 million synthetic images generated from …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Daniel G.Shaw、Jianzhong Qi、Joseph D. Berry",
+   "metric": "DOI:10.26434/chemrxiv.15011593/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "880e38c63744",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Automated Static and Dynamic Contact-Angle Analysis with Machine Learning",
+     "url": "https://doi.org/10.26434/chemrxiv.15011593/v1",
+     "excerpt": "We present an autonomous machine-learning model, Conan-MLII, for fast, reproducible contact-angle measurement. The model was trained on >32 million synthetic images generated from …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Daniel G.Shaw、Jianzhong Qi、Joseph D. Berry",
+     "metric": "DOI:10.26434/chemrxiv.15011593/v1"
+    }
+   ]
+  },
+  {
+   "id": "b3ff5c0c15fcf088",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Evaluating the Dimensionality of Molecular Ensembles Using Deep Neural Network Stochastic Autoencoders",
+   "url": "https://doi.org/10.26434/chemrxiv.15011591/v1",
+   "excerpt": "Stochastic autoencoders (SAEs), which omit the Kullback–Leibler prior-matching term of variational autoencoders and are therefore suited to reconstruction rather than generative sa…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Joseph A. DePaolo-Boisvert、Thitipun Srinarmwong、Aryan Bahl",
+   "metric": "DOI:10.26434/chemrxiv.15011591/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "4357eb436ec6",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Evaluating the Dimensionality of Molecular Ensembles Using Deep Neural Network Stochastic Autoencoders",
+     "url": "https://doi.org/10.26434/chemrxiv.15011591/v1",
+     "excerpt": "Stochastic autoencoders (SAEs), which omit the Kullback–Leibler prior-matching term of variational autoencoders and are therefore suited to reconstruction rather than generative sa…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Joseph A. DePaolo-Boisvert、Thitipun Srinarmwong、Aryan Bahl",
+     "metric": "DOI:10.26434/chemrxiv.15011591/v1"
+    }
+   ]
+  },
+  {
+   "id": "2e7926bd956b2305",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Conserved recognition and divergent peripheral dynamics of designed statin analogues at human HMG-CoA reductase: ensemble docking and replicated molecular dynamics",
+   "url": "https://doi.org/10.26434/chemrxiv.15011586/v1",
+   "excerpt": "Human 3-hydroxy-3-methylglutaryl coenzyme A reductase (HMGCR) recognizes statins through a conserved polar binding region, while peripheral chemical differences may alter protein–l…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学"
+   ],
+   "authors": "Tyrell Towle",
+   "metric": "DOI:10.26434/chemrxiv.15011586/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "421306aa237e",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Conserved recognition and divergent peripheral dynamics of designed statin analogues at human HMG-CoA reductase: ensemble docking and replicated molecular dynamics",
+     "url": "https://doi.org/10.26434/chemrxiv.15011586/v1",
+     "excerpt": "Human 3-hydroxy-3-methylglutaryl coenzyme A reductase (HMGCR) recognizes statins through a conserved polar binding region, while peripheral chemical differences may alter protein–l…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学"
+     ],
+     "authors": "Tyrell Towle",
+     "metric": "DOI:10.26434/chemrxiv.15011586/v1"
+    }
+   ]
+  },
+  {
+   "id": "265c974b06218382",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Explainable ML force-field for evaluating protein–ligand binding energy using SO3LR",
+   "url": "https://doi.org/10.26434/chemrxiv.15008482/v2",
+   "excerpt": "Accurate estimation of protein-ligand binding affinities remains central to structure-based drug design. Classical force fields neglect important quantum-mechanical effects, while …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Hamza Agha、Sergio Suárez-Dou、Adil Kabylda",
+   "metric": "DOI:10.26434/chemrxiv.15008482/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "8b1f62a41329",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Explainable ML force-field for evaluating protein–ligand binding energy using SO3LR",
+     "url": "https://doi.org/10.26434/chemrxiv.15008482/v2",
+     "excerpt": "Accurate estimation of protein-ligand binding affinities remains central to structure-based drug design. Classical force fields neglect important quantum-mechanical effects, while …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Hamza Agha、Sergio Suárez-Dou、Adil Kabylda",
+     "metric": "DOI:10.26434/chemrxiv.15008482/v2"
+    }
+   ]
+  },
+  {
+   "id": "843dbc8d71de19c9",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Tuning supported Fe-Ag catalysts for selective acetylene hydrogenation: A combined experimental and computational study",
+   "url": "https://doi.org/10.26434/chemrxiv-2026-v13ww/v2",
+   "excerpt": "We report the use of Fe–Ag bimetallic nanoparticles supported on α-Al₂O₃ as tunable highly active and selective catalysts for the semihydrogenation of acetylene in ethylene rich st…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "量子化学"
+   ],
+   "authors": "Hannah Lamers、Bo Zhao、Maxime Boniface",
+   "metric": "DOI:10.26434/chemrxiv-2026-v13ww/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "2fc8aa1a6c89",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Tuning supported Fe-Ag catalysts for selective acetylene hydrogenation: A combined experimental and computational study",
+     "url": "https://doi.org/10.26434/chemrxiv-2026-v13ww/v2",
+     "excerpt": "We report the use of Fe–Ag bimetallic nanoparticles supported on α-Al₂O₃ as tunable highly active and selective catalysts for the semihydrogenation of acetylene in ethylene rich st…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "量子化学"
+     ],
+     "authors": "Hannah Lamers、Bo Zhao、Maxime Boniface",
+     "metric": "DOI:10.26434/chemrxiv-2026-v13ww/v2"
+    }
+   ]
+  },
+  {
+   "id": "1696460f5ae930b3",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Surface Reconstruction Activates Bridge Sites of Rutile IrO2(110) for Oxygen Evolution Reaction",
+   "url": "https://doi.org/10.26434/chemrxiv.15011549/v2",
+   "excerpt": "IrO2 is the state-of-the-art catalyst for oxygen evolution reaction (OER) in acid. Previous theoretical investigations are largely based on the (110) surface, with undercoordinated…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学",
+    "催化与反应"
+   ],
+   "authors": "Muhammad Usama、Stephan N. Steinmann、Kai S. Exner",
+   "metric": "DOI:10.26434/chemrxiv.15011549/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "60c74624b2c2",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Surface Reconstruction Activates Bridge Sites of Rutile IrO2(110) for Oxygen Evolution Reaction",
+     "url": "https://doi.org/10.26434/chemrxiv.15011549/v2",
+     "excerpt": "IrO2 is the state-of-the-art catalyst for oxygen evolution reaction (OER) in acid. Previous theoretical investigations are largely based on the (110) surface, with undercoordinated…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学",
+      "催化与反应"
+     ],
+     "authors": "Muhammad Usama、Stephan N. Steinmann、Kai S. Exner",
+     "metric": "DOI:10.26434/chemrxiv.15011549/v2"
+    }
+   ]
+  },
+  {
+   "id": "fc438316481bbc23",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Oxidative Nucleophilic Aromatic ipso-Substitution for the Late-Stage Functionalization of Polycyclic Aromatic Hydrocarbons with Five-Membered Rings",
+   "url": "https://doi.org/10.26434/chemrxiv.15011576/v1",
+   "excerpt": "Nanographenes and polycyclic aromatic hydrocarbons (PAHs) are promising materials for advanced organic electronics, but their late-stage functionalization remains challenging. Here…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "量子化学"
+   ],
+   "authors": "Alexander R. Krappe、Lina M. Filla、Friedrich Braune",
+   "metric": "DOI:10.26434/chemrxiv.15011576/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "b08bb05bc326",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Oxidative Nucleophilic Aromatic ipso-Substitution for the Late-Stage Functionalization of Polycyclic Aromatic Hydrocarbons with Five-Membered Rings",
+     "url": "https://doi.org/10.26434/chemrxiv.15011576/v1",
+     "excerpt": "Nanographenes and polycyclic aromatic hydrocarbons (PAHs) are promising materials for advanced organic electronics, but their late-stage functionalization remains challenging. Here…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "量子化学"
+     ],
+     "authors": "Alexander R. Krappe、Lina M. Filla、Friedrich Braune",
+     "metric": "DOI:10.26434/chemrxiv.15011576/v1"
+    }
+   ]
+  },
+  {
+   "id": "4a76939d47e582b0",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "In silico cyclic-minipeptides predicting antibody-free early-diagnosis of Ebola virus",
+   "url": "https://doi.org/10.26434/chemrxiv.15011575/v1",
+   "excerpt": "In this work, in silico cyclic-minipeptide candidates were computationally generated aiming to develop antibody-free sandwichbased early-diagnosis of ebola virus (EBOV). Presently …",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "预印本"
+   ],
+   "authors": "Julio Coll",
+   "metric": "DOI:10.26434/chemrxiv.15011575/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "ad6700e298fe",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "In silico cyclic-minipeptides predicting antibody-free early-diagnosis of Ebola virus",
+     "url": "https://doi.org/10.26434/chemrxiv.15011575/v1",
+     "excerpt": "In this work, in silico cyclic-minipeptide candidates were computationally generated aiming to develop antibody-free sandwichbased early-diagnosis of ebola virus (EBOV). Presently …",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "预印本"
+     ],
+     "authors": "Julio Coll",
+     "metric": "DOI:10.26434/chemrxiv.15011575/v1"
+    }
+   ]
+  },
+  {
+   "id": "493082f604235383",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Dynamic vacancy redistribution shifts Pd nanoparticle coalescence from orientation-gated to defect-enabled on reduced CeO2(110)",
+   "url": "https://doi.org/10.26434/chemrxiv.15005781/v3",
+   "excerpt": "Sintering deactivates supported catalysts, yet how mobile support defects couple to crystallographic transport anisotropy during nanoparticle coalescence remains poorly understood.…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Shulin Wang、Jilun Song、Liang Cao",
+   "metric": "DOI:10.26434/chemrxiv.15005781/v3",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "658dbf02772d",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Dynamic vacancy redistribution shifts Pd nanoparticle coalescence from orientation-gated to defect-enabled on reduced CeO2(110)",
+     "url": "https://doi.org/10.26434/chemrxiv.15005781/v3",
+     "excerpt": "Sintering deactivates supported catalysts, yet how mobile support defects couple to crystallographic transport anisotropy during nanoparticle coalescence remains poorly understood.…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Shulin Wang、Jilun Song、Liang Cao",
+     "metric": "DOI:10.26434/chemrxiv.15005781/v3"
+    }
+   ]
+  },
+  {
+   "id": "9940669ff1be5a67",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Guest-guest interactions and their impact on molecular mobility: a simulation study of 5-fluorouracil adsorption and diffusion in hydrophobic zeolites",
+   "url": "https://doi.org/10.26434/chemrxiv.15007633/v2",
+   "excerpt": "Zeolites have been proposed as carrier materials for the storage and controlled release of the anticancer drug 5-fluorouracil (5-FU). Containing both hydrogen-bond donor and accept…",
+   "date": "2026-11-03",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学",
+    "催化与反应"
+   ],
+   "authors": "Michael Fischer",
+   "metric": "DOI:10.26434/chemrxiv.15007633/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "ff9866f3e4ed",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Guest-guest interactions and their impact on molecular mobility: a simulation study of 5-fluorouracil adsorption and diffusion in hydrophobic zeolites",
+     "url": "https://doi.org/10.26434/chemrxiv.15007633/v2",
+     "excerpt": "Zeolites have been proposed as carrier materials for the storage and controlled release of the anticancer drug 5-fluorouracil (5-FU). Containing both hydrogen-bond donor and accept…",
+     "date": "2026-11-03",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学",
+      "催化与反应"
+     ],
+     "authors": "Michael Fischer",
+     "metric": "DOI:10.26434/chemrxiv.15007633/v2"
+    }
+   ]
+  },
+  {
+   "id": "5a7b17f0757ab2b0",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Revealing Phase-Controlled Surface Structure in PtNi Nanocatalysts via In-situ Gas Cell Transmission Electron Microscopy",
+   "url": "https://doi.org/10.26434/chemrxiv.15011437/v2",
+   "excerpt": "The rational design of catalysts capable of efficiently utilizing CO2 is critical for sustainable chemical processes. The Super-dry reforming of methane (Super-DRM), which couples …",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "催化与反应"
+   ],
+   "authors": "Yuhan Wang、Shiyu Zhen、Jianxiong Zhao",
+   "metric": "DOI:10.26434/chemrxiv.15011437/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "904c2303fd01",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Revealing Phase-Controlled Surface Structure in PtNi Nanocatalysts via In-situ Gas Cell Transmission Electron Microscopy",
+     "url": "https://doi.org/10.26434/chemrxiv.15011437/v2",
+     "excerpt": "The rational design of catalysts capable of efficiently utilizing CO2 is critical for sustainable chemical processes. The Super-dry reforming of methane (Super-DRM), which couples …",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "催化与反应"
+     ],
+     "authors": "Yuhan Wang、Shiyu Zhen、Jianxiong Zhao",
+     "metric": "DOI:10.26434/chemrxiv.15011437/v2"
+    }
+   ]
+  },
+  {
+   "id": "40e0f2992a615418",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Completing the Jacob’s ladder of multiconfiguration pair-density functional theory with a doubly hybrid functional",
+   "url": "https://doi.org/10.26434/chemrxiv.15011559/v1",
+   "excerpt": "Here we introduce MC-xDH5, the first doubly hybrid functional within the multiconfiguration pair-density functional theory (MC-PDFT) framework, completing the top rung of the MC-PD…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "量子化学"
+   ],
+   "authors": "Rulin Feng、Kirk A. Peterson、Igor Ying Zhang",
+   "metric": "DOI:10.26434/chemrxiv.15011559/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "0bb3e8c0967a",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Completing the Jacob’s ladder of multiconfiguration pair-density functional theory with a doubly hybrid functional",
+     "url": "https://doi.org/10.26434/chemrxiv.15011559/v1",
+     "excerpt": "Here we introduce MC-xDH5, the first doubly hybrid functional within the multiconfiguration pair-density functional theory (MC-PDFT) framework, completing the top rung of the MC-PD…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "量子化学"
+     ],
+     "authors": "Rulin Feng、Kirk A. Peterson、Igor Ying Zhang",
+     "metric": "DOI:10.26434/chemrxiv.15011559/v1"
+    }
+   ]
+  },
+  {
+   "id": "1ccf92b6ec2f4ebc",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Surface-Induced Constraint Release in Confined Polymer Films: A Computational Phenomenological Study",
+   "url": "https://doi.org/10.26434/chemrxiv.15008940/v2",
+   "excerpt": "Thin polymer films exhibit thickness-dependent viscoelastic behavior attributed to enhanced segmental mobility near free surfaces, a phenomenon recently linked to surface-induced c…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "预印本"
+   ],
+   "authors": "Michael Castillo",
+   "metric": "DOI:10.26434/chemrxiv.15008940/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "7ce6364498c4",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Surface-Induced Constraint Release in Confined Polymer Films: A Computational Phenomenological Study",
+     "url": "https://doi.org/10.26434/chemrxiv.15008940/v2",
+     "excerpt": "Thin polymer films exhibit thickness-dependent viscoelastic behavior attributed to enhanced segmental mobility near free surfaces, a phenomenon recently linked to surface-induced c…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "预印本"
+     ],
+     "authors": "Michael Castillo",
+     "metric": "DOI:10.26434/chemrxiv.15008940/v2"
+    }
+   ]
+  },
+  {
+   "id": "e2fa66d7b61b1bc3",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "A Ligand-Centered Radical Reveals Orbital-Specific Bonding Differences Between Near-Isoradial Transuranium-Actinide and Lanthanide Complexes",
+   "url": "https://doi.org/10.26434/chemrxiv.15011544/v1",
+   "excerpt": "Understanding how metal-ligand covalency evolves across the actinide series and compared to the lanthanide series remains a central challenge in f-element chemistry because subtle …",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "量子化学"
+   ],
+   "authors": "Daniel J. Lussier、Maria J. Beltrán-Leiva、Josef Tomeček",
+   "metric": "DOI:10.26434/chemrxiv.15011544/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "4baaa033838c",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "A Ligand-Centered Radical Reveals Orbital-Specific Bonding Differences Between Near-Isoradial Transuranium-Actinide and Lanthanide Complexes",
+     "url": "https://doi.org/10.26434/chemrxiv.15011544/v1",
+     "excerpt": "Understanding how metal-ligand covalency evolves across the actinide series and compared to the lanthanide series remains a central challenge in f-element chemistry because subtle …",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "量子化学"
+     ],
+     "authors": "Daniel J. Lussier、Maria J. Beltrán-Leiva、Josef Tomeček",
+     "metric": "DOI:10.26434/chemrxiv.15011544/v1"
+    }
+   ]
+  },
+  {
+   "id": "c2b109687da6ac91",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Design Of Earth-Abundant W(0) Complexes For Near-Infrared Absorbance Via Ligand Optimization",
+   "url": "https://doi.org/10.26434/chemrxiv.15011541/v1",
+   "excerpt": "This work focuses on developing new earth-abundant metal complexes to be used as eAicient near-infrared (NIR) absorbers and photosensitizers for applications in photocatalysis, bio…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "催化与反应"
+   ],
+   "authors": "Victoria Oas、Wenfang Sun、Dmitri Kilin",
+   "metric": "DOI:10.26434/chemrxiv.15011541/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "64a9c2ead445",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Design Of Earth-Abundant W(0) Complexes For Near-Infrared Absorbance Via Ligand Optimization",
+     "url": "https://doi.org/10.26434/chemrxiv.15011541/v1",
+     "excerpt": "This work focuses on developing new earth-abundant metal complexes to be used as eAicient near-infrared (NIR) absorbers and photosensitizers for applications in photocatalysis, bio…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "催化与反应"
+     ],
+     "authors": "Victoria Oas、Wenfang Sun、Dmitri Kilin",
+     "metric": "DOI:10.26434/chemrxiv.15011541/v1"
+    }
+   ]
+  },
+  {
+   "id": "a3133f2673b02543",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Materials Property Prediction with a Site-Resolved Three-Dimensional Voxel Convolution Neural Network",
+   "url": "https://doi.org/10.26434/chemrxiv.15011524/v1",
+   "excerpt": "Identifying low-energy atomic arrangements is central to the design of multicomponent materials such as high-entropy cathodes and perovskites, but the number of possible arrangemen…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "量子化学"
+   ],
+   "authors": "Juo Kim、Kyoungmin Min",
+   "metric": "DOI:10.26434/chemrxiv.15011524/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "8ce429b04575",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Materials Property Prediction with a Site-Resolved Three-Dimensional Voxel Convolution Neural Network",
+     "url": "https://doi.org/10.26434/chemrxiv.15011524/v1",
+     "excerpt": "Identifying low-energy atomic arrangements is central to the design of multicomponent materials such as high-entropy cathodes and perovskites, but the number of possible arrangemen…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "量子化学"
+     ],
+     "authors": "Juo Kim、Kyoungmin Min",
+     "metric": "DOI:10.26434/chemrxiv.15011524/v1"
+    }
+   ]
+  },
+  {
+   "id": "1b8551540a90fa8b",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "From a Tight-Binding Hessian to an AMBER Iron-Sulfur Site: A Rubredoxin Stress Test",
+   "url": "https://doi.org/10.26434/chemrxiv.15011523/v1",
+   "excerpt": "Parameterized bonded metal sites represent the lowest cost option for molecular dynamics (MD) studies of metalloproteins. However, their quality depends entirely upon the underlyin…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学"
+   ],
+   "authors": "Devashish Das、Anurag Kumar",
+   "metric": "DOI:10.26434/chemrxiv.15011523/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "d6b241687c70",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "From a Tight-Binding Hessian to an AMBER Iron-Sulfur Site: A Rubredoxin Stress Test",
+     "url": "https://doi.org/10.26434/chemrxiv.15011523/v1",
+     "excerpt": "Parameterized bonded metal sites represent the lowest cost option for molecular dynamics (MD) studies of metalloproteins. However, their quality depends entirely upon the underlyin…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学"
+     ],
+     "authors": "Devashish Das、Anurag Kumar",
+     "metric": "DOI:10.26434/chemrxiv.15011523/v1"
+    }
+   ]
+  },
+  {
+   "id": "0ba7882b1b9a2559",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "A Cellular Sheaf Model for Aromaticity in Discrete Molecular Systems",
+   "url": "https://doi.org/10.26434/chemrxiv.15010344/v2",
+   "excerpt": "Aromaticity underpins molecular stability in fields ranging from pharmaceuticals to organic semiconductors, yet existing prediction methods are either too computationally costly fo…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "量子化学"
+   ],
+   "authors": "Roy Han",
+   "metric": "DOI:10.26434/chemrxiv.15010344/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "185bba143abf",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "A Cellular Sheaf Model for Aromaticity in Discrete Molecular Systems",
+     "url": "https://doi.org/10.26434/chemrxiv.15010344/v2",
+     "excerpt": "Aromaticity underpins molecular stability in fields ranging from pharmaceuticals to organic semiconductors, yet existing prediction methods are either too computationally costly fo…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "量子化学"
+     ],
+     "authors": "Roy Han",
+     "metric": "DOI:10.26434/chemrxiv.15010344/v2"
+    }
+   ]
+  },
+  {
+   "id": "26bc10d7935153a8",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Making Complete-Basis-Set Extrapolation Visible: A Spreadsheet-Based Activity for Upper-Division Computational Chemistry",
+   "url": "https://doi.org/10.26434/chemrxiv.15011445/v2",
+   "excerpt": "Complete-basis-set (CBS) extrapolation is widely used to estimate electronic energies beyond finite-basis calculations. However, students may encounter it primarily as a formula or…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "预印本"
+   ],
+   "authors": "Olaseni Sode、Yong Ba",
+   "metric": "DOI:10.26434/chemrxiv.15011445/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "a72d4a94cc2a",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Making Complete-Basis-Set Extrapolation Visible: A Spreadsheet-Based Activity for Upper-Division Computational Chemistry",
+     "url": "https://doi.org/10.26434/chemrxiv.15011445/v2",
+     "excerpt": "Complete-basis-set (CBS) extrapolation is widely used to estimate electronic energies beyond finite-basis calculations. However, students may encounter it primarily as a formula or…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "预印本"
+     ],
+     "authors": "Olaseni Sode、Yong Ba",
+     "metric": "DOI:10.26434/chemrxiv.15011445/v2"
+    }
+   ]
+  },
+  {
+   "id": "89178bebafaff961",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Enantio-Complementary Synthesis of Atropisomeric C–N Biaryl Amines via Imine Reductase-Mediated Dynamic Kinetic Resolution",
+   "url": "https://doi.org/10.26434/chemrxiv.15011520/v1",
+   "excerpt": "C–N axially chiral biaryl amines constitute privileged scaffolds in drug discovery and asymmetric catalysis, yet they remain synthetically challenging due to low rotational barrier…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "分子动力学",
+    "催化与反应"
+   ],
+   "authors": "Yiman Cui、Litong, Chen、Zhi Wang",
+   "metric": "DOI:10.26434/chemrxiv.15011520/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "7be809507eb4",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Enantio-Complementary Synthesis of Atropisomeric C–N Biaryl Amines via Imine Reductase-Mediated Dynamic Kinetic Resolution",
+     "url": "https://doi.org/10.26434/chemrxiv.15011520/v1",
+     "excerpt": "C–N axially chiral biaryl amines constitute privileged scaffolds in drug discovery and asymmetric catalysis, yet they remain synthetically challenging due to low rotational barrier…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "分子动力学",
+      "催化与反应"
+     ],
+     "authors": "Yiman Cui、Litong, Chen、Zhi Wang",
+     "metric": "DOI:10.26434/chemrxiv.15011520/v1"
+    }
+   ]
+  },
+  {
+   "id": "a1d247ba2fd49689",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "PyFMO: A Python Framework for Fragment Molecular Orbital Calculations",
+   "url": "https://doi.org/10.26434/chemrxiv.15011203/v2",
+   "excerpt": "The fragment molecular orbital (FMO) method enables quantum chemical calculations on large biomolecular systems and provides interaction energies between their fragments. Its furth…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "弱相互作用",
+    "量子化学"
+   ],
+   "authors": "Yoshio Okiyama",
+   "metric": "DOI:10.26434/chemrxiv.15011203/v2",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "256e09934961",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "PyFMO: A Python Framework for Fragment Molecular Orbital Calculations",
+     "url": "https://doi.org/10.26434/chemrxiv.15011203/v2",
+     "excerpt": "The fragment molecular orbital (FMO) method enables quantum chemical calculations on large biomolecular systems and provides interaction energies between their fragments. Its furth…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "弱相互作用",
+      "量子化学"
+     ],
+     "authors": "Yoshio Okiyama",
+     "metric": "DOI:10.26434/chemrxiv.15011203/v2"
+    }
+   ]
+  },
+  {
+   "id": "c320068515c4f974",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Incorporating Polarization into ML/MM Endpoint Calculations for Protein–Ligand Affinity Ranking",
+   "url": "https://doi.org/10.26434/chemrxiv.15011517/v1",
+   "excerpt": "Endpoint free-energy calculations combine low computational cost with reasonable accuracy and are widely used to rank protein–ligand affinities, yet describing charge polarization …",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Leshen Zhang、Xujian Wang、Taoyu Niu",
+   "metric": "DOI:10.26434/chemrxiv.15011517/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "349dc4b3fed6",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Incorporating Polarization into ML/MM Endpoint Calculations for Protein–Ligand Affinity Ranking",
+     "url": "https://doi.org/10.26434/chemrxiv.15011517/v1",
+     "excerpt": "Endpoint free-energy calculations combine low computational cost with reasonable accuracy and are widely used to rank protein–ligand affinities, yet describing charge polarization …",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习"
+     ],
+     "authors": "Leshen Zhang、Xujian Wang、Taoyu Niu",
+     "metric": "DOI:10.26434/chemrxiv.15011517/v1"
+    }
+   ]
+  },
+  {
+   "id": "985ce901c85133ce",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "The Evolution of Electronic Structure in Conjugated Molecules Revealed by Mixed-Reference Spin-Flip Time-Dependent Density Functional Theory and Density-Based Analyses: II. Polyacenes",
+   "url": "https://doi.org/10.26434/chemrxiv.15011513/v1",
+   "excerpt": "Large conjugated molecules feature small gaps between occupied and virtual orbital spaces, which results in complex electronic structure patterns in their low-lying states. These o…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "量子化学"
+   ],
+   "authors": "Arnab Chakraborty、Zheng Pei、Yihan Shao",
+   "metric": "DOI:10.26434/chemrxiv.15011513/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "014e828cdae5",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "The Evolution of Electronic Structure in Conjugated Molecules Revealed by Mixed-Reference Spin-Flip Time-Dependent Density Functional Theory and Density-Based Analyses: II. Polyacenes",
+     "url": "https://doi.org/10.26434/chemrxiv.15011513/v1",
+     "excerpt": "Large conjugated molecules feature small gaps between occupied and virtual orbital spaces, which results in complex electronic structure patterns in their low-lying states. These o…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "量子化学"
+     ],
+     "authors": "Arnab Chakraborty、Zheng Pei、Yihan Shao",
+     "metric": "DOI:10.26434/chemrxiv.15011513/v1"
+    }
+   ]
+  },
+  {
+   "id": "c1a97ae51ad8e4d0",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Literature-Scale Mössbauer Data Enable Prediction, Electronic-State Interpretation, and Chemical Insight in Molecular Iron Chemistry",
+   "url": "https://doi.org/10.26434/chemrxiv.15011512/v1",
+   "excerpt": "Experimental spectroscopy is central to molecular characterization, yet conventional quantitative analysis often compresses rich structural and electronic information into a few ca…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "激发态与光谱",
+    "量子化学"
+   ],
+   "authors": "Zhibo Zhang、Haoran Li、Fang-Wei Lin",
+   "metric": "DOI:10.26434/chemrxiv.15011512/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "51bbda03bf24",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Literature-Scale Mössbauer Data Enable Prediction, Electronic-State Interpretation, and Chemical Insight in Molecular Iron Chemistry",
+     "url": "https://doi.org/10.26434/chemrxiv.15011512/v1",
+     "excerpt": "Experimental spectroscopy is central to molecular characterization, yet conventional quantitative analysis often compresses rich structural and electronic information into a few ca…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "激发态与光谱",
+      "量子化学"
+     ],
+     "authors": "Zhibo Zhang、Haoran Li、Fang-Wei Lin",
+     "metric": "DOI:10.26434/chemrxiv.15011512/v1"
+    }
+   ]
+  },
+  {
+   "id": "ebe6e585ab6876a8",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Bringing coupled‑cluster theory to the strong-correlation frontier",
+   "url": "https://doi.org/10.26434/chemrxiv.15011511/v1",
+   "excerpt": "Accurate prediction of molecular electronic energies is essential yet remains challenging for strongly correlated systems, where conventional coupled-cluster (CC) methods break dow…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "催化与反应",
+    "量子化学"
+   ],
+   "authors": "Pengfei Ma、Xiaochuan Ren、Fanhong Han",
+   "metric": "DOI:10.26434/chemrxiv.15011511/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "9f954c49b193",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Bringing coupled‑cluster theory to the strong-correlation frontier",
+     "url": "https://doi.org/10.26434/chemrxiv.15011511/v1",
+     "excerpt": "Accurate prediction of molecular electronic energies is essential yet remains challenging for strongly correlated systems, where conventional coupled-cluster (CC) methods break dow…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "催化与反应",
+      "量子化学"
+     ],
+     "authors": "Pengfei Ma、Xiaochuan Ren、Fanhong Han",
+     "metric": "DOI:10.26434/chemrxiv.15011511/v1"
+    }
+   ]
+  },
+  {
+   "id": "6188b60b5518c332",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Construction of a Curated Literature Dataset and Machine Learning-Guided Exploration of Supported Metal Catalysts for Low- to Intermediate-Temperature Reverse Water–Gas Shift Reaction",
+   "url": "https://doi.org/10.26434/chemrxiv.15011499/v1",
+   "excerpt": "Literature-derived results on reverse water–gas shift (RWGS) catalysts contain extensive information about catalyst design, yet their fragmentation makes systematic, data-driven ex…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "催化与反应"
+   ],
+   "authors": "Umi Shin、Shinya Mine、Aritomo Yamaguchi",
+   "metric": "DOI:10.26434/chemrxiv.15011499/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "a109934ae7ed",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Construction of a Curated Literature Dataset and Machine Learning-Guided Exploration of Supported Metal Catalysts for Low- to Intermediate-Temperature Reverse Water–Gas Shift Reaction",
+     "url": "https://doi.org/10.26434/chemrxiv.15011499/v1",
+     "excerpt": "Literature-derived results on reverse water–gas shift (RWGS) catalysts contain extensive information about catalyst design, yet their fragmentation makes systematic, data-driven ex…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "催化与反应"
+     ],
+     "authors": "Umi Shin、Shinya Mine、Aritomo Yamaguchi",
+     "metric": "DOI:10.26434/chemrxiv.15011499/v1"
+    }
+   ]
+  },
+  {
+   "id": "50afc22b7477e2b4",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "A linear-scaling explicitly correlated local natural orbital CCSD(T) approach",
+   "url": "https://doi.org/10.26434/chemrxiv.15011483/v1",
+   "excerpt": "We introduce an integral-direct, linear-scaling, local explicitly correlated (F12) coupled-cluster (CC) singles, doubles, and perturbative triples [CCSD(T)] approach building on ou…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "量子化学"
+   ],
+   "authors": "Mihály Kállay、Péter R. Nagy",
+   "metric": "DOI:10.26434/chemrxiv.15011483/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "100e48c9dc03",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "A linear-scaling explicitly correlated local natural orbital CCSD(T) approach",
+     "url": "https://doi.org/10.26434/chemrxiv.15011483/v1",
+     "excerpt": "We introduce an integral-direct, linear-scaling, local explicitly correlated (F12) coupled-cluster (CC) singles, doubles, and perturbative triples [CCSD(T)] approach building on ou…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "量子化学"
+     ],
+     "authors": "Mihály Kállay、Péter R. Nagy",
+     "metric": "DOI:10.26434/chemrxiv.15011483/v1"
+    }
+   ]
+  },
+  {
+   "id": "bee384a62e6639d2",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Pressure-Induced Formation of Intermetallic CrBi2",
+   "url": "https://doi.org/10.26434/chemrxiv.15011482/v1",
+   "excerpt": "Binary transition-metal bismuth compounds offer a new class of solid-state materials with emergent properties such as magnetism, superconductivity, thermoelectricity and nontrivial…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "量子化学"
+   ],
+   "authors": "Adrish Das、Ayan Datta",
+   "metric": "DOI:10.26434/chemrxiv.15011482/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "9c5943ee2a78",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Pressure-Induced Formation of Intermetallic CrBi2",
+     "url": "https://doi.org/10.26434/chemrxiv.15011482/v1",
+     "excerpt": "Binary transition-metal bismuth compounds offer a new class of solid-state materials with emergent properties such as magnetism, superconductivity, thermoelectricity and nontrivial…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "量子化学"
+     ],
+     "authors": "Adrish Das、Ayan Datta",
+     "metric": "DOI:10.26434/chemrxiv.15011482/v1"
+    }
+   ]
+  },
+  {
+   "id": "8b456e4b835b9ed2",
+   "source": "chemrxiv",
+   "type": "preprint",
+   "title": "Radial Kernel Attention for Long-Range Modeling in Polymer Machine Learning Force Fields",
+   "url": "https://doi.org/10.26434/chemrxiv.15011478/v1",
+   "excerpt": "We introduce Radial Kernel Attention (RKA) for long-range modeling in polymer machine learning force fields. Local neighbor graphs constrain communication across polymer chains and…",
+   "date": "2026-11-02",
+   "category": "ChemRxiv",
+   "tags": [
+    "AI与机器学习",
+    "分子动力学"
+   ],
+   "authors": "Wenbo Fu、Chenghui Mao、Chengwen Hu",
+   "metric": "DOI:10.26434/chemrxiv.15011478/v1",
+   "origins": [
+    "hub"
+   ],
+   "sourceIds": [
+    "chemrxiv"
+   ],
+   "sourceRecords": [
+    {
+     "id": "406973f8190e",
+     "source": "chemrxiv",
+     "type": "preprint",
+     "title": "Radial Kernel Attention for Long-Range Modeling in Polymer Machine Learning Force Fields",
+     "url": "https://doi.org/10.26434/chemrxiv.15011478/v1",
+     "excerpt": "We introduce Radial Kernel Attention (RKA) for long-range modeling in polymer machine learning force fields. Local neighbor graphs constrain communication across polymer chains and…",
+     "date": "2026-11-02",
+     "category": "ChemRxiv",
+     "tags": [
+      "AI与机器学习",
+      "分子动力学"
+     ],
+     "authors": "Wenbo Fu、Chenghui Mao、Chengwen Hu",
+     "metric": "DOI:10.26434/chemrxiv.15011478/v1"
     }
    ]
   }

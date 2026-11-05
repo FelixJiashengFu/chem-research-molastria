@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-05T12:08:44-05:00",
+ "generatedAt": "2026-11-05T17:29:12+00:00",
  "generator": "crawler.py (titles+short excerpts+links only)",
  "xmolHomepageStats": [
   "300个学术公众号"
@@ -13,7 +13,7 @@
    "color": "#2f7f73",
    "status": "mirror",
    "statusLabel": "经 Sobereva 官方目录交叉引用",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 300,
    "usedCache": false
   },
@@ -25,7 +25,7 @@
    "color": "#6e5aa8",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 762,
    "usedCache": false
   },
@@ -37,7 +37,7 @@
    "color": "#3f8a4f",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 65,
    "usedCache": false
   },
@@ -49,7 +49,7 @@
    "color": "#b07a1e",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 101,
    "usedCache": false
   },
@@ -61,7 +61,7 @@
    "color": "#b0414f",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 50,
    "usedCache": false
   },
@@ -73,7 +73,7 @@
    "color": "#c26a2e",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:16:13-05:00",
+   "fetchedAt": "2026-11-05T17:29:52+00:00",
    "itemCount": 50,
    "usedCache": false
   },
@@ -85,7 +85,7 @@
    "color": "#3d6fa8",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 46,
    "usedCache": false
   },
@@ -97,7 +97,7 @@
    "color": "#4c535c",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 40,
    "usedCache": false
   },
@@ -109,7 +109,7 @@
    "color": "#2f7d8c",
    "status": "ok",
    "statusLabel": "直抓成功",
-   "fetchedAt": "2026-11-05T12:08:44-05:00",
+   "fetchedAt": "2026-11-05T17:29:12+00:00",
    "itemCount": 29,
    "usedCache": false
   }
@@ -4891,7 +4891,7 @@
     "电荷与静电势"
    ],
    "sob_id": 769,
-   "views": "9,460",
+   "views": "9,461",
    "keinsci_url": "http://bbs.keinsci.com/thread-58922-1-1.html"
   },
   {
@@ -5908,7 +5908,7 @@
     "VASP/第一性原理"
    ],
    "sob_id": 706,
-   "views": "22,171",
+   "views": "22,172",
    "keinsci_url": "http://bbs.keinsci.com/thread-45272-1-1.html"
   },
   {
@@ -19882,6 +19882,21 @@
    "metric": "DOI:10.1063/5.0351808"
   },
   {
+   "id": "ac91259d01fd",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Fractional viscoelasticity in transient unentangled polymer networks",
+   "url": "https://doi.org/10.1063/5.0355300",
+   "excerpt": "Stress relaxation in transient polymer networks often shows extended power-law behavior, G(t) ∼ t−β, where the exponent β frequently departs from the value 1/2 predicted by the sti…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Sachin Shanbhag、Ralm G. Ricarte",
+   "metric": "DOI:10.1063/5.0355300"
+  },
+  {
    "id": "20fc108d0a52",
    "source": "crossref",
    "type": "paper",
@@ -19897,6 +19912,36 @@
    "metric": "DOI:10.1063/5.0355468"
   },
   {
+   "id": "24f4f910b227",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Automatic generation of exchange–correlation response kernels",
+   "url": "https://doi.org/10.1063/5.0358101",
+   "excerpt": "Computing density-functional response properties requires contracting derivatives of the exchange–correlation (xc) energy with perturbed densities on a grid. While the xc functiona…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Susi Lehtola",
+   "metric": "DOI:10.1063/5.0358101"
+  },
+  {
+   "id": "9893b2215511",
+   "source": "crossref",
+   "type": "paper",
+   "title": "<i>Ab initio</i> -based intermolecular potential for normal hydrogen, orthohydrogen, and parahydrogen: Prediction of thermodynamic behavior",
+   "url": "https://doi.org/10.1063/5.0359709",
+   "excerpt": "An ab initio-based intermolecular potential is reported for normal hydrogen, orthohydrogen, and parahydrogen. Molecular simulations for thermodynamic properties and calculations of…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "期刊论文"
+   ],
+   "authors": "Ulrich K. Deiters、Richard J. Sadus",
+   "metric": "DOI:10.1063/5.0359709"
+  },
+  {
    "id": "1520a8b6ae4b",
    "source": "crossref",
    "type": "paper",
@@ -19910,6 +19955,21 @@
    ],
    "authors": "Soumik Ghosh、Jack F. Douglas、Francis W. Starr",
    "metric": "DOI:10.1063/5.0354143"
+  },
+  {
+   "id": "33fea3e81d9d",
+   "source": "crossref",
+   "type": "paper",
+   "title": "Interaction embedding via factorized linear models for multi-element machine learning interatomic potentials",
+   "url": "https://doi.org/10.1063/5.0345011",
+   "excerpt": "Linear machine-learning interatomic potentials, such as the Ultra-Fast Force Field (UF3), deliver near-density functional theory accuracy at low computational cost. Their number of…",
+   "date": "2026-11-05",
+   "category": "The Journal of Chemical Physics",
+   "tags": [
+    "AI与机器学习"
+   ],
+   "authors": "Sung Hoon Jung、Ilgar Baghishov、Graeme Henkelman",
+   "metric": "DOI:10.1063/5.0345011"
   },
   {
    "id": "351fbfc6aca7",
@@ -20075,66 +20135,6 @@
    ],
    "authors": "Milan R. Milovanović、Snežana D. Zarić",
    "metric": "DOI:10.1063/5.0355398"
-  },
-  {
-   "id": "7f5aff51149d",
-   "source": "crossref",
-   "type": "paper",
-   "title": "A propagator theory of non-Gaussian diffusion and power-law relaxation in multidimensional disordered media",
-   "url": "https://doi.org/10.1063/5.0357034",
-   "excerpt": "Disordered energy environments generate spatially heterogeneous mobility and persistent deviations from Gaussian diffusion. Such systems are common, and dynamics often provide a ro…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "Gaussian"
-   ],
-   "authors": "Biman Bagchi",
-   "metric": "DOI:10.1063/5.0357034"
-  },
-  {
-   "id": "40f10a741e53",
-   "source": "crossref",
-   "type": "paper",
-   "title": "EmbASI: An extensible Pythonic framework for DFT-in-DFT and WF-in-DFT embedding",
-   "url": "https://doi.org/10.1063/5.0349619",
-   "excerpt": "High-level quantum mechanical (QM) simulations are important for understanding chemical and physical systems, but these methods scale unfavorably with system size, and this limits…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "VASP/第一性原理"
-   ],
-   "authors": "Gabriel Bramley、Pavel V. Stishenko、Oscar van Vuren 等",
-   "metric": "DOI:10.1063/5.0349619"
-  },
-  {
-   "id": "254b75b5c2eb",
-   "source": "crossref",
-   "type": "paper",
-   "title": "Cancer-associated histone tail mutations reshape conformational ensembles and DNA-contact states in nucleosomes",
-   "url": "https://doi.org/10.1063/5.0354083",
-   "excerpt": "Cancer-associated histone mutations can perturb chromatin regulation, yet how many noncanonical mutations in intrinsically disordered histone tails alter nucleosome dynamics remain…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "期刊论文"
-   ],
-   "authors": "Liujin Wang、Houfang Zhang、Xupeng Yuan 等",
-   "metric": "DOI:10.1063/5.0354083"
-  },
-  {
-   "id": "ef49a36d8fdd",
-   "source": "crossref",
-   "type": "paper",
-   "title": "Bayesian sampling of structural ensembles: The role of ensemble-counting measures",
-   "url": "https://doi.org/10.1063/5.0349150",
-   "excerpt": "Structural ensemble refinement is widely used to integrate molecular simulations with experimental measurements. While most applications focus on the maximum-a-posteriori ensemble,…",
-   "date": "2026-11-04",
-   "category": "The Journal of Chemical Physics",
-   "tags": [
-    "期刊论文"
-   ],
-   "authors": "Ivan Gilardoni、Giovanni Bussi",
-   "metric": "DOI:10.1063/5.0349150"
   },
   {
    "id": "b13db33f27ea",
@@ -20661,13 +20661,13 @@
    "title": "lmmentel/awesome-python-chemistry",
    "url": "https://github.com/lmmentel/awesome-python-chemistry",
    "excerpt": "A curated list of Python packages related to chemistry",
-   "date": "2026-11-03",
+   "date": "2026-11-05",
    "category": "开源项目",
    "tags": [
     "开源项目"
    ],
-   "metric": "Star 1450",
-   "stars": 1450,
+   "metric": "Star 1451",
+   "stars": 1451,
    "authors": "lmmentel"
   },
   {
@@ -20837,13 +20837,13 @@
    "title": "Mariewelt/OpenChem",
    "url": "https://github.com/Mariewelt/OpenChem",
    "excerpt": "OpenChem: Deep Learning toolkit for Computational Chemistry and Drug Design Research",
-   "date": "2026-11-04",
+   "date": "2026-11-05",
    "category": "Python",
    "tags": [
     "开源项目"
    ],
-   "metric": "Star 760",
-   "stars": 760,
+   "metric": "Star 761",
+   "stars": 761,
    "authors": "Mariewelt"
   },
   {
