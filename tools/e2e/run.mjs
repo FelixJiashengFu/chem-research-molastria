@@ -549,6 +549,18 @@ check('network: the searched term is the centre, suggestions complete, clicking 
   await finish(en);
 });
 
+check('train page: the weekly Hugging Face check shows its date, link stats and new models', async () => {
+  const p = await open();
+  await go(p, '/train/index.html');
+  const live = await p.evaluate(() => window.MOLASTRIA_MODELS_LIVE);
+  assert.ok(live && live.checkedAt && live.linked > 30, 'models-live.js loaded');
+  assert.match(await text(p, '#stamp-date'), new RegExp(live.checkedAt));
+  assert.ok(await p.locator('.hf-stats').count() >= live.ok);
+  assert.equal(await p.locator('.news-item').count(), live.fresh.length);
+  assert.equal(await p.locator('#model-news').isVisible(), live.fresh.length > 0);
+  await finish(p);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');

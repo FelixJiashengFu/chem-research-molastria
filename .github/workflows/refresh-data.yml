@@ -1,6 +1,7 @@
 name: Weekly catalogue refresh
 
-# Rebuilds the catalogue snapshot behind search and the resource network once a week.
+# Rebuilds the catalogue snapshot behind search and the resource network once a week,
+# and re-checks the models on the train page against Hugging Face (tools/train-models.mjs).
 # The cycle started on Thursday 2026-11-05; it runs every Thursday at 13:00 UTC and can be started by hand.
 # A push made with GITHUB_TOKEN does not start other workflows, so the site deploy is dispatched explicitly.
 on:
@@ -36,15 +37,19 @@ jobs:
         run: deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts
       - name: Check the new snapshot
         run: node tools/check-catalogue.mjs
+      # The train page model facts: links, downloads, new small models. A Hugging Face outage keeps last week's file.
+      - name: Check the models on the train page (Hugging Face)
+        continue-on-error: true
+        run: node tools/train-models.mjs
       - name: Commit and redeploy the site
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/hub/data.json public/hub/data.js public/merged-data.json public/merged-data.js merge-report.json
+          git add public/hub/data.json public/hub/data.js public/merged-data.json public/merged-data.js merge-report.json public/train/models-live.js
           if git diff --cached --quiet; then echo "Catalogue unchanged"; exit 0; fi
-          git commit -m "Weekly catalogue refresh $(date -u +%F)"
+          git commit -m "Weekly catalogue and model refresh $(date -u +%F)"
           git pull --rebase origin main
           git push origin HEAD:main
           gh workflow run pages.yml --ref main

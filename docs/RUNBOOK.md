@@ -79,6 +79,8 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 
 ## 刷新数据
 
+训练页的模型核对：`node tools/train-models.mjs`（每周四随目录刷新自动跑；本机有 HTTPS 扫描时加 `NODE_USE_SYSTEM_CA=1`）。它只更新 `public/train/models-live.js`，手写的模型介绍要人来改。
+
 - **ChemRxiv：** `deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts`，可重复运行，只替换 ChemRxiv 条目。新增文字后走一遍翻译。
 - **每周自动刷新：** `.github/workflows/refresh-data.yml` 每周四 13:00（UTC）跑一遍，结果自动提交并发布。马上要刷新就运行 `gh workflow run refresh-data.yml`。某个来源抓取失败时沿用上周的条目；`tools/check-catalogue.mjs` 发现条目减少超过 15% 或某个来源为空时拒绝提交，到 Actions 日志里看是哪个来源出了问题。
 - **在本机刷新：** 用 Python 3.12 虚拟环境装好 `maintenance/requirements.txt`，运行 `python maintenance/refresh_data.py`，再运行 `hub-chemrxiv.ts` 和 `node tools/check-catalogue.mjs`。

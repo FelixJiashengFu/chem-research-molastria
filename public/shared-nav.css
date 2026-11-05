@@ -56,7 +56,7 @@ html{background:var(--paper)}
 .cr-links a[aria-current=page]::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;background:var(--accent-2)}
 .cr-new{display:inline-block;margin-left:5px;padding:0 5px;border-radius:3px;background:var(--gold);color:#fff;font-size:9.5px;line-height:15px;vertical-align:1px;letter-spacing:.5px}
 .cr-tools{display:flex;align-items:center;gap:6px;flex:none}
-.cr-icon-btn,.cr-ai-btn{font:600 12.5px/1 var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s}
+.cr-icon-btn,.cr-ai-btn{font:600 12.5px/1 var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s}
 .cr-icon-btn{width:36px;padding:0}
 .cr-ai-btn{padding:0 12px}
 .cr-icon-btn:hover,.cr-ai-btn:hover{background:var(--surface-2);border-color:var(--line-strong)}

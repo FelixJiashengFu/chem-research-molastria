@@ -31,7 +31,7 @@ desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs +
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-maintenance/          Python 爬虫与合并脚本；每周四由 .github/workflows/refresh-data.yml 自动运行
+maintenance/          Python 爬虫与合并脚本；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
 ```
 
 ## 常用命令
@@ -70,7 +70,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）。`public/guide/`、`public/resources/`、`sitemap.xml` 和各页的 SEO 头每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）。`public/guide/`、`public/resources/`、`sitemap.xml` 和各页的 SEO 头每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 

@@ -102,6 +102,37 @@
     setTimeout(() => { b.textContent = T('复制'); }, 1600);
   });
 
+  // Weekly Hugging Face check (models-live.js, written by tools/train-models.mjs every Thursday):
+  // downloads and likes next to each link, links that stopped working, and new small models from the labs we follow.
+  const live = window.MOLASTRIA_MODELS_LIVE;
+  if (live) {
+    const en = document.documentElement.lang === 'en';
+    const short = (n) => n == null ? '' : en
+      ? (n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n))
+      : (n >= 1e4 ? (n / 1e4).toFixed(n >= 1e5 ? 0 : 1) + ' 万' : n.toLocaleString('en-US'));
+    const idOf = (href) => (href.match(/^https:\/\/huggingface\.co\/([\w.-]+\/[\w.-]+)/) || [])[1];
+    const stampDate = document.getElementById('stamp-date');
+    if (stampDate) stampDate.innerHTML = `每周四自动核对 · <b>${live.checkedAt}</b>`;
+    const stampLinks = document.getElementById('stamp-links');
+    if (stampLinks) stampLinks.textContent = `${live.ok}/${live.linked} 个 Hugging Face 链接本周可用`;
+    for (const a of document.querySelectorAll('table.models a[href^="https://huggingface.co/"], table a[href^="https://huggingface.co/"]')) {
+      const m = live.models[idOf(a.href)];
+      if (!m || a.dataset.live) continue;
+      a.dataset.live = '1';
+      const s = document.createElement('small');
+      s.className = 'hf-stats';
+      if (m.ok) { s.textContent = `↓ ${short(m.downloads)} · ♥ ${short(m.likes)}`; s.title = `近 30 天下载 ${m.downloads ?? '?'} · 点赞 ${m.likes ?? '?'} · 更新于 ${m.updated}`; }
+      else { s.textContent = '本周检查打不开'; s.classList.add('hf-dead'); }
+      a.after(s);
+    }
+    const box = document.getElementById('model-news');
+    if (box && live.fresh?.length) {
+      box.innerHTML = `<h3>近 ${live.newDays} 天的新模型（每周自动发现）</h3><p>从各家实验室的 Hugging Face 官方账号自动找出、上表还没收录的 40B 以下文本或图文模型，按下载量排序。尚未人工评测，用于化学 Agent 前先读模型卡。</p><div class="news-list">` +
+        live.fresh.map((m) => `<div class="news-item"><a href="https://huggingface.co/${m.id}" target="_blank" rel="noopener" translate="no">${m.id.split('/')[1]}</a><small translate="no">${m.lab} · ${(m.params / 1e9).toFixed(1)}B · ${m.license || '—'}</small><small>${m.created} · ↓ ${short(m.downloads)}</small></div>`).join('') + '</div>';
+      box.hidden = false;
+    }
+  }
+
   // Table of contents follows the reading position.
   const links = [...document.querySelectorAll('.tr-toc a')];
   const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));

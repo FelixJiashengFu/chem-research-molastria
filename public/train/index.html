@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="../shared-nav.css">
   <link rel="stylesheet" href="train.css">
   <script src="../shared-nav.js" defer></script>
+  <script src="models-live.js" defer></script>
   <script src="train.js" defer></script>
 </head>
 <body data-section="train">
@@ -55,7 +56,7 @@
     <p class="eyebrow">TRAIN YOUR OWN CHEMISTRY AGENT</p>
     <h1>用开源小模型，<br><em>训练你自己的化学研究 Agent。</em></h1>
     <p class="lead">一个 2–9B 的小模型，学会调用 RDKit、PubChem 和计算平台这些工具，再用可验证的化学规则做强化学习，就能在一张消费级显卡甚至笔记本上运行，数据不出本机。这份指南给出选型、数据构造、LoRA 微调、GRPO 强化学习、评测和部署的完整步骤，代码可以直接复制。</p>
-    <div class="stamp"><span>更新于 <b>2026-10-28</b></span><span>模型信息核对自 Hugging Face 官方模型卡</span><span>所有链接已逐一检查</span></div>
+    <div class="stamp"><span id="stamp-date">更新于 <b>2026-10-28</b></span><span>模型信息核对自 Hugging Face 官方模型卡</span><span id="stamp-links">所有链接已逐一检查</span></div>
   </header>
 
   <section id="route" aria-labelledby="route-h">
@@ -105,6 +106,7 @@
       <button type="button" data-filter="commercial" aria-pressed="false">Apache / MIT 可商用</button>
       <button type="button" class="expand-all" aria-pressed="false">全部展开</button>
     </div>
+    <div id="model-news" class="model-news" hidden></div>
     <div class="table-wrap"><table class="models">
       <thead><tr><th>模型</th><th>参数</th><th>许可证</th><th>发布</th><th>一句话</th><th>链接</th></tr></thead>
       <tbody>

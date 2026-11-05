@@ -6183,6 +6183,27 @@
  "请手动复制": [
   "train/train.js"
  ],
+ "万": [
+  "train/train.js"
+ ],
+ "每周四自动核对 ·": [
+  "train/train.js"
+ ],
+ "{0}/{1} 个 Hugging Face 链接本周可用": [
+  "train/train.js"
+ ],
+ "近 30 天下载 {0} · 点赞 {1} · 更新于 {2}": [
+  "train/train.js"
+ ],
+ "本周检查打不开": [
+  "train/train.js"
+ ],
+ "近 {0} 天的新模型（每周自动发现）": [
+  "train/train.js"
+ ],
+ "从各家实验室的 Hugging Face 官方账号自动找出、上表还没收录的 40B 以下文本或图文模型，按下载量排序。尚未人工评测，用于化学 Agent 前先读模型卡。": [
+  "train/train.js"
+ ],
  "{0} 个 Pro 席位起，每加 1 席 {1} / 年，席位数在结账页调整": [
   "pro/pro.js"
  ],

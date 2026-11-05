@@ -22,109 +22,153 @@
   const display = (e) => EN && e.nameEn ? e.nameEn.replace(/^./, (c) => c.toUpperCase()) : tr(e.name);
   const sourceOf = (id) => NET.sourceById.get(id) || { id, name: id, color: '#7d8a80' };
 
-  /* ---------- graph model ---------- */
-  let nodes = [], edges = [], byId = new Map(), keep = new Map();
-  let view = { x: 0, y: 0, k: 1 }, alpha = 0, hover = null, drag = null, pan = null, moved = false;
+  /* ---------- graph model ----------
+     A small force simulation in the spirit of Obsidian's graph view: springs along links, repulsion between nodes,
+     gravity toward the centre, and a soft hint of rings. Dragging a node keeps the simulation warm so its neighbours
+     follow; at rest the nodes drift gently. Recentring glides the camera, fades old nodes out and grows new ones from
+     the node they hang off. */
+  let nodes = [], edges = [], byId = new Map(), keep = new Map(), ghosts = [];
+  let view = { x: 0, y: 0, k: 1 }, goal = null, inertia = null, fitPending = false;
+  let alpha = 0, alphaTarget = 0, hover = null, drag = null, pan = null, moved = false, clock = 0, last = 0;
+  const pointers = new Map(); let pinch = null;
 
   function scale() { const c = $('graph'); return Math.max(0.42, Math.min(1.15, Math.min(c.clientWidth || 900, c.clientHeight || 680) / 2 / 400)); }
   function node(id, o) {
-    const old = keep.get(id);
-    const n = { id, x: old ? old.x : (o.ax ?? 0) + (Math.random() - 0.5) * 30, y: old ? old.y : (o.ay ?? 0) + (Math.random() - 0.5) * 30, vx: 0, vy: 0, ...o };
+    const old = keep.get(id), from = o.from && byId.get(o.from);
+    const n = { vx: 0, vy: 0, appear: 0, hl: 1, grow: 0, phase: Math.random() * Math.PI * 2, ...o, id };
+    if (old) Object.assign(n, { x: old.x, y: old.y, vx: old.vx, vy: old.vy, appear: old.appear, hl: old.hl, grow: old.grow, phase: old.phase });
+    else { const a = Math.random() * Math.PI * 2; n.x = (from ? from.x : 0) + Math.cos(a) * 18; n.y = (from ? from.y : 0) + Math.sin(a) * 18; }
     nodes.push(n); byId.set(id, n); return n;
   }
-  function edge(a, b, w, kind) { if (byId.has(a) && byId.has(b) && a !== b && !edges.some((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a))) edges.push({ a, b, w, kind }); }
+  function edge(a, b, w, kind, len, k) {
+    if (byId.has(a) && byId.has(b) && a !== b && !edges.some((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a))) edges.push({ a, b, w, kind, len, k, phase: Math.random() });
+  }
 
   function buildGraph() {
-    keep = new Map(nodes.map((n) => [n.id, n]));
-    nodes = []; edges = []; byId = new Map();
     const s = scale(), narrow = NARROW();
-    const R1 = 150 * s, RD = 245 * s, R2 = 300 * s, RS = 375 * s;
+    const centerId = R.mode === 'entity' ? 'e:' + R.center.idx : R.mode === 'source' ? 's:' + R.source.id : R.mode === 'text' ? 'q' : 'hub';
+    // If the new centre is already on screen, slide the world so it sits at the origin and let the camera glide after it.
+    const prev = byId.get(centerId);
+    if (prev && (prev.x || prev.y)) {
+      const dx = prev.x, dy = prev.y;
+      for (const n of [...nodes, ...ghosts]) { n.x -= dx; n.y -= dy; }
+      view.x += dx * view.k; view.y += dy * view.k;
+    }
+    keep = new Map(nodes.map((n) => [n.id, n]));
+    const before = nodes;
+    nodes = []; edges = []; byId = new Map();
+    const R1 = 150 * s, RD = 240 * s, R2 = 290 * s, RS = 360 * s;
     const ring1Max = narrow ? 8 : 12, docMax = narrow ? 6 : 10, extMax = narrow ? 3 : 6, ring2Max = narrow ? 6 : 14;
-    let centerId;
-    if (R.mode === 'entity') { centerId = 'e:' + R.center.idx; node(centerId, { kind: R.center.kind, entity: R.center, label: display(R.center), center: true, r: 30, fx: 0, fy: 0 }); }
-    else if (R.mode === 'source') { centerId = 's:' + R.source.id; node(centerId, { kind: 'source', source: R.source, label: tr(R.source.name), center: true, r: 30, fx: 0, fy: 0, color: R.source.color }); }
-    else if (R.mode === 'text') { centerId = 'q'; node(centerId, { kind: 'query', label: R.q, center: true, r: 28, fx: 0, fy: 0 }); }
-    else { centerId = 'hub'; node(centerId, { kind: 'hub', label: 'MolAstria', center: true, r: 30, fx: 0, fy: 0 }); }
+    if (R.mode === 'entity') node(centerId, { kind: R.center.kind, entity: R.center, label: display(R.center), center: true, r: 26 });
+    else if (R.mode === 'source') node(centerId, { kind: 'source', source: R.source, label: tr(R.source.name), center: true, r: 26, color: R.source.color });
+    else if (R.mode === 'text') node(centerId, { kind: 'query', label: R.q, center: true, r: 24 });
+    else node(centerId, { kind: 'hub', label: 'MolAstria', center: true, r: 26 });
 
     const ring1 = R.related.slice(0, ring1Max);
     const extra = [...(R.siblings || []).slice(0, 4).map((e) => ({ entity: e, sibling: true })), ...(R.category ? [{ entity: R.category, sibling: true }] : [])]
       .filter((x) => !ring1.some((r) => r.entity === x.entity) && x.entity !== R.center);
-    const firstAll = [...ring1, ...extra];
     const maxScore = Math.max(...ring1.map((r) => r.score), 0.01);
-    firstAll.forEach((r, i) => {
-      const a = -Math.PI / 2 + (i / Math.max(1, firstAll.length)) * Math.PI * 2;
-      const strength = r.sibling ? 0.3 : r.score / maxScore;
-      node('e:' + r.entity.idx, { kind: r.entity.kind, entity: r.entity, label: display(r.entity), ring: 1, target: R1 * (1.25 - 0.4 * strength), angle: a, ax: Math.cos(a) * R1, ay: Math.sin(a) * R1, r: 9 + Math.min(10, Math.log2(1 + r.entity.docs.size) * 1.6) });
-      edge(centerId, 'e:' + r.entity.idx, r.sibling ? 0.5 : 1 + 3 * strength, r.sibling ? 'sibling' : 'center');
+    [...ring1, ...extra].forEach((r) => {
+      const strength = r.sibling ? 0.25 : r.score / maxScore;
+      node('e:' + r.entity.idx, { kind: r.entity.kind, entity: r.entity, label: display(r.entity), ring: 1, target: R1 * (1.25 - 0.4 * strength), from: centerId, r: 7 + Math.min(10, Math.log2(1 + r.entity.docs.size) * 1.5) });
+      edge(centerId, 'e:' + r.entity.idx, r.sibling ? 0.5 : 1 + 3 * strength, r.sibling ? 'sibling' : 'center', R1 * (1.3 - 0.45 * strength), r.sibling ? 0.03 : 0.05 + 0.05 * strength);
     });
     for (const x of R.second.slice(0, ring2Max)) {
       const via = byId.get('e:' + x.via.idx); if (!via || byId.has('e:' + x.entity.idx)) continue;
-      node('e:' + x.entity.idx, { kind: x.entity.kind, entity: x.entity, label: display(x.entity), ring: 2, target: R2, angle: via.angle, ax: via.x * 1.8, ay: via.y * 1.8, r: 7 + Math.min(6, Math.log2(1 + x.entity.docs.size)) });
-      edge(via.id, 'e:' + x.entity.idx, 0.8, 'hop');
+      node('e:' + x.entity.idx, { kind: x.entity.kind, entity: x.entity, label: display(x.entity), ring: 2, target: R2, from: via.id, r: 5 + Math.min(6, Math.log2(1 + x.entity.docs.size)) });
+      edge(via.id, 'e:' + x.entity.idx, 0.8, 'hop', 85 * s, 0.07);
     }
     // Links between first-ring entities that are related to each other give the net its mesh.
     const ents = nodes.filter((n) => n.entity && n.ring === 1);
     for (let i = 0; i < ents.length; i++) for (let j = i + 1; j < ents.length; j++) {
       const w = NET.relation(ents[i].entity, ents[j].entity);
-      if (w > 0.12 && !NET.twins(ents[i].entity, ents[j].entity)) edge(ents[i].id, ents[j].id, w * 3, 'mesh');
+      if (w > (R.mode === 'overview' ? 0.04 : 0.12) && !NET.twins(ents[i].entity, ents[j].entity)) edge(ents[i].id, ents[j].id, w * 3, 'mesh', 140 * s, 0.015);
     }
     // Entries: the best direct hits, then further reading.
     const docsShown = [...NET.dedupe(R.primary).slice(0, R.mode === 'overview' ? 0 : docMax).map((x) => ({ ...x, primary: true })), ...NET.dedupe(R.extended).slice(0, extMax).map((x) => ({ ...x, primary: false }))];
-    const entityNodes = nodes.filter((n) => n.entity);
-    docsShown.forEach((x, i) => {
-      const id = 'd:' + x.doc.i; if (byId.has(id)) return;
-      const linked = entityNodes.filter((n) => x.doc.ents.has(n.entity.idx) && !n.center);
-      const anchor = linked[0];
-      const a = anchor ? anchor.angle : -Math.PI / 2 + (i / docsShown.length) * Math.PI * 2;
-      node(id, { kind: 'doc', doc: x.doc, label: x.doc.title, ring: 3, target: RD, angle: a, ax: Math.cos(a) * RD, ay: Math.sin(a) * RD, r: 5, color: sourceOf(x.doc.source).color, primary: x.primary });
-      if (x.primary) edge(centerId, id, 0.6, 'doc');
-      for (const n of linked.slice(0, 3)) edge(n.id, id, 0.5, 'doc');
-    });
+    const entityNodes = nodes.filter((n) => n.entity && !n.center);
+    for (const x of docsShown) {
+      const id = 'd:' + x.doc.i; if (byId.has(id) || x.doc === R.center?.item) continue;   // the centre's own catalogue page is the centre
+      const linked = entityNodes.filter((n) => x.doc.ents.has(n.entity.idx));
+      node(id, { kind: 'doc', doc: x.doc, label: x.doc.title, ring: 3, target: RD, from: linked[0]?.id || centerId, r: 4, color: sourceOf(x.doc.source).color, primary: x.primary });
+      if (x.primary) edge(centerId, id, 0.6, 'doc', RD * 0.85, 0.02);
+      for (const n of linked.slice(0, 3)) edge(n.id, id, 0.5, 'doc', 70 * s, 0.05);
+    }
     // Sources of the entries shown.
     const srcCount = new Map();
     for (const n of nodes) if (n.doc) for (const sid of n.doc.sources) srcCount.set(sid, (srcCount.get(sid) || 0) + 1);
     if (R.mode === 'overview') for (const src of NET.sources) srcCount.set(src.id, NET.docs.filter((d) => d.sources.includes(src.id)).length);
-    [...srcCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, narrow ? 5 : 10).forEach(([sid], i, arr) => {
-      if (R.mode === 'source' && sid === R.source.id) return;
+    for (const [sid] of [...srcCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, narrow ? 5 : 10)) {
+      if (R.mode === 'source' && sid === R.source.id) continue;
       const src = sourceOf(sid), id = 's:' + sid;
       const docNodes = nodes.filter((n) => n.doc && n.doc.sources.includes(sid));
-      const a = docNodes.length ? Math.atan2(docNodes.reduce((t, n) => t + Math.sin(n.angle), 0), docNodes.reduce((t, n) => t + Math.cos(n.angle), 0)) : -Math.PI / 2 + (i / arr.length) * Math.PI * 2;
-      node(id, { kind: 'source', source: src, label: tr(src.name), ring: 4, target: RS, angle: a, ax: Math.cos(a) * RS, ay: Math.sin(a) * RS, r: 9, color: src.color });
-      for (const n of docNodes) edge(n.id, id, 0.3, 'source');
-      if (R.mode === 'overview') edge(centerId, id, 0.6, 'source');
-    });
-    alpha = 1;
-    if (REDUCED) { for (let i = 0; i < 260; i++) step(); alpha = 0; }
+      node(id, { kind: 'source', source: src, label: tr(src.name), ring: 4, target: RS, from: docNodes[0]?.id || centerId, r: 8, color: src.color });
+      for (const n of docNodes) edge(n.id, id, 0.3, 'source', 80 * s, 0.03);
+      if (R.mode === 'overview') {
+        edge(centerId, id, 0.6, 'source', RS, 0.02);
+        // In the overview each source also ties to the programs and concepts it covers most.
+        for (const n of entityNodes.filter((m) => m.ring === 1)) {
+          let hits = 0; for (const [i] of n.entity.docs) if (NET.docs[i].sources.includes(sid)) hits++;
+          if (hits >= Math.max(3, n.entity.docs.size * 0.4)) edge(n.id, id, 0.5, 'source', 150 * s, 0.02);
+        }
+      }
+    }
+    // Nodes that are not part of the new view fade out where they are.
+    const stay = new Set(nodes.map((n) => n.id));
+    ghosts = ghosts.concat(before.filter((n) => !stay.has(n.id)).map((n) => ({ ...n, fade: n.appear }))).slice(-80);
+    for (const n of nodes) n.deg = edges.filter((e) => e.a === n.id || e.b === n.id).length;
+    alpha = 1; alphaTarget = 0; fitPending = true;
+    if (REDUCED) { for (let i = 0; i < 320; i++) tick(); alpha = 0; ghosts = []; for (const n of nodes) n.appear = 1; fitView(true); }
   }
 
-  function step() {
-    const s = scale();
+  function tick() {
+    // Every force shares one floor, so the net keeps its shape at rest and still answers a drag.
+    const s = scale(), a = Math.max(alpha, 0.05), hold = a;
     for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      let dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+      const p = nodes[i], q = nodes[j];
+      let dx = p.x - q.x, dy = p.y - q.y, d2 = dx * dx + dy * dy;
       if (d2 < 0.01) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; d2 = 0.5; }
-      const d = Math.sqrt(d2), min = a.r + b.r + (a.kind === 'doc' && b.kind === 'doc' ? 6 : 22) * s;
-      let f = 900 * s * s * alpha / d2;
-      if (d < min) f += (min - d) * 0.5;
-      a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f;
+      const d = Math.sqrt(d2);
+      let f = 210 * s * s * a * ((p.kind === 'doc' ? 0.35 : 1) + (q.kind === 'doc' ? 0.35 : 1)) / d2;
+      const min = p.r + q.r + (p.kind === 'doc' && q.kind === 'doc' ? 5 : 18) * s;
+      if (d < min) f += (min - d) * 0.35 / d;
+      p.vx += dx * f; p.vy += dy * f; q.vx -= dx * f; q.vy -= dy * f;
     }
     for (const e of edges) {
-      if (e.kind === 'center' || e.kind === 'doc' && e.a === nodes[0].id) continue;
-      const a = byId.get(e.a), b = byId.get(e.b);
-      const dx = b.x - a.x, dy = b.y - a.y, d = Math.max(1, Math.hypot(dx, dy));
-      const f = (d - 70 * s) * 0.004 * alpha * Math.min(2, e.w);
-      a.vx += dx / d * f; a.vy += dy / d * f; b.vx -= dx / d * f; b.vy -= dy / d * f;
+      const p = byId.get(e.a), q = byId.get(e.b);
+      const dx = q.x - p.x, dy = q.y - p.y, d = Math.max(1, Math.hypot(dx, dy));
+      const f = (d - e.len) * e.k * hold / d;
+      const wp = q.deg / (p.deg + q.deg || 1), wq = 1 - wp;
+      p.vx += dx * f * wp * 2; p.vy += dy * f * wp * 2; q.vx -= dx * f * wq * 2; q.vy -= dy * f * wq * 2;
     }
     for (const n of nodes) {
       if (n.fx != null) { n.x = n.fx; n.y = n.fy; n.vx = n.vy = 0; continue; }
-      if (n.target) {
-        const d = Math.max(1, Math.hypot(n.x, n.y)), pull = (d - n.target) * 0.06 * alpha;
-        n.vx -= n.x / d * pull; n.vy -= n.y / d * pull;
-      }
-      n.vx *= 0.62; n.vy *= 0.62;
-      n.x += Math.max(-20, Math.min(20, n.vx)); n.y += Math.max(-20, Math.min(20, n.vy));
+      const g = n.center ? 0.08 : n.ring >= 3 ? 0.012 : 0.007;
+      n.vx -= n.x * g * hold; n.vy -= n.y * g * hold;
+      if (n.target) { const d = Math.max(1, Math.hypot(n.x, n.y)), pull = (d - n.target) * 0.02 * hold / d; n.vx -= n.x * pull; n.vy -= n.y * pull; }
+      if (!REDUCED) { n.vx += Math.cos(clock * 0.7 + n.phase) * 0.018; n.vy += Math.sin(clock * 0.55 + n.phase * 1.7) * 0.018; }
+      n.vx *= 0.6; n.vy *= 0.6;
+      n.x += Math.max(-24, Math.min(24, n.vx)); n.y += Math.max(-24, Math.min(24, n.vy));
     }
-    alpha *= 0.985;
+    alpha += (alphaTarget - alpha) * 0.0228;
+  }
+
+  /* Camera: eased moves toward a goal; fit puts every node in view. */
+  function fitView(now = false) {
+    const c = $('graph'), W = c.clientWidth || 900, H = c.clientHeight || 680;
+    if (!nodes.length) return;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const n of nodes) { x0 = Math.min(x0, n.x - n.r - 50); x1 = Math.max(x1, n.x + n.r + 50); y0 = Math.min(y0, n.y - n.r - 12); y1 = Math.max(y1, n.y + n.r + 28); }
+    const k = Math.max(NARROW() ? 0.38 : 0.6, Math.min(1.25, Math.min(W / (x1 - x0), H / (y1 - y0))));
+    goal = { k, x: -(x0 + x1) / 2 * k, y: -(y0 + y1) / 2 * k };
+    if (now || REDUCED) { view = goal; goal = null; }
+  }
+  function zoomAt(sx, sy, factor) {
+    const c = $('graph'), base = goal || view;
+    const wx = (sx - c.clientWidth / 2 - base.x) / base.k, wy = (sy - c.clientHeight / 2 - base.y) / base.k;
+    const k = Math.max(0.35, Math.min(3.2, base.k * factor));
+    goal = { k, x: sx - c.clientWidth / 2 - wx * k, y: sy - c.clientHeight / 2 - wy * k };
+    if (REDUCED) { view = goal; goal = null; }
   }
 
   /* ---------- drawing ---------- */
@@ -135,6 +179,9 @@
   }
   readTheme();
   document.addEventListener('chemhub:theme', () => { readTheme(); draw(); });
+  const ease = (t) => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+  const clamp01 = (t) => Math.min(1, Math.max(0, t));
+  const fillOf = (n) => n.center && n.kind !== 'source' ? '#c4923f' : n.color || KIND_COLOR[n.kind] || '#7d8a80';
 
   function draw() {
     const c = $('graph'), ctx = c.getContext('2d'), W = c.clientWidth, H = c.clientHeight;
@@ -143,37 +190,78 @@
     if (c.width !== Math.round(W * dpr) || c.height !== Math.round(H * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     ctx.save(); ctx.translate(W / 2 + view.x, H / 2 + view.y); ctx.scale(view.k, view.k);
-    const focus = hover || drag;
+    const focus = drag || hover;
     const near = new Set(); if (focus) { near.add(focus.id); for (const e of edges) { if (e.a === focus.id) near.add(e.b); if (e.b === focus.id) near.add(e.a); } }
+    for (const n of nodes) {
+      n.appear += (1 - n.appear) * 0.09;
+      n.hl += ((focus ? (near.has(n.id) ? 1 : 0.13) : 1) - n.hl) * 0.16;
+      n.grow += ((n === focus ? 1 : 0) - n.grow) * 0.2;
+    }
+    // Fading nodes from the previous view.
+    ghosts = ghosts.filter((g) => (g.fade -= 0.05) > 0);
+    for (const g of ghosts) { ctx.globalAlpha = g.fade * 0.6; ctx.beginPath(); ctx.arc(g.x, g.y, g.r * g.fade, 0, Math.PI * 2); ctx.fillStyle = fillOf(g); ctx.fill(); }
+    // Links, with light flowing along the ones that touch the focused node (or out of the centre at rest).
     for (const e of edges) {
-      const a = byId.get(e.a), b = byId.get(e.b);
+      const p = byId.get(e.a), q = byId.get(e.b);
       const hot = focus && (e.a === focus.id || e.b === focus.id);
-      ctx.globalAlpha = focus && !hot ? 0.15 : e.kind === 'source' ? 0.45 : 1;
-      ctx.strokeStyle = hot || e.kind === 'center' ? THEME.hot : THEME.edge;
-      ctx.lineWidth = (hot ? 1.2 : 0.6) * Math.max(0.6, Math.min(4, e.w)) / Math.sqrt(view.k);
+      const vis = Math.min(p.hl, q.hl) * Math.min(p.appear, q.appear);
+      ctx.globalAlpha = vis * (hot ? 0.95 : e.kind === 'source' ? 0.4 : e.kind === 'center' ? 0.75 : 0.6);
+      ctx.strokeStyle = hot ? THEME.hot : e.kind === 'center' ? THEME.hot : THEME.edge;
+      ctx.lineWidth = (hot ? 1.6 : 0.7) * Math.max(0.6, Math.min(3.5, e.w)) / Math.sqrt(view.k);
       ctx.setLineDash(e.kind === 'sibling' ? [5, 5] : e.kind === 'source' ? [2, 4] : []);
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      if (!REDUCED && (hot || (!focus && e.kind === 'center'))) {
+        const out = hot ? (e.a === focus.id ? [p, q] : [q, p]) : [p, q];
+        const speed = hot ? 0.55 : 0.18, dots = hot ? 2 : 1;
+        ctx.fillStyle = hot ? THEME.hot : THEME.gold;
+        for (let k = 0; k < dots; k++) {
+          const t = (clock * speed + e.phase + k / dots) % 1;
+          ctx.globalAlpha = vis * (hot ? 0.9 : 0.55) * Math.sin(t * Math.PI);
+          ctx.beginPath(); ctx.arc(out[0].x + (out[1].x - out[0].x) * t, out[0].y + (out[1].y - out[0].y) * t, (hot ? 2.2 : 1.6) / Math.sqrt(view.k), 0, Math.PI * 2); ctx.fill();
+        }
+      }
     }
     ctx.setLineDash([]);
     for (const n of nodes) {
-      ctx.globalAlpha = focus && !near.has(n.id) ? 0.3 : 1;
-      if (n.center) { ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 9, 0, Math.PI * 2); ctx.fillStyle = THEME.gold; ctx.globalAlpha *= 0.18; ctx.fill(); ctx.globalAlpha = focus && !near.has(n.id) ? 0.3 : 1; }
-      ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = n.center && n.kind !== 'source' ? '#c4923f' : n.color || KIND_COLOR[n.kind] || '#7d8a80';
-      if (n.kind === 'doc' && !n.primary) { ctx.fillStyle = THEME.ring; ctx.fill(); ctx.strokeStyle = n.color; ctx.lineWidth = 2; ctx.stroke(); }
-      else { ctx.fill(); ctx.strokeStyle = n === focus ? THEME.label : THEME.ring; ctx.lineWidth = n.center ? 3 : 1.5; ctx.stroke(); }
-      const showLabel = n.kind !== 'doc' || n === focus || view.k > 1.6;
-      if (!showLabel) continue;
-      const max = n.kind === 'doc' ? 18 : n.center ? (EN ? 28 : 22) : (EN ? 18 : 14);
+      const a = n.hl * ease(n.appear);
+      const r = n.r * (0.35 + 0.65 * ease(n.appear)) * (1 + 0.22 * n.grow);
+      const fill = fillOf(n);
+      if (n.center) {
+        const pulse = REDUCED ? 0 : Math.sin(clock * 1.6) * 0.5 + 0.5;
+        ctx.globalAlpha = a * (0.1 + 0.12 * pulse); ctx.beginPath(); ctx.arc(n.x, n.y, r + 8 + 5 * pulse, 0, Math.PI * 2); ctx.fillStyle = THEME.gold; ctx.fill();
+      }
+      ctx.globalAlpha = a;
+      if (n.grow > 0.02 || n.center) { ctx.shadowColor = fill; ctx.shadowBlur = (n.center ? 16 : 0) + 18 * n.grow; }
+      ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      if (n.kind === 'doc' && !n.primary) { ctx.fillStyle = THEME.ring; ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = n.color; ctx.lineWidth = 1.8; ctx.stroke(); }
+      else { ctx.fillStyle = fill; ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = n === focus ? THEME.label : THEME.ring; ctx.lineWidth = n.center ? 2.5 : 1.3; ctx.stroke(); }
+      // Labels fade in with zoom for the outer nodes; the focused node and its neighbours always show theirs.
+      const zoomVis = n.center || n.ring === 1 || n.kind === 'source' ? 1 : n.ring === 2 ? clamp01((view.k - 0.7) / 0.35) : clamp01((view.k - 1.5) / 0.4);
+      const la = a * Math.max(zoomVis, focus && near.has(n.id) && (n.kind !== 'doc' || n === focus) ? 1 : 0);
+      if (la < 0.04) continue;
+      const max = n.kind === 'doc' ? (n === focus ? 30 : 18) : n.center ? (EN ? 28 : 22) : (EN ? 18 : 14);
       const text = n.label.length > max ? n.label.slice(0, max - 1) + '…' : n.label;
-      ctx.font = (n.center ? '700 15px' : n.kind === 'source' ? '600 11.5px' : n.ring === 2 ? '11px' : '600 12px') + " 'Segoe UI','Microsoft YaHei',sans-serif";
+      ctx.globalAlpha = la;
+      const px = (v) => (v / Math.min(1, Math.sqrt(view.k))).toFixed(1) + 'px';   // labels stay legible when zoomed out
+      ctx.font = (n.center ? '700 ' + px(15) : n === focus ? '700 ' + px(13) : n.kind === 'source' ? '600 ' + px(11.5) : n.ring === 2 ? px(11) : '600 ' + px(12)) + " 'Segoe UI','Microsoft YaHei',sans-serif";
       ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = THEME.halo;
-      const y = n.y + n.r + (n.center ? 19 : 14);
+      const y = n.y + r + (n.center ? 18 : 13) / Math.min(1, Math.sqrt(view.k));
       ctx.strokeText(text, n.x, y); ctx.fillStyle = n.kind === 'source' ? THEME.muted : THEME.label; ctx.fillText(text, n.x, y);
     }
     ctx.restore(); ctx.globalAlpha = 1;
   }
-  function loop() { if (alpha > 0.02) step(); draw(); requestAnimationFrame(loop); }
+  function loop(t) {
+    const dt = last ? Math.min(0.05, (t - last) / 1000) : 0.016; last = t; clock += dt;
+    if (!REDUCED || drag || alpha > 0.002) tick();
+    if (goal) {
+      const f = 0.14;
+      view = { x: view.x + (goal.x - view.x) * f, y: view.y + (goal.y - view.y) * f, k: view.k + (goal.k - view.k) * f };
+      if (Math.abs(goal.x - view.x) + Math.abs(goal.y - view.y) < 0.5 && Math.abs(goal.k - view.k) < 0.002) { view = goal; goal = null; }
+    }
+    if (inertia && !pan) { view.x += inertia.x; view.y += inertia.y; inertia.x *= 0.92; inertia.y *= 0.92; if (Math.abs(inertia.x) + Math.abs(inertia.y) < 0.1) inertia = null; }
+    if (fitPending && alpha < 0.35) { fitPending = false; fitView(); }
+    draw(); requestAnimationFrame(loop);
+  }
 
   /* ---------- graph interaction ---------- */
   function toWorld(ev) {
@@ -183,7 +271,7 @@
   }
   function pick(p) {
     let best = null, bd = Infinity;
-    for (const n of nodes) { const d = Math.hypot(n.x - p.x, n.y - p.y); if (d < n.r + 6 / view.k && d < bd) { bd = d; best = n; } }
+    for (const n of nodes) { const d = Math.hypot(n.x - p.x, n.y - p.y); if (d < n.r * (1 + 0.22 * n.grow) + 7 / view.k && d < bd) { bd = d; best = n; } }
     return best;
   }
   function tooltip(n, p) {
@@ -212,30 +300,59 @@
   function bindGraph() {
     const c = $('graph');
     c.addEventListener('pointerdown', (ev) => {
-      moved = false; const p = toWorld(ev), n = pick(p);
-      if (n) { drag = n; drag.fx = n.x; drag.fy = n.y; } else pan = { x: ev.clientX, y: ev.clientY, vx: view.x, vy: view.y };
+      pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
       c.setPointerCapture(ev.pointerId);
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k };
+        if (drag) { drag.fx = drag.fy = null; drag = null; } pan = null; return;
+      }
+      moved = false; inertia = null; const p = toWorld(ev), n = pick(p);
+      if (n) { drag = n; n.fx = n.x; n.fy = n.y; n.grab = { x: p.x - n.x, y: p.y - n.y }; alphaTarget = 0.3; }
+      else pan = { x: ev.clientX, y: ev.clientY, vx: view.x, vy: view.y, t: performance.now(), lx: ev.clientX, ly: ev.clientY };
     });
     c.addEventListener('pointermove', (ev) => {
+      if (pointers.has(ev.pointerId)) pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (pinch && pointers.size === 2) {
+        const [a, b] = [...pointers.values()], r = c.getBoundingClientRect();
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, (pinch.k * d / pinch.d) / (goal || view).k);
+        return;
+      }
       const p = toWorld(ev);
-      if (drag) { if (Math.abs(p.x - drag.fx) + Math.abs(p.y - drag.fy) > 2) moved = true; if (moved && !drag.center) { drag.fx = p.x; drag.fy = p.y; alpha = Math.max(alpha, 0.25); } return; }
-      if (pan) { moved = true; view.x = pan.vx + ev.clientX - pan.x; view.y = pan.vy + ev.clientY - pan.y; draw(); return; }
-      const n = pick(p); if (n !== hover) { hover = n; draw(); }
+      if (drag) {
+        if (Math.hypot(p.x - drag.grab.x - drag.fx, p.y - drag.grab.y - drag.fy) > 3 / view.k) moved = true;
+        if (moved) { drag.fx = p.x - drag.grab.x; drag.fy = p.y - drag.grab.y; }
+        return;
+      }
+      if (pan) {
+        moved = true; goal = null;
+        view.x = pan.vx + ev.clientX - pan.x; view.y = pan.vy + ev.clientY - pan.y;
+        pan.dx = ev.clientX - pan.lx; pan.dy = ev.clientY - pan.ly; pan.lx = ev.clientX; pan.ly = ev.clientY;
+        return;
+      }
+      const n = pick(p); hover = n;
       c.style.cursor = n ? 'pointer' : 'grab'; tooltip(n, p);
     });
-    const up = () => {
-      if (drag) { const n = drag; if (!n.center) { n.fx = moved ? n.fx : null; n.fy = moved ? n.fy : null; } drag = null; if (!moved) activate(n); }
-      pan = null; draw();
+    const up = (ev) => {
+      pointers.delete(ev.pointerId);
+      if (pinch) { if (pointers.size < 2) pinch = null; return; }
+      if (drag) {
+        const n = drag; drag = null; alphaTarget = 0;
+        n.fx = n.fy = null;          // let it go: it springs back into the net like in Obsidian
+        if (!moved) activate(n);
+      }
+      if (pan && moved && (pan.dx || pan.dy)) inertia = { x: pan.dx || 0, y: pan.dy || 0 };
+      pan = null;
     };
     c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
-    c.addEventListener('pointerleave', () => { hover = null; tooltip(null); draw(); });
-    c.addEventListener('dblclick', (ev) => { if (!pick(toWorld(ev))) { view = { x: 0, y: 0, k: 1 }; draw(); } });
+    c.addEventListener('pointerleave', () => { if (!drag) hover = null; tooltip(null); });
+    c.addEventListener('dblclick', (ev) => { if (!pick(toWorld(ev))) fitView(); });
     c.addEventListener('wheel', (ev) => {
       ev.preventDefault(); const p = toWorld(ev);
-      const k2 = Math.max(0.4, Math.min(3, view.k * (ev.deltaY < 0 ? 1.12 : 0.89)));
-      view.x = p.sx - c.clientWidth / 2 - p.x * k2; view.y = p.sy - c.clientHeight / 2 - p.y * k2; view.k = k2; draw();
+      zoomAt(p.sx, p.sy, Math.exp(-Math.max(-60, Math.min(60, ev.deltaY)) * 0.0045));
     }, { passive: false });
-    window.addEventListener('resize', () => { if (R) buildGraph(); });
+    window.addEventListener('resize', () => { if (R) fitView(); });
   }
 
   /* ---------- results ---------- */
@@ -430,13 +547,13 @@
     if (!data || !Array.isArray(data.items)) throw new Error('缺少合并资源数据，请完整解压压缩包后打开');
     NET = window.MolAstriaNet.build(data, window.CHEMDB_CONTENT?.guides || [], window.MolAstriaTerms);
     // For the browser tests: the current result, the drawn nodes and where a node is on screen.
-    window.MolAstriaNetView = { net: NET, current: () => R, nodes: () => nodes, settled: () => alpha <= 0.02,
+    window.MolAstriaNetView = { view: () => view, net: NET, current: () => R, nodes: () => nodes, settled: () => alpha < 0.03 && !goal && !fitPending,
       screenOf: (id) => { const n = byId.get(id), c = $('graph'), r = c.getBoundingClientRect(); return n && { x: r.left + c.clientWidth / 2 + view.x + n.x * view.k, y: r.top + c.clientHeight / 2 + view.y + n.y * view.k }; } };
     $('generatedAt').textContent = `数据生成：${new Date(data.generatedAt).toLocaleString('zh-CN')} · 每周四自动更新`;
     $('presetChips').innerHTML = PRESETS.map((p) => `<button class="chip preset" type="button" data-q="${esc(p)}">${esc(p)}</button>`).join('');
     $('netMore').addEventListener('click', () => { shown += 30; renderResults(); });
-    $('relayoutBtn').addEventListener('click', () => { for (const n of nodes) if (!n.center) { n.fx = n.fy = null; n.x = Math.cos(n.angle || 0) * (n.target || 100); n.y = Math.sin(n.angle || 0) * (n.target || 100); } alpha = 1; });
-    $('fitBtn').addEventListener('click', () => { view = { x: 0, y: 0, k: 1 }; draw(); });
+    $('relayoutBtn').addEventListener('click', () => { for (const n of nodes) if (!n.center) { const a = Math.random() * Math.PI * 2; n.fx = n.fy = null; n.x = Math.cos(a) * 40; n.y = Math.sin(a) * 40; } alpha = 1; fitPending = true; });
+    $('fitBtn').addEventListener('click', () => fitView());
     $('netBack').addEventListener('click', () => history.back());
     renderStats(); renderDirectory(); bindGraph(); bindSearch();
     // ?q= and ?src= links; the old ?select=tag:X / db:id / src:id links still work.
