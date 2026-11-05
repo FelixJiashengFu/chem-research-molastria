@@ -114,6 +114,7 @@
             <option value="uma-s-1p2p1">uma-s-1p2p1 · 最新小模型（推荐）</option>
             <option value="uma-s-1p2p1-ft-d4rev">uma-s-1p2p1-ft-d4rev · ωB97M-D4rev 微调</option>
             <option value="uma-m-1p1">uma-m-1p1 · 最准，较慢</option>
+            <option value="mace-off23-medium">MACE-OFF23 medium · 独立模型，只算中性有机分子</option>
           </select></label>
           <label>设备<select id="u-device"><option value="auto">自动检测（推荐）</option><option value="cuda">NVIDIA GPU（CUDA）</option><option value="rocm">AMD GPU（ROCm）</option><option value="apple">Apple 芯片 Mac（用 CPU）</option><option value="cpu">CPU</option></select></label>
           <label>电荷<input type="number" id="u-charge" value="0" step="1" min="-4" max="4"></label>
@@ -121,8 +122,10 @@
         </div>
         <label class="mx-checkbox" id="u-m-wrap"><input type="checkbox" id="u-m" checked> 再用 uma-m-1p1 在同一几何上算单点（AI 实验室用 S / M 的分歧判断结果是否可疑）</label>
         <ol class="mx-run">
-          <li>安装：<code>pip install fairchem-core rdkit</code></li>
-          <li>申请模型访问： <a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">huggingface.co/facebook/UMA</a>，通过后运行 <code>huggingface-cli login</code></li>
+          <li data-for="uma">安装：<code>pip install fairchem-core rdkit</code></li>
+          <li data-for="uma">申请模型访问： <a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">huggingface.co/facebook/UMA</a>，通过后运行 <code>huggingface-cli login</code></li>
+          <li data-for="mace" hidden>在单独的环境里安装：<code>pip install mace-torch rdkit</code>（mace-torch 固定 e3nn 0.4.4，和 fairchem 装在一起会冲突）</li>
+          <li data-for="mace" hidden>第一次运行会从 GitHub 下载 MACE-OFF23 模型，不用申请。它采用学术软件许可（ASL），仅限非商业用途。</li>
           <li>运行：<code id="u-cmd">python uma_FEC_ipea.py</code></li>
         </ol>
       </div>
@@ -131,6 +134,7 @@
         <pre tabindex="0" aria-label="生成的 Python 脚本"><code id="u-code"></code></pre>
       </div>
     </div>
+    <p class="mx-desk-note" id="u-mace-note" hidden>MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。</p>
     <p class="mx-desk-note" id="u-desk-note">不想自己配命令？<a href="../download/index.html">MolAstria 桌面版</a>可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。</p>
     <div class="mx-local" id="u-local" hidden>
       <div class="mx-local-head">

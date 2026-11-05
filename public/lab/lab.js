@@ -10,7 +10,7 @@
   const STORE = 'chemhub-lab-v1';
   const DEFAULT_CFG = {
     extraElements: [], maxHeavy: 20, maxComplexity: 6,
-    priorIP: 0.44, priorEA: 0.439, priorRP: 0.261, disagreeIP: 0.3, disagreeEA: 0.3, disagreeLi: 0.15, simMin: 0.3, tieWithPrior: true,
+    priorIP: 0.44, priorEA: 0.439, priorRP: 0.261, disagreeIP: 0.3, disagreeEA: 0.3, disagreeLi: 0.15, disagreeGeom: 0.3, disagreeRelax: 0.2, simMin: 0.3, tieWithPrior: true,
     liWindow: null, liMargin: 0.1,
     credits: { t1: 5, t2: 10, t3: 20 }, creditUSD: 0.04, roundBudget: 60, maxDFT: 3,
     plan: { rounds: 10, perRound: 10, t2Total: 40, t3Total: 25, margin: 500 },
@@ -368,9 +368,10 @@
     ea_s: ['ea_uma_s', 'ea_s', 'EA_UMA_S'], ea_m: ['ea_uma_m', 'ea_m', 'EA_UMA_M'],
     li_s: ['li_uma_s', 'li_s', 'li_bind_s', 'li_bind_uma_s'], li_m: ['li_uma_m', 'li_m', 'li_bind_m', 'li_bind_uma_m'],
     e_ox: ['e_ox', 'eox', 'oxidation_potential', 'e_ox_sce'], e_red: ['e_red', 'ered', 'reduction_potential', 'e_red_sce'],
-    warn: ['rowan_warning', 'warning', 'warn'], ip_dft: ['ip_dft', 'IP_DFT'], ea_dft: ['ea_dft', 'EA_DFT'], rowan_url: ['rowan_url', 'url']
+    warn: ['rowan_warning', 'warning', 'warn'], ip_dft: ['ip_dft', 'IP_DFT'], ea_dft: ['ea_dft', 'EA_DFT'], rowan_url: ['rowan_url', 'url'],
+    mace_rmsd: ['mace_rmsd', 'rmsd_mace'], mace_erelax: ['mace_erelax', 'erelax_mace'], mace_fmax: ['mace_fmax', 'fmax_mace']
   };
-  const NUMERIC = ['ip_s', 'ip_m', 'ea_s', 'ea_m', 'li_s', 'li_m', 'e_ox', 'e_red', 'ip_dft', 'ea_dft'];
+  const NUMERIC = ['ip_s', 'ip_m', 'ea_s', 'ea_m', 'li_s', 'li_m', 'e_ox', 'e_red', 'ip_dft', 'ea_dft', 'mace_rmsd', 'mace_erelax', 'mace_fmax'];
   function parseCSV(text) {
     const rows = []; let row = [], cell = '', q = false;
     for (let i = 0; i < text.length; i++) {
@@ -438,7 +439,7 @@
   ['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
   drop.addEventListener('drop', async (e) => { const f = e.dataTransfer.files[0]; if (f) await importText(await f.text(), f.name); });
   $('template').addEventListener('click', () => {
-    const header = 'smiles,name,ip_uma_s,ip_uma_m,ea_uma_s,ea_uma_m,li_uma_s,li_uma_m,e_ox,e_red,rowan_warning,ip_dft,ea_dft,rowan_url';
+    const header = 'smiles,name,ip_uma_s,ip_uma_m,ea_uma_s,ea_uma_m,li_uma_s,li_uma_m,e_ox,e_red,rowan_warning,ip_dft,ea_dft,rowan_url,mace_rmsd,mace_erelax';
     const rows = active().map((m) => `"${(m.canonical || m.smiles).replace(/"/g, '""')}","${String(m.label).replace(/"/g, '""')}",,,,,,,,,,,,`);
     download('chemhub-results-template.csv', '﻿' + [header, ...rows].join('\r\n'), 'text/csv');
   });
@@ -446,9 +447,9 @@
   // ── ④ reliability ───────────────────────────────────────────────────────
   function syncRelInputs() {
     const c = project.cfg;
-    $('prior-ip').value = c.priorIP; $('prior-ea').value = c.priorEA; $('dis-ip').value = c.disagreeIP; $('dis-ea').value = c.disagreeEA; $('dis-li').value = c.disagreeLi; $('sim-min').value = c.simMin; $('tie-prior').checked = c.tieWithPrior;
+    $('prior-ip').value = c.priorIP; $('prior-ea').value = c.priorEA; $('dis-ip').value = c.disagreeIP; $('dis-ea').value = c.disagreeEA; $('dis-li').value = c.disagreeLi; $('dis-geom').value = c.disagreeGeom ?? 0.3; $('dis-relax').value = c.disagreeRelax ?? 0.2; $('sim-min').value = c.simMin; $('tie-prior').checked = c.tieWithPrior;
   }
-  [['prior-ip', 'priorIP'], ['prior-ea', 'priorEA'], ['dis-ip', 'disagreeIP'], ['dis-ea', 'disagreeEA'], ['dis-li', 'disagreeLi'], ['sim-min', 'simMin']].forEach(([id, k]) => {
+  [['prior-ip', 'priorIP'], ['prior-ea', 'priorEA'], ['dis-ip', 'disagreeIP'], ['dis-ea', 'disagreeEA'], ['dis-li', 'disagreeLi'], ['dis-geom', 'disagreeGeom'], ['dis-relax', 'disagreeRelax'], ['sim-min', 'simMin']].forEach(([id, k]) => {
     $(id).addEventListener('change', () => { const v = Number($(id).value); if (Number.isFinite(v) && v >= 0) { project.cfg[k] = v; save(); renderReliability(); renderStatus(); } });
   });
   $('tie-prior').addEventListener('change', () => { project.cfg.tieWithPrior = $('tie-prior').checked; save(); });
@@ -683,9 +684,9 @@
   $('pubchem-all').addEventListener('click', () => checkPubChem(cardList()));
   $('export-csv').addEventListener('click', () => {
     const c = cfg();
-    const head = ['label', 'origin', 'round', 'smiles', 'inchikey', 'formula', 'ip_uma_s', 'ip_uma_m', 'ea_uma_s', 'ea_uma_m', 'li_uma_s', 'li_uma_m', 'e_ox_sce', 'e_red_sce', 'ip_dft', 'ea_dft', 'reliability', 'doubt', 'dft_verdict', 'pubchem', 'rationale', 'synthetic_demo'];
+    const head = ['label', 'origin', 'round', 'smiles', 'inchikey', 'formula', 'ip_uma_s', 'ip_uma_m', 'ea_uma_s', 'ea_uma_m', 'li_uma_s', 'li_uma_m', 'e_ox_sce', 'e_red_sce', 'ip_dft', 'ea_dft', 'mace_rmsd', 'mace_erelax', 'reliability', 'doubt', 'dft_verdict', 'pubchem', 'rationale', 'synthetic_demo'];
     const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const rows = active().map((m) => { const p = m.props, r = rel(m), v = L.verdict(m, c); return [m.label, m.origin, m.round, m.canonical || m.smiles, m.filter?.info?.inchikey, m.filter?.info?.formula, p.ip_s, p.ip_m, p.ea_s, p.ea_m, p.li_s, p.li_m, p.e_ox, p.e_red, p.ip_dft, p.ea_dft, r.level, r.doubt, v ? (v.confirmed ? 'confirmed' : 'overturned') : '', m.pubchem?.status === 'listed' ? `CID ${m.pubchem.cid}` : m.pubchem?.status || '', m.rationale, p.demo ? 'yes' : ''].map(q).join(','); });
+    const rows = active().map((m) => { const p = m.props, r = rel(m), v = L.verdict(m, c); return [m.label, m.origin, m.round, m.canonical || m.smiles, m.filter?.info?.inchikey, m.filter?.info?.formula, p.ip_s, p.ip_m, p.ea_s, p.ea_m, p.li_s, p.li_m, p.e_ox, p.e_red, p.ip_dft, p.ea_dft, p.mace_rmsd, p.mace_erelax, r.level, r.doubt, v ? (v.confirmed ? 'confirmed' : 'overturned') : '', m.pubchem?.status === 'listed' ? `CID ${m.pubchem.cid}` : m.pubchem?.status || '', m.rationale, p.demo ? 'yes' : ''].map(q).join(','); });
     download('chemhub-candidates.csv', '﻿' + [head.join(','), ...rows].join('\r\n'), 'text/csv');
   });
   $('export-md').addEventListener('click', () => {

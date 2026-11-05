@@ -75,6 +75,7 @@ deno run --allow-read --allow-write tools/vendor-radar.ts         # 复制预印
 node --test tools/lab-test.mjs                                     # 实验室逻辑测试 · lab logic tests
 node tools/e2e/run.mjs                                             # 浏览器端到端测试（先 npm ci --prefix tools/e2e）· browser end-to-end checks
 node tools/e2e/live.mjs                                            # 线上只读检查 · read-only checks of the live site
+node tools/cloud/run.mjs candidates.csv                            # 在自己的云 GPU 上批量算 UMA IP/EA 和 MACE-OFF23 复核 · batch UMA + MACE-OFF23 on your own cloud GPU
 ```
 
 **桌面版新版本 · Desktop releases.** 推送标签 `desktop-v0.1.2` 这样的版本号，`.github/workflows/desktop.yml` 会以标签里的版本号构建 Win 安装包和 Mac 磁盘镜像，用仓库密钥 `TAURI_SIGNING_PRIVATE_KEY` 给更新文件签名，并发布 `latest.json`。已安装的桌面版每次启动都会读取它，发现新版本就在右下角提示“立即更新”，下载、校验签名、安装并重启。签名私钥只存在站长电脑（`~/.tauri/molastria-updater.key`）和这个仓库密钥里，请另外备份；丢了它，旧版本就再也收不到更新。<br>Push a tag such as `desktop-v0.1.2`: the workflow builds both installers with that version, signs the update files with the `TAURI_SIGNING_PRIVATE_KEY` secret and publishes `latest.json`. Installed apps read it on every launch and offer "Update now", which downloads, verifies, installs and restarts. Back up the private key; without it, installed apps can never be updated again.

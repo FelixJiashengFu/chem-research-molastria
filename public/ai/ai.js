@@ -79,7 +79,10 @@
     const a = proAccount();
     if (!a?.pro || !a.api) { delete PROVIDERS.hosted; return; }
     const names = Object.fromEntries([...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models]);
-    const models = (a.models || ['deepseek-flash']).map((id) => [id, names[id] || id]);
+    // An account cached before the service reported its models falls back to the service's own default list.
+    const ids = a.models?.length ? a.models : ['deepseek-flash', 'deepseek-v4-pro'];
+    const HOSTED_LABEL = { 'deepseek-v4-pro': 'DeepSeek V4 Pro · 深度推理（每次计 3 次额度）' };
+    const models = ids.map((id) => [id, HOSTED_LABEL[id] || names[id] || id]);
     PROVIDERS.hosted = { label: 'MolAstria Pro', base: `${a.api}/ai/chat`, models, efforts: ['off', 'low', 'high'], json: models.every(([id]) => id.startsWith('deepseek')), proxy: true, hosted: true, usage: a.usage };
   }
   syncHosted();
@@ -584,6 +587,13 @@
       e.preventDefault();
       const keys = collect();
       if (s.provider === 'custom' && (!s.customBase || !s.models.custom)) { setStatus('自定义接口需要填写接口地址和模型 ID。', 'err'); return; }
+      // With a Pro account a provider without a key would quietly fall back to the hosted quota on the next read
+      // (see settings()), which looks like the switch did nothing: say so instead of saving.
+      if (PROVIDERS.hosted && !PROVIDERS[s.provider].proxy && s.provider !== 'custom' && !keys[s.provider] && !keyFor(s)) {
+        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度里可以选 V4 Flash 或 V4 Pro。`, 'err');
+        f.key.focus();
+        return;
+      }
       save(s, keys);
       dialog.close();
       refreshDrawer();

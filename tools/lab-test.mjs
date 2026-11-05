@@ -52,6 +52,17 @@ test('reliability: model disagreement and reference distance', () => {
   assert.equal(L.reliability({ key: 'x', origin: 'ai', props: {} }, cfg).level, 'pending');
 });
 
+test('reliability: MACE-OFF23 cross-check on the neutral geometry', () => {
+  const agree = mol('agree', 11, -0.5); Object.assign(agree.props, { mace_rmsd: 0.05, mace_erelax: 0.03, mace_fmax: 2.1 });
+  assert.equal(L.reliability(agree, cfg).level, 'trusted');
+  const apart = mol('apart', 11, -0.5); Object.assign(apart.props, { mace_rmsd: 0.62, mace_erelax: 0.41 });
+  const r = L.reliability(apart, cfg);
+  assert.notEqual(r.level, 'trusted');
+  assert.ok(r.reasons.some((x) => /UMA 与 MACE-OFF23 不一致/.test(x) && /0\.62 Å/.test(x)));
+  const strict = { ...cfg, disagreeGeom: 0.03 };
+  assert.ok(L.reliability(agree, strict).reasons.some((x) => /MACE-OFF23/.test(x)));
+});
+
 test('DFT verdict confirms within the prior and overturns beyond it', () => {
   const a = mol('a', 11, -0.5); a.props.ip_dft = 11.2; a.props.ea_dft = -0.4;
   const b = mol('b', 11, -0.5); b.props.ip_dft = 10.2;

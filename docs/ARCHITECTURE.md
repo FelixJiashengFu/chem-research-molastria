@@ -122,6 +122,7 @@ sequenceDiagram
 | GitHub Pages | 网站 | 免费：1 GB，带宽软上限 100 GB/月 |
 | GitHub Actions、Releases | 构建、发布 | 公开仓库免费 |
 | Crossref、DataCite、arXiv、jsDelivr | 数据和 CDN | 免费 |
+| Google Cloud（站长自己的 L4 虚拟机） | AI 实验室的批量 UMA / MACE-OFF23 计算，不对外服务（`tools/cloud/`） | 按开机时长计费，算完自动关机，最长 2 小时 |
 
 每周精选每周调用一次 `deepseek-flash`（最多 3,000 token 输出），费用不到一分钱量级；主要限制是 Resend 的每日封数。
 

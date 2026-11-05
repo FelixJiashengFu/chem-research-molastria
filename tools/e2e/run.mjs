@@ -113,6 +113,29 @@ check('hosted AI: the quota button switches away from a saved own key, and the m
   await finish(p);
 });
 
+check('hosted AI: a Pro account can switch to V4 Pro, and a keyless provider is refused with a reason', async () => {
+  const p = await open();
+  await go(p, '/pro/success.html?session_id=cs_test_localpro&plan=pro_year');
+  await p.waitForSelector('#activate.ok');
+  // An account cached before the service listed its models still offers both hosted models.
+  await p.evaluate(() => { const a = JSON.parse(localStorage.getItem('molastria-account')); delete a.models; localStorage.setItem('molastria-account', JSON.stringify(a)); });
+  await go(p, '/index.html');
+  await p.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openSettings()));
+  await p.waitForSelector('.cai-prov input[value=hosted]');
+  await p.check('.cai-prov input[value=hosted]', { force: true });
+  assert.deepEqual(await p.$$eval('select[name=model] option', (o) => o.map((x) => x.value)), ['deepseek-flash', 'deepseek-v4-pro']);
+  await p.selectOption('select[name=model]', 'deepseek-v4-pro');
+  await p.click('[data-act=save]');
+  assert.deepEqual(await p.evaluate(() => { const s = window.ChemAI.settings(); return [s.provider, s.models.hosted]; }), ['hosted', 'deepseek-v4-pro']);
+  // DeepSeek without a key: the dialog stays open and explains, instead of silently going back to the quota.
+  await p.evaluate(() => window.ChemAI.openSettings());
+  await p.check('.cai-prov input[value=deepseek]', { force: true });
+  await p.click('[data-act=save]');
+  assert.match(await text(p, '.cai-status'), /要用你自己的 API key/);
+  assert.equal(await p.evaluate(() => document.querySelector('dialog.cai-settings, dialog[aria-labelledby=cai-settings-title]').open), true);
+  await finish(p);
+});
+
 check('weekly picks: the admin builds an issue, Pro reads and subscribes, visitors see titles', async () => {
   const admin = await open();
   await go(admin, '/pro/account.html');
@@ -448,6 +471,32 @@ check('Meta page in the desktop app: checks Python, runs UMA locally, imports in
   // FEC is one of the lab's seed solvents, so the result updates it instead of adding a molecule.
   await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
   assert.equal(await p.evaluate(() => localStorage.getItem('molastria-lab-import')), null);
+  await finish(p);
+});
+
+check('MACE-OFF23: the Meta page writes a mace-torch script for neutral jobs, and the AI Lab reads its cross-check', async () => {
+  const p = await open();
+  await go(p, '/meta/index.html#uma');
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
+  await p.selectOption('#u-model', 'mace-off23-medium');
+  assert.equal(await p.inputValue('#u-job'), 'opt');
+  assert.equal(await p.evaluate(() => document.querySelector('#u-job option[value=ipea]').disabled), true);
+  const code = await text(p, '#u-code');
+  assert.match(code, /from mace\.calculators import mace_off/);
+  assert.doesNotMatch(code, /from fairchem|FAIRChemCalculator/);
+  assert.equal(await text(p, '#u-file'), 'mace_FEC_opt.py');
+  await p.fill('#u-smiles', 'B(OC)(OC)OC');
+  await p.waitForFunction(() => /MACE-OFF23 不认识 B/.test(document.getElementById('u-check').textContent));
+  await p.selectOption('#u-model', 'uma-s-1p2p1');
+  assert.equal(await p.evaluate(() => document.querySelector('#u-job option[value=ipea]').disabled), false);
+  // A cloud-batch result where MACE-OFF23 relaxes FEC far from the UMA geometry.
+  await go(p, '/lab/index.html');
+  await p.click('[data-tab=results]');
+  await p.fill('#paste-results', 'smiles,name,ip_uma_s,ea_uma_s,ip_uma_m,ea_uma_m,mace_rmsd,mace_erelax\nO=C1OCC(F)O1,FEC,10.9,-0.4,10.95,-0.38,0.71,0.55');
+  await p.click('#apply-paste');
+  await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
+  await p.click('[data-tab=reliability]');
+  await p.waitForFunction(() => document.getElementById('tab-reliability').textContent.includes('UMA 与 MACE-OFF23 不一致'), null, { timeout: 10000 });
   await finish(p);
 });
 

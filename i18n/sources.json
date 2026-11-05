@@ -1397,6 +1397,12 @@
  "分歧 · Li⁺": [
   "lab/index.html"
  ],
+ "分歧 · MACE 结构 Å": [
+  "lab/index.html"
+ ],
+ "分歧 · MACE 弛豫能 eV": [
+  "lab/index.html"
+ ],
  "参考集相似度下限": [
   "lab/index.html"
  ],
@@ -1718,6 +1724,12 @@
  "精度层级": [
   "lab/index.html"
  ],
+ "MACE-OFF23 优化后的中性结构与 UMA 结构的重原子 RMSD": [
+  "lab/index.html"
+ ],
+ "MACE-OFF23 从 UMA 中性结构出发优化时降低的能量": [
+  "lab/index.html"
+ ],
  "筛选卡片": [
   "lab/index.html"
  ],
@@ -1868,6 +1880,9 @@
  "uma-m-1p1 · 最准，较慢": [
   "meta/index.html"
  ],
+ "MACE-OFF23 medium · 独立模型，只算中性有机分子": [
+  "meta/index.html"
+ ],
  "设备": [
   "meta/index.html"
  ],
@@ -1895,6 +1910,15 @@
  "，通过后运行": [
   "meta/index.html"
  ],
+ "在单独的环境里安装：": [
+  "meta/index.html"
+ ],
+ "（mace-torch 固定 e3nn 0.4.4，和 fairchem 装在一起会冲突）": [
+  "meta/index.html"
+ ],
+ "第一次运行会从 GitHub 下载 MACE-OFF23 模型，不用申请。它采用学术软件许可（ASL），仅限非商业用途。": [
+  "meta/index.html"
+ ],
  "运行：": [
   "meta/index.html"
  ],
@@ -1905,6 +1929,9 @@
   "train/train.js"
  ],
  "下载": [
+  "meta/index.html"
+ ],
+ "MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。": [
   "meta/index.html"
  ],
  "不想自己配命令？": [
@@ -5533,6 +5560,15 @@
  "缺少 UMA-M 对照单点，无法检查模型分歧": [
   "lab/chem.js"
  ],
+ "优化结构相差 {0} Å": [
+  "lab/chem.js"
+ ],
+ "MACE 弛豫能 {0} eV": [
+  "lab/chem.js"
+ ],
+ "UMA 与 MACE-OFF23 不一致：{0}": [
+  "lab/chem.js"
+ ],
  "含 {0}，超出主要验证的 C/H/O/F 范围": [
   "lab/chem.js"
  ],
@@ -5678,10 +5714,16 @@
  "RDKit 无法解析这个 SMILES，请先修正。": [
   "meta/meta.js"
  ],
+ "；MACE-OFF23 不认识 {0}": [
+  "meta/meta.js"
+ ],
+ "；MACE-OFF23 只算中性闭壳层分子，电荷和自旋多重度会按 0 和 1 处理": [
+  "meta/meta.js"
+ ],
  "，与自旋多重度 {0} 不相容": [
   "meta/meta.js"
  ],
- "{0} · {1} 个重原子 · {2} 个电子{3}": [
+ "{0} · {1} 个重原子 · {2} 个电子{3}{4}": [
   "meta/meta.js"
  ],
  "# 先输入一个 RDKit 能解析的 SMILES": [
@@ -5888,6 +5930,9 @@
  "由服务商决定": [
   "ai/ai.js"
  ],
+ "DeepSeek V4 Pro · 深度推理（每次计 3 次额度）": [
+  "ai/ai.js"
+ ],
  "免配 key · 本月剩余 {0} 次": [
   "ai/ai.js"
  ],
@@ -6043,6 +6088,9 @@
   "ai/ai.js"
  ],
  "自定义接口需要填写接口地址和模型 ID。": [
+  "ai/ai.js"
+ ],
+ "{0} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度里可以选 V4 Flash 或 V4 Pro。": [
   "ai/ai.js"
  ],
  "分析分子静电势用什么软件，有哪些教程？": [

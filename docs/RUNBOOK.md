@@ -91,6 +91,28 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **训练 Agent 页的模型表：** 模型信息要对照 Hugging Face（`huggingface.co/api/models/<id>?expand[]=safetensors`）和模型卡核实。刷新时要按作者加 `sort=createdAt` 逐家查最新的仓库，不能只查已知的系列名，否则会漏掉刚发布的新系列（发生过）。
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 
+## 云端 GPU 批量计算（UMA + MACE-OFF23）
+
+站长自己的谷歌云 L4 虚拟机，只给 AI 实验室跑批量计算，不对外服务：没有公网端口，全部经 `gcloud compute ssh` / `scp`。
+
+**准备一次：**
+- 本机装好 Google Cloud CLI 并登录（`gcloud auth login`）。
+- 把 `tools/cloud/cloud.example.json` 复制成 `tools/cloud/cloud.local.json`，填项目、区、机器名（这个文件不进 git）。
+- 虚拟机上：UMA 在 `/opt/uma/venv`（开机脚本装的 fairchem；缺 RDKit 时 `remote.sh` 自动补装）；MACE-OFF23 要在另一个装了 `mace-torch` 的 Python 里（两者的 e3nn 版本冲突），`remote.sh` 会自己找，找不到用 `MACE_PY=/路径/python` 指定。
+- Hugging Face：第一次运行时如果虚拟机上没有登录，会在你的终端里提示粘贴 token（只存在虚拟机上）。token 由用户自己粘贴，不经过 Claude。
+
+**每次：**
+1. AI 实验室 → ⑥ 候选卡片 → 导出 CSV（或任何带 smiles 列的 CSV）。
+2. `node tools/cloud/run.mjs chemhub-candidates.csv`：开机 → 上传 → UMA-S 算绝热 IP/EA、UMA-M 单点 → MACE-OFF23 复核中性结构 → 取回 → 关机。中途失败也会关机；虚拟机设了 2 小时自动停机兜底。
+3. 把 `cloud-results/<时间>/results.csv` 拖进 AI 实验室 ③ 计算结果 → 导入结果。
+   可加 `--limit 3` 先试几个，`--no-m` 跳过 UMA-M，`--keep` 算完不关机。同一个命令再跑一次会跳过已算完的分子。
+
+**GPU 缺货（STOCKOUT）：** `run.mjs` 每 60 秒重试，默认 6 次。长期缺货就把机器搬到别的区（先问站长，会改动云资源）：给磁盘做快照 → 在新区用快照建磁盘 → 用同样的设置（一张 L4、`--max-run-duration=2h --instance-termination-action=STOP`）建机器 → 改 `cloud.local.json`。提供 L4 的区可以用 `gcloud compute accelerator-types list --filter="name=nvidia-l4"` 查。项目的 GPU 总配额是 1（`GPUS_ALL_REGIONS`），同一时间只能开一台 GPU 机器；关着的机器不占配额。2026-11-05 us-west4 的两个区和 us-central1、us-east1、us-east4 都没货或报错，搬到了 us-west1-c（快照 `uma-research-l4-20261105` 保留）。
+
+**Windows 上的两个坑：** gcloud 在 Windows 用 PuTTY 的 pscp 传文件，它不认 `~/`，远程路径要写成相对家目录的（`实例名:molastria-batch/`）；在 Git Bash 里手动跑 `gcloud compute ssh --command="/opt/..."` 时，MSYS 会把 `/opt/...` 改成 Windows 路径，改用 PowerShell 跑（`run.mjs` 走 Windows 的 shell，不受影响）。
+
+**不开云也能试：** `batch_uma.py` 和 `batch_mace.py` 在本机也能跑（各用各的环境，例如 `D:\ChemDraw\uma-env` 和 `D:\ChemDraw\mace-env`）。
+
 ## 站长和 VIP 卡
 
 授予站长（用户自己运行，在 `deploy` 目录）：

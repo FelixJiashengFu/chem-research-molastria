@@ -191,6 +191,15 @@
     if (liS !== null && liM !== null && Math.abs(liS - liM) > cfg.disagreeLi) gaps.push(`Li⁺ 结合能相差 ${Math.abs(liS - liM).toFixed(2)} eV`);
     if (gaps.length) { doubt += 0.45; reasons.push(`UMA-S 与 UMA-M 不一致：${gaps.join('，')}`); }
     if (ipM === null && eaM === null && m.origin !== 'seed') { doubt += 0.1; reasons.push('缺少 UMA-M 对照单点，无法检查模型分歧'); }
+    // Rule 2b — an independent model. MACE-OFF23 (different architecture and training data; neutral molecules only)
+    // relaxes the neutral UMA geometry: a large heavy-atom RMSD or a large relaxation energy means the two models
+    // disagree about the structure the IP and EA were computed from. (MACE forces on the UMA geometry are not used:
+    // stiff bond stretches make them large even when the structures agree.)
+    const mRmsd = num(p.mace_rmsd), mRelax = num(p.mace_erelax);
+    const crossGaps = [];
+    if (mRmsd !== null && mRmsd > (cfg.disagreeGeom ?? 0.3)) crossGaps.push(`优化结构相差 ${mRmsd.toFixed(2)} Å`);
+    if (mRelax !== null && mRelax > (cfg.disagreeRelax ?? 0.2)) crossGaps.push(`MACE 弛豫能 ${mRelax.toFixed(2)} eV`);
+    if (crossGaps.length) { doubt += 0.3; reasons.push(`UMA 与 MACE-OFF23 不一致：${crossGaps.join('，')}`); }
     // Rule 3 — applicability domain.
     const info = m.filter?.info;
     if (info) {

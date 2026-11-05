@@ -2,6 +2,11 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-05 云端 GPU 只做站长的批量计算；MACE-OFF23 作为独立模型复核 UMA 的中性结构
+
+站长的 L4 虚拟机不开公网服务，由 `tools/cloud/run.mjs` 经 gcloud 开机、计算、取回、关机，结果用 AI 实验室原有的 CSV 导入。MACE-OFF23 只覆盖中性闭壳层的 H C N O F P S Cl Br I 分子，算不了离子，所以不参与 IP/EA，只复核 UMA 优化出的中性结构：重原子 RMSD 和弛豫能（MACE 从 UMA 结构出发优化降低的能量）。不用“UMA 结构上的 MACE 残余力”：实测 MMFF 结构与 MACE 的 RMSD 只有 0.02–0.08 Å，残余力却有 1.8–3.6 eV/Å，反映的是硬键长的细微差别。阈值默认 0.3 Å / 0.2 eV（MMFF 结构的弛豫能已有 0.08–0.15 eV），是经验值，等有真实 UMA 结果再校准；超过时可靠性层加 0.3 分（独立模型不同意本身就算存疑）。
+**原因：** 用户有云端 UMA 和 MACE-OFF23 medium；对外开放 GPU 有费用和滥用风险，MACE-OFF23 的学术软件许可（ASL）也不允许放进收费功能。mace-torch 固定 e3nn 0.4.4、fairchem 要 e3nn ≥ 0.5，两个模型必须分开环境跑。
+
 ## 2026-11-05 UMA 设备选项：自动、NVIDIA、AMD、Apple、CPU
 
 fairchem 2.25（目前最新）只接受 `cuda` 和 `cpu`（`assert device in ["cpu", "cuda"]`）。AMD 显卡在 ROCm 版 PyTorch 里就是 `cuda`，所以能用；Apple GPU（MPS）fairchem 不支持，选 Apple 时在 M 系列 CPU 上跑，页面写明。默认“自动检测”：有 GPU 用 GPU，否则 CPU。桌面版的参数检查同步放宽到这五个值。

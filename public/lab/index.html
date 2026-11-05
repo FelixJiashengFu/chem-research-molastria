@@ -167,6 +167,8 @@
           <label>UMA-S/M 分歧 · IP<input type="number" id="dis-ip" step="0.05"></label>
           <label>分歧 · EA<input type="number" id="dis-ea" step="0.05"></label>
           <label>分歧 · Li⁺<input type="number" id="dis-li" step="0.05"></label>
+          <label title="MACE-OFF23 优化后的中性结构与 UMA 结构的重原子 RMSD">分歧 · MACE 结构 Å<input type="number" id="dis-geom" step="0.05"></label>
+          <label title="MACE-OFF23 从 UMA 中性结构出发优化时降低的能量">分歧 · MACE 弛豫能 eV<input type="number" id="dis-relax" step="0.05"></label>
           <label>参考集相似度下限<input type="number" id="sim-min" step="0.05" min="0" max="1"></label>
           <label class="check"><input type="checkbox" id="tie-prior"> 差距小于先验误差视为并列</label>
           <button class="button small" type="button" id="calibrate">用已有 DFT 校准</button>

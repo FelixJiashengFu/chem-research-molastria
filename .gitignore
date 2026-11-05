@@ -22,3 +22,7 @@ tools/e2e/shots/
 
 # Intermediate file of the manual build
 docs/manual/manual.html
+
+# Cloud GPU batch (tools/cloud): local VM settings and computed results stay out of git.
+tools/cloud/cloud.local.json
+cloud-results/

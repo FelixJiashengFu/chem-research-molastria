@@ -159,7 +159,9 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
 
   const py = (s) => JSON.stringify(String(s));
   const ionSpin = (m) => (m === 1 ? 2 : m - 1);
-  const fileName = () => `uma_${($('u-name').value.trim() || 'molecule').replace(/[^\w.-]+/g, '_')}_${JOBS[$('u-job').value]}.py`;
+  const isMace = () => $('u-model').value.startsWith('mace');
+  const MACE_ELEMENTS = new Set(['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'I']);
+  const fileName = () => `${isMace() ? 'mace' : 'uma'}_${($('u-name').value.trim() || 'molecule').replace(/[^\w.-]+/g, '_')}_${JOBS[$('u-job').value]}.py`;
 
   function electrons(info, charge) {
     let z = 0;
@@ -192,6 +194,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     const charge = Math.round(Number($('u-charge').value) || 0), spin = Math.max(1, Math.round(Number($('u-spin').value) || 1));
     const withM = job === 'ipea' && model === 'uma-s-1p2p1' && $('u-m').checked;
     const date = new Date().toISOString().slice(0, 10);
+    if (model.startsWith('mace')) return maceScript({ smiles, name, job, device, date });
     const head = [
       '"""MolAstria · UMA script for ' + name.replace(/"""/g, '') + ' (' + smiles.replace(/"""/g, '') + ')',
       `Generated ${date} at https://molastria.com/meta/#uma`,
@@ -350,9 +353,107 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     return [...head, ...imports, '', ...consts, '', '', ...pick, ...predictor, '', '', ...(usesEmbed ? [...embed, '', ''] : []), ...relax, '', '', ...body, ''].join('\n');
   }
 
+  /** The same jobs with MACE-OFF23 medium: neutral, closed-shell organic molecules (H C N O F P S Cl Br I). */
+  function maceScript({ smiles, name, job, device, date }) {
+    const head = [
+      '"""MolAstria · MACE-OFF23 script for ' + name.replace(/"""/g, '') + ' (' + smiles.replace(/"""/g, '') + ')',
+      `Generated ${date} at https://molastria.com/meta/#uma`,
+      '',
+      'Runs MACE-OFF23 medium (Kovacs et al.; trained on SPICE, wB97M-D3(BJ)/def2-TZVPPD) through mace-torch and ASE,',
+      'an independent check on UMA. It covers neutral, closed-shell molecules made of H C N O F P S Cl Br I only.',
+      'Setup once, in its own environment (mace-torch pins e3nn 0.4.4, which fairchem cannot share):',
+      '  pip install mace-torch rdkit',
+      'The model downloads from GitHub on the first run. MACE-OFF23 is under the Academic Software License:',
+      'non-commercial use only.',
+      '"""'
+    ];
+    const imports = ['import torch', 'from ase import Atoms', 'from ase.optimize import LBFGS', 'from rdkit import Chem', 'from rdkit.Chem import AllChem', 'from mace.calculators import mace_off'];
+    if (job === 'md') imports.unshift('from ase import units', 'from ase.io import Trajectory', 'from ase.md.langevin import Langevin', 'from ase.md.velocitydistribution import MaxwellBoltzmannDistribution');
+    const consts = [
+      `SMILES = ${py(smiles)}`,
+      `NAME = ${py(name)}`,
+      'MODEL = "medium"',
+      `# ${py(device)} was chosen on the page; mace-torch uses an NVIDIA (or ROCm) GPU when PyTorch has one, otherwise the CPU.`,
+      'DEVICE = "cuda" if torch.cuda.is_available() else "cpu"',
+      '',
+      'calc = mace_off(model=MODEL, device=DEVICE, default_dtype="float64")  # float64 is the recommended setting for optimisation'
+    ];
+    const embed = [
+      'def embed(smiles, seed=42):',
+      '    """3D structure from SMILES: RDKit ETKDG, then an MMFF clean-up when MMFF knows every atom."""',
+      '    mol = Chem.AddHs(Chem.MolFromSmiles(smiles))',
+      '    params = AllChem.ETKDGv3()',
+      '    params.randomSeed = seed',
+      '    if AllChem.EmbedMolecule(mol, params) != 0:',
+      '        raise SystemExit(f"RDKit could not build a 3D structure for {smiles}")',
+      '    if AllChem.MMFFHasAllMoleculeParams(mol):',
+      '        AllChem.MMFFOptimizeMolecule(mol)',
+      '    return Atoms([a.GetSymbol() for a in mol.GetAtoms()], positions=mol.GetConformer().GetPositions())'
+    ];
+    const relax = [
+      'def relax(atoms, fmax=0.02, steps=500):',
+      '    """Optimize with MACE-OFF23; returns the relaxed copy (calculator attached) and its energy in eV."""',
+      '    atoms = atoms.copy()',
+      '    atoms.calc = calc',
+      '    LBFGS(atoms, logfile=None).run(fmax=fmax, steps=steps)',
+      '    return atoms, atoms.get_potential_energy()'
+    ];
+    let body;
+    if (job === 'conf') {
+      body = [
+        'N_CONFORMERS = 20',
+        'mol = Chem.AddHs(Chem.MolFromSmiles(SMILES))',
+        'params = AllChem.ETKDGv3()',
+        'params.randomSeed = 42',
+        'ids = list(AllChem.EmbedMultipleConfs(mol, N_CONFORMERS, params))',
+        'if not ids:',
+        '    raise SystemExit(f"RDKit could not build conformers for {SMILES}")',
+        'if AllChem.MMFFHasAllMoleculeParams(mol):',
+        '    AllChem.MMFFOptimizeMoleculeConfs(mol)',
+        'symbols = [a.GetSymbol() for a in mol.GetAtoms()]',
+        '',
+        'found = []',
+        'for cid in ids:',
+        '    atoms, energy = relax(Atoms(symbols, positions=mol.GetConformer(cid).GetPositions()))',
+        '    found.append((energy, cid, atoms))',
+        'found.sort(key=lambda x: x[0])',
+        'e_min = found[0][0]',
+        'for energy, cid, _ in found:',
+        '    print(f"conformer {cid:2d}: {(energy - e_min) * 23.0605:7.2f} kcal/mol")',
+        'found[0][2].write(f"{NAME}_mace_lowest.xyz")',
+        'print(f"Lowest: E = {e_min:.6f} eV, written to {NAME}_mace_lowest.xyz")'
+      ];
+    } else if (job === 'md') {
+      body = [
+        'atoms, _ = relax(embed(SMILES), fmax=0.05)',
+        'MaxwellBoltzmannDistribution(atoms, temperature_K=300)',
+        'dyn = Langevin(atoms, timestep=0.5 * units.fs, temperature_K=300, friction=0.01 / units.fs)',
+        'traj = Trajectory(f"{NAME}_mace_md.traj", "w", atoms)',
+        'dyn.attach(traj.write, interval=10)',
+        'dyn.attach(lambda: print(f"step {dyn.get_number_of_steps():5d}  T = {atoms.get_temperature():6.1f} K  E = {atoms.get_total_energy():.4f} eV"), interval=200)',
+        'dyn.run(2000)  # 2000 steps x 0.5 fs = 1 ps',
+        'print(f"Trajectory written to {NAME}_mace_md.traj (open it with: ase gui {NAME}_mace_md.traj)")'
+      ];
+    } else {
+      body = [
+        'atoms, energy = relax(embed(SMILES))',
+        'atoms.write(f"{NAME}_mace.xyz")',
+        'print(f"{NAME}: E = {energy:.6f} eV with MACE-OFF23 {MODEL}; geometry written to {NAME}_mace.xyz")'
+      ];
+    }
+    return [...head, ...imports, '', ...consts, '', '', ...(job === 'conf' ? [] : [...embed, '', '']), ...relax, '', '', ...body, ''].join('\n');
+  }
+
   function render() {
     const smiles = $('u-smiles').value.trim();
     const check = $('u-check');
+    const mace = isMace();
+    const ipeaOption = $('u-job').querySelector('option[value=ipea]');
+    ipeaOption.disabled = mace;
+    if (mace && $('u-job').value === 'ipea') $('u-job').value = 'opt';
+    for (const li of document.querySelectorAll('.mx-run [data-for]')) li.hidden = li.dataset.for !== (mace ? 'mace' : 'uma');
+    $('u-mace-note').hidden = !mace;
+    if ($('u-run')) $('u-run').dataset.mace = String(mace);
     const job = $('u-job').value, model = $('u-model').value;
     $('u-m-wrap').hidden = !(job === 'ipea' && model === 'uma-s-1p2p1');
     const ok = !!smiles && (!R || !!mol);
@@ -363,8 +464,10 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       const charge = Number($('u-charge').value) || 0;
       const e = electrons(mol, charge), spin = Number($('u-spin').value) || 1;
       const mismatch = (e % 2 === 1) !== (spin % 2 === 0); // odd electron counts need an even multiplicity
-      check.textContent = `${mol.formula} · ${mol.heavy} 个重原子 · ${e} 个电子${mismatch ? `，与自旋多重度 ${spin} 不相容` : ''}`;
-      check.dataset.bad = String(mismatch);
+      const outside = mace ? [...new Set(mol.formula.match(/[A-Z][a-z]?/g) || [])].filter((x) => !MACE_ELEMENTS.has(x)) : [];
+      const maceIssue = !mace ? '' : outside.length ? `；MACE-OFF23 不认识 ${outside.join('、')}` : (charge !== 0 || spin !== 1) ? '；MACE-OFF23 只算中性闭壳层分子，电荷和自旋多重度会按 0 和 1 处理' : '';
+      check.textContent = `${mol.formula} · ${mol.heavy} 个重原子 · ${e} 个电子${mismatch && !mace ? `，与自旋多重度 ${spin} 不相容` : ''}${maceIssue}`;
+      check.dataset.bad = String((mismatch && !mace) || outside.length > 0);
     }
     $('u-code').textContent = ok ? script() : '# 先输入一个 RDKit 能解析的 SMILES';
     $('u-copy').disabled = $('u-download').disabled = !ok;
@@ -376,6 +479,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
   $('u-charge').addEventListener('input', onCharge);
   for (const id of ['u-name', 'u-spin']) $(id).addEventListener('input', render);
   for (const id of ['u-job', 'u-model', 'u-device', 'u-m']) $(id).addEventListener('change', render);
+  $('u-model').addEventListener('change', () => { if ($('u-run') && !$('u-run').hidden) $('u-run').disabled = isMace() || $('u-run').dataset.ready !== 'true'; });
   $('u-copy').addEventListener('click', () => copy($('u-code').textContent));
   $('u-download').addEventListener('click', () => {
     const a = document.createElement('a');
@@ -455,7 +559,8 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       }
       $('u-env').innerHTML = chips.join('');
       $('u-help').innerHTML = steps.length ? `<ol>${steps.map(([t, c]) => `<li><span>${t}</span>${c ? `<div class="mx-cmd"><code>${esc(c)}</code><button type="button" class="text-button" data-cmd="${esc(c)}">复制</button></div>` : ''}</li>`).join('')}</ol><p class="muted small">做完点「重新检测」。</p>` : '';
-      $('u-run').disabled = !ready();
+      $('u-run').dataset.ready = String(ready());
+      $('u-run').disabled = !ready() || isMace();
     }
     $('u-help').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) copy(b.dataset.cmd); });
     $('u-recheck').addEventListener('click', find);
