@@ -1,0 +1,50 @@
+name: Weekly catalogue refresh
+
+# Rebuilds the catalogue snapshot behind search and the resource network once a week.
+# The cycle started on Thursday 2026-11-05; it runs every Thursday at 13:00 UTC and can be started by hand.
+# A push made with GITHUB_TOKEN does not start other workflows, so the site deploy is dispatched explicitly.
+on:
+  schedule:
+    - cron: '0 13 * * 4'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Crawl the sources and rebuild the catalogue
+        run: |
+          pip install -r maintenance/requirements.txt
+          python maintenance/refresh_data.py
+      - name: Refresh ChemRxiv entries (Crossref)
+        run: deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts
+      - name: Check the new snapshot
+        run: node tools/check-catalogue.mjs
+      - name: Commit and redeploy the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/hub/data.json public/hub/data.js public/merged-data.json public/merged-data.js merge-report.json
+          if git diff --cached --quiet; then echo "Catalogue unchanged"; exit 0; fi
+          git commit -m "Weekly catalogue refresh $(date -u +%F)"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run pages.yml --ref main

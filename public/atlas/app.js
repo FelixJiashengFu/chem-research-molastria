@@ -4,7 +4,7 @@
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const categories = [...new Map(resources.map(r => [r.category_code, r.category])).entries()];
+  const categories = [...new Map(resources.map(r => [r.category_code, r.category])).entries()].sort((a, b) => a[0].localeCompare(b[0]));
   const stateNames = {adapter:'独立适配器',optimade:'OPTIMADE 模块',catalog:'资源目录',stub:'待实现'};
   let saved = new Set();
   let storageAvailable = true;

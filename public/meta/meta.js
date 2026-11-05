@@ -99,11 +99,12 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     if (!image || busy || !window.ChemAI) return;
     busy = true; run.disabled = true;
     $('v-results').innerHTML = '';
-    status('<span>Muse 正在读图…</span>');
+    const model = $('v-model').value;
+    status(model === 'current' ? '<span>正在读图…</span>' : '<span>Muse 正在读图…</span>');
     try {
-      const model = $('v-model').value;
       const r = await window.ChemAI.chat({
-        provider: 'muse', model, effort: 'low', maxTokens: 3000, temperature: 0,
+        // "current" uses whatever the visitor set up in AI settings (any vision-capable compatible API).
+        ...(model === 'current' ? {} : { provider: 'muse', model, effort: 'low' }), maxTokens: 3000, temperature: 0,
         messages: [
           { role: 'system', content: SYSTEM() },
           { role: 'user', content: [{ type: 'text', text: 'Read the chemical structures in this image.' }, { type: 'image_url', image_url: { url: image } }] }
@@ -117,7 +118,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       $('v-results').innerHTML = list.map(molCard).join('');
     } catch (e) {
       const noKey = e.code === 'no-key' || e.status === 401;
-      status(`<div class="mx-err">${noKey ? '识图需要 Meta Model API key：Muse Spark 能看图，在 AI 设置里选 Meta Muse 并填入 key。' : `识图没有完成：${esc(e.message)}`}${noKey ? '<br><button type="button" class="button small" data-act="settings">配置 Muse key</button>' : ''}</div>`);
+      status(`<div class="mx-err">${noKey ? '识图需要能看图的模型：在 AI 设置里选 Meta Muse 并填入 key（Muse Spark 能看图）。' : `识图没有完成：${esc(e.message)}`}${noKey ? '<br><button type="button" class="button small" data-act="settings">配置 Muse key</button>' : ''}</div>`);
     } finally {
       busy = false; run.disabled = !image;
     }

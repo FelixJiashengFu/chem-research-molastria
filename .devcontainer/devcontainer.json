@@ -1,0 +1,22 @@
+// GitHub Codespaces / VS Code dev container: Node, Deno and Python with the browser-test Chrome installed.
+// After it starts: deno run --allow-net --allow-read tools/serve.ts 8830, then open the forwarded port.
+// Desktop builds (Rust + WebKit) still happen in CI; the e2e tests run here with Chrome.
+{
+  "name": "MolAstria",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers-community/features/deno:1": {},
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" }
+  },
+  "forwardPorts": [8830],
+  "portsAttributes": {
+    "8830": { "label": "MolAstria preview", "onAutoForward": "notify" }
+  },
+  "postCreateCommand": "npm ci --prefix tools/e2e && (cd tools/e2e && npx playwright-core install --with-deps chrome) && pip install -r maintenance/requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": ["denoland.vscode-deno", "ms-python.python"],
+      "settings": { "deno.enablePaths": ["tools", "deploy"] }
+    }
+  }
+}

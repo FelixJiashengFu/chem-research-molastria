@@ -1,5 +1,6 @@
 """Rebuild the combined offline catalogue from the two bundled source snapshots."""
 import copy
+from datetime import date
 import hashlib
 import json
 from pathlib import Path
@@ -53,7 +54,7 @@ def build():
         item['tags'] = list(dict.fromkeys(item.get('tags', []) + [raw['category']]))
     sources = copy.deepcopy(hub['sources'])
     sources.append(dict(id='atlas', name='ChemDB Atlas', color='#206452', url='../atlas/index.html',
-                        role='数据库与研究资源目录', status='snapshot', statusLabel='原项目目录快照', fetchedAt='2026-10-27'))
+                        role='数据库与研究资源目录', status='snapshot', statusLabel='人工整理目录', fetchedAt=atlas.get('date', '2026-10-27')))
     items = list(merged.values())
     for source in sources:
         source['itemCount'] = sum(source['id'] in item['sourceIds'] for item in items)
@@ -64,7 +65,7 @@ def build():
                  uniqueEntries=len(items), duplicates=len(hub['items']) + len(atlas['resources']) - len(items),
                  guideChapters=len(atlas['guides']), sources=len(sources),
                  directoryEntries=sum(i['source'] == 'resdir' or 'atlas' in i['origins'] for i in items))
-    data = dict(generatedAt=hub.get('generatedAt'), packagedAt='2026-10-28',
+    data = dict(generatedAt=hub.get('generatedAt'), packagedAt=date.today().isoformat(),
                 sources=sources, items=items, stats=stats,
                 note='数据为原项目保存的快照，合并未重新核验外部网站；全文与使用许可请查看原站。')
     (PUBLIC / 'merged-data.json').write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')

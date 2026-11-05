@@ -26,7 +26,47 @@
       label: '其他兼容接口', base: '', keyUrl: '', keyHint: 'API key', models: [], efforts: ['auto'], json: false
     }
   };
-  if (SITE.proxy) PROVIDERS.proxy = { label: SITE.proxyLabel || '站点代理', base: SITE.proxy, models: [...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models], efforts: ['off', 'low', 'high'], json: false, proxy: true };
+  // Vendor presets for the "other compatible API" provider. Each accepts requests straight from a browser (CORS
+  // preflight checked 2026-11-05; Zhipu, Tencent Hunyuan and NVIDIA did not, so they are not listed). Model names
+  // are not hard-coded: the settings dialog lists them from the vendor's /models endpoint with the visitor's key.
+  const VENDORS = [
+    ['openai', 'OpenAI', 'https://api.openai.com/v1', 'https://platform.openai.com/api-keys'],
+    ['anthropic', 'Anthropic Claude', 'https://api.anthropic.com/v1', 'https://console.anthropic.com/settings/keys'],
+    ['gemini', 'Google Gemini', 'https://generativelanguage.googleapis.com/v1beta/openai', 'https://aistudio.google.com/apikey'],
+    ['xai', 'xAI Grok', 'https://api.x.ai/v1', 'https://console.x.ai/'],
+    ['mistral', 'Mistral', 'https://api.mistral.ai/v1', 'https://console.mistral.ai/api-keys'],
+    ['qwen', '阿里云百炼（通义千问）', 'https://dashscope.aliyuncs.com/compatible-mode/v1', 'https://bailian.console.aliyun.com/'],
+    ['qwen-intl', 'Alibaba Cloud Model Studio', 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1', 'https://modelstudio.console.alibabacloud.com/'],
+    ['moonshot', '月之暗面 Kimi', 'https://api.moonshot.cn/v1', 'https://platform.moonshot.cn/console/api-keys'],
+    ['ark', '火山方舟（豆包）', 'https://ark.cn-beijing.volces.com/api/v3', 'https://console.volcengine.com/ark'],
+    ['qianfan', '百度千帆（文心）', 'https://qianfan.baidubce.com/v2', 'https://console.bce.baidu.com/qianfan/'],
+    ['minimax', 'MiniMax', 'https://api.minimax.io/v1', 'https://platform.minimax.io/console/keys'],
+    ['siliconflow', '硅基流动', 'https://api.siliconflow.cn/v1', 'https://cloud.siliconflow.cn/account/ak'],
+    ['openrouter', 'OpenRouter', 'https://openrouter.ai/api/v1', 'https://openrouter.ai/keys'],
+    ['groq', 'Groq', 'https://api.groq.com/openai/v1', 'https://console.groq.com/keys'],
+    ['together', 'Together AI', 'https://api.together.xyz/v1', 'https://api.together.ai/settings/api-keys'],
+    ['fireworks', 'Fireworks AI', 'https://api.fireworks.ai/inference/v1', 'https://app.fireworks.ai/settings/users/api-keys'],
+    ['cohere', 'Cohere', 'https://api.cohere.ai/compatibility/v1', 'https://dashboard.cohere.com/api-keys'],
+    ['ollama', '本机 Ollama', 'http://localhost:11434/v1', ''],
+    ['lmstudio', '本机 LM Studio', 'http://localhost:1234/v1', '']
+  ];
+  const trimBase = (b) => String(b || '').trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  const vendorOf = (base) => VENDORS.find(([, , b]) => b === trimBase(base));
+  // Anthropic answers browsers only when they opt in with this header.
+  const extraHeaders = (base) => (/^https:\/\/api\.anthropic\.com(\/|$)/i.test(trimBase(base)) ? { 'anthropic-dangerous-direct-browser-access': 'true' } : {});
+  /** Model IDs the key can use, from the vendor's OpenAI-style /models endpoint. */
+  async function listModels(base, key) {
+    const root = trimBase(base);
+    const headers = { ...extraHeaders(root) };
+    if (key) headers.Authorization = `Bearer ${key}`;
+    if (/api\.anthropic\.com/i.test(root) && key) Object.assign(headers, { 'x-api-key': key, 'anthropic-version': '2023-06-01' });
+    const r = await fetch(`${root}/models`, { headers });
+    if (!r.ok) throw new Error(friendly(r.status, ''));
+    const j = await r.json();
+    const ids = (j.data || j.models || []).map((m) => String(m.id || m.name || '').replace(/^models\//, '')).filter(Boolean);
+    return [...new Set(ids)].sort();
+  }
+  if (SITE.proxy) PROVIDERS.proxy ={ label: SITE.proxyLabel || '站点代理', base: SITE.proxy, models: [...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models], efforts: ['off', 'low', 'high'], json: false, proxy: true };
   const EFFORT_LABEL = { off: '关闭思考（最快）', low: '低', medium: '中', high: '高', xhigh: '很高', max: '最高', auto: '由服务商决定' };
 
   // ── settings ────────────────────────────────────────────────────────────
@@ -174,12 +214,23 @@
     const headers = { 'Content-Type': 'application/json' };
     const key = PROVIDERS[provider].hosted ? proToken() : keyFor(conf);
     if (key) headers.Authorization = `Bearer ${key}`;
+    if (provider === 'custom') Object.assign(headers, extraHeaders(conf.customBase));
     const url = endpoint(conf);
     const started = performance.now();
-    let response = await fetch(url, { method: 'POST', headers, body: JSON.stringify({ ...body, ...optional }), signal: o.signal });
-    if (response.status === 400 && Object.keys(optional).length) {
-      // Some gateways reject the reasoning / JSON-mode fields; ask once more without them.
-      response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: o.signal });
+    let payload = { ...body, ...optional };
+    let response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload), signal: o.signal });
+    // Gateways differ: some reject the reasoning / JSON-mode fields, newer OpenAI-style models want
+    // max_completion_tokens instead of max_tokens, or accept only their default temperature. Retry as they ask.
+    for (let tries = 0; response.status === 400 && tries < 3; tries++) {
+      const message = await response.clone().json().then((d) => d?.error?.message || d?.message || '', () => '');
+      const next = { ...payload };
+      if (/max_completion_tokens/i.test(message) && 'max_tokens' in next) { next.max_completion_tokens = next.max_tokens; delete next.max_tokens; }
+      else if (/temperature/i.test(message) && 'temperature' in next) delete next.temperature;
+      else if (Object.keys(optional).some((k) => k in next)) for (const k of Object.keys(optional)) delete next[k];
+      else if (/stream_options/i.test(message) && next.stream_options) delete next.stream_options;
+      else break;
+      payload = next;
+      response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload), signal: o.signal });
     }
     if (!response.ok) {
       const detail = await response.json().catch(() => null);
@@ -447,8 +498,9 @@
         <label class="cai-field">模型<select name="model"></select></label>
         <label class="cai-field">思考强度<select name="effort"></select></label>
       </div>
+      <label class="cai-field" data-for="custom">常用服务商<select name="vendor"><option value="">手动填写接口地址</option>${VENDORS.map(([id, label]) => `<option value="${id}" ${vendorOf(s.customBase)?.[0] === id ? 'selected' : ''}>${esc(label)}</option>`).join('')}</select></label>
       <label class="cai-field" data-for="custom">接口地址（OpenAI 兼容，到 /v1 为止）<input type="url" name="customBase" placeholder="https://example.com/v1" value="${esc(s.customBase)}"></label>
-      <label class="cai-field" data-for="custom">模型 ID<input type="text" name="customModel" placeholder="例如 qwen-max" value="${esc(s.models.custom)}"></label>
+      <label class="cai-field" data-for="custom">模型 ID<span class="cai-key"><input type="text" name="customModel" list="cai-models" placeholder="填好 key 后点「获取模型列表」" value="${esc(s.models.custom)}" autocomplete="off" spellcheck="false"><button type="button" class="cai-btn" data-act="models">获取模型列表</button></span><datalist id="cai-models"></datalist></label>
       <label class="cai-field" data-for="key">API key <span class="cai-key"><input type="password" name="key" autocomplete="off" spellcheck="false"><button type="button" class="cai-btn" data-act="reveal">显示</button></span><a data-keyurl target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--accent-text)"></a></label>
       <label class="cai-check" data-for="key"><input type="checkbox" name="remember" ${s.remember ? 'checked' : ''}><span>在这台设备上记住 key（存入本浏览器的 localStorage）。不勾选时，关掉标签页后 key 即清除。公用电脑请不要勾选。</span></label>
       <div class="cai-status" role="status" aria-live="polite"></div>
@@ -471,9 +523,16 @@
       dialog.querySelector('[data-note=hosted]').hidden = !p.hosted;
       f.key.value = keyFor(s, id);
       f.key.placeholder = p.keyHint || '';
-      const a = dialog.querySelector('[data-keyurl]');
-      a.hidden = !p.keyUrl; a.href = p.keyUrl || '#'; a.textContent = p.keyUrl ? `在 ${p.label} 控制台创建 key ↗` : '';
+      keyLink();
       setStatus('');
+    };
+    // For the compatible-API provider the console link follows the chosen vendor preset.
+    const keyLink = () => {
+      const id = current(), p = PROVIDERS[id];
+      const v = id === 'custom' ? VENDORS.find(([vid]) => vid === f.vendor.value) : null;
+      const url = v ? v[3] : p.keyUrl, label = v ? v[1] : p.label;
+      const a = dialog.querySelector('[data-keyurl]');
+      a.hidden = !url; a.href = url || '#'; a.textContent = url ? `在 ${label} 控制台创建 key ↗` : '';
     };
     const collect = () => {
       const id = current();
@@ -484,7 +543,16 @@
       s.remember = f.remember.checked;
       return { [id]: PROVIDERS[id].proxy ? '' : f.key.value.trim() };
     };
-    f.addEventListener('change', (e) => { if (e.target.name === 'provider') { collect(); sync(); } });
+    f.addEventListener('change', (e) => {
+      if (e.target.name === 'provider') { collect(); sync(); }
+      if (e.target.name === 'vendor') {
+        const v = VENDORS.find(([vid]) => vid === f.vendor.value);
+        if (v) f.customBase.value = v[2];
+        dialog.querySelector('#cai-models').innerHTML = '';
+        keyLink();
+      }
+    });
+    f.customBase.addEventListener('input', () => { f.vendor.value = vendorOf(f.customBase.value)?.[0] || ''; keyLink(); });
     sync();
     f.addEventListener('click', async (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
@@ -492,6 +560,17 @@
       if (act === 'cancel') { dialog.close(); return; }
       if (act === 'reveal') { f.key.type = f.key.type === 'password' ? 'text' : 'password'; e.target.textContent = f.key.type === 'password' ? '显示' : '隐藏'; return; }
       if (act === 'clear') { f.key.value = ''; const id = current(); save(s, { [id]: '' }); setStatus('已清除这个服务商的 key。', 'ok'); return; }
+      if (act === 'models') {
+        if (!f.customBase.value.trim()) { setStatus('先选服务商或填写接口地址。', 'err'); return; }
+        setStatus('正在获取模型列表…');
+        try {
+          const ids = await listModels(f.customBase.value, f.key.value.trim() || keyFor(s, 'custom'));
+          dialog.querySelector('#cai-models').innerHTML = ids.map((m) => `<option value="${esc(m)}"></option>`).join('');
+          setStatus(ids.length ? `找到 ${ids.length} 个模型，点「模型 ID」输入框即可选择。` : '没有拿到模型列表，请直接填写模型 ID。', ids.length ? 'ok' : '');
+          if (ids.length) f.customModel.focus();
+        } catch (err) { setStatus(`获取模型列表失败：${err.message}`, 'err'); }
+        return;
+      }
       if (act === 'test') {
         save(s, collect());
         setStatus('正在测试…');
@@ -615,7 +694,7 @@
     drawer.querySelector('[data-hint]').textContent = mode === 'catalog' ? '先检索本站目录，再由 AI 作答并标注出处' : '直接与模型对话，不检索目录';
     const log = drawer.querySelector('.cai-log');
     const ready = isReady();
-    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,500 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
+    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,600 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
     log.innerHTML = history[mode].length ? history[mode].map(renderMsg).join('') : welcome;
     log.scrollTop = log.scrollHeight;
   }

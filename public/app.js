@@ -87,7 +87,7 @@
     const blob=new Blob(['\uFEFF'+rows.map(r=>r.map(csv).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download='ChemResearch-资源目录.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast(`已导出 ${format(list.length)} 条资源`);
   };
-  $('stat-total').textContent=format(data.stats.uniqueEntries);$('stat-atlas').textContent=format(data.stats.atlasEntries);$('stat-hub').textContent=format(data.stats.hubEntries);
+  $('stat-total').textContent=format(data.stats.uniqueEntries);const snap=$('snapshot-date'),when=new Date(data.generatedAt);if(snap&&!isNaN(when))snap.textContent=`${when.getFullYear()}.${String(when.getMonth()+1).padStart(2,'0')}.${String(when.getDate()).padStart(2,'0')}`;$('stat-atlas').textContent=format(data.stats.atlasEntries);$('stat-hub').textContent=format(data.stats.hubEntries);
   $('merge-note').textContent=`两站 ${format(data.stats.hubEntries+data.stats.atlasEntries)} 条目录记录，合并 ${data.stats.duplicates} 条重复地址，保留 ${format(data.stats.uniqueEntries)} 条资源及全部出处。`;
   render();
 })();

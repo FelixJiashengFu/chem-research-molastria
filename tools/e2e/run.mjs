@@ -451,6 +451,47 @@ check('Meta page in the desktop app: checks Python, runs UMA locally, imports in
   await finish(p);
 });
 
+check('AI settings: vendor presets fill the endpoint, list models and adapt to the API', async () => {
+  // Vendor APIs are faked: a model list, and a chat endpoint that only accepts max_completion_tokens.
+  const p = await open();
+  const calls = [];
+  await p.context().route('https://api.openai.com/v1/**', async (route) => {
+    const req = route.request();
+    const body = req.method() === 'POST' ? req.postDataJSON() : null;
+    calls.push({ url: req.url(), method: req.method(), headers: req.headers(), body });
+    if (req.url().endsWith('/models')) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [{ id: 'gpt-test-mini' }, { id: 'gpt-test' }] }) });
+    if ('max_tokens' in body) return route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ error: { message: "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead." } }) });
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: 'ok' } }], usage: { total_tokens: 3 } }) });
+  });
+  await p.context().route('https://api.anthropic.com/v1/**', (route) => {
+    calls.push({ url: route.request().url(), method: route.request().method(), headers: route.request().headers() });
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [{ id: 'claude-test' }] }) });
+  });
+  await go(p, '/index.html');
+  await p.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openSettings()));
+  await p.check('input[name=provider][value=custom]', { force: true });
+  await p.selectOption('select[name=vendor]', 'openai');
+  assert.equal(await p.inputValue('input[name=customBase]'), 'https://api.openai.com/v1');
+  assert.equal(await p.getAttribute('[data-keyurl]', 'href'), 'https://platform.openai.com/api-keys');
+  await p.fill('input[name=key]', 'sk-test');
+  await p.click('[data-act=models]');
+  await p.waitForFunction(() => document.querySelectorAll('#cai-models option').length === 2);
+  await p.fill('input[name=customModel]', 'gpt-test-mini');
+  await p.click('[data-act=test]');
+  await p.waitForFunction(() => /连接成功/.test(document.querySelector('.cai-status').textContent));
+  const posts = calls.filter((c) => c.method === 'POST');
+  assert.equal(posts.length, 2, 'one rejected request, one retried');
+  assert.ok('max_tokens' in posts[0].body && 'max_completion_tokens' in posts[1].body && !('max_tokens' in posts[1].body));
+  assert.equal(posts[1].headers.authorization, 'Bearer sk-test');
+  // Claude answers browsers only with its opt-in header.
+  await p.selectOption('select[name=vendor]', 'anthropic');
+  await p.click('[data-act=models]');
+  await p.waitForFunction(() => document.querySelectorAll('#cai-models option').length === 1);
+  const claude = calls.find((c) => c.url.startsWith('https://api.anthropic.com'));
+  assert.equal(claude.headers['anthropic-dangerous-direct-browser-access'], 'true');
+  await finish(p);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');

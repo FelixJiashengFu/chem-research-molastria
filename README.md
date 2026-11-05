@@ -17,7 +17,7 @@ One place to search computational-chemistry databases, software, tutorials, pape
 | --- | --- | --- |
 | 统一搜索 Search | `public/index.html` | 1,465 条去重资源的多关键词检索、筛选、收藏与 CSV 导出；中文术语能搜到英文条目，问句自动近似匹配，结果少时引导去问 AI、雷达和网状查询。<br>Keyword search, filters, saved items and CSV export over 1,465 deduplicated resources; Chinese terms find English entries, natural-language questions fall back to fuzzy matching, and few results lead on to the AI assistant, PreprintRadar and the network. |
 | 网状查询 Network | `public/hub/network.html` | 来源、主题与数据库的关系图，点节点即跨库查询。<br>A graph of sources, topics and databases; click a node to query across all of them. |
-| 讲解与数据库 Guide & databases | `public/atlas/index.html` | 103 条数据库目录、19 章讲解阅读器、Agent 工程说明。<br>103-entry database catalogue, the 19-chapter guide reader, Agent engineering notes. |
+| 讲解与数据库 Guide & databases | `public/atlas/index.html` | 187 条数据库目录、19 章讲解阅读器、Agent 工程说明。<br>187-entry database catalogue, the 19-chapter guide reader, Agent engineering notes. |
 | 论文与社区 Papers & community | `public/hub/index.html` | 来源接入状态、内容分布、论文与教程快照。<br>Source status, content charts, paper and tutorial snapshots. |
 | 预印本雷达 PreprintRadar | `public/radar/` | 同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台，按兴趣主题定时推荐、一键导出 PDF；是独立项目 [PreprintRadar](https://github.com/FelixJiashengFu/PreprintRadar) 的网页版，用 `tools/vendor-radar.ts` 复制进来，跟随本站的深浅色和中英文。<br>Search 12 preprint servers, scheduled recommendations and PDF export: the web build of the separate PreprintRadar project, copied in by `tools/vendor-radar.ts` and following this site's theme and language. |
 | 训练 Agent Train an agent | `public/train/index.html` | 用开源小模型训练化学研究 Agent：2026-10 最新小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型对比，每个模型可展开详细介绍；数据构造、LoRA、GRPO、评测与本地部署代码。<br>Train a chemistry research agent on an open small model: an October 2026 comparison of small and chemistry-specific models with expandable details, plus data, LoRA, GRPO, evaluation and local-deployment code. |
@@ -61,6 +61,7 @@ $env:DEEPSEEK_API_KEY = "<key>"; deno run --allow-net --allow-env --allow-read t
 
 ```powershell
 deno run --allow-net --allow-read tools/serve.ts 8830              # 本地预览 · local preview of public/
+# 或在 GitHub Codespaces 打开（已配置 .devcontainer）· or open in Codespaces: https://codespaces.new/FelixJiashengFu/chem-research-molastria
 deno run --allow-read --allow-write tools/build-seo.ts             # SEO 页面与 sitemap · SEO pages and sitemap
 deno run --allow-read --allow-write tools/i18n-extract.ts          # 抽取界面文字 · collect UI strings
 deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate.ts   # 补译并生成 public/i18n/en.js

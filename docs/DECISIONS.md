@@ -2,6 +2,16 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-05 目录每周四自动刷新，抓不到就沿用上周
+
+`refresh-data.yml` 在 GitHub Actions 上运行原来的 Python 爬虫和 `hub-chemrxiv.ts`，提交后用 `gh workflow run pages.yml` 触发发布（用 GITHUB_TOKEN 推送不会自动触发其他工作流）。某个来源失败时爬虫沿用上周条目；`check-catalogue.mjs` 在条目减少超过 15% 或有来源为空时拒绝提交。
+**原因：** 爬虫在海外的 CI 机器上也能跑通公开来源；宁可旧一点，也不能让一次失败的抓取清空目录。
+
+## 2026-11-05 其他服务商放在“其他兼容接口”里，不写进页面介绍
+
+AI 设置的服务商卡片仍是 DeepSeek、Meta Muse、其他兼容接口三张；19 家服务商作为“其他兼容接口”的预设，填好 key 后从各家的 `/models` 读取模型列表，不写死型号。只收 CORS 预检通过的（2026-11-05 测过；智谱、腾讯混元、NVIDIA 不允许浏览器直接调用，没收）。Anthropic 需要 `anthropic-dangerous-direct-browser-access` 头。新模型拒绝 `max_tokens` 或 `temperature` 时自动按报错改参数重试一次。
+**原因：** 用户要求能接各家 API，但页面介绍保持 Meta / DeepSeek 的定位；型号变化快，写死很快就过时。
+
 ## 2026-11-05 桌面版跑 UMA：脚本编译进应用，页面只传参数
 
 桌面版的“在本机运行”用访客自己的 Python（自动找 `py -0p`、PATH、python.org 和 conda 的安装位置，也可以填路径）。要跑的 Python 脚本 `uma/runner.py` 用 `include_str!` 编进应用，页面只能传 SMILES、任务、模型、设备、电荷、自旋，Rust 端逐项校验；解释器必须是叫 python / python3 的绝对路径。日志用轮询取（和更新进度一样），没有引入前端 Tauri 包。计算结果写在应用数据的 `uma-runs/` 下，IP/EA 通过 localStorage 交给 AI 实验室导入。

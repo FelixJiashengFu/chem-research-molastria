@@ -131,5 +131,6 @@ sequenceDiagram
 | --- | --- | --- |
 | `.github/workflows/pages.yml` | 推到 `main` | 测试、生成 SEO 页、发布网站 |
 | `.github/workflows/desktop.yml` | 推 `desktop-v*` 标签 | 构建 Win/Mac，签名，发布 Release 和 `latest.json` |
+| `.github/workflows/refresh-data.yml` | 每周四 13:00（UTC），也可手动运行 | 爬取各来源、合并目录、刷新 ChemRxiv，`tools/check-catalogue.mjs` 检查条目没有大幅减少后提交，再触发网站发布 |
 | `.github/workflows/health.yml` | 每周一，以及推到 `main` 时 | 浏览器端到端测试；定时运行时还检查线上。失败时 GitHub 发邮件 |
 | Worker 定时任务（`wrangler.toml`） | 周一 12:00–20:00（UTC）每小时；每 15 分钟 | 生成每周精选；发送每周精选 |

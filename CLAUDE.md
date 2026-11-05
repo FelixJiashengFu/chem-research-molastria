@@ -30,7 +30,7 @@ desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs +
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-maintenance/          旧的 Python 爬虫（本机没装 Python）
+maintenance/          Python 爬虫与合并脚本；每周四由 .github/workflows/refresh-data.yml 自动运行
 ```
 
 ## 常用命令

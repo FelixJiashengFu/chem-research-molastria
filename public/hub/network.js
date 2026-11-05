@@ -346,7 +346,7 @@ async function load(){
   if (!DATA || !Array.isArray(DATA.items) || !Array.isArray(DATA.sources))
     throw new Error("缺少合并资源数据，请完整解压压缩包后打开");
   ITEMS = DATA.items; SOURCES = DATA.sources;
-  $("generatedAt").textContent = "数据生成：" + new Date(DATA.generatedAt).toLocaleString("zh-CN");
+  $("generatedAt").textContent = `数据生成：${new Date(DATA.generatedAt).toLocaleString("zh-CN")} · 每周四自动更新`;
   $("netSource").innerHTML = '<option value="">全部来源</option>' +
     SOURCES.map((s) => '<option value="' + esc(s.id) + '">' + esc(s.name) + "</option>").join("");
   $("presetChips").innerHTML = PRESETS.map((p) => '<button class="chip preset" type="button" data-q="' + esc(p) + '">' + esc(p) + "</button>").join("");

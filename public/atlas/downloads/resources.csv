@@ -102,3 +102,87 @@
 101,Sobereva 思想家公社,Sobereva 的博客，含大量量子化学入门、Multiwfn 与实用技巧长文。,http://sobereva.com,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
 102,X-MOL,中文化学与材料文献平台，可跟踪期刊、主题与最新研究进展。,https://www.x-mol.com,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
 103,CCL,Computational Chemistry List，国际计算化学邮件列表与资源索引。,http://www.ccl.net/chemistry,11,社区与中文入口,免费,catalog,社区/中文入口，仅作资源导航
+104,Molpro,以高精度多参考与耦合簇方法见长的量子化学程序，CASSCF/MRCI/CCSD(T)-F12 等波函数方法的常用参考。,https://www.molpro.net/,12,量子化学程序与方法库,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+105,OpenMolcas,开源的多参考量子化学程序（Molcas 开源版），擅长 CASSCF/RASSCF、CASPT2 与过渡金属、激发态体系。,https://gitlab.com/Molcas/OpenMolcas,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+106,CFOUR,专注耦合簇方法的量子化学程序，CCSD(T)、EOM-CC 与解析梯度、振动光谱性质计算是其强项。,https://cfour.uni-mainz.de/cfour/,12,量子化学程序与方法库,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+107,MRCC,高阶耦合簇与局域相关方法程序，可做任意阶 CC 计算和大体系的局域 CCSD(T)。,https://www.mrcc.hu/,12,量子化学程序与方法库,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+108,Dalton,开源量子化学程序，以响应理论计算分子性质（极化率、NMR、光谱）见长。,https://daltonprogram.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+109,DIRAC,相对论量子化学程序，基于四分量 Dirac–Coulomb 哈密顿量，适合重元素体系。,https://diracprogram.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+110,ReSpect,相对论量子化学程序，侧重重元素体系的 EPR/NMR 参数和光谱性质计算。,https://www.respectprogram.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+111,TURBOMOLE,高效的商业量子化学程序，RI 近似下的 DFT、MP2、CC2 与激发态计算速度快。,https://www.turbomole.org/,12,量子化学程序与方法库,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+112,BAGEL,开源的多参考电子结构程序，支持 CASSCF、CASPT2、MRCI 及相对论计算。,https://nubakery.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+113,Quantum Package,以选择组态相互作用（CIPSI）为核心的开源程序，可逼近全组态相互作用（FCI）精度。,https://github.com/QuantumPackage/qp2,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+114,block2,高效的密度矩阵重整化群（DMRG）量子化学程序，可与 PySCF 联用处理强关联体系。,https://github.com/block-hczhai/block2-preview,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+115,CheMPS2,面向量子化学的自旋自适应 DMRG 库，可作为 CASSCF 的活性空间求解器。,https://github.com/SebWouters/CheMPS2,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+116,NECI,全组态相互作用量子蒙特卡罗（FCIQMC）程序，用随机方法求解大活性空间问题。,https://github.com/fkfest/NECI_STABLE,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+117,QMCPACK,开源量子蒙特卡罗程序，可做变分与扩散蒙特卡罗（VMC/DMC），适用于分子与固体。,https://qmcpack.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+118,CASINO,经典的量子蒙特卡罗程序，用于分子、固体和二维材料的高精度 DMC 计算。,https://vallico.net/casinoqmc/,12,量子化学程序与方法库,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+119,MOPAC,经典半经验量子化学程序（PM6、PM7 等），2022 年起开源，适合大分子的快速计算。,https://openmopac.net/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+120,Sparrow,SCINE 项目的半经验方法库，提供 MNDO、AM1、PM6、DFTB 等快速电子结构计算。,https://github.com/qcscine/sparrow,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+121,CREST,基于 xtb 的构象与质子化态搜索工具，常用于计算前的构象系综生成。,https://crest-lab.github.io/crest-docs/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+122,DFT-D4,Grimme 课题组的 D4 色散校正库，可与多数 DFT 程序和泛函配合使用。,https://github.com/dftd4/dftd4,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+123,simple-dftd3,DFT-D3 色散校正的重新实现，带 Python 接口，便于在各类程序中调用。,https://github.com/dftd3/simple-dftd3,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+124,tblite,轻量的紧束缚（GFN-xTB）计算库，提供 Python 接口，可嵌入其他工作流。,https://github.com/tblite/tblite,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+125,Libint,高斯基组分子积分库，被 Psi4、ORCA、CP2K 等众多程序使用。,https://github.com/evaleev/libint,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+126,libcint,PySCF 使用的高斯积分库，支持多种积分与导数，速度快、接口简单。,https://github.com/sunqm/libcint,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+127,QCEngine,MolSSI 的统一计算执行层，用同一套 QCSchema 输入调用 Psi4、ORCA、xtb 等多种程序。,https://github.com/MolSSI/QCEngine,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+128,ChemShell,QM/MM 多尺度计算平台，可把量子化学程序与分子力学程序组合起来模拟酶与材料表面。,https://www.chemshell.org/,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+129,FHI-aims,基于数值原子轨道的全电子第一性原理程序，可处理分子与周期体系，杂化泛函和 GW 计算效率高。,https://fhi-aims.org/,13,周期体系与凝聚态第一性原理,注册,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+130,SIESTA,基于数值原子轨道的线性标度 DFT 程序，适合含数千原子的大体系。,https://siesta-project.org/siesta/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+131,GPAW,基于 PAW 方法的 Python DFT 程序，可用实空间网格、平面波或原子轨道基组，与 ASE 深度集成。,https://gpaw.readthedocs.io/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+132,Octopus,实空间、实时含时密度泛函（TDDFT）程序，用于激发态、光吸收与强场动力学。,https://octopus-code.org/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+133,WIEN2k,全电子 LAPW 方法的经典固体电子结构程序，常作为能带与电子结构计算的高精度参考。,http://www.wien2k.at/,13,周期体系与凝聚态第一性原理,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+134,CASTEP,平面波赝势 DFT 程序，学术用户可免费获取，商业版集成在 BIOVIA Materials Studio。,https://www.castep.org/,13,周期体系与凝聚态第一性原理,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+135,exciting,全电子 LAPW 程序，侧重激发态：GW、BSE 与 TDDFT 光谱计算。,https://www.exciting-code.org/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+136,Elk,开源全电子 FP-LAPW 程序，适合磁性与非共线自旋体系的精确计算。,https://elk.sourceforge.io/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+137,Yambo,多体微扰理论程序，基于平面波 DFT 结果计算 GW 准粒子能级与 BSE 激子光谱。,https://www.yambo-code.eu/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+138,BerkeleyGW,大规模并行的 GW/BSE 程序，用于计算准粒子能带与激子效应。,https://berkeleygw.org/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+139,Wannier90,构造最局域化 Wannier 函数的工具，用于能带插值、拓扑性质与输运计算。,https://wannier.org/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+140,phonopy,声子计算工具，配合 VASP、QE 等程序得到声子谱、热力学性质和热膨胀。,https://phonopy.github.io/phonopy/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+141,DFTK.jl,用 Julia 编写的平面波 DFT 工具包，代码简洁，适合方法开发与教学。,https://docs.dftk.org/stable/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+142,JDFTx,平面波 DFT 程序，内置联合密度泛函（JDFT）溶剂模型，适合电化学界面。,https://jdftx.org/,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+143,Critic2,分析周期与分子体系电子密度的程序，可做 QTAIM 拓扑分析、NCI 图和晶体结构比较。,https://aoterodelaroza.github.io/critic2/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+144,Bader Charge Analysis,Henkelman 课题组的 Bader 电荷划分程序，常与 VASP 输出的电荷密度配合使用。,https://theory.cm.utexas.edu/henkelman/code/bader/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+145,LOBSTER,把平面波结果投影到局域基组上做化学键分析（COHP、COOP），用于解释固体中的成键。,http://www.cohp.de/,14,波函数分析、可视化与动力学,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+146,IboView,计算并可视化内禀成键轨道（IBO）的工具，直观展示化学键与反应中的电子流动。,http://www.iboview.org/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+147,NBO 7,自然键轨道（NBO）分析程序，给出 Lewis 结构、电荷和超共轭等化学解释。,https://nbo7.chem.wisc.edu/,14,波函数分析、可视化与动力学,商业,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+148,ChemTools,基于 Python 的概念 DFT 与波函数分析工具，计算 Fukui 函数、ELF、NCI 等描述符。,https://chemtools.org/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+149,Jmol,开源的分子与晶体三维可视化工具，可显示轨道、振动和表面。,https://jmol.sourceforge.net/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+150,VMD,分子可视化与轨迹分析程序，常用于分子动力学结果和体数据（如电子密度）的展示。,https://www.ks.uiuc.edu/Research/vmd/,14,波函数分析、可视化与动力学,注册,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+151,IQmol,开源的分子编辑与可视化程序，可搭建结构、显示轨道和振动，并作为 Q-Chem 前端。,https://www.iqmol.org/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+152,ChimeraX,UCSF 的分子可视化程序，非商业用途免费，擅长大分子结构与体数据显示。,https://www.cgl.ucsf.edu/chimerax/,14,波函数分析、可视化与动力学,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+153,Molden,经典的量子化学结果可视化程序，可显示分子轨道、电子密度和振动模式。,https://www.theochem.ru.nl/molden/,14,波函数分析、可视化与动力学,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+154,Newton-X,非绝热分子动力学平台，用面跳跃方法模拟光激发后的动力学过程。,https://newtonx.org/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+155,SHARC,面跳跃非绝热动力学程序，可处理系间窜越等任意耦合，并对接多种量子化学程序。,https://sharc-md.org/,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+156,MCTDH,多组态含时 Hartree（MCTDH）量子动力学程序包，用于多维核量子动力学模拟。,https://www.pci.uni-heidelberg.de/tc/usr/mctdh/,14,波函数分析、可视化与动力学,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+157,Quantics,量子动力学程序包，包含 MCTDH、G-MCTDH 与直接动力学方法。,https://www.chem.ucl.ac.uk/quantics/,14,波函数分析、可视化与动力学,学术免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+158,Qiskit Nature,Qiskit 的化学与物理模块，把分子哈密顿量映射到量子比特，配合 VQE 等算法求解。,https://qiskit-community.github.io/qiskit-nature/,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+159,OpenFermion,Google 的量子化学量子计算库，负责费米子哈密顿量构造与量子比特映射。,https://quantumai.google/openfermion,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+160,PennyLane Quantum Chemistry,PennyLane 的量子化学模块，可构造分子哈密顿量并用可微分量子线路做 VQE。,https://docs.pennylane.ai/en/stable/introduction/chemistry.html,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+161,Tequila,面向量子化学算法开发的抽象层，可在多种量子模拟后端上运行 VQE 等算法。,https://github.com/tequilahub/tequila,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+162,TenCirChem,腾讯量子实验室的量子计算化学软件包，提供高效的 UCC/VQE 模拟与动力学。,https://github.com/tencent-quantum-lab/TenCirChem,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+163,CUDA-Q,NVIDIA 的量子–经典混合编程平台，可在 GPU 上快速模拟量子化学线路。,https://nvidia.github.io/cuda-quantum/latest/,16,量子计算与量子化学算法,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+164,MIT 8.04 Quantum Physics I,MIT 开放课程：波函数、薛定谔方程、一维势与谐振子，量子力学入门全套讲义和视频。,https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+165,MIT 8.05 Quantum Physics II,MIT 开放课程：狄拉克符号、角动量、自旋与角动量耦合，量子力学的形式体系。,https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+166,MIT 8.06 Quantum Physics III,MIT 开放课程：微扰论、WKB 近似、散射与全同粒子，连接到原子分子物理的应用。,https://ocw.mit.edu/courses/8-06-quantum-physics-iii-spring-2018/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+167,MIT 5.61 Physical Chemistry,MIT 开放课程：从量子力学基础到原子、分子轨道和化学键，化学系的量子化学入门课。,https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+168,MIT 5.73 Introductory Quantum Mechanics I,MIT 化学系研究生量子力学课程，侧重光谱与分子体系中的应用。,https://ocw.mit.edu/courses/5-73-introductory-quantum-mechanics-i-fall-2005/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+169,MIT 5.74 Introductory Quantum Mechanics II,MIT 化学系研究生课程：含时量子力学、密度矩阵与光谱学的量子描述。,https://ocw.mit.edu/courses/5-74-introductory-quantum-mechanics-ii-spring-2009/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+170,"Feynman Lectures on Physics, Vol. III",加州理工官方在线版《费曼物理学讲义》量子力学卷，从概率幅讲起的经典入门。,https://www.feynmanlectures.caltech.edu/III_toc.html,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+171,"OpenStax University Physics, Vol. 3",免费开放教材，后半部分涵盖光子、物质波、薛定谔方程、原子结构与固体物理。,https://openstax.org/details/books/university-physics-volume-3,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+172,LibreTexts Physical & Theoretical Chemistry,LibreTexts 汇编的物理与理论化学开放教材，包括多本量子化学与光谱学教材。,https://chem.libretexts.org/Bookshelves/Physical_and_Theoretical_Chemistry_Textbook_Maps,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+173,Crawford Group Programming Projects,从读几何到自己写 Hartree–Fock、MP2、CCSD 的分步编程练习，学习量子化学算法的经典材料。,https://github.com/CrawfordGroup/ProgrammingProjects,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+174,MolSSI Education,MolSSI 的计算化学与科学编程教程，包括 Python、量子化学计算和软件工程入门。,https://education.molssi.org/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+175,Sherrill Group Notes,佐治亚理工 Sherrill 课题组的量子化学讲义，涵盖 Hartree–Fock、组态相互作用与微扰理论推导。,https://vergil.chemistry.gatech.edu/notes/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+176,IBM Quantum Learning,IBM 的量子计算课程平台，包含量子信息基础、变分算法与量子化学应用。,https://quantum.cloud.ibm.com/learning/en,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+177,Quantum Country,用间隔重复方式写成的量子计算与量子力学入门读物。,https://quantum.country/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+178,Stanford Encyclopedia of Philosophy: Quantum Mechanics,斯坦福哲学百科的量子力学条目，讲解希尔伯特空间形式体系与测量问题等概念基础。,https://plato.stanford.edu/entries/qm/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+179,Q-Chem Manual,Q-Chem 在线手册，按方法分章介绍 DFT、耦合簇、激发态与性质计算的原理和用法。,https://manual.q-chem.com/latest/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+180,Gaussian Online Manual,Gaussian 关键词与方法说明，附原始文献，是查方法定义与默认设置的常用参考。,https://gaussian.com/man/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+181,ORCA Input Library,ORCA 输入示例与方法说明合集，涵盖 DFT、DLPNO-CC、多参考与光谱计算。,https://sites.google.com/site/orcainputlibrary/,15,量子力学与量子化学课程教材,免费,catalog,课程/教材/讲义，仅作学习资源导航
+182,NIST CODATA Fundamental Constants,CODATA 推荐的基本物理常数（普朗克常数、精细结构常数、单位换算等）。,https://physics.nist.gov/cuu/Constants/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+183,NIST Digital Library of Mathematical Functions,NIST 数字数学函数库，收录量子力学中常用的特殊函数（球谐、厄米、拉盖尔多项式等）。,https://dlmf.nist.gov/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+184,PseudoDojo,经过系统测试的模守恒赝势库，可用于 ABINIT、Quantum ESPRESSO 等平面波程序。,https://www.pseudo-dojo.org/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+185,SG15 ONCV Pseudopotentials,Schlipf–Gygi 优化的模守恒（ONCV）赝势集，覆盖大部分元素。,http://www.quantum-simulation.org/potentials/sg15_oncv/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+186,Stuttgart/Cologne Pseudopotentials,斯图加特/科隆能量一致赝势（ECP）与配套基组，常用于重元素分子计算。,https://www.tc.uni-koeln.de/PP/clickpse.en.html,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+187,BEGDB,非共价相互作用基准数据库，收录 S22、S66 等高精度参考数据。,http://www.begdb.org/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器

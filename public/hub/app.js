@@ -94,7 +94,7 @@ function applyFilters(){
 
 function renderAll(){
   const d = state.data; const items = d.items;
-  $("generatedAt").textContent = "数据快照：" + new Date(d.generatedAt).toLocaleString("zh-CN");
+  $("generatedAt").textContent = `数据快照：${new Date(d.generatedAt).toLocaleString("zh-CN")} · 每周四自动更新`;
   $("complianceLine").textContent = d.compliance || "";
   const bySrc = d.sources.map((s) => ({...s, count: items.filter((i) => i.source === s.id).length}));
   const maxCount = Math.max(1, ...bySrc.map((s) => s.count));
