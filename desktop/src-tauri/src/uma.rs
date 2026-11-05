@@ -68,7 +68,7 @@ fn check(p: &mut Params) -> Result<(), String> {
     p.name = if name.is_empty() || name.starts_with('.') { "molecule".into() } else { name };
     let ok = ["ipea", "opt", "conf", "md"].contains(&p.job.as_str())
         && ["uma-s-1p2p1", "uma-s-1p2p1-ft-d4rev", "uma-m-1p1"].contains(&p.model.as_str())
-        && ["cuda", "cpu"].contains(&p.device.as_str())
+        && ["auto", "cuda", "rocm", "apple", "cpu"].contains(&p.device.as_str())
         && (-4..=4).contains(&p.charge)
         && (1..=7).contains(&p.spin);
     if ok { Ok(()) } else { Err("bad-params".into()) }

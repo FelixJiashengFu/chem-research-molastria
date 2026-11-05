@@ -2,6 +2,11 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-05 UMA 设备选项：自动、NVIDIA、AMD、Apple、CPU
+
+fairchem 2.25（目前最新）只接受 `cuda` 和 `cpu`（`assert device in ["cpu", "cuda"]`）。AMD 显卡在 ROCm 版 PyTorch 里就是 `cuda`，所以能用；Apple GPU（MPS）fairchem 不支持，选 Apple 时在 M 系列 CPU 上跑，页面写明。默认“自动检测”：有 GPU 用 GPU，否则 CPU。桌面版的参数检查同步放宽到这五个值。
+**原因：** 用户要求加上 Apple 和 AMD 的选项；不能假装 Apple GPU 可用。
+
 ## 2026-11-05 训练页的模型每周四自动核对；网状图改成持续运行的力导向
 
 `tools/train-models.mjs` 跟目录刷新一起跑：读出训练页上所有 Hugging Face 模型链接，查是否还在、近 30 天下载、点赞、更新日期；再从各家实验室的官方账号找出近 60 天新发布、40B 以下、上表没有的文本或图文模型（排除量化版、草稿头、Base 等），写进 `public/train/models-live.js`。手写的模型介绍不自动改；新模型只列出，标明未经人工评测。Hugging Face 出问题时保留上周的文件。

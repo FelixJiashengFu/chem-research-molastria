@@ -121,7 +121,7 @@
       a.dataset.live = '1';
       const s = document.createElement('small');
       s.className = 'hf-stats';
-      if (m.ok) { s.textContent = `↓ ${short(m.downloads)} · ♥ ${short(m.likes)}`; s.title = `近 30 天下载 ${m.downloads ?? '?'} · 点赞 ${m.likes ?? '?'} · 更新于 ${m.updated}`; }
+      if (m.ok) { s.innerHTML = `<span>↓ ${short(m.downloads)}</span> <span>♥ ${short(m.likes)}</span>`; s.title = `近 30 天下载 ${m.downloads ?? '?'} · 点赞 ${m.likes ?? '?'} · 更新于 ${m.updated}`; }
       else { s.textContent = '本周检查打不开'; s.classList.add('hf-dead'); }
       a.after(s);
     }

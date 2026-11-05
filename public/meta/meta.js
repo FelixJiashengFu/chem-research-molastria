@@ -209,7 +209,27 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       `SMILES = ${py(smiles)}`,
       `NAME = ${py(name)}`,
       `CHARGE, SPIN = ${charge}, ${spin}  # SPIN is the multiplicity 2S+1, as fairchem expects`,
-      `MODEL, DEVICE = ${py(model)}, ${py(device)}  # DEVICE = "cpu" also works, only slower`
+      `MODEL, DEVICE = ${py(model)}, ${py(device)}  # auto, cuda (NVIDIA), rocm (AMD), apple or cpu`
+    ];
+    const pick = [
+      'def pick_device(want):',
+      '    """fairchem runs UMA on "cuda" or "cpu". AMD cards appear as "cuda" in the ROCm build of PyTorch.',
+      '    fairchem does not support Apple GPUs (MPS) yet, so a Mac uses its CPU, which is fine for small molecules."""',
+      '    import torch',
+      '    if want in ("auto", "cuda", "rocm") and torch.cuda.is_available():',
+      '        kind = "AMD ROCm" if torch.version.hip else "NVIDIA CUDA"',
+      '        print(f"GPU: {torch.cuda.get_device_name(0)} ({kind})")',
+      '        return "cuda"',
+      '    if want == "rocm":',
+      '        print("No AMD GPU in this PyTorch: install the ROCm build from https://pytorch.org/get-started/locally/ (Linux). Using the CPU.")',
+      '    elif want == "cuda":',
+      '        print("No NVIDIA GPU in this PyTorch (CPU-only build or no driver). Using the CPU.")',
+      '    elif want == "apple":',
+      '        print("fairchem does not support Apple GPUs (MPS) yet; running on the CPU.")',
+      '    return "cpu"',
+      '',
+      '',
+      'DEVICE = pick_device(DEVICE)'
     ];
     const predictor = job === 'md'
       ? ['# fairchem seeds numpy\'s global RNG when it loads a model; pass a fresh seed for a new trajectory.', 'seed = int(np.random.randint(0, np.iinfo(np.int32).max))', 'predictor = pretrained_mlip.get_predict_unit(MODEL, device=DEVICE, seed=seed)']
@@ -327,7 +347,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       );
     }
     const usesEmbed = job !== 'conf';
-    return [...head, ...imports, '', ...consts, '', ...predictor, '', '', ...(usesEmbed ? [...embed, '', ''] : []), ...relax, '', '', ...body, ''].join('\n');
+    return [...head, ...imports, '', ...consts, '', '', ...pick, ...predictor, '', '', ...(usesEmbed ? [...embed, '', ''] : []), ...relax, '', '', ...body, ''].join('\n');
   }
 
   function render() {
@@ -423,7 +443,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
         chips.push(usable(info.python) ? chip('ok', `Python ${esc(info.python)}`) : chip('bad', `Python ${esc(info.python)}：需要 3.11–3.14`));
         chips.push(info.fairchem ? chip('ok', `fairchem ${esc(info.fairchem)}`) : chip('bad', '没有 fairchem'));
         chips.push(info.rdkit ? chip('ok', `RDKit ${esc(info.rdkit)}`) : chip('bad', '没有 RDKit'));
-        chips.push(!info.torch ? chip('bad', '没有 PyTorch') : info.cuda ? chip('ok', `GPU：${esc(info.gpu || 'CUDA')}`) : chip('warn', '只能用 CPU（较慢）'));
+        chips.push(!info.torch ? chip('bad', '没有 PyTorch') : info.cuda ? chip('ok', `GPU：${esc(info.gpu || 'CUDA')}${info.hip ? '（ROCm）' : ''}`) : info.mps ? chip('warn', 'Apple 芯片：fairchem 暂不支持 Apple GPU，用 CPU') : chip('warn', '只能用 CPU（较慢）'));
         chips.push(!info.hf_login ? chip('bad', '没有登录 Hugging Face') : info.uma_access === true ? chip('ok', 'facebook/UMA 已有权限') : info.uma_access === false ? chip('bad', '这个账号还没有 facebook/UMA 权限') : chip('warn', '已登录，权限暂时没能确认'));
         if (!usable(info.python)) steps.push(['fairchem 需要 Python 3.11–3.14：装一个新的 Python，或在下面填另一个环境的路径。']);
         else {

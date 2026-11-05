@@ -38,6 +38,8 @@ def probe(quick=False):
 
         info["torch"] = torch.__version__
         info["cuda"] = bool(torch.cuda.is_available())
+        info["hip"] = bool(getattr(torch.version, "hip", None))
+        info["mps"] = bool(getattr(torch.backends, "mps", None) and torch.backends.mps.is_available())
         if info["cuda"]:
             info["gpu"] = torch.cuda.get_device_name(0)
     except Exception as e:  # noqa: BLE001 - reported to the user as-is
@@ -88,8 +90,18 @@ def run(params):
 
     import torch
 
-    if device == "cuda" and not torch.cuda.is_available():
-        emit("STEP", "CUDA is not available in this Python; running on the CPU instead")
+    # fairchem accepts only "cuda" and "cpu". AMD cards appear as "cuda" in the ROCm build of PyTorch;
+    # Apple GPUs (MPS) are not supported by fairchem yet, so a Mac runs on its CPU.
+    want = device
+    if want in ("auto", "cuda", "rocm") and torch.cuda.is_available():
+        kind = "AMD ROCm" if getattr(torch.version, "hip", None) else "NVIDIA CUDA"
+        emit("STEP", f"Using the GPU: {torch.cuda.get_device_name(0)} ({kind})")
+        device = "cuda"
+    else:
+        if want in ("cuda", "rocm"):
+            emit("STEP", "No usable GPU in this Python; running on the CPU instead")
+        elif want == "apple":
+            emit("STEP", "fairchem does not support Apple GPUs (MPS) yet; running on the CPU")
         device = "cpu"
 
     from fairchem.core import FAIRChemCalculator, pretrained_mlip

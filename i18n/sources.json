@@ -1871,6 +1871,12 @@
  "设备": [
   "meta/index.html"
  ],
+ "自动检测（推荐）": [
+  "meta/index.html"
+ ],
+ "Apple 芯片 Mac（用 CPU）": [
+  "meta/index.html"
+ ],
  "电荷": [
   "meta/index.html"
  ],
@@ -5727,6 +5733,9 @@
   "meta/meta.js"
  ],
  "没有 PyTorch": [
+  "meta/meta.js"
+ ],
+ "Apple 芯片：fairchem 暂不支持 Apple GPU，用 CPU": [
   "meta/meta.js"
  ],
  "只能用 CPU（较慢）": [

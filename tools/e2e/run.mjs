@@ -439,7 +439,7 @@ check('Meta page in the desktop app: checks Python, runs UMA locally, imports in
   await p.waitForSelector('.mx-res');
   const started = await p.evaluate(() => window.__fake.started);
   assert.equal(started.python, 'C:\\envs\\uma\\Scripts\\python.exe');
-  assert.deepEqual(started.params, { smiles: 'O=C1OCC(F)O1', name: 'FEC', job: 'ipea', model: 'uma-s-1p2p1', device: 'cuda', charge: 0, spin: 1, with_m: true });
+  assert.deepEqual(started.params, { smiles: 'O=C1OCC(F)O1', name: 'FEC', job: 'ipea', model: 'uma-s-1p2p1', device: 'auto', charge: 0, spin: 1, with_m: true });
   const log = await text(p, '#u-log');
   assert.ok(log.includes('▸ Loading uma-s-1p2p1') && !log.includes('@@RESULT'), log);
   assert.ok((await text(p, '.mx-res')).includes('10.900'));

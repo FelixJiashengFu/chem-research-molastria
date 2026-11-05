@@ -115,7 +115,7 @@
             <option value="uma-s-1p2p1-ft-d4rev">uma-s-1p2p1-ft-d4rev · ωB97M-D4rev 微调</option>
             <option value="uma-m-1p1">uma-m-1p1 · 最准，较慢</option>
           </select></label>
-          <label>设备<select id="u-device"><option value="cuda">GPU（cuda）</option><option value="cpu">CPU</option></select></label>
+          <label>设备<select id="u-device"><option value="auto">自动检测（推荐）</option><option value="cuda">NVIDIA GPU（CUDA）</option><option value="rocm">AMD GPU（ROCm）</option><option value="apple">Apple 芯片 Mac（用 CPU）</option><option value="cpu">CPU</option></select></label>
           <label>电荷<input type="number" id="u-charge" value="0" step="1" min="-4" max="4"></label>
           <label>自旋多重度<input type="number" id="u-spin" value="1" step="1" min="1" max="7"></label>
         </div>

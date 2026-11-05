@@ -169,6 +169,7 @@ textarea{width:100%;resize:vertical;line-height:1.6}
 .chart .axis{stroke:var(--line-strong)}
 .chart .gridline{stroke:var(--line);stroke-dasharray:2 4}
 .chart .tick{fill:var(--muted);font-size:11px}
+.hv .tick{fill:var(--ink);font-size:12px;font-weight:600}
 .chart .label{fill:var(--ink-2);font-size:12px;font-weight:600}
 .chart .front{fill:none;stroke:var(--gold);stroke-width:2}
 .chart .front-old{fill:none;stroke:var(--line-strong);stroke-width:1.4;stroke-dasharray:4 4}
