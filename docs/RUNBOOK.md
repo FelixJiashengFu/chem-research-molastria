@@ -7,6 +7,7 @@
 ```bash
 deno run --allow-read tools/account-test.ts
 node --test tools/lab-test.mjs
+node --test tools/net-test.mjs
 node tools/e2e/run.mjs
 git fetch origin && git rebase origin/main
 git -c credential.helper= -c "credential.helper=!gh auth git-credential" push origin main

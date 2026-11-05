@@ -8,7 +8,7 @@
   const links = [
     ['search', 'index.html', '统一搜索'],
     ['network', 'hub/network.html', '网状查询'],
-    ['atlas', 'atlas/index.html#guide', '中文讲解与数据库'],
+    ['atlas', 'atlas/index.html#guide', '讲解手册与数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
     ['lab', 'lab/index.html', 'AI 实验室'],

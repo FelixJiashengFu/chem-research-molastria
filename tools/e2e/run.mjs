@@ -492,6 +492,63 @@ check('AI settings: vendor presets fill the endpoint, list models and adapt to t
   await finish(p);
 });
 
+check('handbook: Chinese and English chapters, the choice is remembered, the English site opens in English', async () => {
+  const p = await open();
+  await go(p, '/atlas/index.html#guide/p08-cat05');
+  await p.waitForSelector('#guide-article h1');
+  assert.match(await text(p, '#view-guide .page-intro h1'), /^说明讲解手册/);
+  assert.doesNotMatch(await p.innerText('.topbar'), /研究工作台|阅读指南/);
+  assert.equal(await p.locator('#view-guide .page-intro p').count(), 0);
+  assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
+  await p.click('[data-guide-lang=en]');
+  assert.equal(await text(p, '#guide-article h1'), 'Drugs, bioactivity & chemical space');
+  assert.equal(await p.getAttribute('#guide-article', 'lang'), 'en');
+  assert.equal(await text(p, '#reader-progress'), '09 / 19 · 05 · Drugs & chemical space');
+  await p.click('#guide-next');
+  assert.equal(await text(p, '#guide-article h1'), 'Metabolites, natural products & reaction pathways');
+  await p.reload({ waitUntil: 'networkidle' });
+  await p.waitForSelector('#guide-article h1');
+  assert.equal(await text(p, '#guide-article h1'), 'Metabolites, natural products & reaction pathways');
+  // English chapters keep Chinese only in the title subtitle and in names given in parentheses.
+  const left = await p.evaluate(() => window.CHEMDB_GUIDES_EN.guides.flatMap((g) => g.html.replace(/<div class="en" lang="zh-CN">[^<]*<\/div>/g, '').replace(/\([^)]*\)/g, '').match(/[一-鿿]+/g) || []));
+  assert.deepEqual(left, []);
+  await finish(p);
+  const en = await open();
+  await go(en, '/atlas/index.html?lang=en#guide/p00-cover');
+  await en.waitForSelector('#guide-article h1');
+  assert.match(await text(en, '#guide-article h1'), /^103 entry points/);
+  assert.equal(await en.getAttribute('[data-guide-lang=en]', 'aria-pressed'), 'true');
+  await finish(en);
+});
+
+check('network: the searched term is the centre, suggestions complete, clicking a node recentres, Back returns', async () => {
+  const p = await open();
+  await go(p, '/hub/network.html?q=Shermo');
+  await p.waitForFunction(() => window.MolAstriaNetView?.current().center?.name === 'Shermo');
+  assert.equal((await text(p, '#resultTitle')).trim(), 'Shermo');
+  assert.match(await p.innerText('#netRelated'), /热力学/);
+  assert.match(await p.innerText('#netResults'), /Shermo/);
+  // Suggestions while typing; Enter on a partial name completes it.
+  await p.fill('#netQ', 'multiw');
+  await p.waitForFunction(() => !document.getElementById('netSuggest').hidden && /Multiwfn/.test(document.getElementById('netSuggest').innerText));
+  await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().center?.name === 'Multiwfn');
+  // Clicking a first-ring node on the canvas makes it the centre.
+  await p.waitForFunction(() => window.MolAstriaNetView.settled(), null, { timeout: 15000 });
+  await p.locator('#graph').scrollIntoViewIfNeeded();
+  const target = await p.evaluate(() => { const v = window.MolAstriaNetView, n = v.nodes().find((x) => x.ring === 1 && x.entity); return { id: n.id, name: n.entity.name, at: v.screenOf(n.id) }; });
+  await p.mouse.click(target.at.x, target.at.y);
+  await p.waitForFunction((name) => window.MolAstriaNetView.current().center?.name === name, target.name);
+  assert.match(p.url(), /[?&]q=/);
+  await p.goBack();
+  await p.waitForFunction(() => window.MolAstriaNetView.current().center?.name === 'Multiwfn');
+  await finish(p);
+  const en = await open();
+  await go(en, '/hub/network.html?lang=en&q=' + encodeURIComponent('静电势'));
+  await en.waitForFunction(() => document.getElementById('resultTitle')?.textContent.trim() === 'Electrostatic potential');
+  await finish(en);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');

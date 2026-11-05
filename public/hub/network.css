@@ -74,3 +74,68 @@
 .net-controls>*{min-width:0}
 @media(max-width:1080px){.net-graph-panel,.net-results-panel{position:static}}
 @media(max-width:640px){.net-graph-head{align-items:flex-start;flex-wrap:wrap}.net-tools{flex-wrap:wrap}.node-picker,.node-picker select{max-width:100%;width:100%}.net-hero{padding-top:24px}.net-item h4{overflow-wrap:anywhere}}
+
+/* 以查询为中心的网（2026-11 重做）：搜索框、建议、焦点卡片、关联概念、结果卡片。 */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.net-stats{grid-template-columns:repeat(4,1fr)}
+.net-search-panel{padding-top:18px}
+.net-search{position:relative;max-width:920px}
+.net-combo{display:flex;align-items:center;gap:10px;border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:6px 6px 6px 14px;box-shadow:var(--shadow)}
+.net-combo:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.net-combo-icon{font-size:22px;color:var(--muted);line-height:1}
+.net-combo input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:16px;padding:9px 0;outline:none}
+.net-combo input::-webkit-search-cancel-button{cursor:pointer}
+.net-combo kbd{font:11px var(--font-mono,monospace);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+.net-suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;margin:0;padding:6px;list-style:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);max-height:360px;overflow:auto}
+.net-suggest li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:9px 12px;border-radius:5px;cursor:pointer;color:var(--ink)}
+.net-suggest li[aria-selected=true],.net-suggest li:hover{background:var(--accent-soft)}
+.sg-label{font-weight:600;overflow-wrap:anywhere}
+.sg-kind{font-size:12px;color:var(--muted);white-space:nowrap}
+.preset-row{margin-top:12px}
+.net-trail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--muted)}
+.net-trail button{font:inherit;color:var(--accent-text);background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:underline}
+.net-trail b{color:var(--ink)}
+.net-focus{padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.net-focus h2{margin:4px 0 6px;font-size:22px;line-height:1.35;overflow-wrap:anywhere}
+.focus-kind{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.5px;color:#fff;background:#7d8a80;border-radius:3px;padding:2px 8px}
+.focus-kind.k-software,.focus-kind.k-database{background:#3f8a4f}.focus-kind.k-name{background:#2a8c80}.focus-kind.k-concept,.focus-kind.k-topic{background:#7a62b8}
+.focus-kind.k-category{background:#2f6f9c}.focus-kind.k-query,.focus-kind.k-hub{background:#b07f35}.focus-kind.k-source{background:#5f6f66}
+.focus-desc{margin:4px 0 8px;color:var(--muted);font-size:13.5px;line-height:1.7}
+.focus-note{margin:4px 0 8px;font-size:13px;color:var(--ink-2,var(--ink));background:var(--surface-2);border-left:3px solid var(--gold);padding:7px 10px;border-radius:0 4px 4px 0}
+.focus-stats{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.focus-stats span::before{content:"·";margin-right:6px;color:var(--gold)}
+.focus-stats span:first-child::before{content:none}
+.focus-link{margin-top:10px;padding:6px 12px;font-size:12.5px}
+.net-related h3{margin:0 0 6px;font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.net-chip{font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 10px 4px 9px;cursor:pointer;line-height:1.3}
+.net-chip::before{content:"";width:8px;height:8px;border-radius:50%;background:#7d8a80;flex:none}
+.net-chip.k-software::before,.net-chip.k-database::before{background:#3f8a4f}.net-chip.k-name::before{background:#2a8c80}
+.net-chip.k-concept::before,.net-chip.k-topic::before{background:#7a62b8}.net-chip.k-category::before{background:#2f6f9c}
+.net-chip small{font-size:11px;color:var(--muted)}
+.net-chip:hover{border-color:var(--accent);background:var(--accent-soft)}
+.breakdown .bd{font:inherit;font-size:11.5px;cursor:pointer;background:var(--surface);display:inline-flex;align-items:center;gap:5px}
+.breakdown .bd i{display:inline-block;width:8px;height:8px;border-radius:3px}
+.breakdown .bd.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.net-results mark{background:var(--gold-soft,rgba(196,146,63,.25));color:inherit;border-radius:2px;padding:0 1px}
+.net-item-ents{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.net-item-ents .net-chip{font-size:11.5px;padding:2px 8px 2px 7px}
+.net-item .mirror{font-size:11.5px;margin-left:auto;margin-right:8px}
+.net-item .mirror a{color:var(--accent-text)}
+.net-item.flash{animation:netflash 1.6s ease}
+@keyframes netflash{0%,40%{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft,rgba(196,146,63,.3))}100%{box-shadow:none}}
+.net-further{margin:14px 0 2px;font-size:14px;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.net-further small{font-weight:400;font-size:12px;color:var(--muted)}
+.net-msg{margin:8px 0 0}
+.legend-doc{border-radius:50%!important;background:conic-gradient(#3f8a4f 0 25%,#7a62b8 0 50%,#2f6f9c 0 75%,#c4923f 0)}
+.graph-tooltip b{display:block;color:var(--ink)}
+.graph-tooltip>span{display:block}
+.tip-meta,.tip-hint{color:var(--muted);font-size:12px}
+.tip-desc{font-size:12px;margin-top:3px}
+.tip-hint{margin-top:4px;color:var(--accent-text)}
+.tip-title{overflow-wrap:anywhere}
+@media(max-width:1080px){.net-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.net-stats{grid-template-columns:1fr 1fr}.net-combo kbd{display:none}.net-combo input{font-size:15px}.net-focus h2{font-size:19px}}
+.filter-line{display:flex;gap:8px;align-items:baseline}
+.filter-line .breakdown{flex:1}
+.filter-label{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:3px;min-width:2.5em}

@@ -153,41 +153,41 @@ function cleanGuide(html: string) {
 }
 const guides = content.guides as { id: string; title: string; html: string }[];
 const guidePages: string[] = [];
-const toc = (current: number) => `<nav class="sg-toc" aria-label="讲解目录"><h2>中文讲解 · ${guides.length} 章</h2><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html"${i === current ? ' aria-current="page"' : ""}><span>${String(i + 1).padStart(2, "0")}</span>${esc(LABELS[i] || g.title)}</a></li>`).join("")}</ol></nav>`;
+const toc = (current: number) => `<nav class="sg-toc" aria-label="讲解目录"><h2>说明讲解手册 · ${guides.length} 章</h2><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html"${i === current ? ' aria-current="page"' : ""}><span>${String(i + 1).padStart(2, "0")}</span>${esc(LABELS[i] || g.title)}</a></li>`).join("")}</ol></nav>`;
 for (const [i, g] of guides.entries()) {
   const html = cleanGuide(g.html);
   const lead = strip(html.match(/<p class="lead">([\s\S]*?)<\/p>/)?.[1] || html.match(/<p[^>]*>([\s\S]*?)<\/p>/)?.[1] || "");
-  const title = `${g.title} · 计算化学数据库中文讲解 · ${NAME}`;
-  const description = clip(lead || `${g.title}：计算化学数据库与资源导航中文讲解第 ${i + 1} 章。`, 150);
+  const title = `${g.title} · 计算化学数据库说明讲解手册 · ${NAME}`;
+  const description = clip(lead || `${g.title}：计算化学数据库与资源导航说明讲解手册第 ${i + 1} 章。`, 150);
   const prev = guides[i - 1], next = guides[i + 1];
   const path = `guide/${g.id}.html`;
   guidePages.push(path);
   const body = `<main class="sg">
 ${toc(i)}
 <div class="sg-main">
-  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">中文讲解</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../atlas/index.html#guide/${esc(g.id)}">在阅读器中打开 ↗</a></div>
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">说明讲解手册</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../atlas/index.html#guide/${esc(g.id)}">在阅读器中打开 ↗</a></div>
   <p class="en-only" translate="no">This chapter is written in Chinese. Your browser’s translate feature gives a full English version.</p>
   <article class="guide-article">
 ${html}
   </article>
   <nav class="sg-pager" aria-label="翻页">${prev ? `<a href="${esc(prev.id)}.html"><small>← 上一章</small>${esc(LABELS[i - 1] || prev.title)}</a>` : "<span></span>"}${next ? `<a href="${esc(next.id)}.html"><small>下一章 →</small>${esc(LABELS[i + 1] || next.title)}</a>` : ""}</nav>
 </div>
-<footer class="sg-foot">MolAstria · 计算化学数据库与资源导航中文讲解，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
+<footer class="sg-foot">MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
 </main>`;
   await write(path, page({
     rel: "../", path, title, description, section: "atlas", css: ["theme-auto.css", "guide/guide.css"], body, type: "article",
     jsonld: [
       { "@context": "https://schema.org", "@type": "TechArticle", headline: g.title, description, inLanguage: "zh-CN", datePublished: content.date, dateModified: TODAY, isPartOf: { "@type": "WebSite", name: NAME, url: SITE }, mainEntityOfPage: SITE + path, image: SITE + "og.png", publisher: { "@type": "Organization", name: NAME, url: SITE } },
-      crumbs([["首页", ""], ["中文讲解", "guide/"], [LABELS[i] || g.title, path]]),
+      crumbs([["首页", ""], ["说明讲解手册", "guide/"], [LABELS[i] || g.title, path]]),
     ],
   }));
 }
 await write("guide/index.html", page({
   rel: "../", path: "guide/", section: "atlas", css: ["theme-auto.css", "guide/guide.css"],
-  title: `计算化学数据库中文讲解（${guides.length} 章）· ${NAME}`,
-  description: `从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，${guides.length} 章中文讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。`,
-  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>中文讲解</span></nav><a href="../atlas/index.html#guide">在阅读器中打开 ↗</a></div><article class="guide-article"><h1>计算化学数据库中文讲解</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
-  jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学数据库中文讲解", inLanguage: "zh-CN", url: SITE + "guide/", hasPart: guides.map((g) => ({ "@type": "TechArticle", headline: g.title, url: `${SITE}guide/${g.id}.html` })) }, crumbs([["首页", ""], ["中文讲解", "guide/"]])],
+  title: `计算化学数据库说明讲解手册（${guides.length} 章）· ${NAME}`,
+  description: `从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，${guides.length} 章讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。`,
+  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>说明讲解手册</span></nav><a href="../atlas/index.html#guide">在阅读器中打开 ↗</a></div><article class="guide-article"><h1>计算化学数据库说明讲解手册</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
+  jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学数据库说明讲解手册", inLanguage: "zh-CN", url: SITE + "guide/", hasPart: guides.map((g) => ({ "@type": "TechArticle", headline: g.title, url: `${SITE}guide/${g.id}.html` })) }, crumbs([["首页", ""], ["说明讲解手册", "guide/"]])],
 }));
 
 // ── resource directory ───────────────────────────────────────────────────
@@ -247,7 +247,7 @@ await write("resources/index.html", page({
   rel: "../", path: "resources/", section: "search", css: ["resources/resources.css"],
   title: `计算化学资源目录：数据库、软件、教程与论文 · ${NAME}`,
   description: `${items.length} 条去重后的计算化学资源：${content.resources.length} 个数据库与研究资源、量化与分子模拟软件、Sobereva 与计算化学公社教程、arXiv 预印本、期刊论文与 GitHub 开源项目。`,
-  body: `<main class="rs"><nav class="rs-crumbs" aria-label="位置"><a href="../index.html">首页</a> / 资源目录</nav><h1>计算化学资源目录</h1><p class="lead">${items.length} 条去重后的资源，快照日期 ${esc(cfg.dataDate)}。按类型浏览，或回到 <a href="../index.html">统一搜索</a>、<a href="../hub/network.html">网状查询</a>。</p><ul class="rs-types">${typeOrder.map((t) => `<li><a href="${SLUG[t] || t}.html">${esc(TYPES[t])}<span>${byType.get(t)!.length}</span></a></li>`).join("")}</ul><h2>数据库与研究资源（ChemDB Atlas · ${content.resources.length} 条）</h2>${[...atlasCats.entries()].map(([c, arr]) => `<h2>${esc(c)} <small class="muted">${arr.length}</small></h2><ul class="rs-list">${arr.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a><small>${esc(r.access)}</small><p>${esc(r.description)}</p></li>`).join("")}</ul>`).join("")}<p class="rs-foot">中文讲解见 <a href="../guide/index.html">${guides.length} 章讲解</a>。</p></main>`,
+  body: `<main class="rs"><nav class="rs-crumbs" aria-label="位置"><a href="../index.html">首页</a> / 资源目录</nav><h1>计算化学资源目录</h1><p class="lead">${items.length} 条去重后的资源，快照日期 ${esc(cfg.dataDate)}。按类型浏览，或回到 <a href="../index.html">统一搜索</a>、<a href="../hub/network.html">网状查询</a>。</p><ul class="rs-types">${typeOrder.map((t) => `<li><a href="${SLUG[t] || t}.html">${esc(TYPES[t])}<span>${byType.get(t)!.length}</span></a></li>`).join("")}</ul><h2>数据库与研究资源（ChemDB Atlas · ${content.resources.length} 条）</h2>${[...atlasCats.entries()].map(([c, arr]) => `<h2>${esc(c)} <small class="muted">${arr.length}</small></h2><ul class="rs-list">${arr.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a><small>${esc(r.access)}</small><p>${esc(r.description)}</p></li>`).join("")}</ul>`).join("")}<p class="rs-foot">讲解手册见 <a href="../guide/index.html">${guides.length} 章讲解</a>。</p></main>`,
   jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学资源目录", inLanguage: "zh-CN", url: SITE + "resources/", numberOfItems: items.length }, crumbs([["首页", ""], ["资源目录", "resources/"]])],
 }));
 
@@ -292,7 +292,7 @@ await write("404.html", `<!doctype html>
   <script src="${SITE}shared-nav.js" defer></script>
 </head>
 <body data-section="">
-<main class="rs"><h1>这个页面不存在</h1><p class="lead">链接可能已经改名。可以从这些入口继续：</p><ul class="rs-types"><li><a href="${SITE}">统一搜索<span>↗</span></a></li><li><a href="${SITE}resources/">资源目录<span>↗</span></a></li><li><a href="${SITE}guide/">中文讲解<span>↗</span></a></li><li><a href="${SITE}lab/">AI 实验室<span>↗</span></a></li></ul></main>
+<main class="rs"><h1>这个页面不存在</h1><p class="lead">链接可能已经改名。可以从这些入口继续：</p><ul class="rs-types"><li><a href="${SITE}">统一搜索<span>↗</span></a></li><li><a href="${SITE}resources/">资源目录<span>↗</span></a></li><li><a href="${SITE}guide/">说明讲解手册<span>↗</span></a></li><li><a href="${SITE}lab/">AI 实验室<span>↗</span></a></li></ul></main>
 </body>
 </html>
 `);

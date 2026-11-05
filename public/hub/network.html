@@ -9,7 +9,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
   <meta property="og:title" content="网状查询 · MolAstria 计算化学研究导航">
-  <meta property="og:description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
+  <meta property="og:description" content="输入一个词，看它连着什么：把计算化学资源目录、讲解手册与中英术语表织成以查询为中心的关系网，支持同义词、拼写纠错与离线浏览。">
   <meta property="og:url" content="https://molastria.com/hub/network.html">
   <meta property="og:image" content="https://molastria.com/og.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="description" content="把合并后的计算化学资源目录、多源内容与主题标签织成可查询的网，支持跨库关键词检索与离线浏览。">
+<meta name="description" content="输入一个词，看它连着什么：把计算化学资源目录、讲解手册与中英术语表织成以查询为中心的关系网，支持同义词、拼写纠错与离线浏览。">
 <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
 <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
@@ -44,85 +44,89 @@
 <main id="top">
   <section class="net-hero">
     <p class="eyebrow">MESH QUERY · ALL DATABASES</p>
-    <h1>资源与主题，<span class="grad">织成一张可查询的网</span></h1>
-    <p class="lead">节点 = 数据源 / 主题 / 数据库与软件官网；连线 = 真实条目算出的归属与共现关系。
-    <strong>点任意节点即跨库查询</strong>：点主题看所有库里带这个主题的条目，点某个软件官网看它在各库中的相关条目。
-    也可以直接输入关键词全库检索。全部结果来自合并后的资源快照，保留标题、来源与原文链接；解压后即可离线查询。</p>
+    <h1>输入一个词，<span class="grad">看它连着什么</span></h1>
+    <p class="lead">目录里的全部条目、19 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。
+    查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。<strong>点任何节点，网就换成以它为中心。</strong></p>
     <div id="netStats" class="net-stats" aria-label="网状查询统计"></div>
   </section>
 
-  <section class="section net-controls-panel">
-    <div class="filters net-controls" role="search">
-      <label class="searchbox"><span>跨库关键词查询（标题 / 摘要 / 标签 / 分类）</span>
-        <input id="netQ" type="search" placeholder="如：Multiwfn / ORCA / 静电势 / 基组 / molecular dynamics…" autocomplete="off"></label>
-      <label><span>只看来源</span><select id="netSource"><option value="">全部来源</option></select></label>
-      <label><span>节点显示</span><select id="netKind">
-        <option value="">全部节点</option><option value="source">数据源</option>
-        <option value="tag">主题</option><option value="category">数据库分类</option><option value="db">数据库/官网</option>
-      </select></label>
-      <label class="node-picker"><span>选择节点（支持键盘）</span><select id="nodeSelect"><option value="">全部资源</option></select></label>
-      <button id="netReset" class="btn ghost" type="button">重置视图与查询</button>
+  <section class="section net-search-panel">
+    <div class="net-search" role="search">
+      <label class="sr-only" for="netQ">搜索软件、方法、概念或任意关键词</label>
+      <div class="net-combo">
+        <span class="net-combo-icon" aria-hidden="true">⌕</span>
+        <input id="netQ" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="netSuggest" placeholder="软件、方法、概念或任意关键词，如 Shermo、静电势、electrostatic potential、过渡态…" autocomplete="off" spellcheck="false">
+        <kbd aria-hidden="true">/</kbd>
+        <button id="netGo" class="btn primary" type="button">查询</button>
+      </div>
+      <ul id="netSuggest" class="net-suggest" role="listbox" aria-label="搜索建议" hidden></ul>
     </div>
-    <div class="preset-row"><span class="muted small">快捷查询：</span><span id="presetChips"></span>
-      <span id="netMsg" class="small muted" role="status"></span></div>
+    <div class="preset-row"><span class="muted small">试试：</span><span id="presetChips"></span></div>
+    <nav id="netTrail" class="net-trail" aria-label="查询路径"></nav>
   </section>
 
   <section class="net-layout" aria-label="网状图与查询结果">
     <article class="panel net-graph-panel">
       <div class="net-graph-head">
-        <h2>网状关系图</h2>
+        <h2 id="graphTitle">全网概览</h2>
         <div class="net-tools">
-          <button id="pauseBtn" class="btn ghost small-btn" type="button">暂停布局</button>
+          <button id="netBack" class="btn ghost small-btn" type="button">← 上一步</button>
           <button id="relayoutBtn" class="btn ghost small-btn" type="button">重新布局</button>
+          <button id="fitBtn" class="btn ghost small-btn" type="button">复位视图</button>
         </div>
       </div>
-      <p id="graphDescription" class="small muted net-hint">拖动节点可挪位 · 拖空白处平移 · 滚轮缩放 · 单击节点查询 · 双击空白复位。来源与主题节点越大，关联条目越多；官网节点大小仅用于布局。也可用上方节点选择框完成查询。</p>
+      <p id="graphDescription" class="small muted net-hint">中心是你查的词；离中心越近、连线越粗，关系越紧。实心小点是直接相关的条目，空心小点是关联延伸，最外圈是来源。单击节点换中心，悬停看说明，拖动可挪位，滚轮缩放，双击空白复位。</p>
       <div id="graphWrap" class="graph-wrap">
-        <canvas id="graph" role="img" aria-label="数据源、主题与数据库网状关系图" aria-describedby="graphDescription">使用上方的节点选择框或下方的目录按钮，可完成与图中点击相同的查询。</canvas>
+        <canvas id="graph" role="img" aria-label="以查询为中心的实体关系网" aria-describedby="graphDescription">右侧的关联概念按钮和结果列表提供与图中点击相同的查询。</canvas>
         <div id="tooltip" class="graph-tooltip" hidden></div>
       </div>
       <div class="legend net-legend">
-        <span><i style="background:#2f7f73"></i>数据源（每个来源一种颜色）</span>
-        <span><i style="background:#6e5aa8"></i>主题标签</span>
-        <span><i style="background:#2f7d8c"></i>数据库分类</span>
-        <span><i style="background:#3f8a4f"></i>数据库 / 软件官网</span>
-        <span><i style="background:#a67d42"></i>中心枢纽</span>
+        <span><i style="background:#c4923f"></i>中心</span>
+        <span><i style="background:#3f8a4f"></i>软件与数据库</span>
+        <span><i style="background:#2a8c80"></i>程序与方法名</span>
+        <span><i style="background:#7a62b8"></i>概念与主题</span>
+        <span><i style="background:#2f6f9c"></i>资源分类</span>
+        <span><i class="legend-doc"></i>条目（按来源着色）</span>
       </div>
-      <div id="selectedInfo" class="selected-info" role="status">正在加载真实数据…</div>
     </article>
 
-    <aside class="panel net-results-panel" aria-label="跨库查询结果">
-      <h2 id="resultTitle">跨库查询结果</h2>
-      <div id="breakdown" class="breakdown"></div>
+    <aside class="panel net-results-panel" aria-label="查询结果">
+      <div id="netFocus" class="net-focus" role="status">正在加载真实数据…</div>
+      <div id="netRelated" class="net-related"></div>
+      <div class="filter-line"><span class="filter-label">来源</span><div id="breakdown" class="breakdown" aria-label="按来源筛选"></div></div>
+      <div class="filter-line" id="typeLine"><span class="filter-label">类型</span><div id="typeChips" class="breakdown" aria-label="按类型筛选"></div></div>
       <div id="netResults" class="net-results"></div>
       <div class="center"><button id="netMore" class="btn" type="button">加载更多结果</button></div>
+      <p id="netMsg" class="small muted net-msg" role="status"></p>
     </aside>
   </section>
 
   <section id="directory" class="section">
     <div class="section-head"><h2>所有数据库与软件官网总表</h2>
-    <p>下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。相同网址已合并，来源关系仍保留。
-    点「在网中定位」回到图上看它与各主题、各来源的关系；点「访问」直达原站。</p></div>
+    <p>下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。点「在网中查看」，网就以它为中心展开；点「访问」直达原站。</p></div>
     <div id="dbDirectory"></div>
   </section>
 
   <section class="section panel method">
     <h2>这张网是怎么算出来的（不藏算法）</h2>
     <div class="method-grid">
-      <div><h3>节点从哪来</h3><p>数据源节点来自合并数据保留的全部来源；主题节点选取条目中出现次数最多的 24 个标签；数据库节点包含 Atlas 的资源目录和 Hub 的官方软件与数据库，按原有分类归组。页面顶部数量由当前数据自动计算。</p></div>
-      <div><h3>连线从哪来</h3><p>来源—主题连线按该来源下带此标签的条目数加权（每源只连最强的几条，避免糊成一团）；主题—主题连线是同一条目里共同出现的标签共现（达到阈值才连）；分类—数据库是目录归属。线越粗，对应关系的条目数越多。一个网址可能属于多个来源，因此按来源统计的数量可能相加后大于去重条目总数。</p></div>
-      <div><h3>点节点查什么</h3><p>点来源 = 该来源全部条目；点主题 = 所有来源里带该标签的条目；点分类 = 该类全部官网；点某个数据库/官网 = 先给它本身，再跨库找标题、标签、分类、摘要里提到它的条目（如点 ORCA 会带出各源的 ORCA 相关真实条目）。关键词查询同理跨全部条目检索。</p></div>
-      <div><h3>边界照旧</h3><p>结果仍只展示标题、短摘要与原文链接，全文回原站；Atlas 目录可保留受访问限制的网站入口，但不表示本站已抓取其内部内容；Hub 的抓取状态与镜像来源仍保留。图中的连线表示目录归属或标签共现，不代表科学因果关系。</p></div>
+      <div><h3>节点从哪来</h3><p>五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 19 章也作为条目参与。</p></div>
+      <div><h3>连线从哪来</h3><p>两个节点在同一条目里一起出现就连线。标题和标签里出现算 3 分，摘要和正文里算 1 分，按余弦相似度归一化，所以不会因为某个词到处都有就和谁都连。太宽泛的词（如“教程”“软件”）权重打折；同一个东西的不同写法（DFT 与 密度泛函）不算关系。</p></div>
+      <div><h3>查询怎么做</h3><p>先把输入解析成节点：精确名称、别名、中英同义词、前缀补全，拼错一两个字母也能认出（Gaussain → Gaussian）。认不出就做全文检索，按标题 &gt; 标签 &gt; 摘要打分，再用命中条目里的节点织网。同一篇文章的博客原文与论坛镜像合并成一条。</p></div>
+      <div><h3>边界照旧</h3><p>结果只展示标题、短摘要与原文链接，全文回原站。连线表示“在同一条目里一起出现”或目录归属，不代表科学因果关系；关联延伸是按关系强度推荐的阅读，不保证每条都提到你查的词。</p></div>
     </div>
   </section>
 </main>
 
 <footer class="footer">
   <span>MolAstria 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。</span>
-  <span><a href="../index.html">返回统一首页</a> · <a href="../resources/index.html">资源目录</a> · <a href="../guide/index.html">中文讲解</a></span>
+  <span><a href="../index.html">返回统一首页</a> · <a href="../resources/index.html">资源目录</a> · <a href="../guide/index.html">说明讲解手册</a></span>
 </footer>
 <script src="../shared-nav.js"></script>
+<script src="../search-terms.js"></script>
 <script src="../merged-data.js"></script>
+<script src="../atlas/content.js"></script>
+<script src="net-engine.js"></script>
 <script src="network.js"></script>
 </body>
 </html>

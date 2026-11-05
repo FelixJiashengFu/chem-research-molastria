@@ -1,6 +1,7 @@
 /* 搜索用的中英术语表：目录里中文和英文条目混在一起，搜“电解液”也应该找到 electrolyte。
    统一搜索（app.js）和 AI 助手的目录检索（ai/ai.js）共用。每组里的词互为同义；要加词直接加在这里。
-   Public API: MolAstriaTerms.{tokens(), matchesToken(), groupsIn(), has()} */
+   网状查询（hub/net-engine.js）把每组当成一个概念节点。
+   Public API: MolAstriaTerms.{tokens(), matchesToken(), groupsIn(), has(), groups} */
 (() => {
   'use strict';
   const GROUPS = [
@@ -52,6 +53,30 @@
     ['氧化还原', 'redox'],
     ['电极电位', '还原电位', 'electrode potential', 'redox potential', 'reduction potential'],
     ['热力学', 'thermodynamic'],
+    ['热化学', 'thermochemistry', 'thermochemical'],
+    ['配分函数', 'partition function'],
+    ['分子轨道', '前线轨道', 'molecular orbital', 'frontier orbital', 'homo', 'lumo'],
+    ['波函数分析', 'wavefunction analysis', 'wave function analysis'],
+    ['电子密度', 'electron density'],
+    ['键级', 'bond order'],
+    ['芳香性', 'aromaticity', 'aromatic', 'nics'],
+    ['电子定域化', 'electron localization', 'elf', 'lol'],
+    ['能量分解', 'energy decomposition', 'eda', 'sapt'],
+    ['自然键轨道', 'natural bond orbital', 'nbo'],
+    ['极化率', '超极化率', 'polarizability', 'hyperpolarizability'],
+    ['偶极矩', 'dipole moment'],
+    ['吸收光谱', 'absorption spectrum', 'absorption spectra'],
+    ['荧光', '磷光', '发光', 'fluorescence', 'phosphorescence', 'luminescence'],
+    ['圆二色', 'circular dichroism', 'ecd'],
+    ['基组重叠误差', 'bsse', 'counterpoise'],
+    ['态密度', 'density of states', 'dos'],
+    ['声子', 'phonon'],
+    ['赝势', 'pseudopotential', 'effective core potential', 'ecp'],
+    ['结合能', '相互作用能', 'binding energy', 'interaction energy'],
+    ['键能', 'bond energy', 'bond dissociation energy', 'bde'],
+    ['富勒烯', 'fullerene'],
+    ['石墨烯', 'graphene'],
+    ['分子筛', 'zeolite'],
     ['动力学常数', '反应速率', 'rate constant', 'kinetics'],
     ['构象', 'conformer', 'conformation'],
     ['吸附', 'adsorption'],
@@ -124,5 +149,5 @@
     const q = String(query || '').toLowerCase();
     return GROUPS.filter((g) => g.some((t) => has(q, t)));
   }
-  window.MolAstriaTerms = { tokens, matchesToken, groupsIn, has };
+  window.MolAstriaTerms = { tokens, matchesToken, groupsIn, has, groups: GROUPS };
 })();

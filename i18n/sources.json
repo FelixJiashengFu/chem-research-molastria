@@ -20,7 +20,7 @@
  "搜索全部资源": [
   "index.html"
  ],
- "阅读中文讲解": [
+ "阅读说明讲解手册": [
   "index.html",
   "atlas/index.html"
  ],
@@ -81,7 +81,7 @@
  "论文、教程与社区条目": [
   "index.html"
  ],
- "章中文讲解": [
+ "章双语讲解手册": [
   "index.html"
  ],
  "统一资源检索": [
@@ -117,20 +117,21 @@
  "来源": [
   "index.html",
   "hub/index.html",
+  "hub/network.html",
   "lab/index.html",
   "app.js",
+  "hub/network.js",
   "radar/app/app.js"
  ],
  "全部来源": [
   "index.html",
   "hub/index.html",
-  "hub/network.html",
-  "hub/app.js",
-  "hub/network.js"
+  "hub/app.js"
  ],
  "类型": [
   "index.html",
   "hub/index.html",
+  "hub/network.html",
   "app.js"
  ],
  "全部类型": [
@@ -169,8 +170,7 @@
   "index.html"
  ],
  "基组": [
-  "index.html",
-  "hub/network.js"
+  "index.html"
  ],
  "分子动力学": [
   "index.html",
@@ -180,7 +180,6 @@
  ],
  "机器学习": [
   "index.html",
-  "hub/network.js",
   "radar/app/app.js"
  ],
  "正在载入本地目录…": [
@@ -213,9 +212,13 @@
  "01 / 读懂背景": [
   "index.html"
  ],
- "中文讲解手册": [
+ "说明讲解手册": [
   "index.html",
-  "atlas/index.html"
+  "atlas/index.html",
+  "hub/index.html",
+  "hub/network.html",
+  "atlas/app.js",
+  "tools/build-seo.ts"
  ],
  "从三分钟导读开始，理解化学数据的分层、用途与边界。": [
   "index.html"
@@ -273,7 +276,7 @@
  "资源目录（静态页）": [
   "index.html"
  ],
- "中文讲解 19 章": [
+ "说明讲解手册 19 章": [
   "index.html"
  ],
  "Meta × 化学": [
@@ -321,7 +324,7 @@
  "关闭详情": [
   "index.html"
  ],
- "数据库地图与中文讲解 · MolAstria": [
+ "数据库地图与说明讲解手册 · MolAstria": [
   "atlas/index.html"
  ],
  "跳到主要内容": [
@@ -336,13 +339,6 @@
  "资源导航": [
   "atlas/index.html",
   "atlas/app.js"
- ],
- "中文讲解": [
-  "atlas/index.html",
-  "hub/index.html",
-  "hub/network.html",
-  "atlas/app.js",
-  "tools/build-seo.ts"
  ],
  "按研究主题浏览": [
   "atlas/index.html"
@@ -359,13 +355,7 @@
  "下载资源目录": [
   "atlas/index.html"
  ],
- "研究工作台": [
-  "atlas/index.html"
- ],
  "材料版本 · 2026.11.05": [
-  "atlas/index.html"
- ],
- "阅读指南": [
   "atlas/index.html"
  ],
  "从化学问题，": [
@@ -400,8 +390,7 @@
  ],
  "条": [
   "atlas/index.html",
-  "hub/app.js",
-  "hub/network.js"
+  "hub/app.js"
  ],
  "数据库与研究资源": [
   "atlas/index.html"
@@ -443,9 +432,7 @@
   "atlas/index.html"
  ],
  "全部资源": [
-  "atlas/index.html",
-  "hub/network.html",
-  "hub/network.js"
+  "atlas/index.html"
  ],
  "已有接入模块": [
   "atlas/index.html",
@@ -496,7 +483,7 @@
  "读懂资源，也读懂边界。": [
   "atlas/index.html"
  ],
- "将提供的 19 页讲解材料重新排版，适合在电脑与手机上连续阅读。": [
+ "中文": [
   "atlas/index.html"
  ],
  "打印当前章节 ↗": [
@@ -712,7 +699,9 @@
   "atlas/index.html"
  ],
  "资源分类": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "hub/network.html",
+  "hub/network.js"
  ],
  "从化学结构到统一数据的概念示意图": [
   "atlas/index.html"
@@ -726,6 +715,9 @@
  "讲解目录": [
   "atlas/index.html",
   "tools/build-seo.ts"
+ ],
+ "讲解语言": [
+  "atlas/index.html"
  ],
  "选择研究任务": [
   "atlas/index.html"
@@ -834,7 +826,6 @@
  ],
  "主题": [
   "hub/index.html",
-  "hub/network.html",
   "hub/network.js"
  ],
  "全部主题": [
@@ -978,89 +969,62 @@
  "数据库总表": [
   "hub/network.html"
  ],
- "资源与主题，": [
+ "输入一个词，": [
   "hub/network.html"
  ],
- "织成一张可查询的网": [
+ "看它连着什么": [
   "hub/network.html"
  ],
- "节点 = 数据源 / 主题 / 数据库与软件官网；连线 = 真实条目算出的归属与共现关系。": [
+ "目录里的全部条目、19 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
   "hub/network.html"
  ],
- "点任意节点即跨库查询": [
+ "点任何节点，网就换成以它为中心。": [
   "hub/network.html"
  ],
- "：点主题看所有库里带这个主题的条目，点某个软件官网看它在各库中的相关条目。 也可以直接输入关键词全库检索。全部结果来自合并后的资源快照，保留标题、来源与原文链接；解压后即可离线查询。": [
+ "搜索软件、方法、概念或任意关键词": [
   "hub/network.html"
  ],
- "跨库关键词查询（标题 / 摘要 / 标签 / 分类）": [
+ "查询": [
   "hub/network.html"
  ],
- "只看来源": [
+ "试试：": [
   "hub/network.html"
  ],
- "节点显示": [
-  "hub/network.html"
- ],
- "全部节点": [
-  "hub/network.html"
- ],
- "数据源": [
+ "全网概览": [
   "hub/network.html",
   "hub/network.js"
  ],
- "数据库分类": [
-  "hub/network.html",
-  "hub/network.js"
- ],
- "数据库/官网": [
-  "hub/network.html",
-  "hub/network.js"
- ],
- "选择节点（支持键盘）": [
+ "← 上一步": [
   "hub/network.html"
- ],
- "重置视图与查询": [
-  "hub/network.html"
- ],
- "快捷查询：": [
-  "hub/network.html"
- ],
- "网状关系图": [
-  "hub/network.html"
- ],
- "暂停布局": [
-  "hub/network.html",
-  "hub/network.js"
  ],
  "重新布局": [
   "hub/network.html"
  ],
- "拖动节点可挪位 · 拖空白处平移 · 滚轮缩放 · 单击节点查询 · 双击空白复位。来源与主题节点越大，关联条目越多；官网节点大小仅用于布局。也可用上方节点选择框完成查询。": [
+ "复位视图": [
   "hub/network.html"
  ],
- "使用上方的节点选择框或下方的目录按钮，可完成与图中点击相同的查询。": [
+ "中心是你查的词；离中心越近、连线越粗，关系越紧。实心小点是直接相关的条目，空心小点是关联延伸，最外圈是来源。单击节点换中心，悬停看说明，拖动可挪位，滚轮缩放，双击空白复位。": [
   "hub/network.html"
  ],
- "数据源（每个来源一种颜色）": [
+ "右侧的关联概念按钮和结果列表提供与图中点击相同的查询。": [
   "hub/network.html"
  ],
- "主题标签": [
-  "hub/network.html",
-  "hub/network.js"
+ "中心": [
+  "hub/network.html"
  ],
- "数据库 / 软件官网": [
-  "hub/network.html",
-  "hub/network.js"
+ "软件与数据库": [
+  "hub/network.html"
  ],
- "中心枢纽": [
-  "hub/network.html",
-  "hub/network.js"
+ "程序与方法名": [
+  "hub/network.html"
+ ],
+ "概念与主题": [
+  "hub/network.html"
+ ],
+ "条目（按来源着色）": [
+  "hub/network.html"
  ],
  "正在加载真实数据…": [
-  "hub/network.html"
- ],
- "跨库查询结果": [
   "hub/network.html"
  ],
  "加载更多结果": [
@@ -1069,7 +1033,7 @@
  "所有数据库与软件官网总表": [
   "hub/network.html"
  ],
- "下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。相同网址已合并，来源关系仍保留。 点「在网中定位」回到图上看它与各主题、各来源的关系；点「访问」直达原站。": [
+ "下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。点「在网中查看」，网就以它为中心展开；点「访问」直达原站。": [
   "hub/network.html"
  ],
  "这张网是怎么算出来的（不藏算法）": [
@@ -1078,25 +1042,25 @@
  "节点从哪来": [
   "hub/network.html"
  ],
- "数据源节点来自合并数据保留的全部来源；主题节点选取条目中出现次数最多的 24 个标签；数据库节点包含 Atlas 的资源目录和 Hub 的官方软件与数据库，按原有分类归组。页面顶部数量由当前数据自动计算。": [
+ "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 19 章也作为条目参与。": [
   "hub/network.html"
  ],
  "连线从哪来": [
   "hub/network.html"
  ],
- "来源—主题连线按该来源下带此标签的条目数加权（每源只连最强的几条，避免糊成一团）；主题—主题连线是同一条目里共同出现的标签共现（达到阈值才连）；分类—数据库是目录归属。线越粗，对应关系的条目数越多。一个网址可能属于多个来源，因此按来源统计的数量可能相加后大于去重条目总数。": [
+ "两个节点在同一条目里一起出现就连线。标题和标签里出现算 3 分，摘要和正文里算 1 分，按余弦相似度归一化，所以不会因为某个词到处都有就和谁都连。太宽泛的词（如“教程”“软件”）权重打折；同一个东西的不同写法（DFT 与 密度泛函）不算关系。": [
   "hub/network.html"
  ],
- "点节点查什么": [
+ "查询怎么做": [
   "hub/network.html"
  ],
- "点来源 = 该来源全部条目；点主题 = 所有来源里带该标签的条目；点分类 = 该类全部官网；点某个数据库/官网 = 先给它本身，再跨库找标题、标签、分类、摘要里提到它的条目（如点 ORCA 会带出各源的 ORCA 相关真实条目）。关键词查询同理跨全部条目检索。": [
+ "先把输入解析成节点：精确名称、别名、中英同义词、前缀补全，拼错一两个字母也能认出（Gaussain → Gaussian）。认不出就做全文检索，按标题 > 标签 > 摘要打分，再用命中条目里的节点织网。同一篇文章的博客原文与论坛镜像合并成一条。": [
   "hub/network.html"
  ],
  "边界照旧": [
   "hub/network.html"
  ],
- "结果仍只展示标题、短摘要与原文链接，全文回原站；Atlas 目录可保留受访问限制的网站入口，但不表示本站已抓取其内部内容；Hub 的抓取状态与镜像来源仍保留。图中的连线表示目录归属或标签共现，不代表科学因果关系。": [
+ "结果只展示标题、短摘要与原文链接，全文回原站。连线表示“在同一条目里一起出现”或目录归属，不代表科学因果关系；关联延伸是按关系强度推荐的阅读，不保证每条都提到你查的词。": [
   "hub/network.html"
  ],
  "MolAstria 网状查询 · 数据来自各来源站点与官方 API，本站仅做标题级聚合索引与关系可视化。": [
@@ -1108,14 +1072,30 @@
  "网状查询统计": [
   "hub/network.html"
  ],
- "如：Multiwfn / ORCA / 静电势 / 基组 / molecular dynamics…": [
+ "软件、方法、概念或任意关键词，如 Shermo、静电势、electrostatic potential、过渡态…": [
+  "hub/network.html"
+ ],
+ "搜索建议": [
+  "hub/network.html"
+ ],
+ "查询路径": [
   "hub/network.html"
  ],
  "网状图与查询结果": [
   "hub/network.html"
  ],
- "数据源、主题与数据库网状关系图": [
+ "以查询为中心的实体关系网": [
   "hub/network.html"
+ ],
+ "查询结果": [
+  "hub/network.html"
+ ],
+ "按来源筛选": [
+  "hub/network.html"
+ ],
+ "按类型筛选": [
+  "hub/network.html",
+  "meta/index.html"
  ],
  "AI 实验室 · 闭环电解液分子发现 · MolAstria": [
   "lab/index.html"
@@ -2173,9 +2153,6 @@
   "meta/index.html"
  ],
  "运行日志": [
-  "meta/index.html"
- ],
- "按类型筛选": [
   "meta/index.html"
  ],
  "搜索名称、体系、方法…": [
@@ -3335,7 +3312,7 @@
  "统一搜索 1,600 多条资源与网状查询": [
   "pro/index.html"
  ],
- "19 章中文讲解与资源目录": [
+ "19 章中英双语讲解手册与资源目录": [
   "pro/index.html"
  ],
  "AI 助手（自带 DeepSeek / Muse key）": [
@@ -3482,7 +3459,7 @@
  "统一搜索、网状查询、资源目录": [
   "pro/index.html"
  ],
- "19 章中文讲解、训练 Agent 指南": [
+ "19 章双语讲解手册、训练 Agent 指南": [
   "pro/index.html"
  ],
  "AI 助手（自带 key，直连服务商）": [
@@ -3851,7 +3828,7 @@
  "1. 服务内容": [
   "pro/terms.html"
  ],
- "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、中文讲解、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
+ "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
   "pro/terms.html"
  ],
  "付费权益绑定在付款邮箱上，用邮箱验证码登录使用。AI 托管额度按自然月计算，未用完的次数不累计到下个月，并设有防滥用的频率限制；较贵的模型、AI 实验室和特别长的内容会多计次数，具体规则见账号页。同一账号最多同时在 5 台设备上登录，超过时最早登录的设备会退出。每周精选里的解读由 AI 根据论文标题和摘要生成，可能有误，请以原文为准；邮件可以随时退订。课题组版每个席位单独计算额度，购买者可以在账号页添加或移除成员，成员被移除后立即失去付费权益。": [
@@ -4152,7 +4129,7 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
- "中文讲解与数据库": [
+ "讲解手册与数据库": [
   "shared-nav.js"
  ],
  "量子化学": [
@@ -4743,8 +4720,7 @@
   "hub/app.js"
  ],
  "真实条目": [
-  "hub/app.js",
-  "hub/network.js"
+  "hub/app.js"
  ],
  "暂无数据": [
   "hub/app.js",
@@ -4758,8 +4734,7 @@
   "hub/app.js"
  ],
  "共": [
-  "hub/app.js",
-  "hub/network.js"
+  "hub/app.js"
  ],
  "条真实条目": [
   "hub/app.js"
@@ -4810,88 +4785,160 @@
  "。请完整解压压缩包，确认 hub/data.js 与本页一起保留。": [
   "hub/app.js"
  ],
+ "讲解手册": [
+  "hub/network.js"
+ ],
+ "软件": [
+  "hub/network.js"
+ ],
+ "程序与方法": [
+  "hub/network.js"
+ ],
+ "概念": [
+  "hub/network.js"
+ ],
+ "条目": [
+  "hub/network.js"
+ ],
+ "关键词": [
+  "hub/network.js"
+ ],
+ "全网": [
+  "hub/network.js"
+ ],
  "静电势": [
   "hub/network.js"
  ],
- "激发态": [
+ "过渡态": [
   "hub/network.js"
  ],
- "全部真实条目": [
+ "机器学习势": [
   "hub/network.js"
  ],
- "未分类": [
+ "锂电池 电解液": [
   "hub/network.js"
  ],
- "· 关联/包含": [
+ "单击：在右侧列表中定位": [
   "hub/network.js"
  ],
- "单击查询 · 拖动挪位": [
+ "关联延伸 · 单击定位": [
   "hub/network.js"
  ],
- "跨库查询结果 ·": [
+ "当前中心": [
   "hub/network.js"
  ],
- "∩ 关键词「": [
+ "单击：以它为中心": [
   "hub/network.js"
  ],
- "当前选中：": [
+ "{0} 条相关条目": [
   "hub/network.js"
  ],
- "· 命中": [
+ "单击：看这个来源的全部条目": [
   "hub/network.js"
  ],
- "条真实条目。点结果卡片「原文」回原站；再点其它节点可换查询对象，清空关键词/重置可回到全网。": [
+ "全文检索的关键词": [
   "hub/network.js"
  ],
- "未选中节点：当前展示合并后全部": [
+ "阅读 →": [
   "hub/network.js"
  ],
- "条资源。点图中节点、使用节点选择框，或输入关键词进行跨库查询。": [
+ "按「{0}」查询，你输入的是「{1}」。": [
   "hub/network.js"
  ],
- "无命中来源": [
+ "{0} 条直接相关": [
   "hub/network.js"
  ],
- "Atlas 资源目录": [
+ "{0} 个关联概念": [
   "hub/network.js"
  ],
- "（原站未提供摘要，点原文阅读）": [
-  "hub/network.js"
- ],
- "没有命中条目。换个关键词，或点图中的主题/来源节点试试。": [
-  "hub/network.js"
- ],
- "条 · 已显示": [
-  "hub/network.js"
- ],
- "在网中定位": [
+ "{0} 个来源": [
   "hub/network.js"
  ],
  "访问官网 ↗": [
   "hub/network.js"
  ],
- "数据源入口（": [
+ "全文检索": [
   "hub/network.js"
  ],
- "个来源）": [
+ "{0} 条命中": [
   "hub/network.js"
  ],
- "条 ·": [
+ "没有找到。你是不是要找：{0}": [
   "hub/network.js"
  ],
- "图中节点": [
+ "{0} 条条目": [
   "hub/network.js"
  ],
- "真实关系连线": [
+ "{0} 个常见概念": [
+  "hub/network.js"
+ ],
+ "从任意一个词开始": [
+  "hub/network.js"
+ ],
+ "图里是条目最多的软件、方法与概念。点一个节点，或在上方搜索，网就以它为中心展开。": [
+  "hub/network.js"
+ ],
+ "常见节点": [
+  "hub/network.js"
+ ],
+ "关系最紧": [
+  "hub/network.js"
+ ],
+ "同类": [
+  "hub/network.js"
+ ],
+ "没有命中条目。换个说法，或点上方的关联概念试试。": [
+  "hub/network.js"
+ ],
+ "关联延伸": [
+  "hub/network.js"
+ ],
+ "讲{0}等相关内容的条目": [
+  "hub/network.js"
+ ],
+ "共 {0} 条 · 已显示 {1} 条": [
+  "hub/network.js"
+ ],
+ "路径：": [
+  "hub/network.js"
+ ],
+ "以「{0}」为中心": [
+  "hub/network.js"
+ ],
+ "网状查询 · MolAstria": [
+  "hub/network.js"
+ ],
+ "搜索「{0}」": [
+  "hub/network.js"
+ ],
+ "· 拼写相近": [
+  "hub/network.js"
+ ],
+ "条条目（含讲解手册）": [
+  "hub/network.js"
+ ],
+ "个软件、方法与概念节点": [
+  "hub/network.js"
+ ],
+ "对有据可查的关联": [
+  "hub/network.js"
+ ],
+ "个来源": [
+  "hub/network.js"
+ ],
+ "未分类": [
+  "hub/network.js"
+ ],
+ "在网中查看": [
+  "hub/network.js"
+ ],
+ "数据源入口（{0} 个来源）": [
   "hub/network.js"
  ],
  "缺少合并资源数据，请完整解压压缩包后打开": [
   "hub/network.js"
  ],
  "数据生成：{0} · 每周四自动更新": [
-  "hub/network.js"
- ],
- "继续布局": [
   "hub/network.js"
  ],
  "。请完整解压所有文件，再重新打开本页。": [
@@ -7405,13 +7452,13 @@
  "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。": [
   "tools/build-seo.ts"
  ],
- "中文讲解 · {0} 章": [
+ "说明讲解手册 · {0} 章": [
   "tools/build-seo.ts"
  ],
- "{0} · 计算化学数据库中文讲解 · {1}": [
+ "{0} · 计算化学数据库说明讲解手册 · {1}": [
   "tools/build-seo.ts"
  ],
- "{0}：计算化学数据库与资源导航中文讲解第 {1} 章。": [
+ "{0}：计算化学数据库与资源导航说明讲解手册第 {1} 章。": [
   "tools/build-seo.ts"
  ],
  "首页": [
@@ -7420,7 +7467,7 @@
  "在阅读器中打开 ↗": [
   "tools/build-seo.ts"
  ],
- "MolAstria · 计算化学数据库与资源导航中文讲解，材料版本 {0}。全文、更新日期与使用许可以各资源原站为准。": [
+ "MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 {0}。全文、更新日期与使用许可以各资源原站为准。": [
   "tools/build-seo.ts"
  ],
  "位置": [
@@ -7429,13 +7476,13 @@
  "翻页": [
   "tools/build-seo.ts"
  ],
- "计算化学数据库中文讲解（{0} 章）· {1}": [
+ "计算化学数据库说明讲解手册（{0} 章）· {1}": [
   "tools/build-seo.ts"
  ],
- "从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，{0} 章中文讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。": [
+ "从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，{0} 章讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。": [
   "tools/build-seo.ts"
  ],
- "计算化学数据库中文讲解": [
+ "计算化学数据库说明讲解手册": [
   "tools/build-seo.ts"
  ],
  "一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 {0} 章。": [
@@ -7490,7 +7537,7 @@
  "数据库与研究资源（ChemDB Atlas · {0} 条）": [
   "tools/build-seo.ts"
  ],
- "中文讲解见": [
+ "讲解手册见": [
   "tools/build-seo.ts"
  ],
  "{0} 章讲解": [

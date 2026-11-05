@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、19 章中文讲解、AI 实验室、预印本雷达、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、19 章中英双语讲解手册、AI 实验室、预印本雷达、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -19,11 +19,12 @@ public/               发布目录，推到 main 就上线
   shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口；新栏目在这里加导航
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
   ai/ai.js            AI 助手：服务商、托管额度、可拖宽窗口
-  atlas/ hub/ lab/ meta/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
+  atlas/ hub/ lab/ meta/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit；atlas/guides-en.js 是讲解手册的英文版）
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面；app/ 是复制来的，不要手改
   qchem/              量子化学计算外层页面；app/ 是从 qchem-web 复制来的，不要手改
+  hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs + uma/runner.py 是“在本机运行 UMA”
@@ -39,6 +40,7 @@ maintenance/          Python 爬虫与合并脚本；每周四由 .github/workfl
 deno run --allow-net --allow-read tools/serve.ts 8830   # 本地预览 public/
 deno run --allow-read tools/account-test.ts             # 账号服务接口测试
 node --test tools/lab-test.mjs                          # 实验室逻辑测试
+node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次
 node tools/e2e/run.mjs                                  # 浏览器端到端（假 Stripe、假邮件、假 AI，免费）；可加关键词只跑部分，--net 含真实雷达搜索
 node tools/e2e/live.mjs                                 # 线上只读检查（不发邮件、不写数据）
