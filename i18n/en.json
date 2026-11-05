@@ -157,7 +157,7 @@
  "CCL 的软件归档、邮件列表归档、招聘与会议等真实索引条目。": "Real index entries from CCL software archives, mailing list archives, jobs and conferences.",
  "CCL 计算化学列表": "CCL computational chemistry list",
  "CF3 取代的 DOL，改善 DOL 的抗氧化性": "CF3-substituted DOL, improving the oxidation resistance of DOL",
- "COC(=O)OCC(F)(F)F 末端三氟乙基提高抗氧化性 FC(F)OCCOC(F)F": "COC(=O)OCC(F)(F)F terminal trifluoroethyl improves antioxidant properties FC(F)OCCOC(F)F",
+ "COC(=O)OCC(F)(F)F 末端三氟乙基提高抗氧化性 FC(F)OCCOC(F)F": "COC(=O)OCC(F)(F)F terminal CF3CH2 group raises oxidation stability\nFC(F)OCCOC(F)F",
  "CSV 或 JSON，按 SMILES / InChIKey 对应到分子；空单元格保留原值。": "CSV or JSON, matched to molecules by SMILES / InChIKey; empty cells keep their original values.",
  "ChemBench 与自建测试集；vLLM / Ollama 本地服务": "ChemBench and custom test sets; local serving with vLLM / Ollama.",
  "ChemDB Atlas 目录第 {0} 条 · {1}": "ChemDB Atlas catalogue entry {0} · {1}",

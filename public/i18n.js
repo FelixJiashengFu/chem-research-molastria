@@ -17,7 +17,7 @@
 
   const CJK = /[㐀-鿿！-～、-〿]/;
   const HAN = /[㐀-鿿]/;
-  const SKIP = 'script,style,code,pre,textarea,[translate=no],.paper .title,.paper .authors,.paper .abstract,.paper .tag,.acct-digest,#digest-overview,.digest-preview li,.cai-msg.user,.cai-body,.cai-refs span,.guide-article,.smi,.why,.row-main h3,.excerpt,.card h3,.net-item h4,.net-item p,.rs-list,.cr-bgpick-name,.mcard h4,.mx-mol h4';
+  const SKIP = 'script,style,code,pre,textarea,[translate=no],.paper .title,.paper .authors,.paper .abstract,.paper .tag,.acct-digest,#digest-overview,.digest-preview li,.cai-msg.user,.cai-body,.cai-refs span,.guide-article,.smi,.why,.row-main h3,.excerpt,article.card h3,.net-item h4,.net-item p,.rs-list,.cr-bgpick-name,.mcard h4,.mx-mol h4';
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
   const norm = (s) => s.replace(/\s+/g, ' ').trim();
 
@@ -96,12 +96,24 @@
     }
     if (el.tagName === 'OPTION' && el.label && HAN.test(el.label) && el.label !== el.text) el.label = tr(el.label);
   }
+  // Textareas hold what people type, so their content is skipped, but the placeholder is interface text.
+  function translatePlaceholder(el) {
+    const v = el.getAttribute('placeholder');
+    if (!v || !HAN.test(v) || el.parentElement?.closest(SKIP)) return;
+    const out = tr(v);
+    if (out !== v) el.setAttribute('placeholder', out);
+  }
   function walk(rootNode) {
     if (rootNode.nodeType === 3) { translateText(rootNode); return; }
     if (rootNode.nodeType !== 1) return;
+    if (rootNode.tagName === 'TEXTAREA') translatePlaceholder(rootNode);
     translateAttrs(rootNode);
     const w = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
-      acceptNode: (n) => (n.nodeType === 1 && n.matches(SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT)
+      acceptNode: (n) => {
+        if (n.nodeType !== 1 || !n.matches(SKIP)) return NodeFilter.FILTER_ACCEPT;
+        if (n.tagName === 'TEXTAREA') translatePlaceholder(n);
+        return NodeFilter.FILTER_REJECT;
+      }
     });
     for (let n = w.nextNode(); n; n = w.nextNode()) n.nodeType === 3 ? translateText(n) : translateAttrs(n);
   }
