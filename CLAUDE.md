@@ -26,7 +26,7 @@ public/               发布目录，推到 main 就上线
   qchem/              量子化学计算外层页面；app/ 是从 qchem-web 复制来的，不要手改
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
-desktop/              Tauri 2 桌面版，打包时内置 public/
+desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs + uma/runner.py 是“在本机运行 UMA”
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
@@ -104,4 +104,4 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
-- **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。
+- **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。调试版和已安装的应用共用应用数据和 localStorage。

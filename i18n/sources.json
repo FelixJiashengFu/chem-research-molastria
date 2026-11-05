@@ -1263,6 +1263,7 @@
  ],
  "停止": [
   "lab/index.html",
+  "meta/index.html",
   "ai/ai.js"
  ],
  "查看提示词": [
@@ -1836,6 +1837,7 @@
  "模型": [
   "meta/index.html",
   "train/index.html",
+  "meta/meta.js",
   "ai/ai.js"
  ],
  "识别结构": [
@@ -1910,9 +1912,44 @@
  "复制": [
   "meta/index.html",
   "train/index.html",
+  "meta/meta.js",
   "train/train.js"
  ],
  "下载": [
+  "meta/index.html"
+ ],
+ "不想自己配命令？": [
+  "meta/index.html"
+ ],
+ "MolAstria 桌面版": [
+  "meta/index.html"
+ ],
+ "可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。": [
+  "meta/index.html"
+ ],
+ "在本机运行": [
+  "meta/index.html"
+ ],
+ "桌面版用你电脑上的 Python 和 fairchem 计算上面选好的分子和任务。运行的是桌面版内置的固定脚本，页面只传参数；结果保存在本机，不上传。": [
+  "meta/index.html"
+ ],
+ "正在查找 Python…": [
+  "meta/index.html",
+  "meta/meta.js"
+ ],
+ "重新检测": [
+  "meta/index.html"
+ ],
+ "打开结果文件夹": [
+  "meta/index.html"
+ ],
+ "用其他 Python（如 conda 或 venv 环境）": [
+  "meta/index.html"
+ ],
+ "python 可执行文件的完整路径": [
+  "meta/index.html"
+ ],
+ "添加并检测": [
   "meta/index.html"
  ],
  "UMA 的 7 个任务头：换体系时改": [
@@ -2127,6 +2164,12 @@
   "meta/index.html"
  ],
  "生成的 Python 脚本": [
+  "meta/index.html"
+ ],
+ "C:\\envs\\uma\\Scripts\\python.exe 或 /Users/me/miniforge3/envs/uma/bin/python": [
+  "meta/index.html"
+ ],
+ "运行日志": [
   "meta/index.html"
  ],
  "按类型筛选": [
@@ -4054,6 +4097,9 @@
  "（vLLM）即可使用本机模型。": [
   "download/index.html"
  ],
+ "Meta × 化学页的 UMA 脚本可以在本机一键运行：用你电脑上的 Python 和 fairchem，IP / EA 算完直接导入 AI 实验室（需要先装 fairchem 并获得 Hugging Face 上 facebook/UMA 的权限）。": [
+  "download/index.html"
+ ],
  "收藏、偏好和实验室项目保存在本机，和浏览器里的数据互不影响；可以用“导出项目”在两边迁移。": [
   "download/index.html"
  ],
@@ -5312,6 +5358,9 @@
  "已载入演示：3 轮、21 个提案；数值为合成值": [
   "lab/lab.js"
  ],
+ "已导入本机 UMA 计算结果": [
+  "lab/lab.js"
+ ],
  "碳酸乙烯酯": [
   "lab/chem.js"
  ],
@@ -5580,6 +5629,135 @@
   "meta/meta.js"
  ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。": [
+  "meta/meta.js"
+ ],
+ "SMILES 含有不支持的字符。": [
+  "meta/meta.js"
+ ],
+ "参数不在允许的范围内。": [
+  "meta/meta.js"
+ ],
+ "这不是 python 可执行文件的完整路径。": [
+  "meta/meta.js"
+ ],
+ "已经有一个计算在运行。": [
+  "meta/meta.js"
+ ],
+ "这个 Python 没有在 90 秒内完成检测。": [
+  "meta/meta.js"
+ ],
+ "还没有运行过计算。": [
+  "meta/meta.js"
+ ],
+ "无法启动 Python：{0}": [
+  "meta/meta.js"
+ ],
+ "正在检测 {0}…（第一次导入 PyTorch 可能要十几秒）": [
+  "meta/meta.js"
+ ],
+ "没有找到可用的 Python": [
+  "meta/meta.js"
+ ],
+ "安装 Python 3.12（": [
+  "meta/meta.js"
+ ],
+ "或 Miniforge），装好后点「重新检测」。已经装在别处的，可以在下面「用其他 Python」里填路径。": [
+  "meta/meta.js"
+ ],
+ "Python {0}：需要 3.11–3.14": [
+  "meta/meta.js"
+ ],
+ "没有 fairchem": [
+  "meta/meta.js"
+ ],
+ "没有 RDKit": [
+  "meta/meta.js"
+ ],
+ "没有 PyTorch": [
+  "meta/meta.js"
+ ],
+ "只能用 CPU（较慢）": [
+  "meta/meta.js"
+ ],
+ "没有登录 Hugging Face": [
+  "meta/meta.js"
+ ],
+ "facebook/UMA 已有权限": [
+  "meta/meta.js"
+ ],
+ "这个账号还没有 facebook/UMA 权限": [
+  "meta/meta.js"
+ ],
+ "已登录，权限暂时没能确认": [
+  "meta/meta.js"
+ ],
+ "fairchem 需要 Python 3.11–3.14：装一个新的 Python，或在下面填另一个环境的路径。": [
+  "meta/meta.js"
+ ],
+ "在终端里安装 fairchem 和 RDKit（会一并装上 PyTorch，约 3 GB）：": [
+  "meta/meta.js"
+ ],
+ "有 NVIDIA 显卡时，把 PyTorch 换成 CUDA 版（版本号与现在的一致）：": [
+  "meta/meta.js"
+ ],
+ "申请模型权限：": [
+  "meta/meta.js"
+ ],
+ "（Meta 人工审核）。获批后在终端运行下面的命令，按提示粘贴你的 Hugging Face token：": [
+  "meta/meta.js"
+ ],
+ "已经登录，但这个账号还没有 facebook/UMA 的下载权限：到": [
+  "meta/meta.js"
+ ],
+ "模型页": [
+  "meta/meta.js"
+ ],
+ "申请，Meta 批准后点「重新检测」。": [
+  "meta/meta.js"
+ ],
+ "做完点「重新检测」。": [
+  "meta/meta.js"
+ ],
+ "Hugging Face 拒绝下载 UMA：这个账号还没有 facebook/UMA 的权限，或者 token 失效。申请或重新登录后再试。": [
+  "meta/meta.js"
+ ],
+ "计算结束了，但没有读到结果。": [
+  "meta/meta.js"
+ ],
+ "计算出错：{0}": [
+  "meta/meta.js"
+ ],
+ "计算被停止，或 Python 意外退出（退出码 {0}）。": [
+  "meta/meta.js"
+ ],
+ "D4rev 微调": [
+  "meta/meta.js"
+ ],
+ "导入 AI 实验室 →": [
+  "meta/meta.js"
+ ],
+ "复制 CSV": [
+  "meta/meta.js"
+ ],
+ "D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。": [
+  "meta/meta.js"
+ ],
+ "最低能量 E = {0} eV。各构象的相对能量（kcal/mol）：{1}": [
+  "meta/meta.js"
+ ],
+ "优化后的能量 E = {0} eV": [
+  "meta/meta.js"
+ ],
+ "分子动力学完成：{0} 步，300 K。": [
+  "meta/meta.js"
+ ],
+ "计算完成 · {0}": [
+  "meta/meta.js"
+ ],
+ "文件：{0}": [
+  "meta/meta.js"
+ ],
+ "浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入": [
   "meta/meta.js"
  ],
  "模型库最近更新 {0}": [

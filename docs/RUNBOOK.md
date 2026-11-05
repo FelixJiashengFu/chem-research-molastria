@@ -59,7 +59,9 @@ git -c credential.helper= -c "credential.helper=!gh auth git-credential" push or
 
 版本号来自标签。CI 大约 6–8 分钟。完成后 `node tools/e2e/live.mjs` 会核对更新清单和 Release 是否一致。已安装的应用下次启动时提示更新。
 
-本地构建（不发布）：`cd desktop && npm ci && npx tauri build --bundles nsis`。
+本地构建（不发布）：`cd desktop && npm ci && npx tauri build --bundles nsis`。只想试功能：`npx.cmd tauri build --debug --no-bundle`，产物是 `desktop/src-tauri/target/debug/molastria.exe`。它和已安装的应用共用应用数据和 WebView2 存储（同一个 identifier）。
+
+本机 UMA：`desktop/src-tauri/uma/runner.py` 可以单独测，`python -u runner.py --probe` 看环境，`python -u runner.py params.json` 跑一次（参数格式见 `uma.rs` 的 `Params`）。本机测试环境是 `D:/ChemDraw/uma-env`（Python 3.12、CUDA 版 PyTorch、fairchem）。
 
 调试已构建的应用：启动前设环境变量 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9333`，再用 Playwright 的 `connectOverCDP` 连上去。测试更新流程：用 `--config` 把 updater 的 `endpoints` 指向本机 `127.0.0.1` 的假更新源，并打开 `dangerousInsecureTransportProtocol`。不要在用户的应用开着时再启动一个实例。
 

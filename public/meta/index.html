@@ -118,6 +118,27 @@
         <pre tabindex="0" aria-label="生成的 Python 脚本"><code id="u-code"></code></pre>
       </div>
     </div>
+    <p class="mx-desk-note" id="u-desk-note">不想自己配命令？<a href="../download/index.html">MolAstria 桌面版</a>可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。</p>
+    <div class="mx-local" id="u-local" hidden>
+      <div class="mx-local-head">
+        <h3>在本机运行</h3>
+        <p class="muted small">桌面版用你电脑上的 Python 和 fairchem 计算上面选好的分子和任务。运行的是桌面版内置的固定脚本，页面只传参数；结果保存在本机，不上传。</p>
+      </div>
+      <div class="mx-env" id="u-env" role="status"><span class="muted">正在查找 Python…</span></div>
+      <div class="mx-row wrap">
+        <label class="mx-py">Python<select id="u-py"></select></label>
+        <button class="button" type="button" id="u-recheck">重新检测</button>
+        <button class="button primary" type="button" id="u-run" disabled>在本机运行</button>
+        <button class="button" type="button" id="u-stop" hidden>停止</button>
+        <button class="text-button" type="button" id="u-dir" hidden>打开结果文件夹</button>
+      </div>
+      <details class="mx-pypath"><summary>用其他 Python（如 conda 或 venv 环境）</summary>
+        <div class="mx-row"><label class="mx-wide-in">python 可执行文件的完整路径<input type="text" id="u-py-path" placeholder="C:\envs\uma\Scripts\python.exe 或 /Users/me/miniforge3/envs/uma/bin/python" spellcheck="false" autocomplete="off"></label><button class="button" type="button" id="u-py-add">添加并检测</button></div>
+      </details>
+      <div id="u-help" class="mx-help"></div>
+      <pre class="mx-log" id="u-log" tabindex="0" aria-label="运行日志" hidden></pre>
+      <div id="u-result"></div>
+    </div>
     <details class="mx-tasks">
       <summary>UMA 的 7 个任务头：换体系时改 <code>task_name</code></summary>
       <div class="mx-table"><table>

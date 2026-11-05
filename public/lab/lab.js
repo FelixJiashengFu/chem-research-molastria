@@ -762,4 +762,13 @@
   // ai.js is loaded (deferred) before this file; if it failed, the lab still works without the propose step.
   showTab(tab);
   renderStatus();
+  // The desktop app's "run on this computer" (Meta page) hands over a finished UMA IP / EA result as CSV.
+  try {
+    const handoff = localStorage.getItem('molastria-lab-import');
+    if (handoff) {
+      localStorage.removeItem('molastria-lab-import');
+      showTab('results');
+      importText(handoff).then(() => toast('已导入本机 UMA 计算结果'));
+    }
+  } catch {}
 })();

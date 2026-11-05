@@ -403,6 +403,54 @@ check('Meta page: Muse reads a sample image, RDKit checks it, and the UMA script
   await finish(p);
 });
 
+check('Meta page in the desktop app: checks Python, runs UMA locally, imports into the AI Lab', async () => {
+  // The desktop commands are faked; desktop/src-tauri has the real ones (cargo test covers their input checks).
+  const p = await open({ init: () => {
+    const env = { python: '3.12.10', executable: 'C:\\envs\\uma\\Scripts\\python.exe', torch: '2.13.0+cu126', cuda: true, gpu: 'NVIDIA GeForce RTX 2080', fairchem: '2.25.0', rdkit: '2026.03.1', hf_login: false, uma_access: null };
+    let polls = 0;
+    const lines = ['@@STEP Loading uma-s-1p2p1 on cuda', 'neutral: charge +0, multiplicity 1, 12 steps, E = -10.0 eV', 'Downloading 10%', '@@RESULT {"job":"ipea","model":"uma-s-1p2p1","row":{"smiles":"O=C1OCC(F)O1","name":"FEC","ip_uma_s":10.9,"ea_uma_s":-0.31,"ip_uma_m":10.8,"ea_uma_m":-0.29},"files":["uma_results.csv"]}'];
+    window.__MOLASTRIA_DESKTOP__ = true;
+    window.__fake = { env, started: null };
+    window.__TAURI_INTERNALS__ = { invoke: async (cmd, a) => {
+      if (cmd === 'uma_find') return [{ python: env.python, executable: env.executable, has_fairchem: true, has_torch: true, has_rdkit: true }];
+      if (cmd === 'uma_inspect') return { ...window.__fake.env };
+      if (cmd === 'uma_start') { window.__fake.started = a; polls = 0; return 'C:\\runs\\1'; }
+      if (cmd === 'uma_poll') {
+        if (!window.__fake.started) return { from: 0, lines: [], running: false, exit: null, dir: null };
+        polls++;
+        const n = Math.min(lines.length, polls);
+        return { from: Math.max(0, a.since - 1), lines: lines.slice(Math.max(0, a.since - 1), n), running: n < lines.length, exit: n < lines.length ? null : 0, dir: 'C:\\runs\\1' };
+      }
+      return null;
+    } };
+  } });
+  await go(p, '/meta/index.html');
+  await p.waitForSelector('#u-local:not([hidden])');
+  assert.equal(await p.isVisible('#u-desk-note'), false);
+  await p.waitForFunction(() => /没有登录 Hugging Face/.test(document.getElementById('u-env').textContent));
+  assert.ok(await p.isDisabled('#u-run'));
+  assert.ok((await text(p, '#u-help')).includes('& "C:\\envs\\uma\\Scripts\\python.exe" -c "from huggingface_hub import login; login()"'));
+  // Logged in with access: the run starts with the generator's parameters and ends in a result card.
+  await p.evaluate(() => { Object.assign(window.__fake.env, { hf_login: true, uma_access: true }); });
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
+  await p.click('#u-recheck');
+  await p.waitForFunction(() => !document.getElementById('u-run').disabled);
+  await p.click('#u-run');
+  await p.waitForSelector('.mx-res');
+  const started = await p.evaluate(() => window.__fake.started);
+  assert.equal(started.python, 'C:\\envs\\uma\\Scripts\\python.exe');
+  assert.deepEqual(started.params, { smiles: 'O=C1OCC(F)O1', name: 'FEC', job: 'ipea', model: 'uma-s-1p2p1', device: 'cuda', charge: 0, spin: 1, with_m: true });
+  const log = await text(p, '#u-log');
+  assert.ok(log.includes('▸ Loading uma-s-1p2p1') && !log.includes('@@RESULT'), log);
+  assert.ok((await text(p, '.mx-res')).includes('10.900'));
+  await p.click('.mx-res [data-act=lab]');
+  await p.waitForURL(/lab\/index\.html/);
+  // FEC is one of the lab's seed solvents, so the result updates it instead of adding a molecule.
+  await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-lab-import')), null);
+  await finish(p);
+});
+
 check('catalogue: ChemRxiv card, mixed papers section, home search', async () => {
   const p = await open();
   await go(p, '/hub/index.html');

@@ -366,6 +366,172 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
   render();
   rdkit.then(onSmiles, () => { $('u-check').textContent = 'RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。'; });
 
+  // ── 桌面版：在本机运行 ──────────────────────────────────────────────────
+  // The app (desktop/src-tauri/src/uma.rs) runs its built-in runner.py with the visitor's Python;
+  // this page only sends the parameters chosen above and polls the log.
+  const ipc = window.__MOLASTRIA_DESKTOP__ && window.__TAURI_INTERNALS__;
+  $('u-desk-note').hidden = !!ipc;
+  if (ipc) desktop((cmd, args) => ipc.invoke(cmd, args));
+
+  function desktop(invoke) {
+    const PY_KEY = 'molastria-uma-python';
+    const ERR = {
+      'bad-smiles': 'SMILES 含有不支持的字符。', 'bad-params': '参数不在允许的范围内。', 'bad-python': '这不是 python 可执行文件的完整路径。',
+      busy: '已经有一个计算在运行。', 'probe-failed': '这个 Python 没有在 90 秒内完成检测。', 'no-run': '还没有运行过计算。'
+    };
+    const why = (e) => { const s = String(e?.message || e); return ERR[s] || (s.startsWith('spawn-failed') ? `无法启动 Python：${s.slice(14)}` : s); };
+    const saved = () => { try { return localStorage.getItem(PY_KEY) || ''; } catch { return ''; } };
+    const minor = (v) => (/^3\.(\d+)/.exec(v || '') || [])[1] * 1 || 0;
+    const usable = (v) => minor(v) >= 11 && minor(v) <= 14;
+    let found = [], info = null, timer = 0, next = 0, ending = false, log = [];
+    $('u-local').hidden = false;
+
+    async function find() {
+      info = null;
+      $('u-env').innerHTML = '<span class="muted">正在查找 Python…</span>';
+      $('u-help').innerHTML = '';
+      $('u-run').disabled = true;
+      try { found = await invoke('uma_find', { extra: saved() || null }); } catch { found = []; }
+      const score = (p) => (p.executable.toLowerCase() === saved().toLowerCase() ? 1000 : 0) + (p.has_fairchem ? 100 : 0) + (usable(p.python) ? 10 : 0) + minor(p.python) / 100;
+      found.sort((a, b) => score(b) - score(a));
+      $('u-py').innerHTML = found.map((p, i) => `<option value="${i}">${esc(p.executable)} · Python ${esc(p.python)}${p.has_fairchem ? ' · fairchem' : ''}</option>`).join('');
+      $('u-py').disabled = !found.length;
+      if (found.length) await inspect(); else paint();
+    }
+    async function inspect() {
+      const p = found[Number($('u-py').value) || 0];
+      $('u-env').innerHTML = `<span class="muted">正在检测 ${esc(p.executable)}…（第一次导入 PyTorch 可能要十几秒）</span>`;
+      $('u-run').disabled = true;
+      try { info = await invoke('uma_inspect', { python: p.executable }); }
+      catch (e) { info = { executable: p.executable, python: p.python, error: why(e) }; }
+      paint();
+    }
+    const chip = (state, text) => `<span class="chip ${state}">${state === 'ok' ? '✓' : state === 'bad' ? '✗' : '!'} ${text}</span>`;
+    const ready = () => !!info && usable(info.python) && !!info.torch && !!info.fairchem && !!info.rdkit && info.hf_login && info.uma_access !== false;
+
+    function paint() {
+      const chips = [];
+      const steps = [];
+      if (!found.length || !info) {
+        chips.push(chip('bad', '没有找到可用的 Python'));
+        steps.push(['安装 Python 3.12（<a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> 或 Miniforge），装好后点「重新检测」。已经装在别处的，可以在下面「用其他 Python」里填路径。']);
+      } else {
+        const win = info.executable.includes('\\');
+        const py = win ? `& "${info.executable}"` : `"${info.executable}"`;
+        if (info.error) chips.push(chip('bad', esc(info.error)));
+        chips.push(usable(info.python) ? chip('ok', `Python ${esc(info.python)}`) : chip('bad', `Python ${esc(info.python)}：需要 3.11–3.14`));
+        chips.push(info.fairchem ? chip('ok', `fairchem ${esc(info.fairchem)}`) : chip('bad', '没有 fairchem'));
+        chips.push(info.rdkit ? chip('ok', `RDKit ${esc(info.rdkit)}`) : chip('bad', '没有 RDKit'));
+        chips.push(!info.torch ? chip('bad', '没有 PyTorch') : info.cuda ? chip('ok', `GPU：${esc(info.gpu || 'CUDA')}`) : chip('warn', '只能用 CPU（较慢）'));
+        chips.push(!info.hf_login ? chip('bad', '没有登录 Hugging Face') : info.uma_access === true ? chip('ok', 'facebook/UMA 已有权限') : info.uma_access === false ? chip('bad', '这个账号还没有 facebook/UMA 权限') : chip('warn', '已登录，权限暂时没能确认'));
+        if (!usable(info.python)) steps.push(['fairchem 需要 Python 3.11–3.14：装一个新的 Python，或在下面填另一个环境的路径。']);
+        else {
+          if (!info.fairchem || !info.rdkit || !info.torch) steps.push(['在终端里安装 fairchem 和 RDKit（会一并装上 PyTorch，约 3 GB）：', `${py} -m pip install fairchem-core rdkit`]);
+          if (win && /\+cpu$/.test(info.torch || '') ) steps.push(['有 NVIDIA 显卡时，把 PyTorch 换成 CUDA 版（版本号与现在的一致）：', `${py} -m pip install --force-reinstall --no-deps torch==${esc(info.torch.replace(/\+cpu$/, ''))} --index-url https://download.pytorch.org/whl/cu126`]);
+          if (!info.hf_login) steps.push(['申请模型权限：<a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">huggingface.co/facebook/UMA</a>（Meta 人工审核）。获批后在终端运行下面的命令，按提示粘贴你的 Hugging Face token：', `${py} -c "from huggingface_hub import login; login()"`]);
+          else if (info.uma_access === false) steps.push(['已经登录，但这个账号还没有 facebook/UMA 的下载权限：到 <a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">模型页</a> 申请，Meta 批准后点「重新检测」。']);
+        }
+      }
+      $('u-env').innerHTML = chips.join('');
+      $('u-help').innerHTML = steps.length ? `<ol>${steps.map(([t, c]) => `<li><span>${t}</span>${c ? `<div class="mx-cmd"><code>${esc(c)}</code><button type="button" class="text-button" data-cmd="${esc(c)}">复制</button></div>` : ''}</li>`).join('')}</ol><p class="muted small">做完点「重新检测」。</p>` : '';
+      $('u-run').disabled = !ready();
+    }
+    $('u-help').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) copy(b.dataset.cmd); });
+    $('u-recheck').addEventListener('click', find);
+    $('u-py').addEventListener('change', inspect);
+    $('u-py-add').addEventListener('click', () => {
+      const v = $('u-py-path').value.trim();
+      try { if (v) localStorage.setItem(PY_KEY, v); else localStorage.removeItem(PY_KEY); } catch {}
+      find();
+    });
+    $('u-py-path').value = saved();
+
+    function params() {
+      return {
+        smiles: $('u-smiles').value.trim(), name: $('u-name').value.trim() || 'molecule', job: $('u-job').value, model: $('u-model').value,
+        device: $('u-device').value, charge: Math.round(Number($('u-charge').value) || 0), spin: Math.max(1, Math.round(Number($('u-spin').value) || 1)),
+        with_m: $('u-job').value === 'ipea' && $('u-model').value === 'uma-s-1p2p1' && $('u-m').checked
+      };
+    }
+    function busy(on) {
+      $('u-run').hidden = on; $('u-stop').hidden = !on;
+      $('u-recheck').disabled = $('u-py').disabled = on;
+    }
+    $('u-run').addEventListener('click', async () => {
+      if (R && !mol) { toast('RDKit 无法解析这个 SMILES，请先修正。'); return; }
+      try { await invoke('uma_start', { python: info.executable, params: params() }); }
+      catch (e) { $('u-result').innerHTML = `<div class="mx-err">${esc(why(e))}</div>`; return; }
+      log = []; next = 0; ending = false;
+      $('u-log').textContent = ''; $('u-log').hidden = false; $('u-result').innerHTML = ''; $('u-dir').hidden = false;
+      busy(true);
+      poll();
+    });
+    $('u-stop').addEventListener('click', () => invoke('uma_stop').catch(() => {}));
+    $('u-dir').addEventListener('click', () => invoke('uma_open_dir').catch((e) => toast(why(e))));
+
+    const show = (l) => (l.startsWith('@@STEP ') ? `▸ ${l.slice(7)}` : l.startsWith('@@ERROR ') ? `✗ ${(() => { try { return JSON.parse(l.slice(8)).message; } catch { return l.slice(8); } })()}` : l.startsWith('@@') ? null : l);
+    async function poll() {
+      clearTimeout(timer);
+      let p;
+      try { p = await invoke('uma_poll', { since: next }); } catch { timer = setTimeout(poll, 1000); return; }
+      if (p.lines.length) {
+        log.length = Math.min(log.length, p.from);
+        log.push(...p.lines);
+        next = log.length;
+        const box = $('u-log'), atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+        box.textContent = log.map(show).filter((l) => l !== null).join('\n');
+        if (atEnd) box.scrollTop = box.scrollHeight;
+      }
+      if (p.running) { timer = setTimeout(poll, 400); return; }
+      if (!ending && p.exit !== null) { ending = true; timer = setTimeout(poll, 300); return; } // last lines after exit
+      if (p.exit !== null) finish(p.exit);
+    }
+
+    function finish(code) {
+      busy(false);
+      const pick = (tag) => { const l = [...log].reverse().find((x) => x.startsWith(tag)); try { return l ? JSON.parse(l.slice(tag.length)) : null; } catch { return null; } };
+      const res = pick('@@RESULT '), err = pick('@@ERROR ');
+      const out = $('u-result');
+      if (res) out.innerHTML = resultCard(res);
+      else if (err?.kind === 'hf_access') out.innerHTML = '<div class="mx-err">Hugging Face 拒绝下载 UMA：这个账号还没有 facebook/UMA 的权限，或者 token 失效。申请或重新登录后再试。</div>';
+      else out.innerHTML = `<div class="mx-err">${code === 0 ? '计算结束了，但没有读到结果。' : err ? `计算出错：${esc(err.message)}` : `计算被停止，或 Python 意外退出（退出码 ${code}）。`}</div>`;
+    }
+    const f4 = (v) => (Number.isFinite(v) ? v.toFixed(3) : '—');
+    function resultCard(r) {
+      const files = (r.files || []).map((f) => `<code>${esc(f)}</code>`).join(' ');
+      let body = '';
+      if (r.job === 'ipea') {
+        const row = r.row || {};
+        const cols = [['UMA-S', 'uma_s'], ['UMA-M', 'uma_m'], ['D4rev 微调', 'd4rev']].filter(([, c]) => `ip_${c}` in row);
+        body = `<table class="mx-res-table"><thead><tr><th>模型</th><th>IP（eV）</th><th>EA（eV）</th></tr></thead><tbody>${cols.map(([n, c]) => `<tr><td>${n}</td><td>${f4(row[`ip_${c}`])}</td><td>${f4(row[`ea_${c}`])}</td></tr>`).join('')}</tbody></table>`
+          + (cols.some(([, c]) => c !== 'd4rev') ? '<div class="btns"><button type="button" class="button primary small" data-act="lab">导入 AI 实验室 →</button><button type="button" class="button small" data-act="csv">复制 CSV</button></div>' : '<p class="muted small">D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。</p>');
+        out.csv = `${Object.keys(row).join(',')}\n${Object.values(row).join(',')}\n`;
+      } else if (r.job === 'conf') {
+        body = `<p>最低能量 E = ${r.energy_ev.toFixed(6)} eV。各构象的相对能量（kcal/mol）：${(r.relative_kcal || []).slice(0, 20).map((v) => v.toFixed(2)).join('、')}</p>`;
+      } else if (r.job === 'opt') body = `<p>优化后的能量 E = ${r.energy_ev.toFixed(6)} eV</p>`;
+      else body = `<p>分子动力学完成：${r.steps} 步，300 K。</p>`;
+      return `<div class="mx-res"><h4>计算完成 · ${esc(r.model)}</h4>${body}<p class="muted small">文件：${files}</p></div>`;
+    }
+    const out = $('u-result');
+    out.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-act]');
+      if (!b || !out.csv) return;
+      if (b.dataset.act === 'csv') copy(out.csv);
+      if (b.dataset.act === 'lab') {
+        try { localStorage.setItem('molastria-lab-import', out.csv); } catch { toast('浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入'); return; }
+        location.href = '../lab/index.html#workbench';
+      }
+    });
+
+    // A calculation keeps running while the visitor looks at other pages; pick its log back up.
+    invoke('uma_poll', { since: 0 }).then((p) => {
+      if (!p.running && p.exit === null) return;
+      $('u-log').hidden = false; $('u-dir').hidden = false;
+      if (p.running) { busy(true); poll(); } else { ending = true; poll(); }
+    }).catch(() => {});
+    find();
+  }
+
   // ── 开放资源筛选 ────────────────────────────────────────────────────────
   const items = [...document.querySelectorAll('#o-grid .mx-item')];
   const chips = [...document.querySelectorAll('.mx-filter button')];

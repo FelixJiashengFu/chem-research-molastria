@@ -1,6 +1,8 @@
 // MolAstria desktop: serves public/ from inside the app, opens outside links in the system browser,
-// and installs signed updates published on GitHub Releases.
+// installs signed updates published on GitHub Releases, and runs UMA with the user's own Python (uma.rs).
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+mod uma;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Mutex;
@@ -105,7 +107,18 @@ fn main() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(PendingUpdate::default())
         .manage(Progress::default())
-        .invoke_handler(tauri::generate_handler![check_update, install_update, update_progress])
+        .manage(uma::Uma::default())
+        .invoke_handler(tauri::generate_handler![
+            check_update,
+            install_update,
+            update_progress,
+            uma::uma_find,
+            uma::uma_inspect,
+            uma::uma_start,
+            uma::uma_poll,
+            uma::uma_stop,
+            uma::uma_open_dir
+        ])
         .setup(|app| {
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title("MolAstria")
@@ -115,6 +128,12 @@ fn main() {
                 .build()?;
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running MolAstria");
+        .build(tauri::generate_context!())
+        .expect("error while running MolAstria")
+        .run(|app, event| {
+            // A calculation should not keep the GPU busy after the window is gone.
+            if let tauri::RunEvent::Exit = event {
+                uma::stop(&app.state::<uma::Uma>());
+            }
+        });
 }
