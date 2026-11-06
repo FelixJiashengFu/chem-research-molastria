@@ -526,7 +526,7 @@
       list.map((d) => `<div class="db-cell"><h4>${esc(d.title)}</h4><p>${esc(d.excerpt || d.metric || '')}</p><div class="db-actions"><button class="btn locate-btn" type="button" data-q="${esc(d.title)}">在网中查看</button><a class="btn primary" href="${esc(d.url)}" target="_blank" rel="noopener">访问官网 ↗</a></div></div>`).join('') + '</div></div>').join('') +
       `<div class="db-group"><h3>数据源入口（${NET.sources.length} 个来源）</h3><div class="db-table">` + NET.sources.map((s) => {
         const n = NET.docs.filter((d) => d.sources.includes(s.id)).length;
-        return `<div class="db-cell"><h4>${esc(s.name)}</h4><p>${esc(s.role || '')} · ${n} 条</p><div class="db-actions"><button class="btn locate-btn" type="button" data-src="${esc(s.id)}">在网中查看</button>${s.url ? `<a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">访问原站 ↗</a>` : ''}</div></div>`;
+        return `<div class="db-cell"><h4>${esc(s.name)}</h4><p><span>${esc(s.role || '')}</span> · <span>共 ${n} 条</span></p><div class="db-actions"><button class="btn locate-btn" type="button" data-src="${esc(s.id)}">在网中查看</button>${s.url ? `<a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">访问原站 ↗</a>` : ''}</div></div>`;
       }).join('') + '</div></div>';
   }
   document.addEventListener('click', (ev) => {

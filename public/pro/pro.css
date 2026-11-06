@@ -106,6 +106,10 @@ tbody tr:last-child td{border-bottom:0}
 .doc code{font-family:var(--font-mono);font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:3px}
 .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
 @media(max-width:640px){.dl-grid{grid-template-columns:1fr}}
+/* download page: the intro film, decoration only; the dark fill matches the film while it loads */
+.dl-intro{float:right;width:min(300px,42%);aspect-ratio:16/9;margin:4px 0 14px 24px;border:1px solid var(--line-strong);border-radius:12px;overflow:hidden;background:#07231a}
+.dl-intro video,.dl-intro img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:640px){.dl-intro{float:none;width:100%;margin:0 0 18px}}
 
 /* account page */
 .acct{max-width:640px}

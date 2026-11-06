@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: '{"required": {"run": {"system[-1]": {"atoms": "*"}, "calculation[-1]":
+      {"energy": {"total": "*"}, "forces": {"total": "*"}, "stress": {"total": "*"}},
+      "program": "*", "method[-1]": {"dft": {"xc_functional": "*"}, "electrons_representation":
+      "*", "atom_parameters": "*"}}, "metadata": {"entry_id": "*", "upload_id": "*",
+      "datasets": "*"}, "results": {"material": {"chemical_formula_reduced": "*",
+      "structural_type": "*"}}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '422'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: POST
+    uri: https://nomad-lab.eu/prod/v1/api/v1/entries/zzzz-not-an-entry-id/archive/query
+  response:
+    body:
+      string: '{"detail":"The entry does not exist or is not visible to you."}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '63'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      vary:
+      - Origin
+    status:
+      code: 404
+      message: Not Found
+version: 1

@@ -1,0 +1,235 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.materialsproject.org/heartbeat
+  response:
+    body:
+      string: '{"status":"OK","time":"2026-10-27T21:25:37.519198","version":"0.88.1","pymatgen":"2026.10.16","db_version":"2026.09.28","suffix":"green","access_controlled_batch_ids":["gnome_r2scan_statics"]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:25:37 GMT
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '1'
+      X-Kong-Upstream-Latency:
+      - '3'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      server:
+      - cloudflare
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.materialsproject.org/heartbeat
+  response:
+    body:
+      string: '{"status":"OK","time":"2026-10-27T21:25:37.786989","version":"0.88.1","pymatgen":"2026.10.16","db_version":"2026.09.28","suffix":"green","access_controlled_batch_ids":["gnome_r2scan_statics"]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:25:37 GMT
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '1'
+      X-Kong-Upstream-Latency:
+      - '3'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      server:
+      - cloudflare
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      user-agent:
+      - mp-api/0.46.5 (Python/3.11.17 Linux/6.18.33.2-microsoft-standard-WSL2)
+    method: GET
+    uri: https://api.materialsproject.org/materials/summary/?_fields=material_id%2Cformula_pretty%2Cstructure%2Cformation_energy_per_atom%2Cenergy_per_atom%2Cenergy_above_hull%2Cband_gap%2Ctheoretical%2Ctotal_magnetization%2Corigins&_limit=1000&material_ids=mp-149
+  response:
+    body:
+      string: '{"data":[{"theoretical":false,"total_magnetization":0.0,"band_gap":0.6102999999999996,"energy_per_atom":-8.773764595,"formation_energy_per_atom":0.0,"energy_above_hull":0.0,"formula_pretty":"Si","material_id":"mp-aaaaaaft","origins":[{"name":"structure","task_id":"aaaeguxu","last_updated":"2021-03-05T11:47:03.084000"},{"name":"setyawan_curtarolo","task_id":"aaacieeq","last_updated":"2021-03-07T12:03:34.371000"},{"name":"hinuma","task_id":"aaaenlow","last_updated":"2021-07-13T15:11:37.576000"},{"name":"latimer_munro","task_id":"aaafxgxk","last_updated":"2022-06-26T11:08:59.687000"},{"name":"dos","task_id":"aaadryyt","last_updated":"2020-07-15T20:06:29.905000"},{"name":"electronic_structure","task_id":"aaafxgxk","last_updated":"2022-06-26T11:08:59.687000"},{"name":"magnetism","task_id":"aaaeguxu","last_updated":"2021-03-05T11:47:03.084000"},{"name":"dielectric","task_id":"aaacmxxl","last_updated":"2018-12-19T21:45:41.099000"},{"name":"energy","task_id":"aaaeguxu","last_updated":"2026-09-25T18:20:03.759000"},{"name":"absorption","task_id":"aaagbned","last_updated":"2025-03-13T21:15:46.012000"}],"structure":{"@module":"pymatgen.core.structure","@class":"Structure","charge":0.0,"lattice":{"matrix":[[3.333573,0.0,1.924639],[1.111191,3.142924,1.924639],[0.0,0.0,3.849278]],"pbc":[true,true,true],"a":3.8492784033699095,"b":3.8492794116013456,"c":3.849278,"alpha":60.00001213094421,"beta":60.00000346645984,"gamma":60.0000109754579,"volume":40.32952684741405},"properties":{},"sites":[{"species":[{"element":"Si","occu":1.0}],"abc":[0.875,0.875,0.875],"properties":{},"label":"Si","xyz":[3.8891685,2.7500584999999997,6.7362365]},{"species":[{"element":"Si","occu":1.0}],"abc":[0.125,0.125,0.125],"properties":{},"label":"Si","xyz":[0.5555955,0.3928655,0.9623195]}]}}],"meta":{"api_version":"0.88.1","time_stamp":"2026-10-27T21:25:39.857955+00:00","total_doc":1,"facet":null,"max_limit":1000,"default_fields":["material_id"]}}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:25:39 GMT
+      RateLimit-Limit:
+      - '25'
+      RateLimit-Remaining:
+      - '24'
+      RateLimit-Reset:
+      - '1'
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '7'
+      X-Kong-Upstream-Latency:
+      - '477'
+      X-RateLimit-Limit-Day:
+      - '640000'
+      X-RateLimit-Limit-Hour:
+      - '40000'
+      X-RateLimit-Limit-Minute:
+      - '1000'
+      X-RateLimit-Limit-Month:
+      - '12800000'
+      X-RateLimit-Limit-Second:
+      - '25'
+      X-RateLimit-Limit-Year:
+      - '100000000'
+      X-RateLimit-Remaining-Day:
+      - '639993'
+      X-RateLimit-Remaining-Hour:
+      - '39993'
+      X-RateLimit-Remaining-Minute:
+      - '999'
+      X-RateLimit-Remaining-Month:
+      - '12799993'
+      X-RateLimit-Remaining-Second:
+      - '24'
+      X-RateLimit-Remaining-Year:
+      - '99999990'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      server:
+      - cloudflare
+      vary:
+      - Accept-Encoding
+      - Origin
+      x-consumer-id:
+      - 2413be8b-1c29-4960-9d1f-e08e6ef8c106
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      user-agent:
+      - mp-api/0.46.5 (Python/3.11.17 Linux/6.18.33.2-microsoft-standard-WSL2)
+    method: GET
+    uri: https://api.materialsproject.org/materials/tasks/?_fields=task_id%2Crun_type&_limit=1000&task_ids=1947498%2Caaaeguxu
+  response:
+    body:
+      string: '{"data":[{"run_type":"r2SCAN","task_id":"aaaeguxu","meta":{"count":{"total":1}},"meta_pagination_token":"CNuEAhoOWgxovxEQwFN8euAKVOkiDloMaL8REMBTfHrgClTp"}],"meta":{"api_version":"0.88.1","time_stamp":"2026-10-27T21:25:40.083432+00:00","total_doc":1,"facet":{},"pagination_token":"CNuEAhoOWgxovxEQwFN8euAKVOkiDloMaL8REMBTfHrgClTp","max_limit":1000,"default_fields":["task_id","formula_pretty","last_updated"]}}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '410'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:25:40 GMT
+      RateLimit-Limit:
+      - '25'
+      RateLimit-Remaining:
+      - '24'
+      RateLimit-Reset:
+      - '1'
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '10'
+      X-Kong-Upstream-Latency:
+      - '10'
+      X-RateLimit-Limit-Day:
+      - '640000'
+      X-RateLimit-Limit-Hour:
+      - '40000'
+      X-RateLimit-Limit-Minute:
+      - '1000'
+      X-RateLimit-Limit-Month:
+      - '12800000'
+      X-RateLimit-Limit-Second:
+      - '25'
+      X-RateLimit-Limit-Year:
+      - '100000000'
+      X-RateLimit-Remaining-Day:
+      - '639992'
+      X-RateLimit-Remaining-Hour:
+      - '39992'
+      X-RateLimit-Remaining-Minute:
+      - '998'
+      X-RateLimit-Remaining-Month:
+      - '12799992'
+      X-RateLimit-Remaining-Second:
+      - '24'
+      X-RateLimit-Remaining-Year:
+      - '99999989'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      server:
+      - cloudflare
+      vary:
+      - Origin
+      x-consumer-id:
+      - 2413be8b-1c29-4960-9d1f-e08e6ef8c106
+    status:
+      code: 200
+      message: OK
+version: 1

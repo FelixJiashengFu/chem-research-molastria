@@ -1,0 +1,45 @@
+[project]
+name = "chemdb-agent"
+version = "0.2.0"
+description = "计算化学数据库 Agent：跨库检索结构与计算数据，统一单位与理论级别后导出 ASE 训练集（MCP 服务器）"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = { text = "MIT" }
+authors = [{ name = "Fu" }]
+dependencies = [
+    "fastmcp>=2.0.0",
+    "ase>=3.22.0",
+    "pymatgen>=2024.0.0",
+    "mp-api>=0.46.0",
+    "pubchempy>=1.0.4",
+    "qcportal>=0.50",
+    "basis-set-exchange>=0.11.0",
+    "pydantic>=2.0.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+# P1 数据源：jarvis-tools、datasets 等按需安装
+p1 = [
+    "jarvis-tools>=2.0.0",
+    "datasets>=2.18.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=7.1.0",
+    "vcrpy>=6.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chemdb_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: 真实联网查询（设置 CHEMDB_LIVE=1 才运行）"]

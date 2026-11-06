@@ -18,7 +18,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"计算化学论文与社区","inLanguage":"zh-CN","url":"https://molastria.com/hub/"}</script>
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、arXiv、Crossref、GitHub 与官方软件数据库目录的真实标题与链接">
+<meta name="description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、Stack Exchange、matsci.org 等国际论坛与博客、arXiv、ChemRxiv、Crossref 期刊、GitHub 与官方软件数据库目录的真实标题与链接">
 <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
 <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
@@ -63,7 +63,7 @@
     <div class="section-head"><h2>快照中的来源接入状态</h2><p>以下状态对应数据采集时刻；更新时被人机验证拦截的来源会保留缓存或交叉引用。</p></div>
     <div id="sourceCards" class="source-grid"></div>
     <div class="charts-grid">
-      <article class="panel"><h3>条目来源构成</h3><div id="donutChart" class="chart"></div><div id="donutLegend" class="legend"></div><p class="small muted">每段颜色对应下方同色来源，段长表示该来源占快照条目总数的比例；数字是条目数。</p></article>
+      <article class="panel"><h3>条目来源构成</h3><div id="donutChart" class="chart"></div><div id="donutLegend" class="legend"></div><p id="langSplit" class="lang-split"></p><p class="small muted">每段颜色对应下方同色来源，段长表示该来源占快照条目总数的比例；数字是条目数。</p></article>
       <article class="panel"><h3>主题分布 Top 10（真实标题关键词）</h3><div id="tagBars" class="bars"></div></article>
       <article class="panel"><h3>内容类型分布</h3><div id="typeBars" class="bars"></div></article>
       <article class="panel"><h3>Sobereva 博文编号分布（/1 – /1000）</h3><div id="histChart" class="chart"></div><p class="small muted">编号越新越大；可看出博客长期的持续更新密度。</p></article>
@@ -82,13 +82,13 @@
         <option value="title">标题 A–Z</option><option value="source">按来源</option></select></label>
       <button id="clearFilters" class="btn ghost" type="button">清空筛选</button>
     </div>
-    <p class="en-only" translate="no">Entries come from Chinese forums, blogs and journals and keep their original titles.</p>
+    <p class="en-only" translate="no">Entries come from Chinese and international forums, blogs, journals and preprint servers, and keep their original titles.</p>
     <div id="cards" class="cards"></div>
     <div class="center"><button id="loadMore" class="btn" type="button">加载更多</button></div>
   </section>
 
   <section id="latest" class="section">
-    <div class="section-head"><h2>最新长文（带日期与摘要）</h2><p>来自 Sobereva 首页与分类页的最新文章元数据，点卡片直达原文。</p></div>
+    <div class="section-head"><h2>最新长文（带日期与摘要）</h2><p>来自 Sobereva 博客和 Computational Chemistry Highlights、Henry Rzepa、RDKit 等国际博客的最新文章，点卡片直达原文。</p></div>
     <div id="latestCards" class="cards"></div>
   </section>
 
@@ -126,7 +126,7 @@
       <div><h3>只搬标题，不搬全文</h3><p>每条只保留标题、≤180 字短摘要与原文链接，并标注来源。阅读全文请点「原文」回到原站——流量与版权都归原作者。</p></div>
       <div><h3>不绕过人机验证</h3><p>计算化学公社（阿里云 WAF）与 X-MOL 深层页会触发真人验证，本站<strong>不做任何绕过</strong>。公社内容改用 Sobereva 官方博文目录中公开的交叉引用（真实帖标题 + 真实 thread 链接），并打「目录镜像」标签；X-MOL 用同日抓取的真实首页快照解析学科频道。</p></div>
       <div><h3>尊重 robots 与频率</h3><p>同站请求间隔 ≥1.1 秒；不抓各站 robots 禁止的搜索/订阅路径；X-MOL 每次刷新只请求一次首页。某站失败时保留上次缓存，绝不用空数据冒充。</p></div>
-      <div><h3>新来源同样守规矩</h3><p>arXiv、Crossref、GitHub 走<strong>官方 API</strong>；官方软件目录逐站抓首页标题与 meta 描述，抓不到就跳过。小木虫论坛帖被其 robots.txt 明确禁止抓取，故不收录；ChemRxiv、Materials Project 被 Cloudflare 拦截，同样不绕过、仅在 README 中说明。</p></div>
+      <div><h3>新来源同样守规矩</h3><p>arXiv、Crossref、GitHub、Stack Exchange 走<strong>官方 API</strong>，matsci.org、Psi4、GROMACS 等论坛用 Discourse 的公开 JSON 接口，博客和机构新闻用 RSS；官方软件目录逐站抓首页标题与 meta 描述，抓不到就跳过。小木虫论坛帖被其 robots.txt 明确禁止抓取，故不收录；ChemRxiv 官网对程序返回 Cloudflare 验证，改用 Crossref 元数据；Materials Project 首页和 ZINC 同样有验证页，不绕过；Rowan 博客和 CECAM 没有订阅源，暂不收录。每个来源有条数上限，某个来源抓取失败时沿用上周条目。</p></div>
       <div><h3>如何更新这份快照</h3><p>浏览本包无需安装依赖。需要重新采集时，在包根目录的 <code>maintenance</code> 内创建 Python 虚拟环境，安装 <code>requirements.txt</code>，再运行 <code>refresh_data.py</code>。它会更新社区数据、离线数据脚本及统一搜索索引；具体命令见包内 <code>README.md</code>。</p></div>
     </div>
     <p class="small muted" id="complianceLine"></p>

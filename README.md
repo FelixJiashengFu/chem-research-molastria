@@ -5,9 +5,9 @@
 <p align="center"><b>计算化学研究导航 · A computational chemistry atlas</b><br>
 <a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a></p>
 
-数据库、软件、教程、论文与开源工具一处检索（1,600 多条，每周四自动更新），配 19 章中英双语讲解手册、以查询为中心的资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版。
+数据库、软件、教程、论文与开源工具一处检索（2,600 多条，每周四自动更新），配 20 章中英双语讲解手册、计算化学期刊投稿指南、以查询为中心的资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版。
 
-One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (1,600+ entries, refreshed every Thursday), with a 19-chapter handbook in Chinese and English, a query-centred resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app.
+One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (2,600+ entries, refreshed every Thursday), with a 20-chapter handbook in Chinese and English, a guide to computational chemistry journals, a query-centred resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app.
 
 纯静态网站：`public/` 就是发布目录，不需要后端。 · A static site: `public/` is the published folder; no backend is needed.
 
@@ -15,10 +15,12 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 | 栏目 Section | 路径 Path | 说明 What it does |
 | --- | --- | --- |
-| 统一搜索 Search | `public/index.html` | 1,600 多条去重资源（每周四自动更新）的多关键词检索、筛选、收藏与 CSV 导出；中文术语能搜到英文条目，问句自动近似匹配，结果少时引导去问 AI、雷达和网状查询。<br>Keyword search, filters, saved items and CSV export over 1,600+ deduplicated resources (refreshed every Thursday); Chinese terms find English entries, natural-language questions fall back to fuzzy matching, and few results lead on to the AI assistant, PreprintRadar and the network. |
+| 统一搜索 Search | `public/index.html` | 2,600 多条去重资源（每周四自动更新）的多关键词检索、筛选、收藏与 CSV 导出；中文术语能搜到英文条目，问句自动近似匹配，结果少时引导去问 AI、雷达和网状查询。<br>Keyword search, filters, saved items and CSV export over 2,600+ deduplicated resources (refreshed every Thursday); Chinese terms find English entries, natural-language questions fall back to fuzzy matching, and few results lead on to the AI assistant, PreprintRadar and the network. |
 | 网状查询 Network | `public/hub/network.html` | 输入一个词，它就是网的中心：周围是关系最紧的软件、方法与概念，再外一圈是它们的近邻、相关条目和来源，点任何节点换中心。节点和连线由全部条目、讲解手册与中英术语表现算（`hub/net-engine.js`），认得同义词、前缀和拼写错误；数据每周四自动更新。<br>Type a term and it becomes the centre of the network, surrounded by the most closely related software, methods and concepts, their neighbours, the matching entries and their sources; click any node to recentre. Nodes and links are computed from every entry, the handbook and the Chinese–English term table, with synonyms, prefixes and misspellings understood. The data refreshes every Thursday. |
-| 讲解与数据库 Guide & databases | `public/atlas/index.html` | 187 条数据库与研究资源目录（16 类，含量子化学程序、凝聚态第一性原理、波函数分析、量子力学与量子化学课程、量子计算化学）、19 章说明讲解手册（中文 / English 可切换）、Agent 工程说明。<br>187-entry catalogue of databases and research resources in 16 categories (including quantum chemistry programs, condensed-matter codes, wavefunction analysis, quantum mechanics courses and quantum computing for chemistry), the 19-chapter handbook (switchable between Chinese and English), Agent engineering notes. |
-| 论文与社区 Papers & community | `public/hub/index.html` | 来源接入状态、内容分布、论文与教程快照。<br>Source status, content charts, paper and tutorial snapshots. |
+| 讲解手册 Explainer Handbook | `public/manual/index.html` | 20 章说明讲解手册的阅读器：目录、中文 / English 切换、打印、上一章 / 下一章，地址 `manual/index.html#<章节 id>` 直达某一章（旧地址 `atlas/index.html#guide/<id>` 自动跳过来）。正文数据在 `atlas/content.js` 和 `atlas/guides-en.js`；给搜索引擎的静态版在 `guide/`。<br>Reader for the 20-chapter handbook: contents, Chinese / English switch, print, previous / next; `manual/index.html#<chapter id>` opens a chapter, and old `atlas/index.html#guide/<id>` links redirect here. The text lives in `atlas/content.js` and `atlas/guides-en.js`; the static copy for search engines is `guide/`. |
+| 数据库 Databases | `public/atlas/index.html` | 214 条数据库与研究资源目录（17 类，含量子化学程序、凝聚态第一性原理、波函数分析、量子力学与量子化学课程、量子计算化学、科学领域语言模型与多模态基础模型），可按类别、接入状态筛选和搜索，可下载 CSV；`#agent` 是 Agent 工程页（chemdb-agent 0.2.0：跨库检索晶体、分子与量子化学数据并导出训练集，源码在 `agent/chemdb-agent/`）。<br>214-entry catalogue of databases and research resources in 17 categories (including quantum chemistry programs, condensed-matter codes, wavefunction analysis, quantum mechanics courses, quantum computing for chemistry, and scientific language and multimodal foundation models), with filters, search and a CSV download; `#agent` is the Agent engineering page (chemdb-agent 0.2.0, source in `agent/chemdb-agent/`). |
+| 期刊发表 Journals | `public/journals/index.html` | 46 种量子化学与计算化学期刊和 2 个预印本平台的投稿要点（只写期刊或出版社官网核实过的内容，每项附出处和核对日期，不写分区），可按类别、出版社、开放获取方式、文章类型筛选；另有 18 章“从研究到发表”指导。<br>Submission essentials for 46 quantum and computational chemistry journals and 2 preprint servers (only what the journal or publisher site states, each with its source and check date; no quartile rankings), with filters, plus an 18-chapter guide from research to publication. |
+| 论文与社区 Papers & community | `public/hub/index.html` | 来源接入状态、内容分布、论文与教程快照；中文来源和国际来源（Stack Exchange、Discourse 论坛、博客、Crossref 期刊、arXiv、GitHub 发布说明）各占一半左右。<br>Source status, content charts, paper and tutorial snapshots; about half the entries come from international sources (Stack Exchange, Discourse forums, blogs, Crossref journals, arXiv, GitHub releases). |
 | 预印本雷达 PreprintRadar | `public/radar/` | 同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台，按兴趣主题定时推荐、一键导出 PDF；是独立项目 [PreprintRadar](https://github.com/FelixJiashengFu/PreprintRadar) 的网页版，用 `tools/vendor-radar.ts` 复制进来，跟随本站的深浅色和中英文。<br>Search 12 preprint servers, scheduled recommendations and PDF export: the web build of the separate PreprintRadar project, copied in by `tools/vendor-radar.ts` and following this site's theme and language. |
 | 量子化学 Quantum chemistry | `public/qchem/` | 在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇；每个模块都与 PySCF 逐项对拍。来自独立项目 [QChem Web](https://github.com/FelixJiashengFu/qchem-web)，用 `tools/vendor-qchem.ts` 复制进来。<br>Quantum chemistry and quantum dots in the browser: HF/DFT, MP2, CCSD(T), FCI, excited states, geometry optimisation and frequencies, VQE and phase estimation, and colloidal, graphene and silicon quantum dots, each module checked against PySCF. Copied in from the separate QChem Web project by `tools/vendor-qchem.ts`. |
 | 训练 Agent Train an agent | `public/train/index.html` | 用开源小模型训练化学研究 Agent（模型表每周四自动对照 Hugging Face 核对链接、下载量，并列出近两个月各家新发布的小模型）：2026-10 最新小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型对比，每个模型可展开详细介绍；数据构造、LoRA、GRPO、评测与本地部署代码。<br>Train a chemistry research agent on an open small model: an October 2026 comparison of small and chemistry-specific models with expandable details, plus data, LoRA, GRPO, evaluation and local-deployment code. |
@@ -95,12 +97,16 @@ public/                     发布目录 · published site
   ai/                        AI 接入层与助手 · AI layer and assistant
   lab/                       AI 实验室 · AI Lab
   meta/                      Meta × 化学：Muse 识图、UMA 脚本、开放资源 · Meta × Chemistry
-  atlas/, hub/               讲解与数据库、论文与社区 · guide, papers & community
+  manual/                    讲解手册阅读器 · Explainer Handbook reader
+  atlas/                     数据库与 Agent 工程（手册正文数据也在这里）· databases, Agent engineering, handbook text
+  journals/                  期刊发表 · journals and publishing guide
+  hub/                       论文与社区、网状查询 · papers & community, network
   radar/                     预印本雷达（app/ 由 tools/vendor-radar.ts 复制）· PreprintRadar
   qchem/                     量子化学计算（app/ 由 tools/vendor-qchem.ts 复制）· quantum chemistry
   guide/, resources/         生成的静态页 · generated static pages
 i18n/en.json                 英文译文源文件 · English strings (editable)
 desktop/                     Tauri 桌面版（Win + Mac，GitHub Actions 构建）· desktop app
+agent/chemdb-agent/          chemdb-agent 源码（计算化学 MCP 服务器，下载包由 tools/pack-chemdb-agent.py 生成）· chemdb-agent source
 PAYMENTS.md                  开通收款步骤 · how to turn on payments
 deploy/ai-proxy-worker.js    可选 AI 代理 · optional AI proxy
 deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENTS.md 第 4 节）· Pro accounts

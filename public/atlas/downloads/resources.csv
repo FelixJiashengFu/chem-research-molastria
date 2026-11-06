@@ -3,7 +3,7 @@
 2,ChemSpider,英国皇家化学会（RSC）维护的结构数据库，聚合数百万化合物的性质与外部来源链接。,https://www.chemspider.com,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 3,CAS Common Chemistry,CAS 官方免费子库，适合用 CAS 号快速核对常用化学品的基础性质。,https://commonchemistry.cas.org,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 4,NIST Chemistry WebBook,NIST 热化学、热物理与光谱数据总入口，气相离子热化学数据尤其实用。,https://webbook.nist.gov/chemistry,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
-5,ChEBI,EBI 的化学本体数据库，提供化合物本体注释及其与生物医学实体的关联。,https://www.ebi.ac.uk/chebi,01,综合化合物与化学信息,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+5,ChEBI,EBI 的化学本体数据库，提供化合物本体注释及其与生物医学实体的关联。,https://www.ebi.ac.uk/chebi,01,综合化合物与化学信息,免费,adapter,chemdb_agent.adapters.chebi
 6,Reaxys,Elsevier 的反应与物质性质检索平台，支持逆合成分析与文献实验数据回溯。,https://www.reaxys.com,01,综合化合物与化学信息,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
 7,SciFinder-n,CAS 旗舰检索平台，覆盖文献、物质、反应与专利，适合系统查新与专利检索。,https://scifinder-n.cas.org,01,综合化合物与化学信息,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
 8,NIST CCCBDB,计算化学基准数据库，汇集实验与计算的几何、能量、振动频率等，可直接对比方法误差。,https://cccbdb.nist.gov,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
@@ -18,12 +18,12 @@
 17,Basis Set Exchange,基组与赝势的一站式检索、下载平台，支持主流量化程序格式转换。,https://www.basissetexchange.org,02,量子化学基准与基础参数,免费,adapter,chemdb_agent.adapters.basis
 18,SSSP,Materials Cloud 的标准固体赝势库，为可复现的固体 DFT 计算提供推荐设置。,https://www.materialscloud.org/discover/sssp,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 19,libxc,开源交换-相关泛函库，被主流量化与固体电子结构程序广泛调用。,https://libxc.gitlab.io,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
-20,Materials Project,美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。,https://materialsproject.org,03,材料与晶体结构,注册,adapter,chemdb_agent.adapters.materials_project
-21,OQMD,开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。,https://www.oqmd.org,03,材料与晶体结构,免费,catalog,OPTIMADE 端点 2026-10-27 实测 502，待恢复后接入
+20,Materials Project,美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。,https://materialsproject.org,03,材料与晶体结构,注册,adapter,chemdb_agent.adapters.materials_project（需 MP_API_KEY）；无 key 时可用 provider=mp 的 OPTIMADE 结构
+21,OQMD,开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。,https://www.oqmd.org,03,材料与晶体结构,免费,optimade,provider=oqmd（2026-11-06 实测恢复；查询较慢）
 22,AFLOW,高通量材料计算平台，提供结构原型、热力学与电子性质等大规模数据。,https://aflow.org,03,材料与晶体结构,免费,optimade,provider=aflow
-23,NOMAD,欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。,https://nomad-lab.eu,03,材料与晶体结构,免费,optimade,provider=nomad
+23,NOMAD,欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。,https://nomad-lab.eu,03,材料与晶体结构,免费,adapter,chemdb_agent.adapters.nomad（原生接口：能量、力、应力）；另有 provider=nomad
 24,JARVIS,NIST 的材料与分子数据平台，含 DFT 性质、力场与机器学习工具。,https://jarvis.nist.gov,03,材料与晶体结构,免费,optimade,provider=jarvis
-25,Materials Cloud,EPFL 托管的开放材料数据与工具门户，含二维材料、SSSP 与 AiiDA 工作流。,https://www.materialscloud.org,03,材料与晶体结构,免费,optimade,provider=materialscloud (MC3D-PBE-v1)
+25,Materials Cloud,EPFL 托管的开放材料数据与工具门户，含二维材料、SSSP 与 AiiDA 工作流。,https://www.materialscloud.org,03,材料与晶体结构,免费,optimade,provider=materialscloud (MC3D-PBE-v1)、mc3d-pbesol、mc2d
 26,C2DB,二维材料计算数据库，提供数百种单层材料的结构稳定性与电子、磁性质。,https://cmr.fysik.dtu.dk/c2db/c2db.html,03,材料与晶体结构,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 27,ICSD,无机晶体结构数据库，收录实验测定的晶体结构，通常需机构订阅。,https://icsd.fiz-karlsruhe.de,03,材料与晶体结构,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
 28,Cambridge Structural Database,剑桥结构数据库（CSD），有机与金属有机晶体结构的权威来源。,https://www.ccdc.cam.ac.uk,03,材料与晶体结构,机构订阅,catalog,需机构订阅或商业授权，无公开 API 接入
@@ -72,9 +72,9 @@
 71,ANI-1,约两千万个小分子构象的 DFT 能量数据集，ANI 系列机器学习势函数的训练基础。,https://github.com/isayev/ANI1_dataset,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 72,OC20 / OC22,Open Catalyst 项目的大规模催化表面吸附数据集，用于训练通用机器学习势函数。,https://opencatalystproject.org,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 73,PubChemQC,基于 PubChem 的大规模电子结构数据库，含 2.2 亿分子的 PM6 与 8600 万分子的 B3LYP 数据。,https://nakatamaho.riken.jp/pubchemqc.riken.jp/,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
-74,Alexandria,百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。,https://alexandria.icams.rub.de,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+74,Alexandria,百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。,https://alexandria.icams.rub.de,09,机器学习数据集与势函数,免费,optimade,provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）
 75,tmQM,过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。,https://github.com/uiocompcat/tmQM,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
-76,QCArchive,MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。,https://qcarchive.molssi.org,09,机器学习数据集与势函数,免费,stub,chemdb_agent.adapters.qcarchive（阶段2占位）
+76,QCArchive,MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。,https://qcarchive.molssi.org,09,机器学习数据集与势函数,免费,adapter,chemdb_agent.adapters.qcarchive（ml 与 main 公共服务器）
 77,Open Graph Benchmark,图神经网络基准套件，包含分子图性质预测等任务与标准划分。,https://ogb.stanford.edu,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 78,DeepChem / MoleculeNet,DeepChem 生态的分子机器学习数据集与 MoleculeNet 基准合集。,https://deepchem.io,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 79,NIST Interatomic Potentials,NIST 原子间势函数库，收录 EAM、MEAM 等经典势参数与评估工具。,https://www.ctcms.nist.gov/potentials/,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
@@ -186,3 +186,30 @@
 185,SG15 ONCV Pseudopotentials,Schlipf–Gygi 优化的模守恒（ONCV）赝势集，覆盖大部分元素。,http://www.quantum-simulation.org/potentials/sg15_oncv/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 186,Stuttgart/Cologne Pseudopotentials,斯图加特/科隆能量一致赝势（ECP）与配套基组，常用于重元素分子计算。,https://www.tc.uni-koeln.de/PP/clickpse.en.html,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 187,BEGDB,非共价相互作用基准数据库，收录 S22、S66 等高精度参考数据。,http://www.begdb.org/,02,量子化学基准与基础参数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
+188,Hydrogen-1.0,深度原理（Deep Principle）在 GLM-5.3 上用化学、材料与生命科学数据后训练的科研辅助模型，约 753B 参数，官方部署示例用 8 张 GPU。,https://huggingface.co/deep-principle/Hydrogen-1.0,17,科学领域语言模型与多模态基础模型,注册,catalog,子类：跨学科科学推理与科研辅助；开放权重（登录 Hugging Face 申请访问，自动通过）；权重 MIT 许可
+189,Intern-S1 / Intern-S1-mini,上海人工智能实验室的科学多模态基础模型，235B MoE 语言模型加 6B 视觉编码器，能直接读分子式和蛋白序列；mini 版语言部分为 8B。,https://huggingface.co/internlm/Intern-S1,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0
+190,Intern-S1-Pro,Intern-S1 的万亿参数版本，技术报告称其为首个万亿参数的科学多模态基础模型，加强了推理、图文理解和智能体能力。,https://huggingface.co/internlm/Intern-S1-Pro,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0
+191,Intern-S2 系列,上海人工智能实验室 2026 年的科学多模态模型系列（35B 预览版、397B 等），直接从科学文献原始页面做视觉预训练，并加强长流程智能体任务。,https://huggingface.co/collections/internlm/intern-s2,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0
+192,S1-Base（ScienceOne 磐石）,中国科学院磐石团队的科学基础模型，覆盖数学、物理、化学、地球科学、天文和生物，有 8B、32B（基于 Qwen3）和 671B（基于 DeepSeek-R1）三档。,https://huggingface.co/ScienceOne-AI/S1-Base-32B,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0
+193,S1-DeepResearch,磐石团队面向长程深度研究的模型（8B 预览版与 32B），侧重研究指令遵循、调研报告写作、文件理解与技能调用。,https://github.com/ScienceOne-AI/S1-DeepResearch,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重；代码仓库 Apache-2.0（32B 模型卡未标许可证）
+194,SciReasoner,上海人工智能实验室等的跨学科科学推理模型，把自然语言与分子、蛋白质等科学序列表示对齐，公开 8B 权重。,https://huggingface.co/SciReason/SciReasoner-8B,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0；与 ChemReasoner、MOFReasoner、MolReasoner 不是同一个模型
+195,SciDFM,上海交通大学 X-LANCE 实验室与苏州实验室从头训练的混合专家科学对话模型，约 18.5B 总参数、5.6B 激活参数。,https://huggingface.co/OpenDFM/SciDFM-MoE-A5.6B-v1.0,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重；AGPL-3.0
+196,SciGLM,清华大学等用自我反思标注的科学指令数据（SciInstruct）训练的大学水平科学推理模型，覆盖数学、物理、化学和形式证明。,https://github.com/THUDM/SciGLM,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重（SciGLM-6B，Hugging Face 标注 Apache-2.0）
+197,Galactica,Meta 2022 年发布的早期科学语言模型，在 1060 亿 token 的科学语料上训练；模型卡提醒输出可能出现幻觉。,https://huggingface.co/facebook/galactica-120b,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：跨学科科学推理与科研辅助；开放权重；CC BY-NC 4.0（非商业）
+198,ChemDFM / ChemDFM-R,上海交通大学与苏州实验室的化学对话模型系列；ChemDFM-R（14B）加入官能团等原子化化学知识，专门训练化学推理。,https://huggingface.co/collections/OpenDFM/chemdfm,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重；AGPL-3.0
+199,Chem-R,上海人工智能实验室、复旦大学等的化学推理模型，分化学基础、推理协议蒸馏、多任务 GRPO 三阶段训练，覆盖分子与反应任务。,https://github.com/davidweidawang/Chem-R,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重（Chem-R-8B，基座 Llama-3.1-8B-Instruct，Hugging Face 需登录申请访问，标注 Apache-2.0）；代码 Apache-2.0
+200,ether0,FutureHouse 基于 Mistral-Small-24B 的 24B 化学推理模型，在 375 类有实验依据的化学任务上做强化学习，用自然语言推理并输出 SMILES。,https://huggingface.co/futurehouse/ether0,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重；Apache-2.0
+201,ChemLLM,上海人工智能实验室基于 InternLM2 的早期开源化学对话模型（7B），面向化学与分子科学问答。,https://huggingface.co/AI4Chem/ChemLLM-7B-Chat,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重；Hugging Face 标注 Apache-2.0
+202,ECNU-ChemGPT,华东师范大学的化学模型套件，含化学问答模型 ChemGPT2-QA-72B（基于 Qwen2-72B-Instruct 微调）和逆合成预测，论文 2025 年公开。,https://github.com/ilog-ecnu/ECNU-ChemGPT,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重；README 与 Hugging Face 标注 MIT
+203,LlaSMol,俄亥俄州立大学用三百多万条化学指令数据（SMolInstruct，14 类任务）微调的模型系列，处理分子名称、SMILES 与反应预测等任务。,https://github.com/OSU-NLP-Group/LLM4Chem,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重（Mistral、Llama 2、CodeLlama、Galactica 四种基座；Mistral 版标注 CC BY 4.0）
+204,MolReasoner,北京科学智能研究院、上海交通大学等的分子推理框架，先用知识增强的思维链做微调、再用强化学习减少幻觉，用于分子描述和分子生成。,https://arxiv.org/abs/2508.02066,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：化学语言模型与化学推理；开放权重（Hugging Face guojianz/MolReasoner，MIT）；与 SciReasoner、ChemReasoner、MOFReasoner 不是同一个模型
+205,MOFReasoner,北京工业大学等以 MOF 吸附为重点的化学推理模型，用 8200 余篇研究论文和 500 篇综述构建思维链数据并做知识蒸馏，2026 年发表于 Digital Discovery。,https://doi.org/10.1039/D5DD00429B,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：材料与 MOF 领域模型；开放权重（Hugging Face 仓库名为 ChemReasoner-7B，模型卡未标许可证）；与 arXiv 2402.10980 的 ChemReasoner 不是同一个项目
+206,LLaMat,印度理工学院德里分校等在材料文献和晶体学数据上继续预训练 LLaMA 得到的材料模型系列，含对话版和生成晶体结构的 CIF 版。,https://huggingface.co/collections/m3rg-iitd/llamat,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：材料与 MOF 领域模型；开放权重；沿用 Llama 2 / Llama 3 许可（代码仓库 MIT）
+207,MechGPT,MIT 的 Markus Buehler 微调的力学与材料建模语言模型，用于连接材料失效与多尺度力学知识，2024 年发表于 Applied Mechanics Reviews。,https://arxiv.org/abs/2310.10445,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：材料与 MOF 领域模型；仅论文（未找到官方公开权重）
+208,S1-VL-32B,中国科学院磐石团队基于 Qwen3-VL-32B 的科学图文推理模型，推理时可调用代码裁剪、放大、增强图像后再分析。,https://huggingface.co/ScienceOne-AI/S1-VL-32B,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：多模态科学模型；开放权重；Apache-2.0
+209,S1-Omni,磐石团队的统一科学多模态推理模型，把文本、材料 CIF、SMILES、蛋白序列、光谱和科学图像放进同一表示，再接各领域的专用解码器。,https://huggingface.co/ScienceOne-AI/S1-Omni,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：多模态科学模型；开放权重；Apache-2.0
+210,ChemMLLM,上海人工智能实验室、中国科学技术大学等的化学多模态大模型，在文本、SMILES 和分子图像之间做理解与生成。,https://arxiv.org/abs/2505.16326,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：多模态科学模型；仅论文（官方代码仓库未见权重和许可证）
+211,MOOSE-Star,研究如何从研究背景检索启发并组合成科学假设的训练框架，发布灵感检索、假设组合和多任务三个 7B 模型，ICML 2026。,https://github.com/ZonglinY/MOOSE-Star,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：科研假设与文献；开放权重（基于 DeepSeek-R1-Distill-Qwen-7B）；Apache-2.0；公开的训练与评测数据来自生物医学论文
+212,OpenScholar,华盛顿大学与艾伦人工智能研究所等的检索增强模型，从 4500 万篇开放获取论文中找证据并生成带引用的回答，2026 年发表于 Nature。,https://github.com/AkariAsai/OpenScholar,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：科研假设与文献；开放权重（OpenScholar-8B，Llama 3.1 许可）；代码 Apache-2.0
+213,NatureLM,Microsoft Research AI for Science 的序列式科学基础模型（8x7B），按自然语言指令生成和优化小分子、蛋白质、RNA 与材料；模型卡说明它不是通用问答模型。,https://huggingface.co/microsoft/NatureLM-8x7B-Inst,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：相关模型（科学对象生成）；开放权重；MIT
+214,ChemFM,在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。,https://huggingface.co/ChemFM/ChemFM-3B,17,科学领域语言模型与多模态基础模型,免费,catalog,子类：相关模型（科学对象生成）；开放权重；MIT

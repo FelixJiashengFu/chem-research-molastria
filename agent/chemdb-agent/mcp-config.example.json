@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chemdb-agent": {
+      "command": "uv",
+      "args": ["--directory", "/替换为项目绝对路径/chemdb-agent", "run", "python", "-m", "chemdb_agent.server"],
+      "env": { "MP_API_KEY": "可选：你的 Materials Project key，不用就删掉这一行" }
+    }
+  }
+}

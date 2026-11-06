@@ -1,0 +1,807 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: GET
+    uri: https://ml.qcarchive.molssi.org/api/v1/information
+  response:
+    body:
+      string: '{"name": "The MolSSI ML QCFractal Server", "manager_heartbeat_frequency":
+        600, "manager_heartbeat_frequency_jitter": 0.1, "manager_heartbeat_max_missed":
+        5, "version": "0.71", "api_limits": {"get_records": 1000, "add_records": 500,
+        "get_dataset_entries": 2000, "get_molecules": 1000, "add_molecules": 1000,
+        "get_managers": 1000, "manager_tasks_claim": 200, "manager_tasks_return":
+        10, "get_access_logs": 1000, "get_error_logs": 100, "get_internal_jobs": 1000},
+        "client_version_lower_limit": "0.50", "client_version_upper_limit": "1.00",
+        "manager_version_lower_limit": "0.50", "manager_version_upper_limit": "1.00",
+        "motd": ""}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '626'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:08 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: GET
+    uri: https://ml.qcarchive.molssi.org/api/v1/datasets
+  response:
+    body:
+      string: '[{"id": 54, "dataset_type": "optimization", "dataset_name": "JGI Metabolite
+        Set 1", "tagline": "", "tags": [], "description": "", "record_count": 808,
+        "owner_user": null, "creator_user": null}, {"id": 150, "dataset_type": "singlepoint",
+        "dataset_name": "QM7", "tagline": "Small organic molecules with up to 7 heavy
+        atoms.", "tags": ["machine learning", "organic", "GDB"], "description": "Small
+        organic molecules with up to 7 heavy atoms, sampled from GDB-13 and optimized
+        at the PBE0 level of theory. All molecules are neutral singlets. This dataset
+        was sourced from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>
+        and <a href=\"https://qmml.org/datasets.html\">qmml.org</a>.", "record_count":
+        343920, "owner_user": null, "creator_user": null}, {"id": 154, "dataset_type":
+        "singlepoint", "dataset_name": "GDB13-T", "tagline": "Small organic molecules
+        with up to 13 heavy atoms thermalized at 350K.", "tags": ["machine learning",
+        "organic"], "description": "1,000 small organic molecules with up to 13 heavy
+        atoms sampled from GDB-13 and thermalized with 350K MD at the B3LYP/6-31g*
+        level of theory. Energies are provided at the HF/cc-pVTZ and MP2/cc-pVTZ levels
+        of theory. All molecules are neutral singlets. This dataset was sourced from
+        <a href=\"https://data.caltech.edu/records/1177\">data.caltech.edu</a>.",
+        "record_count": 24000, "owner_user": null, "creator_user": null}, {"id": 155,
+        "dataset_type": "singlepoint", "dataset_name": "QM9", "tagline": "Small organic
+        molecules with up to 9 heavy atoms with electronic and thermodynamic properties.",
+        "tags": ["machine learning", "organic", "thermodynamics", "GDB"], "description":
+        "Small organic molecules with up to 9 heavy atoms sampled from GDB-17, optimized
+        at the B3LYP/6-31G(2df,p) level of theory. Ground state, orbital, and thermodynamic
+        properties are available (at the B3LYP/6-31G(2df,p) level). All molecules
+        are neutral singlets. This dataset was sourced from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>
+        and <a href=\"https://qmml.org/datasets.html\">qmml.org</a>.", "record_count":
+        1071080, "owner_user": null, "creator_user": null}, {"id": 166, "dataset_type":
+        "singlepoint", "dataset_name": "QM3", "tagline": "", "tags": [], "description":
+        "", "record_count": 1328, "owner_user": null, "creator_user": null}, {"id":
+        176, "dataset_type": "reaction", "dataset_name": "DBH24", "tagline": "Diverse
+        barrier heights", "tags": ["reaction", "barrier", "height", "small"], "description":
+        "", "record_count": 1704, "owner_user": null, "creator_user": null}, {"id":
+        177, "dataset_type": "reaction", "dataset_name": "DIE60", "tagline": "Isomerization
+        energies of reactions involving double-bond migration in conjugated dienes",
+        "tags": ["reaction", "isomer", "migration", "conjugated", "double-bond", "medium"],
+        "description": "", "record_count": 4260, "owner_user": null, "creator_user":
+        null}, {"id": 178, "dataset_type": "reaction", "dataset_name": "QM3 Atomization",
+        "tagline": "\nAtomization energies of small organic molecules containing up
+        to 3 heavy atoms. Subset of QM7. \n", "tags": [], "description": "", "record_count":
+        1488, "owner_user": null, "creator_user": null}, {"id": 181, "dataset_type":
+        "reaction", "dataset_name": "G21EA", "tagline": "Adiabatic electron affinities
+        of atoms and small molecules", "tags": ["reaction", "adiabatic", "electron
+        affinity", "small"], "description": "", "record_count": 1775, "owner_user":
+        null, "creator_user": null}, {"id": 183, "dataset_type": "reaction", "dataset_name":
+        "H2O17Rel4", "tagline": "Isomerization energies of (H2O)17 complexes", "tags":
+        ["reaction", "isomer", "water", "cluster", "small"], "description": "", "record_count":
+        213, "owner_user": null, "creator_user": null}, {"id": 186, "dataset_type":
+        "reaction", "dataset_name": "QM9 Atomization", "tagline": "Atomization energies
+        for organic molecules of up to 9 heavy atoms, comprised of C, H, O, N, and
+        F.", "tags": [], "description": "", "record_count": 535540, "owner_user":
+        null, "creator_user": null}, {"id": 187, "dataset_type": "reaction", "dataset_name":
+        "H2O16Rel5", "tagline": "Isomerization energies of (H2O)16 boat and fused-cube
+        structures", "tags": ["reaction", "isomer", "water", "cluster", "small"],
+        "description": "", "record_count": 284, "owner_user": null, "creator_user":
+        null}, {"id": 188, "dataset_type": "reaction", "dataset_name": "GDB-13-T Atomization",
+        "tagline": "Atomization energies for 1000 organic molecules of up to 13 heavy
+        atoms, comprised of C, H, O, N, S, and Cl. Each molecule has 6 thermally sampled
+        (350K) geometries.", "tags": [], "description": "", "record_count": 24000,
+        "owner_user": null, "creator_user": null}, {"id": 189, "dataset_type": "reaction",
+        "dataset_name": "NHTBH38", "tagline": "Non-hydrogen transfer barrier heights",
+        "tags": ["reaction", "barrier", "height", "transfer", "small"], "description":
+        "", "record_count": 2698, "owner_user": null, "creator_user": null}, {"id":
+        192, "dataset_type": "reaction", "dataset_name": "HTBH38", "tagline": "Hydrogen
+        transfer barrier heights", "tags": ["reaction", "hydrogen transfer", "barrier",
+        "height", "small"], "description": "", "record_count": 2698, "owner_user":
+        null, "creator_user": null}, {"id": 193, "dataset_type": "reaction", "dataset_name":
+        "YMPJ16", "tagline": "", "tags": [], "description": "", "record_count": 28536,
+        "owner_user": null, "creator_user": null}, {"id": 198, "dataset_type": "optimization",
+        "dataset_name": "QM8-T", "tagline": "", "tags": [], "description": "", "record_count":
+        37440, "owner_user": null, "creator_user": null}, {"id": 199, "dataset_type":
+        "singlepoint", "dataset_name": "QM7b", "tagline": "Small organic molecules
+        with up to 7 heavy atoms with excited state properties.", "tags": ["machine
+        learning", "organic", "excited state", "GDB"], "description": "Small organic
+        molecules with up to 7 heavy atoms, sampled from GDB-13 and optimized at the
+        PBE0 level of theory. Ground and excited state properties are evaluated at
+        the PBE0, ZINDO, and GW levels of theory. This dataset was sourced from <a
+        href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a> and
+        <a href=\"https://qmml.org/datasets.html\">qmml.org</a>.", "record_count":
+        108165, "owner_user": null, "creator_user": null}, {"id": 200, "dataset_type":
+        "singlepoint", "dataset_name": "QM7b-T", "tagline": "Small organic molecules
+        with up to 7 heavy atoms thermalized at 350K.", "tags": ["machine learning",
+        "organic", "GDB"], "description": "Small organic molecules with up to 7 heavy
+        atoms corresponding to those in QM7b, thermalized with 350K MD at the B3LYP/6-31g*
+        level of theory. Energies are provided at the HF/cc-pvDZ, HF/cc-pVTZ, MP2/cc-pVTZ,
+        and CCSD(T0)/cc-pVDZ levels of theory. All molecules are neutral singlets.
+        This dataset was sourced from <a href=\"https://data.caltech.edu/records/1177\">data.caltech.edu</a>.",
+        "record_count": 317284, "owner_user": null, "creator_user": null}, {"id":
+        202, "dataset_type": "optimization", "dataset_name": "PEI", "tagline": "",
+        "tags": [], "description": "", "record_count": 33, "owner_user": null, "creator_user":
+        null}, {"id": 205, "dataset_type": "singlepoint", "dataset_name": "COMP6 ANI-MD",
+        "tagline": "Benchmark containing MD trajectories from the ANI-1x potential.",
+        "tags": ["machine learning", "COMP6", "molecular dynamics", "md", "drug",
+        "peptide", "organic"], "description": "A member of the COMP6 benchmark set,
+        this dataset contains MD trajectories generated using the ANI-1x potential
+        at 300K for 14 drug molecules and two peptides. Each trajectory is 128 frames
+        subsampled from 1 ns of dynamics. Reference calculations are performed at
+        the \u03c9B97x/6-31g* level of theory. All molecules are neutral singlets.
+        This dataset was sourced from <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.",
+        "record_count": 14328, "owner_user": null, "creator_user": null}, {"id": 207,
+        "dataset_type": "singlepoint", "dataset_name": "COMP6 DrugBank", "tagline":
+        "Benchmark containing DrugBank off-equilibrium molecules.", "tags": ["machine
+        learning", "COMP6", "drug", "drugbank", "organic"], "description": "A member
+        of the COMP6 benchmark set, this dataset contains off-equilibrium conformations
+        for 837 molecules subsampled from the DrugBank database. Reference calculations
+        are performed at the \u03c9B97x/6-31g* level of theory. All molecules are
+        neutral singlets. This dataset was sourced from <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.",
+        "record_count": 107032, "owner_user": null, "creator_user": null}, {"id":
+        208, "dataset_type": "singlepoint", "dataset_name": "COMP6 GDB7to9", "tagline":
+        "Benchmark containing off-equilibrium molecules from GDB11 with 7 to 9 heavy
+        atoms.", "tags": ["machine learning", "COMP6", "organic", "GDB"], "description":
+        "A member of the COMP6 benchmark set, this dataset contains off-equilibrium
+        conformations for 1,500 molecules with 7 to 9 heavy atoms subsampled from
+        the GDB-11 data set. Reference calculations are performed at the \u03c9B97x/6-31g*
+        level of theory. All molecules are neutral singlets. This dataset was sourced
+        from <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.", "record_count":
+        288000, "owner_user": null, "creator_user": null}, {"id": 209, "dataset_type":
+        "singlepoint", "dataset_name": "COMP6 GDB10to13", "tagline": "Benchmark containing
+        off-equilibrium molecules from GDB13 with 10 to 13 heavy atoms.", "tags":
+        ["machine learning", "COMP6", "organic", "GDB"], "description": "A member
+        of the COMP6 benchmark set, this dataset contains off-equilibrium conformations
+        for 2,500 molecules with 10 to 13 heavy atoms subsampled from the GDB-13 data
+        set. Reference calculations are performed at the \u03c9B97x/6-31g* level of
+        theory. All molecules are neutral singlets. This dataset is also hosted on
+        <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.", "record_count":
+        381360, "owner_user": null, "creator_user": null}, {"id": 210, "dataset_type":
+        "singlepoint", "dataset_name": "COMP6 S66x8", "tagline": "Benchmark for noncovalent
+        interactions.", "tags": ["machine learning", "COMP6", "organic", "interactions",
+        "S66"], "description": "A member of the COMP6 benchmark set, this dataset
+        contains potential energy scans for noncovalent interactions of dimers based
+        on the S66x8 dataset. Reference calculations are performed at the \u03c9B97x/6-31g*
+        level of theory. All molecules are neutral singlets. This dataset was sourced
+        from <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.", "record_count":
+        4224, "owner_user": null, "creator_user": null}, {"id": 211, "dataset_type":
+        "singlepoint", "dataset_name": "COMP6 Tripeptides", "tagline": "Benchmark
+        containing off-equilibrium geometries of 248 tripeptides.", "tags": ["machine
+        learning", "COMP6", "peptide", "organic"], "description": "A member of the
+        COMP6 benchmark set, this dataset contains off-equilibrium conformations for
+        248 random tripeptides.  Reference calculations are performed at the \u03c9B97x/6-31g*
+        level of theory. All molecules are neutral singlets. This dataset was sourced
+        from <a href=\"https://github.com/isayev/COMP6\">GitHub</a>.", "record_count":
+        15872, "owner_user": null, "creator_user": null}, {"id": 212, "dataset_type":
+        "singlepoint", "dataset_name": "SN2 Reactions", "tagline": "Chemical reactions
+        of methyl halides with halide anions", "tags": ["machine learning", "organic",
+        "reaction", "anion", "MD", "molecular dynamics", "halide", "fragment"], "description":
+        "S<sub>N</sub>2 reactions of methyl halides with halide anions for the halides
+        F, Cl, Br, and I. Structures are generated by high-temperature molecular dynamics
+        evaluated at the DSD-BLYP-D3(BJ)/def2-TZVP level of theory, and include molecules
+        of the following types: CH<sub>3</sub>X, CH<sub>3</sub>X + Y<sup>-</sup>,
+        HX, CHX, CH<sub>2</sub>X<sup>-</sup>, H<sub>2</sub>, CH<sub>2</sub>, CH<sub>3</sub><sup>+</sup>,
+        and XY where X and Y are halides. This dataset was sourced from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 213,
+        "dataset_type": "singlepoint", "dataset_name": "Solvated Protein Fragments",
+        "tagline": "Amons derived from proteins, in water.", "tags": ["machine learning",
+        "organic", "protein", "solvation", "MD", "molecular dynamics", "fragment",
+        "amon", "peptide", "water"], "description": "Water-solvated protein fragements
+        with up to 8 heavy atoms. Configurations are generated from MD, evaluated
+        at the revPBE-D3(BJ)/def2-TZVP level of theory. Also included are fragment
+        dimers and clusters of up to 40 water molecules. This dataset was sourced
+        from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 214,
+        "dataset_type": "singlepoint", "dataset_name": "ANI-1", "tagline": "22 million
+        off-equilibrium conformations and enegies for organic molecules", "tags":
+        ["machine learning", "organic"], "description": "Off-equilibrium conformations
+        and energies of 57,462 organic molecules with up to 8 heavy atoms. Molecules
+        are sampled from the GDB-11 dataset. Configurations are generated with normal
+        mode sampling, evaluated at the \u03c9B97x/6\u201331G(d) level of theory.
+        All molecules are neutral singlets. This dataset was originally sourced from
+        <a href=\"https://github.com/isayev/ANI1_dataset\">GitHub</a>.", "record_count":
+        0, "owner_user": null, "creator_user": null}, {"id": 215, "dataset_type":
+        "singlepoint", "dataset_name": "G-SchNet Generated", "tagline": "Molecules
+        generated by G-SchNet, trained on QM9.", "tags": ["machine learning", "organic",
+        "generated"], "description": "Molecules (not in QM9) generated by G-SchNet,
+        trained on QM9. Geometries are relaxed at the B3LYP/6-31G(2d,p) level of theory.
+        This dataset was sourced from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 216,
+        "dataset_type": "singlepoint", "dataset_name": "ISO-17", "tagline": "Molecular
+        dynamics trajectories of isomers of C7O2H10", "tags": ["machine learning",
+        "MD", "molecular dynamics", "organic"], "description": "Molecular dynamics
+        trajectories of 129 isomers of C<sub>7</sub>H<sub>10</sub>O<sub>2</sub>, each
+        containing 5,000 snapshots at a resolution of 1 fs. All molecules are neutral
+        singlets. Calculations are performed at the PBE-TS level of theory. This dataset
+        was sourced from <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 219,
+        "dataset_type": "singlepoint", "dataset_name": "GDML", "tagline": "Molecular
+        dynamics trajectories of small molecules", "tags": ["machine learning", "MD",
+        "molecular dynamics", "organic"], "description": "Molecular dynamics trajectories
+        of small molecules: benzene, uracil, naphthalene, aspirin, salicylic acid
+        malonaldehyde, ethanol, toluene, paracetamol, azobenzene, aspirin, toluene,
+        and ethanol. Four levels of theory are available: PBE-TS, CCSD/cc-pVDZ, CCSD(T)/cc-pVDZ,
+        and CCSD(T)/cc-pVTZ. Trajectories at the DFT level contain 10<sup>5</sup>-10<sup>6</sup>
+        geometries. Trajectories at the wavefunction level contain 10<sup>3</sup>
+        geometries. All molecules are neutral singlets. This dataset was sourced from
+        <a href=\"http://quantum-machine.org/datasets/\">quantum-machine.org</a>.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 222,
+        "dataset_type": "singlepoint", "dataset_name": "PC9", "tagline": "A diverse
+        subset of PubChemQC containing up to 9 heavy atoms.", "tags": ["machine learning",
+        "organic", "pubchem"], "description": "Small organic molecules with up to
+        9 heavy atoms sampled from PubChemQC. This dataset is analagous to QM9, but
+        represents greater chemical diversity. Ground state and orbital properties
+        are available at the B3LYP/6-31G* level of theory. All molecules are neutral,
+        but some are doublets and triplets. This dataset was sourced from <a href=\"https://figshare.com/articles/PC9_data_zip/9033977\">FigShare</a>.",
+        "record_count": 694638, "owner_user": null, "creator_user": null}, {"id":
+        225, "dataset_type": "singlepoint", "dataset_name": "PC9 (netural singlet
+        subset)", "tagline": "DELETE ME", "tags": [], "description": "A subset of
+        PC9 contaning only neutral singlets. See the PC9 description for more information.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 226,
+        "dataset_type": "singlepoint", "dataset_name": "PC9 (neutral singlet subset)",
+        "tagline": "A subset of PC9 contaning only neutral singlets.", "tags": ["machine
+        learning", "organic", "pubchem"], "description": "A subset of PC9 contaning
+        only neutral singlets. See the PC9 description for more information.", "record_count":
+        0, "owner_user": null, "creator_user": null}, {"id": 234, "dataset_type":
+        "singlepoint", "dataset_name": "TensorMol Water Clusters", "tagline": "Clusters
+        of 1 to 21 water molecules, sampled with metadynamics.", "tags": ["machine
+        learning", "water", "tensormol"], "description": "Small water clusters of
+        between 1 and 21 molecules, sampled using the metadynamics strategy (described
+        in the citations). Energies, gradients, and dipole moments are provided at
+        the \u03c9B97X-D/6-311G** level of theory. Entries with the \"bowlk\" suffix
+        were sampled subject to a restraining spring force with a force constant of
+        either 0.07 or 0.1 Hartree/Angstrom<sup>2</sup>.", "record_count": 2833160,
+        "owner_user": null, "creator_user": null}, {"id": 244, "dataset_type": "reaction",
+        "dataset_name": "ASCDB", "tagline": "A statistically significant database
+        generated from MGCDB84, GMTKN55, and Minnesota 2015B.", "tags": [], "description":
+        "A small database of statistically significant chemical properties ranging
+        from transition metals to artificial molecules coming from the three largest
+        computational databases in the literature: MGCDB84, GMTKN55, and Minnesota
+        2015B.", "record_count": 20800, "owner_user": null, "creator_user": null},
+        {"id": 292, "dataset_type": "singlepoint", "dataset_name": "ANI-1x", "tagline":
+        "Density functional theory properties for molecules", "tags": ["machine learning",
+        "cheminformatics", "density functional theory", "method development"], "description":
+        "The ANI-1x data set is comprised of 5 million density functional theory calculations
+        of quantum mechanical properties such as energies, atomic forces, multipole
+        moments, atomic charges on molecules constructed from C, H, N, and O atoms.",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 293,
+        "dataset_type": "singlepoint", "dataset_name": "ANI-1ccx", "tagline": "Coupled
+        cluster properties for molecules", "tags": ["machine learning", "cheminformatics",
+        "coupled cluster", "method development"], "description": "The ANI-1ccx data
+        set is comprised of 489571 subsampled structures chosen based on active learning
+        sampling methods. Properties involve coupled cluster total energies and correlation
+        energies on molecules constructed from C, H, N, and O atoms.", "record_count":
+        0, "owner_user": null, "creator_user": null}, {"id": 306, "dataset_type":
+        "singlepoint", "dataset_name": "StockholderMultipoles", "tagline": "", "tags":
+        [], "description": "", "record_count": 93278, "owner_user": null, "creator_user":
+        null}, {"id": 325, "dataset_type": "singlepoint", "dataset_name": "A Benchmark
+        Data Set for Hydrogen Combustion", "tagline": "A Benchmark Data Set for Hydrogen
+        Combustion", "tags": ["machine learning", "cheminformatics", "density functional
+        theory", "method development"], "description": "This dataset involves the
+        intrinsic reaction coordinate (IRC) calculations with \n    ab initio MD simulations
+        and normal mode displacement calculations to more extensively cover the \n    potential
+        energy surface for 19 reaction channels for hydrogen combustion.", "record_count":
+        0, "owner_user": null, "creator_user": null}, {"id": 328, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE Solvated Amino Acids Single Points Dataset
+        v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine learning"],
+        "description": "Data source: https://github.com/openmm/qmdataset/tree/main/solvated-amino-acids",
+        "record_count": 3900, "owner_user": null, "creator_user": null}, {"id": 330,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE DES Monomers Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/des370k",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 331,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 1 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 209576, "owner_user": null, "creator_user": null}, {"id":
+        332, "dataset_type": "singlepoint", "dataset_name": "SPICE Dipeptides Single
+        Points Dataset v1.0", "tagline": "QM Dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/dipeptides",
+        "record_count": 26711, "owner_user": null, "creator_user": null}, {"id": 334,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 2 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 335,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 3 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 20000, "owner_user": null, "creator_user": null}, {"id": 336,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 5 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 337,
+        "dataset_type": "optimization", "dataset_name": "SPICE Dipeptides Optimization
+        Dataset v1.0", "tagline": "QM Dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/dipeptides",
+        "record_count": 33327, "owner_user": null, "creator_user": null}, {"id": 338,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 6 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 339,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 1 Single
+        Points Dataset v1.1", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 340,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE DES Monomers Single
+        Points Dataset v1.1", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/des370k",
+        "record_count": 56100, "owner_user": null, "creator_user": null}, {"id": 341,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE Dipeptides Single Points
+        Dataset v1.1", "tagline": "QM Dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/dipeptides",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 342,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE Pubchem Set 4 Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 0, "owner_user": null, "creator_user": null}, {"id": 343,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE Solvated Amino Acids
+        Single Points Dataset v1.1", "tagline": "QM dataset for ML", "tags": ["openff",
+        "machine learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/solvated-amino-acids",
+        "record_count": 3900, "owner_user": null, "creator_user": null}, {"id": 348,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE DES370K Single Points
+        Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/des370k",
+        "record_count": 1037046, "owner_user": null, "creator_user": null}, {"id":
+        349, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 1 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 355818, "owner_user": null, "creator_user": null}, {"id":
+        350, "dataset_type": "singlepoint", "dataset_name": "SPICE Dipeptides Single
+        Points Dataset v1.2", "tagline": "QM Dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/dipeptides",
+        "record_count": 101550, "owner_user": null, "creator_user": null}, {"id":
+        354, "dataset_type": "singlepoint", "dataset_name": "SPICE DES370K Single
+        Points Dataset Supplement v1.0", "tagline": "QM dataset for ML", "tags": ["openff",
+        "machine learning"], "description": "For the molecules that failed MBIS convergence
+        on the original submission this is a supplement, excluding the MBIS charge
+        calculation in scf_properties, to make use of forces and energies. Original
+        submission of DES370K: https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2021-11-08-QMDataset-DES370K-single-points.
+        Main data source: https://github.com/openmm/qmdataset/tree/main/des370k",
+        "record_count": 3631, "owner_user": null, "creator_user": null}, {"id": 355,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 2 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 364620, "owner_user": null, "creator_user": null}, {"id":
+        356, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 3 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 366678, "owner_user": null, "creator_user": null}, {"id":
+        361, "dataset_type": "singlepoint", "dataset_name": "SPICE Pubchem Set 4 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 368250, "owner_user": null, "creator_user": null}, {"id":
+        362, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 5 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 369450, "owner_user": null, "creator_user": null}, {"id":
+        367, "dataset_type": "singlepoint", "dataset_name": "SPICE Ion Pairs Single
+        Points Dataset v1.0", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/spice-dataset/tree/main/ions",
+        "record_count": 1428, "owner_user": null, "creator_user": null}, {"id": 368,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 6 Single
+        Points Dataset v1.2", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/qmdataset/tree/main/pubchem",
+        "record_count": 371400, "owner_user": null, "creator_user": null}, {"id":
+        369, "dataset_type": "singlepoint", "dataset_name": "SPICE Ion Pairs Single
+        Points Dataset v1.1", "tagline": "QM dataset for ML", "tags": ["openff", "machine
+        learning"], "description": "Data source: https://github.com/openmm/spice-dataset/tree/main/ions",
+        "record_count": 4284, "owner_user": null, "creator_user": null}, {"id": 376,
+        "dataset_type": "singlepoint", "dataset_name": "PubChemQC Random Test Set",
+        "tagline": "", "tags": [], "description": "Random selection of PubChemQC molecules
+        for specification testing", "record_count": 6300, "owner_user": "bennybp",
+        "creator_user": "bennybp"}, {"id": 377, "dataset_type": "optimization", "dataset_name":
+        "PubChemQC Random Test Set Opt", "tagline": "", "tags": [], "description":
+        "", "record_count": 2700, "owner_user": "bennybp", "creator_user": "bennybp"},
+        {"id": 382, "dataset_type": "singlepoint", "dataset_name": "BPP test dataset",
+        "tagline": "", "tags": [], "description": "", "record_count": 0, "owner_user":
+        "bennybp", "creator_user": "bennybp"}, {"id": 385, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE Water Clusters v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 1000, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 392, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Boron Silicon v1.0", "tagline": "", "tags": [], "description": "", "record_count":
+        174450, "owner_user": "peastman", "creator_user": "peastman"}, {"id": 393,
+        "dataset_type": "singlepoint", "dataset_name": "SPICE Solvated PubChem Set
+        1 v1.0", "tagline": "", "tags": [], "description": "", "record_count": 13970,
+        "owner_user": "peastman", "creator_user": "peastman"}, {"id": 395, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE Amino Acid Ligand v1.0", "tagline":
+        "", "tags": [], "description": "", "record_count": 194266, "owner_user": "peastman",
+        "creator_user": "peastman"}, {"id": 398, "dataset_type": "singlepoint", "dataset_name":
+        "SPICE PubChem Set 7 Single Points Dataset v1.0", "tagline": "", "tags": [],
+        "description": "", "record_count": 123850, "owner_user": "peastman", "creator_user":
+        "peastman"}, {"id": 402, "dataset_type": "singlepoint", "dataset_name": "SPICE
+        Dipeptides Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 33850, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 403, "dataset_type": "singlepoint", "dataset_name": "SPICE DES370K
+        Single Points Dataset Supplement v1.1", "tagline": "", "tags": [], "description":
+        "", "record_count": 3631, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 404, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 8 Single Points Dataset v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 123800, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 405, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 1 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 118606, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 406, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 2 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 121540, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 407, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 3 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 122226, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 408, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 4 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 122750, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 409, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 5 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 123150, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 410, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 6 Single Points Dataset v1.3", "tagline": "", "tags": [], "description":
+        "", "record_count": 123800, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 411, "dataset_type": "singlepoint", "dataset_name": "SPICE Ion Pairs
+        Single Points Dataset v1.2", "tagline": "", "tags": [], "description": "",
+        "record_count": 1428, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 412, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 9 Single Points Dataset v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 124000, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 413, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 10 Single Points Dataset v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 124000, "owner_user": "peastman", "creator_user": "peastman"},
+        {"id": 414, "dataset_type": "singlepoint", "dataset_name": "SPICE Test Set
+        1 v1.0", "tagline": "", "tags": [], "description": "", "record_count": 6000,
+        "owner_user": "peastman", "creator_user": "peastman"}, {"id": 415, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE PubChem Set 7 Single Points Dataset
+        OpenFF v1.0", "tagline": "", "tags": [], "description": "", "record_count":
+        247700, "owner_user": "openffstaff", "creator_user": "openffstaff"}, {"id":
+        416, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem Set 8 Single
+        Points Dataset OpenFF v1.0", "tagline": "", "tags": [], "description": "",
+        "record_count": 247600, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 417, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 9 Single Points Dataset OpenFF v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 248000, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 418, "dataset_type": "singlepoint", "dataset_name": "SPICE PubChem
+        Set 10 Single Points Dataset OpenFF v1.0", "tagline": "", "tags": [], "description":
+        "", "record_count": 248000, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 419, "dataset_type": "singlepoint", "dataset_name": "SPICE TorsionNet500
+        v1.0", "tagline": "", "tags": [], "description": "", "record_count": 12000,
+        "owner_user": "peastman", "creator_user": "peastman"}, {"id": 420, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE Water Clusters OpenFF v1.0", "tagline":
+        "", "tags": [], "description": "", "record_count": 2000, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 421, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE Water Clusters OpenFF v1.1", "tagline": "", "tags":
+        [], "description": "", "record_count": 2000, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 422, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE Amino Acid Ligand OpenFF v1.0", "tagline": "", "tags":
+        [], "description": "", "record_count": 388532, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 423, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE Solvated PubChem Set 1 OpenFF v1.0", "tagline": "",
+        "tags": [], "description": "", "record_count": 27940, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 424, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE PubChem Boron Silicon OpenFF v1.0", "tagline": "",
+        "tags": [], "description": "", "record_count": 348900, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 425, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE submit testing", "tagline": "", "tags": [], "description":
+        "", "record_count": 200, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 426, "dataset_type": "singlepoint", "dataset_name": "SPICE submit testing2",
+        "tagline": "", "tags": [], "description": "", "record_count": 200, "owner_user":
+        "openffstaff", "creator_user": "openffstaff"}, {"id": 427, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE submit testing3", "tagline": "", "tags":
+        [], "description": "", "record_count": 7262, "owner_user": "openffstaff",
+        "creator_user": "openffstaff"}, {"id": 428, "dataset_type": "singlepoint",
+        "dataset_name": "SPICE submit testing4", "tagline": "", "tags": [], "description":
+        "", "record_count": 7262, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 429, "dataset_type": "singlepoint", "dataset_name": "SPICE submit testing5",
+        "tagline": "", "tags": [], "description": "", "record_count": 3631, "owner_user":
+        "openffstaff", "creator_user": "openffstaff"}, {"id": 430, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE DES370K Single Points Dataset Supplement
+        OpenFF v1.1", "tagline": "", "tags": [], "description": "", "record_count":
+        7262, "owner_user": "openffstaff", "creator_user": "openffstaff"}, {"id":
+        431, "dataset_type": "singlepoint", "dataset_name": "SPICE Ion Pairs Single
+        Points Dataset OpenFF v1.2", "tagline": "", "tags": [], "description": "",
+        "record_count": 2856, "owner_user": "openffstaff", "creator_user": "openffstaff"},
+        {"id": 432, "dataset_type": "singlepoint", "dataset_name": "SPICE Test Set
+        2 v1.0", "tagline": "", "tags": [], "description": "", "record_count": 2000,
+        "owner_user": "peastman", "creator_user": "peastman"}, {"id": 433, "dataset_type":
+        "singlepoint", "dataset_name": "SPICE Water Clusters 60 v1.0", "tagline":
+        "", "tags": [], "description": "", "record_count": 1000, "owner_user": "peastman",
+        "creator_user": "peastman"}, {"id": 434, "dataset_type": "manybody", "dataset_name":
+        "FmH2O10", "tagline": "Binding energies of isomers of F-(H20)10 complexes",
+        "tags": ["interaction", "cluster", "complex", "noncovalent", "intermolecular",
+        "binding", "small", "water", "fluoride", "halogen", "isomer"], "description":
+        "", "record_count": 480, "owner_user": "jchen", "creator_user": "jchen"},
+        {"id": 435, "dataset_type": "manybody", "dataset_name": "HB15", "tagline":
+        "Binding energies of hydrogen bonded dimers featuring ionic groups common
+        in biomolecules", "tags": ["interaction", "hydrogen-bonded", "complex", "noncovalent",
+        "intermolecular", "binding", "small", "biomolecule", "ion"], "description":
+        "", "record_count": 720, "owner_user": "jchen", "creator_user": "jchen"},
+        {"id": 436, "dataset_type": "manybody", "dataset_name": "HSG", "tagline":
+        "Interaction energies for bimolecular complexes from protein-indinavir reaction
+        site 1HSG", "tags": ["interaction", "organic", "bimolecular", "complex", "noncovalent",
+        "intermolecular", "dimer", "binding", "protein", "small"], "description":
+        "", "record_count": 1008, "owner_user": "jchen", "creator_user": "jchen"},
+        {"id": 437, "dataset_type": "manybody", "dataset_name": "Bauza30", "tagline":
+        "Binding energies of halogen, chalcogen, and pnicogen bonded dimers", "tags":
+        ["interaction", "bimolecular", "complex", "noncovalent", "intermolecular",
+        "dimer", "binding", "small", "halogen", "chalcogen", "pnicogen"], "description":
+        "", "record_count": 1440, "owner_user": "jchen", "creator_user": "jchen"},
+        {"id": 438, "dataset_type": "manybody", "dataset_name": "X40", "tagline":
+        "Binding energies of noncovalent interactions involving halogenated molecules",
+        "tags": ["interaction", "complex", "noncovalent", "intermolecular", "dimer",
+        "binding", "small", "halogen"], "description": "", "record_count": 1920, "owner_user":
+        "jchen", "creator_user": "jchen"}, {"id": 439, "dataset_type": "manybody",
+        "dataset_name": "AlkBind12", "tagline": "Binding energies of saturated and
+        unsaturated hydrocarbon dimers", "tags": ["interaction", "bimolecular", "complex",
+        "noncovalent", "intermolecular", "dimer", "binding", "small", "hydrocarbon",
+        "saturated", "unsaturated"], "description": "", "record_count": 576, "owner_user":
+        "jchen", "creator_user": "jchen"}, {"id": 440, "dataset_type": "manybody",
+        "dataset_name": "S22by5", "tagline": "", "tags": [], "description": "", "record_count":
+        5280, "owner_user": "jchen", "creator_user": "jchen"}, {"id": 441, "dataset_type":
+        "manybody", "dataset_name": "A21", "tagline": "Equilibrium complexes from
+        A24 database of small bimolecular complexes", "tags": ["interaction", "bimolecular",
+        "complex", "noncovalent", "intermolecular", "dimer", "binding", "small", "equilibrium"],
+        "description": "", "record_count": 1008, "owner_user": "jchen", "creator_user":
+        "jchen"}, {"id": 442, "dataset_type": "manybody", "dataset_name": "A24", "tagline":
+        "Interaction energies for small bimolecular complexes", "tags": ["interaction",
+        "bimolecular", "complex", "noncovalent", "intermolecular", "dimer", "binding",
+        "small"], "description": "", "record_count": 1152, "owner_user": "jchen",
+        "creator_user": "jchen"}, {"id": 443, "dataset_type": "manybody", "dataset_name":
+        "SSI", "tagline": "Interaction energies for peptide sidechain-sidechain complexes",
+        "tags": ["interaction", "organic", "bimolecular", "complex", "noncovalent",
+        "intermolecular", "dimer", "binding", "protein", "peptide", "sidechain", "large"],
+        "description": "", "record_count": 162240, "owner_user": "jchen", "creator_user":
+        "jchen"}, {"id": 444, "dataset_type": "manybody", "dataset_name": "S22by7",
+        "tagline": "Interaction energies for dissociation curves of organic bimolecular
+        complexes", "tags": ["interaction", "bimolecular", "complex", "noncovalent",
+        "intermolecular", "dimer", "binding", "dispersion", "hydrogen-bonded", "large",
+        "dissociation", "curve"], "description": "", "record_count": 7392, "owner_user":
+        "jchen", "creator_user": "jchen"}, {"id": 445, "dataset_type": "manybody",
+        "dataset_name": "S22", "tagline": "Interaction energies for common organic
+        bimolecular complexes", "tags": ["interaction", "bimolecular", "complex",
+        "noncovalent", "intermolecular", "dimer", "binding", "dispersion", "hydrogen-bonded",
+        "small"], "description": "", "record_count": 1056, "owner_user": "jchen",
+        "creator_user": "jchen"}, {"id": 446, "dataset_type": "manybody", "dataset_name":
+        "NC15", "tagline": "Binding energies of very small noncovalent complexes",
+        "tags": ["interaction", "complex", "noncovalent", "intermolecular", "binding",
+        "small"], "description": "", "record_count": 1008, "owner_user": "jchen",
+        "creator_user": "jchen"}, {"id": 447, "dataset_type": "manybody", "dataset_name":
+        "DS14", "tagline": "Binding energies of complexes containing divalent sulfur",
+        "tags": ["interaction", "bimolecular", "complex", "noncovalent", "intermolecular",
+        "dimer", "binding", "small", "divalent", "sulfur"], "description": "", "record_count":
+        672, "owner_user": "jchen", "creator_user": "jchen"}, {"id": 448, "dataset_type":
+        "manybody", "dataset_name": "S66", "tagline": "Interaction energies for organic
+        bimolecular complexes", "tags": ["interaction", "bimolecular", "complex",
+        "noncovalent", "intermolecular", "dimer", "binding", "dispersion", "hydrogen-bonded",
+        "medium"], "description": "", "record_count": 3168, "owner_user": "jchen",
+        "creator_user": "jchen"}, {"id": 449, "dataset_type": "singlepoint", "dataset_name":
+        "CCAS Test", "tagline": "", "tags": [], "description": "A test dataset for
+        AutoQChem -> QCArchive", "record_count": 6000, "owner_user": "janash", "creator_user":
+        "janash"}, {"id": 452, "dataset_type": "singlepoint", "dataset_name": "SPICE
+        Test Set 2 v2.0", "tagline": "", "tags": [], "description": "", "record_count":
+        2000, "owner_user": "peastman", "creator_user": "peastman"}, {"id": 453, "dataset_type":
+        "singlepoint", "dataset_name": "PCM-subset", "tagline": "", "tags": [], "description":
+        "A dataset with PCM Solvation", "record_count": 1385451, "owner_user": "skaur",
+        "creator_user": "skaur"}, {"id": 455, "dataset_type": "singlepoint", "dataset_name":
+        "PCM-subset-lowHAC", "tagline": "", "tags": [], "description": "A low HAC
+        dataset with PCM Solvation", "record_count": 2279244, "owner_user": "skaur",
+        "creator_user": "skaur"}, {"id": 458, "dataset_type": "singlepoint", "dataset_name":
+        "PCM-mediumHAC", "tagline": "", "tags": [], "description": "A medium HAC dataset
+        with PCM Solvation", "record_count": 4877052, "owner_user": "skaur", "creator_user":
+        "skaur"}, {"id": 459, "dataset_type": "singlepoint", "dataset_name": "GT SPICE
+        Benchmark testing", "tagline": "", "tags": [], "description": "", "record_count":
+        1114, "owner_user": "loriab", "creator_user": "loriab"}, {"id": 461, "dataset_type":
+        "singlepoint", "dataset_name": "cuEST/SPICE PubChem Set 6 Single Points Dataset
+        v1.3", "tagline": "", "tags": [], "description": "", "record_count": 495200,
+        "owner_user": "loriab", "creator_user": "loriab"}, {"id": 462, "dataset_type":
+        "singlepoint", "dataset_name": "cuEST/SPICE PubChem Set 1 Single Points Dataset
+        v1.3", "tagline": "", "tags": [], "description": "", "record_count": 355818,
+        "owner_user": "loriab", "creator_user": "loriab"}, {"id": 465, "dataset_type":
+        "singlepoint", "dataset_name": "PCM-Enamine_lib_2", "tagline": "", "tags":
+        [], "description": "A 50k enamine dataset with PCM Solvation", "record_count":
+        202132, "owner_user": "skaur", "creator_user": "skaur"}, {"id": 466, "dataset_type":
+        "singlepoint", "dataset_name": "cuEST/SPICE PubChem Set 2 Single Points Dataset
+        v1.3", "tagline": "", "tags": [], "description": "", "record_count": 364620,
+        "owner_user": "loriab", "creator_user": "loriab"}, {"id": 467, "dataset_type":
+        "singlepoint", "dataset_name": "PCM-Enamine_lib_series", "tagline": "", "tags":
+        [], "description": "Series enamine dataset with PCM Solvation", "record_count":
+        414516, "owner_user": "skaur", "creator_user": "skaur"}, {"id": 468, "dataset_type":
+        "singlepoint", "dataset_name": "PCM-Enamine_lib_series_ftrees", "tagline":
+        "", "tags": [], "description": "Series enamine dataset with PCM Solvation",
+        "record_count": 394928, "owner_user": "skaur", "creator_user": "skaur"}]'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '45806'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:09 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: GET
+    uri: https://ml.qcarchive.molssi.org/api/v1/datasets/385
+  response:
+    body:
+      string: '{"name": "SPICE Water Clusters v1.0", "tagline": "", "provenance":
+        {}, "id": 385, "dataset_type": "singlepoint", "tags": [], "description": "",
+        "owner_user": "peastman", "group": "default", "visibility": true, "metadata":
+        {}, "extras": {}, "default_tag": "*", "default_priority": 1, "owner_group":
+        null}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '303'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:09 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: GET
+    uri: https://ml.qcarchive.molssi.org/api/v1/datasets/singlepoint/385/record_count
+  response:
+    body:
+      string: '1000'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '4'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:09 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: GET
+    uri: https://ml.qcarchive.molssi.org/api/v1/datasets/singlepoint/385/specification_names
+  response:
+    body:
+      string: '["wb97m-d3bj/def2-tzvppd"]'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '26'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:09 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"names": ["wb97m-d3bj/def2-tzvppd"], "missing_ok": false}'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '58'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - qcportal/0.71
+    method: POST
+    uri: https://ml.qcarchive.molssi.org/api/v1/datasets/singlepoint/385/specifications/bulkFetch
+  response:
+    body:
+      string: '{"wb97m-d3bj/def2-tzvppd": {"description": null, "name": "wb97m-d3bj/def2-tzvppd",
+        "specification": {"driver": "gradient", "basis": "def2-tzvppd", "protocols":
+        {}, "program": "psi4", "method": "wb97m-d3bj", "keywords": {"maxiter": 200,
+        "wcombine": false, "scf_properties": ["dipole", "quadrupole", "wiberg_lowdin_indices",
+        "mayer_indices", "mbis_charges"]}}}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - http://localhost:5173
+      Content-Length:
+      - '359'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:09 GMT
+      Server:
+      - waitress
+      Vary:
+      - Cookie
+    status:
+      code: 200
+      message: OK
+version: 1

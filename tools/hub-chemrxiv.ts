@@ -82,7 +82,7 @@ const fetchedAt = (() => { // local time with offset, like the rest of the snaps
 const source = {
   id: "chemrxiv", name: "ChemRxiv 计算化学", url: "https://chemrxiv.org/",
   role: "ChemRxiv 理论与计算化学最新预印本（Crossref 官方元数据，按标题与摘要筛选，DOI 直达）",
-  color: "#c26a2e", status: "ok", statusLabel: "直抓成功", fetchedAt, itemCount: items.length, usedCache: false,
+  color: "#c26a2e", lang: "en", status: "ok", statusLabel: "直抓成功", fetchedAt, itemCount: items.length, usedCache: false,
 };
 
 // ── write both snapshots; the source goes right after arXiv ──

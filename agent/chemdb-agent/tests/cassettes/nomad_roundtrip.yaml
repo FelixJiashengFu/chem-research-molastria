@@ -1,0 +1,160 @@
+interactions:
+- request:
+    body: '{"owner": "visible", "query": {"results.material.elements:all": ["Si"],
+      "results.material.n_elements": 1, "results.material.structural_type": "bulk",
+      "quantities:all": ["run.calculation.energy.total.value"]}, "pagination": {"page_size":
+      1}, "required": {"run": {"system[-1]": {"atoms": "*"}, "calculation[-1]": {"energy":
+      {"total": "*"}, "forces": {"total": "*"}, "stress": {"total": "*"}}, "program":
+      "*", "method[-1]": {"dft": {"xc_functional": "*"}, "electrons_representation":
+      "*", "atom_parameters": "*"}}, "metadata": {"entry_id": "*", "upload_id": "*",
+      "datasets": "*"}, "results": {"material": {"chemical_formula_reduced": "*",
+      "structural_type": "*"}}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '662'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: POST
+    uri: https://nomad-lab.eu/prod/v1/api/v1/entries/archive/query
+  response:
+    body:
+      string: '{"detail":"Too many requests to a rate-limited endpoint. Only one in-flight
+        connection is allowed, and new connections allowed every 5 seconds."}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '145'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:54:59 GMT
+      Retry-After:
+      - '5'
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+    status:
+      code: 429
+      message: Too Many Requests
+- request:
+    body: '{"owner": "visible", "query": {"results.material.elements:all": ["Si"],
+      "results.material.n_elements": 1, "results.material.structural_type": "bulk",
+      "quantities:all": ["run.calculation.energy.total.value"]}, "pagination": {"page_size":
+      1}, "required": {"run": {"system[-1]": {"atoms": "*"}, "calculation[-1]": {"energy":
+      {"total": "*"}, "forces": {"total": "*"}, "stress": {"total": "*"}}, "program":
+      "*", "method[-1]": {"dft": {"xc_functional": "*"}, "electrons_representation":
+      "*", "atom_parameters": "*"}}, "metadata": {"entry_id": "*", "upload_id": "*",
+      "datasets": "*"}, "results": {"material": {"chemical_formula_reduced": "*",
+      "structural_type": "*"}}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '662'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: POST
+    uri: https://nomad-lab.eu/prod/v1/api/v1/entries/archive/query
+  response:
+    body:
+      string: '{"owner":"visible","query":{"op":[{"name":"results.material.n_elements","value":1},{"name":"results.material.structural_type","value":"bulk"},{"name":"results.material.elements","value":{"op":["Si"]}},{"name":"quantities","value":{"op":["run.calculation.energy.total.value"]}}]},"pagination":{"page_size":1,"order_by":"entry_id","order":"asc","total":19493,"next_page_after_value":"--EsEqc-dr6ZJTayzDGI3xa-nrXy"},"required":{"run":{"system[-1]":{"atoms":"*"},"calculation[-1]":{"energy":{"total":"*"},"forces":{"total":"*"},"stress":{"total":"*"}},"program":"*","method[-1]":{"dft":{"xc_functional":"*"},"electrons_representation":"*","atom_parameters":"*"}},"metadata":{"entry_id":"*","upload_id":"*","datasets":"*"},"results":{"material":{"chemical_formula_reduced":"*","structural_type":"*"}}},"data":[{"entry_id":"--EsEqc-dr6ZJTayzDGI3xa-nrXy","upload_id":"9FnjrfV2QWWVcu9M0kTISQ","parser_name":"parsers/fhi-aims","archive":{"run":[{"system":[{"atoms":{"species":[14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14],"labels":["Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si"],"positions":[[1.7450000000000001e-13,4.834e-13,4.4219999999999997e-13],[4.834e-13,2.703588e-10,2.704e-10],[2.705137e-10,3.285e-13,2.702593e-10],[2.7051280000000004e-10,2.705137e-10,5.409515e-10],[5.408520000000001e-10,5.405431e-10,1.0809529e-9],[5.405431e-10,2.706677e-10,8.109952e-10],[8.108814000000001e-10,3.2940000000000004e-13,8.111358e-10],[8.108822999999999e-10,2.7051280000000004e-10,1.0808123e-9],[1.355616e-10,1.352805e-10,1.352123e-10],[1.352805e-10,4.057459e-10,4.058142e-10],[4.055414e-10,1.3548500000000002e-10,4.054218e-10],[4.0566930000000004e-10,4.055414e-10,6.759733e-10],[6.756491e-10,1.355616e-10,6.759985000000001e-10],[6.759303000000001e-10,4.0546480000000005e-10,9.457652e-10],[9.460380000000002e-10,1.3535710000000002e-10,9.461576e-10],[9.459101000000001e-10,4.0566930000000004e-10,1.2159747e-9]],"lattice_vectors":[[0.0,5.403686e-10,5.403686e-10],[1.0807373000000001e-9,0.0,1.0807373000000001e-9],[2.701843e-10,2.701843e-10,0.0]],"lattice_vectors_reciprocal":[[-5813800000.0,5813800000.0,5813800000.0],[2906900000.0,-2906900000.0,2906900000.0],[11627590000.000002,11627590000.000002,-11627590000.000002]],"periodic":[true,true,true]}}],"calculation":[{"energy":{"total":{"value":-2.018529289317464e-14}},"forces":{}}],"program":{"name":"FHI-aims","version":"071914","compilation_host":"eos01."},"method":[{"dft":{"xc_functional":{"name":"LDA_C_PW+LDA_X","exchange":[{"name":"LDA_X"}],"correlation":[{"name":"LDA_C_PW"}]}},"electrons_representation":[{"type":"atom-centered
+        orbitals","scope":["wavefunction"],"basis_set":[{"type":"numeric AOs","scope":["full-electron"]}]}],"atom_parameters":[{"label":"Si","mass":4.66370699549943e-26,"charge":2.2430472876e-18,"x_fhi_aims_section_controlInOut_atom_species":[{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_atom_species","x_fhi_aims_controlInOut_species_charge":2.2430472876e-18,"x_fhi_aims_controlInOut_species_cut_pot_scale":1.0,"x_fhi_aims_controlInOut_species_cut_pot_width":2e-10,"x_fhi_aims_controlInOut_species_cut_pot":4e-10,"x_fhi_aims_controlInOut_species_mass":4.66370699549943e-26,"x_fhi_aims_controlInOut_species_name":"Si","x_fhi_aims_section_controlInOut_basis_func":[{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":2.0,"x_fhi_aims_controlInOut_basis_func_type":"free-atom
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":2.0,"x_fhi_aims_controlInOut_basis_func_type":"free-atom
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":1.0,"x_fhi_aims_controlInOut_basis_func_type":"free-ion
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":1.0,"x_fhi_aims_controlInOut_basis_func_type":"free-ion
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":4.2,"x_fhi_aims_controlInOut_basis_func_l":"d","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":1.4,"x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":2,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":6.2,"x_fhi_aims_controlInOut_basis_func_l":"f","x_fhi_aims_controlInOut_basis_func_n":4,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":9.0,"x_fhi_aims_controlInOut_basis_func_l":"d","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":9.4,"x_fhi_aims_controlInOut_basis_func_l":"g","x_fhi_aims_controlInOut_basis_func_n":5,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"ionic
+        basis"}]}]}]}]}],"metadata":{"entry_id":"--EsEqc-dr6ZJTayzDGI3xa-nrXy","upload_id":"9FnjrfV2QWWVcu9M0kTISQ","datasets":["PP1qop0XQYWsiQjJWL5tgQ"]},"results":{"material":{"chemical_formula_reduced":"Si","structural_type":"bulk"}},"m_ref_archives":{}}}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Origin
+      content-length:
+      - '6424'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"required": {"run": {"system[-1]": {"atoms": "*"}, "calculation[-1]":
+      {"energy": {"total": "*"}, "forces": {"total": "*"}, "stress": {"total": "*"}},
+      "program": "*", "method[-1]": {"dft": {"xc_functional": "*"}, "electrons_representation":
+      "*", "atom_parameters": "*"}}, "metadata": {"entry_id": "*", "upload_id": "*",
+      "datasets": "*"}, "results": {"material": {"chemical_formula_reduced": "*",
+      "structural_type": "*"}}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '422'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: POST
+    uri: https://nomad-lab.eu/prod/v1/api/v1/entries/--EsEqc-dr6ZJTayzDGI3xa-nrXy/archive/query
+  response:
+    body:
+      string: '{"entry_id":"--EsEqc-dr6ZJTayzDGI3xa-nrXy","required":{"run":{"system[-1]":{"atoms":"*"},"calculation[-1]":{"energy":{"total":"*"},"forces":{"total":"*"},"stress":{"total":"*"}},"program":"*","method[-1]":{"dft":{"xc_functional":"*"},"electrons_representation":"*","atom_parameters":"*"}},"metadata":{"entry_id":"*","upload_id":"*","datasets":"*"},"results":{"material":{"chemical_formula_reduced":"*","structural_type":"*"}}},"data":{"entry_id":"--EsEqc-dr6ZJTayzDGI3xa-nrXy","upload_id":"9FnjrfV2QWWVcu9M0kTISQ","parser_name":"parsers/fhi-aims","archive":{"run":[{"system":[{"atoms":{"species":[14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14],"labels":["Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si"],"positions":[[1.7450000000000001e-13,4.834e-13,4.4219999999999997e-13],[4.834e-13,2.703588e-10,2.704e-10],[2.705137e-10,3.285e-13,2.702593e-10],[2.7051280000000004e-10,2.705137e-10,5.409515e-10],[5.408520000000001e-10,5.405431e-10,1.0809529e-9],[5.405431e-10,2.706677e-10,8.109952e-10],[8.108814000000001e-10,3.2940000000000004e-13,8.111358e-10],[8.108822999999999e-10,2.7051280000000004e-10,1.0808123e-9],[1.355616e-10,1.352805e-10,1.352123e-10],[1.352805e-10,4.057459e-10,4.058142e-10],[4.055414e-10,1.3548500000000002e-10,4.054218e-10],[4.0566930000000004e-10,4.055414e-10,6.759733e-10],[6.756491e-10,1.355616e-10,6.759985000000001e-10],[6.759303000000001e-10,4.0546480000000005e-10,9.457652e-10],[9.460380000000002e-10,1.3535710000000002e-10,9.461576e-10],[9.459101000000001e-10,4.0566930000000004e-10,1.2159747e-9]],"lattice_vectors":[[0.0,5.403686e-10,5.403686e-10],[1.0807373000000001e-9,0.0,1.0807373000000001e-9],[2.701843e-10,2.701843e-10,0.0]],"lattice_vectors_reciprocal":[[-5813800000.0,5813800000.0,5813800000.0],[2906900000.0,-2906900000.0,2906900000.0],[11627590000.000002,11627590000.000002,-11627590000.000002]],"periodic":[true,true,true]}}],"calculation":[{"energy":{"total":{"value":-2.018529289317464e-14}},"forces":{}}],"program":{"name":"FHI-aims","version":"071914","compilation_host":"eos01."},"method":[{"dft":{"xc_functional":{"name":"LDA_C_PW+LDA_X","exchange":[{"name":"LDA_X"}],"correlation":[{"name":"LDA_C_PW"}]}},"electrons_representation":[{"type":"atom-centered
+        orbitals","scope":["wavefunction"],"basis_set":[{"type":"numeric AOs","scope":["full-electron"]}]}],"atom_parameters":[{"label":"Si","mass":4.66370699549943e-26,"charge":2.2430472876e-18,"x_fhi_aims_section_controlInOut_atom_species":[{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_atom_species","x_fhi_aims_controlInOut_species_charge":2.2430472876e-18,"x_fhi_aims_controlInOut_species_cut_pot_scale":1.0,"x_fhi_aims_controlInOut_species_cut_pot_width":2e-10,"x_fhi_aims_controlInOut_species_cut_pot":4e-10,"x_fhi_aims_controlInOut_species_mass":4.66370699549943e-26,"x_fhi_aims_controlInOut_species_name":"Si","x_fhi_aims_section_controlInOut_basis_func":[{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":2.0,"x_fhi_aims_controlInOut_basis_func_type":"free-atom
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":2.0,"x_fhi_aims_controlInOut_basis_func_type":"free-atom
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":1.0,"x_fhi_aims_controlInOut_basis_func_type":"free-ion
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_occ":1.0,"x_fhi_aims_controlInOut_basis_func_type":"free-ion
+        valence"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":4.2,"x_fhi_aims_controlInOut_basis_func_l":"d","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":1.4,"x_fhi_aims_controlInOut_basis_func_l":"p","x_fhi_aims_controlInOut_basis_func_n":2,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":6.2,"x_fhi_aims_controlInOut_basis_func_l":"f","x_fhi_aims_controlInOut_basis_func_n":4,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":9.0,"x_fhi_aims_controlInOut_basis_func_l":"d","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_eff_charge":9.4,"x_fhi_aims_controlInOut_basis_func_l":"g","x_fhi_aims_controlInOut_basis_func_n":5,"x_fhi_aims_controlInOut_basis_func_type":"hydrogenic
+        basis"},{"m_def":"electronicparsers.fhiaims.metainfo.fhi_aims.x_fhi_aims_section_controlInOut_basis_func","x_fhi_aims_controlInOut_basis_func_l":"s","x_fhi_aims_controlInOut_basis_func_n":3,"x_fhi_aims_controlInOut_basis_func_type":"ionic
+        basis"}]}]}]}]}],"metadata":{"entry_id":"--EsEqc-dr6ZJTayzDGI3xa-nrXy","upload_id":"9FnjrfV2QWWVcu9M0kTISQ","datasets":["PP1qop0XQYWsiQjJWL5tgQ"]},"results":{"material":{"chemical_formula_reduced":"Si","structural_type":"bulk"}},"m_ref_archives":{}}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 20:55:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Origin
+      content-length:
+      - '6052'
+    status:
+      code: 200
+      message: OK
+version: 1

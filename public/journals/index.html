@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="量子化学与计算化学期刊投稿指南：JCTC、J. Chem. Phys.、JPC、PCCP、JCIM、npj Comput. Mater.、物理化学学报等 46 种期刊和 2 个预印本平台的收稿范围、文章类型与篇幅、开放获取、预印本与数据政策，每条附官网出处；另有从选题、方法基准、可复现性到投稿、回复审稿意见和发表的完整指导。">
+  <meta name="theme-color" content="#173f34">
+  <title>期刊发表 · 计算化学期刊投稿与发表指南 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="journals.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="journals-data.js" defer></script>
+  <script src="journals-guide.js" defer></script>
+  <script src="journals.js" defer></script>
+</head>
+<body data-section="journals">
+<a class="skip" href="#jr-directory">跳到期刊目录</a>
+<main>
+  <section class="jr-hero">
+    <p class="eyebrow">MOLASTRIA · JOURNALS &amp; PUBLISHING</p>
+    <h1>期刊发表</h1>
+    <p class="lead">主流量子化学与计算化学期刊的投稿要点，以及从做研究到论文上线的完整指导。期刊信息只写能在期刊或出版社官网核实的内容，每条都附出处链接和核对日期；影响因子、版面费这类每年会变的数字，只收录官网明确写出的。</p>
+    <p class="jr-meta" id="jr-meta"></p>
+    <nav class="jr-jump" aria-label="本页内容"><a class="button primary" href="#jr-directory">期刊目录 <span aria-hidden="true">↓</span></a><a class="button" href="#jr-guide">从研究到发表的指导 <span aria-hidden="true">↓</span></a></nav>
+  </section>
+
+  <section id="jr-directory" class="jr-directory" aria-labelledby="jr-dir-h" tabindex="-1">
+    <h2 id="jr-dir-h">期刊目录</h2>
+    <p class="muted">按类别分组。可以组合筛选和搜索；点“查看详情”看每一项信息和它的官网出处。</p>
+    <div class="jr-filters" role="search" aria-label="筛选期刊">
+      <label class="jr-search">搜索<input type="search" id="jr-q" placeholder="期刊名、缩写、ISSN 或关键词" autocomplete="off" spellcheck="false"></label>
+      <label>类别<select id="jr-cat"><option value="">全部类别</option></select></label>
+      <label>出版社<select id="jr-pub"><option value="">全部出版社</option></select></label>
+      <label>开放获取<select id="jr-oa"><option value="">全部方式</option></select></label>
+      <label>文章类型<select id="jr-type"><option value="">全部类型</option></select></label>
+      <button type="button" class="text-button" id="jr-reset" hidden>清除筛选</button>
+    </div>
+    <p class="jr-count" id="jr-count" role="status" aria-live="polite"></p>
+    <div id="jr-list" class="jr-list"></div>
+    <div id="jr-empty" class="jr-empty" hidden><p>没有符合条件的期刊。换个关键词，或者放宽筛选条件。</p><button type="button" class="button" id="jr-empty-reset">清除筛选</button></div>
+    <p class="jr-fine">ISSN 以期刊页面或出版社在 Crossref 登记的元数据为准。“未核实”表示没能在官网直接核对该项，本页不猜测。中科院分区、JCR 分区不在期刊官网上，这里不写，它们是什么、去哪里查见<a href="#g-choose">“怎么选刊”</a>一章。</p>
+  </section>
+
+  <section id="jr-guide" class="jr-guide" aria-labelledby="jr-guide-h" tabindex="-1">
+    <h2 id="jr-guide-h">从研究到发表</h2>
+    <p class="muted">通用做法和清单，正文是 MolAstria 自己写的；遇到具体规定，以目标期刊的作者指南为准。</p>
+    <div class="jr-guide-layout">
+      <nav class="jr-toc" id="jr-toc" aria-label="指导目录" translate="no"></nav>
+      <div class="jr-guide-body" id="jr-guide-body" translate="no"></div>
+    </div>
+  </section>
+
+  <footer class="jr-foot">
+    <strong>MolAstria · 期刊发表</strong>
+    <p>期刊名称和商标归各出版社所有，MolAstria 与本页列出的出版社没有隶属关系。期刊的规定和费用会变，投稿前请以官网为准。</p>
+    <p><a href="../manual/index.html">说明讲解手册</a> · <a href="../radar/index.html">预印本雷达</a> · <a href="../models/index.html">量子化学模型接口</a> · <a href="#jr-directory">回到期刊目录 ↑</a></p>
+  </footer>
+</main>
+</body>
+</html>

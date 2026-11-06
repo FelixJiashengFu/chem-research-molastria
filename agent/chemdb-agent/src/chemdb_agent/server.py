@@ -1,0 +1,545 @@
+"""chemdb-agent MCP 服务器入口（fastmcp，标准输入输出）。
+
+九个工具都接到真实适配器上：每个数据源在线程里查询，超过 ``CHEMDB_SOURCE_TIMEOUT``
+（默认 90 秒）就单独记为超时，其他来源的结果照常返回；完整记录按 record_id 缓存在数据目录里。
+启动：``python -m chemdb_agent.server``。
+"""
+
+from __future__ import annotations
+
+import functools
+import os
+from concurrent.futures import ThreadPoolExecutor, wait
+from dataclasses import asdict
+from pathlib import Path
+from typing import Annotated, Any, Callable, Literal
+
+from dotenv import load_dotenv
+from fastmcp import FastMCP
+from fastmcp.exceptions import ToolError
+from pydantic import Field
+
+from chemdb_agent import __version__, net
+from chemdb_agent.cache import Cache
+
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_DIR / ".env", override=False)
+
+mcp = FastMCP(
+    "chemdb-agent",
+    instructions=(
+        "计算化学数据库检索：search_structures 查晶体（OPTIMADE 15 个库、NOMAD、Materials Project），"
+        "search_molecules 查分子（PubChem、ChEMBL、ChEBI），find_qm_data / fetch_dataset_shard 找并下载 "
+        "QCArchive 量子化学数据，get_record 取完整记录，export_training_set 导出 extxyz / ASE 数据库训练集，"
+        "get_basis 取基组，search_resources 查资源目录，catalog_status 看数据源与本地数据。"
+    ),
+    version=__version__,
+)
+
+DATA_DIR = Path(os.environ.get("CHEMDB_DATA_DIR", PROJECT_DIR / "data"))
+_POOL = ThreadPoolExecutor(max_workers=8, thread_name_prefix="chemdb-source")
+SHARD_CONFIRM_BYTES = 2 * 1024**3
+DEFAULT_STRUCTURE_DATABASES = ["optimade-alexandria-pbe", "optimade-mp", "optimade-cod", "nomad"]
+
+
+def source_timeout_s() -> float:
+    try:
+        return max(5.0, float(os.environ.get("CHEMDB_SOURCE_TIMEOUT", "90")))
+    except ValueError:
+        return 90.0
+
+
+def _cache() -> Cache:
+    return Cache(DATA_DIR)
+
+
+def _message(e: BaseException) -> str:
+    if isinstance(e, KeyError) and e.args:
+        return str(e.args[0])
+    return str(e) or type(e).__name__
+
+
+def _tool_errors(fn: Callable) -> Callable:
+    """把可预期的失败（参数不对、找不到、数据源报错、缺 key、导出被拒）转成 MCP 工具错误，消息原样给客户端。"""
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except ToolError:
+            raise
+        except (ValueError, KeyError, net.SourceError, TimeoutError) as e:
+            raise ToolError(_message(e)) from e
+
+    return wrapper
+
+
+def _run_sources(tasks: dict[str, Callable[[], Any]]) -> dict[str, tuple[str, Any]]:
+    """并行跑各数据源；返回 {名称: (状态, 结果或消息)}，状态为 ok / missing_key / error / timeout。"""
+    futures = {name: _POOL.submit(fn) for name, fn in tasks.items()}
+    wait(futures.values(), timeout=source_timeout_s())
+    out: dict[str, tuple[str, Any]] = {}
+    for name, fut in futures.items():
+        if not fut.done():
+            fut.cancel()
+            out[name] = ("timeout", f"{name}：超过 {source_timeout_s():g} 秒没有返回，已跳过（可调 CHEMDB_SOURCE_TIMEOUT）")
+            continue
+        try:
+            out[name] = ("ok", fut.result())
+        except net.MissingKeyError as e:
+            out[name] = ("missing_key", str(e))
+        except Exception as e:  # noqa: BLE001 - 单个来源失败不能拖垮整次检索
+            out[name] = ("error", _message(e))
+    return out
+
+
+def _summary(rec) -> dict[str, Any]:
+    from chemdb_agent.adapters.optimade import formula_of_atoms
+
+    atoms = rec.atoms
+    lot = rec.level_of_theory
+    detail = lot.basis_set or (f"{lot.cutoff_ev:g} eV" if lot.cutoff_ev else None)
+    return {
+        "record_id": rec.record_id,
+        "database": rec.source.database,
+        "formula": atoms.get_chemical_formula(),
+        "reduced_formula": formula_of_atoms(atoms),
+        "natoms": len(atoms),
+        "periodic": rec.is_periodic,
+        "has_energy": rec.energy is not None,
+        "energy_ev": rec.energy,
+        "energy_type": rec.energy_type.value if rec.energy_type else None,
+        "has_forces": rec.forces is not None,
+        "has_stress": rec.stress is not None,
+        "level_of_theory": "/".join(x for x in (lot.method, detail, lot.program) if x),
+        "theory_key": rec.mix_key,
+        "license": rec.license,
+        "url": rec.source.url,
+    }
+
+
+def _remember(records) -> None:
+    cache = _cache()
+    for rec in records:
+        cache.put(f"record:{rec.record_id}", rec.model_dump(mode="json"))
+
+
+def _structure_task(database: str, formula: str | None, elements: list[str] | None, limit: int) -> Callable:
+    if database == "mp":
+        from chemdb_agent.adapters import materials_project as mp
+
+        return lambda: mp.search_structures(formula=formula, elements=None if formula else elements, limit=limit)
+    if database == "nomad":
+        from chemdb_agent.adapters import nomad
+
+        return lambda: nomad.search_structures(formula=formula, elements=elements, limit=limit)
+    if database.startswith("optimade-"):
+        from chemdb_agent.adapters import optimade
+
+        provider = database.removeprefix("optimade-")
+        if provider not in optimade.PROVIDERS:
+            raise ValueError(f"未知数据库 {database!r}，可选：{', '.join(_structure_databases())}")
+        return lambda: optimade.search_structures(formula=formula, elements=elements, providers=[provider], limit=limit)
+    raise ValueError(f"未知数据库 {database!r}，可选：{', '.join(_structure_databases())}")
+
+
+def _structure_databases() -> list[str]:
+    from chemdb_agent.adapters.optimade import PROVIDERS
+
+    return ["mp", "nomad"] + [f"optimade-{p}" for p in PROVIDERS]
+
+
+def _expand_databases(databases: list[str] | None) -> tuple[list[str], list[str]]:
+    from chemdb_agent.adapters import materials_project as mp
+    from chemdb_agent.adapters.optimade import PROVIDERS
+
+    notes: list[str] = []
+    if not databases:
+        chosen = list(DEFAULT_STRUCTURE_DATABASES)
+        if mp.configured_key():
+            chosen.append("mp")
+        else:
+            notes.append("没有 MP_API_KEY，默认不查 Materials Project 原生接口；结构可用 optimade-mp 查到（无能量）。")
+        return chosen, notes
+    chosen = []
+    for d in databases:
+        d = d.strip().lower()
+        if d == "optimade-all":
+            chosen += [f"optimade-{p}" for p in PROVIDERS]
+        elif d == "optimade":
+            chosen += [x for x in DEFAULT_STRUCTURE_DATABASES if x.startswith("optimade-")]
+        else:
+            chosen.append(d)
+    return list(dict.fromkeys(chosen)), notes
+
+
+def _overall(sources: list[dict[str, Any]]) -> str:
+    oks = [s for s in sources if s["status"] == "ok"]
+    if len(oks) == len(sources):
+        return "ok"
+    return "partial" if oks else "error"
+
+
+def _report(results: dict[str, tuple[str, Any]], notes: list[str]) -> dict[str, Any]:
+    records, sources = [], []
+    for name, (status, value) in results.items():
+        if status == "ok":
+            records.extend(value)
+            sources.append({"database": name, "status": "ok", "count": len(value)})
+        else:
+            sources.append({"database": name, "status": status, "count": 0, "message": value})
+    _remember(records)
+    if not records and all(s["status"] == "ok" for s in sources):
+        notes = notes + ["各数据源都没有匹配结果：检查化学式或元素写法，或换个数据库。"]
+    return {
+        "status": _overall(sources),
+        "count": len(records),
+        "results": [_summary(r) for r in records],
+        "sources": sources,
+        "notes": notes,
+    }
+
+
+# -- 工具 ------------------------------------------------------------------
+
+
+@mcp.tool()
+@_tool_errors
+def search_structures(
+    formula: Annotated[str | None, Field(description="化学式，写法不限：NaCl、ClNa、Na2Cl2 等价；与 elements 二选一，同时给时以化学式为准")] = None,
+    elements: Annotated[list[str] | None, Field(description="元素符号列表，如 [\"Li\", \"Mn\", \"O\"]；只查恰好由这些元素组成的结构")] = None,
+    databases: Annotated[list[str] | None, Field(description="要查的库：mp（需 MP_API_KEY）、nomad（原生接口，带能量/力/应力）、optimade-<提供方>（如 optimade-alexandria-pbe、optimade-cod）、optimade（默认 OPTIMADE 组合）或 optimade-all（全部 15 个）。不填时查 optimade-alexandria-pbe、optimade-mp、optimade-cod、nomad，配置了 MP_API_KEY 时再加 mp")] = None,
+    limit: Annotated[int, Field(ge=1, le=100, description="每个库最多返回的条数")] = 5,
+) -> dict[str, Any]:
+    """跨库检索晶体结构，返回摘要（是否带能量、理论级别、许可）和每个库的状态。
+
+    单个库超时、报错或缺 key 时只在 sources 里记下原因，其他库的结果照常返回。完整记录已缓存，用 get_record 取。
+    """
+    if formula is None and not elements:
+        raise ValueError("请至少给出 formula 或 elements")
+    chosen, notes = _expand_databases(databases)
+    tasks = {d: _structure_task(d, formula, elements, limit) for d in chosen}
+    return _report(_run_sources(tasks), notes)
+
+
+def _fetch_record(record_id: str):
+    """按前缀分派到适配器取一条记录。"""
+    prefix = record_id.partition(":")[0]
+    if prefix == "mp":
+        from chemdb_agent.adapters import materials_project as mp
+
+        return mp.get_record(record_id)
+    if prefix.startswith("optimade-"):
+        from chemdb_agent.adapters import optimade
+
+        return optimade.get_record(record_id)
+    if prefix == "nomad":
+        from chemdb_agent.adapters import nomad
+
+        return nomad.get_record(record_id)
+    if prefix == "pubchem":
+        from chemdb_agent.adapters import pubchem
+
+        return pubchem.get_record(record_id)
+    if prefix == "chembl":
+        from chemdb_agent.adapters import chembl
+
+        return chembl.get_record(record_id)
+    if prefix == "chebi":
+        from chemdb_agent.adapters import chebi
+
+        return chebi.get_record(record_id)
+    if prefix.startswith("qcarchive-"):
+        from chemdb_agent.adapters import qcarchive
+
+        return qcarchive.get_record(record_id)
+    raise ValueError(
+        f"不认识的 record_id 前缀 {prefix!r}：应为 mp、nomad、optimade-<提供方>、pubchem、chembl、chebi、qcarchive-ml 或 qcarchive-main"
+    )
+
+
+def _load_record(record_id: str):
+    """缓存 → 本地分片 → 联网，返回 (记录, 出处)。"""
+    from chemdb_agent.adapters import local_catalog
+    from chemdb_agent.schema import UnifiedRecord
+
+    record_id = record_id.strip()
+    cached = _cache().get(f"record:{record_id}")
+    if cached is not None:
+        return UnifiedRecord.model_validate(cached), "cache"
+    local = local_catalog.get(DATA_DIR, record_id)
+    if local is not None:
+        return local, "local"
+    status, value = _run_sources({record_id: lambda: _fetch_record(record_id)})[record_id]
+    if status != "ok":
+        raise ToolError(value)
+    _remember([value])
+    return value, "network"
+
+
+@mcp.tool()
+@_tool_errors
+def get_record(
+    record_id: Annotated[str, Field(description="统一记录编号，形如 mp:mp-149、optimade-cod:1010928、nomad:<entry_id>、pubchem:2244、chembl:CHEMBL25、chebi:15365、qcarchive-ml:119038366")],
+) -> dict[str, Any]:
+    """按 record_id 取完整统一记录（extxyz 结构、能量、力、应力、理论级别、来源、许可）。先查缓存与本地分片。"""
+    rec, origin = _load_record(record_id)
+    return {"status": "ok", "origin": origin, "summary": _summary(rec), "record": rec.model_dump(mode="json")}
+
+
+@mcp.tool()
+@_tool_errors
+def search_molecules(
+    query: Annotated[str, Field(description="分子名称、SMILES 或 InChIKey，与 by 对应")],
+    by: Annotated[Literal["name", "smiles", "inchikey"], Field(description="query 的类型")] = "name",
+    databases: Annotated[list[Literal["pubchem", "chembl", "chebi"]] | None, Field(description="要查的库，默认只查 pubchem（三维构象）；chembl、chebi 给二维重原子结构；chebi 不支持 smiles")] = None,
+    limit: Annotated[int, Field(ge=1, le=20, description="每个库最多返回的条数")] = 3,
+) -> dict[str, Any]:
+    """按名称/SMILES/InChIKey 查分子，返回结构记录摘要（分子记录没有能量，不能直接进训练集）。"""
+    if not query.strip():
+        raise ValueError("query 不能为空")
+    from chemdb_agent.adapters import chebi, chembl, pubchem
+
+    modules = {"pubchem": pubchem, "chembl": chembl, "chebi": chebi}
+    chosen = list(dict.fromkeys(databases or ["pubchem"]))
+    tasks = {d: functools.partial(modules[d].search_molecules, query, by=by, limit=limit) for d in chosen}
+    return _report(_run_sources(tasks), [])
+
+
+@mcp.tool()
+@_tool_errors
+def find_qm_data(
+    query: Annotated[str, Field(description="数据集名称关键词（不分大小写），如 SPICE、QM9、water；空字符串列出全部")] = "",
+    elements: Annotated[list[str] | None, Field(description="只要元素清单包含这些元素的数据集；数据集没给元素清单时照列，并标 elements_checked=false")] = None,
+    method: Annotated[str | None, Field(description="只要含此方法的规格，如 wb97m-d3bj、b3lyp")] = None,
+    basis: Annotated[str | None, Field(description="只要含此基组的规格，如 def2-tzvppd")] = None,
+    server: Annotated[Literal["ml", "main"], Field(description="QCArchive 公共服务器：ml（机器学习数据集）或 main（OpenFF 等）")] = "ml",
+    limit: Annotated[int, Field(ge=1, le=20, description="最多返回的数据集个数")] = 5,
+) -> dict[str, Any]:
+    """找量子化学数据集：只返回统计、规格（方法/基组/程序）和许可，不下载记录；同时列出本地已下载的匹配数据。"""
+    from chemdb_agent import units
+    from chemdb_agent.adapters import local_catalog, qcarchive
+    from chemdb_agent.adapters.optimade import normalize_elements
+
+    want = normalize_elements(elements) if elements else []
+
+    def scan() -> dict[str, Any]:
+        candidates = qcarchive.list_datasets(server, query)
+        found, scanned = [], 0
+        for d in candidates:
+            if len(found) >= limit or scanned >= 40:
+                break
+            scanned += 1
+            summ = qcarchive.dataset_summary(server, qcarchive.get_dataset(server, d["dataset_id"]))
+            specs = [
+                s for s in summ["specifications"]
+                if not s["is_correction_only"]
+                and (method is None or units.normalize_method(s["method"]) == units.normalize_method(method))
+                and (basis is None or (s["basis"] or "").lower() == basis.strip().lower())
+            ]
+            if not specs:
+                continue
+            checked = summ["elements"] is not None
+            if want and checked and not set(want) <= set(summ["elements"]):
+                continue
+            summ["specifications"] = specs
+            summ["elements_checked"] = checked or not want
+            found.append(summ)
+        return {"candidates": len(candidates), "scanned": scanned, "datasets": found}
+
+    status, value = _run_sources({f"qcarchive-{server}": scan})[f"qcarchive-{server}"]
+    local = local_catalog.search(DATA_DIR, elements=want)
+    if status != "ok":
+        return {"status": "error", "message": value, "datasets": [], "local": local}
+    notes = []
+    if value["scanned"] < value["candidates"] and len(value["datasets"]) < limit:
+        notes.append(f"只检查了前 {value['scanned']} 个候选（共 {value['candidates']} 个），请把 query 写得更具体。")
+    return {"status": "ok", "server": server, **value, "local": local, "notes": notes}
+
+
+@mcp.tool()
+@_tool_errors
+def get_basis(
+    basis_name: Annotated[str, Field(description="基组名，如 def2-SVP、def2-TZVP、cc-pVDZ、6-31G*")],
+    elements: Annotated[list[str], Field(description="元素符号列表，如 [\"Fe\", \"Pt\"]；重元素会同时返回配套 ECP")],
+    fmt: Annotated[Literal["orca", "gaussian", "cp2k", "pyscf", "psi4", "nwchem", "json", "molpro", "qchem", "turbomole"], Field(description="输出格式（程序名）；pyscf 返回与其兼容的 NWChem 格式")] = "orca",
+) -> dict[str, Any]:
+    """取基组与 ECP 文本（Basis Set Exchange 本地库，离线）。"""
+    from chemdb_agent.adapters import basis
+
+    return {"status": "ok", **asdict(basis.get_basis(basis_name, elements, fmt=fmt))}
+
+
+@mcp.tool()
+@_tool_errors
+def search_resources(
+    query: Annotated[str, Field(description="关键词，匹配名称、描述和链接；空字符串表示不按关键词筛")] = "",
+    category: Annotated[str | None, Field(description="类别名，如 材料与晶体结构、药物、生物活性与化学空间（共 11 类，见 catalog_status）")] = None,
+    integration: Annotated[Literal["adapter", "optimade", "stub", "catalog"] | None, Field(description="接入状态：adapter（独立适配器）、optimade（经 OPTIMADE 接入）、stub（占位）、catalog（仅收录导航信息）")] = None,
+) -> dict[str, Any]:
+    """检索资源目录（《计算化学数据库与资源导航 2026》103 条）。catalog 表示仅收录导航信息、尚未接入，不会冒充可检索数据源。"""
+    from chemdb_agent.catalog.resources import search_resources as _search
+
+    results = _search(query, category=category, integration=integration)
+    return {"status": "ok", "count": len(results), "results": results}
+
+
+def _sources_status() -> list[dict[str, Any]]:
+    from chemdb_agent.adapters import materials_project as mp
+    from chemdb_agent.adapters import optimade, qcarchive
+
+    rows: list[dict[str, Any]] = [
+        {"id": "mp", "kind": "晶体", "energy": "形成能/原子（MP 兼容性校正）", "requires_key": "MP_API_KEY",
+         "configured": bool(mp.configured_key()), "license": mp.MP_LICENSE},
+        {"id": "nomad", "kind": "晶体", "energy": "总能量、力、应力（SI 单位换算）", "license": "CC-BY-4.0"},
+    ]
+    for p, url in optimade.PROVIDERS.items():
+        spec = optimade.ENERGY_FIELDS.get(p)
+        energy = None
+        if spec:
+            energy = "总能量" + ("、力" if spec.forces else "") + ("、应力" if spec.stress else "")
+        rows.append({"id": f"optimade-{p}", "kind": "晶体", "energy": energy, "url": url,
+                     "license": optimade.LICENSES.get(p, "see-provider-terms")})
+    rows += [
+        {"id": "pubchem", "kind": "分子", "energy": None, "license": "public-domain"},
+        {"id": "chembl", "kind": "分子", "energy": None, "license": "CC-BY-SA-3.0"},
+        {"id": "chebi", "kind": "分子", "energy": None, "license": "CC-BY-4.0"},
+    ]
+    rows += [{"id": f"qcarchive-{s}", "kind": "量子化学", "energy": "总能量、力（gradient 规格）", "url": url,
+              "license": "按数据集（SPICE 为 CC0，其余见数据集引用）"} for s, url in qcarchive.SERVERS.items()]
+    rows.append({"id": "bse", "kind": "基组", "energy": None, "license": "见 Basis Set Exchange 各基组引用", "offline": True})
+    return rows
+
+
+@mcp.tool()
+@_tool_errors
+def catalog_status() -> dict[str, Any]:
+    """数据源清单（是否带能量、是否要 key、许可）、本地已下载的分片、缓存与资源目录概况（只读，不联网）。"""
+    from chemdb_agent.adapters import local_catalog
+    from chemdb_agent.catalog.resources import CATEGORIES, RESOURCES, integrated
+
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    entries = [
+        {"name": p.name, "size_bytes": p.stat().st_size if p.is_file() else None}
+        for p in sorted(DATA_DIR.iterdir())
+        if p.name != ".gitkeep"
+    ]
+    return {
+        "status": "ok",
+        "version": __version__,
+        "data_dir": str(DATA_DIR),
+        "entries": entries,
+        "sources": _sources_status(),
+        "local_catalog": local_catalog.stats(DATA_DIR),
+        "cache": _cache().stats(),
+        "resources": {
+            "total": len(RESOURCES),
+            "categories": CATEGORIES,
+            "integrated": [r["name"] for r in integrated()],
+            "source": "《计算化学数据库与资源导航 2026》（103 条，2026-10-27 核验；接入状态 2026-11-06 更新）",
+        },
+    }
+
+
+@mcp.tool()
+@_tool_errors
+def fetch_dataset_shard(
+    dataset: Annotated[str, Field(description="QCArchive singlepoint 数据集的编号（如 385）或准确名称（如 SPICE Water Clusters v1.0）；先用 find_qm_data 找")],
+    specification: Annotated[str, Field(description="规格名（find_qm_data 返回的 specifications[].name），如 wb97m-d3bj/def2-tzvppd")],
+    start: Annotated[int, Field(ge=0, description="从第几个条目开始（按数据集的条目顺序）")] = 0,
+    count: Annotated[int, Field(ge=1, le=50000, description="下载多少个条目")] = 100,
+    server: Annotated[Literal["ml", "main"], Field(description="QCArchive 公共服务器")] = "ml",
+    confirm: Annotated[bool, Field(description="估计大小超过 2 GB 时必须设为 true 才会真正下载")] = False,
+) -> dict[str, Any]:
+    """把 QCArchive 数据集的一段下载到本地目录（jsonl 分片 + manifest），登记到本地索引，保留理论级别、来源和许可。
+
+    先取一条样本估计大小；超过 2 GB 只返回估计值，确认后才下载。之后可用 export_training_set(dataset=…) 导出。
+    """
+    from chemdb_agent.adapters import local_catalog, qcarchive
+
+    def run() -> dict[str, Any]:
+        ds = qcarchive.get_dataset(server, dataset)
+        spec = qcarchive.check_specification(ds, specification)
+        names = ds.entry_names
+        if start >= len(names):
+            raise ValueError(f"start={start} 超出范围：数据集 {ds.name!r} 只有 {len(names)} 个条目")
+        chunk = names[start : start + count]
+        sample = next((r for _, r in qcarchive.iterate_records(server, ds, specification, chunk[:1]) if not isinstance(r, str)), None)
+        per_record = len(sample.model_dump_json()) + 1 if sample is not None else 4096
+        estimate = per_record * len(chunk)
+        if estimate > SHARD_CONFIRM_BYTES and not confirm:
+            return {"status": "needs_confirmation", "dataset": ds.name, "entries": len(chunk),
+                    "estimated_bytes": estimate, "message": "估计超过 2 GB；确认磁盘空间后用 confirm=true 再调用一次，或减小 count"}
+        records, skipped = [], []
+        for entry_name, rec in qcarchive.iterate_records(server, ds, specification, chunk):
+            if isinstance(rec, str):
+                skipped.append({"entry": entry_name, "reason": rec})
+            else:
+                records.append(rec)
+        if not records:
+            raise ValueError(f"这一段没有可用记录（跳过 {len(skipped)} 条）：{skipped[:3]}")
+        manifest = local_catalog.write_shard(
+            DATA_DIR, source=f"qcarchive-{server}", dataset=ds.name, dataset_id=ds.id, specification=specification,
+            start=start, records=records, license=qcarchive.license_for(ds.name),
+            level_of_theory={k: spec[k] for k in ("program", "driver", "method", "basis")},
+            notes=[f"跳过 {len(skipped)} 条：{skipped[:5]}"] if skipped else [],
+        )
+        return {"status": "ok", "dataset": ds.name, "dataset_id": ds.id, "specification": specification,
+                "n_records": len(records), "n_skipped": len(skipped), "skipped": skipped[:20],
+                "estimated_bytes": estimate, "shard_id": manifest["shard_id"], "file": manifest["file"],
+                "license": manifest["license"], "theory_keys": manifest["theory_keys"]}
+
+    status, value = _run_sources({"qcarchive": run})["qcarchive"]
+    if status != "ok":
+        raise ToolError(value)
+    return value
+
+
+def _export_path(path: str) -> Path:
+    """导出路径只能落在数据目录里：相对路径放到 <数据目录>/exports/ 下。"""
+    p = Path(path)
+    if not p.is_absolute():
+        p = DATA_DIR / "exports" / p
+    p = p.resolve()
+    root = DATA_DIR.resolve()
+    if p != root and root not in p.parents:
+        raise ValueError(f"导出路径须在数据目录 {root} 之内（可用环境变量 CHEMDB_DATA_DIR 改数据目录），实际 {p}")
+    return p
+
+
+@mcp.tool()
+@_tool_errors
+def export_training_set(
+    record_ids: Annotated[list[str] | None, Field(description="要导出的记录编号（search_structures / get_record 返回的 record_id）")] = None,
+    dataset: Annotated[str | None, Field(description="改为导出本地已下载的数据集：数据集名称、编号或 shard_id（见 catalog_status）")] = None,
+    fmt: Annotated[Literal["extxyz", "ase_db"], Field(description="extxyz（.extxyz/.xyz，能量、力、应力挂在 ASE 计算器上）或 ase_db（.db）")] = "extxyz",
+    path: Annotated[str, Field(description="输出文件；相对路径放在 <数据目录>/exports/ 下，绝对路径必须在数据目录内。清单写在旁边的 <文件名>.manifest.json")] = "train.extxyz",
+    level_of_theory: Annotated[str | None, Field(description="只导出这个理论级别键（记录摘要里的 theory_key）；记录理论级别不一致时用它指定一种")] = None,
+    allow_mixed: Annotated[bool, Field(description="确认要混用不同理论级别时设为 true（清单里会标明）")] = False,
+    overwrite: Annotated[bool, Field(description="文件已存在时是否覆盖")] = False,
+) -> dict[str, Any]:
+    """导出训练集与来源清单（每条记录的来源、理论级别、许可、获取时间）。
+
+    统一单位：能量 eV、长度 Å、力 eV/Å、应力 eV/Å³（ASE 号约定）。理论级别不一致时拒绝并说明差在哪；
+    没有能量的纯结构记录不能导出。
+    """
+    from chemdb_agent import export
+    from chemdb_agent.adapters import local_catalog
+
+    if bool(record_ids) == bool(dataset):
+        raise ValueError("record_ids 与 dataset 二选一")
+    out = _export_path(path)
+    if dataset:
+        records = local_catalog.load_dataset(DATA_DIR, dataset)
+    else:
+        records = [_load_record(rid)[0] for rid in dict.fromkeys(record_ids)]
+    return {"status": "ok", **export.export_training_set(
+        records, out, fmt, level_of_theory=level_of_theory, allow_mixed=allow_mixed, overwrite=overwrite)}
+
+
+def main() -> None:
+    mcp.run(show_banner=False)
+
+
+if __name__ == "__main__":
+    main()

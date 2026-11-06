@@ -2,6 +2,8 @@
 const TYPE_LABEL = {tutorial:"深度教程", qa:"论坛帖", discipline:"学科频道", tool:"平台工具",
   software:"软件/官网", archive:"邮件归档", resource:"资源索引", job:"学术招聘", conference:"学术会议", announcement:"公告",
   preprint:"预印本", paper:"期刊论文", repo:"开源仓库", database:"数据库"};
+/* 只说明条目是什么（论坛帖、预印本……）的兜底标签，与右侧“内容类型分布”重复，不算主题 */
+const TYPE_TAGS = new Set(["站长随笔","论坛问答","文献频道","预印本","期刊论文","开源项目","学术会议","学术招聘","软件归档","邮件列表归档","培训与公告","平台工具","资源索引","数据库"]);
 const state = { data:null, filtered:[], shown:24, q:"", source:"", type:"", tag:"", sort:"recent" };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -48,6 +50,8 @@ function donut(bySource){
     '<text x="90" y="108" text-anchor="middle" style="fill:var(--muted)" font-size="12">真实条目</text></svg>';
   $("donutLegend").innerHTML = bySource.map((s) =>
     '<span><i style="background:' + esc(s.color) + '"></i>' + esc(s.name) + " " + s.count + "</span>").join("");
+  const zh = bySource.filter((s) => s.lang === "zh").reduce((a,b) => a + b.count, 0);
+  $("langSplit").textContent = `中文来源 ${zh} 条 · 国际来源 ${total - zh} 条（${Math.round((total - zh) / total * 100)}%）`;
 }
 function bars(el, rows){
   const max = Math.max(1, ...rows.map((r) => r.count));
@@ -114,7 +118,7 @@ function renderAll(){
   }).join("");
   donut(bySrc);
   const tagCount = {}; items.forEach((i) => (i.tags || []).forEach((t) => tagCount[t] = (tagCount[t] || 0) + 1));
-  bars($("tagBars"), Object.entries(tagCount).map(([name,count]) => ({name,count})).sort((a,b) => b.count - a.count).slice(0,10));
+  bars($("tagBars"), Object.entries(tagCount).filter(([name]) => !TYPE_TAGS.has(name)).map(([name,count]) => ({name,count})).sort((a,b) => b.count - a.count).slice(0,10));
   const typeCount = {}; items.forEach((i) => typeCount[i.type] = (typeCount[i.type] || 0) + 1);
   bars($("typeBars"), Object.entries(typeCount).map(([k,count]) => ({name: TYPE_LABEL[k] || k, count})).sort((a,b) => b.count - a.count));
   histogram(items);
@@ -128,7 +132,7 @@ function renderAll(){
   if (state.type) $("fType").value = state.type;
   if (state.tag) $("fTag").value = state.tag;
   /* 分区 */
-  renderCards($("latestCards"), dated.slice(0, 9));
+  renderCards($("latestCards"), dated.filter((i) => i.type === "tutorial").slice(0, 9));
   /* 每个论文来源各取最新 6 篇，避免更新最勤的来源占满整栏 */
   const byDate = (a,b) => String(b.date || "").localeCompare(String(a.date || ""));
   renderCards($("freshCards"), ["arxiv", "chemrxiv", "crossref"].flatMap((id) => items.filter((i) => i.source === id).sort(byDate).slice(0, 6)).sort(byDate));

@@ -1,0 +1,104 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: http://optimade.openmaterialsdb.se/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: "{\n    \"data\": [\n        {\n            \"attributes\": {\n                \"cartesian_site_positions\":
+        [\n                    [\n                        0.0,\n                        0.0,\n
+        \                       0.0\n                    ]\n                ],\n                \"chemical_formula_hill\":
+        null,\n                \"chemical_formula_reduced\": \"Si\",\n                \"dimension_types\":
+        [\n                    1,\n                    1,\n                    1\n
+        \               ],\n                \"elements\": [\n                    \"Si\"\n
+        \               ],\n                \"lattice_vectors\": [\n                    [\n
+        \                       2.188446168,\n                        -1.263499989,\n
+        \                       0.0\n                    ],\n                    [\n
+        \                       0.0,\n                        2.526999979,\n                        0.0\n
+        \                   ],\n                    [\n                        0.0,\n
+        \                       0.0,\n                        2.373000052\n                    ]\n
+        \               ],\n                \"nelements\": 1,\n                \"nsites\":
+        1,\n                \"species\": [\n                    {\n                        \"chemical_symbols\":
+        [\n                            \"Si\"\n                        ],\n                        \"concentration\":
+        [\n                            1.0\n                        ],\n                        \"name\":
+        \"Si\",\n                        \"original_name\": \"Si\"\n                    }\n
+        \               ],\n                \"species_at_sites\": [\n                    \"Si\"\n
+        \               ]\n            },\n            \"id\": \"omdb.structures-1-108\",\n
+        \           \"type\": \"structures\"\n        },\n        {\n            \"attributes\":
+        {\n                \"cartesian_site_positions\": [\n                    [\n
+        \                       0.6655908,\n                        0.6655908,\n                        0.6655908\n
+        \                   ],\n                    [\n                        0.6655908000000001,\n
+        \                       3.9835908,\n                        -0.6655908000000001\n
+        \                   ],\n                    [\n                        2.6524092,\n
+        \                       0.6655908,\n                        -0.6655908\n                    ],\n
+        \                   [\n                        -0.6655908000000001,\n                        0.6655908000000001,\n
+        \                       3.9835908\n                    ],\n                    [\n
+        \                       0.6655908,\n                        -0.6655908,\n
+        \                       2.6524092\n                    ],\n                    [\n
+        \                       -0.6655908,\n                        2.6524092,\n
+        \                       0.6655908\n                    ],\n                    [\n
+        \                       3.9835908,\n                        -0.6655908000000001,\n
+        \                       0.6655908000000001\n                    ],\n                    [\n
+        \                       2.6524092,\n                        2.6524092,\n                        2.6524092\n
+        \                   ]\n                ],\n                \"chemical_formula_hill\":
+        null,\n                \"chemical_formula_reduced\": \"Si\",\n                \"dimension_types\":
+        [\n                    1,\n                    1,\n                    1\n
+        \               ],\n                \"elements\": [\n                    \"Si\"\n
+        \               ],\n                \"lattice_vectors\": [\n                    [\n
+        \                       -3.318,\n                        3.318,\n                        3.318\n
+        \                   ],\n                    [\n                        3.318,\n
+        \                       -3.318,\n                        3.318\n                    ],\n
+        \                   [\n                        3.318,\n                        3.318,\n
+        \                       -3.318\n                    ]\n                ],\n
+        \               \"nelements\": 1,\n                \"nsites\": 8,\n                \"species\":
+        [\n                    {\n                        \"chemical_symbols\": [\n
+        \                           \"Si\"\n                        ],\n                        \"concentration\":
+        [\n                            1.0\n                        ],\n                        \"name\":
+        \"Si\",\n                        \"original_name\": \"Si\"\n                    }\n
+        \               ],\n                \"species_at_sites\": [\n                    \"Si\",\n
+        \                   \"Si\",\n                    \"Si\",\n                    \"Si\",\n
+        \                   \"Si\",\n                    \"Si\",\n                    \"Si\",\n
+        \                   \"Si\"\n                ]\n            },\n            \"id\":
+        \"omdb.structures-1-125\",\n            \"type\": \"structures\"\n        }\n
+        \   ],\n    \"links\": {\n        \"next\": \"https://optimade.openmaterialsdb.se/v1/structures?response_format=json&page_limit=2&page_offset=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies&filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&_httk_as_of=1793998249923993999\"\n
+        \   },\n    \"meta\": {\n        \"api_version\": \"1.3.0\",\n        \"data_available\":
+        227755,\n        \"data_returned\": 29,\n        \"implementation\": {\n            \"homepage\":
+        \"https://httk.org/\",\n            \"issue_tracker\": \"https://github.com/httk/httk-serve/issues\",\n
+        \           \"name\": \"httk-serve\",\n            \"source_url\": \"https://github.com/httk/httk-serve\",\n
+        \           \"version\": \"2.1.3\"\n        },\n        \"last_id\": \"omdb.structures-1-125\",\n
+        \       \"more_data_available\": true,\n        \"provider\": {\n            \"description\":
+        \"OMDB crystal structures\",\n            \"name\": \"Open Materials Database\",\n
+        \           \"prefix\": \"omdb\"\n        },\n        \"query\": {\n            \"representation\":
+        \"/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies\"\n
+        \       },\n        \"time_stamp\": \"2026-11-06T20:50:54.363992+00:00\"\n
+        \   }\n}"
+    headers:
+      Connection:
+      - Keep-Alive
+      Date:
+      - Fri, 06 Nov 2026 20:50:49 GMT
+      Keep-Alive:
+      - timeout=15, max=100
+      Server:
+      - uvicorn
+      Via:
+      - 1.1 optimade.openmaterialsdb.se
+      content-length:
+      - '6031'
+      content-type:
+      - application/vnd.api+json
+      x-content-type-options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

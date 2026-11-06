@@ -57,6 +57,27 @@ test('a Sobereva post and its forum mirror are one result', () => {
   assert.deepEqual(new Set([both.doc.source, ...both.also.map((d) => d.source)]), new Set(['sobereva', 'keinsci']));
 });
 
+test('English entries mention a program in their own text, not through a topic tag label', () => {
+  const vasp = net.entities.find((e) => e.name === 'VASP');
+  const english = [...vasp.docs.keys()].map((i) => net.docs[i]).filter((d) => !d.official && d.type !== 'handbook' && !/[㐀-鿿]/.test(d.title));
+  assert.ok(english.length > 0, 'English entries about VASP');
+  for (const d of english) assert.match(d.raw.title + ' ' + d.raw.body, /vasp/i, d.title); // not just tagged "VASP/第一性原理"
+});
+
+test('ordinary English words are not names, and the overview hubs are real programs', () => {
+  const aim = net.entities.find((e) => e.name === 'AIM');
+  for (const [i] of aim.docs) assert.match(net.docs[i].raw.title + ' ' + net.docs[i].raw.body, /\bAIM\b|原子|分子中的原子/, net.docs[i].title);
+  const gaussian = net.entities.find((e) => e.name === 'Gaussian');
+  for (const [i] of gaussian.docs) {
+    const d = net.docs[i];
+    const rest = (d.raw.title + ' ' + d.raw.body).replace(/gaussian[- ]?(?:process|basis|type|function|orbital|smearing|distribution|mixture|kernel|regression|noise|broadening|charge|wave|width)\w*/gi, '');
+    assert.ok(/gaussian|高斯/i.test(rest) || d.tags.includes('Gaussian'), d.title);
+  }
+  const hubs = net.overview().related.map((r) => r.entity).filter((e) => ['software', 'database', 'name'].includes(e.kind));
+  assert.ok(hubs.length >= 8);
+  for (const e of hubs) assert.match(e.name, /[A-Z0-9]|[㐀-鿿]/, `${e.name} looks like an ordinary word`);
+});
+
 test('suggestions complete names and say which kind they are', () => {
   const s = net.suggest('multi');
   assert.equal(s[0].entity.name, 'Multiwfn');

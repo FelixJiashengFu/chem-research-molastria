@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: null
+    headers:
+      user-agent:
+      - mp-api/0.46.5 (Python/3.11.17 Linux/6.18.33.2-microsoft-standard-WSL2)
+    method: GET
+    uri: https://api.materialsproject.org/materials/summary/?_fields=material_id%2Cformula_pretty%2Cstructure%2Cformation_energy_per_atom%2Cenergy_per_atom%2Cenergy_above_hull%2Cband_gap%2Ctheoretical%2Ctotal_magnetization%2Corigins&_limit=1000&material_ids=mp-dgehtyl
+  response:
+    body:
+      string: '{"data":[],"meta":{"api_version":"0.88.1","time_stamp":"2026-10-27T21:25:42.963138+00:00","total_doc":0,"facet":null,"max_limit":1000,"default_fields":["material_id"]}}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '168'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:25:42 GMT
+      RateLimit-Limit:
+      - '25'
+      RateLimit-Remaining:
+      - '23'
+      RateLimit-Reset:
+      - '1'
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '6'
+      X-Kong-Upstream-Latency:
+      - '480'
+      X-RateLimit-Limit-Day:
+      - '640000'
+      X-RateLimit-Limit-Hour:
+      - '40000'
+      X-RateLimit-Limit-Minute:
+      - '1000'
+      X-RateLimit-Limit-Month:
+      - '12800000'
+      X-RateLimit-Limit-Second:
+      - '25'
+      X-RateLimit-Limit-Year:
+      - '100000000'
+      X-RateLimit-Remaining-Day:
+      - '639987'
+      X-RateLimit-Remaining-Hour:
+      - '39987'
+      X-RateLimit-Remaining-Minute:
+      - '993'
+      X-RateLimit-Remaining-Month:
+      - '12799987'
+      X-RateLimit-Remaining-Second:
+      - '23'
+      X-RateLimit-Remaining-Year:
+      - '99999984'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      server:
+      - cloudflare
+      vary:
+      - Origin
+      x-consumer-id:
+      - 2413be8b-1c29-4960-9d1f-e08e6ef8c106
+    status:
+      code: 200
+      message: OK
+version: 1

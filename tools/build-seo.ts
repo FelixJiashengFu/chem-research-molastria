@@ -165,7 +165,7 @@ for (const [i, g] of guides.entries()) {
   const body = `<main class="sg">
 ${toc(i)}
 <div class="sg-main">
-  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">说明讲解手册</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../atlas/index.html#guide/${esc(g.id)}">在阅读器中打开 ↗</a></div>
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">说明讲解手册</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../manual/index.html#${esc(g.id)}">在阅读器中打开 ↗</a></div>
   <p class="en-only" translate="no">This chapter is written in Chinese. Your browser’s translate feature gives a full English version.</p>
   <article class="guide-article">
 ${html}
@@ -175,7 +175,7 @@ ${html}
 <footer class="sg-foot">MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
 </main>`;
   await write(path, page({
-    rel: "../", path, title, description, section: "atlas", css: ["theme-auto.css", "guide/guide.css"], body, type: "article",
+    rel: "../", path, title, description, section: "manual", css: ["theme-auto.css", "guide/guide.css"], body, type: "article",
     jsonld: [
       { "@context": "https://schema.org", "@type": "TechArticle", headline: g.title, description, inLanguage: "zh-CN", datePublished: content.date, dateModified: TODAY, isPartOf: { "@type": "WebSite", name: NAME, url: SITE }, mainEntityOfPage: SITE + path, image: SITE + "og.png", publisher: { "@type": "Organization", name: NAME, url: SITE } },
       crumbs([["首页", ""], ["说明讲解手册", "guide/"], [LABELS[i] || g.title, path]]),
@@ -183,10 +183,10 @@ ${html}
   }));
 }
 await write("guide/index.html", page({
-  rel: "../", path: "guide/", section: "atlas", css: ["theme-auto.css", "guide/guide.css"],
+  rel: "../", path: "guide/", section: "manual", css: ["theme-auto.css", "guide/guide.css"],
   title: `计算化学数据库说明讲解手册（${guides.length} 章）· ${NAME}`,
   description: `从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，${guides.length} 章讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。`,
-  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>说明讲解手册</span></nav><a href="../atlas/index.html#guide">在阅读器中打开 ↗</a></div><article class="guide-article"><h1>计算化学数据库说明讲解手册</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
+  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>说明讲解手册</span></nav><a href="../manual/index.html">在阅读器中打开 ↗</a></div><article class="guide-article"><h1>计算化学数据库说明讲解手册</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
   jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学数据库说明讲解手册", inLanguage: "zh-CN", url: SITE + "guide/", hasPart: guides.map((g) => ({ "@type": "TechArticle", headline: g.title, url: `${SITE}guide/${g.id}.html` })) }, crumbs([["首页", ""], ["说明讲解手册", "guide/"]])],
 }));
 
@@ -261,6 +261,8 @@ if (datasetDescriptionLength < 50 || datasetDescriptionLength > 5000) {
 const mains = [
   await injectHead("index.html", "", { jsonld: [website, { "@context": "https://schema.org", "@type": "Dataset", name: "MolAstria 计算化学资源目录", description: datasetDescription, url: SITE, inLanguage: "zh-CN", dateModified: cfg.dataDate, isAccessibleForFree: true, creator: { "@type": "Organization", name: NAME, url: SITE }, distribution: [{ "@type": "DataDownload", encodingFormat: "application/json", contentUrl: SITE + "merged-data.json" }] }] }),
   await injectHead("atlas/index.html", "atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "ChemDB Atlas 计算化学数据库导航", inLanguage: "zh-CN", url: SITE + "atlas/" }] }),
+  await injectHead("manual/index.html", "manual/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "计算化学数据库说明讲解手册 · 阅读器", inLanguage: "zh-CN", url: SITE + "manual/" }] }),
+  await injectHead("journals/index.html", "journals/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "期刊发表：计算化学期刊投稿与发表指南", inLanguage: "zh-CN", url: SITE + "journals/", isAccessibleForFree: true, about: ["computational chemistry journals", "quantum chemistry", "scholarly publishing", "peer review", "preprints"] }, crumbs([["首页", ""], ["期刊发表", "journals/"]])] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
   await injectHead("pro/index.html", "pro/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "MolAstria Pro", inLanguage: "zh-CN", url: SITE + "pro/" }] }),
@@ -299,7 +301,7 @@ await write("404.html", `<!doctype html>
 `);
 const urls = [
   ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
-  ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
+  ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>

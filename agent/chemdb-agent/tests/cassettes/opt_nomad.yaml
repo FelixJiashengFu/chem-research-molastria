@@ -1,0 +1,37 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://nomad-lab.eu/prod/v1/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1+AND+nperiodic_dimensions%3E%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"links":{"next":"https://nomad-lab.eu/backend/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1+AND+nperiodic_dimensions%3E%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies&page_offset=2"},"data":[{"id":"-02mISronjzyQTllgIrDuJoX2u_A","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":"Si","dimension_types":[1,1,1],"lattice_vectors":[[-1.54016078,1.54016078,1.54016078],[1.54016078,-1.54016078,1.54016078],[1.54016078,1.54016078,-1.54016078]],"cartesian_site_positions":[[0.0,0.0,0.0]],"nsites":1,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0]}],"species_at_sites":["Si"]}},{"id":"-1MyUqWhJXYiWx2cQvqa00NTb_JT","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":"Si8","dimension_types":[1,1,1],"lattice_vectors":[[3.8523810000000003,0.0,0.0],[0.0,6.668133,0.0],[0.0,0.0,6.365686000000001]],"cartesian_site_positions":[[0.0,5.555515000152,2.782084872184],[0.0,1.1126179998480001,5.964927872184],[0.0,5.555515000152,0.400758127816],[0.0,1.1126179998480001,3.5836011278160003],[1.9261905000000001,2.221448500152,2.782084872184],[1.9261905000000001,4.446684499848,5.964927872184],[1.9261905000000001,2.221448500152,0.400758127816],[1.9261905000000001,4.446684499848,3.5836011278160003]],"nsites":8,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0]}],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si"]}}],"meta":{"query":{"representation":"/backend/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1+AND+nperiodic_dimensions%3E%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"api_version":"1.2.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.2.0/optimade.json","time_stamp":"2026-11-06T20:50:48.468470","data_returned":25384,"provider":{"name":"novel
+        materials discovery (NOMAD)","description":"A FAIR data sharing platform for
+        materials science data","prefix":"nmd","homepage":"https://nomad-lab.eu/"},"data_available":18840359,"implementation":{"name":"NOMAD''s
+        Optimade implementation","version":"1.3.1","source_url":"https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR","maintainer":{"email":"markus.scheidgen@physik.hu-berlin.de"}}},"included":[]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2641'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:48 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: OK
+version: 1

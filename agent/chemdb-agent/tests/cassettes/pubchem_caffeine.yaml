@@ -1,0 +1,301 @@
+interactions:
+- request:
+    body: name=caffeine
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '13'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Host:
+      - pubchem.ncbi.nlm.nih.gov
+      User-Agent:
+      - Python-urllib/3.11
+    method: POST
+    uri: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/JSON?record_type=3d
+  response:
+    body:
+      string: "{\n  \"PC_Compounds\": [\n    {\n      \"id\": {\n        \"id\": {\n\
+        \          \"cid\": 2519\n        }\n      },\n      \"atoms\": {\n      \
+        \  \"aid\": [\n          1,\n          2,\n          3,\n          4,\n  \
+        \        5,\n          6,\n          7,\n          8,\n          9,\n    \
+        \      10,\n          11,\n          12,\n          13,\n          14,\n \
+        \         15,\n          16,\n          17,\n          18,\n          19,\n\
+        \          20,\n          21,\n          22,\n          23,\n          24\n\
+        \        ],\n        \"element\": [\n          8,\n          8,\n        \
+        \  7,\n          7,\n          7,\n          7,\n          6,\n          6,\n\
+        \          6,\n          6,\n          6,\n          6,\n          6,\n  \
+        \        6,\n          1,\n          1,\n          1,\n          1,\n    \
+        \      1,\n          1,\n          1,\n          1,\n          1,\n      \
+        \    1\n        ]\n      },\n      \"bonds\": {\n        \"aid1\": [\n   \
+        \       1,\n          2,\n          3,\n          3,\n          3,\n     \
+        \     4,\n          4,\n          4,\n          5,\n          5,\n       \
+        \   5,\n          6,\n          6,\n          7,\n          7,\n         \
+        \ 11,\n          12,\n          12,\n          12,\n          13,\n      \
+        \    13,\n          13,\n          14,\n          14,\n          14\n    \
+        \    ],\n        \"aid2\": [\n          9,\n          10,\n          8,\n\
+        \          10,\n          12,\n          7,\n          11,\n          13,\n\
+        \          9,\n          10,\n          14,\n          8,\n          11,\n\
+        \          8,\n          9,\n          15,\n          16,\n          17,\n\
+        \          18,\n          19,\n          20,\n          21,\n          22,\n\
+        \          23,\n          24\n        ],\n        \"order\": [\n         \
+        \ 2,\n          2,\n          1,\n          1,\n          1,\n          1,\n\
+        \          1,\n          1,\n          1,\n          1,\n          1,\n  \
+        \        1,\n          2,\n          2,\n          1,\n          1,\n    \
+        \      1,\n          1,\n          1,\n          1,\n          1,\n      \
+        \    1,\n          1,\n          1,\n          1\n        ]\n      },\n  \
+        \    \"coords\": [\n        {\n          \"type\": [\n            2,\n   \
+        \         5,\n            10\n          ],\n          \"aid\": [\n       \
+        \     1,\n            2,\n            3,\n            4,\n            5,\n\
+        \            6,\n            7,\n            8,\n            9,\n        \
+        \    10,\n            11,\n            12,\n            13,\n            14,\n\
+        \            15,\n            16,\n            17,\n            18,\n    \
+        \        19,\n            20,\n            21,\n            22,\n        \
+        \    23,\n            24\n          ],\n          \"conformers\": [\n    \
+        \        {\n              \"x\": [\n                0.47,\n              \
+        \  -3.1271,\n                -0.9686,\n                2.2182,\n         \
+        \       -1.3477,\n                1.4119,\n                0.8579,\n     \
+        \           0.3897,\n                0.0307,\n                -1.9061,\n \
+        \               2.5032,\n                -1.4276,\n                3.1926,\n\
+        \                -2.2969,\n                3.5163,\n                -1.0451,\n\
+        \                -2.5186,\n                -1.0447,\n                4.1992,\n\
+        \                3.0468,\n                3.0466,\n                -1.8087,\n\
+        \                -2.9322,\n                -2.9346\n              ],\n   \
+        \           \"y\": [\n                2.5688,\n                -0.4436,\n\
+        \                -1.3125,\n                0.1412,\n                1.0797,\n\
+        \                -1.9372,\n                0.2592,\n                -1.0264,\n\
+        \                1.422,\n                -0.2495,\n                -1.1998,\n\
+        \                -2.696,\n                1.2061,\n                2.1881,\n\
+        \                -1.5787,\n                -3.1973,\n                -2.7596,\n\
+        \                -3.1963,\n                0.7801,\n                1.8092,\n\
+        \                1.8083,\n                3.1651,\n                2.1027,\n\
+        \                2.1021\n              ],\n              \"z\": [\n      \
+        \          0.0006,\n                -0.0003,\n                0,\n       \
+        \         -0.0003,\n                -0.0001,\n                0.0002,\n  \
+        \              -0.0008,\n                -0.0004,\n                -0.0006,\n\
+        \                -0.0004,\n                0.0003,\n                0.0008,\n\
+        \                0.0003,\n                0.0007,\n                0.0008,\n\
+        \                -0.8937,\n                0.0011,\n                0.8957,\n\
+        \                0.0002,\n                -0.8992,\n                0.9004,\n\
+        \                -0.0003,\n                0.8881,\n                -0.8849\n\
+        \              ],\n              \"data\": [\n                {\n        \
+        \          \"urn\": {\n                    \"label\": \"Conformer\",\n   \
+        \                 \"name\": \"ID\",\n                    \"datatype\": 11,\n\
+        \                    \"version\": \"2.1\",\n                    \"software\"\
+        : \"PubChem\",\n                    \"source\": \"ncbi.nlm.nih.gov\",\n  \
+        \                  \"release\": \"2009.12.11\"\n                  },\n   \
+        \               \"value\": {\n                    \"sval\": \"000009D700000001\"\
+        \n                  }\n                },\n                {\n           \
+        \       \"urn\": {\n                    \"label\": \"Energy\",\n         \
+        \           \"name\": \"MMFF94 NoEstat\",\n                    \"datatype\"\
+        : 7,\n                    \"version\": \"1.6.0\",\n                    \"\
+        software\": \"Szybki\",\n                    \"source\": \"openeye.com\",\n\
+        \                    \"release\": \"2012.01.18\"\n                  },\n \
+        \                 \"value\": {\n                    \"fval\": 22.901\n   \
+        \               }\n                },\n                {\n               \
+        \   \"urn\": {\n                    \"label\": \"Feature\",\n            \
+        \        \"name\": \"Self Overlap\",\n                    \"datatype\": 7,\n\
+        \                    \"version\": \"2.1\",\n                    \"software\"\
+        : \"PubChem\",\n                    \"source\": \"ncbi.nlm.nih.gov\",\n  \
+        \                  \"release\": \"2012.01.18\"\n                  },\n   \
+        \               \"value\": {\n                    \"fval\": 25.487\n     \
+        \             }\n                },\n                {\n                 \
+        \ \"urn\": {\n                    \"label\": \"Fingerprint\",\n          \
+        \          \"name\": \"Shape\",\n                    \"datatype\": 2,\n  \
+        \                  \"version\": \"2.1\",\n                    \"software\"\
+        : \"PubChem\",\n                    \"source\": \"ncbi.nlm.nih.gov\",\n  \
+        \                  \"release\": \"2012.11.26\"\n                  },\n   \
+        \               \"value\": {\n                    \"slist\": [\n         \
+        \             \"10967382 1 18338799025773621285\",\n                     \
+        \ \"11132069 177 18339075025094499008\",\n                      \"12524768\
+        \ 44 18342463625094026902\",\n                      \"13140716 1 17978511158789908153\"\
+        ,\n                      \"16945 1 18338517550775811621\",\n             \
+        \         \"193761 8 15816500986559935910\",\n                      \"20588541\
+        \ 1 18339082691204868851\",\n                      \"21501502 16 18338796715286957384\"\
+        ,\n                      \"22802520 49 18128840606503503494\",\n         \
+        \             \"2334 1 18338516344016692929\",\n                      \"23402539\
+        \ 116 18270382932679789735\",\n                      \"23552423 10 18262240993325675966\"\
+        ,\n                      \"23559900 14 18199193898169584358\",\n         \
+        \             \"241688 4 18266458702623303353\",\n                      \"\
+        2748010 2 18266180539182415717\",\n                      \"5084963 1 17698433339235542986\"\
+        ,\n                      \"528886 8 18267580380709240570\",\n            \
+        \          \"53812653 166 18198902694142226312\",\n                      \"\
+        66348 1 18339079396917369615\"\n                    ]\n                  }\n\
+        \                },\n                {\n                  \"urn\": {\n   \
+        \                 \"label\": \"Shape\",\n                    \"name\": \"\
+        Multipoles\",\n                    \"datatype\": 8,\n                    \"\
+        version\": \"1.8.1\",\n                    \"software\": \"OEShape\",\n  \
+        \                  \"source\": \"openeye.com\",\n                    \"release\"\
+        : \"2012.01.18\"\n                  },\n                  \"value\": {\n \
+        \                   \"fvec\": [\n                      256.45,\n         \
+        \             4.01,\n                      2.83,\n                      0.58,\n\
+        \                      0.71,\n                      0.08,\n              \
+        \        0,\n                      -0.48,\n                      0,\n    \
+        \                  -0.81,\n                      0,\n                    \
+        \  0.01,\n                      0,\n                      0\n            \
+        \        ]\n                  }\n                },\n                {\n \
+        \                 \"urn\": {\n                    \"label\": \"Shape\",\n\
+        \                    \"name\": \"Self Overlap\",\n                    \"datatype\"\
+        : 7,\n                    \"version\": \"2.1\",\n                    \"software\"\
+        : \"PubChem\",\n                    \"source\": \"ncbi.nlm.nih.gov\",\n  \
+        \                  \"release\": \"2012.01.18\"\n                  },\n   \
+        \               \"value\": {\n                    \"fval\": 550.88\n     \
+        \             }\n                },\n                {\n                 \
+        \ \"urn\": {\n                    \"label\": \"Shape\",\n                \
+        \    \"name\": \"Volume\",\n                    \"datatype\": 7,\n       \
+        \             \"version\": \"1.8.1\",\n                    \"software\": \"\
+        OEShape\",\n                    \"source\": \"openeye.com\",\n           \
+        \         \"release\": \"2012.01.18\"\n                  },\n            \
+        \      \"value\": {\n                    \"fval\": 143.9\n               \
+        \   }\n                }\n              ]\n            }\n          ],\n \
+        \         \"data\": [\n            {\n              \"urn\": {\n         \
+        \       \"label\": \"Conformer\",\n                \"name\": \"RMSD\",\n \
+        \               \"datatype\": 7,\n                \"release\": \"2009.12.11\"\
+        \n              },\n              \"value\": {\n                \"fval\":\
+        \ 0.4\n              }\n            },\n            {\n              \"urn\"\
+        : {\n                \"label\": \"Diverse Conformer\",\n                \"\
+        name\": \"ID List\",\n                \"datatype\": 6,\n                \"\
+        release\": \"2010.05.05\"\n              },\n              \"value\": {\n\
+        \                \"ivec\": [\n                  1\n                ]\n   \
+        \           }\n            }\n          ]\n        }\n      ],\n      \"props\"\
+        : [\n        {\n          \"urn\": {\n            \"label\": \"Charge\",\n\
+        \            \"name\": \"MMFF94 Partial\",\n            \"datatype\": 2,\n\
+        \            \"version\": \"1.9.0\",\n            \"software\": \"OEChem\"\
+        ,\n            \"source\": \"openeye.com\",\n            \"release\": \"2012.11.26\"\
+        \n          },\n          \"value\": {\n            \"slist\": [\n       \
+        \       \"15\",\n              \"1 -0.57\",\n              \"10 0.69\",\n\
+        \              \"11 0.04\",\n              \"12 0.3\",\n              \"13\
+        \ 0.26\",\n              \"14 0.3\",\n              \"15 0.15\",\n       \
+        \       \"2 -0.57\",\n              \"3 -0.42\",\n              \"4 0.05\"\
+        ,\n              \"5 -0.42\",\n              \"6 -0.57\",\n              \"\
+        7 -0.24\",\n              \"8 0.29\",\n              \"9 0.71\"\n        \
+        \    ]\n          }\n        },\n        {\n          \"urn\": {\n       \
+        \     \"label\": \"Count\",\n            \"name\": \"Effective Rotor\",\n\
+        \            \"datatype\": 7,\n            \"version\": \"1.7.6\",\n     \
+        \       \"software\": \"OEChem\",\n            \"source\": \"ncbi.nlm.nih.gov\"\
+        ,\n            \"release\": \"2012.01.18\"\n          },\n          \"value\"\
+        : {\n            \"fval\": 0\n          }\n        },\n        {\n       \
+        \   \"urn\": {\n            \"label\": \"Features\",\n            \"name\"\
+        : \"Pharmacophore\",\n            \"datatype\": 2,\n            \"parameters\"\
+        : \"ImplicitMillsDean merged\",\n            \"version\": \"1.8.3\",\n   \
+        \         \"software\": \"OEShape\",\n            \"source\": \"openeye.com\"\
+        ,\n            \"release\": \"2012.11.26\"\n          },\n          \"value\"\
+        : {\n            \"slist\": [\n              \"5\",\n              \"1 1 acceptor\"\
+        ,\n              \"1 2 acceptor\",\n              \"3 4 6 11 cation\",\n \
+        \             \"5 4 6 7 8 11 rings\",\n              \"6 3 5 7 8 9 10 rings\"\
+        \n            ]\n          }\n        }\n      ],\n      \"count\": {\n  \
+        \      \"heavy_atom\": 14,\n        \"atom_chiral\": 0,\n        \"atom_chiral_def\"\
+        : 0,\n        \"atom_chiral_undef\": 0,\n        \"bond_chiral\": 0,\n   \
+        \     \"bond_chiral_def\": 0,\n        \"bond_chiral_undef\": 0,\n       \
+        \ \"isotope_atom\": 0,\n        \"covalent_unit\": 1,\n        \"tautomers\"\
+        : 1\n      }\n    }\n  ]\n}\n"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Connection:
+      - close
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:28:14 GMT
+      Expires:
+      - Tue, 27 Oct 2026 22:28:14 GMT
+      Ncbi-Phid:
+      - 95B76D9DAE1176E10000000000000001.m_1
+      Ncbi-Sid:
+      - 95B76D9DAE1176E1_0000SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      X-Throttling-Control:
+      - 'Request Count status: Green (0%), Request Time status: Green (0%), Service
+        status: Green (30%)'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: cid=2519
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '8'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Host:
+      - pubchem.ncbi.nlm.nih.gov
+      User-Agent:
+      - Python-urllib/3.11
+    method: POST
+    uri: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/property/MolecularFormula,Charge,IUPACName,InChIKey,ConnectivitySMILES/JSON
+  response:
+    body:
+      string: "{\n  \"PropertyTable\": {\n    \"Properties\": [\n      {\n       \
+        \ \"CID\": 2519,\n        \"MolecularFormula\": \"C8H10N4O2\",\n        \"\
+        ConnectivitySMILES\": \"CN1C=NC2=C1C(=O)N(C(=O)N2C)C\",\n        \"InChIKey\"\
+        : \"RYYVLZVUVIJVGH-UHFFFAOYSA-N\",\n        \"IUPACName\": \"1,3,7-trimethylpurine-2,6-dione\"\
+        ,\n        \"Charge\": 0\n      }\n    ]\n  }\n}\n"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Connection:
+      - close
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:28:14 GMT
+      Expires:
+      - Tue, 27 Oct 2026 22:28:15 GMT
+      Ncbi-Phid:
+      - 95B76E1DAE1176E10000000000000001.m_1
+      Ncbi-Sid:
+      - 95B76E1DAE1176E1_0000SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      X-Throttling-Control:
+      - 'Request Count status: Green (1%), Request Time status: Green (0%), Service
+        status: Green (30%)'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

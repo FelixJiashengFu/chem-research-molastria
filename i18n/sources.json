@@ -21,8 +21,7 @@
   "index.html"
  ],
  "阅读说明讲解手册": [
-  "index.html",
-  "atlas/index.html"
+  "index.html"
  ],
  "目录快照": [
   "index.html"
@@ -41,6 +40,7 @@
  ],
  "数据库": [
   "index.html",
+  "shared-nav.js",
   "app.js",
   "hub/app.js",
   "hub/network.js",
@@ -136,6 +136,7 @@
  ],
  "全部类型": [
   "index.html",
+  "journals/index.html",
   "hub/index.html",
   "hub/app.js"
  ],
@@ -156,7 +157,8 @@
  ],
  "清除筛选": [
   "index.html",
-  "atlas/index.html"
+  "atlas/index.html",
+  "journals/index.html"
  ],
  "想要一段带出处的回答？": [
   "index.html"
@@ -216,10 +218,10 @@
  ],
  "说明讲解手册": [
   "index.html",
-  "atlas/index.html",
+  "manual/index.html",
+  "journals/index.html",
   "hub/index.html",
   "hub/network.html",
-  "atlas/app.js",
   "tools/build-seo.ts"
  ],
  "从三分钟导读开始，理解化学数据的分层、用途与边界。": [
@@ -278,8 +280,14 @@
  "资源目录（静态页）": [
   "index.html"
  ],
- "说明讲解手册 19 章": [
+ "说明讲解手册 20 章": [
   "index.html"
+ ],
+ "期刊发表": [
+  "index.html",
+  "journals/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
  ],
  "Meta × 化学": [
   "index.html"
@@ -326,16 +334,17 @@
  "关闭详情": [
   "index.html"
  ],
- "数据库地图与说明讲解手册 · MolAstria": [
+ "数据库地图 · MolAstria": [
   "atlas/index.html"
  ],
  "跳到主要内容": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "manual/index.html"
  ],
  "计算化学资源导航": [
   "atlas/index.html"
  ],
- "MolAstria · 数据库与讲解": [
+ "MolAstria · 数据库": [
   "atlas/index.html"
  ],
  "资源导航": [
@@ -358,7 +367,8 @@
   "atlas/index.html"
  ],
  "材料版本 · 2026.11.05": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "manual/index.html"
  ],
  "从化学问题，": [
   "atlas/index.html"
@@ -376,9 +386,6 @@
   "atlas/index.html"
  ],
  "探索资源": [
-  "atlas/index.html"
- ],
- "从三分钟导读开始": [
   "atlas/index.html"
  ],
  "晶体结构与数据节点的概念示意，非真实分子模型": [
@@ -452,52 +459,11 @@
  "加载更多资源": [
   "atlas/index.html"
  ],
- "目录与接入状态来自你提供的成果包（2026-10-27），本页未重新测试外部端点。": [
+ "目录来自你提供的成果包（2026-10-27），接入状态按 chemdb-agent 0.2.0 核对（2026-11-06）；本页不联网测试外部端点。": [
   "atlas/index.html"
  ],
- "“已有接入模块”表示代码中有实现；在线服务和 MCP 工具是否可用，请查看 Agent 工程页。": [
+ "“已有接入模块”表示 chemdb-agent 里有实现并通过了测试；各数据源的实测情况见 Agent 工程页。": [
   "atlas/index.html"
- ],
- "这是一张分层地图，": [
-  "atlas/index.html"
- ],
- "也是一本可以读懂的指南。": [
-  "atlas/index.html"
- ],
- "不知道选哪个库？从问题出发，读懂每一层数据的用途与边界。": [
-  "atlas/index.html"
- ],
- "化合物身份与性质": [
-  "atlas/index.html"
- ],
- "材料与晶体结构": [
-  "atlas/index.html",
-  "atlas data",
-  "tags",
-  "categories"
- ],
- "机器学习与训练数据": [
-  "atlas/index.html"
- ],
- "接入实况与工程边界": [
-  "atlas/index.html"
- ],
- "读懂资源，也读懂边界。": [
-  "atlas/index.html"
- ],
- "中文": [
-  "atlas/index.html"
- ],
- "打印当前章节 ↗": [
-  "atlas/index.html"
- ],
- "← 上一章": [
-  "atlas/index.html",
-  "tools/build-seo.ts"
- ],
- "下一章 →": [
-  "atlas/index.html",
-  "tools/build-seo.ts"
  ],
  "让资源地图，走进研究流程。": [
   "atlas/index.html"
@@ -511,7 +477,7 @@
  "再让数据可以比较。": [
   "atlas/index.html"
  ],
- "目标是跨库检索晶体与分子，统一单位、理论级别与来源记录，最终导出用于机器学习的训练集。": [
+ "跨库检索晶体、分子与量子化学数据，统一单位、理论级别与来源记录，导出可直接用于机器学习的训练集。": [
   "atlas/index.html"
  ],
  "下载项目源码": [
@@ -532,25 +498,28 @@
  "数据源适配器": [
   "atlas/index.html"
  ],
- "4 个独立模块 + 5 家 OPTIMADE": [
+ "7 个独立模块 + 15 家 OPTIMADE": [
   "atlas/index.html"
  ],
  "统一记录与单位换算": [
   "atlas/index.html"
  ],
- "源码已有实现": [
+ "MCP 查询编排": [
   "atlas/index.html"
  ],
- "MCP 查询编排 → 训练集导出": [
+ "9 个工具 · 缓存、超时与重试": [
   "atlas/index.html"
  ],
- "仍需接线与实现": [
+ "训练集导出": [
+  "atlas/index.html"
+ ],
+ "extxyz / ASE 数据库 + 来源清单": [
   "atlas/index.html"
  ],
  "当前能做什么": [
   "atlas/index.html"
  ],
- "按提供的源码核对": [
+ "按 0.2.0 源码与测试核对 · 2026-11-06": [
   "atlas/index.html"
  ],
  "能力层": [
@@ -570,34 +539,46 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 支持关键词、类别和接入状态检索；catalog_status 返回目录信息。": [
+ "search_resources 按关键词、类别和接入状态检索 103 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
- "数据源模块": [
+ "晶体与材料检索": [
   "atlas/index.html"
  ],
- "已有代码": [
+ "已接通": [
   "atlas/index.html"
  ],
- "PubChem、BSE、Materials Project、ChEMBL，以及 5 家 OPTIMADE。历史验证见讲解手册。": [
+ "search_structures 并行查 15 家 OPTIMADE、NOMAD 原生接口与 Materials Project（需 MP_API_KEY）。Alexandria、MC3D、NOMAD 带总能量，Alexandria 与 NOMAD 还带力和应力；化学式写法不限。": [
+  "atlas/index.html"
+ ],
+ "分子检索": [
+  "atlas/index.html"
+ ],
+ "search_molecules 查 PubChem（三维构象）、ChEMBL 与 ChEBI（二维重原子结构）；get_record 取完整记录，结果缓存 7 天。": [
   "atlas/index.html"
  ],
  "统一模型与单位": [
   "atlas/index.html"
  ],
- "UnifiedRecord、能量/长度/力/应力换算与理论级别标识。": [
-  "atlas/index.html"
- ],
- "MCP 查询工具": [
-  "atlas/index.html"
- ],
- "待接线": [
-  "atlas/index.html"
- ],
- "search_structures、get_record、search_molecules、get_basis 等入口仍返回占位状态。": [
+ "UnifiedRecord 统一为 eV、Å、eV/Å、eV/Å³；Hartree、Bohr、J、m、N、Pa、kbar 按来源换算，原始单位留档。理论级别键区分方法、基组、截断能、程序与能量修正。": [
   "atlas/index.html"
  ],
  "量子数据与分片下载": [
+  "atlas/index.html"
+ ],
+ "find_qm_data 在 QCArchive 两个公共服务器上按名称、方法、基组找数据集；fetch_dataset_shard 把一段下载到本地目录并建索引，保留理论级别、来源和许可。": [
+  "atlas/index.html"
+ ],
+ "export_training_set 写 extxyz 或 ASE 数据库，附逐条来源清单（来源、理论级别、许可、获取时间）；理论级别不一致时拒绝并说明差别，纯结构记录不能导出。": [
+  "atlas/index.html"
+ ],
+ "错误与缺 key": [
+  "atlas/index.html"
+ ],
+ "每个数据源单独超时与重试，失败只记在该来源上；没有 MP_API_KEY 时说明怎么配置，其他库照常返回。": [
+  "atlas/index.html"
+ ],
+ "尚未覆盖": [
   "atlas/index.html"
  ],
  "待实现": [
@@ -605,13 +586,7 @@
   "app.js",
   "atlas/app.js"
  ],
- "QCArchive、本地目录及 fetch_dataset_shard 尚未完成。": [
-  "atlas/index.html"
- ],
- "训练集导出": [
-  "atlas/index.html"
- ],
- "export_training_set 与 export.py 为占位；当前网页不提供真实训练集生成。": [
+ "跨库去重；AFLOW、JARVIS、OQMD、GNoME 的能量字段；OMol25 等需授权的数据集；直接生成 MACE / SchNetPack 训练配置。": [
   "atlas/index.html"
  ],
  "按研究任务选一条路径": [
@@ -624,6 +599,9 @@
   "atlas/index.html"
  ],
  "量化计算基组": [
+  "atlas/index.html"
+ ],
+ "量子数据与训练集": [
   "atlas/index.html"
  ],
  "选择任务后，这里会更新推荐数据源与操作步骤。这是研究路径说明，未执行联网查询。": [
@@ -644,7 +622,7 @@
  "复制代码": [
   "atlas/index.html"
  ],
- "真实 MP 查询需在本地设置 MP_API_KEY。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
+ "Materials Project 官方接口需在项目目录的 .env 里设置 MP_API_KEY，不设也能用其余数据源。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
   "atlas/index.html"
  ],
  "下一步工程路线": [
@@ -659,38 +637,37 @@
  "：最新小模型对比、数据构造、LoRA 与 GRPO 代码。": [
   "atlas/index.html"
  ],
- "连接 MCP 与适配器": [
+ "跨库去重与合并": [
   "atlas/index.html"
  ],
- "用现有模块替换查询入口的占位返回，补齐缓存与错误处理。": [
+ "把同一结构在不同库里的记录合成一条，保留各自的来源、能量与理论级别。": [
   "atlas/index.html"
  ],
- "补全量子数据目录": [
+ "补全带能量的数据源": [
   "atlas/index.html"
  ],
- "实现 QCArchive 与本地索引，保留理论级别和数据许可。": [
+ "映射 AFLOW、JARVIS、OQMD 的能量字段，接入需授权的 OMol25 等数据集。": [
   "atlas/index.html"
  ],
- "完成训练集导出": [
+ "对接训练框架": [
   "atlas/index.html"
  ],
- "实现 ASE / extxyz 与来源清单，通过端到端验证后再开放导出。": [
+ "由导出的 extxyz 与来源清单直接生成 MACE、SchNetPack 的训练配置。": [
   "atlas/index.html"
  ],
  "计算化学，循图而行。": [
   "atlas/index.html"
  ],
  "基于提供的讲解版源文件与 chemdb-agent 制作": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "manual/index.html"
  ],
  "目录版本 2026.11.05 · 收藏保存在当前浏览器": [
   "atlas/index.html"
  ],
- "讲解静态版 ↗": [
-  "atlas/index.html"
- ],
  "回到顶部 ↑": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "manual/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -714,18 +691,137 @@
  "资源筛选": [
   "atlas/index.html"
  ],
- "讲解目录": [
-  "atlas/index.html",
-  "tools/build-seo.ts"
- ],
- "讲解语言": [
-  "atlas/index.html"
- ],
  "选择研究任务": [
   "atlas/index.html"
  ],
  "关闭资源详情": [
   "atlas/index.html"
+ ],
+ "说明讲解手册 · MolAstria": [
+  "manual/index.html"
+ ],
+ "读懂资源，也读懂边界。": [
+  "manual/index.html"
+ ],
+ "中文": [
+  "manual/index.html"
+ ],
+ "打印当前章节 ↗": [
+  "manual/index.html"
+ ],
+ "← 上一章": [
+  "manual/index.html",
+  "tools/build-seo.ts"
+ ],
+ "下一章 →": [
+  "manual/index.html",
+  "tools/build-seo.ts"
+ ],
+ "讲解静态版 ↗": [
+  "manual/index.html"
+ ],
+ "讲解目录": [
+  "manual/index.html",
+  "tools/build-seo.ts"
+ ],
+ "讲解语言": [
+  "manual/index.html"
+ ],
+ "期刊发表 · 计算化学期刊投稿与发表指南 · MolAstria": [
+  "journals/index.html"
+ ],
+ "跳到期刊目录": [
+  "journals/index.html"
+ ],
+ "主流量子化学与计算化学期刊的投稿要点，以及从做研究到论文上线的完整指导。期刊信息只写能在期刊或出版社官网核实的内容，每条都附出处链接和核对日期；影响因子、版面费这类每年会变的数字，只收录官网明确写出的。": [
+  "journals/index.html"
+ ],
+ "期刊目录": [
+  "journals/index.html"
+ ],
+ "从研究到发表的指导": [
+  "journals/index.html"
+ ],
+ "按类别分组。可以组合筛选和搜索；点“查看详情”看每一项信息和它的官网出处。": [
+  "journals/index.html"
+ ],
+ "搜索": [
+  "journals/index.html",
+  "hub/index.html",
+  "radar/app/app.js"
+ ],
+ "类别": [
+  "journals/index.html",
+  "train/index.html",
+  "journals/journals.js"
+ ],
+ "全部类别": [
+  "journals/index.html"
+ ],
+ "出版社": [
+  "journals/index.html",
+  "journals/journals.js"
+ ],
+ "全部出版社": [
+  "journals/index.html"
+ ],
+ "开放获取": [
+  "journals/index.html"
+ ],
+ "全部方式": [
+  "journals/index.html"
+ ],
+ "文章类型": [
+  "journals/index.html"
+ ],
+ "没有符合条件的期刊。换个关键词，或者放宽筛选条件。": [
+  "journals/index.html"
+ ],
+ "ISSN 以期刊页面或出版社在 Crossref 登记的元数据为准。“未核实”表示没能在官网直接核对该项，本页不猜测。中科院分区、JCR 分区不在期刊官网上，这里不写，它们是什么、去哪里查见": [
+  "journals/index.html"
+ ],
+ "“怎么选刊”": [
+  "journals/index.html"
+ ],
+ "一章。": [
+  "journals/index.html"
+ ],
+ "从研究到发表": [
+  "journals/index.html"
+ ],
+ "通用做法和清单，正文是 MolAstria 自己写的；遇到具体规定，以目标期刊的作者指南为准。": [
+  "journals/index.html"
+ ],
+ "MolAstria · 期刊发表": [
+  "journals/index.html"
+ ],
+ "期刊名称和商标归各出版社所有，MolAstria 与本页列出的出版社没有隶属关系。期刊的规定和费用会变，投稿前请以官网为准。": [
+  "journals/index.html"
+ ],
+ "预印本雷达": [
+  "journals/index.html",
+  "radar/index.html",
+  "radar/app/index.html",
+  "shared-nav.js"
+ ],
+ "量子化学模型接口": [
+  "journals/index.html",
+  "models/index.html"
+ ],
+ "回到期刊目录 ↑": [
+  "journals/index.html"
+ ],
+ "本页内容": [
+  "journals/index.html"
+ ],
+ "筛选期刊": [
+  "journals/index.html"
+ ],
+ "期刊名、缩写、ISSN 或关键词": [
+  "journals/index.html"
+ ],
+ "指导目录": [
+  "journals/index.html"
  ],
  "论文与社区 · MolAstria": [
   "hub/index.html"
@@ -761,6 +857,7 @@
  ],
  "文献频道": [
   "hub/index.html",
+  "hub/app.js",
   "tags",
   "categories"
  ],
@@ -822,10 +919,6 @@
  "探索真实内容库": [
   "hub/index.html"
  ],
- "搜索": [
-  "hub/index.html",
-  "radar/app/app.js"
- ],
  "主题": [
   "hub/index.html",
   "hub/network.js"
@@ -857,7 +950,7 @@
  "最新长文（带日期与摘要）": [
   "hub/index.html"
  ],
- "来自 Sobereva 首页与分类页的最新文章元数据，点卡片直达原文。": [
+ "来自 Sobereva 博客和 Computational Chemistry Highlights、Henry Rzepa、RDKit 等国际博客的最新文章，点卡片直达原文。": [
   "hub/index.html"
  ],
  "网状查询 · 合并资源图谱": [
@@ -926,13 +1019,13 @@
  "新来源同样守规矩": [
   "hub/index.html"
  ],
- "arXiv、Crossref、GitHub 走": [
+ "arXiv、Crossref、GitHub、Stack Exchange 走": [
   "hub/index.html"
  ],
  "官方 API": [
   "hub/index.html"
  ],
- "；官方软件目录逐站抓首页标题与 meta 描述，抓不到就跳过。小木虫论坛帖被其 robots.txt 明确禁止抓取，故不收录；ChemRxiv、Materials Project 被 Cloudflare 拦截，同样不绕过、仅在 README 中说明。": [
+ "，matsci.org、Psi4、GROMACS 等论坛用 Discourse 的公开 JSON 接口，博客和机构新闻用 RSS；官方软件目录逐站抓首页标题与 meta 描述，抓不到就跳过。小木虫论坛帖被其 robots.txt 明确禁止抓取，故不收录；ChemRxiv 官网对程序返回 Cloudflare 验证，改用 Crossref 元数据；Materials Project 首页和 ZINC 同样有验证页，不绕过；Rowan 博客和 CECAM 没有订阅源，暂不收录。每个来源有条数上限，某个来源抓取失败时沿用上周条目。": [
   "hub/index.html"
  ],
  "如何更新这份快照": [
@@ -977,7 +1070,7 @@
  "看它连着什么": [
   "hub/network.html"
  ],
- "目录里的全部条目、19 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
+ "目录里的全部条目、20 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
   "hub/network.html"
  ],
  "点任何节点，网就换成以它为中心。": [
@@ -1044,7 +1137,7 @@
  "节点从哪来": [
   "hub/network.html"
  ],
- "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 19 章也作为条目参与。": [
+ "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 20 章也作为条目参与。": [
   "hub/network.html"
  ],
  "连线从哪来": [
@@ -2218,9 +2311,6 @@
  "跳到计算": [
   "models/index.html"
  ],
- "量子化学模型接口": [
-  "models/index.html"
- ],
  "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x。这里按模型类别分成四个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
   "models/index.html"
  ],
@@ -2228,6 +2318,12 @@
   "models/index.html"
  ],
  "结果是机器学习势的预测，不是 DFT 计算。模型的误差随体系变化，重要的结论请用 DFT 或实验核对。": [
+  "models/index.html"
+ ],
+ "这里的模型预测原子体系的能量和力；处理科学文本和科学数据的语言模型（如 Hydrogen-1.0、Intern-S1）见": [
+  "models/index.html"
+ ],
+ "讲解手册的科学语言模型一章": [
   "models/index.html"
  ],
  "正在查询在线状态…": [
@@ -3408,9 +3504,6 @@
  "工具、框架与数据集": [
   "train/index.html"
  ],
- "类别": [
-  "train/index.html"
- ],
  "项目": [
   "train/index.html"
  ],
@@ -3543,7 +3636,7 @@
  "统一搜索 1,600 多条资源与网状查询": [
   "pro/index.html"
  ],
- "19 章中英双语讲解手册与资源目录": [
+ "20 章中英双语讲解手册与资源目录": [
   "pro/index.html"
  ],
  "AI 助手（自带 DeepSeek / Muse key）": [
@@ -3690,7 +3783,7 @@
  "统一搜索、网状查询、资源目录": [
   "pro/index.html"
  ],
- "19 章双语讲解手册、训练 Agent 指南": [
+ "20 章双语讲解手册、训练 Agent 指南": [
   "pro/index.html"
  ],
  "AI 助手（自带 key，直连服务商）": [
@@ -4251,7 +4344,7 @@
  "下载 MolAstria 桌面版": [
   "download/index.html"
  ],
- "完整的资源目录、19 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
+ "完整的资源目录、20 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
   "download/index.html"
  ],
  "发布页": [
@@ -4329,11 +4422,6 @@
  "预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
  ],
- "预印本雷达": [
-  "radar/index.html",
-  "radar/app/index.html",
-  "shared-nav.js"
- ],
  "同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。": [
   "radar/index.html"
  ],
@@ -4360,8 +4448,9 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
- "讲解手册与数据库": [
-  "shared-nav.js"
+ "讲解手册": [
+  "shared-nav.js",
+  "hub/network.js"
  ],
  "模型接口": [
   "shared-nav.js"
@@ -4379,6 +4468,9 @@
   "shared-nav.js"
  ],
  "全站导航": [
+  "shared-nav.js"
+ ],
+ "更多{0}": [
   "shared-nav.js"
  ],
  "我的 Pro 账号": [
@@ -4763,131 +4855,67 @@
   "hub/app.js",
   "hub/network.js"
  ],
- "封面与阅读地图": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "三分钟导读": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "全景与分层逻辑": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "01 · 综合化合物与化学信息": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "02 · 量子化学基准与参数": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "03 · 材料与晶体：计算库": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "03 · 材料与晶体：实验库": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "04 · 生物大分子结构": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "05 · 药物与化学空间": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "06–07 · 代谢与反应通路": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "08 · 光谱与波谱": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "09 · 机器学习：分子与催化": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "09 · 机器学习：材料与工具": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "10 · 软件：量化与动力学": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "10 · 软件：分析与工作流": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "11 · 社区与中文入口": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "接入实况与边界": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "细读质疑与使用提醒": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
- "关键术语与附录": [
-  "atlas/app.js",
-  "tools/build-seo.ts"
- ],
  "从一个分子名字，找到可靠身份与结构": [
   "atlas/app.js"
  ],
- "先用 PubChem 核对名称、标识符与可用构象。": [
+ "用 search_molecules 查 PubChem，核对名称、标识符与三维构象。": [
   "atlas/app.js"
  ],
- "需要药物与活性信息时，再转向 ChEMBL；其适配器的 molfile 为二维重原子结构。": [
+ "需要药物与活性信息时加 ChEMBL，需要本体分类时加 ChEBI；二者给的是二维重原子结构。": [
   "atlas/app.js"
  ],
- "需要计算精度基准时，进一步查 NIST CCCBDB，并核对方法与实验参考。": [
+ "需要计算精度基准时，查 NIST CCCBDB（仅收录导航，没有接口），并核对方法与实验参考。": [
   "atlas/app.js"
  ],
- "身份、二维结构与三维构象含义不同。不能直接把二维重原子坐标当作三维量化结构。": [
+ "分子记录没有能量，不能直接进训练集；也不能把二维重原子坐标当作三维量化结构。": [
   "atlas/app.js"
  ],
  "从材料化学式，走到可比较的晶体数据": [
   "atlas/app.js"
  ],
- "先选 Materials Project 的专业 API，或用 OPTIMADE 跨 AFLOW、NOMAD、JARVIS、MC3D 与 COD 查结构。": [
+ "用 search_structures 写化学式即可，NaCl、ClNa、Na2Cl2 等价；默认查 Alexandria、Materials Project 的 OPTIMADE 端点、COD 与 NOMAD。": [
   "atlas/app.js"
  ],
- "核对周期性、坐标字段与结构来源；NOMAD 的材料检索须关注周期性过滤。": [
+ "看摘要里的 has_energy 与 theory_key：Alexandria、MC3D、NOMAD 带能量，其余库只有结构。": [
   "atlas/app.js"
  ],
- "比较能量前，确认能量类型、泛函、校正方式与单位；保留原始来源。": [
+ "导出前确认能量类型、泛函、截断能与修正方式一致；不一致时用 level_of_theory 选定一种，来源清单会记下每条记录的出处。": [
   "atlas/app.js"
  ],
- "Materials Project 真实查询需要 API key。已有独立适配器，但 MCP 查询入口仍待接线。": [
+ "Materials Project 官方接口需要 MP_API_KEY；没有时结果里会写明原因，结构仍可从 optimade-mp 查到（无能量）。": [
   "atlas/app.js"
  ],
  "为计算方法，找到匹配的基组与赝势": [
   "atlas/app.js"
  ],
- "分子量化计算可从 Basis Set Exchange 获取目标元素的基组，并选择程序输出格式。": [
+ "用 get_basis 从 Basis Set Exchange 取目标元素的基组，选 ORCA、Gaussian、CP2K、PySCF 等输出格式。": [
   "atlas/app.js"
  ],
- "涉及重元素时，确认有效芯势（ECP）与基组的组合，以及程序如何识别元素名称。": [
+ "涉及重元素时，同时返回有效芯势（ECP）；ORCA 格式用元素全名。": [
   "atlas/app.js"
  ],
  "固体计算可阅读 SSSP；选择泛函时用 libxc 核对名称与实现。": [
   "atlas/app.js"
  ],
- "BSE 模块已有离线实现；MCP 的 get_basis 入口仍为占位。SSSP 与 libxc 当前仅收录导航。": [
+ "Basis Set Exchange 随包安装，get_basis 不联网。SSSP 与 libxc 当前仅收录导航。": [
   "atlas/app.js"
  ],
- "# 在已安装 uv 的终端中，进入解压后的项目目录 cd chemdb-agent uv python install 3.11 uv sync --python 3.11 # 启动 MCP 服务器（供 MCP 客户端通过标准输入输出连接） uv run --python 3.11 python -m chemdb_agent.server # 另开终端运行项目自带测试 uv run --python 3.11 pytest tests/ -v": [
+ "从量子化学数据集，走到可训练的数据文件": [
   "atlas/app.js"
  ],
- "# 独立 Python 示例；在项目目录内用 uv run 执行 from chemdb_agent.catalog.resources import search_resources from chemdb_agent.adapters import basis # 检索资源目录：不触发外部 API 查询 results = search_resources(\"晶体\") for item in results: print(item[\"name\"], item[\"integration\"]) # 直接调用离线基组模块 result = basis.get_basis(\"def2-SVP\", [\"H\", \"O\"], fmt=\"orca\") print(result)": [
+ "用 find_qm_data 按名称（如 SPICE）、方法与基组找 QCArchive 数据集，先看条数、规格与许可。": [
+  "atlas/app.js"
+ ],
+ "用 fetch_dataset_shard 下载一段到本地目录：Hartree、Bohr 换成 eV、Å，梯度转为力，只有色散校正的规格会被拒绝。": [
+  "atlas/app.js"
+ ],
+ "用 export_training_set 按数据集导出 extxyz 和来源清单，ase.io.read 读回即可交给训练框架。": [
+  "atlas/app.js"
+ ],
+ "QCArchive 不给逐条许可：SPICE 系列为 CC0，其余数据集要到引用里核对，来源清单会提示。QM9 目前只收录导航。": [
+  "atlas/app.js"
+ ],
+ "# 进入解压后的项目目录（需要 Python 3.11–3.13 与 uv） cd chemdb-agent uv sync # 不用 uv 时：python -m venv .venv，激活后 pip install -e . pytest vcrpy # 离线测试：用录好的接口返回，不联网 uv run python -m pytest # 启动 MCP 服务器（供 MCP 客户端通过标准输入输出连接） uv run python -m chemdb_agent.server": [
   "atlas/app.js"
  ],
  "/替换为项目绝对路径/chemdb-agent": [
@@ -4930,9 +4958,153 @@
  "ChemDB-资源目录.csv": [
   "atlas/app.js"
  ],
+ "封面与阅读地图": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "三分钟导读": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "全景与分层逻辑": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "01 · 综合化合物与化学信息": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "02 · 量子化学基准与参数": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "03 · 材料与晶体：计算库": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "03 · 材料与晶体：实验库": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "04 · 生物大分子结构": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "05 · 药物与化学空间": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "06–07 · 代谢与反应通路": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "08 · 光谱与波谱": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "09 · 机器学习：分子与催化": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "09 · 机器学习：材料与工具": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "17 · 科学语言模型与多模态": [
+  "manual/app.js"
+ ],
+ "10 · 软件：量化与动力学": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "10 · 软件：分析与工作流": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "11 · 社区与中文入口": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "接入实况与边界": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "细读质疑与使用提醒": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "关键术语与附录": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "（印刷版）": [
+  "journals/journals.js"
+ ],
+ "（电子版）": [
+  "journals/journals.js"
+ ],
+ "出处：{0}": [
+  "journals/journals.js"
+ ],
+ "以下几项没有在官网核实，本页不写，请看作者指南：": [
+  "journals/journals.js"
+ ],
+ "查看详情": [
+  "journals/journals.js"
+ ],
+ "全称": [
+  "journals/journals.js"
+ ],
+ "缩写": [
+  "journals/journals.js"
+ ],
+ "官方链接": [
+  "journals/journals.js"
+ ],
+ "以上信息核对于 {0}；规定和数字会变，投稿前以官网为准。": [
+  "journals/journals.js"
+ ],
+ "共 {0} 项": [
+  "journals/journals.js"
+ ],
+ "显示 {0} 项，共 {1} 项": [
+  "journals/journals.js"
+ ],
+ "收录 {0} 种期刊和 {1} 个预印本平台 · 信息核对于 {2}": [
+  "journals/journals.js"
+ ],
+ "收起详情": [
+  "journals/journals.js"
+ ],
  "软件/官网": [
   "hub/app.js",
   "hub/network.js"
+ ],
+ "站长随笔": [
+  "hub/app.js",
+  "tags"
+ ],
+ "论坛问答": [
+  "hub/app.js",
+  "tools/build-seo.ts",
+  "tags"
+ ],
+ "开源项目": [
+  "hub/app.js",
+  "tags",
+  "categories"
+ ],
+ "软件归档": [
+  "hub/app.js",
+  "tags"
+ ],
+ "邮件列表归档": [
+  "hub/app.js",
+  "tags"
+ ],
+ "培训与公告": [
+  "hub/app.js",
+  "tags"
  ],
  "（原站未在目录页提供摘要，点「原文」阅读全文）": [
   "hub/app.js"
@@ -4954,6 +5126,9 @@
   "hub/app.js"
  ],
  "真实条目": [
+  "hub/app.js"
+ ],
+ "中文来源 {0} 条 · 国际来源 {1} 条（{2}%）": [
   "hub/app.js"
  ],
  "暂无数据": [
@@ -5018,9 +5193,6 @@
  ],
  "。请完整解压压缩包，确认 hub/data.js 与本页一起保留。": [
   "hub/app.js"
- ],
- "讲解手册": [
-  "hub/network.js"
  ],
  "软件": [
   "hub/network.js"
@@ -5167,6 +5339,9 @@
   "hub/network.js"
  ],
  "数据源入口（{0} 个来源）": [
+  "hub/network.js"
+ ],
+ "共 {0} 条": [
   "hub/network.js"
  ],
  "缺少合并资源数据，请完整解压压缩包后打开": [
@@ -8655,10 +8830,6 @@
  "材料版本 {0}。": [
   "tools/build-seo.ts"
  ],
- "论坛问答": [
-  "tools/build-seo.ts",
-  "tags"
- ],
  "其他": [
   "tools/build-seo.ts"
  ],
@@ -8714,6 +8885,12 @@
   "tools/build-seo.ts"
  ],
  "ChemDB Atlas 计算化学数据库导航": [
+  "tools/build-seo.ts"
+ ],
+ "计算化学数据库说明讲解手册 · 阅读器": [
+  "tools/build-seo.ts"
+ ],
+ "期刊发表：计算化学期刊投稿与发表指南": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
@@ -8830,22 +9007,33 @@
  "开源交换-相关泛函库，被主流量化与固体电子结构程序广泛调用。": [
   "atlas data"
  ],
+ "材料与晶体结构": [
+  "atlas data",
+  "tags",
+  "categories"
+ ],
  "注册": [
   "atlas data"
  ],
  "美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。": [
   "atlas data"
  ],
+ "chemdb_agent.adapters.materials_project（需 MP_API_KEY）；无 key 时可用 provider=mp 的 OPTIMADE 结构": [
+  "atlas data"
+ ],
  "开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。": [
   "atlas data"
  ],
- "OPTIMADE 端点 2026-10-27 实测 502，待恢复后接入": [
+ "provider=oqmd（2026-11-06 实测恢复；查询较慢）": [
   "atlas data"
  ],
  "高通量材料计算平台，提供结构原型、热力学与电子性质等大规模数据。": [
   "atlas data"
  ],
  "欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。": [
+  "atlas data"
+ ],
+ "chemdb_agent.adapters.nomad（原生接口：能量、力、应力）；另有 provider=nomad": [
   "atlas data"
  ],
  "NIST 的材料与分子数据平台，含 DFT 性质、力场与机器学习工具。": [
@@ -9040,13 +9228,16 @@
  "百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。": [
   "atlas data"
  ],
+ "provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）": [
+  "atlas data"
+ ],
  "过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。": [
   "atlas data"
  ],
  "MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。": [
   "atlas data"
  ],
- "chemdb_agent.adapters.qcarchive（阶段2占位）": [
+ "chemdb_agent.adapters.qcarchive（ml 与 main 公共服务器）": [
   "atlas data"
  ],
  "图神经网络基准套件，包含分子图性质预测等任务与标准划分。": [
@@ -9427,6 +9618,162 @@
  "非共价相互作用基准数据库，收录 S22、S66 等高精度参考数据。": [
   "atlas data"
  ],
+ "科学领域语言模型与多模态基础模型": [
+  "atlas data",
+  "guide titles",
+  "tags",
+  "categories"
+ ],
+ "深度原理（Deep Principle）在 GLM-5.3 上用化学、材料与生命科学数据后训练的科研辅助模型，约 753B 参数，官方部署示例用 8 张 GPU。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重（登录 Hugging Face 申请访问，自动通过）；权重 MIT 许可": [
+  "atlas data"
+ ],
+ "上海人工智能实验室的科学多模态基础模型，235B MoE 语言模型加 6B 视觉编码器，能直接读分子式和蛋白序列；mini 版语言部分为 8B。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0": [
+  "atlas data"
+ ],
+ "Intern-S1 的万亿参数版本，技术报告称其为首个万亿参数的科学多模态基础模型，加强了推理、图文理解和智能体能力。": [
+  "atlas data"
+ ],
+ "上海人工智能实验室 2026 年的科学多模态模型系列（35B 预览版、397B 等），直接从科学文献原始页面做视觉预训练，并加强长流程智能体任务。": [
+  "atlas data"
+ ],
+ "中国科学院磐石团队的科学基础模型，覆盖数学、物理、化学、地球科学、天文和生物，有 8B、32B（基于 Qwen3）和 671B（基于 DeepSeek-R1）三档。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0": [
+  "atlas data"
+ ],
+ "磐石团队面向长程深度研究的模型（8B 预览版与 32B），侧重研究指令遵循、调研报告写作、文件理解与技能调用。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重；代码仓库 Apache-2.0（32B 模型卡未标许可证）": [
+  "atlas data"
+ ],
+ "上海人工智能实验室等的跨学科科学推理模型，把自然语言与分子、蛋白质等科学序列表示对齐，公开 8B 权重。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0；与 ChemReasoner、MOFReasoner、MolReasoner 不是同一个模型": [
+  "atlas data"
+ ],
+ "上海交通大学 X-LANCE 实验室与苏州实验室从头训练的混合专家科学对话模型，约 18.5B 总参数、5.6B 激活参数。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重；AGPL-3.0": [
+  "atlas data"
+ ],
+ "清华大学等用自我反思标注的科学指令数据（SciInstruct）训练的大学水平科学推理模型，覆盖数学、物理、化学和形式证明。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重（SciGLM-6B，Hugging Face 标注 Apache-2.0）": [
+  "atlas data"
+ ],
+ "Meta 2022 年发布的早期科学语言模型，在 1060 亿 token 的科学语料上训练；模型卡提醒输出可能出现幻觉。": [
+  "atlas data"
+ ],
+ "子类：跨学科科学推理与科研辅助；开放权重；CC BY-NC 4.0（非商业）": [
+  "atlas data"
+ ],
+ "上海交通大学与苏州实验室的化学对话模型系列；ChemDFM-R（14B）加入官能团等原子化化学知识，专门训练化学推理。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重；AGPL-3.0": [
+  "atlas data"
+ ],
+ "上海人工智能实验室、复旦大学等的化学推理模型，分化学基础、推理协议蒸馏、多任务 GRPO 三阶段训练，覆盖分子与反应任务。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重（Chem-R-8B，基座 Llama-3.1-8B-Instruct，Hugging Face 需登录申请访问，标注 Apache-2.0）；代码 Apache-2.0": [
+  "atlas data"
+ ],
+ "FutureHouse 基于 Mistral-Small-24B 的 24B 化学推理模型，在 375 类有实验依据的化学任务上做强化学习，用自然语言推理并输出 SMILES。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重；Apache-2.0": [
+  "atlas data"
+ ],
+ "上海人工智能实验室基于 InternLM2 的早期开源化学对话模型（7B），面向化学与分子科学问答。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重；Hugging Face 标注 Apache-2.0": [
+  "atlas data"
+ ],
+ "华东师范大学的化学模型套件，含化学问答模型 ChemGPT2-QA-72B（基于 Qwen2-72B-Instruct 微调）和逆合成预测，论文 2025 年公开。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重；README 与 Hugging Face 标注 MIT": [
+  "atlas data"
+ ],
+ "俄亥俄州立大学用三百多万条化学指令数据（SMolInstruct，14 类任务）微调的模型系列，处理分子名称、SMILES 与反应预测等任务。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重（Mistral、Llama 2、CodeLlama、Galactica 四种基座；Mistral 版标注 CC BY 4.0）": [
+  "atlas data"
+ ],
+ "北京科学智能研究院、上海交通大学等的分子推理框架，先用知识增强的思维链做微调、再用强化学习减少幻觉，用于分子描述和分子生成。": [
+  "atlas data"
+ ],
+ "子类：化学语言模型与化学推理；开放权重（Hugging Face guojianz/MolReasoner，MIT）；与 SciReasoner、ChemReasoner、MOFReasoner 不是同一个模型": [
+  "atlas data"
+ ],
+ "北京工业大学等以 MOF 吸附为重点的化学推理模型，用 8200 余篇研究论文和 500 篇综述构建思维链数据并做知识蒸馏，2026 年发表于 Digital Discovery。": [
+  "atlas data"
+ ],
+ "子类：材料与 MOF 领域模型；开放权重（Hugging Face 仓库名为 ChemReasoner-7B，模型卡未标许可证）；与 arXiv 2402.10980 的 ChemReasoner 不是同一个项目": [
+  "atlas data"
+ ],
+ "印度理工学院德里分校等在材料文献和晶体学数据上继续预训练 LLaMA 得到的材料模型系列，含对话版和生成晶体结构的 CIF 版。": [
+  "atlas data"
+ ],
+ "子类：材料与 MOF 领域模型；开放权重；沿用 Llama 2 / Llama 3 许可（代码仓库 MIT）": [
+  "atlas data"
+ ],
+ "MIT 的 Markus Buehler 微调的力学与材料建模语言模型，用于连接材料失效与多尺度力学知识，2024 年发表于 Applied Mechanics Reviews。": [
+  "atlas data"
+ ],
+ "子类：材料与 MOF 领域模型；仅论文（未找到官方公开权重）": [
+  "atlas data"
+ ],
+ "中国科学院磐石团队基于 Qwen3-VL-32B 的科学图文推理模型，推理时可调用代码裁剪、放大、增强图像后再分析。": [
+  "atlas data"
+ ],
+ "子类：多模态科学模型；开放权重；Apache-2.0": [
+  "atlas data"
+ ],
+ "磐石团队的统一科学多模态推理模型，把文本、材料 CIF、SMILES、蛋白序列、光谱和科学图像放进同一表示，再接各领域的专用解码器。": [
+  "atlas data"
+ ],
+ "上海人工智能实验室、中国科学技术大学等的化学多模态大模型，在文本、SMILES 和分子图像之间做理解与生成。": [
+  "atlas data"
+ ],
+ "子类：多模态科学模型；仅论文（官方代码仓库未见权重和许可证）": [
+  "atlas data"
+ ],
+ "研究如何从研究背景检索启发并组合成科学假设的训练框架，发布灵感检索、假设组合和多任务三个 7B 模型，ICML 2026。": [
+  "atlas data"
+ ],
+ "子类：科研假设与文献；开放权重（基于 DeepSeek-R1-Distill-Qwen-7B）；Apache-2.0；公开的训练与评测数据来自生物医学论文": [
+  "atlas data"
+ ],
+ "华盛顿大学与艾伦人工智能研究所等的检索增强模型，从 4500 万篇开放获取论文中找证据并生成带引用的回答，2026 年发表于 Nature。": [
+  "atlas data"
+ ],
+ "子类：科研假设与文献；开放权重（OpenScholar-8B，Llama 3.1 许可）；代码 Apache-2.0": [
+  "atlas data"
+ ],
+ "Microsoft Research AI for Science 的序列式科学基础模型（8x7B），按自然语言指令生成和优化小分子、蛋白质、RNA 与材料；模型卡说明它不是通用问答模型。": [
+  "atlas data"
+ ],
+ "子类：相关模型（科学对象生成）；开放权重；MIT": [
+  "atlas data"
+ ],
+ "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。": [
+  "atlas data"
+ ],
  "一百零三个入口，先分清去哪一层": [
   "guide titles"
  ],
@@ -9466,7 +9813,7 @@
  "术语表与关键数字": [
   "guide titles"
  ],
- "仅收录标题、短摘要与原文链接；优先官方 API（arXiv/Crossref/GitHub）；不绕过人机验证；尊重 robots.txt（如小木虫论坛被 robots 禁止，故不收录其帖子）；各站状态如实标注。": [
+ "仅收录标题、短摘要与原文链接；只用官方 API（arXiv/Crossref/GitHub/Stack Exchange）、Discourse 论坛的公开 JSON 接口和 RSS/Atom 订阅；不绕过人机验证；尊重 robots.txt（如小木虫论坛被 robots 禁止，故不收录其帖子）；Stack Exchange 内容为 CC BY-SA，卡片保留作者与原帖链接；各站状态如实标注。": [
   "hub data"
  ],
  "300个学术公众号": [
@@ -9508,10 +9855,79 @@
  "历史最久的邮件列表归档、软件与资源索引": [
   "sources"
  ],
+ "材料与分子模拟问答社区的最新提问（Stack Exchange 官方 API；内容为 CC BY-SA，作者与原帖见卡片）": [
+  "sources"
+ ],
+ "Chemistry Stack Exchange · 计算化学": [
+  "sources"
+ ],
+ "化学问答社区 computational-chemistry 标签的最新提问（Stack Exchange 官方 API；CC BY-SA）": [
+  "sources"
+ ],
+ "matsci.org 材料模拟论坛": [
+  "sources"
+ ],
+ "LAMMPS、OVITO、pymatgen、Materials Project、ASE、NOMAD 等程序的官方论坛（Discourse 公开 JSON 接口）": [
+  "sources"
+ ],
+ "Psi4 论坛": [
+  "sources"
+ ],
+ "Psi4 量子化学程序的官方论坛（Discourse 公开 JSON 接口）": [
+  "sources"
+ ],
+ "GROMACS 论坛": [
+  "sources"
+ ],
+ "GROMACS 分子动力学程序的官方论坛（Discourse 公开 JSON 接口）": [
+  "sources"
+ ],
+ "Avogadro 论坛": [
+  "sources"
+ ],
+ "Avogadro 分子编辑器的官方论坛（Discourse 公开 JSON 接口）": [
+  "sources"
+ ],
+ "AiiDA 论坛": [
+  "sources"
+ ],
+ "AiiDA 计算工作流平台的官方论坛（Discourse 公开 JSON 接口）": [
+  "sources"
+ ],
+ "计算化学新论文的精选点评（Jan Jensen 等编辑，博客 RSS）": [
+  "sources"
+ ],
+ "Jan Jensen 的分子模拟教学与研究博客（博客 RSS）": [
+  "sources"
+ ],
+ "Henry Rzepa 博客": [
+  "sources"
+ ],
+ "帝国理工 Henry Rzepa 关于化学结构、反应机理与计算的博客（博客 RSS）": [
+  "sources"
+ ],
+ "化学信息学博客": [
+  "sources"
+ ],
+ "RDKit 博客、Pat Walters、Noel O'Boyle、ChEMBL、Macs in Chemistry、iwatobipen 的最新文章（各博客 RSS）": [
+  "sources"
+ ],
+ "MolSSI 新闻与活动": [
+  "sources"
+ ],
+ "美国分子科学软件研究所的新闻、研讨会、培训与职位（官网 RSS）": [
+  "sources"
+ ],
+ "Psi-k 社区公告": [
+  "sources"
+ ],
+ "欧洲电子结构计算社区的职位、研讨会与学校公告（官网 RSS）": [
+  "sources"
+ ],
  "arXiv 化学物理": [
   "sources"
  ],
- "化学物理/计算物理最新预印本（arXiv 官方 API，按提交时间倒序）": [
+ "化学物理最新预印本，加上计算物理里讲分子与化学的部分（arXiv 官方 API，按提交时间倒序）": [
   "sources"
  ],
  "ChemRxiv 计算化学": [
@@ -9523,13 +9939,22 @@
  "最新期刊论文 · Crossref": [
   "sources"
  ],
- "JCTC、JCP、PCCP、JPCL 最新论文元数据（Crossref 官方 API，DOI 直达）": [
+ "JCTC、JCIM、JCC、WIREs CMS、npj Comput. Mater.、Digital Discovery 等 22 种期刊的最新论文元数据；JCP、PCCP、JPC A/B/C 等综合期刊只收理论与计算类（Crossref 官方 API，DOI 直达）": [
   "sources"
  ],
  "GitHub 开源项目": [
   "sources"
  ],
  "计算化学开源软件与工具库（GitHub 官方 API，按 Star 排序）": [
+  "sources"
+ ],
+ "本次失败，保留上次缓存": [
+  "sources"
+ ],
+ "主流程序发布说明": [
+  "sources"
+ ],
+ "xtb、PySCF、Psi4、CP2K、OpenMM、LAMMPS、RDKit、MACE 等 22 个开源程序的最新正式版本（GitHub 官方 API）": [
   "sources"
  ],
  "官方软件与数据库": [
@@ -9553,9 +9978,6 @@
  "电荷与静电势": [
   "tags"
  ],
- "站长随笔": [
-  "tags"
- ],
  "硬件与购机": [
   "tags"
  ],
@@ -9568,28 +9990,24 @@
  "VASP/第一性原理": [
   "tags"
  ],
- "软件归档": [
-  "tags"
- ],
- "邮件列表归档": [
-  "tags"
+ "化学信息与建模": [
+  "tags",
+  "categories"
  ],
  "催化与反应": [
   "tags"
  ],
- "开源项目": [
-  "tags",
-  "categories"
+ "安装与报错": [
+  "tags"
+ ],
+ "电池与能源": [
+  "tags"
  ],
  "量子化学软件": [
   "tags",
   "categories"
  ],
  "周期与第一性原理": [
-  "tags",
-  "categories"
- ],
- "化学信息与建模": [
   "tags",
   "categories"
  ],

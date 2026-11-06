@@ -1,0 +1,35 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade.materialscloud.org/main/mc2d/v1/structures?filter=elements+HAS+ALL+%22Mo%22%2C+%22S%22+AND+nelements%3D2&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"id":"beef06e3-fdac-47df-a4ed-2aa97da5dcce","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Mo","S"],"nelements":2,"chemical_formula_reduced":"MoS2","chemical_formula_hill":null,"dimension_types":[1,1,0],"lattice_vectors":[[3.1867374979,0.0,0.0],[-1.5933687489,2.7597956285,0.0],[0.0,0.0,23.1892369035]],"cartesian_site_positions":[[0.0,1.8398637524,11.5946151394],[0.0,0.0,13.1833034026],[1.5933687489,0.9199318762,10.0059368132]],"nsites":3,"species":[{"name":"S","chemical_symbols":["S"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"Mo","chemical_symbols":["Mo"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Mo","S","S"]}},{"id":"d25962ea-3c39-4e86-9333-2baf8f31a1a8","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Mo","S"],"nelements":2,"chemical_formula_reduced":"MoS2","chemical_formula_hill":null,"dimension_types":[1,1,0],"lattice_vectors":[[3.1881795204,0.0,0.0],[-1.5940897602,2.7610444565,0.0],[0.0,0.0,23.1547020881]],"cartesian_site_positions":[[0.0,1.8406963043,11.577351044],[1.5940897602,0.9203481522,10.0188259936],[1.5940897602,0.9203481522,13.1358760945]],"nsites":3,"species":[{"name":"S","chemical_symbols":["S"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"Mo","chemical_symbols":["Mo"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Mo","S","S"]}}],"meta":{"query":{"representation":"/main/mc2d/v1/structures?filter=elements+HAS+ALL+%22Mo%22%2C+%22S%22+AND+nelements%3D2&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"api_version":"1.2.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.2.0/optimade.json","time_stamp":"2026-11-06T20:50:44.090725","data_returned":3,"provider":{"name":"Materials
+        Cloud","description":"A platform for Open Science built for seamless sharing
+        of resources in computational materials science","prefix":"mcloud","homepage":"https://www.materialscloud.org/"},"data_available":2683,"implementation":{"name":"OPTIMADE
+        Python Tools","version":"1.4.1","homepage":"https://optimade.org/optimade-python-tools","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"https://optimade.materialscloud.org/main/mc2d/v1/structures?filter=elements+HAS+ALL+%22Mo%22%2C+%22S%22+AND+nelements%3D2&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies&page_offset=2"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3031'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:44 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    status:
+      code: 200
+      message: OK
+version: 1

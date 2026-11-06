@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade-gnome.odbx.science/v1/structures?filter=elements+HAS+ALL+%22Mo%22%2C+%22S%22+AND+nelements%3D2&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"id":"27ca381c5c","type":"structures","attributes":{"elements":["Mo","S"],"nelements":2,"chemical_formula_reduced":"MoS27","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[14.95394783,0.0,0.0],[-7.208671965718903,13.101739897503524,0.0],[-7.208673284209145,-12.194035851348973,4.79177067132989]],"cartesian_site_positions":[[0.10624784745682597,0.17972630884264745,0.9487753846939896],[-8.610376278168962,0.5514002538053664,2.9108425544007543],[4.633806636092395,7.83844633224885,0.04732352715005398],[4.633805848174491,-7.2780815932836616,2.9108425544007543],[-7.768100955665877,2.3551053750089848,3.445144151336722],[5.808077851556436,6.537783826596785,1.1325062475447916],[2.928177577152654,-7.255182330412339,4.0678059994520135],[5.808077215217445,-5.670640535744649,3.445144151336722],[-7.768101126995772,-0.9319289088999069,4.0678059994520135],[2.9281783848215417,8.240276315837985,1.1325062475447916],[-6.252716355998261,2.8124218613798866,2.1221746031479105],[5.478246871255246,4.6130426250183305,0.4674036865935315],[1.4008338712042432,-6.365921522811024,3.0037501959471693],[5.4782464159331,-4.122499388987395,2.1221746031479105],[-6.25271659857014,-1.8414190735667482,3.0037501959471693],[1.4008345690982682,7.023461426141336,0.4674036865935315],[-4.446225624935337,2.273813949028248,2.9613669843592567],[4.135517862673883,3.6885339825295587,1.7323592672645522],[1.23810941575853,-4.393577551853632,3.5878143313048985],[4.13551752450355,-2.799402468863376,2.9613669843592567],[-4.446225797306841,-1.033203997722237,3.5878143313048985],[1.2381099263003672,5.401376846289783,1.7323592672645522],[-3.889706812025679,0.4225053715473747,2.2304063273012384],[2.245239151704125,3.7979974057385397,0.9039723289170551],[2.2452387867262487,-3.2042527581800626,2.2304063273012384],[-12.427797622823435,0.8991534740397757,4.746632191605962],[6.778706599309152,11.466712241428267,0.5940022677300671],[6.778705456683093,-10.455037050715037,4.746632191605962]],"nsites":28,"species":[{"name":"Mo","chemical_symbols":["Mo"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"S","chemical_symbols":["S"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Mo","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S","S"]}}],"meta":{"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Mo%22%2C+%22S%22+AND+nelements%3D2&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"api_version":"1.1.0","more_data_available":false,"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:50:41.583790","data_returned":1,"provider":{"name":"Gnome","description":"An
+        unofficial OPTIMADE API for the Gnome dataset from Google Deepmind (CC-BY
+        NC). Full terms of use can be found on the project homepage.","prefix":"gnome","homepage":"https://github.com/google-deepmind/materials_discovery"},"data_available":384938,"implementation":{"name":"optimade-python-tools
+        (modified for odbx.science)","version":"1.0","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"web@odbx.science"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":null}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3526'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:41 GMT
+      Server:
+      - nginx/1.31.8
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload;
+      X-Content-Type-Options:
+      - nosniff;
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block;
+    status:
+      code: 200
+      message: OK
+version: 1

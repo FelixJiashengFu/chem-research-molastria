@@ -1,7 +1,9 @@
 // MolAstria desktop: serves public/ from inside the app, opens outside links in the system browser,
-// installs signed updates published on GitHub Releases, and runs UMA with the user's own Python (uma.rs).
+// installs signed updates published on GitHub Releases, runs UMA with the user's own Python (uma.rs),
+// and sends every download through the system Save dialog (save.rs).
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod save;
 mod uma;
 
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -105,9 +107,12 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        // Used from Rust only (save.rs); pages get no dialog permission in capabilities/default.json.
+        .plugin(tauri_plugin_dialog::init())
         .manage(PendingUpdate::default())
         .manage(Progress::default())
         .manage(uma::Uma::default())
+        .manage(save::Saving::default())
         .invoke_handler(tauri::generate_handler![
             check_update,
             install_update,
@@ -117,7 +122,8 @@ fn main() {
             uma::uma_start,
             uma::uma_poll,
             uma::uma_stop,
-            uma::uma_open_dir
+            uma::uma_open_dir,
+            save::save_download
         ])
         .setup(|app| {
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
@@ -125,6 +131,8 @@ fn main() {
                 .inner_size(1320.0, 880.0)
                 .min_inner_size(900.0, 600.0)
                 .initialization_script(INIT_SCRIPT)
+                // All frames: the quantum-chemistry and preprint-radar pages save files from inside an iframe.
+                .initialization_script_for_all_frames(save::SCRIPT)
                 .build()?;
             Ok(())
         })

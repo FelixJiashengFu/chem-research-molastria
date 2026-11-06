@@ -15,9 +15,12 @@
     'lovelive comiket animania comicvertex mycomic beijing windows linux centos vmware photoshop cpu gpu gb rtx nvidia epyc ai pi n-h c3 c6 version online update ver www http https com org cn ' +
     'pccp jcp jcc jctc jpca jpcb jpcc cpl cej jacs acs rsc wiley elsevier mol model phys j').split(' '));
   // Ordinary English words that are also program names: matched only with their own capitals.
-  const CASED = new Set(['exciting', 'elk', 'octopus', 'amber', 'dalton', 'casino', 'rowan', 'sparrow', 'tequila', 'bagel', 'siesta', 'molden', 'block2', 'ase']);
+  const CASED = new Set(['exciting', 'elk', 'octopus', 'amber', 'dalton', 'casino', 'rowan', 'sparrow', 'tequila', 'bagel', 'siesta', 'molden', 'block2', 'ase',
+    'aim', 'crystal', 'dirac', 'respect', 'zinc', 'lobster']);
+  // Program names that are also an ordinary term in English papers: these phrases are not a mention of the program.
+  const OTHER_SENSE = { gaussian: /gaussian[- ]?(?:process|basis|type|function|orbital|smearing|distribution|mixture|kernel|regression|noise|broadening|charge|wave|width)\w*/g };
   // Concepts so broad that they say little about a relation (still searchable and usable as a centre).
-  const BROAD = new Set(['教程', '安装', '报错', '开源', '数据库', '数据集', '软件', '可视化', '综述', '预印本', '招聘', '会议', '材料', '表面', '溶剂', '纳米', '小分子', '量子化学']);
+  const BROAD = new Set(['教程', '安装', '报错', '安装与报错', '开源', '数据库', '数据集', '软件', '可视化', '综述', '预印本', '招聘', '会议', '材料', '表面', '溶剂', '纳米', '小分子', '量子化学']);
   const KIND_RANK = { software: 6, database: 6, name: 5, concept: 4, topic: 3, category: 2 };
   const TYPE_RANK = { tutorial: 3, database: 3, software: 3, handbook: 3, tool: 2, qa: 2, paper: 2, preprint: 2, repo: 2, resource: 1, discipline: 0, archive: 1, job: 0, conference: 0, announcement: 0 };
 
@@ -46,7 +49,7 @@
 
   function build(data, guides = [], terms = null) {
     const sources = [...(data.sources || []).map((s) => ({ ...s }))];
-    if (guides.length) sources.push({ id: 'handbook', name: '说明讲解手册', color: '#b08a4f', role: '本站 19 章讲解', url: '../atlas/index.html#guide' });
+    if (guides.length) sources.push({ id: 'handbook', name: '说明讲解手册', color: '#b08a4f', role: '本站 20 章讲解', url: '../manual/index.html' });
     const sourceById = new Map(sources.map((s) => [s.id, s]));
 
     // ---------- documents ----------
@@ -68,7 +71,7 @@
       const lead = strip((g.html.match(/<p class="lead">([\s\S]*?)<\/p>/) || g.html.match(/<div class="deck">([\s\S]*?)<\/div>/) || [])[1] || '');
       docs.push({
         i: docs.length, id: 'guide:' + g.id, title: `说明讲解手册 · ${String(k + 1).padStart(2, '0')} ${g.title}`, excerpt: lead,
-        url: '../atlas/index.html#guide/' + g.id, source: 'handbook', sources: ['handbook'], type: 'handbook', tags: [], category: '说明讲解手册',
+        url: '../manual/index.html#' + g.id, source: 'handbook', sources: ['handbook'], type: 'handbook', tags: [], category: '说明讲解手册',
         date: '', metric: '', authors: '', official: false, essay: false, raw: { title: g.title, tags: '', body: strip(g.html) },
       });
     });
@@ -76,6 +79,10 @@
       d.low = { title: norm(d.raw.title), tags: norm(d.raw.tags), body: norm(d.raw.body) };
       d.tok = { title: new Set(latinTokens(d.low.title)), tags: new Set(latinTokens(d.low.tags)), body: new Set(latinTokens(d.low.body)) };
       d.ents = new Map();
+      // English entries get their topic tags from keyword rules over their own text (maintenance/crawler.py):
+      // for them only a whole tag counts as a mention, not a name inside a tag label (VASP in "VASP/第一性原理", 碳环 in "碳环与材料").
+      d.autoTags = !d.official && d.type !== 'handbook' && !HAN.test(d.title);
+      d.tagSet = new Set(d.tags.map(norm));
     }
 
     // ---------- entities ----------
@@ -122,7 +129,7 @@
     for (const [k, s] of seen) {
       if (s.n < 2 || byKey.has(k)) continue;
       const name = [...s.forms.entries()].sort((a, b) => b[1] - a[1])[0][0];
-      addEntity({ name, kind: 'name', aliases: [k] });
+      addEntity({ name, kind: 'name', aliases: [k], cased: CASED.has(k) });
     }
     // 3. Concepts from the shared Chinese–English term table.
     for (const g of terms?.groups || []) {
@@ -150,8 +157,14 @@
       return boundary.get(alias).test(field);
     }
     function hit(d, field, ent, alias) {
+      if (field === 'tags' && d.autoTags) return d.tagSet.has(alias);
       if (HAN.test(alias)) return d.low[field].includes(alias);
       if (!latinHit(d.low[field], d.tok[field], alias)) return false;
+      const other = OTHER_SENSE[ent.key];
+      if (other) {
+        const rest = d.low[field].replace(other, ' ');
+        if (!latinHit(rest, new Set(latinTokens(rest)), alias)) return false;
+      }
       if (!ent.cased) return true;
       if (!casedRe.has(ent.name)) casedRe.set(ent.name, new RegExp(`(^|[^A-Za-z0-9])${reEscape(ent.name)}($|[^A-Za-z0-9])`));
       return casedRe.get(ent.name).test(d.raw[field]);
@@ -340,7 +353,7 @@
     }
     function overview() {
       const pick = (kinds, n) => live.filter((e) => kinds.includes(e.kind) && !e.broad).sort((a, b) => b.docs.size - a.docs.size).slice(0, n);
-      const sourceNames = new Set(sources.map((s) => norm(s.name)).concat(['x-mol', 'ccl', '计算化学公社', 'sobereva 思想家公社']));
+      const sourceNames = new Set(sources.map((s) => norm(s.name)).concat(['x-mol', 'ccl', '计算化学公社', 'sobereva 思想家公社', 'molssi']));
       const hubs = [...pick(['software', 'database', 'name'], 14).filter((x) => !sourceNames.has(x.key)).slice(0, 10), ...pick(['concept', 'topic'], 8), ...pick(['category'], 4)];
       return { mode: 'overview', q: '', center: null, corrected: '', primary: docs.map((d) => ({ doc: d, score: rankDoc(d) })), siblings: [], category: null,
         related: hubs.map((e) => ({ entity: e, score: Math.log2(1 + e.docs.size) / 10, co: e.docs.size })), second: [], extended: [] };

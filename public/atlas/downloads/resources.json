@@ -51,8 +51,8 @@
     "category_code": "01",
     "category": "综合化合物与化学信息",
     "access": "免费",
-    "integration": "catalog",
-    "detail": "已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器"
+    "integration": "adapter",
+    "detail": "chemdb_agent.adapters.chebi"
   },
   {
     "number": 6,
@@ -217,7 +217,7 @@
     "category": "材料与晶体结构",
     "access": "注册",
     "integration": "adapter",
-    "detail": "chemdb_agent.adapters.materials_project"
+    "detail": "chemdb_agent.adapters.materials_project（需 MP_API_KEY）；无 key 时可用 provider=mp 的 OPTIMADE 结构"
   },
   {
     "number": 21,
@@ -227,8 +227,8 @@
     "category_code": "03",
     "category": "材料与晶体结构",
     "access": "免费",
-    "integration": "catalog",
-    "detail": "OPTIMADE 端点 2026-10-27 实测 502，待恢复后接入"
+    "integration": "optimade",
+    "detail": "provider=oqmd（2026-11-06 实测恢复；查询较慢）"
   },
   {
     "number": 22,
@@ -249,8 +249,8 @@
     "category_code": "03",
     "category": "材料与晶体结构",
     "access": "免费",
-    "integration": "optimade",
-    "detail": "provider=nomad"
+    "integration": "adapter",
+    "detail": "chemdb_agent.adapters.nomad（原生接口：能量、力、应力）；另有 provider=nomad"
   },
   {
     "number": 24,
@@ -272,7 +272,7 @@
     "category": "材料与晶体结构",
     "access": "免费",
     "integration": "optimade",
-    "detail": "provider=materialscloud (MC3D-PBE-v1)"
+    "detail": "provider=materialscloud (MC3D-PBE-v1)、mc3d-pbesol、mc2d"
   },
   {
     "number": 26,
@@ -810,8 +810,8 @@
     "category_code": "09",
     "category": "机器学习数据集与势函数",
     "access": "免费",
-    "integration": "catalog",
-    "detail": "已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器"
+    "integration": "optimade",
+    "detail": "provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）"
   },
   {
     "number": 75,
@@ -832,8 +832,8 @@
     "category_code": "09",
     "category": "机器学习数据集与势函数",
     "access": "免费",
-    "integration": "stub",
-    "detail": "chemdb_agent.adapters.qcarchive（阶段2占位）"
+    "integration": "adapter",
+    "detail": "chemdb_agent.adapters.qcarchive（ml 与 main 公共服务器）"
   },
   {
     "number": 77,
@@ -2055,5 +2055,302 @@
     "access": "免费",
     "integration": "catalog",
     "detail": "已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器"
+  },
+  {
+    "number": 188,
+    "name": "Hydrogen-1.0",
+    "description": "深度原理（Deep Principle）在 GLM-5.3 上用化学、材料与生命科学数据后训练的科研辅助模型，约 753B 参数，官方部署示例用 8 张 GPU。",
+    "url": "https://huggingface.co/deep-principle/Hydrogen-1.0",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "注册",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重（登录 Hugging Face 申请访问，自动通过）；权重 MIT 许可"
+  },
+  {
+    "number": 189,
+    "name": "Intern-S1 / Intern-S1-mini",
+    "description": "上海人工智能实验室的科学多模态基础模型，235B MoE 语言模型加 6B 视觉编码器，能直接读分子式和蛋白序列；mini 版语言部分为 8B。",
+    "url": "https://huggingface.co/internlm/Intern-S1",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0"
+  },
+  {
+    "number": 190,
+    "name": "Intern-S1-Pro",
+    "description": "Intern-S1 的万亿参数版本，技术报告称其为首个万亿参数的科学多模态基础模型，加强了推理、图文理解和智能体能力。",
+    "url": "https://huggingface.co/internlm/Intern-S1-Pro",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0"
+  },
+  {
+    "number": 191,
+    "name": "Intern-S2 系列",
+    "description": "上海人工智能实验室 2026 年的科学多模态模型系列（35B 预览版、397B 等），直接从科学文献原始页面做视觉预训练，并加强长流程智能体任务。",
+    "url": "https://huggingface.co/collections/internlm/intern-s2",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助（兼多模态）；开放权重；Apache-2.0"
+  },
+  {
+    "number": 192,
+    "name": "S1-Base（ScienceOne 磐石）",
+    "description": "中国科学院磐石团队的科学基础模型，覆盖数学、物理、化学、地球科学、天文和生物，有 8B、32B（基于 Qwen3）和 671B（基于 DeepSeek-R1）三档。",
+    "url": "https://huggingface.co/ScienceOne-AI/S1-Base-32B",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0"
+  },
+  {
+    "number": 193,
+    "name": "S1-DeepResearch",
+    "description": "磐石团队面向长程深度研究的模型（8B 预览版与 32B），侧重研究指令遵循、调研报告写作、文件理解与技能调用。",
+    "url": "https://github.com/ScienceOne-AI/S1-DeepResearch",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重；代码仓库 Apache-2.0（32B 模型卡未标许可证）"
+  },
+  {
+    "number": 194,
+    "name": "SciReasoner",
+    "description": "上海人工智能实验室等的跨学科科学推理模型，把自然语言与分子、蛋白质等科学序列表示对齐，公开 8B 权重。",
+    "url": "https://huggingface.co/SciReason/SciReasoner-8B",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重；Apache-2.0；与 ChemReasoner、MOFReasoner、MolReasoner 不是同一个模型"
+  },
+  {
+    "number": 195,
+    "name": "SciDFM",
+    "description": "上海交通大学 X-LANCE 实验室与苏州实验室从头训练的混合专家科学对话模型，约 18.5B 总参数、5.6B 激活参数。",
+    "url": "https://huggingface.co/OpenDFM/SciDFM-MoE-A5.6B-v1.0",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重；AGPL-3.0"
+  },
+  {
+    "number": 196,
+    "name": "SciGLM",
+    "description": "清华大学等用自我反思标注的科学指令数据（SciInstruct）训练的大学水平科学推理模型，覆盖数学、物理、化学和形式证明。",
+    "url": "https://github.com/THUDM/SciGLM",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重（SciGLM-6B，Hugging Face 标注 Apache-2.0）"
+  },
+  {
+    "number": 197,
+    "name": "Galactica",
+    "description": "Meta 2022 年发布的早期科学语言模型，在 1060 亿 token 的科学语料上训练；模型卡提醒输出可能出现幻觉。",
+    "url": "https://huggingface.co/facebook/galactica-120b",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：跨学科科学推理与科研辅助；开放权重；CC BY-NC 4.0（非商业）"
+  },
+  {
+    "number": 198,
+    "name": "ChemDFM / ChemDFM-R",
+    "description": "上海交通大学与苏州实验室的化学对话模型系列；ChemDFM-R（14B）加入官能团等原子化化学知识，专门训练化学推理。",
+    "url": "https://huggingface.co/collections/OpenDFM/chemdfm",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重；AGPL-3.0"
+  },
+  {
+    "number": 199,
+    "name": "Chem-R",
+    "description": "上海人工智能实验室、复旦大学等的化学推理模型，分化学基础、推理协议蒸馏、多任务 GRPO 三阶段训练，覆盖分子与反应任务。",
+    "url": "https://github.com/davidweidawang/Chem-R",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重（Chem-R-8B，基座 Llama-3.1-8B-Instruct，Hugging Face 需登录申请访问，标注 Apache-2.0）；代码 Apache-2.0"
+  },
+  {
+    "number": 200,
+    "name": "ether0",
+    "description": "FutureHouse 基于 Mistral-Small-24B 的 24B 化学推理模型，在 375 类有实验依据的化学任务上做强化学习，用自然语言推理并输出 SMILES。",
+    "url": "https://huggingface.co/futurehouse/ether0",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重；Apache-2.0"
+  },
+  {
+    "number": 201,
+    "name": "ChemLLM",
+    "description": "上海人工智能实验室基于 InternLM2 的早期开源化学对话模型（7B），面向化学与分子科学问答。",
+    "url": "https://huggingface.co/AI4Chem/ChemLLM-7B-Chat",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重；Hugging Face 标注 Apache-2.0"
+  },
+  {
+    "number": 202,
+    "name": "ECNU-ChemGPT",
+    "description": "华东师范大学的化学模型套件，含化学问答模型 ChemGPT2-QA-72B（基于 Qwen2-72B-Instruct 微调）和逆合成预测，论文 2025 年公开。",
+    "url": "https://github.com/ilog-ecnu/ECNU-ChemGPT",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重；README 与 Hugging Face 标注 MIT"
+  },
+  {
+    "number": 203,
+    "name": "LlaSMol",
+    "description": "俄亥俄州立大学用三百多万条化学指令数据（SMolInstruct，14 类任务）微调的模型系列，处理分子名称、SMILES 与反应预测等任务。",
+    "url": "https://github.com/OSU-NLP-Group/LLM4Chem",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重（Mistral、Llama 2、CodeLlama、Galactica 四种基座；Mistral 版标注 CC BY 4.0）"
+  },
+  {
+    "number": 204,
+    "name": "MolReasoner",
+    "description": "北京科学智能研究院、上海交通大学等的分子推理框架，先用知识增强的思维链做微调、再用强化学习减少幻觉，用于分子描述和分子生成。",
+    "url": "https://arxiv.org/abs/2508.02066",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：化学语言模型与化学推理；开放权重（Hugging Face guojianz/MolReasoner，MIT）；与 SciReasoner、ChemReasoner、MOFReasoner 不是同一个模型"
+  },
+  {
+    "number": 205,
+    "name": "MOFReasoner",
+    "description": "北京工业大学等以 MOF 吸附为重点的化学推理模型，用 8200 余篇研究论文和 500 篇综述构建思维链数据并做知识蒸馏，2026 年发表于 Digital Discovery。",
+    "url": "https://doi.org/10.1039/D5DD00429B",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：材料与 MOF 领域模型；开放权重（Hugging Face 仓库名为 ChemReasoner-7B，模型卡未标许可证）；与 arXiv 2402.10980 的 ChemReasoner 不是同一个项目"
+  },
+  {
+    "number": 206,
+    "name": "LLaMat",
+    "description": "印度理工学院德里分校等在材料文献和晶体学数据上继续预训练 LLaMA 得到的材料模型系列，含对话版和生成晶体结构的 CIF 版。",
+    "url": "https://huggingface.co/collections/m3rg-iitd/llamat",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：材料与 MOF 领域模型；开放权重；沿用 Llama 2 / Llama 3 许可（代码仓库 MIT）"
+  },
+  {
+    "number": 207,
+    "name": "MechGPT",
+    "description": "MIT 的 Markus Buehler 微调的力学与材料建模语言模型，用于连接材料失效与多尺度力学知识，2024 年发表于 Applied Mechanics Reviews。",
+    "url": "https://arxiv.org/abs/2310.10445",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：材料与 MOF 领域模型；仅论文（未找到官方公开权重）"
+  },
+  {
+    "number": 208,
+    "name": "S1-VL-32B",
+    "description": "中国科学院磐石团队基于 Qwen3-VL-32B 的科学图文推理模型，推理时可调用代码裁剪、放大、增强图像后再分析。",
+    "url": "https://huggingface.co/ScienceOne-AI/S1-VL-32B",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：多模态科学模型；开放权重；Apache-2.0"
+  },
+  {
+    "number": 209,
+    "name": "S1-Omni",
+    "description": "磐石团队的统一科学多模态推理模型，把文本、材料 CIF、SMILES、蛋白序列、光谱和科学图像放进同一表示，再接各领域的专用解码器。",
+    "url": "https://huggingface.co/ScienceOne-AI/S1-Omni",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：多模态科学模型；开放权重；Apache-2.0"
+  },
+  {
+    "number": 210,
+    "name": "ChemMLLM",
+    "description": "上海人工智能实验室、中国科学技术大学等的化学多模态大模型，在文本、SMILES 和分子图像之间做理解与生成。",
+    "url": "https://arxiv.org/abs/2505.16326",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：多模态科学模型；仅论文（官方代码仓库未见权重和许可证）"
+  },
+  {
+    "number": 211,
+    "name": "MOOSE-Star",
+    "description": "研究如何从研究背景检索启发并组合成科学假设的训练框架，发布灵感检索、假设组合和多任务三个 7B 模型，ICML 2026。",
+    "url": "https://github.com/ZonglinY/MOOSE-Star",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：科研假设与文献；开放权重（基于 DeepSeek-R1-Distill-Qwen-7B）；Apache-2.0；公开的训练与评测数据来自生物医学论文"
+  },
+  {
+    "number": 212,
+    "name": "OpenScholar",
+    "description": "华盛顿大学与艾伦人工智能研究所等的检索增强模型，从 4500 万篇开放获取论文中找证据并生成带引用的回答，2026 年发表于 Nature。",
+    "url": "https://github.com/AkariAsai/OpenScholar",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：科研假设与文献；开放权重（OpenScholar-8B，Llama 3.1 许可）；代码 Apache-2.0"
+  },
+  {
+    "number": 213,
+    "name": "NatureLM",
+    "description": "Microsoft Research AI for Science 的序列式科学基础模型（8x7B），按自然语言指令生成和优化小分子、蛋白质、RNA 与材料；模型卡说明它不是通用问答模型。",
+    "url": "https://huggingface.co/microsoft/NatureLM-8x7B-Inst",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：相关模型（科学对象生成）；开放权重；MIT"
+  },
+  {
+    "number": 214,
+    "name": "ChemFM",
+    "description": "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。",
+    "url": "https://huggingface.co/ChemFM/ChemFM-3B",
+    "category_code": "17",
+    "category": "科学领域语言模型与多模态基础模型",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "子类：相关模型（科学对象生成）；开放权重；MIT"
   }
 ]

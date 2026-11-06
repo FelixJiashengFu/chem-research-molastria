@@ -1,0 +1,106 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://alexandria.icams.rub.de/pbe/v1/structures?filter=chemical_formula_reduced%3D%22GaN%22&page_limit=3&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance
+  response:
+    body:
+      string: '{"data":[{"id":"agm003269497","type":"structures","attributes":{"elements":["Ga","N"],"nelements":2,"chemical_formula_reduced":"GaN","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[3.21566974,0.0,0.0],[-1.60783487,2.78485169,0.0],[0.0,0.0,5.23873513]],"cartesian_site_positions":[[1.6078348860783491,0.9282838873838276,2.614827153262829],[-1.607834876925862e-08,1.8565678026161723,5.234194718262829],[1.6078348860783491,0.9282838873838276,4.588433650487171],[-1.607834876925862e-08,1.8565678026161723,1.969066085487171]],"nsites":4,"species":[{"name":"N","chemical_symbols":["N"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"Ga","chemical_symbols":["Ga"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Ga","Ga","N","N"],"_alexandria_stress_tensor":[[0.73355424,0.0,0.0],[0.0,0.73355424,0.0],[0.0,0.0,0.7557439]],"_alexandria_forces":[[-0.0,0.0,0.00078683],[0.0,0.0,0.00078683],[0.0,0.0,-0.00078683],[-0.0,0.0,-0.00078683]],"_alexandria_energy":-24.63082896,"_alexandria_hull_distance":0.0,"_alexandria_formation_energy_per_atom":-0.6668121}},{"id":"agm003273604","type":"structures","attributes":{"elements":["Ga","N"],"nelements":2,"chemical_formula_reduced":"GaN","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[3.21370336,0.0,0.0],[1.60685168,2.78314875,0.0],[1.60685168,0.92771625,2.62397781]],"cartesian_site_positions":[[0.0,0.0,0.0],[1.60685168,0.92771625,0.6559944525]],"nsites":2,"species":[{"name":"N","chemical_symbols":["N"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"Ga","chemical_symbols":["Ga"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Ga","N"],"_alexandria_stress_tensor":[[0.5097004,0.0,0.0],[0.0,0.5097004,0.0],[0.0,0.0,0.5097004]],"_alexandria_forces":[[-0.0,0.0,-0.0],[0.0,-0.0,0.0]],"_alexandria_energy":-12.30468881,"_alexandria_hull_distance":0.005362845,"_alexandria_formation_energy_per_atom":-0.66144925}},{"id":"agm004389625","type":"structures","attributes":{"elements":["Ga","N"],"nelements":2,"chemical_formula_reduced":"GaN","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[3.01875906,0.0,0.0],[1.50937953,2.61432203,0.0],[1.50937953,0.87144068,2.46480645]],"cartesian_site_positions":[[0.0,0.0,0.0],[3.01875906,1.742881355,1.232403225]],"nsites":2,"species":[{"name":"N","chemical_symbols":["N"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null},{"name":"Ga","chemical_symbols":["Ga"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Ga","N"],"_alexandria_stress_tensor":[[1.1528196,0.0,0.0],[0.0,1.1528196,0.0],[0.0,0.0,1.1528196]],"_alexandria_forces":[[0.0,0.0,0.0],[-0.0,-0.0,0.0]],"_alexandria_energy":-11.35699423,"_alexandria_hull_distance":0.47921014,"_alexandria_formation_energy_per_atom":-0.18760198}}],"meta":{"query":{"representation":"/structures?filter=chemical_formula_reduced%3D%22GaN%22&page_limit=3&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance"},"api_version":"1.1.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:54:18Z","data_returned":null,"provider":{"name":"Alexandria","description":"A
+        collection of databases from the group of Prof. Miguel A. L. Marques at Ruhr
+        University Bochum.","prefix":"alexandria","homepage":"https://alexandria.icams.rub.de/"},"data_available":5777914,"implementation":{"name":"OPTIMADE
+        Python tools","version":"0.25.3","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"https://alexandria.icams.rub.de/pbe/v1/structures?filter=chemical_formula_reduced%3D%22GaN%22&page_limit=3&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance&page_offset=3"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '4672'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:54:18 GMT
+      Server:
+      - nginx/1.22.1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.crystallography.net/cod/optimade/v1/structures?filter=elements+HAS+ALL+%22Ga%22%2C+%22N%22+AND+nelements%3D2&page_limit=30&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"errors":[{"detail":"maximum value of ''page_limit'' exceeded: 30
+        > 10","status":"403 Forbidden","title":"403 Forbidden"}]}
+
+        '
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Date:
+      - Fri, 06 Nov 2026 20:54:18 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      Server:
+      - Apache/2.4.68 (Debian)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 403
+      message: Forbidden
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.crystallography.net/cod/optimade/v1/structures?filter=elements+HAS+ALL+%22Ga%22%2C+%22N%22+AND+nelements%3D2&page_limit=10&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"attributes":{"cartesian_site_positions":[[-0.000158999999999354,1.83606565471581,0],[1.590159,0.917895129318704,2.583],[-0.000158999999999235,1.83606565471581,1.93725],[1.590159,0.917895129318705,4.52025]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.18,0,0],[-1.59,2.75396078403452,0],[0,0,5.166]],"nelements":2,"nsites":4,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_7_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_7_555"}],"species_at_sites":["Ga1","Ga1_7_555","N1","N1_7_555"]},"id":"1010168","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/1010168"},"relationships":{"references":{"data":[{"id":"1010168","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[1.5731573,0.908081156237938,0],[0.000157300000000739,1.81643476406791,2.5625],[1.5731573,0.908081156237938,1.932125],[0.000157300000000857,1.81643476406791,4.494625]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.146,0,0],[-1.573,2.72451592030584,0],[0,0,5.125]],"nelements":2,"nsites":4,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_2_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_2_555"}],"species_at_sites":["Ga1","Ga1_2_555","N1","N1_2_555"]},"id":"1535443","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/1535443"},"relationships":{"references":{"data":[{"id":"1535443","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[1.9925,1.9925,1.9925],[1.9925,0,0],[1.22005437365055e-16,1.9925,0],[1.22005437365055e-16,1.22005437365055e-16,1.9925],[0,0,0],[2.4401087473011e-16,1.9925,1.9925],[1.9925,1.22005437365055e-16,1.9925],[1.9925,1.9925,0]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.985,0,0],[0,3.985,0],[0,0,3.985]],"nelements":2,"nsites":8,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_49_555"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_97_555"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_145_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_49_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_97_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_145_555"}],"species_at_sites":["Ga1","Ga1_49_555","Ga1_97_555","Ga1_145_555","N1","N1_49_555","N1_97_555","N1_145_555"]},"id":"1536825","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/1536825"},"relationships":{"references":{"data":[{"id":"1536825","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[4.73167125477273e-16,1.84571969022501,0.4748784],[1.59875986,0.922859845112504,3.0783784],[5.93559898951339e-16,1.84571969022501,2.4410416],[1.59875986,0.922859845112504,5.0445416]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.1972,0,0],[-1.5986,2.76885642097961,0],[0,0,5.207]],"nelements":2,"nsites":4,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1_1_555"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga1"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1_1_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N1"}],"species_at_sites":["Ga1_1_555","Ga1","N1_1_555","N1"]},"id":"7234259","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/7234259"},"relationships":{"references":{"data":[{"id":"7234259","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[-1.58999999995135e-05,1.83598303589229,0],[1.59,0.918005287750066,2.583],[-1.58999999993917e-05,1.83598303589229,1.98891],[1.59,0.918005287750066,4.57191]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.18,0,0],[-1.59,2.75396078403452,0],[0,0,5.166]],"nelements":2,"nsites":4,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga_2_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N"},{"chemical_symbols":["N"],"concentration":[1],"name":"N_2_555"}],"species_at_sites":["Ga","Ga_2_555","N","N_2_555"]},"id":"9008868","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/9008868"},"relationships":{"references":{"data":[{"id":"9008868","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[1.59501595,0.92086447062066,0],[6.02956515869453e-16,1.84172894124132,2.5945],[1.59501595,0.92086447062066,1.945875],[7.22106995383996e-16,1.84172894124132,4.540375]],"chemical_formula_hill":"GaN","chemical_formula_reduced":"GaN","dimension_types":[1,1,1],"elements":["Ga","N"],"lattice_vectors":[[3.19,0,0],[-1.595,2.76262103807236,0],[0,0,5.189]],"nelements":2,"nsites":4,"species":[{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga"},{"chemical_symbols":["Ga"],"concentration":[1],"name":"Ga_2_555"},{"chemical_symbols":["N"],"concentration":[1],"name":"N"},{"chemical_symbols":["N"],"concentration":[1],"name":"N_2_555"}],"species_at_sites":["Ga","Ga_2_555","N","N_2_555"]},"id":"9011658","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/9011658"},"relationships":{"references":{"data":[{"id":"9011658","type":"references"}]}},"type":"structures"}],"links":{"base_url":"https://www.crystallography.net/cod/optimade/v1.1.0/"},"meta":{"api_version":"1.1.0","data_available":535205,"data_returned":6,"implementation":{"issue_tracker":{"href":"https://projects.ibt.lt/repositories/projects/cod-optimade/issues"},"maintainer":{"email":"cod-bugs@ibt.lt"},"name":"Crystallography
+        Open Database","source_url":"svn://www.crystallography.net/cod/tags/v0.14.0/cgi-bin/optimade.pl@304057","version":"v0.14.0"},"last_id":"9011658","more_data_available":false,"provider":{"description":"Crystallography
+        Open Database","name":"Crystallography Open Database","prefix":"cod"},"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Ga%22%2C+%22N%22+AND+nelements%3D2&page_limit=10&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:54:22Z"}}
+
+        '
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Date:
+      - Fri, 06 Nov 2026 20:54:19 GMT
+      Keep-Alive:
+      - timeout=5, max=99
+      Server:
+      - Apache/2.4.68 (Debian)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

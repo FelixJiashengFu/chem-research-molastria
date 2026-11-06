@@ -1,0 +1,35 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade.materialscloud.org/main/mc3d-pbesol-v2/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy
+  response:
+    body:
+      string: '{"data":[{"id":"e0680921-2121-47f5-b5e3-c536835594d8","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[2.6317295741461,-7.7154461712529e-13,-4.2858959772538e-35],[-1.315864787123,2.2791446671424,-3.8205210338869e-35],[1.4681640001417e-48,4.9557978188556e-36,2.4622472334396]],"cartesian_site_positions":[[0.0,0.0,0.0]],"nsites":1,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si"],"_mcloud_total_energy":-154.07710949052}},{"id":"c7ea3905-8661-4b02-82df-b198baf8283b","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[2.6742521613558,6.1949509338788e-19,-5.7936225091767e-35],[-1.3371260806779,2.3159703077997,2.9263482746807e-35],[-9.9630220464152e-38,-5.6052299869178e-35,4.5106595144778]],"cartesian_site_positions":[[3.1988132311119e-17,1.5439802052332,1.1276648785945],[1.3371260806779,0.77199010256652,3.3829946358833]],"nsites":2,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si"],"_mcloud_total_energy":-307.79438262147}}],"meta":{"query":{"representation":"/main/mc3d-pbesol-v2/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy"},"api_version":"1.2.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.2.0/optimade.json","time_stamp":"2026-11-06T20:50:44.552000","data_returned":33,"provider":{"name":"Materials
+        Cloud","description":"A platform for Open Science built for seamless sharing
+        of resources in computational materials science","prefix":"mcloud","homepage":"https://www.materialscloud.org/"},"data_available":33142,"implementation":{"name":"OPTIMADE
+        Python Tools","version":"1.4.1","homepage":"https://optimade.org/optimade-python-tools","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"https://optimade.materialscloud.org/main/mc3d-pbesol-v2/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy&page_offset=2"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2973'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:44 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    status:
+      code: 200
+      message: OK
+version: 1

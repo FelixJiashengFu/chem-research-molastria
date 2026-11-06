@@ -1,0 +1,128 @@
+interactions:
+- request:
+    body: name=zzzz-not-a-real-molecule-xyz
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '33'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Host:
+      - pubchem.ncbi.nlm.nih.gov
+      User-Agent:
+      - Python-urllib/3.11
+    method: POST
+    uri: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/JSON?record_type=3d
+  response:
+    body:
+      string: "{\n  \"Fault\": {\n    \"Code\": \"PUGREST.NotFound\",\n    \"Message\"\
+        : \"No CID found\",\n    \"Details\": [\n      \"No CID found that matches\
+        \ the given name\"\n    ]\n  }\n}\n"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Connection:
+      - close
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:28:17 GMT
+      Expires:
+      - Tue, 27 Oct 2026 22:28:17 GMT
+      Ncbi-Phid:
+      - 90C6F815AE1177110000000000000001.m_1
+      Ncbi-Sid:
+      - 90C6F815AE117711_0000SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      X-Throttling-Control:
+      - 'Request Count status: Green (2%), Request Time status: Green (0%), Service
+        status: Green (27%)'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: PUGREST.NotFound
+- request:
+    body: name=zzzz-not-a-real-molecule-xyz
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '33'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Host:
+      - pubchem.ncbi.nlm.nih.gov
+      User-Agent:
+      - Python-urllib/3.11
+    method: POST
+    uri: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/JSON?record_type=2d
+  response:
+    body:
+      string: "{\n  \"Fault\": {\n    \"Code\": \"PUGREST.NotFound\",\n    \"Message\"\
+        : \"No CID found\",\n    \"Details\": [\n      \"No CID found that matches\
+        \ the given name\"\n    ]\n  }\n}\n"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Alt-Svc:
+      - clear
+      Cache-Control:
+      - private
+      Connection:
+      - close
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 27 Oct 2026 21:28:17 GMT
+      Expires:
+      - Tue, 27 Oct 2026 22:28:17 GMT
+      Ncbi-Phid:
+      - 95B77200AE1177110000000000000001.m_1
+      Ncbi-Sid:
+      - 95B77200AE117711_0000SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 google
+      X-Throttling-Control:
+      - 'Request Count status: Green (1%), Request Time status: Green (0%), Service
+        status: Green (20%)'
+      X-Ua-Compatible:
+      - IE=Edge
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: PUGREST.NotFound
+version: 1

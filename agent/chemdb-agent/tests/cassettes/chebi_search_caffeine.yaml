@@ -1,0 +1,506 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.ebi.ac.uk/chebi/backend/api/public/es_search/?size=2&term=caffeine
+  response:
+    body:
+      string: '{"results":[{"_index":"chebi-prod-compounds-06112026","_type":"_doc","_id":"27732","_score":58.272705,"_source":{"chebi_accession":"CHEBI:27732","name":"caffeine","ascii_name":"caffeine","stars":3,"default_structure":27932,"definition":"A
+        trimethylxanthine in which the three methyl groups are located at positions
+        1, 3, and 7. A purine alkaloid that occurs naturally in tea and coffee.","inchi":"InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3","monoisotopicmass":194.08038,"smiles":"Cn1c(=O)c2c(ncn2C)n(C)c1=O","inchikey":"RYYVLZVUVIJVGH-UHFFFAOYSA-N","formula":"C8H10N4O2","charge":0,"mass":194.194,"structures":[27932,27934,3601]}},{"_index":"chebi-prod-compounds-06112026","_type":"_doc","_id":"749278","_score":57.042778,"_source":{"chebi_accession":"CHEBI:749278","name":"caffeine
+        citrate","ascii_name":"caffeine citrate","stars":2,"default_structure":3490751,"formula":"C6H8O7.C8H10N4O2","monoisotopicmass":386.10738,"mass":386.317,"inchi":"InChI=1S/C8H10N4O2.C6H8O7/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2;7-3(8)1-6(13,5(11)12)2-4(9)10/h4H,1-3H3;13H,1-2H2,(H,7,8)(H,9,10)(H,11,12)","inchikey":"RCQXSQPPHJPGOF-UHFFFAOYSA-N","smiles":"Cn1c(=O)c2c(ncn2C)n(C)c1=O.O=C(O)CC(O)(CC(=O)O)C(=O)O","charge":0,"structures":[3490751]}}],"total":18,"number_pages":9}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 06 Nov 2026 20:55:13 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.17.7
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Accept, origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      content-length:
+      - '1281'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.ebi.ac.uk/chebi/backend/api/public/compound/27732/
+  response:
+    body:
+      string: "{\"id\":27732,\"chebi_accession\":\"CHEBI:27732\",\"name\":\"caffeine\",\"stars\":3,\"definition\":\"A
+        trimethylxanthine in which the three methyl groups are located at positions
+        1, 3, and 7. A purine alkaloid that occurs naturally in tea and coffee.\",\"ascii_name\":\"caffeine\",\"names\":{\"SYNONYM\":[{\"name\":\"1,3,7-trimethyl-2,6-dioxopurine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"1,3,7-trimethyl-2,6-dioxopurine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"1,3,7-trimethylpurine-2,6-dione\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"IUPHAR\",\"ascii_name\":\"1,3,7-trimethylpurine-2,6-dione\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"1,3,7-trimethylxanthine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"NIST
+        Chemistry WebBook\",\"ascii_name\":\"1,3,7-trimethylxanthine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"1,3,7-Trimethylxanthine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"KEGG
+        COMPOUND\",\"ascii_name\":\"1,3,7-Trimethylxanthine\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"1-methyltheobromine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"1-methyltheobromine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"3,7-Dihydro-1,3,7-trimethyl-1<em>H</em>-purin-2,6-dion\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"NIST
+        Chemistry WebBook\",\"ascii_name\":\"3,7-Dihydro-1,3,7-trimethyl-1H-purin-2,6-dion\",\"adapted\":true,\"language_code\":\"de\"},{\"name\":\"7-methyltheophylline\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"NIST
+        Chemistry WebBook\",\"ascii_name\":\"7-methyltheophylline\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"anhydrous
+        caffeine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"KEGG DRUG\",\"ascii_name\":\"anhydrous
+        caffeine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"cafe\xEDna\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"cafeina\",\"adapted\":true,\"language_code\":\"es\"},{\"name\":\"caf\xE9ine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChEBI\",\"ascii_name\":\"cafeine\",\"adapted\":false,\"language_code\":\"fr\"},{\"name\":\"Caffeine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"KEGG
+        COMPOUND\",\"ascii_name\":\"Caffeine\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"CAFFEINE\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"PDBeChem\",\"ascii_name\":\"CAFFEINE\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        anhydrous\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        anhydrous\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        melting point standard\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        melting point standard\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeinum\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeinum\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Coffein\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"Coffein\",\"adapted\":true,\"language_code\":\"de\"},{\"name\":\"Coffeinum\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Coffeinum\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"FEMA
+        NO. 2224\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"FEMA
+        NO. 2224\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"guaranine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"IUPHAR\",\"ascii_name\":\"guaranine\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Koffein\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"Koffein\",\"adapted\":false,\"language_code\":\"de\"},{\"name\":\"mate\xEDna\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"mateina\",\"adapted\":true,\"language_code\":\"es\"},{\"name\":\"methyltheobromine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"IUPHAR\",\"ascii_name\":\"methyltheobromine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"NSC-5036\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"NSC-5036\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Synalgos\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Synalgos\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"te\xEDna\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChEBI\",\"ascii_name\":\"teina\",\"adapted\":false,\"language_code\":\"es\"},{\"name\":\"Thein\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"ChemIDplus\",\"ascii_name\":\"Thein\",\"adapted\":false,\"language_code\":\"de\"},{\"name\":\"theine\",\"status\":\"C\",\"type\":\"SYNONYM\",\"source\":\"NIST
+        Chemistry WebBook\",\"ascii_name\":\"theine\",\"adapted\":true,\"language_code\":\"en\"},{\"name\":\"Vivarin\",\"status\":\"S\",\"type\":\"SYNONYM\",\"source\":\"ChEMBL\",\"ascii_name\":\"Vivarin\",\"adapted\":false,\"language_code\":\"en\"}],\"IUPAC
+        NAME\":[{\"name\":\"1,3,7-trimethyl-3,7-dihydro-1<em>H</em>-purine-2,6-dione\",\"status\":\"C\",\"type\":\"IUPAC
+        NAME\",\"source\":\"IUPAC\",\"ascii_name\":\"1,3,7-trimethyl-3,7-dihydro-1H-purine-2,6-dione\",\"adapted\":false,\"language_code\":\"en\"}],\"UNIPROT
+        NAME\":[{\"name\":\"caffeine\",\"status\":\"C\",\"type\":\"UNIPROT NAME\",\"source\":\"UniProt\",\"ascii_name\":\"caffeine\",\"adapted\":false,\"language_code\":\"en\"}],\"BRAND
+        NAME\":[{\"name\":\"Caffeine component of anoquan\",\"status\":\"S\",\"type\":\"BRAND
+        NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine component of anoquan\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of cafergot\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of cafergot\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of darvon compound\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of darvon compound\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of dhc plus\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of dhc plus\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of esgic\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of esgic\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of excedrin\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of excedrin\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of femcet\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of femcet\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of fioricet\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of fioricet\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of fiorinal\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of fiorinal\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of invagesic\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of invagesic\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of invagesic forte\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of invagesic forte\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of lanorinal\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of lanorinal\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of medigesic plus\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of medigesic plus\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of migergot\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of migergot\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of norgesic\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of norgesic\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of orphengesic\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of orphengesic\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of orphengesic forte\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of orphengesic forte\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of synalgos-dc\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of synalgos-dc\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of synalgos-dc-a\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of synalgos-dc-a\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of trezix\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of trezix\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of triad\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of triad\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Caffeine
+        component of wigraine\",\"status\":\"S\",\"type\":\"BRAND NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Caffeine
+        component of wigraine\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Nodoz\",\"status\":\"S\",\"type\":\"BRAND
+        NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Nodoz\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Pro-plus\",\"status\":\"S\",\"type\":\"BRAND
+        NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Pro-plus\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Yeast-vite\",\"status\":\"S\",\"type\":\"BRAND
+        NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Yeast-vite\",\"adapted\":false,\"language_code\":\"en\"},{\"name\":\"Zanthine\",\"status\":\"S\",\"type\":\"BRAND
+        NAME\",\"source\":\"ChEMBL\",\"ascii_name\":\"Zanthine\",\"adapted\":false,\"language_code\":\"en\"}]},\"chemical_data\":{\"formula\":\"C8H10N4O2\",\"charge\":0,\"mass\":\"194.194\",\"monoisotopic_mass\":\"194.08038\"},\"modified_on\":\"2021-09-20T10:57:24Z\",\"secondary_ids\":[\"CHEBI:3295\",\"CHEBI:22982\",\"CHEBI:41472\"],\"default_structure\":{\"id\":27932,\"smiles\":\"Cn1c(=O)c2c(ncn2C)n(C)c1=O\",\"standard_inchi\":\"InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3\",\"standard_inchi_key\":\"RYYVLZVUVIJVGH-UHFFFAOYSA-N\",\"wurcs\":null,\"is_r_group\":false},\"compound_origins\":[{\"species_text\":\"Camellia
+        sinensis\",\"species_accession\":\"4442\",\"component_text\":null,\"component_accession\":null,\"strain_text\":null,\"strain_accession\":null,\"source\":\"PubMed\",\"source_accession\":\"18068204\",\"comments\":null,\"species_accession_url\":\"https://bioregistry.io/ncbitaxon:4442\",\"source_accession_url\":\"http://europepmc.org/abstract/MED/18068204\",\"species_accession_prefix\":\"ncbitaxon\"},{\"species_text\":\"Claviceps
+        sorghicola\",\"species_accession\":\"83213\",\"component_text\":null,\"component_accession\":null,\"strain_text\":null,\"strain_accession\":null,\"source\":\"DOI\",\"source_accession\":\"10.1016/S0031-9422(00)00169-2\",\"comments\":null,\"species_accession_url\":\"https://bioregistry.io/ncbitaxon:83213\",\"source_accession_url\":\"https://bioregistry.io/doi:10.1016/S0031-9422(00)00169-2\",\"species_accession_prefix\":\"ncbitaxon\"},{\"species_text\":\"Homo
+        sapiens\",\"species_accession\":\"9606\",\"component_text\":\"blood serum\",\"component_accession\":\"BTO:0000133\",\"strain_text\":null,\"strain_accession\":null,\"source\":\"MetaboLights\",\"source_accession\":\"MTBLS90\",\"comments\":null,\"species_accession_url\":\"https://bioregistry.io/ncbitaxon:9606\",\"component_accession_url\":\"https://purl.obolibrary.org/obo/BTO_0000133\",\"source_accession_url\":\"https://bioregistry.io/metabolights:MTBLS90\",\"species_accession_prefix\":\"ncbitaxon\"},{\"species_text\":\"Mus
+        musculus\",\"species_accession\":\"10090\",\"component_text\":null,\"component_accession\":null,\"strain_text\":null,\"strain_accession\":null,\"source\":\"PubMed\",\"source_accession\":\"19425150\",\"comments\":\"Source:
+        BioModels - MODEL1507180067\",\"species_accession_url\":\"https://bioregistry.io/ncbitaxon:10090\",\"source_accession_url\":\"http://europepmc.org/abstract/MED/19425150\",\"species_accession_prefix\":\"ncbitaxon\"},{\"species_text\":\"Theobroma
+        cacao\",\"species_accession\":\"3641\",\"component_text\":null,\"component_accession\":null,\"strain_text\":null,\"strain_accession\":null,\"source\":\"DOI\",\"source_accession\":\"10.1016/S0031-9422(00)00169-2\",\"comments\":null,\"species_accession_url\":\"https://bioregistry.io/ncbitaxon:3641\",\"source_accession_url\":\"https://bioregistry.io/doi:10.1016/S0031-9422(00)00169-2\",\"species_accession_prefix\":\"ncbitaxon\"}],\"created_by\":[],\"ontology_relations\":{\"incoming_relations\":[{\"init_id\":53115,\"init_name\":\"8-(3-chlorostyryl)caffeine\",\"relation_type\":\"has
+        functional parent\",\"final_id\":27732,\"final_name\":\"caffeine\"},{\"init_id\":31332,\"init_name\":\"caffeine
+        monohydrate\",\"relation_type\":\"has part\",\"final_id\":27732,\"final_name\":\"caffeine\"},{\"init_id\":32140,\"init_name\":\"sodium
+        caffeine benzoate\",\"relation_type\":\"has part\",\"final_id\":27732,\"final_name\":\"caffeine\"}],\"outgoing_relations\":[{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35705,\"final_name\":\"immunosuppressive agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":25435,\"final_name\":\"mutagen\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":176497,\"final_name\":\"geroprotector\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35337,\"final_name\":\"central nervous system stimulant\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":50218,\"final_name\":\"EC 3.1.4.* (phosphoric diester
+        hydrolase) inhibitor\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":75771,\"final_name\":\"mouse metabolite\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":50925,\"final_name\":\"EC 2.7.11.1 (non-specific serine/threonine
+        protein kinase) inhibitor\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":67114,\"final_name\":\"ryanodine receptor agonist\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":76946,\"final_name\":\"fungal metabolite\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":64946,\"final_name\":\"anti-HIV agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":22587,\"final_name\":\"antiviral agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":53121,\"final_name\":\"adenosine A<small><sub>2A</sub></small>
+        receptor antagonist\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35471,\"final_name\":\"psychotropic drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35498,\"final_name\":\"diuretic\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":64047,\"final_name\":\"food additive\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":60809,\"final_name\":\"adjuvant\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":76924,\"final_name\":\"plant metabolite\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":71232,\"final_name\":\"adenosine receptor antagonist\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":85234,\"final_name\":\"human blood serum metabolite\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":78298,\"final_name\":\"environmental contaminant\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35703,\"final_name\":\"xenobiotic\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":75835,\"final_name\":\"anti-anaemic agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35842,\"final_name\":\"antirheumatic drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":38070,\"final_name\":\"anti-arrhythmia drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35480,\"final_name\":\"analgesic\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35610,\"final_name\":\"antineoplastic agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":67079,\"final_name\":\"anti-inflammatory agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35554,\"final_name\":\"cardiovascular drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":50177,\"final_name\":\"dermatologic drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":35526,\"final_name\":\"hypoglycemic agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":50514,\"final_name\":\"vasoconstrictor agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":74518,\"final_name\":\"anti-obesity agent\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":48407,\"final_name\":\"antiparkinson drug\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"has
+        role\",\"final_id\":50748,\"final_name\":\"antipsoriatic\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"is
+        a\",\"final_id\":26385,\"final_name\":\"purine alkaloid\"},{\"init_id\":27732,\"init_name\":\"caffeine\",\"relation_type\":\"is
+        a\",\"final_id\":27134,\"final_name\":\"trimethylxanthine\"}]},\"database_accessions\":{\"CITATION\":[{\"id\":1179915,\"accession_number\":\"10213372\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10213372\",\"prefix\":\"pubmed\"},{\"id\":1179914,\"accession_number\":\"10411473\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10411473\",\"prefix\":\"pubmed\"},{\"id\":822104,\"accession_number\":\"10510174\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10510174\",\"prefix\":\"pubmed\"},{\"id\":1179913,\"accession_number\":\"10602692\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10602692\",\"prefix\":\"pubmed\"},{\"id\":1179919,\"accession_number\":\"10757709\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10757709\",\"prefix\":\"pubmed\"},{\"id\":847233,\"accession_number\":\"10796597\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10796597\",\"prefix\":\"pubmed\"},{\"id\":822105,\"accession_number\":\"10803761\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10803761\",\"prefix\":\"pubmed\"},{\"id\":847235,\"accession_number\":\"10822912\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10822912\",\"prefix\":\"pubmed\"},{\"id\":1179917,\"accession_number\":\"10841799\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10841799\",\"prefix\":\"pubmed\"},{\"id\":1179920,\"accession_number\":\"10866370\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10866370\",\"prefix\":\"pubmed\"},{\"id\":822102,\"accession_number\":\"10884512\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10884512\",\"prefix\":\"pubmed\"},{\"id\":1179918,\"accession_number\":\"10891117\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10891117\",\"prefix\":\"pubmed\"},{\"id\":847240,\"accession_number\":\"10924888\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10924888\",\"prefix\":\"pubmed\"},{\"id\":1179916,\"accession_number\":\"10956200\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10956200\",\"prefix\":\"pubmed\"},{\"id\":822103,\"accession_number\":\"10983026\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/10983026\",\"prefix\":\"pubmed\"},{\"id\":847234,\"accession_number\":\"11014293\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11014293\",\"prefix\":\"pubmed\"},{\"id\":822074,\"accession_number\":\"11022879\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11022879\",\"prefix\":\"pubmed\"},{\"id\":822075,\"accession_number\":\"11209966\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11209966\",\"prefix\":\"pubmed\"},{\"id\":847243,\"accession_number\":\"11312039\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11312039\",\"prefix\":\"pubmed\"},{\"id\":822107,\"accession_number\":\"11410911\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11410911\",\"prefix\":\"pubmed\"},{\"id\":822108,\"accession_number\":\"11431501\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11431501\",\"prefix\":\"pubmed\"},{\"id\":1179922,\"accession_number\":\"11448232\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11448232\",\"prefix\":\"pubmed\"},{\"id\":1179921,\"accession_number\":\"11728183\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11728183\",\"prefix\":\"pubmed\"},{\"id\":1179926,\"accession_number\":\"11754587\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11754587\",\"prefix\":\"pubmed\"},{\"id\":822110,\"accession_number\":\"11815511\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11815511\",\"prefix\":\"pubmed\"},{\"id\":822076,\"accession_number\":\"11949272\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/11949272\",\"prefix\":\"pubmed\"},{\"id\":1179923,\"accession_number\":\"12014951\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12014951\",\"prefix\":\"pubmed\"},{\"id\":1179924,\"accession_number\":\"12061889\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12061889\",\"prefix\":\"pubmed\"},{\"id\":1179925,\"accession_number\":\"12139454\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12139454\",\"prefix\":\"pubmed\"},{\"id\":847231,\"accession_number\":\"12397877\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12397877\",\"prefix\":\"pubmed\"},{\"id\":1179927,\"accession_number\":\"12398547\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12398547\",\"prefix\":\"pubmed\"},{\"id\":1179928,\"accession_number\":\"12444669\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12444669\",\"prefix\":\"pubmed\"},{\"id\":847241,\"accession_number\":\"12457274\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12457274\",\"prefix\":\"pubmed\"},{\"id\":822085,\"accession_number\":\"12574990\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12574990\",\"prefix\":\"pubmed\"},{\"id\":1179884,\"accession_number\":\"1271403\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1271403\",\"prefix\":\"pubmed\"},{\"id\":822109,\"accession_number\":\"12915014\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12915014\",\"prefix\":\"pubmed\"},{\"id\":822093,\"accession_number\":\"12943586\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12943586\",\"prefix\":\"pubmed\"},{\"id\":1179929,\"accession_number\":\"12954186\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/12954186\",\"prefix\":\"pubmed\"},{\"id\":822112,\"accession_number\":\"14521986\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/14521986\",\"prefix\":\"pubmed\"},{\"id\":1179931,\"accession_number\":\"14575433\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/14575433\",\"prefix\":\"pubmed\"},{\"id\":1179930,\"accession_number\":\"14592511\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/14592511\",\"prefix\":\"pubmed\"},{\"id\":822077,\"accession_number\":\"14607010\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/14607010\",\"prefix\":\"pubmed\"},{\"id\":1179932,\"accession_number\":\"14971904\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/14971904\",\"prefix\":\"pubmed\"},{\"id\":1179902,\"accession_number\":\"1501234\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1501234\",\"prefix\":\"pubmed\"},{\"id\":822088,\"accession_number\":\"15257305\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/15257305\",\"prefix\":\"pubmed\"},{\"id\":847232,\"accession_number\":\"15280431\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/15280431\",\"prefix\":\"pubmed\"},{\"id\":1179899,\"accession_number\":\"1548682\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1548682\",\"prefix\":\"pubmed\"},{\"id\":822063,\"accession_number\":\"15681408\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/15681408\",\"prefix\":\"pubmed\"},{\"id\":822087,\"accession_number\":\"15718055\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/15718055\",\"prefix\":\"pubmed\"},{\"id\":847230,\"accession_number\":\"15840517\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/15840517\",\"prefix\":\"pubmed\"},{\"id\":1179901,\"accession_number\":\"1613758\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1613758\",\"prefix\":\"pubmed\"},{\"id\":822083,\"accession_number\":\"16143823\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16143823\",\"prefix\":\"pubmed\"},{\"id\":1179933,\"accession_number\":\"16169219\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16169219\",\"prefix\":\"pubmed\"},{\"id\":847237,\"accession_number\":\"16391865\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16391865\",\"prefix\":\"pubmed\"},{\"id\":847238,\"accession_number\":\"16528931\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16528931\",\"prefix\":\"pubmed\"},{\"id\":822095,\"accession_number\":\"16644114\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16644114\",\"prefix\":\"pubmed\"},{\"id\":822084,\"accession_number\":\"16709440\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16709440\",\"prefix\":\"pubmed\"},{\"id\":822092,\"accession_number\":\"16805851\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16805851\",\"prefix\":\"pubmed\"},{\"id\":822082,\"accession_number\":\"16856769\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/16856769\",\"prefix\":\"pubmed\"},{\"id\":822080,\"accession_number\":\"17132260\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17132260\",\"prefix\":\"pubmed\"},{\"id\":1179900,\"accession_number\":\"1738138\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1738138\",\"prefix\":\"pubmed\"},{\"id\":822079,\"accession_number\":\"17387608\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17387608\",\"prefix\":\"pubmed\"},{\"id\":822081,\"accession_number\":\"17508167\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17508167\",\"prefix\":\"pubmed\"},{\"id\":847239,\"accession_number\":\"17724925\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17724925\",\"prefix\":\"pubmed\"},{\"id\":822065,\"accession_number\":\"17932622\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17932622\",\"prefix\":\"pubmed\"},{\"id\":883340,\"accession_number\":\"17957400\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/17957400\",\"prefix\":\"pubmed\"},{\"id\":880272,\"accession_number\":\"18068204\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18068204\",\"prefix\":\"pubmed\"},{\"id\":822086,\"accession_number\":\"18258404\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18258404\",\"prefix\":\"pubmed\"},{\"id\":822067,\"accession_number\":\"18421070\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18421070\",\"prefix\":\"pubmed\"},{\"id\":1084870,\"accession_number\":\"18513215\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18513215\",\"prefix\":\"pubmed\"},{\"id\":822072,\"accession_number\":\"18625110\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18625110\",\"prefix\":\"pubmed\"},{\"id\":822073,\"accession_number\":\"18647558\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/18647558\",\"prefix\":\"pubmed\"},{\"id\":822078,\"accession_number\":\"19007524\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19007524\",\"prefix\":\"pubmed\"},{\"id\":822090,\"accession_number\":\"19047957\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19047957\",\"prefix\":\"pubmed\"},{\"id\":822064,\"accession_number\":\"19084078\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19084078\",\"prefix\":\"pubmed\"},{\"id\":822089,\"accession_number\":\"19088793\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19088793\",\"prefix\":\"pubmed\"},{\"id\":847242,\"accession_number\":\"19418355\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19418355\",\"prefix\":\"pubmed\"},{\"id\":822091,\"accession_number\":\"19879252\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/19879252\",\"prefix\":\"pubmed\"},{\"id\":1179898,\"accession_number\":\"1992150\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/1992150\",\"prefix\":\"pubmed\"},{\"id\":847236,\"accession_number\":\"20164568\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/20164568\",\"prefix\":\"pubmed\"},{\"id\":822106,\"accession_number\":\"20470411\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/20470411\",\"prefix\":\"pubmed\"},{\"id\":1084872,\"accession_number\":\"22114686\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/22114686\",\"prefix\":\"pubmed\"},{\"id\":1179896,\"accession_number\":\"2213834\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2213834\",\"prefix\":\"pubmed\"},{\"id\":815803,\"accession_number\":\"22770225\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/22770225\",\"prefix\":\"pubmed\"},{\"id\":1084873,\"accession_number\":\"23551936\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/23551936\",\"prefix\":\"pubmed\"},{\"id\":1179897,\"accession_number\":\"2374150\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2374150\",\"prefix\":\"pubmed\"},{\"id\":1084871,\"accession_number\":\"24039592\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/24039592\",\"prefix\":\"pubmed\"},{\"id\":1179890,\"accession_number\":\"2579237\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2579237\",\"prefix\":\"pubmed\"},{\"id\":1179895,\"accession_number\":\"2724296\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2724296\",\"prefix\":\"pubmed\"},{\"id\":1179894,\"accession_number\":\"2795597\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2795597\",\"prefix\":\"pubmed\"},{\"id\":1179892,\"accession_number\":\"2984420\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/2984420\",\"prefix\":\"pubmed\"},{\"id\":1179893,\"accession_number\":\"3806581\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/3806581\",\"prefix\":\"pubmed\"},{\"id\":1179891,\"accession_number\":\"3965711\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/3965711\",\"prefix\":\"pubmed\"},{\"id\":1179889,\"accession_number\":\"6090665\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/6090665\",\"prefix\":\"pubmed\"},{\"id\":1179887,\"accession_number\":\"6279840\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/6279840\",\"prefix\":\"pubmed\"},{\"id\":1179888,\"accession_number\":\"6716406\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/6716406\",\"prefix\":\"pubmed\"},{\"id\":1179886,\"accession_number\":\"7265121\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/7265121\",\"prefix\":\"pubmed\"},{\"id\":822066,\"accession_number\":\"7441110\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/7441110\",\"prefix\":\"pubmed\"},{\"id\":822068,\"accession_number\":\"7689104\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/7689104\",\"prefix\":\"pubmed\"},{\"id\":1179905,\"accession_number\":\"7932565\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/7932565\",\"prefix\":\"pubmed\"},{\"id\":1179906,\"accession_number\":\"8071944\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8071944\",\"prefix\":\"pubmed\"},{\"id\":1179908,\"accession_number\":\"8158169\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8158169\",\"prefix\":\"pubmed\"},{\"id\":1179907,\"accession_number\":\"8182711\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8182711\",\"prefix\":\"pubmed\"},{\"id\":822094,\"accession_number\":\"8332255\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8332255\",\"prefix\":\"pubmed\"},{\"id\":822069,\"accession_number\":\"8347173\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8347173\",\"prefix\":\"pubmed\"},{\"id\":1179903,\"accession_number\":\"8355252\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8355252\",\"prefix\":\"pubmed\"},{\"id\":1179904,\"accession_number\":\"8410976\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8410976\",\"prefix\":\"pubmed\"},{\"id\":822070,\"accession_number\":\"8679661\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8679661\",\"prefix\":\"pubmed\"},{\"id\":1179910,\"accession_number\":\"8691461\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8691461\",\"prefix\":\"pubmed\"},{\"id\":1179909,\"accession_number\":\"8941388\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/8941388\",\"prefix\":\"pubmed\"},{\"id\":1179885,\"accession_number\":\"894678\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/894678\",\"prefix\":\"pubmed\"},{\"id\":822097,\"accession_number\":\"9063686\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9063686\",\"prefix\":\"pubmed\"},{\"id\":822071,\"accession_number\":\"9067318\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9067318\",\"prefix\":\"pubmed\"},{\"id\":822096,\"accession_number\":\"9132918\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9132918\",\"prefix\":\"pubmed\"},{\"id\":822098,\"accession_number\":\"9218278\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9218278\",\"prefix\":\"pubmed\"},{\"id\":1179911,\"accession_number\":\"9435909\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9435909\",\"prefix\":\"pubmed\"},{\"id\":1179912,\"accession_number\":\"9514015\",\"type\":\"CITATION\",\"source_name\":\"PubMed\",\"url\":\"http://europepmc.org/abstract/MED/9514015\",\"prefix\":\"pubmed\"}],\"REGISTRY_NUMBER\":[{\"id\":113379,\"accession_number\":\"103040\",\"type\":\"REGISTRY_NUMBER\",\"source_name\":\"Gmelin\",\"url\":null,\"prefix\":\"gmelin\"},{\"id\":815806,\"accession_number\":\"17705\",\"type\":\"REGISTRY_NUMBER\",\"source_name\":\"Reaxys\",\"url\":null,\"prefix\":\"reaxys\"}],\"MANUAL_X_REF\":[{\"id\":815807,\"accession_number\":\"1-3-7-TRIMETHYLXANTHINE\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"MetaCyc\",\"url\":\"https://bioregistry.io/metacyc.compound:1-3-7-TRIMETHYLXANTHINE\",\"prefix\":\"metacyc.compound\"},{\"id\":979581,\"accession_number\":\"463\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"DrugCentral\",\"url\":\"https://bioregistry.io/drugcentral:463\",\"prefix\":\"drugcentral\"},{\"id\":867146,\"accession_number\":\"C00001492\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"KNApSAcK\",\"url\":\"https://bioregistry.io/knapsack:C00001492\",\"prefix\":\"knapsack\"},{\"id\":9642,\"accession_number\":\"C07481\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"KEGG
+        COMPOUND\",\"url\":\"https://bioregistry.io/kegg.compound:C07481\",\"prefix\":\"kegg.compound\"},{\"id\":793208,\"accession_number\":\"Caffeine\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"Wikipedia\",\"url\":\"https://bioregistry.io/wikipedia.en:Caffeine\",\"prefix\":\"wikipedia.en\"},{\"id\":84351,\"accession_number\":\"CFF\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"PDBeChem\",\"url\":\"https://bioregistry.io/pdb-ccd:CFF\",\"prefix\":\"pdb-ccd\"},{\"id\":113382,\"accession_number\":\"D00528\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"KEGG
+        DRUG\",\"url\":\"https://bioregistry.io/kegg.drug:D00528\",\"prefix\":\"kegg.drug\"},{\"id\":113380,\"accession_number\":\"DB00201\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"DrugBank\",\"url\":\"https://bioregistry.io/drugbank:DB00201\",\"prefix\":\"drugbank\"},{\"id\":815808,\"accession_number\":\"HMDB0001847\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"HMDB\",\"url\":\"https://bioregistry.io/hmdb:HMDB0001847\",\"prefix\":\"hmdb\"},{\"id\":926373,\"accession_number\":\"LSM-2026\",\"type\":\"MANUAL_X_REF\",\"source_name\":\"LINCS\",\"url\":\"https://bioregistry.io/lincs.smallmolecule:LSM-2026\",\"prefix\":\"lincs.smallmolecule\"}],\"CAS\":[{\"id\":84349,\"accession_number\":\"58-08-2\",\"type\":\"CAS\",\"source_name\":\"ChemIDplus\",\"url\":\"https://bioregistry.io/chemidplus:58-08-2\",\"prefix\":\"chemidplus\"},{\"id\":84348,\"accession_number\":\"58-08-2\",\"type\":\"CAS\",\"source_name\":\"NIST
+        Chemistry WebBook\",\"url\":\"http://webbook.nist.gov/cgi/cbook.cgi?ID=58-08-2\",\"prefix\":\"nist\"},{\"id\":9643,\"accession_number\":\"58-08-2\",\"type\":\"CAS\",\"source_name\":\"KEGG
+        COMPOUND\",\"url\":null,\"prefix\":\"kegg.compound\"}]},\"roles_classification\":[{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35705\",\"name\":\"immunosuppressive
+        agent\",\"definition\":\"An agent that suppresses immune function by one of
+        several mechanisms of action. Classical cytotoxic immunosuppressants act by
+        inhibiting DNA synthesis. Others may act through activation of T-cells or
+        by inhibiting the activation of helper cells. In addition, an immunosuppressive
+        agent is a role played by a compound which is exhibited by a capability to
+        diminish the extent and/or voracity of an immune response.\",\"id\":35705,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:53121\",\"name\":\"adenosine
+        A2A receptor antagonist\",\"definition\":\"An antagonist at the A<small><sub>2A</sub></small>
+        receptor.\",\"id\":53121,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:38070\",\"name\":\"anti-arrhythmia
+        drug\",\"definition\":\"A drug used for the treatment or prevention of cardiac
+        arrhythmias. Anti-arrhythmia drugs may affect the polarisation-repolarisation
+        phase of the action potential, its excitability or refractoriness, or impulse
+        conduction or membrane responsiveness within cardiac fibres.\",\"id\":38070,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:85234\",\"name\":\"human
+        blood serum metabolite\",\"definition\":\"Any metabolite (endogenous or exogenous)
+        found in human blood serum samples.\",\"id\":85234,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:50925\",\"name\":\"EC
+        2.7.11.1 (non-specific serine/threonine protein kinase) inhibitor\",\"definition\":\"An
+        EC 2.7.11.* (protein-serine/threonine kinase) inhibitor that interferes with
+        the action of non-specific serine/threonine protein kinase (EC 2.7.11.1),
+        a kinase enzyme involved in phosphorylation of hydroxy group of serine or
+        threonine.\",\"id\":50925,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35526\",\"name\":\"hypoglycemic
+        agent\",\"definition\":\"A drug which lowers the blood glucose level.\",\"id\":35526,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:22587\",\"name\":\"antiviral
+        agent\",\"definition\":\"A substance that destroys or inhibits replication
+        of viruses.\",\"id\":22587,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:25435\",\"name\":\"mutagen\",\"definition\":\"An
+        agent that increases the frequency of mutations above the normal background
+        level, usually by interacting directly with DNA and causing it damage, including
+        base substitution.\",\"id\":25435,\"biological_role\":true},{\"application\":false,\"chemical_role\":true,\"chebi_accession\":\"CHEBI:78298\",\"name\":\"environmental
+        contaminant\",\"definition\":\"Any minor or unwanted substance introduced
+        into the environment that can have undesired effects.\",\"id\":78298,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:50218\",\"name\":\"EC
+        3.1.4.* (phosphoric diester hydrolase) inhibitor\",\"definition\":\"An EC
+        3.1.* (ester hydrolase) inhibitor that interferes with the action of a phosphoric
+        diester hydrolase (EC 3.1.4.*).\",\"id\":50218,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35703\",\"name\":\"xenobiotic\",\"definition\":\"A
+        xenobiotic (Greek, <em>xenos</em> \\\"foreign\\\"; <em>bios</em> \\\"life\\\")
+        is a compound that is foreign to a living organism. Principal xenobiotics
+        include: drugs, carcinogens and various compounds that have been introduced
+        into the environment by artificial means.\",\"id\":35703,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:60809\",\"name\":\"adjuvant\",\"definition\":\"Any
+        pharmacological or immunological agent that modifies the effect of other agents
+        such as drugs or vaccines while having few if any direct effects when given
+        by itself.\",\"id\":60809,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:76946\",\"name\":\"fungal
+        metabolite\",\"definition\":\"Any eukaryotic metabolite produced during a
+        metabolic reaction in fungi, the kingdom that includes microorganisms such
+        as the yeasts and moulds.\",\"id\":76946,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35610\",\"name\":\"antineoplastic
+        agent\",\"definition\":\"A substance that inhibits or prevents the proliferation
+        of neoplasms.\",\"id\":35610,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:50177\",\"name\":\"dermatologic
+        drug\",\"definition\":\"A drug used to treat or prevent skin disorders or
+        for the routine care of skin.\",\"id\":50177,\"biological_role\":false},{\"application\":true,\"chemical_role\":true,\"chebi_accession\":\"CHEBI:64047\",\"name\":\"food
+        additive\",\"definition\":\"Any substance which is added to food to preserve
+        or enhance its flavour and/or appearance.\",\"id\":64047,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:67114\",\"name\":\"ryanodine
+        receptor agonist\",\"definition\":\"A ryanodine receptor modulator which activates
+        the receptor. Ryanodine receptors (RyRs) act as selective ion channels, modulating
+        the release of calcium. Activating the receptors causes the release of calcium,
+        so depleting internal calcium and ultimately preventing further muscle contraction.\",\"id\":67114,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:64946\",\"name\":\"anti-HIV
+        agent\",\"definition\":\"An antiviral agent that destroys or inhibits the
+        replication of the human immunodeficiency virus.\",\"id\":64946,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:176497\",\"name\":\"geroprotector\",\"definition\":\"Any
+        compound that supports healthy aging, slows the biological aging process,
+        or extends lifespan.\",\"id\":176497,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35842\",\"name\":\"antirheumatic
+        drug\",\"definition\":\"A drug used to treat rheumatoid arthritis.\",\"id\":35842,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35471\",\"name\":\"psychotropic
+        drug\",\"definition\":\"A loosely defined grouping of drugs that have effects
+        on psychological function.\",\"id\":35471,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:67079\",\"name\":\"anti-inflammatory
+        agent\",\"definition\":\"Any compound that has anti-inflammatory effects.\",\"id\":67079,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:48407\",\"name\":\"antiparkinson
+        drug\",\"definition\":\"A drug used in the treatment of Parkinson's disease.\",\"id\":48407,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:50514\",\"name\":\"vasoconstrictor
+        agent\",\"definition\":\"Drug used to cause constriction of the blood vessels.\",\"id\":50514,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:50748\",\"name\":\"antipsoriatic\",\"definition\":\"A
+        drug used to treat psoriasis.\",\"id\":50748,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35337\",\"name\":\"central
+        nervous system stimulant\",\"definition\":\"Any drug that enhances the activity
+        of the central nervous system.\",\"id\":35337,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35554\",\"name\":\"cardiovascular
+        drug\",\"definition\":\"A drug that affects the rate or intensity of cardiac
+        contraction, blood vessel diameter or blood volume.\",\"id\":35554,\"biological_role\":false},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35480\",\"name\":\"analgesic\",\"definition\":\"An
+        agent capable of relieving pain without the loss of consciousness or without
+        producing anaesthesia. In addition, analgesic is a role played by a compound
+        which is exhibited by a capability to cause a reduction of pain symptoms.\",\"id\":35480,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:75771\",\"name\":\"mouse
+        metabolite\",\"definition\":\"Any mammalian metabolite produced during a metabolic
+        reaction in a mouse (<em>Mus musculus</em>).\",\"id\":75771,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:35498\",\"name\":\"diuretic\",\"definition\":\"An
+        agent that promotes the excretion of urine through its effects on kidney function.\",\"id\":35498,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:76924\",\"name\":\"plant
+        metabolite\",\"definition\":\"Any eukaryotic metabolite produced during a
+        metabolic reaction in plants, the kingdom that include flowering plants, conifers
+        and other gymnosperms.\",\"id\":76924,\"biological_role\":true},{\"application\":true,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:75835\",\"name\":\"anti-anaemic
+        agent\",\"definition\":\"A compound which increases either the number of red
+        cells or the amount of haemoglobin in the blood.\",\"id\":75835,\"biological_role\":false},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:71232\",\"name\":\"adenosine
+        receptor antagonist\",\"definition\":\"An antagonist at any adenosine receptor.\",\"id\":71232,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:74518\",\"name\":\"anti-obesity
+        agent\",\"definition\":\"Any substance which is used to reduce or control
+        weight.\",\"id\":74518,\"biological_role\":true},{\"application\":false,\"chemical_role\":false,\"chebi_accession\":\"CHEBI:25212\",\"name\":\"metabolite\",\"definition\":\"Any
+        intermediate or product resulting from metabolism. The term 'metabolite' subsumes
+        the classes commonly known as primary and secondary metabolites.\",\"id\":25212,\"biological_role\":true}],\"is_released\":true}"
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 06 Nov 2026 20:55:13 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.17.7
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Accept, origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      content-length:
+      - '46861'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.ebi.ac.uk/chebi/backend/api/public/molfile/27732/
+  response:
+    body:
+      string: "\n  Marvin  02080816422D          \n\n 14 15  0  0  0  0            999
+        V2000\n   -0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0
+        \ 0\n   -0.7145    0.4125    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n
+        \   0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145
+        \   0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -0.8250
+        \   0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.8250    0.0000
+        C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4992    0.6674    0.0000 N   0
+        \ 0  0  0  0  0  0  0  0  0  0  0\n    1.4992   -0.6675    0.0000 N   0  0
+        \ 0  0  0  0  0  0  0  0  0  0\n    1.9841    0.0000    0.0000 C   0  0  0
+        \ 0  0  0  0  0  0  0  0  0\n   -1.4289   -0.8250    0.0000 O   0  0  0  0
+        \ 0  0  0  0  0  0  0  0\n    0.0001    1.6500    0.0000 O   0  0  0  0  0
+        \ 0  0  0  0  0  0  0\n    0.0001   -1.6500    0.0000 C   0  0  0  0  0  0
+        \ 0  0  0  0  0  0\n    1.7541    1.4520    0.0000 C   0  0  0  0  0  0  0
+        \ 0  0  0  0  0\n   -1.4289    0.8250    0.0000 C   0  0  0  0  0  0  0  0
+        \ 0  0  0  0\n 10  1  2  0  0  0  0\n  1  2  1  0  0  0  0\n 14  2  1  0  0
+        \ 0  0\n  8  3  1  0  0  0  0\n  4  3  2  0  0  0  0\n  7  4  1  0  0  0  0\n
+        \ 1  5  1  0  0  0  0\n  5  3  1  0  0  0  0\n 12  5  1  0  0  0  0\n  6  2
+        \ 1  0  0  0  0\n  6  4  1  0  0  0  0\n 11  6  2  0  0  0  0\n  9  7  1  0
+        \ 0  0  0\n 13  7  1  0  0  0  0\n  9  8  2  0  0  0  0\nM  END\n"
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Disposition:
+      - attachment; filename="CHEBI:27732.mol"
+      Content-Length:
+      - '1392'
+      Content-Type:
+      - chemical/x-mdl-molfile
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 06 Nov 2026 20:55:13 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.17.7
+      Vary:
+      - Accept, origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.ebi.ac.uk/chebi/backend/api/public/compound/749278/
+  response:
+    body:
+      string: '{"id":749278,"chebi_accession":"CHEBI:749278","name":"caffeine citrate","stars":2,"definition":"","ascii_name":"caffeine
+        citrate","names":{"BRAND NAME":[{"name":"Cafcit","status":"S","type":"BRAND
+        NAME","source":"ChEMBL","ascii_name":"Cafcit","adapted":false,"language_code":"en"},{"name":"Gencebok","status":"S","type":"BRAND
+        NAME","source":"ChEMBL","ascii_name":"Gencebok","adapted":false,"language_code":"en"},{"name":"Peyona
+        (previously nymusa)","status":"S","type":"BRAND NAME","source":"ChEMBL","ascii_name":"Peyona
+        (previously nymusa)","adapted":false,"language_code":"en"}],"SYNONYM":[{"name":"Caffeine
+        mixture with citric acid","status":"S","type":"SYNONYM","source":"ChEMBL","ascii_name":"Caffeine
+        mixture with citric acid","adapted":false,"language_code":"en"},{"name":"Citrated
+        caffeine","status":"S","type":"SYNONYM","source":"ChEMBL","ascii_name":"Citrated
+        caffeine","adapted":false,"language_code":"en"}]},"chemical_data":{"formula":"C6H8O7.C8H10N4O2","charge":0,"mass":"386.317","monoisotopic_mass":"386.10738"},"modified_on":"2026-06-29T15:48:47.975926Z","secondary_ids":[],"default_structure":{"id":3490751,"smiles":"Cn1c(=O)c2c(ncn2C)n(C)c1=O.O=C(O)CC(O)(CC(=O)O)C(=O)O","standard_inchi":"InChI=1S/C8H10N4O2.C6H8O7/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2;7-3(8)1-6(13,5(11)12)2-4(9)10/h4H,1-3H3;13H,1-2H2,(H,7,8)(H,9,10)(H,11,12)","standard_inchi_key":"RCQXSQPPHJPGOF-UHFFFAOYSA-N","wurcs":null,"is_r_group":false},"compound_origins":[],"created_by":["ChEMBL"],"ontology_relations":{"incoming_relations":[],"outgoing_relations":[{"init_id":749278,"init_name":"caffeine
+        citrate","relation_type":"has role","final_id":35480,"final_name":"analgesic"},{"init_id":749278,"init_name":"caffeine
+        citrate","relation_type":"has role","final_id":55324,"final_name":"gastrointestinal
+        drug"},{"init_id":749278,"init_name":"caffeine citrate","relation_type":"is
+        a","final_id":25810,"final_name":"oxopurine"}]},"database_accessions":{"CITATION":[{"id":1232927,"accession_number":"30956014","type":"CITATION","source_name":"PubMed","url":"http://europepmc.org/abstract/MED/30956014","prefix":"pubmed"}]},"roles_classification":[{"application":true,"chemical_role":false,"chebi_accession":"CHEBI:35480","name":"analgesic","definition":"An
+        agent capable of relieving pain without the loss of consciousness or without
+        producing anaesthesia. In addition, analgesic is a role played by a compound
+        which is exhibited by a capability to cause a reduction of pain symptoms.","id":35480,"biological_role":true},{"application":true,"chemical_role":false,"chebi_accession":"CHEBI:55324","name":"gastrointestinal
+        drug","definition":"A drug used for its effects on the gastrointestinal system,
+        e.g. controlling gastric acidity, regulating gastrointestinal motility and
+        water flow, and improving digestion.","id":55324,"biological_role":false}],"is_released":true}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 06 Nov 2026 20:55:14 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.17.7
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Accept, origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      content-length:
+      - '2852'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.ebi.ac.uk/chebi/backend/api/public/molfile/749278/
+  response:
+    body:
+      string: "\n     RDKit          2D\n\n 27 27  0  0  0  0  0  0  0  0999 V2000\n
+        \   2.8375   -1.6750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.4542
+        \  -2.0292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.2167   -2.0250
+        \   0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4792   -1.0542    0.0000
+        C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.0667   -1.6750    0.0000 C   0
+        \ 0  0  0  0  0  0  0  0  0  0  0\n    2.2250   -2.7292    0.0000 C   0  0
+        \ 0  0  0  0  0  0  0  0  0  0\n    2.8292   -0.4417    0.0000 O   0  0  0
+        \ 0  0  0  0  0  0  0  0  0\n    2.8417   -3.0792    0.0000 O   0  0  0  0
+        \ 0  0  0  0  0  0  0  0\n    4.0667   -0.9667    0.0000 O   0  0  0  0  0
+        \ 0  0  0  0  0  0  0\n    3.1875   -1.0542    0.0000 O   0  0  0  0  0  0
+        \ 0  0  0  0  0  0\n    1.7667   -1.0542    0.0000 O   0  0  0  0  0  0  0
+        \ 0  0  0  0  0\n    1.6125   -3.0917    0.0000 O   0  0  0  0  0  0  0  0
+        \ 0  0  0  0\n    4.6792   -2.0292    0.0000 O   0  0  0  0  0  0  0  0  0
+        \ 0  0  0\n   -0.2458   -2.1292    0.0000 C   0  0  0  0  0  0  0  0  0  0
+        \ 0  0\n   -0.2458   -1.4375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0
+        \ 0\n   -0.8708   -2.5042    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n
+        \  -1.4750   -1.4375    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4750
+        \  -2.1292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.8708   -1.0750
+        \   0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.4417   -2.3667    0.0000
+        N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.4417   -1.2375    0.0000 N   0
+        \ 0  0  0  0  0  0  0  0  0  0  0\n    0.8292   -1.7792    0.0000 C   0  0
+        \ 0  0  0  0  0  0  0  0  0  0\n   -2.0833   -2.5125    0.0000 O   0  0  0
+        \ 0  0  0  0  0  0  0  0  0\n   -0.8708   -0.3667    0.0000 O   0  0  0  0
+        \ 0  0  0  0  0  0  0  0\n   -0.8708   -3.2167    0.0000 C   0  0  0  0  0
+        \ 0  0  0  0  0  0  0\n   -2.0833   -1.0750    0.0000 C   0  0  0  0  0  0
+        \ 0  0  0  0  0  0\n    0.6500   -0.5500    0.0000 C   0  0  0  0  0  0  0
+        \ 0  0  0  0  0\n  2  1  1  0\n  3  1  1  0\n  4  1  1  0\n  5  2  1  0\n
+        \ 6  3  1  0\n  7  4  2  0\n  8  6  2  0\n  9  5  2  0\n 10  1  1  0\n 11
+        \ 4  1  0\n 12  6  1  0\n 13  5  1  0\n 15 14  2  0\n 16 14  1  0\n 17 18
+        \ 1  0\n 18 16  1  0\n 19 15  1  0\n 20 14  1  0\n 21 15  1  0\n 22 20  2
+        \ 0\n 23 18  2  0\n 24 19  2  0\n 25 16  1  0\n 26 17  1  0\n 27 21  1  0\n
+        22 21  1  0\n 17 19  1  0\nM  END\n"
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Disposition:
+      - attachment; filename="CHEBI:749278.mol"
+      Content-Length:
+      - '2313'
+      Content-Type:
+      - chemical/x-mdl-molfile
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 06 Nov 2026 20:55:14 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.17.7
+      Vary:
+      - Accept, origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+    status:
+      code: 200
+      message: OK
+version: 1

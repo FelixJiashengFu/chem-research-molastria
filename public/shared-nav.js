@@ -8,9 +8,11 @@
   const links = [
     ['search', 'index.html', '统一搜索'],
     ['network', 'hub/network.html', '网状查询'],
-    ['atlas', 'atlas/index.html#guide', '讲解手册与数据库'],
+    ['manual', 'manual/index.html', '讲解手册'],
+    ['atlas', 'atlas/index.html#resources', '数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
+    ['journals', 'journals/index.html', '期刊发表'],
     ['lab', 'lab/index.html', 'AI 实验室'],
     ['meta', 'meta/index.html', 'Meta', true],
     ['models', 'models/index.html', '模型接口', true],
@@ -24,6 +26,7 @@
   const moon = '<svg class="cr-theme-dark" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>';
   const sun = '<svg class="cr-theme-light" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>';
   const spark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z"/></svg>';
+  const chevron = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
 
   // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
   const readAccount = () => { try { return localStorage.getItem('molastria-session') ? JSON.parse(localStorage.getItem('molastria-account') || 'null') : null; } catch { return null; } };
@@ -33,24 +36,60 @@
   nav.className = 'cr-header';
   const en = document.documentElement.lang === 'en';
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
-    + `<nav class="cr-links" aria-label="全站导航">${links.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
+    + `<nav class="cr-links" aria-label="全站导航">${links.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
+    + `<div class="cr-more" hidden><button class="cr-more-btn" type="button" aria-expanded="false" aria-controls="cr-more-menu">更多${chevron}</button><div class="cr-more-menu" id="cr-more-menu" hidden></div></div>`
+    + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
     + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-bg" aria-label="更换背景" title="更换背景" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-theme" aria-label="切换浅色 / 深色">${moon}${sun}</button>`
     + `<button class="cr-ai-btn" type="button" id="cr-ai" aria-haspopup="dialog">${spark}<span class="cr-label">AI 助手</span><span class="cr-dot" aria-hidden="true"></span></button></div>`;
   document.body.prepend(nav);
 
+  const row = nav.querySelector('.cr-links'), more = row.querySelector('.cr-more'), moreBtn = more.firstElementChild, menu = more.lastElementChild;
+  const items = [...row.querySelectorAll(':scope > a:not(.cr-pro-link)')];
   const markCurrent = () => {
     const hash = (window.__CHEM_LOCATION__ || location).hash || '';
     const active = section === 'atlas' && hash.startsWith('#agent') ? 'agent' : section;
     nav.querySelectorAll('.cr-links a').forEach((a) => {
       if (a.dataset.id === active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    moreBtn.toggleAttribute('data-current', !!menu.querySelector('[aria-current]'));
   };
-  markCurrent();
+  // One row at every desktop width: links that do not fit move, in their order, into the "更多" menu.
+  // Phones keep every link in the row and scroll it sideways.
+  const phone = matchMedia('(max-width:760px)');
+  const setMenu = (open) => { menu.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open)); };
+  const fits = () => {
+    const shown = [...row.children].filter((el) => el.offsetWidth);
+    const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+    return shown.reduce((w, el) => w + el.getBoundingClientRect().width, gap * (shown.length - 1)) <= row.clientWidth + 0.5;
+  };
+  const fit = () => {
+    const open = !menu.hidden, focused = document.activeElement;
+    items.forEach((a) => row.insertBefore(a, more));
+    more.hidden = true;
+    if (!phone.matches && !fits()) {
+      more.hidden = false;
+      for (let i = items.length - 1; i >= 0 && !fits(); i--) menu.prepend(items[i]);
+    }
+    setMenu(open && !more.hidden);
+    // Moving a focused link drops its focus; give it back (or to the button when the link went into the closed menu).
+    if (focused !== document.activeElement && row.contains(focused)) (focused.offsetWidth ? focused : moreBtn).focus({ preventScroll: true });
+    markCurrent();
+  };
+  moreBtn.addEventListener('click', () => setMenu(menu.hidden));
+  more.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); setMenu(false); moreBtn.focus(); } });
+  more.addEventListener('focusout', (e) => { if (e.relatedTarget && !more.contains(e.relatedTarget)) setMenu(false); });
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('click', (e) => { if (!more.contains(e.target)) setMenu(false); });
+  fit();
+  // Re-fit when the row's width changes, when English labels arrive and when web fonts finish loading.
+  new ResizeObserver(fit).observe(row);
+  document.addEventListener('chemhub:i18n', fit);
+  document.fonts?.ready.then(fit);
   window.addEventListener('hashchange', markCurrent);
   // On phones the link row scrolls sideways: bring the current section into view.
-  const row = nav.querySelector('.cr-links'), current = row.querySelector('[aria-current]');
+  const current = row.querySelector('[aria-current]');
   if (current && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, current.offsetLeft - (row.clientWidth - current.offsetWidth) / 2);
 
   // 主题：未手动选择时跟随系统；点击后在浅色 / 深色之间切换并记住。

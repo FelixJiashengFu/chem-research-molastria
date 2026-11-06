@@ -82,12 +82,13 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 训练页的模型核对：`node tools/train-models.mjs`（每周四随目录刷新自动跑；本机有 HTTPS 扫描时加 `NODE_USE_SYSTEM_CA=1`）。它只更新 `public/train/models-live.js`，手写的模型介绍要人来改。
 
 - **ChemRxiv：** `deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts`，可重复运行，只替换 ChemRxiv 条目。新增文字后走一遍翻译。
-- **每周自动刷新：** `.github/workflows/refresh-data.yml` 每周四 13:00（UTC）跑一遍，结果自动提交并发布。马上要刷新就运行 `gh workflow run refresh-data.yml`。某个来源抓取失败时沿用上周的条目；`tools/check-catalogue.mjs` 发现条目减少超过 15% 或某个来源为空时拒绝提交，到 Actions 日志里看是哪个来源出了问题。
-- **在本机刷新：** 用 Python 3.12 虚拟环境装好 `maintenance/requirements.txt`，运行 `python maintenance/refresh_data.py`，再运行 `hub-chemrxiv.ts` 和 `node tools/check-catalogue.mjs`。
-- **ChemDB Atlas 目录（`public/atlas/content.js`）：** 人工整理，可以手改；加条目前用浏览器 UA 检查链接，改完同步 `public/atlas/downloads/resources.{json,csv}` 和页面上写死的条数，再运行 `merge_data.py`。
+- **每周自动刷新：** `.github/workflows/refresh-data.yml` 每周四 13:00（UTC）跑一遍，结果自动提交并发布。马上要刷新就运行 `gh workflow run refresh-data.yml`。某个来源抓取失败时沿用上周的条目（来源状态记为 `cache`，页面卡片显示“本次失败，保留上次缓存”）；`tools/check-catalogue.mjs` 发现条目减少超过 15%、某个来源为空、上次有的来源这次没了、`hub/data.js` 超过 1.6 MB 或 `merged-data.js` 超过 3.2 MB 时拒绝提交，到 Actions 日志里看是哪个来源出了问题。
+- **在本机刷新：** 用 Python 3.12 虚拟环境装好 `maintenance/requirements.txt`，先跑维护脚本的单元测试 `python -m unittest discover -s maintenance -p "test_*.py"`（离线，不联网；每周的工作流也先跑它），再运行 `python -X utf8 maintenance/refresh_data.py`，然后运行 `hub-chemrxiv.ts` 和 `node tools/check-catalogue.mjs`。
+- **ChemDB Atlas 目录（`public/atlas/content.js`）：** 人工整理，可以手改；加条目前用浏览器 UA 检查链接，改完同步 `public/atlas/downloads/resources.{json,csv}` 和页面上写死的条数、类别数（`atlas/index.html`、`index.html`），再依次运行 `python -X utf8 maintenance/merge_data.py`、`hub-chemrxiv.ts`（`merge_data.py` 给 ChemRxiv 条目算的 id 和它不同，不重跑会换掉这 50 条的 id）和 `node tools/check-catalogue.mjs`。手册加章时还要改写死的章数（`index.html`、`manual/index.html`、`hub/network.html`、`hub/net-engine.js`、`pro/index.html`、`download/index.html`、`tools/bundle-single.ts`、`tools/og.html`）。
 - **其余目录快照（旧说明）：** `maintenance/` 的 Python 脚本。重新生成后要再跑一次 `hub-chemrxiv.ts`，否则 ChemRxiv 条目会丢。
 - **预印本雷达：** 先在 `D:\ChemDraw\PreprintRadar` 运行 `deno task web`，再回到这里运行 `deno run --allow-read --allow-write tools/vendor-radar.ts`，然后走一遍翻译。
 - **量子化学计算：** 先在 qchem-web 仓库运行 `python3 tools/build.py`（它的测试是 `node tests/run_all.js`），再回到这里运行 `deno run --allow-read --allow-write --allow-run=git tools/vendor-qchem.ts [qchem-web 的路径]`，默认找同级目录 `../qchem-web`。它自带中英文词典，复制后不用走翻译；只有外层页面 `public/qchem/index.html` 的文字改了才要走。
+- **chemdb-agent 下载包：** 源码在 `agent/chemdb-agent/`。改完先在那里跑离线测试（`uv sync` 后 `uv run python -m pytest`，或 venv 里 `pip install -e . pytest vcrpy` 后 `python -m pytest`；联网冒烟测试加 `CHEMDB_LIVE=1`），再回到仓库根目录运行 `python tools/pack-chemdb-agent.py`，重新生成 `public/atlas/downloads/chemdb-agent.zip`。同样的源码打出同样的 zip；脚本发现 .env、缓存、本机路径或 token 时会中止，不要手放 zip。
 - **训练 Agent 页的模型表：** 模型信息要对照 Hugging Face（`huggingface.co/api/models/<id>?expand[]=safetensors`）和模型卡核实。刷新时要按作者加 `sort=createdAt` 逐家查最新的仓库，不能只查已知的系列名，否则会漏掉刚发布的新系列（发生过）。
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 

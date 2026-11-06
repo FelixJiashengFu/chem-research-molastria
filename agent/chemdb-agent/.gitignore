@@ -1,0 +1,14 @@
+# 本地环境与数据（不提交）
+.env
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/*
+!data/.gitkeep
+*.db
+*.db-journal
+*.extxyz
+*.tmp
+# tests/cassettes/ 要提交：离线测试靠它回放（录制时已去掉 key 与 Cookie）

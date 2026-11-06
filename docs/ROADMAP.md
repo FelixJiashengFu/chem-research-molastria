@@ -6,6 +6,7 @@
 
 - 在线模型已开通（2026-11-05）：15 个模型（UMA 四个、OMol25 的 AllScAIP 两个和 eSEN 三个、MACE 五个、ANI-2x 只给 Pro），隧道 `molastria-uma` → `uma-origin.molastria.com`。FEC 实测每个模型 1–14 秒（RTX 2080）。待办：观察一周的用量再调各档次数；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）；UMA-M 1.1 要更大的内存和显存；可以向 MACE 作者要在线服务的书面许可；UMA-S 1.2.1 水的 IP 偏低，可以反馈给 fairchem。
 - 模型接口（API v3，2026-11-06）：新页面 `/models/`，13 种计算（sp、opt、freq、conf、scan、md、rxn、ipea、spin、bde、pa、polar、ir），按计算量计次。站长电脑要用新版 `tools/uma-server/server.py` 重启 `start.ps1`（health 里有 `api: 3`）。真实模型试跑见 `tools/uma-server/realrun.py`：A 类最坏情况（30 个重原子）都在 600 s 内；MACE-OMOL-0、MACE-OFF23 large、MACE-MDP 的最坏情况还没测，MACE-OMOL-0 跑大分子的 md、freq 可能超时。
+- 桌面版 0.1.13 装好后要人在真机上点一次：Mac 上点任意下载，应弹出系统“存储为”窗口（Mac 的保存窗口没有实测过）；Win 和 Mac 都从顶栏进“讲解手册”“数据库”“期刊发表”看一眼，再看首页徽标和下载页片头视频有没有播放。Mac 桌面版的 WKWebView 从 Tauri 内置协议播视频可能要 Range 请求（内置协议只返回完整文件），没有实测；不支持时两处都退回 poster 静图。
 - 每周精选第一期（周一）发出后看一眼：邮件显示、进垃圾箱没有、DeepSeek 花了多少。
 - 商业邮件合规：加拿大 CASL 一般要求邮件里有发件人的联系方式（如邮寄地址），每周精选现在只有网址和退订链接；要确认是否适用、放什么。
 - 售后邮箱：在 Porkbun 设 `support@molastria.com` 转发，再填进 `public/pay/config.js` 的 `contactEmail`（现在售后只能去公开的 GitHub Issues）。
@@ -28,8 +29,9 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 
 增长：
 - 云端批量计算（2026-11-05 站长暂停）：`tools/cloud/` 代码和 MACE-OFF23 一段已在云端 L4 上验证过；L4 在美国各区普遍缺货，UMA 一段没跑成。要继续时：在虚拟机上登录 Hugging Face，跑 `tools/cloud/run.mjs`，再用真实 UMA 结果校准 MACE-OFF23 的两个阈值（0.3 Å / 0.2 eV）。云上的两台机器都关着，磁盘和快照还在计存储费。
-- 说明讲解手册：给 12–16 类（量子化学程序、凝聚态第一性原理、波函数分析、课程教材、量子计算）补写章节；现有 19 章按原材料的 103 条写成，封面数字也还是 103。
-- 网状查询：记录没有命中的查询词，用来补 `public/search-terms.js` 的概念组。
+- 说明讲解手册：给 12–16 类（量子化学程序、凝聚态第一性原理、波函数分析、课程教材、量子计算）补写章节；现有 20 章，其中 19 章按原材料的 103 条写成（封面数字也还是 103），第 17 类一章是 2026-11-06 新写的。
+- 同步 chemdb-agent 工具包的目录：现在是 103 条，网站是 214 条。要连带改 `agent/chemdb-agent` 的 `catalog/resources.py`、`tests/test_resources.py`（断言 103 条、11 类）、`server.py`、README，再 `python tools/pack-chemdb-agent.py`。
+- 网状查询：记录没有命中的查询词，用来补 `public/search-terms.js` 的概念组。条目翻倍后网状查询页变慢（4 倍 CPU 减速下 1.5 → 1.8 s），可以懒加载或预先算好实体；“ESPRESSO”和目录里的“Quantum ESPRESSO”是两个节点，可以合并。
 - 目录数据：定时自动刷新；把 arXiv、Crossref 期刊等快照也改成不依赖 Python；补上缺失的日期和占位摘要。
 - 搜索引擎：生成英文静态页（`?lang=en` 和中文页 HTML 相同，没有 hreflang）；做主题合集页；到 Search Console 确认收录。
 - 用大陆网络实测访问速度和百度收录（GitHub Pages 在这两方面都有风险）。
@@ -37,7 +39,9 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 
 ## 以后再说
 
-- 顶栏已有 9 个栏目：中文在 1181–1250 px 宽、英文在 1536 px 以下会折成两行。再加栏目前先考虑合并或做下拉菜单。
+- 390 px 下正文比容器宽 2 px：讲解手册第 17 类一章的 `#guide-article` scrollWidth 352、clientWidth 350，找不到超出右边界的元素，页面本身不横向滚动。
+- 目录数据小错：Alexandria（#74）的说明写成“百万级分子的 DFT 性质数据集”，它其实是无机晶体库；网状查询里几个中文资源名（Burcat 热化学库、IUPAC 气相动力学、USPTO 反应数据集）英文站仍显示中文。
+- 单文件版（`tools/bundle-single.ts`）没有打包模型接口页，手册第 17 类一章里指向 `../models/index.html` 的链接在单文件版里打不开。
 - 文字对比度：讲解与数据库页 148 处、训练 Agent 页 71 处、论文与社区页 63 处、Pro 页 13 处不达标（axe，2026-10-31）。
 - 代码整理：根目录遗留文件（`server.py`、`merge-report.json`、`verification.json`、`index.html`），`public/app.js` 的超长行，开 Dependabot。
 - 代码签名：Apple Developer Program（US$99/年）加 Windows 证书，去掉首次打开时的安全提示。
@@ -46,6 +50,8 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 
 ## 已完成
 
+- 2026-11-06 第二期（桌面版 0.1.13）：讲解手册单独成栏目 `manual/`，顶栏放不下的入口收进“更多”；新栏目“期刊发表”（46 种期刊 + 2 个预印本平台，18 章投稿指导，只写官网核实过的内容）；数据库第 17 类“科学领域语言模型与多模态基础模型”27 条，讲解手册加一章（共 20 章）；论文与社区新增 14 个国际来源，目录 1,607 → 2,639 条、国际来源过半；chemdb-agent 0.2.0 源码进仓库（`agent/chemdb-agent/`），下载包由 `tools/pack-chemdb-agent.py` 确定性生成；桌面版点下载弹系统保存窗口；首页动态徽标、下载页片头视频（`assets/brand/`）。
+- 2026-11-06 模型接口 API v3（`models/`）与桌面版 0.1.12。
 - 2026-11-05 目录每周四自动刷新（`refresh-data.yml` + `check-catalogue.mjs`），当天先刷新一次：1,515 → 1,607 条；ChemDB Atlas 新增 84 条量子物理、量子力学与量子化学资源（程序、凝聚态第一性原理、波函数分析与动力学、课程教材、量子计算化学，共 187 条、16 类）。
 - 2026-11-05 AI 设置的“其他兼容接口”内置 19 家服务商预设（只收浏览器能直接调用的），可按 key 获取模型列表；识图可用“AI 设置中的当前模型”。页面介绍仍只写 Muse / DeepSeek。
 - 2026-11-05 GitHub 学生包：仓库加了 Codespaces 开发环境（`.devcontainer/`）和 Copilot 说明（`.github/copilot-instructions.md`）。

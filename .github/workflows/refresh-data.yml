@@ -29,11 +29,16 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      # Each source is crawled on its own: one that fails or comes back empty keeps last week's entries
+      # (maintenance/crawler.py), so only a broken crawler stops the refresh. The unit tests run first and need no network.
       - name: Crawl the sources and rebuild the catalogue
         run: |
           pip install -r maintenance/requirements.txt
+          python -m unittest discover -s maintenance -p "test_*.py"
           python maintenance/refresh_data.py
+      # The crawler already carried last week's ChemRxiv entries over, so a Crossref outage here keeps them.
       - name: Refresh ChemRxiv entries (Crossref)
+        continue-on-error: true
         run: deno run --allow-net --allow-read --allow-write tools/hub-chemrxiv.ts
       - name: Check the new snapshot
         run: node tools/check-catalogue.mjs

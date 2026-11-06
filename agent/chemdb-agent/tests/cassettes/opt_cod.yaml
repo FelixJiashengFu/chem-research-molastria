@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://www.crystallography.net/cod/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"attributes":{"cartesian_site_positions":[[0,0,0],[3.34873543992848e-16,2.73445,2.73445],[2.73445,2.73445,0],[2.73445,1.67436771996424e-16,2.73445],[4.101675,1.367225,4.101675],[1.367225,1.367225,1.367225],[1.367225,4.101675,4.101675],[4.101675,4.101675,1.367225]],"chemical_formula_hill":"Si","chemical_formula_reduced":"Si","dimension_types":[1,1,1],"elements":["Si"],"lattice_vectors":[[5.4689,0,0],[0,5.4689,0],[0,0,5.4689]],"nelements":1,"nsites":8,"species":[{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_2_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_3_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_4_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_13_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_14_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_15_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si001_16_555"}],"species_at_sites":["Si001","Si001_2_555","Si001_3_555","Si001_4_555","Si001_13_555","Si001_14_555","Si001_15_555","Si001_16_555"]},"id":"1512541","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/1512541"},"relationships":{"references":{"data":[{"id":"1512541","type":"references"}]}},"type":"structures"},{"attributes":{"cartesian_site_positions":[[0,0,0],[1.34525,1.34525,1.34525],[3.29491221310595e-16,2.6905,2.6905],[4.03575,1.34525,4.03575],[2.6905,1.64745610655298e-16,2.6905],[1.34525,4.03575,4.03575],[2.6905,2.6905,0],[4.03575,4.03575,1.34525]],"chemical_formula_hill":"Si","chemical_formula_reduced":"Si","dimension_types":[1,1,1],"elements":["Si"],"lattice_vectors":[[5.381,0,0],[0,5.381,0],[0,0,5.381]],"nelements":1,"nsites":8,"species":[{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_2_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_3_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_4_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_18_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_19_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_20_555"},{"chemical_symbols":["Si"],"concentration":[1],"name":"Si1_44_555"}],"species_at_sites":["Si1","Si1_2_555","Si1_3_555","Si1_4_555","Si1_18_555","Si1_19_555","Si1_20_555","Si1_44_555"]},"id":"1526655","links":{"self":"https://www.crystallography.net/cod/optimade/v1.1.0/structures/1526655"},"relationships":{"references":{"data":[{"id":"1526655","type":"references"}]}},"type":"structures"}],"links":{"base_url":"https://www.crystallography.net/cod/optimade/v1.1.0/","first":{"href":"https://www.crystallography.net/cod/optimade/v1.1.0/structures?page_limit=2&filter=elements%20HAS%20ALL%20%22Si%22%20AND%20nelements%3D1&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"next":{"href":"https://www.crystallography.net/cod/optimade/v1.1.0/structures?page_offset=2&page_limit=2&filter=elements%20HAS%20ALL%20%22Si%22%20AND%20nelements%3D1&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"}},"meta":{"api_version":"1.1.0","data_available":535205,"data_returned":28,"implementation":{"issue_tracker":{"href":"https://projects.ibt.lt/repositories/projects/cod-optimade/issues"},"maintainer":{"email":"cod-bugs@ibt.lt"},"name":"Crystallography
+        Open Database","source_url":"svn://www.crystallography.net/cod/tags/v0.14.0/cgi-bin/optimade.pl@304057","version":"v0.14.0"},"last_id":"1526655","more_data_available":true,"provider":{"description":"Crystallography
+        Open Database","name":"Crystallography Open Database","prefix":"cod"},"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:50:38Z"}}
+
+        '
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Type:
+      - application/vnd.api+json; charset=utf-8
+      Date:
+      - Fri, 06 Nov 2026 20:50:37 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      Server:
+      - Apache/2.4.68 (Debian)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

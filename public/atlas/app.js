@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const { resources, guides } = window.CHEMDB_CONTENT;
+  const { resources } = window.CHEMDB_CONTENT;
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
   const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -9,7 +9,7 @@
   let saved = new Set();
   let storageAvailable = true;
   try { const value = JSON.parse(localStorage.getItem('chemdb-atlas-saved') || '[]'); if(Array.isArray(value)) saved = new Set(value.filter(Number.isInteger)); } catch { storageAvailable = false; }
-  let filter = 'all', category = '', query = '', visible = 12, guideIndex = 1, currentView = 'resources';
+  let filter = 'all', category = '', query = '', visible = 12, currentView = 'resources';
   let toastTimeout;
   function toast(message) { $('#toast').textContent = message; $('#toast').classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => $('#toast').classList.remove('show'), 2800); }
   function toggleSaved(number) {
@@ -58,56 +58,21 @@
     if (!$('#resource-dialog').open) $('#resource-dialog').showModal();
     history.replaceState(null,'',`#resources/${number}`);
   }
-  const guideLabels = ['封面与阅读地图','三分钟导读','全景与分层逻辑','01 · 综合化合物与化学信息','02 · 量子化学基准与参数','03 · 材料与晶体：计算库','03 · 材料与晶体：实验库','04 · 生物大分子结构','05 · 药物与化学空间','06–07 · 代谢与反应通路','08 · 光谱与波谱','09 · 机器学习：分子与催化','09 · 机器学习：材料与工具','10 · 软件：量化与动力学','10 · 软件：分析与工作流','11 · 社区与中文入口','接入实况与边界','细读质疑与使用提醒','关键术语与附录'];
-  // The handbook ships in Chinese and English (guides-en.js). It follows the site language until the reader picks one here;
-  // the pick is remembered per site language, so switching the whole site switches the handbook too.
-  const english = window.CHEMDB_GUIDES_EN;
-  const hasEnglish = Boolean(english && english.guides.length === guides.length);
-  const siteLang = document.documentElement.lang === 'en' ? 'en' : 'zh';
-  let guideLang = hasEnglish ? siteLang : 'zh';
-  try { const [site, lang] = (localStorage.getItem('molastria-guide-lang') || '').split(':'); if (hasEnglish && site === siteLang && (lang === 'zh' || lang === 'en')) guideLang = lang; } catch {}
-  const guideText = () => guideLang === 'en' ? { list: english.guides, labels: english.labels } : { list: guides, labels: guideLabels };
-  function setGuideLang(lang) {
-    if (!hasEnglish || lang === guideLang) return;
-    guideLang = lang;
-    try { localStorage.setItem('molastria-guide-lang', `${siteLang}:${lang}`); } catch {}
-    renderGuide();
-  }
-  function renderGuide() {
-    const { list, labels } = guideText();
-    $('#guide-lang').hidden = !hasEnglish;
-    $$('[data-guide-lang]').forEach(b => { b.classList.toggle('active', b.dataset.guideLang === guideLang); b.setAttribute('aria-pressed', String(b.dataset.guideLang === guideLang)); });
-    $('#guide-toc').lang = $('#guide-article').lang = $('#reader-progress').lang = guideLang === 'en' ? 'en' : 'zh-CN';
-    $('#guide-toc').innerHTML = list.map((g,i)=>`<button data-guide="${i}" class="${i===guideIndex?'active':''}" ${i===guideIndex?'aria-current="true"':''}><span>${String(i+1).padStart(2,'0')}</span>${escape(labels[i])}</button>`).join('');
-    // Source HTML is bundled locally; remove active content before displaying it.
-    const doc = new DOMParser().parseFromString(list[guideIndex].html,'text/html');
-    doc.querySelectorAll('script,iframe,object,embed,style,link,base,meta,form').forEach(n=>n.remove());
-    doc.querySelectorAll('*').forEach(n=>[...n.attributes].forEach(a=>{if(/^on/i.test(a.name)||(/^(href|src)$/i.test(a.name)&&/^\s*(javascript|data):/i.test(a.value)))n.removeAttribute(a.name);}));
-    doc.querySelectorAll('a[href]').forEach(a=>{if(/^https?:/.test(a.getAttribute('href'))){a.target='_blank';a.rel='noopener noreferrer';}});
-    $('#guide-article').innerHTML = doc.body.innerHTML;
-    $('#reader-progress').textContent = `${String(guideIndex+1).padStart(2,'0')} / ${guides.length} · ${labels[guideIndex]}`;
-    $('#guide-prev').disabled = guideIndex===0; $('#guide-next').disabled = guideIndex===guides.length-1;
-  }
-  function selectGuide(index) {
-    guideIndex = Math.max(0,Math.min(index,guides.length-1)); renderGuide();
-    history.replaceState(null,'',`#guide/${guides[guideIndex].id}`);
-    $('#view-guide .page-intro').scrollIntoView({behavior:'smooth',block:'start'});
-  }
   function showView(view,scroll = true) {
-    if(!['resources','guide','agent'].includes(view))view='resources';
+    if(!['resources','agent'].includes(view))view='resources';
     currentView = view;
     $$('.view').forEach(s=>s.hidden = s.id !== `view-${view}`);
     $$('.main-nav [data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.setAttribute('aria-current',b.dataset.view===view?'page':'false');});
-    $('#breadcrumb').textContent = ({resources:'资源导航',guide:'说明讲解手册',agent:'Agent 工程'})[view];
+    $('#breadcrumb').textContent = ({resources:'资源导航',agent:'Agent 工程'})[view];
     document.title = `${$('#breadcrumb').textContent} · MolAstria`;
-    if(view==='guide')renderGuide();
     if(location.hash.split('/')[0] !== `#${view}`)history.replaceState(null,'',`#${view}`);
     if(scroll)window.scrollTo({top:0,behavior:'smooth'});
   }
   const plans = {
-    molecule:{title:'从一个分子名字，找到可靠身份与结构',ids:[1,43,8],steps:['先用 PubChem 核对名称、标识符与可用构象。','需要药物与活性信息时，再转向 ChEMBL；其适配器的 molfile 为二维重原子结构。','需要计算精度基准时，进一步查 NIST CCCBDB，并核对方法与实验参考。'],note:'身份、二维结构与三维构象含义不同。不能直接把二维重原子坐标当作三维量化结构。'},
-    crystal:{title:'从材料化学式，走到可比较的晶体数据',ids:[20,22,23,24,25,29],steps:['先选 Materials Project 的专业 API，或用 OPTIMADE 跨 AFLOW、NOMAD、JARVIS、MC3D 与 COD 查结构。','核对周期性、坐标字段与结构来源；NOMAD 的材料检索须关注周期性过滤。','比较能量前，确认能量类型、泛函、校正方式与单位；保留原始来源。'],note:'Materials Project 真实查询需要 API key。已有独立适配器，但 MCP 查询入口仍待接线。'},
-    basis:{title:'为计算方法，找到匹配的基组与赝势',ids:[17,18,19],steps:['分子量化计算可从 Basis Set Exchange 获取目标元素的基组，并选择程序输出格式。','涉及重元素时，确认有效芯势（ECP）与基组的组合，以及程序如何识别元素名称。','固体计算可阅读 SSSP；选择泛函时用 libxc 核对名称与实现。'],note:'BSE 模块已有离线实现；MCP 的 get_basis 入口仍为占位。SSSP 与 libxc 当前仅收录导航。'}
+    molecule:{title:'从一个分子名字，找到可靠身份与结构',ids:[1,43,5,8],steps:['用 search_molecules 查 PubChem，核对名称、标识符与三维构象。','需要药物与活性信息时加 ChEMBL，需要本体分类时加 ChEBI；二者给的是二维重原子结构。','需要计算精度基准时，查 NIST CCCBDB（仅收录导航，没有接口），并核对方法与实验参考。'],note:'分子记录没有能量，不能直接进训练集；也不能把二维重原子坐标当作三维量化结构。'},
+    crystal:{title:'从材料化学式，走到可比较的晶体数据',ids:[74,20,23,22,25,29],steps:['用 search_structures 写化学式即可，NaCl、ClNa、Na2Cl2 等价；默认查 Alexandria、Materials Project 的 OPTIMADE 端点、COD 与 NOMAD。','看摘要里的 has_energy 与 theory_key：Alexandria、MC3D、NOMAD 带能量，其余库只有结构。','导出前确认能量类型、泛函、截断能与修正方式一致；不一致时用 level_of_theory 选定一种，来源清单会记下每条记录的出处。'],note:'Materials Project 官方接口需要 MP_API_KEY；没有时结果里会写明原因，结构仍可从 optimade-mp 查到（无能量）。'},
+    basis:{title:'为计算方法，找到匹配的基组与赝势',ids:[17,18,19],steps:['用 get_basis 从 Basis Set Exchange 取目标元素的基组，选 ORCA、Gaussian、CP2K、PySCF 等输出格式。','涉及重元素时，同时返回有效芯势（ECP）；ORCA 格式用元素全名。','固体计算可阅读 SSSP；选择泛函时用 libxc 核对名称与实现。'],note:'Basis Set Exchange 随包安装，get_basis 不联网。SSSP 与 libxc 当前仅收录导航。'},
+    qm:{title:'从量子化学数据集，走到可训练的数据文件',ids:[76,69,74],steps:['用 find_qm_data 按名称（如 SPICE）、方法与基组找 QCArchive 数据集，先看条数、规格与许可。','用 fetch_dataset_shard 下载一段到本地目录：Hartree、Bohr 换成 eV、Å，梯度转为力，只有色散校正的规格会被拒绝。','用 export_training_set 按数据集导出 extxyz 和来源清单，ase.io.read 读回即可交给训练框架。'],note:'QCArchive 不给逐条许可：SPICE 系列为 CC0，其余数据集要到引用里核对，来源清单会提示。QM9 目前只收录导航。'}
   };
   function renderPlan(task) {
     const p=plans[task];
@@ -115,9 +80,9 @@
     $('#plan-result').innerHTML = `<h3>${p.title}</h3><div class="plan-resource-list">${p.ids.map(id=>`<button data-detail="${id}">${escape(resources.find(r=>r.number===id)?.name||'')} ↗</button>`).join('')}</div><ol>${p.steps.map(s=>`<li>${s}</li>`).join('')}</ol><p class="plan-note">${p.note}</p>`;
   }
   const codes = {
-    install:`# 在已安装 uv 的终端中，进入解压后的项目目录\ncd chemdb-agent\nuv python install 3.11\nuv sync --python 3.11\n\n# 启动 MCP 服务器（供 MCP 客户端通过标准输入输出连接）\nuv run --python 3.11 python -m chemdb_agent.server\n\n# 另开终端运行项目自带测试\nuv run --python 3.11 pytest tests/ -v`,
-    python:`# 独立 Python 示例；在项目目录内用 uv run 执行\nfrom chemdb_agent.catalog.resources import search_resources\nfrom chemdb_agent.adapters import basis\n\n# 检索资源目录：不触发外部 API 查询\nresults = search_resources("晶体")\nfor item in results:\n    print(item["name"], item["integration"])\n\n# 直接调用离线基组模块\nresult = basis.get_basis("def2-SVP", ["H", "O"], fmt="orca")\nprint(result)`,
-    mcp:JSON.stringify({mcpServers:{'chemdb-agent':{command:'uv',args:['--directory','/替换为项目绝对路径/chemdb-agent','run','--python','3.11','python','-m','chemdb_agent.server']}}},null,2)
+    install:`# 进入解压后的项目目录（需要 Python 3.11–3.13 与 uv）\ncd chemdb-agent\nuv sync\n# 不用 uv 时：python -m venv .venv，激活后 pip install -e . pytest vcrpy\n\n# 离线测试：用录好的接口返回，不联网\nuv run python -m pytest\n\n# 启动 MCP 服务器（供 MCP 客户端通过标准输入输出连接）\nuv run python -m chemdb_agent.server`,
+    python:`# 独立 Python 示例；在项目目录内用 uv run python 执行（会联网查询 Alexandria）\nfrom chemdb_agent.adapters import optimade\nfrom chemdb_agent import export\n\nrecs = optimade.search_structures(formula="GaN", providers=["alexandria-pbe"], limit=5)\nfor r in recs:\n    print(r.record_id, r.energy, r.level_of_theory.method)\n\n# 导出 extxyz（能量 eV、力 eV/Å、应力 eV/Å³）与来源清单 gan.extxyz.manifest.json\nexport.export_training_set(recs, "data/exports/gan.extxyz", level_of_theory=recs[0].mix_key)`,
+    mcp:JSON.stringify({mcpServers:{'chemdb-agent':{command:'uv',args:['--directory','/替换为项目绝对路径/chemdb-agent','run','python','-m','chemdb_agent.server']}}},null,2)
   };
   let currentCode = 'install';
   function renderCode(name){currentCode=name;$('#code-content').textContent=codes[name];$$('.code-tabs [data-code]').forEach(b=>{b.classList.toggle('active',b.dataset.code===name);b.setAttribute('aria-pressed',String(b.dataset.code===name));});}
@@ -128,14 +93,11 @@
   $('#category-nav').innerHTML = categories.map(([code,name])=>`<button class="category-button" data-category="${code}"><span class="category-number">${code}</span><span>${escape(name.replace('与基础参数','与参数').replace('、生物活性与化学空间','与化学空间'))}</span><span class="count">${resources.filter(r=>r.category_code===code).length}</span></button>`).join('');
   $('#category-select').innerHTML += categories.map(([code,name])=>`<option value="${code}">${code} · ${escape(name)}</option>`).join('');
   document.addEventListener('click',e=>{
-    const shortcut=e.target.closest('[data-open-guide]');if(shortcut){guideIndex=Number(shortcut.dataset.openGuide);showView('guide');selectGuide(guideIndex);return;}
     const view=e.target.closest('[data-view]');if(view){showView(view.dataset.view);return;}
     const c=e.target.closest('[data-category]');if(c){setCategory(c.dataset.category);return;}
     const f=e.target.closest('[data-filter]');if(f){filter=f.dataset.filter;visible=12;renderResources();return;}
     const s=e.target.closest('[data-save]');if(s){toggleSaved(Number(s.dataset.save));return;}
     const detail=e.target.closest('[data-detail]');if(detail){showResource(Number(detail.dataset.detail));return;}
-    const g=e.target.closest('[data-guide]');if(g){selectGuide(Number(g.dataset.guide));return;}
-    const gl=e.target.closest('[data-guide-lang]');if(gl){setGuideLang(gl.dataset.guideLang);return;}
     const task=e.target.closest('[data-task]');if(task){renderPlan(task.dataset.task);return;}
     const code=e.target.closest('[data-code]');if(code){renderCode(code.dataset.code);return;}
     if(e.target.closest('#clear-category'))setCategory('');
@@ -154,13 +116,19 @@
   $('#close-dialog').onclick=()=>$('#resource-dialog').close();
   $('#resource-dialog').addEventListener('close',()=>{if(location.hash.startsWith('#resources/'))history.replaceState(null,'','#resources');});
   $('#resource-dialog').addEventListener('click',e=>{if(e.target===$('#resource-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-  $('#guide-prev').onclick=()=>selectGuide(guideIndex-1);$('#guide-next').onclick=()=>selectGuide(guideIndex+1);
-  $('#print-guide').onclick=()=>window.print();$('#copy-code').onclick=()=>copyText(codes[currentCode]);
+  $('#copy-code').onclick=()=>copyText(codes[currentCode]);
   document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();showView('resources',false);$('#search').focus();$('#catalog').scrollIntoView({behavior:'smooth'});}});
+  // The handbook has its own page now: old #guide and #guide/<chapter> addresses open the same chapter in manual/.
+  function openManual(id){
+    const target=`../manual/index.html${location.search}${id?`#${id}`:''}`;
+    if(!window.__CHEM_LOCATION__){location.replace(target);return;}
+    // Single-file edition: pages run in a srcdoc frame whose link shim turns in-site links into page switches.
+    const a=document.createElement('a');a.href=target;document.body.append(a);a.click();a.remove();
+  }
   function readHash(scroll=false){
     const [view,id]=location.hash.slice(1).split('/');
-    if(view==='guide'&&id){const i=guides.findIndex(g=>g.id===id);if(i>=0)guideIndex=i;}
-    if(['resources','guide','agent'].includes(view))showView(view,scroll);
+    if(view==='guide'){openManual(id);return;}
+    if(['resources','agent'].includes(view))showView(view,scroll);
     if(view==='resources'&&id&&/^\d+$/.test(id))showResource(Number(id));
     else if($('#resource-dialog').open)$('#resource-dialog').close();
   }

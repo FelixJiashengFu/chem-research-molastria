@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade.materialsproject.org/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"id":"mp-27","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_hill":"Si","dimension_types":[1,1,1],"lattice_vectors":[[2.34028049,1e-08,1.35116061],[0.78009318,2.20643674,1.35116061],[1e-08,1e-08,2.70232219]],"cartesian_site_positions":[[0.0,0.0,0.0]],"nsites":1,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si"],"chemical_formula_reduced":"Si"}},{"id":"mp-1056579","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_hill":"Si","dimension_types":[1,1,1],"lattice_vectors":[[-0.0,0.0,2.6406597],[-1.62691493,1.62691493,1.32032985],[-1.62691493,-1.62691493,1.32032985]],"cartesian_site_positions":[[-0.813457465,-0.813457465,1.980494775]],"nsites":1,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si"],"chemical_formula_reduced":"Si"}}],"meta":{"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"api_version":"1.2.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.2.0/optimade.json","time_stamp":"2026-11-06T20:50:44.897886","data_returned":42,"provider":{"name":"Materials
+        Project - OPTIMADE","description":"The Materials Project OPTIMADE endpoint","prefix":"mp","homepage":"https://materialsproject.org/"},"data_available":154387,"implementation":{"name":"OPTIMADE
+        Python Tools","version":"1.5.0","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"http://optimade.materialsproject.org/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies&page_offset=2"}}'
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Api-Key
+      Connection:
+      - keep-alive
+      Content-Security-Policy-Report-Only:
+      - script-src 'unsafe-inline' 'unsafe-eval'; connect-src 'none'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=4OAnFEmAtZMLALBqY7L_NHQoHoUHLpv2RV19X49c644-1793998244.7710147-1.0.1.1-g_iaRb7corRLaPp9kYtYt4fnsdNdYVS8saBsVnj0c9FZ8pjv7xXxDX1HkYspntagIiw8CgkzugnmlSlhtnoPfHPGm2zqgv0OpnDh_Qb739jxJnu.KNM0mIa7yP4ziRfiqY0h.VAc_jqVDCEJ5tGHDu__Iy6pdglovBzfP2bj0cqopMIV9sEciMVMhLhrv1mj;
+        report-to cf-csp-endpoint
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:44 GMT
+      Reporting-Endpoints:
+      - cf-csp-endpoint="https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=4OAnFEmAtZMLALBqY7L_NHQoHoUHLpv2RV19X49c644-1793998244.7710147-1.0.1.1-g_iaRb7corRLaPp9kYtYt4fnsdNdYVS8saBsVnj0c9FZ8pjv7xXxDX1HkYspntagIiw8CgkzugnmlSlhtnoPfHPGm2zqgv0OpnDh_Qb739jxJnu.KNM0mIa7yP4ziRfiqY0h.VAc_jqVDCEJ5tGHDu__Iy6pdglovBzfP2bj0cqopMIV9sEciMVMhLhrv1mj"
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - kong/2.8.4
+      X-Kong-Proxy-Latency:
+      - '1'
+      X-Kong-Upstream-Latency:
+      - '15'
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      content-length:
+      - '2336'
+      server:
+      - cloudflare
+      vary:
+      - Origin
+      - Origin
+    status:
+      code: 200
+      message: OK
+version: 1

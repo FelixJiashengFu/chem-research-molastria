@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://aflow.org/API/optimade/v1/structures?filter=id%3D%22definitely-not-an-id-zzz%22&page_limit=1&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data": [], "meta": {"query": {"representation": "/v1/structures?filter=id%3D%22definitely-not-an-id-zzz%22&page_limit=1&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},
+        "api_version": "1.0.0", "schema": "https://schemas.optimade.org/openapi/v1.0.0/optimade.json",
+        "time_stamp": "2026-11-06T20:51:04Z", "more_data_available": false, "provider":
+        {"name": "AFLOW", "description": "Automatic-FLOW (AFLOW) Computational Materials
+        Data Repository", "prefix": "aflow", "homepage": "https://aflow.org"}, "implementation":
+        {"name": "aflow-optimade-ng", "version": "0000000", "source_url": "https://aflow.org/install-aflow",
+        "maintainer": {"email": "optimade@aflowlib.duke.edu"}, "issue_tracker": "https://groups.io/g/aflow"},
+        "_aflow_aflux_query": "http://aflow.org/API/aflux/?auid,auid(''definitely-not-an-id-zzz''),composition,compound,geometry,natoms,nspecies,positions_cartesian,species,stoichiometry,paging(1,1),format(json)",
+        "data_available": 3929948, "data_returned": 0}, "links": {"first": "https://aflow.org/API/optimade/v1/structures?filter=id%3D\"definitely-not-an-id-zzz\"&page_limit=1&response_fields=elements,nelements,chemical_formula_reduced,chemical_formula_hill,dimension_types,nsites,lattice_vectors,cartesian_site_positions,species_at_sites,species&page_number=1",
+        "next": "https://aflow.org/API/optimade/v1/structures?filter=id%3D\"definitely-not-an-id-zzz\"&page_limit=1&response_fields=elements,nelements,chemical_formula_reduced,chemical_formula_hill,dimension_types,nsites,lattice_vectors,cartesian_site_positions,species_at_sites,species&page_number=2"}}'
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '1715'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 06 Nov 2026 20:51:03 GMT
+      Keep-Alive:
+      - timeout=5, max=1000
+      Server:
+      - Apache/2.4.58 (Ubuntu)
+    status:
+      code: 200
+      message: OK
+version: 1

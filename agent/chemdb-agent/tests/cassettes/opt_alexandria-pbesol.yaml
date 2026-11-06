@@ -1,0 +1,35 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://alexandria.icams.rub.de/pbesol/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance
+  response:
+    body:
+      string: '{"data":[{"id":"agm002185901","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[2.42161191,0.25441315,0.48967294],[-0.29154059,2.60279978,0.08803659],[-0.29154059,-1.42425688,2.18032325]],"cartesian_site_positions":[[0.0,0.0,0.0]],"nsites":1,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si"],"_alexandria_forces":[[-0.0,0.0,0.0]],"_alexandria_stress_tensor":[[-23.402803,-3.6458614,-7.0172462],[-3.6458616,12.097432,-0.9498043],[-7.0172462,-0.9498043,10.762807]],"_alexandria_energy":-5.54815763,"_alexandria_hull_distance":0.19853778,"_alexandria_formation_energy_per_atom":0.19853778}},{"id":"agm003157600","type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[3.84232781,0.0,0.0],[1.92116391,3.3275535,0.0],[1.92116391,1.1091845,3.13724752]],"cartesian_site_positions":[[3.842327815,2.218369,1.56862376],[5.7634917224999995,3.3275535,2.35293564]],"nsites":2,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si"],"_alexandria_forces":[[-0.0,0.0,-0.0],[0.0,-0.0,0.0]],"_alexandria_stress_tensor":[[0.94124764,0.0,0.0],[0.0,0.94124764,0.0],[0.0,0.0,0.94124764]],"_alexandria_energy":-11.49339081,"_alexandria_hull_distance":0.0,"_alexandria_formation_energy_per_atom":0.0}}],"meta":{"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance"},"api_version":"1.1.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:50:36Z","data_returned":8,"provider":{"name":"Alexandria","description":"A
+        collection of databases from the group of Prof. Miguel A. L. Marques at Ruhr
+        University Bochum.","prefix":"alexandria","homepage":"https://alexandria.icams.rub.de/"},"data_available":415673,"implementation":{"name":"OPTIMADE
+        Python tools","version":"0.25.3","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"https://alexandria.icams.rub.de/pbesol/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_alexandria_energy%2C_alexandria_forces%2C_alexandria_stress_tensor%2C_alexandria_formation_energy_per_atom%2C_alexandria_hull_distance&page_offset=2"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3266'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:36 GMT
+      Server:
+      - nginx/1.22.1
+    status:
+      code: 200
+      message: OK
+version: 1

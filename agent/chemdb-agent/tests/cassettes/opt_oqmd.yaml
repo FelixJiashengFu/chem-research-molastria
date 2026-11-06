@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://oqmd.org/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"links":{"next":"http://oqmd.org/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&page_offset=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies","previous":null,"self":"http://oqmd.org/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"data":[{"id":"4080516","type":"structures","attributes":{"chemical_formula_reduced":"Si","chemical_formula_hill":null,"nelements":1,"elements":["Si"],"nsites":8,"lattice_vectors":[[3.326061,-3.326061,3.326061],[3.326061,3.326061,-3.326061],[-3.326061,3.326061,3.326061]],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si"],"dimension_types":[1,1,1],"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0]}],"cartesian_site_positions":[[4.00099,-0.67493,0.67493],[2.65114,0.67493,-0.67493],[0.67493,0.67493,0.67493],[0.67493,-0.67493,2.65114],[0.67493,4.00099,-0.67493],[-0.67493,2.65114,0.67493],[-0.67493,0.67493,4.00099],[2.65114,2.65114,2.65114]]}},{"id":"4062615","type":"structures","attributes":{"chemical_formula_reduced":"Si","chemical_formula_hill":null,"nelements":1,"elements":["Si"],"nsites":2,"lattice_vectors":[[2.732954,-2.732954,0.0],[-2.732954,0.0,-2.732954],[2.732954,2.732954,0.0]],"species_at_sites":["Si","Si"],"dimension_types":[1,1,1],"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0]}],"cartesian_site_positions":[[0.0,0.0,0.0],[1.36648,-1.36648,-1.36648]]}}],"meta":{"api_version":"1.2.0","query":{"representation":"/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"more_data_available":true,"schema":"https://schemas.optimade.org/json-schema/v1.2.0/optimade.json","time_stamp":"2026-11-06T21:01:01Z","provider":{"name":"OQMD","description":"The
+        Open Quantum Materials Database","prefix":"oqmd","homepage":"https://oqmd.org"},"implementation":{"name":"qmpy","version":"1.6.0","source_url":"https://github.com/wolverton-research-group/qmpy","issue_tracker":"https://github.com/wolverton-research-group/qmpy/issues"},"data_returned":71,"data_available":1407395,"warnings":[],"_oqmd_data_in_response":2,"_oqmd_final_query":"(
+        composition__element_list__contains=Si_  AND  entry__composition__ntypes=1
+        )"}}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '2736'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 06 Nov 2026 21:01:01 GMT
+      Server:
+      - gunicorn
+      Vary:
+      - Cookie
+      Via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+version: 1

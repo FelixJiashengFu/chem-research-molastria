@@ -1,0 +1,6 @@
+/* 说明讲解手册：阅读器样式沿用 atlas/styles.css（tools/build-seo.ts 也从那里取 .guide-article 规则），这里只放本页没有侧栏时的位置。 */
+.guide-toc{top:calc(var(--cr-nav-height,76px) + 20px);max-height:calc(100vh - var(--cr-nav-height,76px) - 40px)}
+.guide-toc button{min-height:44px}
+.skip-link{z-index:1000}
+.skip-link:focus{top:calc(var(--cr-nav-height,76px) + 8px)}
+@media(max-width:600px){.guide-toc{max-height:180px}.reader-pagination{gap:8px}}

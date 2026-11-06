@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://aflow.org/API/optimade/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data": [{"attributes": {"dimension_types": [1, 1, 1], "nelements":
+        1, "cartesian_site_positions": [[0, 0, 0]], "elements": ["Si"], "nsites":
+        1, "species_at_sites": ["Si"], "chemical_formula_reduced": "Si", "chemical_formula_hill":
+        "Si", "species": [{"name": "Si", "chemical_symbols": ["Si"], "concentration":
+        [1]}], "lattice_vectors": [[2.73407, 0.0, 0.0], [1.3670350000000002, 2.36777407572492,
+        0.0], [1.3670350000000002, 0.7892580252416401, 2.232358807017068]]}, "type":
+        "structures", "id": "aflow:000fd734f5f66e15", "relationships": {"references":
+        {"data": [{"id": "aflow++", "type": "references"}, {"id": "aflow_web", "type":
+        "references"}]}}}, {"attributes": {"dimension_types": [1, 1, 1], "nelements":
+        1, "cartesian_site_positions": [[0.96657, 0, 0.68341], [0.96657, 1.93314,
+        2.05024]], "elements": ["Si"], "nsites": 2, "species_at_sites": ["Si", "Si"],
+        "chemical_formula_reduced": "Si", "chemical_formula_hill": "Si2", "species":
+        [{"name": "Si", "chemical_symbols": ["Si"], "concentration": [1]}], "lattice_vectors":
+        [[3.86613, 0.0, 0.0], [-0.0003171404793514679, 3.866129986992408, 0.0], [-1.9328896877468755,
+        -1.9330482501093436, 2.7339025393475516]]}, "type": "structures", "id": "aflow:003e4074de524ea5",
+        "relationships": {"references": {"data": [{"id": "aflow++", "type": "references"},
+        {"id": "aflow_web", "type": "references"}]}}}], "meta": {"query": {"representation":
+        "/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},
+        "api_version": "1.0.0", "schema": "https://schemas.optimade.org/openapi/v1.0.0/optimade.json",
+        "time_stamp": "2026-11-06T20:50:35Z", "more_data_available": true, "provider":
+        {"name": "AFLOW", "description": "Automatic-FLOW (AFLOW) Computational Materials
+        Data Repository", "prefix": "aflow", "homepage": "https://aflow.org"}, "implementation":
+        {"name": "aflow-optimade-ng", "version": "0000000", "source_url": "https://aflow.org/install-aflow",
+        "maintainer": {"email": "optimade@aflowlib.duke.edu"}, "issue_tracker": "https://groups.io/g/aflow"},
+        "_aflow_aflux_query": "http://aflow.org/API/aflux/?auid,species(Si),nspecies(1),composition,compound,geometry,natoms,nspecies,positions_cartesian,species,stoichiometry,paging(1,2),format(json)",
+        "data_available": 3929948, "data_returned": 706}, "links": {"first": "https://aflow.org/API/optimade/v1/structures?filter=elements+HAS+ALL+\"Si\"+AND+nelements%3D1&page_limit=2&response_fields=elements,nelements,chemical_formula_reduced,chemical_formula_hill,dimension_types,nsites,lattice_vectors,cartesian_site_positions,species_at_sites,species&page_number=1",
+        "next": "https://aflow.org/API/optimade/v1/structures?filter=elements+HAS+ALL+\"Si\"+AND+nelements%3D1&page_limit=2&response_fields=elements,nelements,chemical_formula_reduced,chemical_formula_hill,dimension_types,nsites,lattice_vectors,cartesian_site_positions,species_at_sites,species&page_number=2"}}'
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '3067'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 06 Nov 2026 20:50:34 GMT
+      Keep-Alive:
+      - timeout=5, max=1000
+      Server:
+      - Apache/2.4.58 (Ubuntu)
+    status:
+      code: 200
+      message: OK
+version: 1

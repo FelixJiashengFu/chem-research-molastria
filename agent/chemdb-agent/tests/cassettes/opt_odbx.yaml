@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade-misc.odbx.science/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies
+  response:
+    body:
+      string: '{"data":[{"id":"camd-camd_44849","type":"structures","links":null,"relationships":null,"attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[1.92752,1.112854,15.851921],[-1.92752,1.112854,15.851921],[0.0,-2.225708,15.851921]],"cartesian_site_positions":[[-2.2660455513801026e-18,-3.2810146706907517e-18,1.18378230603513],[-3.64570721274049e-18,-3.8075007115878634e-18,5.16137247902478],[1.72432267277145e-17,9.440355209164863e-18,7.52958384947184],[-5.141098778267406e-17,-5.130454640152493e-17,17.831877927200882],[-9.122438824249455e-18,3.033449360771101e-17,20.213333102085812],[-1.018998636382662e-16,8.068780885480464e-17,27.34242989791419],[-5.96113146798416e-17,-5.971775606099072e-17,29.72388507279912],[9.579079985542194e-17,3.980614056104059e-17,40.026179150528165],[8.993002024055841e-17,7.767724436689605e-17,42.39439052097522],[5.5262541631861947e-17,1.1519524255561464e-16,46.37198069396487]],"nsites":10,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si","Si","Si"]}},{"id":"camd-camd_80147","type":"structures","links":null,"relationships":null,"attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[3.858188,0.0,0.0],[-1.929094,3.341289,0.0],[0.0,0.0,25.326337]],"cartesian_site_positions":[[0.0,0.0,1.1830777912355799],[-1.929094007736709e-08,2.22752601113763,1.9731017225560699],[-1.929094007736709e-08,2.22752601113763,4.34125403343631],[1.9290940192909405,1.11376298886237,5.13967997705655],[1.9290940192909405,1.11376298886237,7.52348852294345],[-1.929094007736709e-08,2.22752601113763,8.321914466563689],[-1.929094007736709e-08,2.22752601113763,10.69006677744393],[0.0,0.0,11.48009070876442],[0.0,0.0,13.84624629123558],[1.9290940192909405,1.11376298886237,14.636270222556067],[1.9290940192909405,1.11376298886237,17.00442253343631],[-1.929094007736709e-08,2.22752601113763,17.80284847705655],[-1.929094007736709e-08,2.22752601113763,20.186657022943447],[1.9290940192909405,1.11376298886237,20.98508296656369],[1.9290940192909405,1.11376298886237,23.35323527744393],[0.0,0.0,24.143259208764416]],"nsites":16,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si"]}}],"meta":{"query":{"representation":"/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies"},"api_version":"1.1.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.1.0/optimade.json","time_stamp":"2026-11-06T20:50:49.357965","data_returned":61,"provider":{"name":"Open
+        Database of Xtals","description":"This particular database hosts a series
+        of miscellaneous datasets.","prefix":"odbx","homepage":"https://odbx.science/"},"data_available":137853,"implementation":{"name":"optimade-python-tools
+        (modified for odbx.science)","version":"0.1","source_url":"https://github.com/ml-evs/optimade-misc-datasets","maintainer":{"email":"web@odbx.science"},"issue_tracker":"https://github.com/ml-evs/optimade-misc-datasets/issues"}},"included":[],"links":{"next":"https://optimade-misc.odbx.science/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies&page_offset=2"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3929'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:49 GMT
+      Server:
+      - nginx/1.31.8
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains; preload;
+      X-Content-Type-Options:
+      - nosniff;
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block;
+    status:
+      code: 200
+      message: OK
+version: 1

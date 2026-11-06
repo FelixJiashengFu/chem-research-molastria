@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、19 章中英双语讲解手册、AI 实验室、预印本雷达、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、数据库目录、期刊投稿指南、AI 实验室、预印本雷达、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -17,9 +17,13 @@ MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源�
 public/               发布目录，推到 main 就上线
   index.html, app.js  统一搜索；search-terms.js 是中英术语表
   shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口；新栏目在这里加导航
+  assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}、下载页片头 intro.mp4 + intro-end.webp（ffmpeg 转码的小文件，原片不进仓库）
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
   ai/ai.js            AI 助手：服务商、托管额度、可拖宽窗口
-  atlas/ hub/ lab/ meta/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit；atlas/guides-en.js 是讲解手册的英文版）
+  manual/ atlas/ journals/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
+  manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
+  atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
+  journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面；app/ 是复制来的，不要手改
@@ -27,13 +31,14 @@ public/               发布目录，推到 main 就上线
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
-desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs + uma/runner.py 是“在本机运行 UMA”
+desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
 tools/uma-server/     在线模型：站长电脑上的服务 server.py（15 个模型，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；secret.local、cache*.json 不进 git
 tools/cloud/          站长的云端 GPU 批量计算：run.mjs（本机，经 gcloud）+ batch_uma.py / batch_mace.py / remote.sh（虚拟机上）；cloud.local.json 不进 git
-maintenance/          Python 爬虫与合并脚本；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
+agent/chemdb-agent/   chemdb-agent 源码（计算化学 MCP 服务器，Python；测试与 venv 说明见其 README）。下载包由 python tools/pack-chemdb-agent.py 生成
+maintenance/          Python 爬虫与合并脚本，单元测试是 test_*.py（离线）；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
 ```
 
 ## 常用命令
@@ -72,7 +77,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）。`public/guide/`、`public/resources/`、`sitemap.xml` 和各页的 SEO 头每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/guide/`、`public/resources/`、`sitemap.xml` 和各页的 SEO 头每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 
@@ -103,11 +108,12 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **Worker 免费版：** 每次调用限 10 ms CPU，本地测不出来；生成一期实测 8 ms（2026-10-31）。定时任务里解析的响应要小（每个来源 20 条），改动后在线上跑一次（`docs/RUNBOOK.md`）。
 - **页面缓存：** GitHub Pages 让浏览器缓存文件 10 分钟，刚上线时要 Ctrl+F5。测线上时给网址加查询参数。
 - **ChemRxiv：** 官网对程序返回 Cloudflare 验证，不要绕过；用 Crossref（前缀 10.26434）。Crossref 里没有学科字段，靠关键词筛。
-- **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。`i18n.js` 的 `SKIP` 选择器要写窄：`.card h3` 曾把实验室所有卡片标题一起跳过，现在是 `article.card h3`（只跳论文卡片）；`textarea` 只跳过内容，placeholder 照常翻译。
+- **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。`i18n.js` 的 `SKIP` 选择器要写窄：`.card h3` 曾把实验室所有卡片标题一起跳过，现在是 `article.card h3`（只跳论文卡片）；`textarea` 只跳过内容，placeholder 照常翻译。`i18n-extract` 不抽资源名和 `hub/net-engine.js`，那里要显示英文的文字直接手加到 `i18n/en.json`（有译文的手加词条会保留）。只有一个汉字的模板（如 `${n} 条`）永远不会被翻译，写成至少两个汉字（`共 ${n} 条`）。
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
+- **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。
 - **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。调试版和已安装的应用共用应用数据和 localStorage。
 - **UMA 在 Windows：** fairchem 的默认设置用 `torch.compile`，需要 Triton，Windows 没有，会报 `TritonMissing`；所有加载 UMA 的地方（`uma-server/server.py`、桌面版 `runner.py`、`batch_uma.py`、Meta 页生成的脚本）用 `uma_settings()`，没有 Triton 时改用 `batch` 预设（全精度、不编译）。中文 Windows 上 Python 还要用 UTF-8 模式（`-X utf8` 或 `PYTHONUTF8=1`），否则 fairchem 按 GBK 读自己的数据文件失败；桌面版已设 `PYTHONUTF8=1`，`start.ps1` 用 `-X utf8`。RTX 20 系（计算能力 7.5）用不了 UMA Nitro。
 - **MACE 和 fairchem 不能装在一起：** mace-torch 固定 e3nn 0.4.4，fairchem 要 0.5 以上。在线服务把 MACE 放在 `mace-env`，经 `mace_worker.py`（标准输入输出 JSON）调用。

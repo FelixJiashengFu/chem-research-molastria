@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -802,18 +802,20 @@ check('AI settings: vendor presets fill the endpoint, list models and adapt to t
   await finish(p);
 });
 
-check('handbook: Chinese and English chapters, the choice is remembered, the English site opens in English', async () => {
+check('handbook: its own page, Chinese and English chapters, the choice is remembered, the English site opens in English', async () => {
   const p = await open();
-  await go(p, '/atlas/index.html#guide/p08-cat05');
+  await go(p, '/manual/index.html#p08-cat05');
   await p.waitForSelector('#guide-article h1');
   assert.match(await text(p, '#view-guide .page-intro h1'), /^说明讲解手册/);
-  assert.doesNotMatch(await p.innerText('.topbar'), /研究工作台|阅读指南/);
+  assert.equal(await p.getAttribute('.cr-links a[data-id=manual]', 'aria-current'), 'page');
+  assert.equal(await p.locator('#guide-toc button').count(), 20);
+  assert.equal(await p.locator('.sidebar, #view-resources, #view-agent').count(), 0, 'no database views on the handbook page');
   assert.equal(await p.locator('#view-guide .page-intro p').count(), 0);
   assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
   await p.click('[data-guide-lang=en]');
   assert.equal(await text(p, '#guide-article h1'), 'Drugs, bioactivity & chemical space');
   assert.equal(await p.getAttribute('#guide-article', 'lang'), 'en');
-  assert.equal(await text(p, '#reader-progress'), '09 / 19 · 05 · Drugs & chemical space');
+  assert.equal(await text(p, '#reader-progress'), '09 / 20 · 05 · Drugs & chemical space');
   await p.click('#guide-next');
   assert.equal(await text(p, '#guide-article h1'), 'Metabolites, natural products & reaction pathways');
   await p.reload({ waitUntil: 'networkidle' });
@@ -824,11 +826,148 @@ check('handbook: Chinese and English chapters, the choice is remembered, the Eng
   assert.deepEqual(left, []);
   await finish(p);
   const en = await open();
-  await go(en, '/atlas/index.html?lang=en#guide/p00-cover');
+  await go(en, '/manual/index.html?lang=en#p00-cover');
   await en.waitForSelector('#guide-article h1');
   assert.match(await text(en, '#guide-article h1'), /^103 entry points/);
   assert.equal(await en.getAttribute('[data-guide-lang=en]', 'aria-pressed'), 'true');
   await finish(en);
+});
+
+check('handbook: old atlas #guide addresses open the same chapter in manual/, the database page has no handbook left', async () => {
+  // The old address runs the database page first, which replaces itself with the handbook.
+  const oldAddress = async (p, path, url) => { await p.goto(SITE + path, { waitUntil: 'commit' }); await p.waitForURL(url); await p.waitForSelector('#guide-article h1'); };
+  const p = await open();
+  await oldAddress(p, '/atlas/index.html#guide/p08-cat05', /\/manual\/index\.html#p08-cat05$/);
+  assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
+  await oldAddress(p, '/atlas/index.html#guide', /\/manual\/index\.html$/);
+  assert.equal(await text(p, '#reader-progress'), '02 / 20 · 三分钟导读');
+  await finish(p);
+  const en = await open();
+  await oldAddress(en, '/atlas/index.html?lang=en#guide/p00-cover', /\/manual\/index\.html\?lang=en#p00-cover$/);
+  assert.match(await text(en, '#guide-article h1'), /^103 entry points/);
+  await finish(en);
+  // The database page: resource navigation, research topics and Agent engineering only.
+  const db = await open();
+  await go(db, '/atlas/index.html');
+  assert.deepEqual(await db.$$eval('.main-nav [data-view]', (b) => b.map((x) => x.dataset.view)), ['resources', 'agent']);
+  assert.ok(await db.locator('#category-nav .category-button').count() > 10);
+  assert.equal(await db.locator('#view-guide, [data-view=guide], [data-open-guide], .reading-banner, script[src*="guides-en"]').count(), 0);
+  assert.equal(await db.getAttribute('.cr-links a[data-id=atlas]', 'aria-current'), 'page');
+  await db.evaluate(() => { location.hash = '#agent'; });
+  await db.waitForFunction(() => document.querySelector('.cr-links a[data-id=agent]').getAttribute('aria-current') === 'page' && !document.getElementById('view-agent').hidden);
+  await finish(db);
+  // Entry points elsewhere on the site lead to the new address: the home page and a handbook card in the network view.
+  const home = await open();
+  await go(home, '/index.html');
+  assert.deepEqual(await home.$$eval('a[href*="atlas/index.html#guide"]', (a) => a.length), 0);
+  assert.equal(await home.locator('.intro-actions a[href="manual/index.html"]').count(), 1);
+  await go(home, '/hub/network.html?q=PubChem');
+  const card = home.locator('#netResults a[href*="manual/index.html#"]').first();
+  await card.waitFor();
+  const href = await card.getAttribute('href');
+  await card.click();
+  await home.waitForURL(new RegExp(`/manual/index\\.html${href.slice(href.indexOf('#'))}$`));
+  await home.waitForSelector('#guide-toc button.active');
+  await finish(home);
+});
+
+check('agent: the Agent section shows chemdb-agent 0.2.0 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
+  const p = await open();
+  await go(p, '/atlas/index.html#agent');
+  await p.waitForFunction(() => !document.getElementById('view-agent').hidden);
+  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.0/);
+  // The query tools, QCArchive and export are wired now; only the "not yet covered" row stays pending.
+  assert.doesNotMatch(await p.innerText('#view-agent'), /占位|待接线/);
+  assert.equal(await p.locator('#view-agent .state.pending').count(), 1);
+  assert.equal(await p.locator('#view-agent .agent-flow .planned').count(), 0);
+  // "已有接入模块" in the metrics and the filter tab is the number of catalogue entries with a module.
+  const n = await p.evaluate(() => window.CHEMDB_CONTENT.resources.filter((r) => ['adapter', 'optimade'].includes(r.integration)).length);
+  assert.equal(n, 13);
+  assert.equal(await text(p, '[data-filter=integrated] span'), String(n));
+  assert.match(await text(p, '.metrics > div:nth-child(3) strong'), new RegExp(`^${n}`));
+  // Four research paths, every resource they name is in the catalogue.
+  for (const task of ['molecule', 'crystal', 'basis', 'qm']) {
+    await p.click(`[data-task=${task}]`);
+    const names = await p.$$eval('#plan-result .plan-resource-list button', (b) => b.map((x) => x.textContent.replace('↗', '').trim()));
+    assert.ok(names.length >= 3 && names.every(Boolean), `${task}: ${names}`);
+  }
+  await p.click('[data-code=python]');
+  assert.match(await text(p, '#code-content'), /export_training_set/);
+  await p.click('[data-code=mcp]');
+  assert.match(await text(p, '#code-content'), /chemdb_agent\.server/);
+  // The download button serves the zip built by tools/pack-chemdb-agent.py.
+  const href = await p.getAttribute('#view-agent a[download]', 'href');
+  assert.equal(href, 'downloads/chemdb-agent.zip');
+  const res = await p.request.get(new URL(href, p.url()).href);
+  assert.equal(res.status(), 200);
+  const zip = await res.body();
+  assert.equal(zip.subarray(0, 2).toString(), 'PK');
+  assert.ok(['src/chemdb_agent/server.py', 'src/chemdb_agent/export.py', 'CHANGELOG.md'].every((f) => zip.includes(`chemdb-agent/${f}`)));
+  assert.ok(!zip.includes('__pycache__') && !zip.includes('.venv/'));
+  await go(p, '/atlas/index.html#resources');
+  await p.click('[data-filter=integrated]');
+  assert.match(await text(p, '#results-count'), new RegExp(`共 ${n} 条`));
+  await finish(p);
+});
+
+check('top bar: one row at every desktop width in both languages, the rest goes into 更多 in order, phones scroll', async () => {
+  for (const lang of ['zh', 'en']) {
+    // Phones keep every link in the scrolling row, so they give the full list in its order.
+    const phone = await open({ viewport: { width: 390, height: 844 } });
+    await go(phone, `/manual/index.html${lang === 'en' ? '?lang=en' : ''}`);
+    const order = await phone.$$eval('.cr-links > a[data-id]:not(.cr-pro-link)', (a) => a.map((x) => x.dataset.id));
+    assert.ok(order.length >= 12 && ['manual', 'atlas', 'agent'].every((id) => order.includes(id)), `links: ${order}`);
+    assert.ok(await phone.locator('.cr-more-btn').isHidden());
+    assert.ok(await phone.evaluate(() => { const r = document.querySelector('.cr-links'); return r.scrollWidth > r.clientWidth && getComputedStyle(r).overflowX === 'auto'; }), 'phone row scrolls');
+    await finish(phone);
+    for (const width of [761, 1024, 1181, 1250, 1366, 1536, 1920]) {
+      const p = await open({ viewport: { width, height: 800 } });
+      await go(p, `/atlas/index.html${lang === 'en' ? '?lang=en' : ''}#agent`);
+      await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+      const bar = await p.evaluate(() => {
+        const row = document.querySelector('.cr-links'), btn = document.querySelector('.cr-more-btn');
+        const shown = [...row.children].filter((el) => el.offsetWidth);
+        return {
+          tops: [...new Set(shown.map((el) => Math.round(el.getBoundingClientRect().top)))],
+          inRow: [...row.querySelectorAll(':scope > a[data-id]')].filter((a) => a.offsetWidth).map((a) => a.dataset.id),
+          inMenu: [...document.querySelectorAll('.cr-more-menu a')].map((a) => a.dataset.id),
+          moreShown: !!btn.offsetWidth, moreCurrent: btn.hasAttribute('data-current'),
+          header: document.querySelector('.cr-header').offsetHeight, wide: row.scrollWidth > row.clientWidth + 1,
+        };
+      });
+      const where = `${lang} ${width}px`;
+      assert.equal(bar.tops.length, 1, `${where}: links on ${bar.tops.length} rows`);
+      assert.ok(bar.header <= 70 && !bar.wide, `${where}: header ${bar.header}px, row overflows ${bar.wide}`);
+      assert.deepEqual([...bar.inRow, ...bar.inMenu], order, `${where}: order`);
+      assert.equal(bar.moreShown, bar.inMenu.length > 0, `${where}: 更多 shown only when needed`);
+      assert.equal(bar.moreCurrent, bar.inMenu.includes('agent'), `${where}: 更多 marked current when Agent 工程 is inside`);
+      await p.context().close();
+    }
+  }
+  // Keyboard: Enter opens, Tab reaches the first tucked-away link, Escape closes and returns focus. Resizing moves links back.
+  const p = await open({ viewport: { width: 1024, height: 800 } });
+  await go(p, '/atlas/index.html#agent');
+  const tucked = await p.$$eval('.cr-more-menu a', (a) => a.map((x) => x.dataset.id));
+  assert.ok(tucked.length >= 2 && tucked.includes('agent'), `tucked at 1024px: ${tucked}`);
+  assert.ok(await p.evaluate(() => document.querySelector('.cr-more-btn').hasAttribute('data-current')));
+  await p.focus('.cr-more-btn');
+  await p.keyboard.press('Enter');
+  assert.equal(await p.getAttribute('.cr-more-btn', 'aria-expanded'), 'true');
+  assert.ok(await p.locator('.cr-more-menu').isVisible());
+  await p.keyboard.press('Tab');
+  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), tucked[0]);
+  await p.keyboard.press('Escape');
+  assert.equal(await p.getAttribute('.cr-more-btn', 'aria-expanded'), 'false');
+  assert.ok(await p.locator('.cr-more-menu').isHidden());
+  assert.ok(await p.evaluate(() => document.activeElement.classList.contains('cr-more-btn')));
+  await p.click('.cr-more-btn');
+  await p.click('#breadcrumb');
+  assert.ok(await p.locator('.cr-more-menu').isHidden(), 'a click outside closes the menu');
+  await p.setViewportSize({ width: 1920, height: 800 });
+  await p.waitForFunction(() => !document.querySelector('.cr-more-btn').offsetWidth);
+  await p.setViewportSize({ width: 900, height: 800 });
+  await p.waitForFunction((n) => document.querySelectorAll('.cr-more-menu a').length > n, tucked.length);
+  await finish(p);
 });
 
 check('network: the searched term is the centre, suggestions complete, clicking a node recentres, Back returns', async () => {
@@ -884,6 +1023,36 @@ check('catalogue: ChemRxiv card, mixed papers section, home search', async () =>
   await finish(p);
 });
 
+check('catalogue: international sources outnumber Chinese ones, the topic chart has topics, search and network find them', async () => {
+  const p = await open();
+  await go(p, '/hub/index.html');
+  await p.waitForSelector('#sourceCards .source-card');
+  const cards = await p.$$eval('#sourceCards h3', (h) => h.map((x) => x.textContent));
+  for (const s of ['Matter Modeling Stack Exchange', 'matsci.org', 'Computational Chemistry Highlights', '主流程序发布说明']) assert.ok(cards.some((t) => t.includes(s)), `no source card for ${s}`);
+  const split = await text(p, '#langSplit');
+  const [, zh, intl] = split.match(/中文来源 (\d+) 条 · 国际来源 (\d+) 条/) || [];
+  assert.ok(+intl > +zh, split);
+  const topics = await p.$$eval('#tagBars .name', (n) => n.map((x) => x.textContent));
+  assert.equal(topics.length, 10);
+  for (const t of ['站长随笔', '论坛问答', '预印本', '期刊论文']) assert.ok(!topics.includes(t), `type tag ${t} in the topic chart`);
+  await p.selectOption('#fSource', 'gromacsforum'); // an English forum question is filed under a topic
+  assert.match(await p.innerText('#cards .card .chips'), /分子动力学/);
+  const phone = await open({ viewport: { width: 390, height: 844 } }); // long URLs in forum excerpts must wrap
+  await go(phone, '/hub/index.html');
+  for (const id of ['mattermodeling', 'matsci', 'chemse']) {
+    await phone.selectOption('#fSource', id);
+    assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll with ${id} cards`);
+  }
+  await finish(phone);
+  await go(p, '/index.html');
+  await p.fill('input[type=search]', 'LAMMPS');
+  await p.waitForFunction(() => [...document.querySelectorAll('.result-row')].some((r) => /matsci\.org/.test(r.textContent)), null, { timeout: 8000 });
+  await go(p, '/hub/network.html?q=GROMACS');
+  await p.waitForFunction(() => window.MolAstriaNetView?.current().center?.name === 'GROMACS');
+  assert.match(await p.innerText('#netResults'), /GROMACS 论坛/);
+  await finish(p);
+});
+
 check('English: account page and radar are translated, paper-free UI has no Chinese left', async () => {
   const p = await open();
   await go(p, '/pro/account.html?lang=en');
@@ -898,8 +1067,105 @@ check('English: account page and radar are translated, paper-free UI has no Chin
   await finish(p);
 });
 
+check('journals: 35+ journals by category, filters and search combine, empty state, sourced details, deep links', async () => {
+  const p = await open();
+  await go(p, '/journals/index.html');
+  const visible = () => p.$$eval('.jr-card:not([hidden])', (c) => c.map((x) => x.dataset.id));
+  const all = await visible();
+  const journals = await p.locator('.jr-group:not([data-cat=preprint]) .jr-card').count();
+  assert.ok(journals >= 35, `${journals} journals`);
+  assert.ok(await p.locator('.jr-group[data-cat=preprint] .jr-card').count() >= 2, 'ChemRxiv and arXiv');
+  // Every item has at least one field, and every field names its source with a link; every item has official links.
+  const unsourced = await p.$$eval('.jr-card', (cards) => cards.filter((c) => !c.querySelector('.jr-fields > div') || [...c.querySelectorAll('.jr-fields > div')].some((f) => !f.querySelector('.jr-src a[href^="http"]')) || !c.querySelector('.jr-links a[href^="http"]')).map((c) => c.dataset.id));
+  assert.deepEqual(unsourced, []);
+  // One filter, two combined, search by ISSN with or without the hyphen, and an empty combination with its reset.
+  await p.selectOption('#jr-cat', 'china');
+  assert.ok((await visible()).length >= 5 && (await p.$$eval('.jr-card:not([hidden])', (c) => c.every((x) => x.closest('.jr-group').dataset.cat === 'china'))));
+  assert.ok(await p.locator('.jr-group[data-cat=core]').isHidden(), 'empty groups are hidden');
+  await p.selectOption('#jr-cat', '');
+  await p.selectOption('#jr-pub', 'acs');
+  await p.selectOption('#jr-oa', 'full');
+  assert.deepEqual((await visible()).sort(), ['apcau', 'jacsau']);
+  assert.match(await text(p, '#jr-count'), /2/);
+  await p.click('#jr-reset');
+  assert.equal((await visible()).length, all.length);
+  for (const q of ['1549-9618', '15499618', 'JCTC']) {
+    await p.fill('#jr-q', q);
+    assert.deepEqual(await visible(), ['jctc'], `search ${q}`);
+  }
+  await p.fill('#jr-q', '');
+  await p.selectOption('#jr-type', 'software');
+  assert.ok((await visible()).includes('joss') && !(await visible()).includes('jacs'));
+  await p.selectOption('#jr-cat', 'china');
+  assert.equal((await visible()).length, 0);
+  assert.ok(await p.locator('#jr-empty').isVisible(), 'empty-state message');
+  await p.click('#jr-empty-reset');
+  assert.equal((await visible()).length, all.length);
+  assert.ok(await p.locator('#jr-empty').isHidden());
+  // Details open in place and give the item an address; the address opens it again.
+  await p.click('#j-pccp .jr-toggle');
+  assert.equal(await p.getAttribute('#j-pccp .jr-toggle', 'aria-expanded'), 'true');
+  assert.ok(await p.locator('#jd-pccp a[href*="rsc.org"]').first().isVisible());
+  assert.match(p.url(), /#j-pccp$/);
+  await go(p, '/journals/index.html#j-ccs');
+  await p.waitForSelector('#jd-ccs:not([hidden])');
+  await finish(p);
+});
+
+check('journals: the guide has a table of contents that jumps to each chapter, in Chinese and in English', async () => {
+  const p = await open();
+  await go(p, '/journals/index.html');
+  const ids = await p.$$eval('#jr-toc a', (a) => a.map((x) => x.dataset.chapter));
+  assert.ok(ids.length >= 15 && ['g-methods', 'g-details', 'g-cover', 'g-response', 'g-ethics', 'g-reject'].every((id) => ids.includes(id)), `chapters: ${ids}`);
+  assert.deepEqual(await p.$$eval('#jr-guide-body .jr-chapter', (s) => s.map((x) => x.id)), ids);
+  for (const id of ['g-response', 'g-repro']) {
+    await p.click(`#jr-toc a[data-chapter=${id}]`);
+    await p.waitForFunction((cid) => { const top = document.getElementById(cid).getBoundingClientRect().top, nav = document.querySelector('.cr-header').offsetHeight; return top >= nav - 2 && top < nav + 60; }, id);
+    assert.match(p.url(), new RegExp(`#${id}$`));
+    assert.equal(await p.getAttribute(`#jr-toc a[data-chapter=${id}]`, 'aria-current'), 'true');
+  }
+  await finish(p);
+  // English: the same chapters in English, and the journal facts too (names in Chinese only where given in parentheses).
+  const en = await open();
+  await go(en, '/journals/index.html?lang=en#g-ethics');
+  assert.match(await text(en, '#g-map h3'), /Overview/);
+  assert.deepEqual(await en.$$eval('#jr-guide-body .jr-chapter', (s) => s.map((x) => x.id)), ids);
+  const left = await en.evaluate(() => [...document.querySelectorAll('#jr-guide-body, .jr-fields dd > span[translate=no], .jr-scope, .jr-tags')].flatMap((n) => n.textContent.match(/[㐀-鿿]+/g) || []));
+  assert.deepEqual([...new Set(left)], ['中科院分区']);
+  await finish(en);
+});
+
+check('journals: the top bar marks 期刊发表 current, also when it sits in 更多', async () => {
+  let tucked = 0;
+  for (const width of [900, 1024, 1181, 1366, 1920]) {
+    const p = await open({ viewport: { width, height: 800 } });
+    await go(p, '/journals/index.html');
+    const bar = await p.evaluate(() => ({ inMenu: !!document.querySelector('.cr-more-menu a[data-id=journals]'), current: document.querySelector('.cr-links a[data-id=journals]').getAttribute('aria-current'), more: document.querySelector('.cr-more-btn').hasAttribute('data-current') }));
+    assert.equal(bar.current, 'page', `${width}px`);
+    assert.equal(bar.more, bar.inMenu, `${width}px: 更多 marked current exactly when 期刊发表 is inside`);
+    if (bar.inMenu) tucked++;
+    await p.context().close();
+  }
+  assert.ok(tucked > 0, 'some tested width puts 期刊发表 into 更多');
+});
+
+check('decor: the home logo loop and the download intro film play muted, are hidden decoration, and stay still under reduced motion', async () => {
+  for (const [path, sel, loop] of [['/index.html', '.brand-loop video', true], ['/download/index.html', '.dl-intro video', false]]) {
+    const p = await open();
+    await go(p, path);
+    await p.waitForFunction((s) => document.querySelector(s).currentTime > 0.5, sel);
+    const v = await p.$eval(sel, (el) => ({ muted: el.muted, loop: el.loop, controls: el.controls, hidden: el.parentElement.getAttribute('aria-hidden'), tab: el.tabIndex }));
+    assert.deepEqual(v, { muted: true, loop, controls: false, hidden: 'true', tab: -1 }, path);
+    await finish(p);
+    const still = await open({ reducedMotion: 'reduce' });
+    await go(still, path);
+    assert.deepEqual(await still.$eval(sel, (el) => [el.currentSrc, el.paused, !!el.getAttribute('poster')]), ['', true, true], `${path} under reduced motion`);
+    await finish(still);
+  }
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

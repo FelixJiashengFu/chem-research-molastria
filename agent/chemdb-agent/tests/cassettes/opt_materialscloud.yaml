@@ -1,0 +1,35 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - chemdb-agent/0.2.0 (+https://molastria.com)
+    method: GET
+    uri: https://optimade.materialscloud.org/main/mc3d-pbe-v1/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy
+  response:
+    body:
+      string: '{"data":[{"id":"04cf2957-cf7c-4482-afbf-6ced5b2054a9","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[4.6406428156364,-2.459169449267,0.0],[4.6406428155364,2.4591694492669,0.0],[0.0,0.0,5.3684159578398]],"cartesian_site_positions":[[4.6406428154365,4.9183383273887,1.4581081654136],[4.6406428165355,2.4591688777204,1.2260998132072],[4.6406428151369,5.7184744219561e-07,3.910307792825],[4.6406428148371,2.4591700206127,4.1423161444331],[6.7177908761533,2.459169449267,2.6842079790196],[2.0771480605169,2.459169449267,0.0],[2.5634947550195,2.4591694492668,2.6842079790196],[7.2041375706561,2.4591694492669,0.0]],"nsites":8,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si"],"_mcloud_total_energy":-1240.6574262332}},{"id":"c9e859fd-c05a-49f2-b3d1-bc82a7c5c878","relationships":null,"links":null,"type":"structures","attributes":{"elements":["Si"],"nelements":1,"chemical_formula_reduced":"Si","chemical_formula_hill":null,"dimension_types":[1,1,1],"lattice_vectors":[[1.9258200372,-5.3735917742,0.0],[1.9258200372,5.3735917742,0.0],[0.0,0.0,12.7483402543]],"cartesian_site_positions":[[1.9258200372,5.0664031076,11.5944588797],[1.9258200372,5.0664031076,7.5280515018],[-3.9539747266281e-18,0.3071886666,5.2202887525],[-3.9539747266281e-18,0.3071886666,1.1538813746],[1.9258200372,2.7635269594,12.0512564035],[1.9258200372,2.7635269594,7.0712539779],[-2.7585086786924e-18,2.6100648149,5.6770862764],[-2.7585086786924e-18,2.6100648149,0.6970838508],[1.9258200372,0.7655314615,10.7439151581],[1.9258200372,0.7655314615,8.3785952233],[-7.8274836222304e-19,4.6080603128,4.369745031],[-7.8274836222304e-19,4.6080603128,2.0044250962]],"nsites":12,"species":[{"name":"Si","chemical_symbols":["Si"],"concentration":[1.0],"mass":null,"original_name":null,"attached":null,"nattached":null}],"species_at_sites":["Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si","Si"],"_mcloud_total_energy":-1863.4716329646}}],"meta":{"query":{"representation":"/main/mc3d-pbe-v1/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy"},"api_version":"1.2.0","more_data_available":true,"schema":"https://schemas.optimade.org/openapi/v1.2.0/optimade.json","time_stamp":"2026-11-06T20:50:43.675248","data_returned":31,"provider":{"name":"Materials
+        Cloud","description":"A platform for Open Science built for seamless sharing
+        of resources in computational materials science","prefix":"mcloud","homepage":"https://www.materialscloud.org/"},"data_available":34970,"implementation":{"name":"OPTIMADE
+        Python Tools","version":"1.4.1","homepage":"https://optimade.org/optimade-python-tools","source_url":"https://github.com/Materials-Consortia/optimade-python-tools","maintainer":{"email":"dev@optimade.org"},"issue_tracker":"https://github.com/Materials-Consortia/optimade-python-tools/issues"}},"included":[],"links":{"next":"https://optimade.materialscloud.org/main/mc3d-pbe-v1/v1/structures?filter=elements+HAS+ALL+%22Si%22+AND+nelements%3D1&page_limit=2&response_fields=elements%2Cnelements%2Cchemical_formula_reduced%2Cchemical_formula_hill%2Cdimension_types%2Cnsites%2Clattice_vectors%2Ccartesian_site_positions%2Cspecies_at_sites%2Cspecies%2C_mcloud_total_energy&page_offset=2"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3697'
+      Content-Type:
+      - application/vnd.api+json
+      Date:
+      - Fri, 06 Nov 2026 20:50:43 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    status:
+      code: 200
+      message: OK
+version: 1
