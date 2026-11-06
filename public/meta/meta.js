@@ -232,11 +232,23 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       '    return "cpu"',
       '',
       '',
-      'DEVICE = pick_device(DEVICE)'
+      'DEVICE = pick_device(DEVICE)',
+      '',
+      '',
+      'def uma_settings():',
+      '    """fairchem\'s default settings compile the model with torch.compile, which needs Triton. Windows has no Triton,',
+      '    so there UMA runs the full-precision path without compilation ("batch"), slower but exact."""',
+      '    try:',
+      '        import triton  # noqa: F401',
+      '        return "default"',
+      '    except ImportError:',
+      '        return "batch"',
+      '',
+      ''
     ];
     const predictor = job === 'md'
-      ? ['# fairchem seeds numpy\'s global RNG when it loads a model; pass a fresh seed for a new trajectory.', 'seed = int(np.random.randint(0, np.iinfo(np.int32).max))', 'predictor = pretrained_mlip.get_predict_unit(MODEL, device=DEVICE, seed=seed)']
-      : ['predictor = pretrained_mlip.get_predict_unit(MODEL, device=DEVICE)'];
+      ? ['# fairchem seeds numpy\'s global RNG when it loads a model; pass a fresh seed for a new trajectory.', 'seed = int(np.random.randint(0, np.iinfo(np.int32).max))', 'predictor = pretrained_mlip.get_predict_unit(MODEL, device=DEVICE, inference_settings=uma_settings(), seed=seed)']
+      : ['predictor = pretrained_mlip.get_predict_unit(MODEL, device=DEVICE, inference_settings=uma_settings())'];
     const embed = [
       'def embed(smiles, seed=42):',
       '    """3D structure from SMILES: RDKit ETKDG, then an MMFF clean-up when MMFF knows every atom."""',
@@ -318,7 +330,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       if (withM) body.push(
         '',
         '# UMA-M single points on the UMA-S geometries: the AI Lab compares S and M to flag doubtful results.',
-        'predictor_m = pretrained_mlip.get_predict_unit("uma-m-1p1", device=DEVICE)',
+        'predictor_m = pretrained_mlip.get_predict_unit("uma-m-1p1", device=DEVICE, inference_settings=uma_settings())',
         '',
         '',
         'def single_point(atoms):',
@@ -473,7 +485,98 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     $('u-copy').disabled = $('u-download').disabled = !ok;
     $('u-file').textContent = fileName();
     $('u-cmd').textContent = `python ${fileName()}`;
+    onlineSync();
   }
+
+  // ── 在线运行：站长电脑上的 UMA，经账号服务（/uma/*）排队 ──────────────────────────
+  // The owner's computer is reached only through the account service, which limits jobs per visitor and adds the
+  // secret the computer checks (tools/uma-server). It may be off: the panel then says so and the button stays off.
+  const umaApi = () => (window.MOLASTRIA_PAY?.accountApi || '').replace(/\/+$/, '');
+  let umaOnline = false, umaBusy = false;
+  async function umaCall(path, opts = {}) {
+    const token = (() => { try { return localStorage.getItem('molastria-session') || ''; } catch { return ''; } })();
+    const res = await fetch(umaApi() + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error?.message || data.error || `HTTP ${res.status}`);
+    return data;
+  }
+  function onlineSync() {
+    const box = $('u-online');
+    if (!box || box.hidden) return;
+    const job = $('u-job').value, model = $('u-model').value;
+    const why = !umaOnline ? '' : !mol ? '先输入一个 RDKit 能解析的 SMILES。' : !['ipea', 'opt'].includes(job) ? '在线运行只支持电离能 / 电子亲和能和几何优化。' : model !== 'uma-s-1p2p1' ? '在线运行用的是 uma-s-1p2p1，请把模型切回它。' : mol.heavy > 30 ? '在线运行最多 30 个重原子。' : '';
+    $('u-online-why').textContent = why;
+    $('u-online-run').disabled = umaBusy || !umaOnline || !!why;
+  }
+  async function online() {
+    const box = $('u-online');
+    if (!box || !umaApi()) return;
+    try {
+      const h = await umaCall('/uma/health');
+      // Shown only once the service exists: before the owner opens it (or with an older account service) it stays hidden.
+      if (h.configured === false) return;
+      box.hidden = false;
+      umaOnline = !!h.online;
+      $('u-online-status').innerHTML = h.online
+        ? `<span class="chip ok">✓ 在线 · ${esc(h.model)}${h.gpu ? ` · ${esc(h.gpu)}` : ''}</span><span class="chip">排队 ${Number(h.queue) || 0} 个${h.running ? '，正在计算' : ''}</span>`
+        : '<span class="chip warn">! 站长的 GPU 现在离线，可以先下载脚本自己运行</span>';
+    } catch {
+      umaOnline = false;
+      return;
+    }
+    onlineSync();
+  }
+  function onlineResult(r) {
+    const f = (v, d = 3) => (Number.isFinite(v) ? v.toFixed(d) : '—');
+    const box = $('u-online-result');
+    const head = `<h4>计算完成 · ${esc(r.model)}${r.fake ? '（测试数据）' : ''}</h4>`;
+    if (r.job === 'ipea') {
+      box.csv = `smiles,name,ip_uma_s,ea_uma_s\n${r.smiles},${($('u-name').value.trim() || 'molecule').replace(/[,\n]/g, ' ')},${r.ip_uma_s},${r.ea_uma_s}`;
+      box.innerHTML = `<div class="mx-res">${head}<table class="mx-res-table"><thead><tr><th>IP（eV）</th><th>EA（eV）</th><th>中性能量（eV）</th></tr></thead><tbody><tr><td>${f(r.ip_uma_s)}</td><td>${f(r.ea_uma_s)}</td><td>${f(r.energy_ev, 4)}</td></tr></tbody></table><div class="btns"><button type="button" class="button primary small" data-act="lab">导入 AI 实验室 →</button><button type="button" class="button small" data-act="csv">复制 CSV</button>${r.xyz ? '<button type="button" class="button small" data-act="xyz">下载结构</button>' : ''}</div><p class="muted small">绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；${r.seconds ?? '?'} 秒。</p></div>`;
+    } else {
+      box.csv = '';
+      box.innerHTML = `<div class="mx-res">${head}<p>能量 <b>${f(r.energy_ev, 4)} eV</b>，${r.steps ?? '?'} 步收敛，${r.seconds ?? '?'} 秒。</p><div class="btns">${r.xyz ? '<button type="button" class="button primary small" data-act="xyz">下载优化结构（.xyz）</button>' : ''}</div></div>`;
+    }
+    box.xyz = r.xyz || '';
+  }
+  $('u-online-result')?.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]'), box = $('u-online-result');
+    if (!b) return;
+    if (b.dataset.act === 'csv' && box.csv) copy(box.csv);
+    if (b.dataset.act === 'lab' && box.csv) {
+      try { localStorage.setItem('molastria-lab-import', box.csv); } catch { toast('浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入'); return; }
+      location.href = '../lab/index.html#workbench';
+    }
+    if (b.dataset.act === 'xyz' && box.xyz) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([box.xyz], { type: 'chemical/x-xyz' }));
+      a.download = `${($('u-name').value.trim() || 'molecule').replace(/[^\w.-]+/g, '_')}_uma.xyz`;
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+  });
+  $('u-online-run')?.addEventListener('click', async () => {
+    const box = $('u-online-result');
+    umaBusy = true; onlineSync();
+    box.innerHTML = '<p class="muted">已提交…</p>';
+    try {
+      const body = { smiles: $('u-smiles').value.trim(), job: $('u-job').value, charge: Math.round(Number($('u-charge').value) || 0), spin: Math.max(1, Math.round(Number($('u-spin').value) || 1)) };
+      let r = await umaCall('/uma/jobs', { method: 'POST', body: JSON.stringify(body) });
+      const until = Date.now() + 15 * 60 * 1000;
+      while (r.status !== 'done' && r.status !== 'error') {
+        box.innerHTML = r.status === 'running' ? '<p class="muted">正在计算…（一个分子通常几十秒）</p>' : `<p class="muted">排队中，前面还有 ${Math.max(0, (r.position || 1) - 1)} 个任务…</p>`;
+        if (Date.now() > until) throw new Error('等了 15 分钟还没轮到，请稍后再试');
+        await new Promise((ok) => setTimeout(ok, 2500));
+        r = await umaCall(`/uma/jobs/${r.id}`);
+      }
+      if (r.status === 'error') throw new Error(r.error || '计算失败');
+      onlineResult(r.result);
+    } catch (err) {
+      box.innerHTML = `<p class="mx-err">${esc(err.message)}</p>`;
+    } finally {
+      umaBusy = false; onlineSync();
+    }
+  });
   let typing = 0;
   $('u-smiles').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(onSmiles, 250); });
   $('u-charge').addEventListener('input', onCharge);
@@ -489,6 +592,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
   render();
+  online();
   rdkit.then(onSmiles, () => { $('u-check').textContent = 'RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。'; });
 
   // ── 桌面版：在本机运行 ──────────────────────────────────────────────────

@@ -29,6 +29,11 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   const reply = (data: unknown) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
   if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
   if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
+  if (url.hostname === "uma.test") { // e2e: a pretend owner computer (tools/uma-server --fake behaves the same)
+    if (url.pathname === "/health") return reply({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0 });
+    if (url.pathname === "/jobs") return new Response(JSON.stringify({ id: "00000000000000e2", status: "queued", position: 1 }), { status: 202, headers: { "Content-Type": "application/json" } });
+    if (url.pathname === "/jobs/00000000000000e2") return reply({ id: "00000000000000e2", status: "done", result: { model: "uma-s-1p2p1", job: "ipea", smiles: "O=C1OCC(F)O1", ip_uma_s: 10.9, ea_uma_s: -0.4, energy_ev: -12034.1, seconds: 1, fake: true, xyz: "" } });
+  }
   if (fake && url.hostname === "api.deepseek.com" && JSON.parse(String(init?.body ?? "{}")).response_format && !JSON.parse(String(init?.body ?? "{}")).stream) {
     return reply({ choices: [{ message: { content: JSON.stringify({ overview_zh: "本周概览", overview_en: "This week", picks: [0, 1, 2].map((i) => ({ i, why_zh: `解读 ${i}`, why_en: `Why ${i}` })) }) } }] });
   }
@@ -54,5 +59,8 @@ const env = {
   DEEPSEEK_API_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("DEEPSEEK_API_KEY") ?? "",
   ALLOWED_ORIGINS: Deno.args[1] ?? "http://localhost:8830,http://127.0.0.1:8830",
   MONTHLY_ASKS: "300",
+  // UMA on the owner computer: UMA_ORIGIN / UMA_SERVER_SECRET from this process (e.g. tools/uma-server --fake), else the e2e stand-in.
+  UMA_ORIGIN: Deno.env.get("UMA_ORIGIN") ?? (Deno.env.get("FAKE_AI") ? "https://uma.test" : ""),
+  UMA_SERVER_SECRET: Deno.env.get("UMA_SERVER_SECRET") ?? (Deno.env.get("FAKE_AI") ? "e2e-secret-0123456789abcdef0123456789" : ""),
 };
 Deno.serve({ port, hostname: "127.0.0.1" }, (req) => worker.fetch(req, env));

@@ -109,7 +109,7 @@ def run(params):
     def load(model_name, **kw):
         emit("STEP", f"Loading {model_name} on {device} (the first run downloads the checkpoint from Hugging Face)")
         t = time.time()
-        unit = pretrained_mlip.get_predict_unit(model_name, device=device, **kw)
+        unit = pretrained_mlip.get_predict_unit(model_name, device=device, inference_settings=uma_settings(), **kw)
         emit("STEP", f"{model_name} ready in {time.time() - t:.0f} s")
         return unit
 
@@ -215,6 +215,16 @@ def run(params):
         f.write(",".join(row) + "\n" + ",".join(str(v) for v in row.values()) + "\n")
     files.append("uma_results.csv")
     emit("RESULT", {"job": job, "model": model, "row": row, "files": files})
+
+
+def uma_settings():
+    """fairchem's default settings compile the model with torch.compile, which needs Triton. Windows has no Triton,
+    so there UMA runs the full-precision path without compilation ("batch"), slower but exact."""
+    try:
+        import triton  # noqa: F401
+        return "default"
+    except ImportError:
+        return "batch"
 
 
 def main():

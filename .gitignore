@@ -26,3 +26,6 @@ docs/manual/manual.html
 # Cloud GPU batch (tools/cloud): local VM settings and computed results stay out of git.
 tools/cloud/cloud.local.json
 cloud-results/
+tools/uma-server/secret.local
+tools/uma-server/cache*.json
+tools/uma-server/cache*.json.tmp

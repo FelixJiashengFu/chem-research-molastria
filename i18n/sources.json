@@ -1931,6 +1931,21 @@
  "下载": [
   "meta/index.html"
  ],
+ "在线运行：用站长的 GPU 免费算": [
+  "meta/index.html"
+ ],
+ "不用装任何东西：把上面的分子交给站长电脑上的 UMA-S 1.2.1 计算，按提交顺序排队，算过的分子直接给结果。在线运行只支持“绝热电离能与电子亲和能”和“几何优化”。": [
+  "meta/index.html"
+ ],
+ "正在查询在线状态…": [
+  "meta/index.html"
+ ],
+ "在线运行": [
+  "meta/index.html"
+ ],
+ "提交即表示同意：只用于合法的研究与教学，不得用于武器、军事等 Meta FAIR Chemistry 可接受使用政策禁止的用途；结果按原样提供，不作任何保证；论文里用到请注明 UMA（Meta FAIR Chemistry）。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每位访客每天 20 次，Pro 会员 100 次。": [
+  "meta/index.html"
+ ],
  "MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。": [
   "meta/index.html"
  ],
@@ -5729,6 +5744,78 @@
  "# 先输入一个 RDKit 能解析的 SMILES": [
   "meta/meta.js"
  ],
+ "先输入一个 RDKit 能解析的 SMILES。": [
+  "meta/meta.js"
+ ],
+ "在线运行只支持电离能 / 电子亲和能和几何优化。": [
+  "meta/meta.js"
+ ],
+ "在线运行用的是 uma-s-1p2p1，请把模型切回它。": [
+  "meta/meta.js"
+ ],
+ "在线运行最多 30 个重原子。": [
+  "meta/meta.js"
+ ],
+ "，正在计算": [
+  "meta/meta.js"
+ ],
+ "✓ 在线 · {0}{1}": [
+  "meta/meta.js"
+ ],
+ "排队 {0} 个{1}": [
+  "meta/meta.js"
+ ],
+ "! 站长的 GPU 现在离线，可以先下载脚本自己运行": [
+  "meta/meta.js"
+ ],
+ "（测试数据）": [
+  "meta/meta.js"
+ ],
+ "计算完成 · {0}{1}": [
+  "meta/meta.js"
+ ],
+ "下载结构": [
+  "meta/meta.js"
+ ],
+ "中性能量（eV）": [
+  "meta/meta.js"
+ ],
+ "导入 AI 实验室 →": [
+  "meta/meta.js"
+ ],
+ "复制 CSV": [
+  "meta/meta.js"
+ ],
+ "绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；{0} 秒。": [
+  "meta/meta.js"
+ ],
+ "下载优化结构（.xyz）": [
+  "meta/meta.js"
+ ],
+ "能量": [
+  "meta/meta.js"
+ ],
+ "，{0} 步收敛，{1} 秒。": [
+  "meta/meta.js"
+ ],
+ "浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入": [
+  "meta/meta.js"
+ ],
+ "已提交…": [
+  "meta/meta.js"
+ ],
+ "正在计算…（一个分子通常几十秒）": [
+  "meta/meta.js"
+ ],
+ "排队中，前面还有 {0} 个任务…": [
+  "meta/meta.js"
+ ],
+ "等了 15 分钟还没轮到，请稍后再试": [
+  "meta/meta.js"
+ ],
+ "计算失败": [
+  "meta/meta.js"
+ ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。": [
   "meta/meta.js"
  ],
@@ -5837,12 +5924,6 @@
  "D4rev 微调": [
   "meta/meta.js"
  ],
- "导入 AI 实验室 →": [
-  "meta/meta.js"
- ],
- "复制 CSV": [
-  "meta/meta.js"
- ],
  "D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。": [
   "meta/meta.js"
  ],
@@ -5859,9 +5940,6 @@
   "meta/meta.js"
  ],
  "文件：{0}": [
-  "meta/meta.js"
- ],
- "浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入": [
   "meta/meta.js"
  ],
  "模型库最近更新 {0}": [
@@ -7422,10 +7500,49 @@
  "{0} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。 打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。 {1} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.": [
   "deploy/account-worker.js"
  ],
+ "UMA 计算服务还没有开通": [
+  "deploy/account-worker.js"
+ ],
+ "按照模型许可要求遵守的出口管制规定，这个地区不能使用 UMA 计算服务": [
+  "deploy/account-worker.js"
+ ],
  "请求内容过大": [
   "deploy/account-worker.js"
  ],
  "请求不是合法的 JSON": [
+  "deploy/account-worker.js"
+ ],
+ "SMILES 含有不支持的字符或太长": [
+  "deploy/account-worker.js"
+ ],
+ "只支持电离能/电子亲和能（ipea）和几何优化（opt）": [
+  "deploy/account-worker.js"
+ ],
+ "电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间": [
+  "deploy/account-worker.js"
+ ],
+ "，Pro 会员每天更多": [
+  "deploy/account-worker.js"
+ ],
+ "今天的 UMA 计算次数已用完（每天 {0} 次{1}），明天再来": [
+  "deploy/account-worker.js"
+ ],
+ "UMA 服务：{0}": [
+  "deploy/account-worker.js"
+ ],
+ "UMA 服务暂时不可用": [
+  "deploy/account-worker.js"
+ ],
+ "站长的 GPU 现在离线，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "查询太频繁，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "没有找到这个任务（完成后保留一小时）": [
+  "deploy/account-worker.js"
+ ],
+ "没有这个接口": [
   "deploy/account-worker.js"
  ],
  "订单参考号格式不对": [
@@ -7516,9 +7633,6 @@
   "deploy/account-worker.js"
  ],
  "本月 {0} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。": [
-  "deploy/account-worker.js"
- ],
- "没有这个接口": [
   "deploy/account-worker.js"
  ],
  "这个网站没有使用账号服务的权限": [

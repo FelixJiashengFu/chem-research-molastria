@@ -4,6 +4,8 @@
 
 ## 现在
 
+- 在线 UMA 已开通（2026-11-05）：隧道 `molastria-uma` → `uma-origin.molastria.com`，账号服务已部署；FEC 的 IP/EA 实测 8.8 秒（RTX 2080，batch 设置）。待办：观察一周的用量再调 `UMA_DAILY`；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）。
+- 发新桌面版：桌面版“在本机运行”在 Windows + NVIDIA 上会因缺 Triton 报错，`runner.py` 已修，要发版才到用户手里。
 - 每周精选第一期（周一）发出后看一眼：邮件显示、进垃圾箱没有、DeepSeek 花了多少。
 - 商业邮件合规：加拿大 CASL 一般要求邮件里有发件人的联系方式（如邮寄地址），每周精选现在只有网址和退订链接；要确认是否适用、放什么。
 - 售后邮箱：在 Porkbun 设 `support@molastria.com` 转发，再填进 `public/pay/config.js` 的 `contactEmail`（现在售后只能去公开的 GitHub Issues）。

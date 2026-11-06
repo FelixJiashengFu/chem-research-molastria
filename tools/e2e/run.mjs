@@ -500,6 +500,25 @@ check('MACE-OFF23: the Meta page writes a mace-torch script for neutral jobs, an
   await finish(p);
 });
 
+check('online UMA: the Meta page shows the owner GPU, queues a job through the account service and imports the result', async () => {
+  const p = await open();
+  await go(p, '/meta/index.html#uma');
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /在线 · uma-s-1p2p1 · Test GPU/.test(document.getElementById('u-online-status').textContent));
+  assert.equal(await p.isDisabled('#u-online-run'), false);
+  await p.selectOption('#u-job', 'md');
+  assert.equal(await p.isDisabled('#u-online-run'), true);
+  assert.match(await text(p, '#u-online-why'), /只支持/);
+  await p.selectOption('#u-job', 'ipea');
+  await p.click('#u-online-run');
+  await p.waitForSelector('#u-online-result .mx-res', { timeout: 15000 });
+  assert.match(await text(p, '#u-online-result'), /10\.900/);
+  await p.click('#u-online-result [data-act=lab]');
+  await p.waitForURL(/lab\/index\.html/);
+  await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
+  await finish(p);
+});
+
 check('AI settings: vendor presets fill the endpoint, list models and adapt to the API', async () => {
   // Vendor APIs are faked: a model list, and a chat endpoint that only accepts max_completion_tokens.
   const p = await open();

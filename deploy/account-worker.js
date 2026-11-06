@@ -252,6 +252,83 @@ const inviteMail = (owner) => [
   `${owner} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。\n打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。\n\n${owner} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.`
 ];
 
+// ── UMA on the site owner's GPU (tools/uma-server, reached through Cloudflare Tunnel) ──────────────────
+// Open to every visitor of the allowed sites: this service limits jobs per visitor, keeps embargoed regions out
+// (the FAIR Chemistry License requires following trade-control laws) and adds the shared secret the owner's
+// computer checks. The computer may be off; health then answers { online: false } instead of an error.
+const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
+async function umaOrigin(env, path, init = {}) {
+  if (!env.UMA_ORIGIN || !env.UMA_SERVER_SECRET) throw fail(503, 'UMA 计算服务还没有开通');
+  const res = await fetch(env.UMA_ORIGIN.replace(/\/+$/, '') + path, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json', 'X-MolAstria-Key': env.UMA_SERVER_SECRET,
+      // Optional Cloudflare Access service token: requests without it are stopped at Cloudflare and never reach the computer.
+      ...(env.UMA_ACCESS_ID && env.UMA_ACCESS_SECRET ? { 'CF-Access-Client-Id': env.UMA_ACCESS_ID, 'CF-Access-Client-Secret': env.UMA_ACCESS_SECRET } : {})
+    },
+    signal: AbortSignal.timeout(Number(env.UMA_TIMEOUT_MS || 8000))
+  });
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
+}
+async function uma(request, env, cors, path, ip) {
+  const key = `${request.method} ${path}`;
+  if (key === 'GET /uma/health') {
+    try {
+      const { status, data } = await umaOrigin(env, '/health');
+      return json(status === 200 ? { online: !!data.ready, model: data.model, gpu: data.gpu || '', queue: data.queue, running: data.running, cached: data.cached } : { online: false }, { ...cors, 'Cache-Control': 'no-store' });
+    } catch (e) {
+      if (e.status === 503) return json({ online: false, configured: false }, cors);
+      return json({ online: false }, cors);
+    }
+  }
+  const country = request.cf?.country || '';
+  if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用 UMA 计算服务');
+  if (key === 'POST /uma/jobs') {
+    const raw = await request.text();
+    if (raw.length > 2000) throw fail(413, '请求内容过大');
+    let body;
+    try { body = JSON.parse(raw || '{}'); } catch { throw fail(400, '请求不是合法的 JSON'); }
+    const smiles = String(body.smiles || '').trim();
+    const job = String(body.job || 'ipea');
+    if (!/^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长');
+    if (!['ipea', 'opt'].includes(job)) throw fail(400, '只支持电离能/电子亲和能（ipea）和几何优化（opt）');
+    const out = { smiles, job };
+    for (const [k, lo, hi] of [['charge', -2, 2], ['spin', 1, 4]]) {
+      if (body[k] === undefined || body[k] === null || body[k] === '') continue;
+      const v = Number(body[k]);
+      if (!Number.isInteger(v) || v < lo || v > hi) throw fail(400, '电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间');
+      out[k] = v;
+    }
+    // Signed-in Pro members get a larger daily allowance than anonymous visitors.
+    const email = await signedIn(env, request).catch(() => null);
+    const pro = email ? (await access(env, email)).pro : false;
+    const limit = Number(pro ? env.UMA_DAILY_PRO || 100 : env.UMA_DAILY || 20);
+    if (!(await allow(env, `uma:${pro ? email : ip}`, limit, 86400))) throw fail(429, `今天的 UMA 计算次数已用完（每天 ${limit} 次${pro ? '' : '，Pro 会员每天更多'}），明天再来`);
+    try {
+      const { status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) });
+      if (status >= 400) throw fail(status === 503 ? 503 : 400, data.error ? `UMA 服务：${data.error}` : 'UMA 服务暂时不可用');
+      return json(data, cors, status);
+    } catch (e) {
+      if (e.status) throw e;
+      throw fail(503, '站长的 GPU 现在离线，请稍后再试');
+    }
+  }
+  const m = /^\/uma\/jobs\/([0-9a-f]{16})$/.exec(path);
+  if (request.method === 'GET' && m) {
+    if (!(await allow(env, `uma-poll:${ip}`, 1200, 3600))) throw fail(429, '查询太频繁，请稍后再试');
+    try {
+      const { status, data } = await umaOrigin(env, `/jobs/${m[1]}`);
+      if (status === 404) throw fail(404, '没有找到这个任务（完成后保留一小时）');
+      return json(data, { ...cors, 'Cache-Control': 'no-store' }, status);
+    } catch (e) {
+      if (e.status) throw e;
+      throw fail(503, '站长的 GPU 现在离线，请稍后再试');
+    }
+  }
+  throw fail(404, '没有这个接口');
+}
+
 // ── routes ──────────────────────────────────────────────────────────────
 async function route(request, env, cors) {
   const url = new URL(request.url);
@@ -259,6 +336,7 @@ async function route(request, env, cors) {
   const ip = request.headers.get('CF-Connecting-IP') || 'local';
   if (request.method === 'GET' && path === '/') return json({ ok: true, service: 'molastria-account' }, cors);
   if (request.method === 'GET' && path === '/me') return json(await view(env, await access(env, await signedIn(env, request))), cors);
+  if (path === '/uma' || path.startsWith('/uma/')) return uma(request, env, cors, path, ip);
 
   const raw = request.method === 'GET' ? '' : await request.text();
   if (raw.length > Number(env.MAX_BODY || 200000)) throw fail(413, '请求内容过大');

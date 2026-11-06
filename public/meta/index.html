@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="../shared-nav.css">
   <link rel="stylesheet" href="meta.css">
   <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
   <script src="../ai/config.js" defer></script>
   <script src="../ai/ai.js" defer></script>
   <script src="../lab/chem.js" defer></script>
@@ -133,6 +134,14 @@
         <div class="mx-code-bar"><span id="u-file">uma_FEC_ipea.py</span><span><button type="button" class="text-button" id="u-copy">复制</button><button type="button" class="text-button" id="u-download">下载</button></span></div>
         <pre tabindex="0" aria-label="生成的 Python 脚本"><code id="u-code"></code></pre>
       </div>
+    </div>
+    <div class="mx-local mx-online" id="u-online" hidden>
+      <div class="mx-local-head"><h3>在线运行：用站长的 GPU 免费算</h3>
+        <p>不用装任何东西：把上面的分子交给站长电脑上的 UMA-S 1.2.1 计算，按提交顺序排队，算过的分子直接给结果。在线运行只支持“绝热电离能与电子亲和能”和“几何优化”。</p></div>
+      <div class="mx-env" id="u-online-status" role="status"><span class="muted">正在查询在线状态…</span></div>
+      <div class="mx-row wrap"><button class="button primary" type="button" id="u-online-run" disabled>在线运行</button><span class="muted small" id="u-online-why"></span></div>
+      <div id="u-online-result" aria-live="polite"></div>
+      <p class="mx-fine">提交即表示同意：只用于合法的研究与教学，不得用于武器、军事等 Meta FAIR Chemistry 可接受使用政策禁止的用途；结果按原样提供，不作任何保证；论文里用到请注明 UMA（Meta FAIR Chemistry）。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每位访客每天 20 次，Pro 会员 100 次。</p>
     </div>
     <p class="mx-desk-note" id="u-mace-note" hidden>MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。</p>
     <p class="mx-desk-note" id="u-desk-note">不想自己配命令？<a href="../download/index.html">MolAstria 桌面版</a>可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。</p>

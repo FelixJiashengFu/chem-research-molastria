@@ -15,6 +15,8 @@ let mailDown = false, sourcesDown = false, digestModel = "ok", digestPrompt = ""
 let upstreamStatus = 200;
 let lastUpstream: any = null;
 let stripeCalls = 0;
+const umaCalls: { path: string; key: string | null; access: string | null; body: unknown }[] = [];
+let umaOffline = false;
 function addCustomer(id: string, email: string, sub?: { quantity?: number; status?: string; interval?: string; cancel?: boolean }) {
   customers[id] = { id, email };
   subs[id] = sub ? [{ status: sub.status ?? "active", cancel_at_period_end: !!sub.cancel, items: { data: [{ quantity: sub.quantity ?? 1, current_period_end: nowS() + 86400 * 300, price: { recurring: { interval: sub.interval ?? "year" } } }] } }] : [];
@@ -24,6 +26,15 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   const req = new Request(input, init);
   const url = new URL(req.url);
   const ok = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+  if (url.hostname === "uma.test") { // the owner's computer behind the tunnel (tools/uma-server)
+    if (umaOffline) throw new TypeError("connection refused");
+    umaCalls.push({ path: url.pathname, key: req.headers.get("X-MolAstria-Key"), access: req.headers.get("CF-Access-Client-Id"), body: req.method === "POST" ? await req.json() : null });
+    if (req.headers.get("X-MolAstria-Key") !== "uma-secret-for-tests-0123456789abcdef") return ok({ error: "unauthorized" }, 401);
+    if (url.pathname === "/health") return ok({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7 });
+    if (url.pathname === "/jobs") return ok({ id: "0123456789abcdef", status: "queued", position: 2 }, 202);
+    if (url.pathname === "/jobs/0123456789abcdef") return ok({ id: "0123456789abcdef", status: "done", result: { ip_uma_s: 10.9, ea_uma_s: -0.4 } });
+    return ok({ error: "no such job" }, 404);
+  }
   if (url.hostname === "api.stripe.com") {
     stripeCalls++;
     if (req.headers.get("Authorization") !== "Bearer rk_test_fake") return ok({ error: { message: "bad key" } }, 401);
@@ -506,6 +517,40 @@ await test("unknown routes and bad JSON", async () => {
   eq((await call("GET", "/nope")).status, 404);
   const res = await worker.fetch(new Request("https://api.test/auth/start", { method: "POST", headers: { Origin: "https://molastria.com" }, body: "{" }), env);
   eq(res.status, 400);
+});
+
+await test("UMA: off until configured, then health, jobs and polling through the owner's computer", async () => {
+  eq(await call("GET", "/uma/health").then((r) => r.data), { online: false, configured: false });
+  Object.assign(env, { UMA_ORIGIN: "https://uma.test/", UMA_SERVER_SECRET: "uma-secret-for-tests-0123456789abcdef", UMA_DAILY: "2" });
+  const h = await call("GET", "/uma/health");
+  eq(h.data, { online: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, cached: 7 });
+  if (JSON.stringify(h.data).includes("secret")) throw new Error("health leaked the secret");
+  eq(umaCalls.at(-1)?.key, "uma-secret-for-tests-0123456789abcdef", "secret sent to the computer");
+  const bad = await call("POST", "/uma/jobs", { smiles: "C; rm -rf /", job: "ipea" });
+  eq(bad.status, 400);
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "md" })).status, 400, "only ipea and opt");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", charge: 9 })).status, 400, "charge range");
+  const ok = await call("POST", "/uma/jobs", { smiles: "O=C1OCC(F)O1", job: "ipea", extra: "dropped", path: "../../etc" });
+  eq([ok.status, ok.data.id], [202, "0123456789abcdef"]);
+  eq(umaCalls.at(-1)?.body, { smiles: "O=C1OCC(F)O1", job: "ipea" }, "only checked fields reach the computer");
+  eq((await call("GET", "/uma/jobs/0123456789abcdef")).data.result.ip_uma_s, 10.9);
+  eq((await call("GET", "/uma/jobs/not-a-job-id")).status, 404, "job ids are checked");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" })).status, 202);
+  eq((await call("POST", "/uma/jobs", { smiles: "CCC", job: "opt" })).status, 429, "daily limit per visitor");
+});
+
+await test("UMA: embargoed regions are refused, an optional Access token is sent, an offline computer is reported", async () => {
+  const req = new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com", "Content-Type": "application/json", "CF-Connecting-IP": "203.0.113.9" }, body: JSON.stringify({ smiles: "CCO", job: "opt" }) });
+  Object.defineProperty(req, "cf", { value: { country: "IR" } });
+  eq((await worker.fetch(req, env)).status, 451);
+  Object.assign(env, { UMA_ACCESS_ID: "access-id.test", UMA_ACCESS_SECRET: "access-secret" });
+  await call("GET", "/uma/health");
+  eq(umaCalls.at(-1)?.access, "access-id.test");
+  umaOffline = true;
+  eq((await call("GET", "/uma/health")).data, { online: false });
+  const r = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com", "CF-Connecting-IP": "203.0.113.10" }, body: JSON.stringify({ smiles: "CCO", job: "opt" }) }), env);
+  eq([r.status, (await r.json()).error?.message], [503, "站长的 GPU 现在离线，请稍后再试"]);
+  umaOffline = false;
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");

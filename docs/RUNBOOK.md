@@ -91,6 +91,41 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **训练 Agent 页的模型表：** 模型信息要对照 Hugging Face（`huggingface.co/api/models/<id>?expand[]=safetensors`）和模型卡核实。刷新时要按作者加 `sort=createdAt` 逐家查最新的仓库，不能只查已知的系列名，否则会漏掉刚发布的新系列（发生过）。
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 
+## 在线 UMA：站长电脑的 GPU，对所有访客开放
+
+链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，GPU 一次算一个，其余排队，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
+
+**开通一次（按顺序）：**
+1. UMA 环境里登录 Hugging Face：`D:\ChemDraw\uma-env\Scripts\python.exe -c "from huggingface_hub import login; login()"`（站长自己粘贴 token 或用浏览器登录）。
+2. 装 Cloudflare Tunnel：`winget install --id Cloudflare.cloudflared`，然后 `cloudflared tunnel login`（浏览器里选 molastria.com）。
+3. 建隧道和域名：`cloudflared tunnel create molastria-uma`，`cloudflared tunnel route dns molastria-uma uma-origin.molastria.com`，在 `%USERPROFILE%\.cloudflared\config.yml` 写：
+   ```yaml
+   tunnel: molastria-uma
+   credentials-file: C:\Users\<你>\.cloudflared\<隧道 ID>.json
+   ingress:
+     - hostname: uma-origin.molastria.com
+       service: http://127.0.0.1:8765
+     - service: http_status:404
+   ```
+4. 生成共享暗号：`node tools/uma-server/new-secret.mjs`（写进 `tools/uma-server/secret.local`，同时用 `wrangler secret put UMA_SERVER_SECRET` 交给账号服务；屏幕上不显示）。
+5. 在 `deploy/wrangler.toml` 的 `[vars]` 加 `UMA_ORIGIN = "https://uma-origin.molastria.com"`，部署账号服务（`/ship-worker`）。
+6. **推荐：** Cloudflare Zero Trust → Access → 为 `uma-origin.molastria.com` 建一个 Self-hosted 应用，策略选 Service Auth，绑定一个 Service Token；把令牌的 ID 和 Secret 用 `wrangler secret put UMA_ACCESS_ID` / `UMA_ACCESS_SECRET` 交给账号服务。这样不是账号服务发来的请求在 Cloudflare 就被拦下，到不了电脑。
+
+**每次上线：** 普通（非管理员）PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe`。关掉这个窗口就同时下线服务和隧道。
+
+**额度：** 匿名访客每天 `UMA_DAILY`（默认 20）次，登录的 Pro 每天 `UMA_DAILY_PRO`（默认 100）次，在 `wrangler.toml` 的 `[vars]` 里改。
+
+**电脑的安全：**
+- 不开任何入站端口：服务只听 127.0.0.1，隧道是电脑主动连出去的，家里的 IP 不公开；Windows 防火墙保持默认开启。
+- 只认暗号：没有 `X-MolAstria-Key` 的请求一律 401（用 `hmac.compare_digest` 比较）；暗号只在 `secret.local` 和账号服务的 secret 里，怀疑泄露就重跑 `new-secret.mjs` 并重启服务。
+- 不执行外来内容：只接受 SMILES、任务（ipea / opt）、电荷、自旋，账号服务先校验再转发，多余字段丢弃；请求体最大 8 KB；不读写访客给的文件或路径，不调用 shell；只加载 Meta 官方的模型权重。
+- 防耗尽：最多 30 个重原子、120 个原子，优化最多 400 步，队列最多 25 个，空闲连接 15 秒断开；账号服务按访客限次、限查询频率。
+- 不用管理员身份运行（`start.ps1` 会拒绝）；服务只写本文件夹里的缓存。
+- 电脑看不到访客的 IP（请求都经过 Cloudflare 和账号服务）；缓存里只有提交的 SMILES 和结果。
+- 许可：FAIR Chemistry License 要求遵守 Meta 的可接受使用政策和出口管制，所以页面写明禁止用途、结果不作保证、论文注明 UMA，账号服务挡住 CU、IR、KP、SY。
+
+**测试（不用 GPU）：** `server.py --fake` 返回标明 fake 的假数据（缓存单独放在 `cache.fake.local.json`）；`tools/account-test.ts` 和 `tools/e2e/run.mjs` 里各有 UMA 的检查。
+
 ## 云端 GPU 批量计算（UMA + MACE-OFF23）
 
 站长自己的谷歌云 L4 虚拟机，只给 AI 实验室跑批量计算，不对外服务：没有公网端口，全部经 `gcloud compute ssh` / `scp`。

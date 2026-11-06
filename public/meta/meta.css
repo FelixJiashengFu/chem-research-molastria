@@ -125,6 +125,8 @@ input[type=number]{width:88px}
 .mx-cmd{display:flex;align-items:center;gap:8px;margin-top:5px;padding:6px 8px 6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2)}
 .mx-cmd code{flex:1;background:none;padding:0;word-break:break-all}
 .mx-log{margin:14px 0 0;max-height:300px;overflow:auto;padding:12px 14px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);font:12px/1.55 var(--font-mono);color:var(--ink-2);white-space:pre-wrap;word-break:break-all}
+.mx-online .mx-row{margin-top:10px}
+.mx-fine{margin:12px 0 0;font-size:12px;line-height:1.7;color:var(--muted);max-width:90ch}
 .mx-res{margin-top:14px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:5px;background:color-mix(in srgb,var(--ok) 6%,transparent)}
 .mx-res h4{margin:0 0 8px;font-size:14px}
 .mx-res p{margin:6px 0 0;font-size:13px}

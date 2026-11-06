@@ -45,6 +45,16 @@ def safe(name):
     return re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:40] or "molecule"
 
 
+def uma_settings():
+    """fairchem's default settings compile the model with torch.compile, which needs Triton. Windows has no Triton,
+    so there UMA runs the full-precision path without compilation ("batch"), slower but exact."""
+    try:
+        import triton  # noqa: F401
+        return "default"
+    except ImportError:
+        return "batch"
+
+
 def pick_device(want):
     import torch
 
@@ -94,7 +104,7 @@ def main():
     def load(model):
         t = time.time()
         print(f"Loading {model} on {device} (the first run downloads the checkpoint from Hugging Face)", flush=True)
-        unit = pretrained_mlip.get_predict_unit(model, device=device)
+        unit = pretrained_mlip.get_predict_unit(model, device=device, inference_settings=uma_settings())
         print(f"{model} ready in {time.time() - t:.0f} s", flush=True)
         return unit
 
