@@ -5,7 +5,6 @@
 ## 现在
 
 - 在线模型已开通（2026-11-05）：15 个模型（UMA 四个、OMol25 的 AllScAIP 两个和 eSEN 三个、MACE 五个、ANI-2x 只给 Pro），隧道 `molastria-uma` → `uma-origin.molastria.com`。FEC 实测每个模型 1–14 秒（RTX 2080）。待办：观察一周的用量再调各档次数；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）；UMA-M 1.1 要更大的内存和显存；可以向 MACE 作者要在线服务的书面许可；UMA-S 1.2.1 水的 IP 偏低，可以反馈给 fairchem。
-- 发新桌面版：桌面版“在本机运行”在 Windows + NVIDIA 上会因缺 Triton 报错，`runner.py` 已修，要发版才到用户手里。
 - 每周精选第一期（周一）发出后看一眼：邮件显示、进垃圾箱没有、DeepSeek 花了多少。
 - 商业邮件合规：加拿大 CASL 一般要求邮件里有发件人的联系方式（如邮寄地址），每周精选现在只有网址和退订链接；要确认是否适用、放什么。
 - 售后邮箱：在 Porkbun 设 `support@molastria.com` 转发，再填进 `public/pay/config.js` 的 `contactEmail`（现在售后只能去公开的 GitHub Issues）。
@@ -49,6 +48,7 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 - 2026-11-05 目录每周四自动刷新（`refresh-data.yml` + `check-catalogue.mjs`），当天先刷新一次：1,515 → 1,607 条；ChemDB Atlas 新增 84 条量子物理、量子力学与量子化学资源（程序、凝聚态第一性原理、波函数分析与动力学、课程教材、量子计算化学，共 187 条、16 类）。
 - 2026-11-05 AI 设置的“其他兼容接口”内置 19 家服务商预设（只收浏览器能直接调用的），可按 key 获取模型列表；识图可用“AI 设置中的当前模型”。页面介绍仍只写 Muse / DeepSeek。
 - 2026-11-05 GitHub 学生包：仓库加了 Codespaces 开发环境（`.devcontainer/`）和 Copilot 说明（`.github/copilot-instructions.md`）。
+- 2026-11-05 桌面版 0.1.11：“在本机运行”在 Windows 上不再因缺 Triton 报错（runner.py 用 batch 设置）；内置 15 个在线模型的 Meta 页；Pro 的 AI 模型切换修复。
 - 2026-11-05 桌面版“在本机运行 UMA”（Meta 页）：找 Python、检查 fairchem / GPU / Hugging Face 权限并给出安装命令，运行内置脚本、实时日志，IP/EA 一键导入 AI 实验室。真实计算还没跑过：等 facebook/UMA 的 Hugging Face 权限。
 - 2026-11-05 “Meta × 化学”页（`meta/`）：Muse Spark 识图（图片 → SMILES，RDKit 逐个校验）、UMA 脚本生成器（fairchem + ASE，IP/EA 输出可直接导入 AI 实验室）、FAIR Chemistry 开放模型与数据集目录、fairchem 最新版本；首页、AI 实验室和训练页加了入口，导航加“Meta”。
 - 2026-11-03 量子化学计算并入（`qchem/`，来自 qchem-web）：HF/DFT、CCSD(T)、FCI、激发态、VQE/QPE，新增量子点模块（核/壳有效质量模型、Yu 2003 经验尺寸曲线、石墨烯量子点、硅纳米团簇），中英文跟随站点。顺带修好 `tools/serve.ts` 在含中文的路径下找不到文件。
