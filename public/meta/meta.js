@@ -488,23 +488,80 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     onlineSync();
   }
 
-  // ── 在线运行：站长电脑上的 UMA，经账号服务（/uma/*）排队 ──────────────────────────
-  // The owner's computer is reached only through the account service, which limits jobs per visitor and adds the
-  // secret the computer checks (tools/uma-server). It may be off: the panel then says so and the button stays off.
+  // ── 在线运行：站长电脑上的模型，经账号服务（/uma/*）排队 ──────────────────────────
+  // The owner's computer is reached only through the account service, which limits jobs per visitor, keeps ANI-2x
+  // for Pro and adds the secret the computer checks (tools/uma-server). Each model computes for one visitor at a
+  // time; the computer may be off, and the panel then says so and the button stays off.
+  const OFF = ['H', 'C', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'I'];
+  const OFF_ABOUT = 'MACE-OFF23 有机分子力场（在 SPICE 数据上训练，ωB97M-D3BJ），只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子；small 最快，large 最准。';
+  const OFF_FINE = 'MACE-OFF23 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 Kovács et al., J. Am. Chem. Soc. 2025（MACE-OFF）。';
+  // Which models give IP / EA follows vertical-IP checks on the owner's GPU (tools/uma-server/server.py, MODELS):
+  // models whose charge-state energies came out unreliable take neutral closed-shell molecules only.
+  const FAIR_FINE = '采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；';
+  const NEUTRAL_ONLY = '实测它对不同电荷态的能量差不可靠，所以在线只算中性闭壳层分子的几何优化。';
+  const fair = (name, ipea, about, cite) => ({ name, tier: 'fair', jobs: ipea ? ['ipea', 'opt'] : ['opt'], charged: ipea, elements: null, about, fine: `${name} ${FAIR_FINE}论文里请注明 ${cite}。` });
+  const OMOL = '在 OMol25（ωB97M-V/def2-TZVPD，1 亿多个 DFT 计算）上训练';
+  const ONLINE = {
+    'uma-s-1p2p1': fair('UMA-S 1.2.1', true, `Meta FAIR Chemistry 的通用原子模型，${OMOL}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。`, 'UMA（Meta FAIR Chemistry）'),
+    'uma-s-1p2': fair('UMA-S 1.2', true, `UMA-S 1.2.1 的上一版，${OMOL}，支持电荷和自旋。实测苯、乙醇、水的垂直电离能都接近实验值，可以用来对照 1.2.1 的 IP / EA；比 1.2.1 慢。`, 'UMA（Meta FAIR Chemistry）'),
+    'uma-s-1p2p1-ft-d4rev': fair('UMA-S 1.2.1 D4rev', true, 'UMA-S 1.2.1 按 ωB97M-D4rev 色散校正微调的分子专用版本，能量里含 D4 色散。和 1.2.1 一样，水这类极小分子的电离能偏低。', 'UMA（Meta FAIR Chemistry）'),
+    'uma-s-1p1': fair('UMA-S 1.1', false, `较早的 UMA 版本，可作对照。${NEUTRAL_ONLY}`, 'UMA（Meta FAIR Chemistry）'),
+    'allscaip-md-conserving-all-omol': fair('AllScAIP-md 能量守恒型', true, `Meta 的 AllScAIP 中等模型，${OMOL}，力由能量求导，支持电荷和自旋；实测苯、乙醇、水的垂直电离能都接近实验值。`, 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）'),
+    'allscaip-md-direct-all-omol': fair('AllScAIP-md 直接受力型', true, `Meta 的 AllScAIP 中等模型，${OMOL}，直接预测力（更快，但能量和力不严格守恒），支持电荷和自旋。`, 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）'),
+    'esen-sm-conserving-all-omol': fair('eSEN-sm 能量守恒型', false, `Meta 的 eSEN 小模型，${OMOL}，力由能量求导。${NEUTRAL_ONLY}`, 'eSEN 和 OMol25 数据集（Levine et al., 2025）'),
+    'esen-sm-direct-all-omol': fair('eSEN-sm 直接受力型', false, `Meta 的 eSEN 小模型，${OMOL}，直接预测力（能量和力不严格守恒）。${NEUTRAL_ONLY}`, 'eSEN 和 OMol25 数据集（Levine et al., 2025）'),
+    'esen-md-direct-all-omol': fair('eSEN-md 直接受力型', false, `Meta 的 eSEN 中等模型，${OMOL}，直接预测力（能量和力不严格守恒）。${NEUTRAL_ONLY}`, 'eSEN 和 OMol25 数据集（Levine et al., 2025）'),
+    'mace-off23-small': { name: 'MACE-OFF23 small', tier: 'asl', jobs: ['opt'], charged: false, elements: OFF, about: OFF_ABOUT, fine: OFF_FINE },
+    'mace-off23-medium': { name: 'MACE-OFF23 medium', tier: 'asl', jobs: ['opt'], charged: false, elements: OFF, about: OFF_ABOUT, fine: OFF_FINE },
+    'mace-off23-large': { name: 'MACE-OFF23 large', tier: 'asl', jobs: ['opt'], charged: false, elements: OFF, about: OFF_ABOUT, fine: OFF_FINE },
+    'mace-omol-0': { name: 'MACE-OMOL-0', tier: 'asl', jobs: ['opt'], charged: false, elements: null,
+      about: 'MACE 在 OMol25 上训练的模型，覆盖 83 种元素（H 到 Bi）。实测它对不同电荷态的能量差不可靠（水的垂直电离能只有 0.04 eV），所以在线只算中性闭壳层分子的几何优化。',
+      fine: 'MACE-OMOL-0 采用学术软件许可（ASL），只限学术、非商业研究；论文里请注明 MACE-OMOL-0 和 OMol25 数据集（Levine et al., 2025）。' },
+    'mace-mdp': { name: 'MACE-MDP', tier: 'asl', jobs: ['polar'], charged: false, elements: OFF,
+      about: '预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。',
+      fine: 'MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。' },
+    'ani-2x': { name: 'ANI-2x', tier: 'pro', jobs: ['opt'], charged: false, elements: ['H', 'C', 'N', 'O', 'F', 'S', 'Cl'],
+      about: 'ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。',
+      fine: 'ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。' }
+  };
+  const JOB_NAMES = { ipea: '绝热电离能与电子亲和能', opt: '几何优化与能量', polar: '偶极矩与极化率' };
   const umaApi = () => (window.MOLASTRIA_PAY?.accountApi || '').replace(/\/+$/, '');
-  let umaOnline = false, umaBusy = false;
+  const session = () => { try { return localStorage.getItem('molastria-session') || ''; } catch { return ''; } };
+  const isPro = () => { try { return !!session() && !!JSON.parse(localStorage.getItem('molastria-account') || 'null')?.pro; } catch { return false; } };
+  let umaOnline = false, umaBusy = false, umaHealth = null;
   async function umaCall(path, opts = {}) {
-    const token = (() => { try { return localStorage.getItem('molastria-session') || ''; } catch { return ''; } })();
+    const token = session();
     const res = await fetch(umaApi() + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error?.message || data.error || `HTTP ${res.status}`);
     return data;
   }
+  function onlineModel() { return ONLINE[$('u-online-model').value] || ONLINE['uma-s-1p2p1']; }
   function onlineSync() {
     const box = $('u-online');
     if (!box || box.hidden) return;
-    const job = $('u-job').value, model = $('u-model').value;
-    const why = !umaOnline ? '' : !mol ? '先输入一个 RDKit 能解析的 SMILES。' : !['ipea', 'opt'].includes(job) ? '在线运行只支持电离能 / 电子亲和能和几何优化。' : model !== 'uma-s-1p2p1' ? '在线运行用的是 uma-s-1p2p1，请把模型切回它。' : mol.heavy > 30 ? '在线运行最多 30 个重原子。' : '';
+    const id = $('u-online-model').value, M = onlineModel(), st = umaHealth?.models?.[id];
+    // Only the jobs this model can do; keep the choice when it still fits.
+    for (const o of $('u-online-job').options) o.disabled = !M.jobs.includes(o.value);
+    if (!M.jobs.includes($('u-online-job').value)) $('u-online-job').value = M.jobs[0];
+    // Models the computer has not loaded cannot be picked (the reason shows when one is already selected).
+    for (const o of $('u-online-model').options) o.disabled = !!umaHealth?.models && !umaHealth.models[o.value]?.ready && o.value !== id;
+    $('u-online-about').textContent = M.about;
+    $('u-online-asl').hidden = M.tier !== 'asl';
+    $('u-online-fine').textContent = `提交即表示同意：${M.fine}结果按原样提供，不作任何保证。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每天次数：Meta 的 UMA 和 OMol25 模型每位访客共 20 次、Pro 会员 100 次；MACE 系列每位访客 20 次，对所有人相同；ANI-2x 只给 Pro 会员，每天 100 次。`;
+    $('u-online-queue').textContent = st ? `${M.name}：${st.running ? '正在为一位访客计算' : '空闲'}，排队 ${Number(st.queue) || 0} 个` : '';
+    let why = '';
+    if (umaOnline) {
+      const charge = Number($('u-charge').value) || 0, spin = Number($('u-spin').value) || 1;
+      const outside = mol && M.elements ? [...new Set(mol.formula.match(/[A-Z][a-z]?/g) || [])].filter((x) => !M.elements.includes(x)) : [];
+      if (st && !st.ready) why = `${M.name} 现在没有在站长电脑上运行，请换一个模型。`;
+      else if (!mol) why = '先输入一个 RDKit 能解析的 SMILES。';
+      else if (mol.heavy > 30) why = '在线运行最多 30 个重原子。';
+      else if (outside.length) why = `${M.name} 不认识 ${outside.join('、')}。`;
+      else if (!M.charged && (charge !== 0 || spin !== 1 || electrons(mol, charge) % 2 === 1)) why = `${M.name} 只算中性闭壳层分子：请把电荷设为 0、自旋多重度设为 1。`;
+      else if (M.tier === 'asl' && !$('u-online-academic').checked) why = '请先勾选学术用途确认。';
+      else if (M.tier === 'pro' && !isPro()) why = 'ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。';
+    }
     $('u-online-why').textContent = why;
     $('u-online-run').disabled = umaBusy || !umaOnline || !!why;
   }
@@ -517,9 +574,11 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
       if (h.configured === false) return;
       box.hidden = false;
       umaOnline = !!h.online;
+      umaHealth = h;
+      const ready = h.models ? Object.values(h.models).filter((m) => m.ready).length : 1;
       $('u-online-status').innerHTML = h.online
-        ? `<span class="chip ok">✓ 在线 · ${esc(h.model)}${h.gpu ? ` · ${esc(h.gpu)}` : ''}</span><span class="chip">排队 ${Number(h.queue) || 0} 个${h.running ? '，正在计算' : ''}</span>`
-        : '<span class="chip warn">! 站长的 GPU 现在离线，可以先下载脚本自己运行</span>';
+        ? `<span class="chip ok">✓ 在线 · ${ready} 个模型${h.gpu ? ` · ${esc(h.gpu)}` : ''}</span><span class="chip" id="u-online-queue"></span>`
+        : '<span class="chip warn">! 站长的 GPU 现在离线，可以先下载脚本自己运行</span><span id="u-online-queue" hidden></span>';
     } catch {
       umaOnline = false;
       return;
@@ -529,28 +588,40 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
   function onlineResult(r) {
     const f = (v, d = 3) => (Number.isFinite(v) ? v.toFixed(d) : '—');
     const box = $('u-online-result');
-    const head = `<h4>计算完成 · ${esc(r.model)}${r.fake ? '（测试数据）' : ''}</h4>`;
+    const M = ONLINE[r.model] || { name: r.model };
+    const name = ($('u-name').value.trim() || 'molecule').replace(/[,\n]/g, ' ');
+    const head = `<h4>计算完成 · ${esc(M.name)} · ${esc(JOB_NAMES[r.job] || r.job)}${r.fake ? '（测试数据）' : ''}</h4>`;
+    const xyzButton = (label) => (r.xyz ? `<button type="button" class="button${box.csv ? '' : ' primary'} small" data-act="xyz">${label}</button>` : '');
+    box.csv = '';
+    box.lab = false;
     if (r.job === 'ipea') {
-      box.csv = `smiles,name,ip_uma_s,ea_uma_s\n${r.smiles},${($('u-name').value.trim() || 'molecule').replace(/[,\n]/g, ' ')},${r.ip_uma_s},${r.ea_uma_s}`;
-      box.innerHTML = `<div class="mx-res">${head}<table class="mx-res-table"><thead><tr><th>IP（eV）</th><th>EA（eV）</th><th>中性能量（eV）</th></tr></thead><tbody><tr><td>${f(r.ip_uma_s)}</td><td>${f(r.ea_uma_s)}</td><td>${f(r.energy_ev, 4)}</td></tr></tbody></table><div class="btns"><button type="button" class="button primary small" data-act="lab">导入 AI 实验室 →</button><button type="button" class="button small" data-act="csv">复制 CSV</button>${r.xyz ? '<button type="button" class="button small" data-act="xyz">下载结构</button>' : ''}</div><p class="muted small">绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；${r.seconds ?? '?'} 秒。</p></div>`;
+      const ip = r.ip_ev ?? r.ip_uma_s, ea = r.ea_ev ?? r.ea_uma_s;
+      box.lab = r.model === 'uma-s-1p2p1'; // the AI Lab compares UMA-S, UMA-M and DFT
+      box.csv = box.lab ? `smiles,name,ip_uma_s,ea_uma_s\n${r.smiles},${name},${ip},${ea}` : `smiles,name,model,ip_ev,ea_ev\n${r.smiles},${name},${r.model},${ip},${ea}`;
+      box.innerHTML = `<div class="mx-res">${head}<table class="mx-res-table"><thead><tr><th>IP（eV）</th><th>EA（eV）</th><th>中性能量（eV）</th></tr></thead><tbody><tr><td>${f(ip)}</td><td>${f(ea)}</td><td>${f(r.energy_ev, 4)}</td></tr></tbody></table><div class="btns">${box.lab ? '<button type="button" class="button primary small" data-act="lab">导入 AI 实验室 →</button>' : ''}<button type="button" class="button small" data-act="csv">复制 CSV</button>${xyzButton('下载结构')}</div><p class="muted small">绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；${r.seconds ?? '?'} 秒。</p></div>`;
+    } else if (r.job === 'polar') {
+      const t = r.polarizability_tensor_a3 || [], v = r.dipole_vector || [];
+      box.csv = `smiles,name,dipole_debye,polarizability_a3,alpha_xx,alpha_yy,alpha_zz,alpha_xy,alpha_xz,alpha_yz\n${r.smiles},${name},${r.dipole_debye},${r.polarizability_a3},${t[0]?.[0]},${t[1]?.[1]},${t[2]?.[2]},${t[0]?.[1]},${t[0]?.[2]},${t[1]?.[2]}`;
+      const rows = ['x', 'y', 'z'].map((a, i) => `<tr><th>${a}</th>${[0, 1, 2].map((j) => `<td>${f(t[i]?.[j], 2)}</td>`).join('')}</tr>`).join('');
+      box.innerHTML = `<div class="mx-res">${head}<p>偶极矩 <b>${f(r.dipole_debye, 2)} D</b>（分量 ${v.map((x) => f(x, 2)).join(' / ')} D），各向同性极化率 <b>${f(r.polarizability_a3, 2)} Å³</b>。</p><table class="mx-res-table"><thead><tr><th>α（Å³）</th><th>x</th><th>y</th><th>z</th></tr></thead><tbody>${rows}</tbody></table><div class="btns"><button type="button" class="button primary small" data-act="csv">复制 CSV</button>${xyzButton('下载结构（.xyz）')}</div><p class="muted small">结构用 ${esc(ONLINE[r.geometry_model]?.name || r.geometry_model || 'MACE-OFF23 medium')} 优化（${r.steps ?? '?'} 步），偶极矩和极化率由 MACE-MDP 在这个结构上预测；${r.seconds ?? '?'} 秒。</p></div>`;
     } else {
-      box.csv = '';
-      box.innerHTML = `<div class="mx-res">${head}<p>能量 <b>${f(r.energy_ev, 4)} eV</b>，${r.steps ?? '?'} 步收敛，${r.seconds ?? '?'} 秒。</p><div class="btns">${r.xyz ? '<button type="button" class="button primary small" data-act="xyz">下载优化结构（.xyz）</button>' : ''}</div></div>`;
+      box.innerHTML = `<div class="mx-res">${head}<p>能量 <b>${f(r.energy_ev, 4)} eV</b>，${r.steps ?? '?'} 步收敛，${r.seconds ?? '?'} 秒。</p><div class="btns">${xyzButton('下载优化结构（.xyz）')}</div></div>`;
     }
     box.xyz = r.xyz || '';
+    box.model = r.model;
   }
   $('u-online-result')?.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act]'), box = $('u-online-result');
     if (!b) return;
     if (b.dataset.act === 'csv' && box.csv) copy(box.csv);
-    if (b.dataset.act === 'lab' && box.csv) {
+    if (b.dataset.act === 'lab' && box.csv && box.lab) {
       try { localStorage.setItem('molastria-lab-import', box.csv); } catch { toast('浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入'); return; }
       location.href = '../lab/index.html#workbench';
     }
     if (b.dataset.act === 'xyz' && box.xyz) {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([box.xyz], { type: 'chemical/x-xyz' }));
-      a.download = `${($('u-name').value.trim() || 'molecule').replace(/[^\w.-]+/g, '_')}_uma.xyz`;
+      a.download = `${($('u-name').value.trim() || 'molecule').replace(/[^\w.-]+/g, '_')}_${box.model || 'uma'}.xyz`;
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
@@ -560,11 +631,12 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     umaBusy = true; onlineSync();
     box.innerHTML = '<p class="muted">已提交…</p>';
     try {
-      const body = { smiles: $('u-smiles').value.trim(), job: $('u-job').value, charge: Math.round(Number($('u-charge').value) || 0), spin: Math.max(1, Math.round(Number($('u-spin').value) || 1)) };
+      const model = $('u-online-model').value, M = onlineModel();
+      const body = { smiles: $('u-smiles').value.trim(), model, job: $('u-online-job').value, charge: Math.round(Number($('u-charge').value) || 0), spin: Math.max(1, Math.round(Number($('u-spin').value) || 1)), ...(M.tier === 'asl' ? { academic: true } : {}) };
       let r = await umaCall('/uma/jobs', { method: 'POST', body: JSON.stringify(body) });
       const until = Date.now() + 15 * 60 * 1000;
       while (r.status !== 'done' && r.status !== 'error') {
-        box.innerHTML = r.status === 'running' ? '<p class="muted">正在计算…（一个分子通常几十秒）</p>' : `<p class="muted">排队中，前面还有 ${Math.max(0, (r.position || 1) - 1)} 个任务…</p>`;
+        box.innerHTML = r.status === 'running' ? `<p class="muted">${esc(M.name)} 正在计算…（一个分子通常几秒到几十秒）</p>` : `<p class="muted">排队中，${esc(M.name)} 前面还有 ${Math.max(0, (r.position || 1) - 1)} 个任务…</p>`;
         if (Date.now() > until) throw new Error('等了 15 分钟还没轮到，请稍后再试');
         await new Promise((ok) => setTimeout(ok, 2500));
         r = await umaCall(`/uma/jobs/${r.id}`);
@@ -574,9 +646,14 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     } catch (err) {
       box.innerHTML = `<p class="mx-err">${esc(err.message)}</p>`;
     } finally {
-      umaBusy = false; onlineSync();
+      umaBusy = false;
+      online();
     }
   });
+  for (const id of ['u-online-model', 'u-online-job', 'u-online-academic']) $(id)?.addEventListener('change', onlineSync);
+  // The generator's choices carry over when the online service can do the same thing.
+  $('u-job').addEventListener('change', () => { if (onlineModel().jobs.includes($('u-job').value)) $('u-online-job').value = $('u-job').value; onlineSync(); });
+  $('u-model').addEventListener('change', () => { if (ONLINE[$('u-model').value]) $('u-online-model').value = $('u-model').value; onlineSync(); });
   let typing = 0;
   $('u-smiles').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(onSmiles, 250); });
   $('u-charge').addEventListener('input', onCharge);

@@ -1863,7 +1863,8 @@
   "meta/index.html"
  ],
  "几何优化与能量": [
-  "meta/index.html"
+  "meta/index.html",
+  "meta/meta.js"
  ],
  "构象搜索：20 个构象全部优化，取能量最低": [
   "meta/index.html"
@@ -1934,16 +1935,61 @@
  "在线运行：用站长的 GPU 免费算": [
   "meta/index.html"
  ],
- "不用装任何东西：把上面的分子交给站长电脑上的 UMA-S 1.2.1 计算，按提交顺序排队，算过的分子直接给结果。在线运行只支持“绝热电离能与电子亲和能”和“几何优化”。": [
+ "不用装任何东西：把上面的分子交给站长电脑上的模型计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务；算过的分子直接给结果。Meta 的 UMA 和 OMol25 模型、MACE 系列对所有人免费，ANI-2x 是 Pro 会员的模型。UMA-M 1.1 的权重有 11 GB，站长电脑的内存和显存装不下，暂不提供。": [
   "meta/index.html"
  ],
  "正在查询在线状态…": [
   "meta/index.html"
  ],
- "在线运行": [
+ "在线模型": [
   "meta/index.html"
  ],
- "提交即表示同意：只用于合法的研究与教学，不得用于武器、军事等 Meta FAIR Chemistry 可接受使用政策禁止的用途；结果按原样提供，不作任何保证；论文里用到请注明 UMA（Meta FAIR Chemistry）。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每位访客每天 20 次，Pro 会员 100 次。": [
+ "UMA-S 1.2.1（推荐）": [
+  "meta/index.html"
+ ],
+ "UMA-S 1.2.1 D4rev 微调": [
+  "meta/index.html"
+ ],
+ "UMA-S 1.1（只算中性分子）": [
+  "meta/index.html"
+ ],
+ "AllScAIP-md · 能量守恒型": [
+  "meta/index.html"
+ ],
+ "AllScAIP-md · 直接受力型": [
+  "meta/index.html"
+ ],
+ "eSEN-sm · 能量守恒型（只算中性分子）": [
+  "meta/index.html"
+ ],
+ "eSEN-sm · 直接受力型（只算中性分子）": [
+  "meta/index.html"
+ ],
+ "eSEN-md · 直接受力型（只算中性分子）": [
+  "meta/index.html"
+ ],
+ "MACE-OMOL-0（只算中性分子）": [
+  "meta/index.html"
+ ],
+ "MACE-MDP · 偶极矩与极化率": [
+  "meta/index.html"
+ ],
+ "任务": [
+  "meta/index.html",
+  "lab/lab.js"
+ ],
+ "绝热电离能与电子亲和能": [
+  "meta/index.html",
+  "meta/meta.js"
+ ],
+ "偶极矩与极化率": [
+  "meta/index.html",
+  "meta/meta.js"
+ ],
+ "我确认只用于学术、非商业研究（MACE 模型采用学术软件许可 ASL）": [
+  "meta/index.html"
+ ],
+ "在线运行": [
   "meta/index.html"
  ],
  "MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。": [
@@ -5350,9 +5396,6 @@
  "Tier 3：ωB97M-V 单点": [
   "lab/lab.js"
  ],
- "任务": [
-  "lab/lab.js"
- ],
  "每个 credits": [
   "lab/lab.js"
  ],
@@ -5744,25 +5787,124 @@
  "# 先输入一个 RDKit 能解析的 SMILES": [
   "meta/meta.js"
  ],
+ "MACE-OFF23 有机分子力场（在 SPICE 数据上训练，ωB97M-D3BJ），只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子；small 最快，large 最准。": [
+  "meta/meta.js"
+ ],
+ "MACE-OFF23 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 Kovács et al., J. Am. Chem. Soc. 2025（MACE-OFF）。": [
+  "meta/meta.js"
+ ],
+ "采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；": [
+  "meta/meta.js"
+ ],
+ "实测它对不同电荷态的能量差不可靠，所以在线只算中性闭壳层分子的几何优化。": [
+  "meta/meta.js"
+ ],
+ "{0} {1}论文里请注明 {2}。": [
+  "meta/meta.js"
+ ],
+ "在 OMol25（ωB97M-V/def2-TZVPD，1 亿多个 DFT 计算）上训练": [
+  "meta/meta.js"
+ ],
+ "Meta FAIR Chemistry 的通用原子模型，{0}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。": [
+  "meta/meta.js"
+ ],
+ "UMA-S 1.2.1 的上一版，{0}，支持电荷和自旋。实测苯、乙醇、水的垂直电离能都接近实验值，可以用来对照 1.2.1 的 IP / EA；比 1.2.1 慢。": [
+  "meta/meta.js"
+ ],
+ "UMA-S 1.2.1 按 ωB97M-D4rev 色散校正微调的分子专用版本，能量里含 D4 色散。和 1.2.1 一样，水这类极小分子的电离能偏低。": [
+  "meta/meta.js"
+ ],
+ "较早的 UMA 版本，可作对照。{0}": [
+  "meta/meta.js"
+ ],
+ "AllScAIP-md 能量守恒型": [
+  "meta/meta.js"
+ ],
+ "Meta 的 AllScAIP 中等模型，{0}，力由能量求导，支持电荷和自旋；实测苯、乙醇、水的垂直电离能都接近实验值。": [
+  "meta/meta.js"
+ ],
+ "AllScAIP 和 OMol25 数据集（Levine et al., 2025）": [
+  "meta/meta.js"
+ ],
+ "AllScAIP-md 直接受力型": [
+  "meta/meta.js"
+ ],
+ "Meta 的 AllScAIP 中等模型，{0}，直接预测力（更快，但能量和力不严格守恒），支持电荷和自旋。": [
+  "meta/meta.js"
+ ],
+ "eSEN-sm 能量守恒型": [
+  "meta/meta.js"
+ ],
+ "Meta 的 eSEN 小模型，{0}，力由能量求导。{1}": [
+  "meta/meta.js"
+ ],
+ "eSEN 和 OMol25 数据集（Levine et al., 2025）": [
+  "meta/meta.js"
+ ],
+ "eSEN-sm 直接受力型": [
+  "meta/meta.js"
+ ],
+ "Meta 的 eSEN 小模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
+  "meta/meta.js"
+ ],
+ "eSEN-md 直接受力型": [
+  "meta/meta.js"
+ ],
+ "Meta 的 eSEN 中等模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
+  "meta/meta.js"
+ ],
+ "MACE 在 OMol25 上训练的模型，覆盖 83 种元素（H 到 Bi）。实测它对不同电荷态的能量差不可靠（水的垂直电离能只有 0.04 eV），所以在线只算中性闭壳层分子的几何优化。": [
+  "meta/meta.js"
+ ],
+ "MACE-OMOL-0 采用学术软件许可（ASL），只限学术、非商业研究；论文里请注明 MACE-OMOL-0 和 OMol25 数据集（Levine et al., 2025）。": [
+  "meta/meta.js"
+ ],
+ "预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
+  "meta/meta.js"
+ ],
+ "MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。": [
+  "meta/meta.js"
+ ],
+ "ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。": [
+  "meta/meta.js"
+ ],
+ "ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。": [
+  "meta/meta.js"
+ ],
+ "提交即表示同意：{0}结果按原样提供，不作任何保证。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每天次数：Meta 的 UMA 和 OMol25 模型每位访客共 20 次、Pro 会员 100 次；MACE 系列每位访客 20 次，对所有人相同；ANI-2x 只给 Pro 会员，每天 100 次。": [
+  "meta/meta.js"
+ ],
+ "正在为一位访客计算": [
+  "meta/meta.js"
+ ],
+ "空闲": [
+  "meta/meta.js"
+ ],
+ "{0}：{1}，排队 {2} 个": [
+  "meta/meta.js"
+ ],
+ "{0} 现在没有在站长电脑上运行，请换一个模型。": [
+  "meta/meta.js"
+ ],
  "先输入一个 RDKit 能解析的 SMILES。": [
-  "meta/meta.js"
- ],
- "在线运行只支持电离能 / 电子亲和能和几何优化。": [
-  "meta/meta.js"
- ],
- "在线运行用的是 uma-s-1p2p1，请把模型切回它。": [
   "meta/meta.js"
  ],
  "在线运行最多 30 个重原子。": [
   "meta/meta.js"
  ],
- "，正在计算": [
+ "{0} 不认识 {1}。": [
   "meta/meta.js"
  ],
- "✓ 在线 · {0}{1}": [
+ "{0} 只算中性闭壳层分子：请把电荷设为 0、自旋多重度设为 1。": [
   "meta/meta.js"
  ],
- "排队 {0} 个{1}": [
+ "请先勾选学术用途确认。": [
+  "meta/meta.js"
+ ],
+ "ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。": [
+  "meta/meta.js"
+ ],
+ "✓ 在线 · {0} 个模型{1}": [
   "meta/meta.js"
  ],
  "! 站长的 GPU 现在离线，可以先下载脚本自己运行": [
@@ -5771,7 +5913,10 @@
  "（测试数据）": [
   "meta/meta.js"
  ],
- "计算完成 · {0}{1}": [
+ "计算完成 · {0} · {1}{2}": [
+  "meta/meta.js"
+ ],
+ "导入 AI 实验室 →": [
   "meta/meta.js"
  ],
  "下载结构": [
@@ -5780,13 +5925,22 @@
  "中性能量（eV）": [
   "meta/meta.js"
  ],
- "导入 AI 实验室 →": [
-  "meta/meta.js"
- ],
  "复制 CSV": [
   "meta/meta.js"
  ],
  "绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；{0} 秒。": [
+  "meta/meta.js"
+ ],
+ "下载结构（.xyz）": [
+  "meta/meta.js"
+ ],
+ "偶极矩": [
+  "meta/meta.js"
+ ],
+ "（分量 {0} D），各向同性极化率": [
+  "meta/meta.js"
+ ],
+ "结构用 {0} 优化（{1} 步），偶极矩和极化率由 MACE-MDP 在这个结构上预测；{2} 秒。": [
   "meta/meta.js"
  ],
  "下载优化结构（.xyz）": [
@@ -5804,10 +5958,10 @@
  "已提交…": [
   "meta/meta.js"
  ],
- "正在计算…（一个分子通常几十秒）": [
+ "{0} 正在计算…（一个分子通常几秒到几十秒）": [
   "meta/meta.js"
  ],
- "排队中，前面还有 {0} 个任务…": [
+ "排队中，{0} 前面还有 {1} 个任务…": [
   "meta/meta.js"
  ],
  "等了 15 分钟还没轮到，请稍后再试": [
@@ -7503,7 +7657,7 @@
  "UMA 计算服务还没有开通": [
   "deploy/account-worker.js"
  ],
- "按照模型许可要求遵守的出口管制规定，这个地区不能使用 UMA 计算服务": [
+ "按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务": [
   "deploy/account-worker.js"
  ],
  "请求内容过大": [
@@ -7515,25 +7669,46 @@
  "SMILES 含有不支持的字符或太长": [
   "deploy/account-worker.js"
  ],
- "只支持电离能/电子亲和能（ipea）和几何优化（opt）": [
+ "没有这个在线模型": [
+  "deploy/account-worker.js"
+ ],
+ "只支持电离能/电子亲和能（ipea）、几何优化（opt）和偶极矩/极化率（polar）": [
+  "deploy/account-worker.js"
+ ],
+ "MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”": [
   "deploy/account-worker.js"
  ],
  "电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间": [
   "deploy/account-worker.js"
  ],
+ "ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费": [
+  "deploy/account-worker.js"
+ ],
+ "今天的 ANI-2x 计算次数已用完": [
+  "deploy/account-worker.js"
+ ],
+ "今天的 MACE 计算次数已用完": [
+  "deploy/account-worker.js"
+ ],
+ "今天的 UMA / OMol25 模型计算次数已用完": [
+  "deploy/account-worker.js"
+ ],
  "，Pro 会员每天更多": [
   "deploy/account-worker.js"
  ],
- "今天的 UMA 计算次数已用完（每天 {0} 次{1}），明天再来": [
-  "deploy/account-worker.js"
- ],
- "UMA 服务：{0}": [
-  "deploy/account-worker.js"
- ],
- "UMA 服务暂时不可用": [
+ "{0}（每天 {1} 次{2}），明天再来": [
   "deploy/account-worker.js"
  ],
  "站长的 GPU 现在离线，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "你已经有一个任务在排队或计算，等它完成再提交下一个": [
+  "deploy/account-worker.js"
+ ],
+ "计算服务：{0}": [
+  "deploy/account-worker.js"
+ ],
+ "计算服务暂时不可用": [
   "deploy/account-worker.js"
  ],
  "查询太频繁，请稍后再试": [

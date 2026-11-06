@@ -91,9 +91,27 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **训练 Agent 页的模型表：** 模型信息要对照 Hugging Face（`huggingface.co/api/models/<id>?expand[]=safetensors`）和模型卡核实。刷新时要按作者加 `sort=createdAt` 逐家查最新的仓库，不能只查已知的系列名，否则会漏掉刚发布的新系列（发生过）。
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 
-## 在线 UMA：站长电脑的 GPU，对所有访客开放
+## 在线模型：站长电脑的 GPU，对所有访客开放（UMA、OMol25、MACE、ANI-2x）
 
-链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，GPU 一次算一个，其余排队，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
+链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、决定谁能用哪个模型、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，每个模型一次只给一个人算，每人同时只能有一个任务，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
+
+**15 个在线模型**（Meta 页“在线运行”面板；`server.py` 的 `MODELS`、账号服务的 `UMA_MODELS`、`meta.js` 的 `ONLINE` 三处要一致）：
+
+| 模型 | 任务 | 谁能用 | 许可 |
+| --- | --- | --- | --- |
+| UMA-S 1.2.1、1.2、1.2.1 D4rev | IP/EA、几何优化 | 所有人 | FAIR Chemistry License |
+| AllScAIP-md 能量守恒型、直接受力型（OMol25） | IP/EA、几何优化 | 所有人 | FAIR Chemistry License |
+| UMA-S 1.1，eSEN-sm 能量守恒型、eSEN-sm / eSEN-md 直接受力型（OMol25） | 只算中性分子的几何优化 | 所有人 | FAIR Chemistry License |
+| MACE-OFF23 small / medium / large，MACE-OMOL-0（中性） | 几何优化 | 所有人，勾选学术用途 | ASL（学术、非商业） |
+| MACE-MDP | 偶极矩与极化率（结构用 MACE-OFF23 medium 优化） | 所有人，勾选学术用途 | ASL |
+| ANI-2x | 中性分子的几何优化 | 只有 Pro | MIT |
+
+三条通道并行：fairchem 模型（UMA-S 1.2.1 常驻显存，另外最多留 2 个，其余按需加载）、ANI-2x、MACE 模型（`mace_worker.py`，一个 GPU 进程轮流算）。UMA-M 1.1 的权重 11 GB，这台电脑（15 GB 内存、8 GB 显存）装不下，没有上线。
+
+**两个 Python 环境**（mace-torch 固定 e3nn 0.4.4，fairchem 要 0.5 以上，不能装在一起）：
+- `D:\ChemDraw\uma-env`：fairchem-core、rdkit、`torchani==2.9.0`（2.9 兼容 torch 2.13，不会改动 torch）。
+- `D:\ChemDraw\mace-env`：`pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cu126`，再装 mace-torch、rdkit。
+- 权重：fairchem 的在 `%USERPROFILE%\.cache\fairchem`（Hugging Face 上 facebook/UMA 和 facebook/OMol25 都要申请访问；站长 WSL 里已有的是从 `~/.cache/fairchem/blobs` 按快照名复制过来的，WSL 的符号链接 Windows 读不到）；MACE 的五个文件在 `%USERPROFILE%\.cache\mace`；ANI-2x 由 TorchANI 第一次运行时下载。
 
 **开通一次（按顺序）：**
 1. UMA 环境里登录 Hugging Face：`D:\ChemDraw\uma-env\Scripts\python.exe -c "from huggingface_hub import login; login()"`（站长自己粘贴 token 或用浏览器登录）。
@@ -111,20 +129,23 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 5. 在 `deploy/wrangler.toml` 的 `[vars]` 加 `UMA_ORIGIN = "https://uma-origin.molastria.com"`，部署账号服务（`/ship-worker`）。
 6. **推荐：** Cloudflare Zero Trust → Access → 为 `uma-origin.molastria.com` 建一个 Self-hosted 应用，策略选 Service Auth，绑定一个 Service Token；把令牌的 ID 和 Secret 用 `wrangler secret put UMA_ACCESS_ID` / `UMA_ACCESS_SECRET` 交给账号服务。这样不是账号服务发来的请求在 Cloudflare 就被拦下，到不了电脑。
 
-**每次上线：** 普通（非管理员）PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe`。关掉这个窗口就同时下线服务和隧道。
+**每次上线：** 普通（非管理员）PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe -MacePython D:\ChemDraw\mace-env\Scripts\python.exe`（不给 `-MacePython` 时 MACE 模型不上线）。启动约 1 分钟；关掉这个窗口就同时下线服务和隧道。服务运行时设 `HF_HUB_OFFLINE=1`，不连 Hugging Face。
 
-**额度：** 匿名访客每天 `UMA_DAILY`（默认 20）次，登录的 Pro 每天 `UMA_DAILY_PRO`（默认 100）次，在 `wrangler.toml` 的 `[vars]` 里改。
+**额度**（`wrangler.toml` 的 `[vars]`）：Meta 的 UMA 和 OMol25 模型共用一份，匿名访客每天 `UMA_DAILY`（20）次、Pro 每天 `UMA_DAILY_PRO`（100）次；MACE 系列每位访客每天 `ASL_DAILY`（20）次，Pro 不加（学术许可的模型不能变成付费功能）；ANI-2x 只给 Pro，每天 `ANI_DAILY_PRO`（100）次。被电脑拒绝的任务（已有任务在算、队列满、元素不支持）不计次数。
 
 **电脑的安全：**
 - 不开任何入站端口：服务只听 127.0.0.1，隧道是电脑主动连出去的，家里的 IP 不公开；Windows 防火墙保持默认开启。
 - 只认暗号：没有 `X-MolAstria-Key` 的请求一律 401（用 `hmac.compare_digest` 比较）；暗号只在 `secret.local` 和账号服务的 secret 里，怀疑泄露就重跑 `new-secret.mjs` 并重启服务。
-- 不执行外来内容：只接受 SMILES、任务（ipea / opt）、电荷、自旋，账号服务先校验再转发，多余字段丢弃；请求体最大 8 KB；不读写访客给的文件或路径，不调用 shell；只加载 Meta 官方的模型权重。
+- 不执行外来内容：只接受 SMILES、模型（白名单）、任务（ipea / opt / polar）、电荷、自旋，账号服务先校验再转发，多余字段丢弃；请求体最大 8 KB；不读写访客给的文件或路径，不调用 shell；只加载官方发布的模型权重；MACE 进程只经标准输入输出收发 JSON。
+- 每人一次一个任务：账号服务把访客的 IP（或 Pro 的邮箱）和暗号一起做 SHA-256，只把前 16 位交给电脑，电脑凭它拒绝同一访客的第二个任务。
 - 防耗尽：最多 30 个重原子、120 个原子，优化最多 400 步，队列最多 25 个，空闲连接 15 秒断开；账号服务按访客限次、限查询频率。
 - 不用管理员身份运行（`start.ps1` 会拒绝）；服务只写本文件夹里的缓存。
 - 电脑看不到访客的 IP（请求都经过 Cloudflare 和账号服务）；缓存里只有提交的 SMILES 和结果。
-- 许可：FAIR Chemistry License 要求遵守 Meta 的可接受使用政策和出口管制，所以页面写明禁止用途、结果不作保证、论文注明 UMA，账号服务挡住 CU、IR、KP、SY。
+- 许可：FAIR Chemistry License（UMA、eSEN、AllScAIP）要求遵守 Meta 的可接受使用政策和出口管制，所以页面写明禁止用途、结果不作保证、论文注明模型，账号服务挡住 CU、IR、KP、SY。MACE 的 ASL 只许学术、非商业用途：MACE 对所有人免费且次数相同，不进 Pro，每次提交都要勾选学术用途（账号服务检查 `academic: true`）。ANI-2x 是 MIT，可以放进 Pro。
 
-**测试（不用 GPU）：** `server.py --fake` 返回标明 fake 的假数据（缓存单独放在 `cache.fake.local.json`）；`tools/account-test.ts` 和 `tools/e2e/run.mjs` 里各有 UMA 的检查。
+**测试（不用 GPU）：** `server.py --fake` 返回标明 fake 的假数据（缓存单独放在 `cache.fake.local.json`），所有模型都算“已加载”；`tools/account-test.ts` 和 `tools/e2e/run.mjs` 里各有在线模型的检查。
+
+**加一个在线模型：** 先在 GPU 上测：能加载、FEC 优化收敛，再在 ETKDG 结构上算苯、乙醇、水的垂直 IP（实验约 9.2 / 10.5 / 12.6 eV）。接近的才开放 IP/EA；偏差大（OMol-0 时期的模型常见）就只开放中性分子的几何优化（`charged: False`）。然后改 `server.py` 的 `MODELS`、`deploy/account-worker.js` 的 `UMA_MODELS`（新许可要想清楚放哪一档）、`public/meta/meta.js` 的 `ONLINE` 和 `index.html` 的选项、`tools/account-local.ts` 的假电脑；跑测试，部署账号服务，重启 `start.ps1`。
 
 ## 云端 GPU 批量计算（UMA + MACE-OFF23）
 

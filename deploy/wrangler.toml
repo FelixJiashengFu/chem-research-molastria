@@ -30,7 +30,9 @@ HOSTED_MODELS = "deepseek-flash,deepseek-v4-pro"   # 托管额度可用的模型
 HOSTED_MODEL_WEIGHTS = "deepseek-v4-pro:3"         # 调用一次这个模型计几次；价格差很多的模型要写在这里
 UMA_ORIGIN = "https://uma-origin.molastria.com"   # 站长电脑上的在线 UMA（tools/uma-server，经 Cloudflare Tunnel）；暗号在 secret UMA_SERVER_SECRET
 UMA_DAILY = "20"                                   # 匿名访客每天的在线 UMA 次数
-UMA_DAILY_PRO = "100"                              # 登录的 Pro 每天的次数
+UMA_DAILY_PRO = "100"                              # 登录的 Pro 每天的次数（UMA 和 OMol25 模型共用）
+ASL_DAILY = "20"                                   # MACE 系列（学术许可）每位访客每天的次数，Pro 不加
+ANI_DAILY_PRO = "100"                              # ANI-2x（只给 Pro）每天的次数
 
 # 密钥不要写在这里，用 npx wrangler secret put <名字> 逐个填入：
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions

@@ -504,18 +504,60 @@ check('online UMA: the Meta page shows the owner GPU, queues a job through the a
   const p = await open();
   await go(p, '/meta/index.html#uma');
   await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
-  await p.waitForFunction(() => /在线 · uma-s-1p2p1 · Test GPU/.test(document.getElementById('u-online-status').textContent));
+  await p.waitForFunction(() => /在线 · 15 个模型 · Test GPU/.test(document.getElementById('u-online-status').textContent));
+  assert.equal(await p.inputValue('#u-online-model'), 'uma-s-1p2p1');
   assert.equal(await p.isDisabled('#u-online-run'), false);
-  await p.selectOption('#u-job', 'md');
-  assert.equal(await p.isDisabled('#u-online-run'), true);
-  assert.match(await text(p, '#u-online-why'), /只支持/);
+  // The generator's job carries over when the online model can do it.
+  await p.selectOption('#u-job', 'opt');
+  assert.equal(await p.inputValue('#u-online-job'), 'opt');
   await p.selectOption('#u-job', 'ipea');
+  assert.equal(await p.inputValue('#u-online-job'), 'ipea');
+  assert.match(await text(p, '#u-online-fine'), /FAIR Chemistry License/);
   await p.click('#u-online-run');
   await p.waitForSelector('#u-online-result .mx-res', { timeout: 15000 });
   assert.match(await text(p, '#u-online-result'), /10\.900/);
   await p.click('#u-online-result [data-act=lab]');
   await p.waitForURL(/lab\/index\.html/);
   await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
+  await finish(p);
+});
+
+check('online models: MACE needs the academic box, MACE-MDP gives dipole and polarizability, ANI-2x is for Pro', async () => {
+  const p = await open();
+  await go(p, '/meta/index.html#uma');
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /在线 · 15 个模型/.test(document.getElementById('u-online-status').textContent));
+  await p.selectOption('#u-online-model', 'mace-mdp');
+  assert.equal(await p.inputValue('#u-online-job'), 'polar', 'the only job MACE-MDP has');
+  assert.equal(await p.$eval('#u-online-job option[value=ipea]', (o) => o.disabled), true, 'IP / EA is off for MACE-MDP');
+  assert.equal(await p.isVisible('#u-online-asl'), true, 'the academic-use box shows');
+  assert.equal(await p.isDisabled('#u-online-run'), true, 'off until the box is ticked');
+  assert.match(await text(p, '#u-online-why'), /学术用途/);
+  assert.match(await text(p, '#u-online-fine'), /ASL/);
+  await p.check('#u-online-academic');
+  assert.equal(await p.isDisabled('#u-online-run'), false, 'on once the box is ticked: ' + await text(p, '#u-online-why'));
+  await p.click('#u-online-run');
+  await p.waitForSelector('#u-online-result .mx-res', { timeout: 15000 });
+  const res = await text(p, '#u-online-result');
+  assert.match(res, /4.81 D/);
+  assert.match(res, /6.78 Å³/);
+  assert.match(res, /MACE-OFF23 medium/);
+  assert.equal(await p.locator('#u-online-result [data-act=lab]').count(), 0, 'only UMA IP / EA goes to the AI Lab');
+  // Neutral closed-shell only for MACE-OFF23; a cation is refused before it is sent.
+  await p.selectOption('#u-online-model', 'mace-off23-small');
+  await p.fill('#u-charge', '1');
+  await p.waitForFunction(() => /中性闭壳层/.test(document.getElementById('u-online-why').textContent));
+  await p.fill('#u-charge', '0');
+  // OMol25 models: AllScAIP gives IP / EA, the eSEN models only neutral optimisations.
+  await p.selectOption('#u-online-model', 'allscaip-md-conserving-all-omol');
+  assert.equal(await p.$eval('#u-online-job option[value=ipea]', (o) => o.disabled), false, 'AllScAIP has IP / EA');
+  assert.equal(await p.isVisible('#u-online-asl'), false, 'no academic box for FAIR models');
+  await p.selectOption('#u-online-model', 'esen-md-direct-all-omol');
+  assert.equal(await p.inputValue('#u-online-job'), 'opt');
+  assert.match(await text(p, '#u-online-about'), /中性闭壳层/);
+  await p.selectOption('#u-online-model', 'ani-2x');
+  await p.waitForFunction(() => /Pro/.test(document.getElementById('u-online-why').textContent));
+  assert.equal(await p.isDisabled('#u-online-run'), true);
   await finish(p);
 });
 

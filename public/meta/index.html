@@ -137,11 +137,45 @@
     </div>
     <div class="mx-local mx-online" id="u-online" hidden>
       <div class="mx-local-head"><h3>在线运行：用站长的 GPU 免费算</h3>
-        <p>不用装任何东西：把上面的分子交给站长电脑上的 UMA-S 1.2.1 计算，按提交顺序排队，算过的分子直接给结果。在线运行只支持“绝热电离能与电子亲和能”和“几何优化”。</p></div>
+        <p>不用装任何东西：把上面的分子交给站长电脑上的模型计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务；算过的分子直接给结果。Meta 的 UMA 和 OMol25 模型、MACE 系列对所有人免费，ANI-2x 是 Pro 会员的模型。UMA-M 1.1 的权重有 11 GB，站长电脑的内存和显存装不下，暂不提供。</p></div>
       <div class="mx-env" id="u-online-status" role="status"><span class="muted">正在查询在线状态…</span></div>
+      <div class="mx-row wrap">
+        <label>在线模型<select id="u-online-model">
+          <optgroup label="Meta UMA · 免费">
+            <option value="uma-s-1p2p1">UMA-S 1.2.1（推荐）</option>
+            <option value="uma-s-1p2">UMA-S 1.2</option>
+            <option value="uma-s-1p2p1-ft-d4rev">UMA-S 1.2.1 D4rev 微调</option>
+            <option value="uma-s-1p1">UMA-S 1.1（只算中性分子）</option>
+          </optgroup>
+          <optgroup label="Meta OMol25 模型 · 免费">
+            <option value="allscaip-md-conserving-all-omol">AllScAIP-md · 能量守恒型</option>
+            <option value="allscaip-md-direct-all-omol">AllScAIP-md · 直接受力型</option>
+            <option value="esen-sm-conserving-all-omol">eSEN-sm · 能量守恒型（只算中性分子）</option>
+            <option value="esen-sm-direct-all-omol">eSEN-sm · 直接受力型（只算中性分子）</option>
+            <option value="esen-md-direct-all-omol">eSEN-md · 直接受力型（只算中性分子）</option>
+          </optgroup>
+          <optgroup label="MACE · 免费（学术许可）">
+            <option value="mace-off23-small">MACE-OFF23 small</option>
+            <option value="mace-off23-medium">MACE-OFF23 medium</option>
+            <option value="mace-off23-large">MACE-OFF23 large</option>
+            <option value="mace-omol-0">MACE-OMOL-0（只算中性分子）</option>
+            <option value="mace-mdp">MACE-MDP · 偶极矩与极化率</option>
+          </optgroup>
+          <optgroup label="Pro 会员">
+            <option value="ani-2x">ANI-2x</option>
+          </optgroup>
+        </select></label>
+        <label>任务<select id="u-online-job">
+          <option value="ipea">绝热电离能与电子亲和能</option>
+          <option value="opt">几何优化与能量</option>
+          <option value="polar">偶极矩与极化率</option>
+        </select></label>
+      </div>
+      <p class="muted small" id="u-online-about"></p>
+      <label class="mx-checkbox" id="u-online-asl" hidden><input type="checkbox" id="u-online-academic"> 我确认只用于学术、非商业研究（MACE 模型采用学术软件许可 ASL）</label>
       <div class="mx-row wrap"><button class="button primary" type="button" id="u-online-run" disabled>在线运行</button><span class="muted small" id="u-online-why"></span></div>
       <div id="u-online-result" aria-live="polite"></div>
-      <p class="mx-fine">提交即表示同意：只用于合法的研究与教学，不得用于武器、军事等 Meta FAIR Chemistry 可接受使用政策禁止的用途；结果按原样提供，不作任何保证；论文里用到请注明 UMA（Meta FAIR Chemistry）。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每位访客每天 20 次，Pro 会员 100 次。</p>
+      <p class="mx-fine" id="u-online-fine"></p>
     </div>
     <p class="mx-desk-note" id="u-mace-note" hidden>MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。</p>
     <p class="mx-desk-note" id="u-desk-note">不想自己配命令？<a href="../download/index.html">MolAstria 桌面版</a>可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。</p>

@@ -23,6 +23,7 @@ const sessions: Record<string, unknown> = {
 };
 
 const realFetch = globalThis.fetch;
+let umaLast: { model?: string; job?: string } = {}; // the last job sent to the pretend owner computer
 globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
   const fake = Deno.env.get("FAKE_AI");
@@ -30,9 +31,19 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
   if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer (tools/uma-server --fake behaves the same)
-    if (url.pathname === "/health") return reply({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0 });
-    if (url.pathname === "/jobs") return new Response(JSON.stringify({ id: "00000000000000e2", status: "queued", position: 1 }), { status: 202, headers: { "Content-Type": "application/json" } });
-    if (url.pathname === "/jobs/00000000000000e2") return reply({ id: "00000000000000e2", status: "done", result: { model: "uma-s-1p2p1", job: "ipea", smiles: "O=C1OCC(F)O1", ip_uma_s: 10.9, ea_uma_s: -0.4, energy_ev: -12034.1, seconds: 1, fake: true, xyz: "" } });
+    const jobs: Record<string, string[]> = { "uma-s-1p2p1": ["ipea", "opt"], "uma-s-1p2": ["ipea", "opt"], "uma-s-1p2p1-ft-d4rev": ["ipea", "opt"], "uma-s-1p1": ["opt"], "allscaip-md-conserving-all-omol": ["ipea", "opt"], "allscaip-md-direct-all-omol": ["ipea", "opt"], "esen-sm-conserving-all-omol": ["opt"], "esen-sm-direct-all-omol": ["opt"], "esen-md-direct-all-omol": ["opt"], "ani-2x": ["opt"], "mace-off23-small": ["opt"], "mace-off23-medium": ["opt"], "mace-off23-large": ["opt"], "mace-omol-0": ["opt"], "mace-mdp": ["polar"] };
+    if (url.pathname === "/health") return reply({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
+    if (url.pathname === "/jobs") {
+      umaLast = JSON.parse(String(init?.body ?? (input instanceof Request ? await input.clone().text() : "{}")));
+      return new Response(JSON.stringify({ id: "00000000000000e2", status: "queued", position: 1 }), { status: 202, headers: { "Content-Type": "application/json" } });
+    }
+    if (url.pathname === "/jobs/00000000000000e2") {
+      const { model = "uma-s-1p2p1", job = "ipea" } = umaLast;
+      const base = { model, job, smiles: "O=C1OCC(F)O1", energy_ev: -12034.1, steps: 22, seconds: 1, fake: true, xyz: "" };
+      const result = job === "polar" ? { ...base, geometry_model: "mace-off23-medium", dipole_debye: 4.81, dipole_vector: [-4.24, 2.02, -1.06], polarizability_a3: 6.78, polarizability_tensor_a3: [[8.34, -0.41, -0.26], [-0.41, 6.46, 0.15], [-0.26, 0.15, 5.53]] }
+        : job === "ipea" ? { ...base, ip_ev: 10.9, ea_ev: -0.4, ip_uma_s: 10.9, ea_uma_s: -0.4 } : base;
+      return reply({ id: "00000000000000e2", status: "done", result });
+    }
   }
   if (fake && url.hostname === "api.deepseek.com" && JSON.parse(String(init?.body ?? "{}")).response_format && !JSON.parse(String(init?.body ?? "{}")).stream) {
     return reply({ choices: [{ message: { content: JSON.stringify({ overview_zh: "本周概览", overview_en: "This week", picks: [0, 1, 2].map((i) => ({ i, why_zh: `解读 ${i}`, why_en: `Why ${i}` })) }) } }] });

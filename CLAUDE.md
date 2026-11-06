@@ -31,7 +31,7 @@ desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs +
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-tools/uma-server/     在线 UMA：站长电脑上的服务 server.py（经 Cloudflare Tunnel 接到账号服务 /uma/*）；secret.local、cache*.json 不进 git
+tools/uma-server/     在线模型：站长电脑上的服务 server.py（15 个模型，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；secret.local、cache*.json 不进 git
 tools/cloud/          站长的云端 GPU 批量计算：run.mjs（本机，经 gcloud）+ batch_uma.py / batch_mace.py / remote.sh（虚拟机上）；cloud.local.json 不进 git
 maintenance/          Python 爬虫与合并脚本；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
 ```
@@ -110,3 +110,6 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。调试版和已安装的应用共用应用数据和 localStorage。
 - **UMA 在 Windows：** fairchem 的默认设置用 `torch.compile`，需要 Triton，Windows 没有，会报 `TritonMissing`；所有加载 UMA 的地方（`uma-server/server.py`、桌面版 `runner.py`、`batch_uma.py`、Meta 页生成的脚本）用 `uma_settings()`，没有 Triton 时改用 `batch` 预设（全精度、不编译）。中文 Windows 上 Python 还要用 UTF-8 模式（`-X utf8` 或 `PYTHONUTF8=1`），否则 fairchem 按 GBK 读自己的数据文件失败；桌面版已设 `PYTHONUTF8=1`，`start.ps1` 用 `-X utf8`。RTX 20 系（计算能力 7.5）用不了 UMA Nitro。
+- **MACE 和 fairchem 不能装在一起：** mace-torch 固定 e3nn 0.4.4，fairchem 要 0.5 以上。在线服务把 MACE 放在 `mace-env`，经 `mace_worker.py`（标准输入输出 JSON）调用。
+- **在线模型的 IP/EA：** 不少 OMol25 系模型（UMA-S 1.1、eSEN、MACE-OMOL-0）给的电荷态能量差不可靠，加模型前按 RUNBOOK“加一个在线模型”先测垂直 IP。
+- **WSL 里的模型权重：** Hugging Face 缓存的 `snapshots` 是 Linux 符号链接，Windows 经 `\\wsl.localhost` 读不到，要复制 `blobs` 里的文件；WSL 也写不进 Windows 的 `%USERPROFILE%\.cache`，从 Windows 这边复制。

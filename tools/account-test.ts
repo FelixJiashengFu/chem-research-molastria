@@ -30,7 +30,8 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
     if (umaOffline) throw new TypeError("connection refused");
     umaCalls.push({ path: url.pathname, key: req.headers.get("X-MolAstria-Key"), access: req.headers.get("CF-Access-Client-Id"), body: req.method === "POST" ? await req.json() : null });
     if (req.headers.get("X-MolAstria-Key") !== "uma-secret-for-tests-0123456789abcdef") return ok({ error: "unauthorized" }, 401);
-    if (url.pathname === "/health") return ok({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7 });
+    if (url.pathname === "/health") return ok({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt"], queue: 1, running: true }, "mace-mdp": { ready: false, jobs: ["polar", "rm -rf"], queue: 0, running: false }, "evil-model": { ready: true, jobs: ["opt"] } } });
+    if (url.pathname === "/jobs" && (umaCalls.at(-1)?.body as any)?.smiles === "CCCC") return ok({ error: "one job at a time" }, 429);
     if (url.pathname === "/jobs") return ok({ id: "0123456789abcdef", status: "queued", position: 2 }, 202);
     if (url.pathname === "/jobs/0123456789abcdef") return ok({ id: "0123456789abcdef", status: "done", result: { ip_uma_s: 10.9, ea_uma_s: -0.4 } });
     return ok({ error: "no such job" }, 404);
@@ -523,20 +524,41 @@ await test("UMA: off until configured, then health, jobs and polling through the
   eq(await call("GET", "/uma/health").then((r) => r.data), { online: false, configured: false });
   Object.assign(env, { UMA_ORIGIN: "https://uma.test/", UMA_SERVER_SECRET: "uma-secret-for-tests-0123456789abcdef", UMA_DAILY: "2" });
   const h = await call("GET", "/uma/health");
-  eq(h.data, { online: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, cached: 7 });
+  eq(h.data, { online: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt"], queue: 1, running: true, tier: "fair" }, "mace-mdp": { ready: false, jobs: ["polar"], queue: 0, running: false, tier: "asl" } } }, "only known models and jobs are passed on");
   if (JSON.stringify(h.data).includes("secret")) throw new Error("health leaked the secret");
   eq(umaCalls.at(-1)?.key, "uma-secret-for-tests-0123456789abcdef", "secret sent to the computer");
   const bad = await call("POST", "/uma/jobs", { smiles: "C; rm -rf /", job: "ipea" });
   eq(bad.status, 400);
-  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "md" })).status, 400, "only ipea and opt");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "md" })).status, 400, "only ipea, opt and polar");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "__proto__" })).status, 400, "only known models");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", charge: 9 })).status, 400, "charge range");
   const ok = await call("POST", "/uma/jobs", { smiles: "O=C1OCC(F)O1", job: "ipea", extra: "dropped", path: "../../etc" });
   eq([ok.status, ok.data.id], [202, "0123456789abcdef"]);
-  eq(umaCalls.at(-1)?.body, { smiles: "O=C1OCC(F)O1", job: "ipea" }, "only checked fields reach the computer");
+  const sent = umaCalls.at(-1)?.body as any;
+  eq({ ...sent, who: undefined }, { smiles: "O=C1OCC(F)O1", job: "ipea", model: "uma-s-1p2p1", who: undefined }, "only checked fields reach the computer");
+  if (!/^[0-9a-f]{16}$/.test(sent.who) || JSON.stringify(sent).includes("203.0.113")) throw new Error("the computer must get a hashed visitor id, not the IP");
   eq((await call("GET", "/uma/jobs/0123456789abcdef")).data.result.ip_uma_s, 10.9);
   eq((await call("GET", "/uma/jobs/not-a-job-id")).status, 404, "job ids are checked");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" })).status, 202);
   eq((await call("POST", "/uma/jobs", { smiles: "CCC", job: "opt" })).status, 429, "daily limit per visitor");
+});
+
+await test("online models: ANI-2x only for Pro, MACE free and the same for everyone with academic use confirmed, one job per visitor", async () => {
+  Object.assign(env, { ASL_DAILY: "2", ANI_DAILY_PRO: "5" });
+  const anon = await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" });
+  eq([anon.status, anon.data.error?.message?.includes("Pro")], [403, true], "ANI-2x needs Pro");
+  const pro = adminToken; // permanent Pro (an admin grant); the Stripe Pro account was cancelled by an earlier test
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" }, pro)).status, 202, "Pro runs ANI-2x");
+  eq((umaCalls.at(-1)?.body as any).model, "ani-2x");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small" })).status, 400, "MACE needs the academic-use box");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: "yes" })).status, 400, "only a real true counts");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true })).status, 202);
+  eq((umaCalls.at(-1)?.body as any).academic, undefined, "the box is checked here, not forwarded");
+  // Busy visitor: the computer refuses, and the refused job is not counted.
+  const busy = await call("POST", "/uma/jobs", { smiles: "CCCC", job: "opt", model: "mace-mdp", academic: true });
+  eq([busy.status, busy.data.error?.message], [429, "你已经有一个任务在排队或计算，等它完成再提交下一个"]);
+  eq((await call("POST", "/uma/jobs", { smiles: "CCN", job: "polar", model: "mace-mdp", academic: true })).status, 202, "the refused job gave its use back");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCN", job: "polar", model: "mace-mdp", academic: true }, pro)).status, 429, "Pro gets no extra MACE runs (same visitor address)");
 });
 
 await test("UMA: embargoed regions are refused, an optional Access token is sent, an offline computer is reported", async () => {

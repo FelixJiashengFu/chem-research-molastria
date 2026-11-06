@@ -72,6 +72,9 @@ async function allow(env, key, limit, seconds) {
   ).bind(key, t + seconds, t).first();
   return row.n <= limit;
 }
+async function refund(env, key) { // give back one use counted by allow() for a request that was not served
+  await env.DB.prepare('UPDATE throttle SET n = n - 1 WHERE key = ?1 AND n > 0').bind(key).run().catch(() => {});
+}
 
 // ── Stripe (read-only restricted key: Customers, Checkout Sessions, Subscriptions) ──
 async function stripe(env, path) {
@@ -252,11 +255,26 @@ const inviteMail = (owner) => [
   `${owner} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。\n打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。\n\n${owner} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.`
 ];
 
-// ── UMA on the site owner's GPU (tools/uma-server, reached through Cloudflare Tunnel) ──────────────────
-// Open to every visitor of the allowed sites: this service limits jobs per visitor, keeps embargoed regions out
-// (the FAIR Chemistry License requires following trade-control laws) and adds the shared secret the owner's
-// computer checks. The computer may be off; health then answers { online: false } instead of an error.
+// ── Online models on the site owner's GPU (tools/uma-server, reached through Cloudflare Tunnel) ─────────
+// This service limits jobs per visitor, decides who may use which model, keeps embargoed regions out (the FAIR
+// Chemistry License requires following trade-control laws) and adds the shared secret the owner's computer checks.
+// The computer may be off; health then answers { online: false } instead of an error.
+//   fair: the Meta FAIR Chemistry models (UMA, eSEN, AllScAIP) free for everyone, sharing one daily allowance (Pro gets
+//         more runs a day); pro: ANI-2x (MIT) for Pro members only.
+//   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
+//        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
+const UMA_MODELS = {
+  'uma-s-1p2p1': 'fair', 'uma-s-1p2': 'fair', 'uma-s-1p2p1-ft-d4rev': 'fair', 'uma-s-1p1': 'fair',
+  'allscaip-md-conserving-all-omol': 'fair', 'allscaip-md-direct-all-omol': 'fair',
+  'esen-sm-conserving-all-omol': 'fair', 'esen-sm-direct-all-omol': 'fair', 'esen-md-direct-all-omol': 'fair',
+  'ani-2x': 'pro',
+  'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl'
+};
+async function visitorId(env, who) { // the computer sees a stable hash of the visitor, never the IP or email
+  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${env.UMA_SERVER_SECRET}|${who}`)));
+  return [...bytes.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
 async function umaOrigin(env, path, init = {}) {
   if (!env.UMA_ORIGIN || !env.UMA_SERVER_SECRET) throw fail(503, 'UMA 计算服务还没有开通');
   const res = await fetch(env.UMA_ORIGIN.replace(/\/+$/, '') + path, {
@@ -276,14 +294,21 @@ async function uma(request, env, cors, path, ip) {
   if (key === 'GET /uma/health') {
     try {
       const { status, data } = await umaOrigin(env, '/health');
-      return json(status === 200 ? { online: !!data.ready, model: data.model, gpu: data.gpu || '', queue: data.queue, running: data.running, cached: data.cached } : { online: false }, { ...cors, 'Cache-Control': 'no-store' });
+      if (status !== 200) return json({ online: false }, { ...cors, 'Cache-Control': 'no-store' });
+      // Per model: whether it is loaded, what it can do and how many visitors wait for it; only the known models.
+      const models = {};
+      for (const [id, v] of Object.entries(data.models && typeof data.models === 'object' ? data.models : {})) {
+        if (!UMA_MODELS[id] || !v || typeof v !== 'object') continue;
+        models[id] = { ready: !!v.ready, jobs: (Array.isArray(v.jobs) ? v.jobs : []).filter((j) => ['ipea', 'opt', 'polar'].includes(j)), queue: Number(v.queue) || 0, running: !!v.running, tier: UMA_MODELS[id] };
+      }
+      return json({ online: !!data.ready, model: data.model, gpu: data.gpu || '', queue: data.queue, running: data.running, cached: data.cached, ...(Object.keys(models).length ? { models } : {}) }, { ...cors, 'Cache-Control': 'no-store' });
     } catch (e) {
       if (e.status === 503) return json({ online: false, configured: false }, cors);
       return json({ online: false }, cors);
     }
   }
   const country = request.cf?.country || '';
-  if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用 UMA 计算服务');
+  if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务');
   if (key === 'POST /uma/jobs') {
     const raw = await request.text();
     if (raw.length > 2000) throw fail(413, '请求内容过大');
@@ -291,28 +316,45 @@ async function uma(request, env, cors, path, ip) {
     try { body = JSON.parse(raw || '{}'); } catch { throw fail(400, '请求不是合法的 JSON'); }
     const smiles = String(body.smiles || '').trim();
     const job = String(body.job || 'ipea');
+    const model = String(body.model || 'uma-s-1p2p1');
     if (!/^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长');
-    if (!['ipea', 'opt'].includes(job)) throw fail(400, '只支持电离能/电子亲和能（ipea）和几何优化（opt）');
-    const out = { smiles, job };
+    if (!Object.hasOwn(UMA_MODELS, model)) throw fail(400, '没有这个在线模型');
+    if (!['ipea', 'opt', 'polar'].includes(job)) throw fail(400, '只支持电离能/电子亲和能（ipea）、几何优化（opt）和偶极矩/极化率（polar）');
+    const tier = UMA_MODELS[model];
+    if (tier === 'asl' && body.academic !== true) throw fail(400, 'MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”');
+    const out = { smiles, job, model };
     for (const [k, lo, hi] of [['charge', -2, 2], ['spin', 1, 4]]) {
       if (body[k] === undefined || body[k] === null || body[k] === '') continue;
       const v = Number(body[k]);
       if (!Number.isInteger(v) || v < lo || v > hi) throw fail(400, '电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间');
       out[k] = v;
     }
-    // Signed-in Pro members get a larger daily allowance than anonymous visitors.
     const email = await signedIn(env, request).catch(() => null);
     const pro = email ? (await access(env, email)).pro : false;
-    const limit = Number(pro ? env.UMA_DAILY_PRO || 100 : env.UMA_DAILY || 20);
-    if (!(await allow(env, `uma:${pro ? email : ip}`, limit, 86400))) throw fail(429, `今天的 UMA 计算次数已用完（每天 ${limit} 次${pro ? '' : '，Pro 会员每天更多'}），明天再来`);
+    let counter, limit, used;
+    if (tier === 'pro') { // ANI-2x: Pro members only
+      if (!pro) throw fail(403, 'ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费');
+      [counter, limit, used] = [`ani:${email}`, Number(env.ANI_DAILY_PRO || 100), '今天的 ANI-2x 计算次数已用完'];
+    } else if (tier === 'asl') { // the same for everyone: a paid plan must not buy more of an academic-only model
+      [counter, limit, used] = [`asl:${ip}`, Number(env.ASL_DAILY || 20), '今天的 MACE 计算次数已用完'];
+    } else { // UMA: signed-in Pro members get a larger daily allowance than anonymous visitors
+      [counter, limit, used] = [`uma:${pro ? email : ip}`, Number(pro ? env.UMA_DAILY_PRO || 100 : env.UMA_DAILY || 20), '今天的 UMA / OMol25 模型计算次数已用完'];
+    }
+    if (!(await allow(env, counter, limit, 86400))) throw fail(429, `${used}（每天 ${limit} 次${tier === 'fair' && !pro ? '，Pro 会员每天更多' : ''}），明天再来`);
+    out.who = await visitorId(env, pro ? email : ip); // one job at a time per visitor, checked on the computer
+    let status, data;
     try {
-      const { status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) });
-      if (status >= 400) throw fail(status === 503 ? 503 : 400, data.error ? `UMA 服务：${data.error}` : 'UMA 服务暂时不可用');
-      return json(data, cors, status);
-    } catch (e) {
-      if (e.status) throw e;
+      ({ status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) }));
+    } catch {
+      await refund(env, counter);
       throw fail(503, '站长的 GPU 现在离线，请稍后再试');
     }
+    if (status >= 400) { // refused on the computer (busy visitor, full queue, unknown element): not counted
+      await refund(env, counter);
+      if (status === 429) throw fail(429, '你已经有一个任务在排队或计算，等它完成再提交下一个');
+      throw fail(status === 503 ? 503 : 400, data.error ? `计算服务：${data.error}` : '计算服务暂时不可用');
+    }
+    return json(data, cors, status);
   }
   const m = /^\/uma\/jobs\/([0-9a-f]{16})$/.exec(path);
   if (request.method === 'GET' && m) {
