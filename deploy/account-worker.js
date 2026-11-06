@@ -65,15 +65,17 @@ function randomToken() {
 }
 
 // ── rate limits ─────────────────────────────────────────────────────────
-async function allow(env, key, limit, seconds) {
+/** Adds `cost` uses to this window's count and returns the new count. */
+async function bump(env, key, seconds, cost = 1) {
   const t = now();
   const row = await env.DB.prepare(
-    'INSERT INTO throttle (key, n, reset) VALUES (?1, 1, ?2) ON CONFLICT(key) DO UPDATE SET n = CASE WHEN reset < ?3 THEN 1 ELSE n + 1 END, reset = CASE WHEN reset < ?3 THEN ?2 ELSE reset END RETURNING n'
-  ).bind(key, t + seconds, t).first();
-  return row.n <= limit;
+    'INSERT INTO throttle (key, n, reset) VALUES (?1, ?4, ?2) ON CONFLICT(key) DO UPDATE SET n = CASE WHEN reset < ?3 THEN ?4 ELSE n + ?4 END, reset = CASE WHEN reset < ?3 THEN ?2 ELSE reset END RETURNING n'
+  ).bind(key, t + seconds, t, cost).first();
+  return row.n;
 }
-async function refund(env, key) { // give back one use counted by allow() for a request that was not served
-  await env.DB.prepare('UPDATE throttle SET n = n - 1 WHERE key = ?1 AND n > 0').bind(key).run().catch(() => {});
+async function allow(env, key, limit, seconds) { return (await bump(env, key, seconds)) <= limit; }
+async function refund(env, key, cost = 1) { // give back the uses counted by allow() / bump() for a request that was not served
+  await env.DB.prepare('UPDATE throttle SET n = MAX(n - ?2, 0) WHERE key = ?1').bind(key, cost).run().catch(() => {});
 }
 
 // ── Stripe (read-only restricted key: Customers, Checkout Sessions, Subscriptions) ──
@@ -271,6 +273,70 @@ const UMA_MODELS = {
   'ani-2x': 'pro',
   'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl'
 };
+// Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
+const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5 };
+const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
+const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol']);
+// Which jobs each kind of model does: charge-and-spin molecular models, neutral models, and MACE-MDP's properties.
+const umaJobsOf = (model) => (model === 'mace-mdp' ? ['polar', 'ir'] : UMA_CHARGED.has(model) ? [...UMA_GEOM, 'ipea', 'spin', 'bde', 'pa'] : UMA_GEOM);
+const SMILES_RE = /^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/;
+const UMA_SMILES_ONLY = new Set(['conf', 'rxn', 'bde', 'pa']);
+// params: the allowed keys per job and how each is checked; anything else is dropped, a bad value is refused.
+const pnum = (lo, hi, int = false) => (v) => (typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi && (!int || Number.isInteger(v)) ? v : undefined);
+const pbool = (v) => (typeof v === 'boolean' ? v : undefined);
+const pone = (...ok) => (v) => (ok.includes(v) ? v : undefined);
+const pidx = pnum(0, 999, true);
+const plist = (n, item) => (v) => (Array.isArray(v) && v.length === n && v.every((x) => item(x) !== undefined) && new Set(v).size === n ? v : undefined);
+const preaction = (v) => {
+  if (typeof v !== 'string' || v.length > 400) return undefined;
+  const sides = v.split('>>').map((s) => s.split('.'));
+  if (sides.length !== 2) return undefined;
+  // At least one species a side and at most 6 in all, repeats counted (server.py: MAX_SPECIES).
+  return sides[0].length + sides[1].length <= 6 && sides.flat().every((x) => SMILES_RE.test(x)) ? v : undefined;
+};
+const TEMP = pnum(10, 2000);
+const UMA_PARAMS = {
+  sp: {}, ir: {},
+  opt: { fmax: pnum(0.001, 0.1) },
+  freq: { temperature: TEMP, symmetry: pnum(1, 24, true) },
+  conf: { n: pnum(2, 30, true), temperature: TEMP, window_kcal: pnum(1, 30) },
+  scan: { atoms: plist(4, pidx), start: pnum(-360, 360), end: pnum(-360, 360), points: pnum(3, 24, true) },
+  md: { temperature: pnum(10, 1500), timestep_fs: pnum(0.1, 2.0), steps: pnum(100, 2000, true), friction: pnum(0.001, 0.1) },
+  rxn: { reaction: preaction, thermo: pbool, temperature: TEMP },
+  ipea: { mode: pone('vertical', 'adiabatic', 'both') },
+  spin: { spins: plist(2, pnum(1, 4, true)) },
+  bde: { bond: plist(2, pidx), thermo: pbool, temperature: TEMP },
+  pa: { site: pidx, mode: pone('protonate', 'deprotonate'), thermo: pbool, temperature: TEMP },
+  polar: { average: pbool, n: pnum(2, 20, true) }
+};
+// No default for these; spins and pa's mode have one on the computer (the two lowest multiplicities, protonate).
+const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'] };
+function umaParams(job, raw) {
+  if (raw !== undefined && raw !== null && (typeof raw !== 'object' || Array.isArray(raw))) throw fail(400, '参数（params）必须是一个对象');
+  const out = {};
+  for (const [k, check] of Object.entries(UMA_PARAMS[job])) {
+    if (raw?.[k] === undefined) continue;
+    const v = check(raw[k]);
+    if (v === undefined) throw fail(400, `参数 ${k} 的值不在允许的范围内`);
+    out[k] = v;
+  }
+  const missing = (UMA_REQUIRED[job] || []).filter((k) => !(k in out));
+  if (missing.length) throw fail(400, `这项计算需要参数 ${missing.join('、')}`);
+  if (job === 'scan' && (out.end ?? 180) <= (out.start ?? -180)) throw fail(400, '扫描的终止角要大于起始角');
+  return out;
+}
+/** A standard XYZ text: atom count (1-120), a comment line, then one "Symbol x y z" line per atom. */
+function umaXyz(v) {
+  if (typeof v !== 'string' || v.length > 12000 || /[^\x20-\x7e\t\r\n]/.test(v)) throw fail(400, 'XYZ 结构不合法：最多 12000 个字符，只能包含普通 ASCII 字符');
+  const lines = v.replace(/\r/g, '').replace(/^\s*\n/, '').split('\n');
+  const n = Number(lines[0].trim());
+  if (!Number.isInteger(n) || n < 1 || n > 120) throw fail(400, 'XYZ 结构的第一行要是原子数，在线计算最多 120 个原子');
+  const atoms = lines.slice(2, 2 + n);
+  const okLine = (l) => { const f = l.trim().split(/\s+/); return f.length >= 4 && /^[A-Z][a-z]?$/.test(f[0]) && f.slice(1, 4).every((x) => x !== '' && Number.isFinite(Number(x))); };
+  if (atoms.length !== n || !atoms.every(okLine)) throw fail(400, 'XYZ 结构不合法：原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致');
+  return lines.slice(0, 2 + n).join('\n') + '\n';
+}
+
 async function visitorId(env, who) { // the computer sees a stable hash of the visitor, never the IP or email
   const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${env.UMA_SERVER_SECRET}|${who}`)));
   return [...bytes.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -299,9 +365,10 @@ async function uma(request, env, cors, path, ip) {
       const models = {};
       for (const [id, v] of Object.entries(data.models && typeof data.models === 'object' ? data.models : {})) {
         if (!UMA_MODELS[id] || !v || typeof v !== 'object') continue;
-        models[id] = { ready: !!v.ready, jobs: (Array.isArray(v.jobs) ? v.jobs : []).filter((j) => ['ipea', 'opt', 'polar'].includes(j)), queue: Number(v.queue) || 0, running: !!v.running, tier: UMA_MODELS[id] };
+        models[id] = { ready: !!v.ready, jobs: (Array.isArray(v.jobs) ? v.jobs : []).filter((j) => umaJobsOf(id).includes(j)), queue: Number(v.queue) || 0, running: !!v.running, tier: UMA_MODELS[id] };
       }
-      return json({ online: !!data.ready, model: data.model, gpu: data.gpu || '', queue: data.queue, running: data.running, cached: data.cached, ...(Object.keys(models).length ? { models } : {}) }, { ...cors, 'Cache-Control': 'no-store' });
+      const api = ['number', 'string'].includes(typeof data.api) ? { api: data.api } : {}; // the computer's API version
+      return json({ online: !!data.ready, model: data.model, gpu: data.gpu || '', queue: data.queue, running: data.running, cached: data.cached, ...api, ...(Object.keys(models).length ? { models } : {}) }, { ...cors, 'Cache-Control': 'no-store' });
     } catch (e) {
       if (e.status === 503) return json({ online: false, configured: false }, cors);
       return json({ online: false }, cors);
@@ -311,24 +378,44 @@ async function uma(request, env, cors, path, ip) {
   if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务');
   if (key === 'POST /uma/jobs') {
     const raw = await request.text();
-    if (raw.length > 2000) throw fail(413, '请求内容过大');
+    if (raw.length > 16000) throw fail(413, '请求内容过大');
     let body;
     try { body = JSON.parse(raw || '{}'); } catch { throw fail(400, '请求不是合法的 JSON'); }
-    const smiles = String(body.smiles || '').trim();
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw fail(400, '请求不是合法的 JSON');
     const job = String(body.job || 'ipea');
     const model = String(body.model || 'uma-s-1p2p1');
-    if (!/^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长');
     if (!Object.hasOwn(UMA_MODELS, model)) throw fail(400, '没有这个在线模型');
-    if (!['ipea', 'opt', 'polar'].includes(job)) throw fail(400, '只支持电离能/电子亲和能（ipea）、几何优化（opt）和偶极矩/极化率（polar）');
+    if (!Object.hasOwn(UMA_COST, job)) throw fail(400, '没有这种计算');
+    if (!umaJobsOf(model).includes(job)) throw fail(400, '这个模型不做这种计算');
     const tier = UMA_MODELS[model];
     if (tier === 'asl' && body.academic !== true) throw fail(400, 'MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”');
-    const out = { smiles, job, model };
+    // Structure: exactly one of SMILES and XYZ; a reaction brings its species in params.reaction instead.
+    const given = (v) => v !== undefined && v !== null && v !== '';
+    const out = {};
+    if (job === 'rxn') {
+      if (given(body.smiles) || given(body.xyz)) throw fail(400, '反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ');
+    } else if (given(body.smiles) === given(body.xyz)) {
+      throw fail(400, given(body.smiles) ? 'SMILES 和 XYZ 只能给一个' : '请给出分子的 SMILES 或 XYZ 结构');
+    } else if (given(body.smiles)) {
+      const smiles = String(body.smiles).trim();
+      if (!SMILES_RE.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长');
+      out.smiles = smiles;
+    } else {
+      if (UMA_SMILES_ONLY.has(job) || (job === 'polar' && body.params?.average === true)) throw fail(400, '这项计算要从 SMILES 生成结构，不接受 XYZ');
+      out.xyz = umaXyz(body.xyz);
+    }
+    Object.assign(out, { job, model }); // the same field order as API v2, so old requests reach the computer unchanged
     for (const [k, lo, hi] of [['charge', -2, 2], ['spin', 1, 4]]) {
       if (body[k] === undefined || body[k] === null || body[k] === '') continue;
       const v = Number(body[k]);
       if (!Number.isInteger(v) || v < lo || v > hi) throw fail(400, '电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间');
       out[k] = v;
     }
+    if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1');
+    const params = umaParams(job, body.params);
+    if (Object.keys(params).length) out.params = params;
+    // Conformer-averaged polarisability and the thermochemistry options need frequency runs: 5 uses each.
+    const cost = (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
     const email = await signedIn(env, request).catch(() => null);
     const pro = email ? (await access(env, email)).pro : false;
     let counter, limit, used;
@@ -340,17 +427,24 @@ async function uma(request, env, cors, path, ip) {
     } else { // UMA: signed-in Pro members get a larger daily allowance than anonymous visitors
       [counter, limit, used] = [`uma:${pro ? email : ip}`, Number(pro ? env.UMA_DAILY_PRO || 100 : env.UMA_DAILY || 20), '今天的 UMA / OMol25 模型计算次数已用完'];
     }
-    if (!(await allow(env, counter, limit, 86400))) throw fail(429, `${used}（每天 ${limit} 次${tier === 'fair' && !pro ? '，Pro 会员每天更多' : ''}），明天再来`);
+    // A job costs UMA_COST uses at once; one that does not fit in what is left is refused and costs nothing.
+    const n = await bump(env, counter, 86400, cost);
+    if (n > limit) {
+      await refund(env, counter, cost);
+      const left = Math.max(0, limit - (n - cost)), more = tier === 'fair' && !pro ? '，Pro 会员每天更多' : '';
+      if (!left) throw fail(429, `${used}（每天 ${limit} 次${more}），明天再来`);
+      throw fail(429, `今天还剩 ${left} 次，这项计算要用 ${cost} 次（每天 ${limit} 次${more}）；换一项花费少的计算，或明天再来`);
+    }
     out.who = await visitorId(env, pro ? email : ip); // one job at a time per visitor, checked on the computer
     let status, data;
     try {
       ({ status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) }));
     } catch {
-      await refund(env, counter);
+      await refund(env, counter, cost);
       throw fail(503, '站长的 GPU 现在离线，请稍后再试');
     }
     if (status >= 400) { // refused on the computer (busy visitor, full queue, unknown element): not counted
-      await refund(env, counter);
+      await refund(env, counter, cost);
       if (status === 429) throw fail(429, '你已经有一个任务在排队或计算，等它完成再提交下一个');
       throw fail(status === 503 ? 503 : 400, data.error ? `计算服务：${data.error}` : '计算服务暂时不可用');
     }

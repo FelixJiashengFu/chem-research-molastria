@@ -142,6 +142,7 @@
  "排序": [
   "index.html",
   "hub/index.html",
+  "models/models.js",
   "radar/app/app.js"
  ],
  "默认 / 关键词相关": [
@@ -175,6 +176,7 @@
  "分子动力学": [
   "index.html",
   "hub/network.js",
+  "models/models.js",
   "tags",
   "categories"
  ],
@@ -1629,7 +1631,8 @@
   "lab/index.html"
  ],
  "几何优化": [
-  "lab/index.html"
+  "lab/index.html",
+  "models/models.js"
  ],
  "单点能": [
   "lab/index.html"
@@ -1828,8 +1831,10 @@
  ],
  "模型": [
   "meta/index.html",
+  "models/index.html",
   "train/index.html",
   "meta/meta.js",
+  "models/models.js",
   "ai/ai.js"
  ],
  "AI 设置中的当前模型": [
@@ -1857,14 +1862,14 @@
   "meta/index.html"
  ],
  "计算": [
-  "meta/index.html"
+  "meta/index.html",
+  "models/index.html"
  ],
  "绝热电离能与电子亲和能（可导入 AI 实验室）": [
   "meta/index.html"
  ],
  "几何优化与能量": [
-  "meta/index.html",
-  "meta/meta.js"
+  "meta/index.html"
  ],
  "构象搜索：20 个构象全部优化，取能量最低": [
   "meta/index.html"
@@ -1894,10 +1899,14 @@
   "meta/index.html"
  ],
  "电荷": [
-  "meta/index.html"
+  "meta/index.html",
+  "models/index.html",
+  "models/models.js"
  ],
  "自旋多重度": [
-  "meta/index.html"
+  "meta/index.html",
+  "models/index.html",
+  "models/models.js"
  ],
  "再用 uma-m-1p1 在同一几何上算单点（AI 实验室用 S / M 的分歧判断结果是否可疑）": [
   "meta/index.html"
@@ -1930,66 +1939,16 @@
   "train/train.js"
  ],
  "下载": [
-  "meta/index.html"
- ],
- "在线运行：用站长的 GPU 免费算": [
-  "meta/index.html"
- ],
- "不用装任何东西：把上面的分子交给站长电脑上的模型计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务；算过的分子直接给结果。Meta 的 UMA 和 OMol25 模型、MACE 系列对所有人免费，ANI-2x 是 Pro 会员的模型。UMA-M 1.1 的权重有 11 GB，站长电脑的内存和显存装不下，暂不提供。": [
-  "meta/index.html"
- ],
- "正在查询在线状态…": [
-  "meta/index.html"
- ],
- "在线模型": [
-  "meta/index.html"
- ],
- "UMA-S 1.2.1（推荐）": [
-  "meta/index.html"
- ],
- "UMA-S 1.2.1 D4rev 微调": [
-  "meta/index.html"
- ],
- "UMA-S 1.1（只算中性分子）": [
-  "meta/index.html"
- ],
- "AllScAIP-md · 能量守恒型": [
-  "meta/index.html"
- ],
- "AllScAIP-md · 直接受力型": [
-  "meta/index.html"
- ],
- "eSEN-sm · 能量守恒型（只算中性分子）": [
-  "meta/index.html"
- ],
- "eSEN-sm · 直接受力型（只算中性分子）": [
-  "meta/index.html"
- ],
- "eSEN-md · 直接受力型（只算中性分子）": [
-  "meta/index.html"
- ],
- "MACE-OMOL-0（只算中性分子）": [
-  "meta/index.html"
- ],
- "MACE-MDP · 偶极矩与极化率": [
-  "meta/index.html"
- ],
- "任务": [
   "meta/index.html",
-  "lab/lab.js"
+  "models/models.js"
  ],
- "绝热电离能与电子亲和能": [
-  "meta/index.html",
-  "meta/meta.js"
- ],
- "偶极矩与极化率": [
-  "meta/index.html",
-  "meta/meta.js"
- ],
- "我确认只用于学术、非商业研究（MACE 模型采用学术软件许可 ASL）": [
+ "不想装环境：在线计算在“模型接口”页": [
   "meta/index.html"
  ],
- "在线运行": [
+ "站长 GPU 上的 15 个机器学习势（UMA、OMol25 系列、MACE、ANI-2x）可以免费在线计算：单点、优化、频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、IP / EA、自旋态能隙、键解离能、质子亲和能、极化率和红外 / 拉曼光谱。": [
+  "meta/index.html"
+ ],
+ "打开量子化学模型接口 →": [
   "meta/index.html"
  ],
  "MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。": [
@@ -1999,7 +1958,8 @@
   "meta/index.html"
  ],
  "MolAstria 桌面版": [
-  "meta/index.html"
+  "meta/index.html",
+  "models/index.html"
  ],
  "可以用你电脑上的 Python 一键运行上面的计算，IP / EA 算完直接导入 AI 实验室。": [
   "meta/index.html"
@@ -2251,6 +2211,182 @@
  ],
  "搜索名称、体系、方法…": [
   "meta/index.html"
+ ],
+ "量子化学模型接口 · 15 个机器学习势在线计算 · MolAstria": [
+  "models/index.html"
+ ],
+ "跳到计算": [
+  "models/index.html"
+ ],
+ "量子化学模型接口": [
+  "models/index.html"
+ ],
+ "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x。这里按模型类别分成四个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
+  "models/index.html"
+ ],
+ "注意：": [
+  "models/index.html"
+ ],
+ "结果是机器学习势的预测，不是 DFT 计算。模型的误差随体系变化，重要的结论请用 DFT 或实验核对。": [
+  "models/index.html"
+ ],
+ "正在查询在线状态…": [
+  "models/index.html"
+ ],
+ "带电荷与自旋的分子模型": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "UMA · AllScAIP · 11 种计算": [
+  "models/index.html"
+ ],
+ "中性分子通用模型": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "83 种元素 · 7 种计算": [
+  "models/index.html"
+ ],
+ "有机分子力场": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "MACE-OFF23 · ANI-2x · 7 种计算": [
+  "models/index.html"
+ ],
+ "分子性质模型": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "MACE-MDP · 极化率与光谱": [
+  "models/index.html"
+ ],
+ "1 · 模型": [
+  "models/index.html"
+ ],
+ "直接受力型模型：它直接预测原子受力，力不是能量的导数，能量和力不严格守恒；频率由受力的有限差分得到，和能量守恒型模型相比误差更大。": [
+  "models/index.html"
+ ],
+ "多模型对比：选几个模型依次跑同一个计算，结果放进一张表": [
+  "models/index.html"
+ ],
+ "2 · 结构": [
+  "models/index.html"
+ ],
+ "XYZ 坐标": [
+  "models/index.html"
+ ],
+ "图中的数字是原子编号（从 0 开始，按 SMILES 里的顺序）；加氢后氢原子排在重原子后面。扫描、键解离能和质子亲和能按这些编号选原子或键。": [
+  "models/index.html"
+ ],
+ "XYZ 结构（标准格式：原子数、注释行、每行“元素 x y z”，单位 Å，最多 120 个原子）": [
+  "models/index.html"
+ ],
+ "上传 .xyz 文件": [
+  "models/index.html"
+ ],
+ "用示例（水）": [
+  "models/index.html"
+ ],
+ "反应计算的物种写在右边的反应 SMILES 里，不用另给结构。": [
+  "models/index.html"
+ ],
+ "电荷 −2 到 2，自旋多重度 2S+1 在 1 到 4 之间": [
+  "models/index.html"
+ ],
+ "3 · 计算": [
+  "models/index.html"
+ ],
+ "我确认只用于学术、非商业研究（MACE 模型采用学术软件许可 ASL）": [
+  "models/index.html"
+ ],
+ "运行": [
+  "models/index.html"
+ ],
+ "这个窗口的模型": [
+  "models/index.html"
+ ],
+ "训练数据的 DFT 水平决定了模型在学什么：同一个分子，不同模型的绝对能量不能直接比较，比较相对能量和趋势。": [
+  "models/index.html"
+ ],
+ "每日额度与计次": [
+  "models/index.html"
+ ],
+ "每项计算按花费扣次数；被拒绝的计算、站长电脑离线时的计算都不扣。次数每 24 小时重置。": [
+  "models/index.html"
+ ],
+ "每天": [
+  "models/index.html",
+  "radar/app/app.js"
+ ],
+ "Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）": [
+  "models/index.html"
+ ],
+ "每位访客共 20 次，Pro 会员 100 次": [
+  "models/index.html"
+ ],
+ "MACE 系列（学术许可）": [
+  "models/index.html"
+ ],
+ "每位访客 20 次，对所有人相同": [
+  "models/index.html"
+ ],
+ "只给 Pro 会员，每天 100 次": [
+  "models/index.html"
+ ],
+ "消耗": [
+  "models/index.html"
+ ],
+ "单点、几何优化、电离能与电子亲和能、偶极矩与极化率": [
+  "models/index.html"
+ ],
+ "1 次": [
+  "models/index.html"
+ ],
+ "自旋态能隙、键解离能、质子亲和能": [
+  "models/index.html"
+ ],
+ "2 次（加热校正 5 次）": [
+  "models/index.html"
+ ],
+ "振动频率与热化学、红外与拉曼光谱、反应能": [
+  "models/index.html"
+ ],
+ "3 次（反应能加热校正 5 次）": [
+  "models/index.html"
+ ],
+ "构象搜索、二面角扫描、分子动力学、构象平均的极化率": [
+  "models/index.html"
+ ],
+ "5 次": [
+  "models/index.html"
+ ],
+ "在线计算经 MolAstria 账号服务转发，按照模型许可要求遵守的出口管制规定，部分地区不能使用。提交的结构会缓存在站长电脑上以便复用结果，不记录你的其他信息。想在自己的电脑上算，用": [
+  "models/index.html"
+ ],
+ "Meta 页的脚本生成器": [
+  "models/index.html"
+ ],
+ "，也可以用": [
+  "models/index.html"
+ ],
+ "MolAstria · 量子化学模型接口": [
+  "models/index.html"
+ ],
+ "结果按原样提供，不作任何保证。模型名称归各自的作者所有；MolAstria 与 Meta 没有隶属关系。": [
+  "models/index.html"
+ ],
+ "在线计算": [
+  "models/index.html"
+ ],
+ "模型类别": [
+  "models/index.html"
+ ],
+ "结构输入方式": [
+  "models/index.html"
+ ],
+ "带原子编号的二维结构": [
+  "models/index.html"
  ],
  "训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria": [
   "train/index.html"
@@ -3389,6 +3525,7 @@
  "免费": [
   "pro/index.html",
   "atlas/app.js",
+  "models/models.js",
   "pro/account-page.js",
   "atlas data"
  ],
@@ -4224,6 +4361,9 @@
   "tools/build-seo.ts"
  ],
  "讲解手册与数据库": [
+  "shared-nav.js"
+ ],
+ "模型接口": [
   "shared-nav.js"
  ],
  "量子化学": [
@@ -5396,6 +5536,9 @@
  "Tier 3：ωB97M-V 单点": [
   "lab/lab.js"
  ],
+ "任务": [
+  "lab/lab.js"
+ ],
  "每个 credits": [
   "lab/lab.js"
  ],
@@ -5713,6 +5856,7 @@
  ],
  "已复制": [
   "meta/meta.js",
+  "models/models.js",
   "train/train.js"
  ],
  "图片无法读取": [
@@ -5764,13 +5908,15 @@
   "meta/meta.js"
  ],
  "先输入一个 SMILES。": [
-  "meta/meta.js"
+  "meta/meta.js",
+  "models/models.js"
  ],
  "正在载入 RDKit，载入后会校验 SMILES…": [
   "meta/meta.js"
  ],
  "RDKit 无法解析这个 SMILES，请先修正。": [
-  "meta/meta.js"
+  "meta/meta.js",
+  "models/models.js"
  ],
  "；MACE-OFF23 不认识 {0}": [
   "meta/meta.js"
@@ -5785,189 +5931,6 @@
   "meta/meta.js"
  ],
  "# 先输入一个 RDKit 能解析的 SMILES": [
-  "meta/meta.js"
- ],
- "MACE-OFF23 有机分子力场（在 SPICE 数据上训练，ωB97M-D3BJ），只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子；small 最快，large 最准。": [
-  "meta/meta.js"
- ],
- "MACE-OFF23 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 Kovács et al., J. Am. Chem. Soc. 2025（MACE-OFF）。": [
-  "meta/meta.js"
- ],
- "采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；": [
-  "meta/meta.js"
- ],
- "实测它对不同电荷态的能量差不可靠，所以在线只算中性闭壳层分子的几何优化。": [
-  "meta/meta.js"
- ],
- "{0} {1}论文里请注明 {2}。": [
-  "meta/meta.js"
- ],
- "在 OMol25（ωB97M-V/def2-TZVPD，1 亿多个 DFT 计算）上训练": [
-  "meta/meta.js"
- ],
- "Meta FAIR Chemistry 的通用原子模型，{0}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。": [
-  "meta/meta.js"
- ],
- "UMA-S 1.2.1 的上一版，{0}，支持电荷和自旋。实测苯、乙醇、水的垂直电离能都接近实验值，可以用来对照 1.2.1 的 IP / EA；比 1.2.1 慢。": [
-  "meta/meta.js"
- ],
- "UMA-S 1.2.1 按 ωB97M-D4rev 色散校正微调的分子专用版本，能量里含 D4 色散。和 1.2.1 一样，水这类极小分子的电离能偏低。": [
-  "meta/meta.js"
- ],
- "较早的 UMA 版本，可作对照。{0}": [
-  "meta/meta.js"
- ],
- "AllScAIP-md 能量守恒型": [
-  "meta/meta.js"
- ],
- "Meta 的 AllScAIP 中等模型，{0}，力由能量求导，支持电荷和自旋；实测苯、乙醇、水的垂直电离能都接近实验值。": [
-  "meta/meta.js"
- ],
- "AllScAIP 和 OMol25 数据集（Levine et al., 2025）": [
-  "meta/meta.js"
- ],
- "AllScAIP-md 直接受力型": [
-  "meta/meta.js"
- ],
- "Meta 的 AllScAIP 中等模型，{0}，直接预测力（更快，但能量和力不严格守恒），支持电荷和自旋。": [
-  "meta/meta.js"
- ],
- "eSEN-sm 能量守恒型": [
-  "meta/meta.js"
- ],
- "Meta 的 eSEN 小模型，{0}，力由能量求导。{1}": [
-  "meta/meta.js"
- ],
- "eSEN 和 OMol25 数据集（Levine et al., 2025）": [
-  "meta/meta.js"
- ],
- "eSEN-sm 直接受力型": [
-  "meta/meta.js"
- ],
- "Meta 的 eSEN 小模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
-  "meta/meta.js"
- ],
- "eSEN-md 直接受力型": [
-  "meta/meta.js"
- ],
- "Meta 的 eSEN 中等模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
-  "meta/meta.js"
- ],
- "MACE 在 OMol25 上训练的模型，覆盖 83 种元素（H 到 Bi）。实测它对不同电荷态的能量差不可靠（水的垂直电离能只有 0.04 eV），所以在线只算中性闭壳层分子的几何优化。": [
-  "meta/meta.js"
- ],
- "MACE-OMOL-0 采用学术软件许可（ASL），只限学术、非商业研究；论文里请注明 MACE-OMOL-0 和 OMol25 数据集（Levine et al., 2025）。": [
-  "meta/meta.js"
- ],
- "预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
-  "meta/meta.js"
- ],
- "MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。": [
-  "meta/meta.js"
- ],
- "ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。": [
-  "meta/meta.js"
- ],
- "ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。": [
-  "meta/meta.js"
- ],
- "提交即表示同意：{0}结果按原样提供，不作任何保证。提交的 SMILES 会缓存在站长电脑上以便复用结果，不记录你的其他信息。每天次数：Meta 的 UMA 和 OMol25 模型每位访客共 20 次、Pro 会员 100 次；MACE 系列每位访客 20 次，对所有人相同；ANI-2x 只给 Pro 会员，每天 100 次。": [
-  "meta/meta.js"
- ],
- "正在为一位访客计算": [
-  "meta/meta.js"
- ],
- "空闲": [
-  "meta/meta.js"
- ],
- "{0}：{1}，排队 {2} 个": [
-  "meta/meta.js"
- ],
- "{0} 现在没有在站长电脑上运行，请换一个模型。": [
-  "meta/meta.js"
- ],
- "先输入一个 RDKit 能解析的 SMILES。": [
-  "meta/meta.js"
- ],
- "在线运行最多 30 个重原子。": [
-  "meta/meta.js"
- ],
- "{0} 不认识 {1}。": [
-  "meta/meta.js"
- ],
- "{0} 只算中性闭壳层分子：请把电荷设为 0、自旋多重度设为 1。": [
-  "meta/meta.js"
- ],
- "请先勾选学术用途确认。": [
-  "meta/meta.js"
- ],
- "ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。": [
-  "meta/meta.js"
- ],
- "✓ 在线 · {0} 个模型{1}": [
-  "meta/meta.js"
- ],
- "! 站长的 GPU 现在离线，可以先下载脚本自己运行": [
-  "meta/meta.js"
- ],
- "（测试数据）": [
-  "meta/meta.js"
- ],
- "计算完成 · {0} · {1}{2}": [
-  "meta/meta.js"
- ],
- "导入 AI 实验室 →": [
-  "meta/meta.js"
- ],
- "下载结构": [
-  "meta/meta.js"
- ],
- "中性能量（eV）": [
-  "meta/meta.js"
- ],
- "复制 CSV": [
-  "meta/meta.js"
- ],
- "绝热 IP = E(+1) − E(0)，EA = E(0) − E(−1)，每个电荷态各自优化；{0} 秒。": [
-  "meta/meta.js"
- ],
- "下载结构（.xyz）": [
-  "meta/meta.js"
- ],
- "偶极矩": [
-  "meta/meta.js"
- ],
- "（分量 {0} D），各向同性极化率": [
-  "meta/meta.js"
- ],
- "结构用 {0} 优化（{1} 步），偶极矩和极化率由 MACE-MDP 在这个结构上预测；{2} 秒。": [
-  "meta/meta.js"
- ],
- "下载优化结构（.xyz）": [
-  "meta/meta.js"
- ],
- "能量": [
-  "meta/meta.js"
- ],
- "，{0} 步收敛，{1} 秒。": [
-  "meta/meta.js"
- ],
- "浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入": [
-  "meta/meta.js"
- ],
- "已提交…": [
-  "meta/meta.js"
- ],
- "{0} 正在计算…（一个分子通常几秒到几十秒）": [
-  "meta/meta.js"
- ],
- "排队中，{0} 前面还有 {1} 个任务…": [
-  "meta/meta.js"
- ],
- "等了 15 分钟还没轮到，请稍后再试": [
-  "meta/meta.js"
- ],
- "计算失败": [
   "meta/meta.js"
  ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），脚本照常生成，但没有校验 SMILES。": [
@@ -6078,6 +6041,14 @@
  "D4rev 微调": [
   "meta/meta.js"
  ],
+ "导入 AI 实验室 →": [
+  "meta/meta.js",
+  "models/models.js"
+ ],
+ "复制 CSV": [
+  "meta/meta.js",
+  "models/models.js"
+ ],
  "D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。": [
   "meta/meta.js"
  ],
@@ -6096,6 +6067,10 @@
  "文件：{0}": [
   "meta/meta.js"
  ],
+ "浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入": [
+  "meta/meta.js",
+  "models/models.js"
+ ],
  "模型库最近更新 {0}": [
   "meta/meta.js"
  ],
@@ -6104,6 +6079,789 @@
  ],
  "直接去 GitHub 看 ↗": [
   "meta/meta.js"
+ ],
+ "MACE-OFF23 有机分子力场（在 SPICE 数据上训练，ωB97M-D3BJ），只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子；small 最快，large 最准。": [
+  "models/models.js"
+ ],
+ "MACE-OFF23 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 Kovács et al., J. Am. Chem. Soc. 2025（MACE-OFF）。": [
+  "models/models.js"
+ ],
+ "实测它对不同电荷态的能量差不可靠，所以在线只算中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "在 OMol25（ωB97M-V/def2-TZVPD，1 亿多个 DFT 计算）上训练": [
+  "models/models.js"
+ ],
+ "{0} 采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；论文里请注明 {1}。": [
+  "models/models.js"
+ ],
+ "AllScAIP 和 OMol25 数据集（Levine et al., 2025）": [
+  "models/models.js"
+ ],
+ "eSEN 和 OMol25 数据集（Levine et al., 2025）": [
+  "models/models.js"
+ ],
+ "Meta FAIR Chemistry 的通用原子模型，{0}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。": [
+  "models/models.js"
+ ],
+ "UMA-S 1.2.1 的上一版，{0}，支持电荷和自旋。实测苯、乙醇、水的垂直电离能都接近实验值，可以用来对照 1.2.1 的 IP / EA；比 1.2.1 慢。": [
+  "models/models.js"
+ ],
+ "UMA-S 1.2.1 按 ωB97M-D4rev 色散校正微调的分子专用版本，能量里含 D4 色散。和 1.2.1 一样，水这类极小分子的电离能偏低。": [
+  "models/models.js"
+ ],
+ "OMol25 结构按 ωB97M-D4rev 重算": [
+  "models/models.js"
+ ],
+ "AllScAIP-md 能量守恒型": [
+  "models/models.js"
+ ],
+ "Meta 的 AllScAIP 中等模型，{0}，力由能量求导，支持电荷和自旋；实测苯、乙醇、水的垂直电离能都接近实验值。": [
+  "models/models.js"
+ ],
+ "AllScAIP-md 直接受力型": [
+  "models/models.js"
+ ],
+ "Meta 的 AllScAIP 中等模型，{0}，直接预测力（更快，但能量和力不严格守恒），支持电荷和自旋。": [
+  "models/models.js"
+ ],
+ "较早的 UMA 版本，可作对照。{0}": [
+  "models/models.js"
+ ],
+ "eSEN-sm 能量守恒型": [
+  "models/models.js"
+ ],
+ "Meta 的 eSEN 小模型，{0}，力由能量求导。{1}": [
+  "models/models.js"
+ ],
+ "eSEN-sm 直接受力型": [
+  "models/models.js"
+ ],
+ "Meta 的 eSEN 小模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
+  "models/models.js"
+ ],
+ "eSEN-md 直接受力型": [
+  "models/models.js"
+ ],
+ "Meta 的 eSEN 中等模型，{0}，直接预测力（能量和力不严格守恒）。{1}": [
+  "models/models.js"
+ ],
+ "学术软件许可（ASL）": [
+  "models/models.js"
+ ],
+ "MACE 在 OMol25 上训练的模型，覆盖 83 种元素（H 到 Bi）。实测它对不同电荷态的能量差不可靠（水的垂直电离能只有 0.04 eV），所以在线只算中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "MACE-OMOL-0 采用学术软件许可（ASL），只限学术、非商业研究；论文里请注明 MACE-OMOL-0 和 OMol25 数据集（Levine et al., 2025）。": [
+  "models/models.js"
+ ],
+ "ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。": [
+  "models/models.js"
+ ],
+ "ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。": [
+  "models/models.js"
+ ],
+ "预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测；红外与拉曼光谱用 MACE-OFF23 medium 的振动模式加上 MACE-MDP 的偶极矩和极化率导数。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。": [
+  "models/models.js"
+ ],
+ "① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。": [
+  "models/models.js"
+ ],
+ "② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。": [
+  "models/models.js"
+ ],
+ "③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。": [
+  "models/models.js"
+ ],
+ "④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "温度（K）": [
+  "models/models.js"
+ ],
+ "加上热校正（焓与吉布斯自由能，要先算频率）": [
+  "models/models.js"
+ ],
+ "单点能与受力": [
+  "models/models.js"
+ ],
+ "在给定的结构上算能量和每个原子受的力，不优化。SMILES 输入时结构由 RDKit 生成。": [
+  "models/models.js"
+ ],
+ "找到能量最低的结构（局部极小点）。": [
+  "models/models.js"
+ ],
+ "收敛判据 fmax（eV/Å）": [
+  "models/models.js"
+ ],
+ "振动频率与热化学": [
+  "models/models.js"
+ ],
+ "先优化，再用有限差分求振动频率，按理想气体、刚性转子和谐振子给出零点能、焓、熵和吉布斯自由能。": [
+  "models/models.js"
+ ],
+ "转动对称数 σ（水是 2，苯是 12）": [
+  "models/models.js"
+ ],
+ "构象搜索": [
+  "models/models.js"
+ ],
+ "RDKit 生成多个构象，全部用模型优化，去掉重复的，按相对能量和 Boltzmann 权重排序。": [
+  "models/models.js"
+ ],
+ "生成的构象数": [
+  "models/models.js"
+ ],
+ "保留的能量窗口（kcal/mol）": [
+  "models/models.js"
+ ],
+ "二面角扫描": [
+  "models/models.js"
+ ],
+ "固定一个二面角，每个角度优化其余结构，得到扭转能量曲线（柔性扫描）。": [
+  "models/models.js"
+ ],
+ "二面角的四个原子（按结构图上的编号）": [
+  "models/models.js"
+ ],
+ "起始角（°）": [
+  "models/models.js"
+ ],
+ "终止角（°）": [
+  "models/models.js"
+ ],
+ "扫描点数": [
+  "models/models.js"
+ ],
+ "先优化，再在 Langevin 恒温器下跑一段气相分子动力学，给出势能、动能和温度随时间的变化。": [
+  "models/models.js"
+ ],
+ "步长（fs）": [
+  "models/models.js"
+ ],
+ "步数": [
+  "models/models.js"
+ ],
+ "摩擦系数（1/fs）": [
+  "models/models.js"
+ ],
+ "反应能": [
+  "models/models.js"
+ ],
+ "每个物种分别优化，反应能 ΔE = Σ 产物 − Σ 反应物；加热校正时再给出 ΔG。原子要守恒。": [
+  "models/models.js"
+ ],
+ "反应 SMILES（反应物{0}产物，物种之间用 . 分开，两边一共最多 6 个）": [
+  "models/models.js"
+ ],
+ "电离能与电子亲和能": [
+  "models/models.js"
+ ],
+ "绝热：中性、阳离子、阴离子各自优化；垂直：在中性分子的结构上直接换电荷态。IP = E(+1) − E(0)，EA = E(0) − E(−1)。": [
+  "models/models.js"
+ ],
+ "方式": [
+  "models/models.js"
+ ],
+ "绝热": [
+  "models/models.js"
+ ],
+ "垂直": [
+  "models/models.js"
+ ],
+ "绝热和垂直都算": [
+  "models/models.js"
+ ],
+ "自旋态能隙": [
+  "models/models.js"
+ ],
+ "同一个分子的两个自旋多重度各自优化，比较能量；也给出在低能态结构上的垂直能隙。": [
+  "models/models.js"
+ ],
+ "比较的两个自旋多重度": [
+  "models/models.js"
+ ],
+ "键解离能": [
+  "models/models.js"
+ ],
+ "把一根非环单键均裂成两个自由基，各自优化：BDE = E(碎片 1) + E(碎片 2) − E(分子)。": [
+  "models/models.js"
+ ],
+ "断开的键（只列非环单键）": [
+  "models/models.js"
+ ],
+ "质子亲和能与去质子化能": [
+  "models/models.js"
+ ],
+ "在指定的重原子上加一个质子或去掉一个质子，比较优化后的能量。质子亲和能 = E(B) − E(BH⁺)；去质子化能 = E(A⁻) − E(AH)（不含质子本身的能量）。": [
+  "models/models.js"
+ ],
+ "位点（重原子编号）": [
+  "models/models.js"
+ ],
+ "加质子：质子亲和能": [
+  "models/models.js"
+ ],
+ "去质子：去质子化能": [
+  "models/models.js"
+ ],
+ "偶极矩与极化率": [
+  "models/models.js"
+ ],
+ "偶极矩和完整的极化率张量；可以对多个构象按 Boltzmann 权重平均。": [
+  "models/models.js"
+ ],
+ "按构象的 Boltzmann 权重平均（要用 SMILES）": [
+  "models/models.js"
+ ],
+ "平均用的构象数": [
+  "models/models.js"
+ ],
+ "红外与拉曼光谱": [
+  "models/models.js"
+ ],
+ "MACE-OFF23 medium 优化并求振动模式，MACE-MDP 给出偶极矩和极化率对振动的导数，得到红外强度和拉曼活性。": [
+  "models/models.js"
+ ],
+ "先粘贴或上传一个 XYZ 结构。": [
+  "models/models.js"
+ ],
+ "XYZ 结构最多 12000 个字符。": [
+  "models/models.js"
+ ],
+ "XYZ 结构只能包含普通 ASCII 字符。": [
+  "models/models.js"
+ ],
+ "XYZ 的第一行要是原子数；在线计算最多 120 个原子。": [
+  "models/models.js"
+ ],
+ "XYZ 的原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致。": [
+  "models/models.js"
+ ],
+ "不认识的元素符号：{0}": [
+  "models/models.js"
+ ],
+ "第 {0} 个原子": [
+  "models/models.js"
+ ],
+ "单重态": [
+  "models/models.js"
+ ],
+ "二重态": [
+  "models/models.js"
+ ],
+ "三重态": [
+  "models/models.js"
+ ],
+ "四重态": [
+  "models/models.js"
+ ],
+ "第 {0} 个自旋多重度": [
+  "models/models.js"
+ ],
+ "这个分子没有可以断开的非环单键": [
+  "models/models.js"
+ ],
+ "{0}（{1} 个氢）": [
+  "models/models.js"
+ ],
+ "{0} – {1}，默认 {2}": [
+  "models/models.js"
+ ],
+ "站长的 GPU 现在离线，请稍后再试。": [
+  "models/models.js"
+ ],
+ "多模型对比至少要选两个模型。": [
+  "models/models.js"
+ ],
+ "{0} 现在没有在站长电脑上运行，请换一个模型。": [
+  "models/models.js"
+ ],
+ "{0} 现在不做“{1}”。": [
+  "models/models.js"
+ ],
+ "反应 SMILES 要写成“反应物{0}产物”。": [
+  "models/models.js"
+ ],
+ "反应 SMILES 最多 400 个字符。": [
+  "models/models.js"
+ ],
+ "反应物和产物一共最多 6 个物种（重复的物种按个数算）。": [
+  "models/models.js"
+ ],
+ "RDKit 无法解析反应里的物种 {0}。": [
+  "models/models.js"
+ ],
+ "{0}只算中性闭壳层分子：{1} 带电荷或有未成对电子，请换到窗口 ① 计算。": [
+  "models/models.js"
+ ],
+ "正在载入 RDKit…": [
+  "models/models.js"
+ ],
+ "SMILES 输入最多 30 个重原子；更大的分子请用 XYZ 输入（最多 120 个原子）。": [
+  "models/models.js"
+ ],
+ "“{0}”要从 SMILES 生成结构，请换成 SMILES 输入。": [
+  "models/models.js"
+ ],
+ "{0} 不认识 {1}。": [
+  "models/models.js"
+ ],
+ "{0}只算中性闭壳层分子：这个结构带电荷或有未成对电子，请换到窗口 ① 计算。": [
+  "models/models.js"
+ ],
+ "电荷 {0} 时有 {1} 个电子，和自旋多重度 {2} 不相容。": [
+  "models/models.js"
+ ],
+ "，取整数": [
+  "models/models.js"
+ ],
+ "{0}要在 {1} 到 {2} 之间{3}。": [
+  "models/models.js"
+ ],
+ "二面角扫描要至少 4 个重原子。": [
+  "models/models.js"
+ ],
+ "二面角的四个原子要各不相同。": [
+  "models/models.js"
+ ],
+ "终止角要大于起始角。": [
+  "models/models.js"
+ ],
+ "二面角扫描要至少 4 个原子。": [
+  "models/models.js"
+ ],
+ "请选两个不同的自旋多重度。": [
+  "models/models.js"
+ ],
+ "偶数（2、4）": [
+  "models/models.js"
+ ],
+ "奇数（1、3）": [
+  "models/models.js"
+ ],
+ "{0} 个电子只能取{1}的自旋多重度。": [
+  "models/models.js"
+ ],
+ "这个分子没有可以断开的非环单键。": [
+  "models/models.js"
+ ],
+ "{0} 上没有氢，不能去质子。": [
+  "models/models.js"
+ ],
+ "请先勾选学术用途确认。": [
+  "models/models.js"
+ ],
+ "ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。": [
+  "models/models.js"
+ ],
+ "（Pro 会员）": [
+  "models/models.js"
+ ],
+ "· 形式电荷 {0}{1}": [
+  "models/models.js"
+ ],
+ "{0} · {1} 个重原子 · {2} 个电子{3}": [
+  "models/models.js"
+ ],
+ "XYZ · {0} 个原子 · {1}": [
+  "models/models.js"
+ ],
+ "依次运行 {0} 个模型 · 消耗 {1} 次": [
+  "models/models.js"
+ ],
+ "运行 · 消耗 {0} 次": [
+  "models/models.js"
+ ],
+ "提交即表示同意：": [
+  "models/models.js"
+ ],
+ "结果按原样提供，不作任何保证。": [
+  "models/models.js"
+ ],
+ "免费 · 学术许可": [
+  "models/models.js"
+ ],
+ "Pro 会员": [
+  "models/models.js"
+ ],
+ "直接受力型": [
+  "models/models.js"
+ ],
+ "训练数据：{0} · 许可：{1}": [
+  "models/models.js"
+ ],
+ "! 在线计算服务还没有开通": [
+  "models/models.js"
+ ],
+ "! 站长的 GPU 现在离线，请稍后再来；也可以用": [
+  "models/models.js"
+ ],
+ "Meta 页的脚本": [
+  "models/models.js"
+ ],
+ "在自己的电脑上算": [
+  "models/models.js"
+ ],
+ "正在为一位访客计算": [
+  "models/models.js"
+ ],
+ "空闲": [
+  "models/models.js"
+ ],
+ "{0}：{1}，排队 {2} 个": [
+  "models/models.js"
+ ],
+ "✓ 在线 · {0} 个模型{1}": [
+  "models/models.js"
+ ],
+ "已提交 {0}…": [
+  "models/models.js"
+ ],
+ "（进度 {0}/{1}{2}）": [
+  "models/models.js"
+ ],
+ "{0} 正在计算…{1}": [
+  "models/models.js"
+ ],
+ "排队中，{0} 前面还有 {1} 个任务…": [
+  "models/models.js"
+ ],
+ "等了 20 分钟还没算完，请稍后再试": [
+  "models/models.js"
+ ],
+ "计算失败": [
+  "models/models.js"
+ ],
+ "没有实频振动。": [
+  "models/models.js"
+ ],
+ "波数（cm⁻¹）": [
+  "models/models.js"
+ ],
+ "拉曼活性（相对）": [
+  "models/models.js"
+ ],
+ "红外强度（相对）": [
+  "models/models.js"
+ ],
+ "有 {0} 个虚频（表里是负数）：这个结构不是能量极小点，可能是过渡态或没有优化好，热化学数值不可靠。": [
+  "models/models.js"
+ ],
+ "原子": [
+  "models/models.js"
+ ],
+ "能量": [
+  "models/models.js"
+ ],
+ "，最大受力 {0} eV/Å。": [
+  "models/models.js"
+ ],
+ "每个原子的受力（eV/Å）": [
+  "models/models.js"
+ ],
+ "优化没有在步数上限内收敛，结构可能不是极小点。": [
+  "models/models.js"
+ ],
+ "，{0} 步，最大受力 {1} eV/Å。": [
+  "models/models.js"
+ ],
+ "，线性分子": [
+  "models/models.js"
+ ],
+ "优化后的能量": [
+  "models/models.js"
+ ],
+ "（优化 {0} 步）{1}。": [
+  "models/models.js"
+ ],
+ "振动频率（cm⁻¹，共 {0} 个）：": [
+  "models/models.js"
+ ],
+ "热化学（{0} K）": [
+  "models/models.js"
+ ],
+ "零点能 ZPE": [
+  "models/models.js"
+ ],
+ "焓校正 H_corr": [
+  "models/models.js"
+ ],
+ "吉布斯自由能校正 G_corr": [
+  "models/models.js"
+ ],
+ "焓 H": [
+  "models/models.js"
+ ],
+ "吉布斯自由能 G": [
+  "models/models.js"
+ ],
+ "熵 S": [
+  "models/models.js"
+ ],
+ "生成 {0} 个构象，去重后 {1} 个；Boltzmann 权重按 {2} K 计算。": [
+  "models/models.js"
+ ],
+ "相对能量（kcal/mol）": [
+  "models/models.js"
+ ],
+ "Boltzmann 权重": [
+  "models/models.js"
+ ],
+ "能量（eV）": [
+  "models/models.js"
+ ],
+ "红点是没有收敛的点。": [
+  "models/models.js"
+ ],
+ "二面角 {0}，{1} 个点；最高相对能量": [
+  "models/models.js"
+ ],
+ "二面角（°）": [
+  "models/models.js"
+ ],
+ "平均温度": [
+  "models/models.js"
+ ],
+ "，模拟时长 {0} fs。": [
+  "models/models.js"
+ ],
+ "势能 − 初始势能": [
+  "models/models.js"
+ ],
+ "动能": [
+  "models/models.js"
+ ],
+ "总能量 − 初始势能": [
+  "models/models.js"
+ ],
+ "时间（fs）": [
+  "models/models.js"
+ ],
+ "反应自由能 ΔG({0} K) =": [
+  "models/models.js"
+ ],
+ "（换算为 {0} kcal/mol）。": [
+  "models/models.js"
+ ],
+ "反应能 ΔE =": [
+  "models/models.js"
+ ],
+ "个数": [
+  "models/models.js"
+ ],
+ "自旋": [
+  "models/models.js"
+ ],
+ "产物": [
+  "models/models.js"
+ ],
+ "反应物": [
+  "models/models.js"
+ ],
+ "中性分子能量": [
+  "models/models.js"
+ ],
+ "IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自优化，垂直值都用中性分子的结构。": [
+  "models/models.js"
+ ],
+ "能隙": [
+  "models/models.js"
+ ],
+ "（{0} kcal/mol），垂直能隙 {1} eV；能量较低的是自旋多重度 {2}。": [
+  "models/models.js"
+ ],
+ "298 K 键解离焓：": [
+  "models/models.js"
+ ],
+ "断开的键 {0}：BDE =": [
+  "models/models.js"
+ ],
+ "（换算为 {0} eV）。": [
+  "models/models.js"
+ ],
+ "分子": [
+  "models/models.js"
+ ],
+ "碎片 {0}": [
+  "models/models.js"
+ ],
+ "质子亲和能": [
+  "models/models.js"
+ ],
+ "去质子化能": [
+  "models/models.js"
+ ],
+ "298 K 下的焓变：": [
+  "models/models.js"
+ ],
+ "原子 {0}：{1}": [
+  "models/models.js"
+ ],
+ "碱 B": [
+  "models/models.js"
+ ],
+ "碱 A⁻": [
+  "models/models.js"
+ ],
+ "共轭酸 BH⁺": [
+  "models/models.js"
+ ],
+ "酸 AH": [
+  "models/models.js"
+ ],
+ "（分量 {0} D）": [
+  "models/models.js"
+ ],
+ "，按 {0} 个构象的 Boltzmann 权重平均。": [
+  "models/models.js"
+ ],
+ "偶极矩": [
+  "models/models.js"
+ ],
+ "{0}，各向同性极化率": [
+  "models/models.js"
+ ],
+ "构象": [
+  "models/models.js"
+ ],
+ "权重": [
+  "models/models.js"
+ ],
+ "各构象的权重": [
+  "models/models.js"
+ ],
+ "结构用 {0} 优化，偶极矩和极化率由 MACE-MDP 预测。": [
+  "models/models.js"
+ ],
+ "红外": [
+  "models/models.js"
+ ],
+ "拉曼": [
+  "models/models.js"
+ ],
+ "展宽（半峰宽）": [
+  "models/models.js"
+ ],
+ "红外强度（km/mol）": [
+  "models/models.js"
+ ],
+ "拉曼活性（Å⁴/amu）": [
+  "models/models.js"
+ ],
+ "振动模式（{0} 个）": [
+  "models/models.js"
+ ],
+ "振动模式来自 {0}；谱线按洛伦兹线型展宽，强度归一化到最高峰。": [
+  "models/models.js"
+ ],
+ "最大受力（eV/Å）": [
+  "models/models.js"
+ ],
+ "收敛": [
+  "models/models.js"
+ ],
+ "否": [
+  "models/models.js"
+ ],
+ "是": [
+  "models/models.js"
+ ],
+ "虚频数": [
+  "models/models.js"
+ ],
+ "最低频率（cm⁻¹）": [
+  "models/models.js"
+ ],
+ "零点能（eV）": [
+  "models/models.js"
+ ],
+ "不重复的构象": [
+  "models/models.js"
+ ],
+ "最低能量（eV）": [
+  "models/models.js"
+ ],
+ "最低构象权重": [
+  "models/models.js"
+ ],
+ "最高相对能量（kcal/mol）": [
+  "models/models.js"
+ ],
+ "平均温度（K）": [
+  "models/models.js"
+ ],
+ "绝热 IP（eV）": [
+  "models/models.js"
+ ],
+ "绝热 EA（eV）": [
+  "models/models.js"
+ ],
+ "垂直 IP（eV）": [
+  "models/models.js"
+ ],
+ "垂直 EA（eV）": [
+  "models/models.js"
+ ],
+ "能隙（eV）": [
+  "models/models.js"
+ ],
+ "能隙（kcal/mol）": [
+  "models/models.js"
+ ],
+ "垂直能隙（eV）": [
+  "models/models.js"
+ ],
+ "去质子化能（kcal/mol）": [
+  "models/models.js"
+ ],
+ "质子亲和能（kcal/mol）": [
+  "models/models.js"
+ ],
+ "偶极矩（D）": [
+  "models/models.js"
+ ],
+ "极化率（Å³）": [
+  "models/models.js"
+ ],
+ "振动模式": [
+  "models/models.js"
+ ],
+ "多模型对比 · {0}": [
+  "models/models.js"
+ ],
+ "复制对比 CSV": [
+  "models/models.js"
+ ],
+ "（测试数据）": [
+  "models/models.js"
+ ],
+ "计算完成 · {0} · {1}{2}": [
+  "models/models.js"
+ ],
+ "，多帧": [
+  "models/models.js"
+ ],
+ "下载结构（.xyz{0}）": [
+  "models/models.js"
+ ],
+ "· 直接受力型模型：力不是能量的导数，频率由受力差分得到": [
+  "models/models.js"
+ ],
+ "{0} 秒 · 机器学习势的预测，不是 DFT 计算{1}。": [
+  "models/models.js"
+ ],
+ "完整结果": [
+  "models/models.js"
+ ],
+ "文件太大：在线计算的 XYZ 最多 12000 个字符": [
+  "models/models.js"
+ ],
+ "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。": [
+  "models/models.js"
  ],
  "DeepSeek V4.1 Flash · 快速": [
   "ai/ai.js"
@@ -7555,9 +8313,6 @@
  "每隔": [
   "radar/app/app.js"
  ],
- "每天": [
-  "radar/app/app.js"
- ],
  "下次推荐": [
   "radar/app/app.js"
  ],
@@ -7654,6 +8409,27 @@
  "{0} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。 打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。 {1} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.": [
   "deploy/account-worker.js"
  ],
+ "参数（params）必须是一个对象": [
+  "deploy/account-worker.js"
+ ],
+ "参数 {0} 的值不在允许的范围内": [
+  "deploy/account-worker.js"
+ ],
+ "这项计算需要参数 {0}": [
+  "deploy/account-worker.js"
+ ],
+ "扫描的终止角要大于起始角": [
+  "deploy/account-worker.js"
+ ],
+ "XYZ 结构不合法：最多 12000 个字符，只能包含普通 ASCII 字符": [
+  "deploy/account-worker.js"
+ ],
+ "XYZ 结构的第一行要是原子数，在线计算最多 120 个原子": [
+  "deploy/account-worker.js"
+ ],
+ "XYZ 结构不合法：原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致": [
+  "deploy/account-worker.js"
+ ],
  "UMA 计算服务还没有开通": [
   "deploy/account-worker.js"
  ],
@@ -7666,19 +8442,37 @@
  "请求不是合法的 JSON": [
   "deploy/account-worker.js"
  ],
- "SMILES 含有不支持的字符或太长": [
-  "deploy/account-worker.js"
- ],
  "没有这个在线模型": [
   "deploy/account-worker.js"
  ],
- "只支持电离能/电子亲和能（ipea）、几何优化（opt）和偶极矩/极化率（polar）": [
+ "没有这种计算": [
+  "deploy/account-worker.js"
+ ],
+ "这个模型不做这种计算": [
   "deploy/account-worker.js"
  ],
  "MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”": [
   "deploy/account-worker.js"
  ],
+ "反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "SMILES 和 XYZ 只能给一个": [
+  "deploy/account-worker.js"
+ ],
+ "请给出分子的 SMILES 或 XYZ 结构": [
+  "deploy/account-worker.js"
+ ],
+ "SMILES 含有不支持的字符或太长": [
+  "deploy/account-worker.js"
+ ],
+ "这项计算要从 SMILES 生成结构，不接受 XYZ": [
+  "deploy/account-worker.js"
+ ],
  "电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间": [
+  "deploy/account-worker.js"
+ ],
+ "这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1": [
   "deploy/account-worker.js"
  ],
  "ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费": [
@@ -7697,6 +8491,9 @@
   "deploy/account-worker.js"
  ],
  "{0}（每天 {1} 次{2}），明天再来": [
+  "deploy/account-worker.js"
+ ],
+ "今天还剩 {0} 次，这项计算要用 {1} 次（每天 {2} 次{3}）；换一项花费少的计算，或明天再来": [
   "deploy/account-worker.js"
  ],
  "站长的 GPU 现在离线，请稍后再试": [
@@ -7935,6 +8732,9 @@
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [
+  "tools/build-seo.ts"
+ ],
+ "量子化学模型接口：15 个机器学习势在线计算": [
   "tools/build-seo.ts"
  ],
  "闭环电解液分子发现 · AI 实验室": [

@@ -272,6 +272,7 @@ const mains = [
   await injectHead("radar/index.html", "radar/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "预印本雷达 PreprintRadar", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "radar/", isAccessibleForFree: true, codeRepository: "https://github.com/FelixJiashengFu/PreprintRadar", description: "同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。" }] }),
   await injectHead("qchem/index.html", "qchem/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "量子化学计算 QChem Web", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "qchem/", isAccessibleForFree: true, codeRepository: "https://github.com/FelixJiashengFu/qchem-web", description: "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。" }] }),
   await injectHead("meta/index.html", "meta/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "Meta × 化学：Muse 识图、UMA 脚本与开放数据集", inLanguage: "zh-CN", url: SITE + "meta/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "fairchem", "Meta Muse"] }] }),
+  await injectHead("models/index.html", "models/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "量子化学模型接口：15 个机器学习势在线计算", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "models/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "MACE-OFF23", "ANI-2x", "machine learning interatomic potentials"] }] }),
   await injectHead("lab/index.html", "lab/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "闭环电解液分子发现 · AI 实验室", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "lab/", isAccessibleForFree: true, description: "用 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层分配 DFT 验证。" }] }),
 ];
 
@@ -297,7 +298,7 @@ await write("404.html", `<!doctype html>
 </html>
 `);
 const urls = [
-  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
+  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
   ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];

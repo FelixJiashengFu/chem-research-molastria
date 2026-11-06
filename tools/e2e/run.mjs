@@ -5,6 +5,10 @@
 //   node tools/e2e/run.mjs vip      only checks whose name contains "vip"
 //   node tools/e2e/run.mjs --net    also run a real PreprintRadar search (calls Crossref and DataCite)
 import { spawn } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
@@ -18,11 +22,19 @@ const only = args.find((a) => !a.startsWith('--'));
 const HAN = /[㐀-鿿]/;
 
 // ── local servers ───────────────────────────────────────────────────────
+// Optional: E2E_UMA_PYTHON=<python with the uma-server dependencies> puts the real tools/uma-server/server.py --fake
+// behind the account worker instead of account-local.ts's built-in stand-in (no model weights, toy numbers). A one-time
+// key goes to both sides; secret.local is not read. The models checks then test shapes instead of the stand-in's numbers.
+const UMA_PY = process.env.E2E_UMA_PYTHON, UMA_PORT = 8844, UMA_KEY = randomBytes(24).toString('hex');
+const REAL = !!UMA_PY;
+const V = (standIn, real) => (REAL ? real : standIn);
+const umaTmp = REAL ? mkdtempSync(join(tmpdir(), 'molastria-e2e-')) : '';
 const servers = [
   spawn('deno', ['run', '--allow-net', '--allow-read', 'tools/serve.ts', String(SITE_PORT)], { cwd: ROOT, stdio: 'ignore' }),
-  spawn('deno', ['run', '--allow-net', '--allow-env', '--allow-read', '--allow-write', 'tools/account-local.ts', String(API_PORT), SITE], { cwd: ROOT, stdio: 'ignore', env: { ...process.env, FAKE_AI: '1' } }),
+  spawn('deno', ['run', '--allow-net', '--allow-env', '--allow-read', '--allow-write', 'tools/account-local.ts', String(API_PORT), SITE], { cwd: ROOT, stdio: 'ignore', env: { ...process.env, FAKE_AI: '1', ...(REAL ? { UMA_ORIGIN: `http://127.0.0.1:${UMA_PORT}`, UMA_SERVER_SECRET: UMA_KEY } : {}) } }),
+  ...(REAL ? [spawn(UMA_PY, ['-X', 'utf8', 'tools/uma-server/server.py', '--fake', '--port', String(UMA_PORT), '--cache', join(umaTmp, 'cache.json')], { cwd: ROOT, stdio: 'ignore', env: { ...process.env, MOLASTRIA_UMA_SECRET: UMA_KEY, PYTHONUTF8: '1' } })] : []),
 ];
-const stopServers = () => servers.forEach((s) => s.kill());
+const stopServers = () => { servers.forEach((s) => s.kill()); if (umaTmp) rmSync(umaTmp, { recursive: true, force: true }); };
 process.on('exit', stopServers);
 async function ready(url) {
   for (let i = 0; i < 120; i++) {
@@ -65,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -500,64 +512,252 @@ check('MACE-OFF23: the Meta page writes a mace-torch script for neutral jobs, an
   await finish(p);
 });
 
-check('online UMA: the Meta page shows the owner GPU, queues a job through the account service and imports the result', async () => {
-  const p = await open();
-  await go(p, '/meta/index.html#uma');
-  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
-  await p.waitForFunction(() => /在线 · 15 个模型 · Test GPU/.test(document.getElementById('u-online-status').textContent));
-  assert.equal(await p.inputValue('#u-online-model'), 'uma-s-1p2p1');
-  assert.equal(await p.isDisabled('#u-online-run'), false);
-  // The generator's job carries over when the online model can do it.
-  await p.selectOption('#u-job', 'opt');
-  assert.equal(await p.inputValue('#u-online-job'), 'opt');
-  await p.selectOption('#u-job', 'ipea');
-  assert.equal(await p.inputValue('#u-online-job'), 'ipea');
-  assert.match(await text(p, '#u-online-fine'), /FAIR Chemistry License/);
-  await p.click('#u-online-run');
-  await p.waitForSelector('#u-online-result .mx-res', { timeout: 15000 });
-  assert.match(await text(p, '#u-online-result'), /10\.900/);
-  await p.click('#u-online-result [data-act=lab]');
+// ── models page (public/models/): the online model API v3 through the account service and the fake computer ──
+const MODEL_WINDOWS = {
+  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'] },
+  neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
+  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
+  props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
+};
+/** Opens the models page once the fake computer is online and RDKit has checked the sample SMILES; records each job sent. */
+async function openModels(win = '', { health, ...options } = {}) {
+  const p = await open(options);
+  p.posts = [];
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) p.posts.push(JSON.parse(r.postData() || '{}')); });
+  if (health) await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: health(await res.json()) }); });
+  await go(p, `/models/index.html${win ? `#${win}` : ''}`);
+  await p.waitForFunction((re) => new RegExp(re).test(document.getElementById('m-status').textContent), V('在线 · \\d+ 个模型 · Test GPU', '在线 · \\d+ 个模型'), { timeout: 30000 });
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  return p;
+}
+const runOff = (p) => p.isDisabled('#m-run');
+async function runJob(p, job, setup) {
+  await p.selectOption('#m-job', job);
+  if (setup) await setup();
+  try { await p.waitForFunction(() => !document.getElementById('m-run').disabled, null, { timeout: 5000 }); }
+  catch { throw new Error(`${job}: the run button stays off: ${await text(p, '#m-why')}`); }
+  await p.click('#m-run');
+  await p.waitForSelector('#m-result :is(.md-res, .md-err)', { timeout: 20000 });
+  await p.waitForFunction(() => !document.getElementById('m-progress').textContent, null, { timeout: 20000 });
+  const out = await text(p, '#m-result');
+  assert.ok(!(await p.locator('#m-result .md-err').count()), `${job}: ${out}`);
+  return out;
+}
+
+check('models page: each window lists only its own models and jobs, and the button shows the cost', async () => {
+  const p = await openModels();
+  assert.equal(await p.getAttribute('.cr-links a[data-id=models]', 'aria-current'), 'page');
+  assert.match(await text(p, '.md-disclaim'), /不是 DFT 计算/);
+  for (const [win, want] of Object.entries(MODEL_WINDOWS)) {
+    await p.click(`#m-tabs [data-win=${win}]`);
+    assert.equal(await p.getAttribute(`#m-tabs [data-win=${win}]`, 'aria-selected'), 'true');
+    assert.deepEqual(await p.$$eval('#m-model option', (os) => os.map((o) => o.value)), want.models, `${win} models`);
+    assert.deepEqual(await p.$$eval('#m-job option', (os) => os.map((o) => o.value)), want.jobs, `${win} jobs`);
+    assert.equal(await p.isVisible('#m-cs'), win === 'charged', `charge and spin only in window 1 (${win})`);
+    assert.equal(await p.locator('#m-cards .md-model').count(), want.models.length, `${win} model cards`);
+  }
+  await p.click('#m-tabs [data-win=charged]');
+  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ipea: 1, spin: 2, bde: 2, pa: 2 };
+  for (const [job, n] of Object.entries(costs)) {
+    await p.selectOption('#m-job', job);
+    assert.equal(await text(p, '#m-run'), `运行 · 消耗 ${n} 次`, job);
+  }
+  await p.check('#m-params input[data-k=thermo]');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次', 'thermochemistry costs 5');
+  assert.match(await text(p, '#m-costs'), /构象搜索、二面角扫描、分子动力学/);
+  // Direct-force models say what their forces are.
+  await p.selectOption('#m-model', 'allscaip-md-direct-all-omol');
+  assert.equal(await p.isVisible('#m-direct'), true);
+  await p.selectOption('#m-model', 'uma-s-1p2p1');
+  assert.equal(await p.isVisible('#m-direct'), false);
+  await finish(p);
+});
+
+check('models page: every job runs once and its result is shown', async () => {
+  const p = await openModels();
+  const last = () => p.posts.at(-1);
+  assert.match(await runJob(p, 'sp'), V(/最大受力 0\.0120 eV\/Å/, /最大受力 -?\d+\.\d{4} eV\/Å/));
+  assert.deepEqual(last(), { model: 'uma-s-1p2p1', job: 'sp', smiles: 'O=C1OCC(F)O1', charge: 0, spin: 1 });
+  let r = await runJob(p, 'freq');
+  assert.match(r, V(/有 1 个虚频/, /振动频率（cm⁻¹，共 \d+ 个）/)); assert.match(r, /吉布斯自由能 G/); assert.match(r, V(/-112\.4/, /零点能 ZPE-?\d+\.\d{4}/));
+  assert.deepEqual(last().params, { temperature: 298.15, symmetry: 1 });
+  r = await runJob(p, 'conf');
+  assert.match(r, V(/去重后 3 个/, /去重后 \d+ 个/)); assert.match(r, V(/71\.2%/, /\d+\.\d%/));
+  // Scan: the dihedral defaults to one around a rotatable bond of the numbered structure.
+  await p.fill('#m-smiles', 'CCCO');
+  await p.waitForFunction(() => /C3H8O/.test(document.getElementById('m-check').textContent));
+  r = await runJob(p, 'scan');
+  assert.match(r, /二面角 0-1-2-3，13 个点/);
+  assert.deepEqual(last().params, { atoms: [0, 1, 2, 3], start: -180, end: 180, points: 13 });
+  assert.equal(await p.locator('#m-result svg.md-plot polyline').count(), 1);
+  assert.ok(await p.locator('#m-art svg').count(), 'the numbered 2D structure is drawn');
+  r = await runJob(p, 'md');
+  assert.match(r, V(/平均温度 301\.2 K/, /平均温度 -?\d+\.\d K/));
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), 2, 'energy and temperature curves');
+  r = await runJob(p, 'rxn', () => p.check('#m-params input[data-k=thermo]'));
+  assert.match(r, V(/ΔE = -1\.370 eV/, /ΔE = -?\d+\.\d{3} eV/)); assert.match(r, V(/ΔG\(298\.15 K\) = -1\.050 eV/, /ΔG\(298\.15 K\) = -?\d+\.\d{3} eV/));
+  assert.equal(last().smiles, undefined, 'a reaction sends no structure');
+  assert.equal(last().params.reaction, 'C=C.[H][H]>>CC');
+  r = await runJob(p, 'ipea', () => p.selectOption('#m-params select[data-k=mode]', 'both'));
+  assert.match(r, V(/绝热10\.900-0\.400/, /绝热-?\d+\.\d{3}-?\d+\.\d{3}/)); assert.match(r, V(/垂直11\.320-0\.950/, /垂直-?\d+\.\d{3}-?\d+\.\d{3}/));
+  r = await runJob(p, 'spin');
+  assert.match(r, V(/能隙 1\.020 eV/, /能隙 -?\d+\.\d{3} eV/));
+  assert.deepEqual(last().params.spins, [1, 3]);
+  r = await runJob(p, 'bde');
+  assert.match(r, V(/BDE = 88\.8 kcal\/mol/, /BDE = -?\d+\.\d kcal\/mol/));
+  assert.deepEqual(last().params.bond, [0, 1]);
+  assert.ok((await p.$$eval('#m-params select[data-k=bond] option', (os) => os.map((o) => o.textContent))).includes('O3–H11'), 'X–H bonds use the AddHs numbering');
+  r = await runJob(p, 'pa');
+  assert.match(r, V(/质子亲和能 216\.8 kcal\/mol/, /质子亲和能 -?\d+\.\d kcal\/mol/));
+  assert.deepEqual([last().params.site, last().params.mode], [3, 'protonate']);
+  // Window 4: MACE-MDP.
+  await p.click('#m-tabs [data-win=props]');
+  r = await runJob(p, 'polar', async () => { await p.check('#m-academic'); await p.check('#m-params input[data-k=average]'); assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次'); });
+  assert.match(r, V(/按 2 个构象的 Boltzmann 权重平均/, /按 \d+ 个构象的 Boltzmann 权重平均/)); assert.match(r, V(/4\.81 D/, /偶极矩 -?\d+\.\d{2} D/));
+  assert.equal(last().academic, true);
+  r = await runJob(p, 'ir');
+  assert.ok(V((n) => n === 3, (n) => n > 0)(await p.locator('#m-result line.stick').count()), 'one stick per real mode');
+  await p.locator('#m-result input[type=range]').fill('50');
+  assert.equal(await text(p, '#m-result .md-fwhm'), '50');
+  await p.check('#m-result input[value=raman]');
+  assert.match(await p.getAttribute('#m-result .md-spec svg', 'aria-label'), /拉曼/);
+  await finish(p);
+});
+
+check('models page: MACE academic box, ANI-2x for Pro, ions kept to window 1, XYZ input, parameter limits', async () => {
+  const p = await openModels('organic');
+  await p.selectOption('#m-model', 'mace-off23-small');
+  assert.equal(await p.isVisible('#m-asl'), true);
+  assert.equal(await runOff(p), true);
+  assert.match(await text(p, '#m-why'), /学术用途/);
+  assert.match(await text(p, '#m-fine'), /ASL/);
+  await p.check('#m-academic');
+  assert.equal(await runOff(p), false, await text(p, '#m-why'));
+  await p.selectOption('#m-model', 'ani-2x');
+  assert.match(await text(p, '#m-why'), /Pro/);
+  assert.equal(await runOff(p), true);
+  // A cation is fine in window 1 and refused in window 2.
+  await p.click('#m-tabs [data-win=charged]');
+  await p.fill('#m-smiles', '[NH4+]');
+  await p.waitForFunction(() => /H4N/.test(document.getElementById('m-check').textContent));
+  assert.equal(await p.inputValue('#m-charge'), '1');
+  assert.equal(await runOff(p), false, await text(p, '#m-why'));
+  await p.click('#m-tabs [data-win=neutral]');
+  assert.match(await text(p, '#m-why'), /只算中性闭壳层分子/);
+  assert.equal(await runOff(p), true);
+  // XYZ: conformers need SMILES, a single point does not; no charge or spin is sent outside window 1.
+  await p.check('input[name=m-mode][value=xyz]');
+  await p.click('#m-xyz-sample');
+  await p.waitForFunction(() => /XYZ · 3 个原子 · H2O/.test(document.getElementById('m-check').textContent));
+  await p.selectOption('#m-job', 'conf');
+  assert.match(await text(p, '#m-why'), /要从 SMILES 生成结构/);
+  const r = await runJob(p, 'sp');
+  assert.match(r, V(/能量 -2079\.6200 eV/, /能量 -?\d+\.\d{4} eV/));
+  const sent = p.posts.at(-1);
+  assert.deepEqual([sent.model, sent.job, sent.charge, sent.spin, sent.smiles], ['uma-s-1p1', 'sp', undefined, undefined, undefined]);
+  assert.match(sent.xyz, /^3\nwater\nO 0\.000/);
+  await p.fill('#m-xyz', `121\nbig\n${'C 0 0 0\n'.repeat(121)}`);
+  await p.waitForFunction(() => /最多 120 个原子/.test(document.getElementById('m-check').textContent));
+  assert.equal(await runOff(p), true);
+  await p.check('input[name=m-mode][value=smiles]');
+  // Parameter limits are checked before sending.
+  await p.click('#m-tabs [data-win=charged]');
+  await p.fill('#m-smiles', 'CCO');
+  await p.waitForFunction(() => /C2H6O/.test(document.getElementById('m-check').textContent));
+  await p.selectOption('#m-job', 'opt');
+  await p.fill('#m-params input[data-k=fmax]', '0.5');
+  assert.match(await text(p, '#m-why'), /fmax.*0\.001 到 0\.1/);
+  await p.fill('#m-params input[data-k=fmax]', '0.1');
+  assert.equal(await runOff(p), false, await text(p, '#m-why'));
+  await p.selectOption('#m-job', 'md');
+  await p.fill('#m-params input[data-k=steps]', '2001');
+  assert.match(await text(p, '#m-why'), /步数要在 100 到 2000 之间/);
+  await p.fill('#m-params input[data-k=steps]', '2000');
+  assert.equal(await runOff(p), false);
+  await p.selectOption('#m-job', 'scan');
+  await p.fill('#m-params input[data-k=start]', '90');
+  await p.fill('#m-params input[data-k=end]', '90');
+  assert.match(await text(p, '#m-why'), /终止角要大于起始角|至少 4 个重原子/);
+  // A reaction may have 6 species in all, both sides together (server.py counts the same way).
+  await p.selectOption('#m-job', 'rxn');
+  await p.fill('#m-params input[data-k=reaction]', 'C.C.C.C>>C.C.C.C');
+  assert.match(await text(p, '#m-why'), /一共最多 6 个物种/);
+  await p.fill('#m-params input[data-k=reaction]', 'C.C.C>>C.C.C');
+  assert.equal(await runOff(p), false, await text(p, '#m-why'));
+  await p.selectOption('#m-job', 'opt'); // a reaction hides the structure input
+  // Deprotonation needs a hydrogen on the chosen atom: acetone's oxygen has none.
+  await p.fill('#m-smiles', 'CC(C)=O');
+  await p.waitForFunction(() => /C3H6O/.test(document.getElementById('m-check').textContent));
+  await p.selectOption('#m-job', 'pa');
+  await p.selectOption('#m-params select[data-k=mode]', 'deprotonate');
+  await p.selectOption('#m-params select[data-k=site]', '3');
+  assert.match(await text(p, '#m-why'), /O3 上没有氢，不能去质子/);
+  await p.selectOption('#m-params select[data-k=site]', '0');
+  assert.equal(await runOff(p), false, await text(p, '#m-why'));
+  await finish(p);
+});
+
+check('models page: compare several models in one table, and a model that is off cannot be picked', async () => {
+  const p = await openModels('', { health: (h) => { h.models['uma-s-1p2p1-ft-d4rev'].ready = false; return h; } });
+  assert.equal(await p.$eval('#m-model option[value=uma-s-1p2p1-ft-d4rev]', (o) => o.disabled), true, 'an unloaded model is off');
+  await p.check('#m-compare-on');
+  await p.selectOption('#m-job', 'ipea');
+  assert.equal(await text(p, '#m-run'), '依次运行 2 个模型 · 消耗 2 次');
+  await p.check('#m-compare input[value=uma-s-1p2p1-ft-d4rev]');
+  assert.match(await text(p, '#m-why'), /UMA-S 1\.2\.1 D4rev 现在没有在站长电脑上运行/);
+  assert.equal(await runOff(p), true);
+  await p.uncheck('#m-compare input[value=uma-s-1p2p1-ft-d4rev]');
+  await p.check('#m-compare input[value=allscaip-md-conserving-all-omol]');
+  assert.equal(await text(p, '#m-run'), '依次运行 3 个模型 · 消耗 3 次');
+  await p.click('#m-run');
+  await p.waitForFunction(() => document.querySelectorAll('#m-result .md-cmp tbody tr').length === 3 && !document.getElementById('m-progress').textContent, null, { timeout: 40000 });
+  assert.deepEqual(p.posts.map((b) => b.model), ['uma-s-1p2p1', 'uma-s-1p2', 'allscaip-md-conserving-all-omol'], 'one after another');
+  assert.match(await text(p, '#m-result .md-cmp'), /绝热 IP（eV）/);
+  await finish(p);
+});
+
+check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and progress is shown', async () => {
+  const p = await openModels();
+  await p.selectOption('#m-job', 'ipea');
+  await p.click('#m-run');
+  // The real --fake server finishes these jobs before the first poll, so only the stand-in shows progress.
+  if (!REAL) await p.waitForFunction(() => /进度 1\/3 · test step/.test(document.getElementById('m-progress').textContent), null, { timeout: 10000 });
+  await p.waitForSelector('#m-result [data-act=lab]', { timeout: 20000 });
+  assert.match(await text(p, '#m-result'), V(/10\.900/, /绝热-?\d+\.\d{3}/));
+  await p.click('#m-result [data-act=lab]');
   await p.waitForURL(/lab\/index\.html/);
   await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
   await finish(p);
 });
 
-check('online models: MACE needs the academic box, MACE-MDP gives dipole and polarizability, ANI-2x is for Pro', async () => {
+check('English: the models page has no Chinese left in its windows and a result', async () => {
+  const p = await openModels('', {});
+  await go(p, '/models/index.html?lang=en#charged');
+  await p.waitForFunction(() => /15/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  await runJob(p, 'freq');
+  const left = new Set();
+  for (const win of ['charged', 'neutral', 'organic', 'props']) {
+    await p.click(`#m-tabs [data-win=${win}]`);
+    await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await p.waitForTimeout(400);
+    for (const t of await p.evaluate(() => {
+      const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,code,textarea,[translate=no]')) out.push(n.nodeValue.trim());
+      return out;
+    })) left.add(t);
+  }
+  assert.deepEqual([...left], []);
+  await finish(p);
+});
+
+check('Meta page: the online panel moved to the models page', async () => {
   const p = await open();
   await go(p, '/meta/index.html#uma');
-  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
-  await p.waitForFunction(() => /在线 · 15 个模型/.test(document.getElementById('u-online-status').textContent));
-  await p.selectOption('#u-online-model', 'mace-mdp');
-  assert.equal(await p.inputValue('#u-online-job'), 'polar', 'the only job MACE-MDP has');
-  assert.equal(await p.$eval('#u-online-job option[value=ipea]', (o) => o.disabled), true, 'IP / EA is off for MACE-MDP');
-  assert.equal(await p.isVisible('#u-online-asl'), true, 'the academic-use box shows');
-  assert.equal(await p.isDisabled('#u-online-run'), true, 'off until the box is ticked');
-  assert.match(await text(p, '#u-online-why'), /学术用途/);
-  assert.match(await text(p, '#u-online-fine'), /ASL/);
-  await p.check('#u-online-academic');
-  assert.equal(await p.isDisabled('#u-online-run'), false, 'on once the box is ticked: ' + await text(p, '#u-online-why'));
-  await p.click('#u-online-run');
-  await p.waitForSelector('#u-online-result .mx-res', { timeout: 15000 });
-  const res = await text(p, '#u-online-result');
-  assert.match(res, /4.81 D/);
-  assert.match(res, /6.78 Å³/);
-  assert.match(res, /MACE-OFF23 medium/);
-  assert.equal(await p.locator('#u-online-result [data-act=lab]').count(), 0, 'only UMA IP / EA goes to the AI Lab');
-  // Neutral closed-shell only for MACE-OFF23; a cation is refused before it is sent.
-  await p.selectOption('#u-online-model', 'mace-off23-small');
-  await p.fill('#u-charge', '1');
-  await p.waitForFunction(() => /中性闭壳层/.test(document.getElementById('u-online-why').textContent));
-  await p.fill('#u-charge', '0');
-  // OMol25 models: AllScAIP gives IP / EA, the eSEN models only neutral optimisations.
-  await p.selectOption('#u-online-model', 'allscaip-md-conserving-all-omol');
-  assert.equal(await p.$eval('#u-online-job option[value=ipea]', (o) => o.disabled), false, 'AllScAIP has IP / EA');
-  assert.equal(await p.isVisible('#u-online-asl'), false, 'no academic box for FAIR models');
-  await p.selectOption('#u-online-model', 'esen-md-direct-all-omol');
-  assert.equal(await p.inputValue('#u-online-job'), 'opt');
-  assert.match(await text(p, '#u-online-about'), /中性闭壳层/);
-  await p.selectOption('#u-online-model', 'ani-2x');
-  await p.waitForFunction(() => /Pro/.test(document.getElementById('u-online-why').textContent));
-  assert.equal(await p.isDisabled('#u-online-run'), true);
+  assert.equal(await p.locator('#u-online').count(), 0, 'the old online panel is gone');
+  assert.equal(await p.locator('#u-code').count(), 1, 'the script generator stays');
+  await p.click('#u-models a[href$="models/index.html"]');
+  await p.waitForURL(/models\/index\.html/);
+  await p.waitForSelector('#m-tabs');
   await finish(p);
 });
 
@@ -699,7 +899,7 @@ check('English: account page and radar are translated, paper-free UI has no Chin
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html']) {
+  for (const path of ['/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
@@ -711,6 +911,11 @@ check('phone width: no sideways scrolling', async () => {
 let failed = 0;
 try {
   await Promise.all([ready(`${SITE}/index.html`), ready(`${API}/`)]);
+  for (let i = 0; REAL && i < 120; i++) { // server.py --fake takes a few seconds to import RDKit and ASE
+    if ((await (await fetch(`${API}/uma/health`, { headers: { Origin: SITE } })).json().catch(() => ({}))).online) break;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  if (REAL) console.log(`models checks run against tools/uma-server/server.py --fake (${UMA_PY})`);
   browser = await chromium.launch({ channel: 'chrome', headless: true });
   for (const [name, fn] of checks) {
     if (only && !name.toLowerCase().includes(only.toLowerCase())) continue;

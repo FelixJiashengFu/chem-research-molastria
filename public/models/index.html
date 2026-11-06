@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 量子化学模型接口：用站长 GPU 上的 15 个机器学习势（Meta UMA、OMol25 系列、MACE、ANI-2x）在线做单点、优化、频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、IP/EA、自旋态能隙、键解离能、质子亲和能、极化率和红外/拉曼光谱。">
+  <meta name="theme-color" content="#173f34">
+  <title>量子化学模型接口 · 15 个机器学习势在线计算 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="models.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="../ai/config.js" defer></script>
+  <script src="../ai/ai.js" defer></script>
+  <script src="../lab/chem.js" defer></script>
+  <script src="models.js" defer></script>
+</head>
+<body data-section="models">
+<a class="skip" href="#work">跳到计算</a>
+<main>
+  <section class="md-hero">
+    <p class="eyebrow">MOLASTRIA · ONLINE MODEL API</p>
+    <h1>量子化学模型接口</h1>
+    <p class="lead">站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x。这里按模型类别分成四个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。</p>
+    <p class="md-disclaim"><b>注意：</b>结果是机器学习势的预测，不是 DFT 计算。模型的误差随体系变化，重要的结论请用 DFT 或实验核对。</p>
+    <div class="md-status" id="m-status" role="status"><span class="muted">正在查询在线状态…</span></div>
+  </section>
+
+  <section id="work" class="md-work" aria-label="在线计算">
+    <div class="md-tabs" role="tablist" id="m-tabs" aria-label="模型类别">
+      <button type="button" role="tab" data-win="charged" aria-selected="true" aria-controls="m-panel"><b>①</b><span>带电荷与自旋的分子模型</span><small>UMA · AllScAIP · 11 种计算</small></button>
+      <button type="button" role="tab" data-win="neutral" aria-selected="false" aria-controls="m-panel"><b>②</b><span>中性分子通用模型</span><small>83 种元素 · 7 种计算</small></button>
+      <button type="button" role="tab" data-win="organic" aria-selected="false" aria-controls="m-panel"><b>③</b><span>有机分子力场</span><small>MACE-OFF23 · ANI-2x · 7 种计算</small></button>
+      <button type="button" role="tab" data-win="props" aria-selected="false" aria-controls="m-panel"><b>④</b><span>分子性质模型</span><small>MACE-MDP · 极化率与光谱</small></button>
+    </div>
+    <div class="md-panel" id="m-panel" role="tabpanel">
+      <p class="md-win-about" id="m-win-about"></p>
+      <div class="md-grid">
+        <div class="md-card">
+          <h2 class="md-step">1 · 模型</h2>
+          <label class="md-wide">模型<select id="m-model"></select></label>
+          <p class="muted small" id="m-about"></p>
+          <p class="md-note" id="m-direct" hidden>直接受力型模型：它直接预测原子受力，力不是能量的导数，能量和力不严格守恒；频率由受力的有限差分得到，和能量守恒型模型相比误差更大。</p>
+          <label class="md-checkbox"><input type="checkbox" id="m-compare-on"> 多模型对比：选几个模型依次跑同一个计算，结果放进一张表</label>
+          <div class="md-compare" id="m-compare" hidden></div>
+
+          <h2 class="md-step">2 · 结构</h2>
+          <div id="m-struct">
+            <div class="md-seg" role="radiogroup" aria-label="结构输入方式">
+              <label><input type="radio" name="m-mode" value="smiles" checked> SMILES</label>
+              <label><input type="radio" name="m-mode" value="xyz"> XYZ 坐标</label>
+            </div>
+            <div id="m-smiles-box">
+              <label class="md-wide">SMILES<input type="text" id="m-smiles" value="O=C1OCC(F)O1" spellcheck="false" autocomplete="off"></label>
+              <div class="md-art" id="m-art" aria-label="带原子编号的二维结构"></div>
+              <p class="muted small">图中的数字是原子编号（从 0 开始，按 SMILES 里的顺序）；加氢后氢原子排在重原子后面。扫描、键解离能和质子亲和能按这些编号选原子或键。</p>
+            </div>
+            <div id="m-xyz-box" hidden>
+              <label class="md-wide">XYZ 结构（标准格式：原子数、注释行、每行“元素 x y z”，单位 Å，最多 120 个原子）<textarea id="m-xyz" rows="8" spellcheck="false" placeholder="3&#10;water&#10;O 0.000 0.000 0.000&#10;H 0.000 0.000 0.960&#10;H 0.930 0.000 -0.240"></textarea></label>
+              <div class="md-row"><label class="button small md-file">上传 .xyz 文件<input type="file" id="m-xyz-file" accept=".xyz,text/plain" hidden></label><button type="button" class="text-button" id="m-xyz-sample">用示例（水）</button></div>
+            </div>
+            <p class="md-check" id="m-check" role="status"></p>
+          </div>
+          <p class="muted small" id="m-rxn-note" hidden>反应计算的物种写在右边的反应 SMILES 里，不用另给结构。</p>
+          <div class="md-row" id="m-cs">
+            <label>电荷<input type="number" id="m-charge" value="0" step="1" min="-2" max="2"></label>
+            <label>自旋多重度<input type="number" id="m-spin" value="1" step="1" min="1" max="4"></label>
+            <span class="muted small">电荷 −2 到 2，自旋多重度 2S+1 在 1 到 4 之间</span>
+          </div>
+        </div>
+
+        <div class="md-card">
+          <h2 class="md-step">3 · 计算</h2>
+          <label class="md-wide">计算<select id="m-job"></select></label>
+          <p class="muted small" id="m-job-about"></p>
+          <div class="md-params" id="m-params"></div>
+          <label class="md-checkbox" id="m-asl" hidden><input type="checkbox" id="m-academic"> 我确认只用于学术、非商业研究（MACE 模型采用学术软件许可 ASL）</label>
+          <div class="md-row md-run-row"><button class="button primary" type="button" id="m-run" disabled>运行</button><span class="muted small" id="m-why"></span></div>
+          <div class="md-progress" id="m-progress" role="status" aria-live="polite"></div>
+          <p class="md-fine" id="m-fine"></p>
+        </div>
+      </div>
+      <div id="m-result" class="md-result" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="md-models" aria-labelledby="models-h">
+    <h2 id="models-h">这个窗口的模型</h2>
+    <p class="muted small">训练数据的 DFT 水平决定了模型在学什么：同一个分子，不同模型的绝对能量不能直接比较，比较相对能量和趋势。</p>
+    <div class="md-cards" id="m-cards"></div>
+  </section>
+
+  <section class="md-quota" aria-labelledby="quota-h">
+    <h2 id="quota-h">每日额度与计次</h2>
+    <p class="muted">每项计算按花费扣次数；被拒绝的计算、站长电脑离线时的计算都不扣。次数每 24 小时重置。</p>
+    <div class="md-quota-grid">
+      <div class="md-table"><table>
+        <thead><tr><th>模型</th><th>每天</th></tr></thead>
+        <tbody>
+          <tr><td>Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）</td><td>每位访客共 20 次，Pro 会员 100 次</td></tr>
+          <tr><td>MACE 系列（学术许可）</td><td>每位访客 20 次，对所有人相同</td></tr>
+          <tr><td>ANI-2x</td><td>只给 Pro 会员，每天 100 次</td></tr>
+        </tbody>
+      </table></div>
+      <div class="md-table"><table>
+        <thead><tr><th>计算</th><th>消耗</th></tr></thead>
+        <tbody id="m-costs">
+          <tr><td>单点、几何优化、电离能与电子亲和能、偶极矩与极化率</td><td>1 次</td></tr>
+          <tr><td>自旋态能隙、键解离能、质子亲和能</td><td>2 次（加热校正 5 次）</td></tr>
+          <tr><td>振动频率与热化学、红外与拉曼光谱、反应能</td><td>3 次（反应能加热校正 5 次）</td></tr>
+          <tr><td>构象搜索、二面角扫描、分子动力学、构象平均的极化率</td><td>5 次</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <p class="muted small">在线计算经 MolAstria 账号服务转发，按照模型许可要求遵守的出口管制规定，部分地区不能使用。提交的结构会缓存在站长电脑上以便复用结果，不记录你的其他信息。想在自己的电脑上算，用 <a href="../meta/index.html#uma">Meta 页的脚本生成器</a>，也可以用 <a href="../download/index.html">MolAstria 桌面版</a>。</p>
+  </section>
+
+  <footer class="md-foot">
+    <strong>MolAstria · 量子化学模型接口</strong>
+    <p>结果按原样提供，不作任何保证。模型名称归各自的作者所有；MolAstria 与 Meta 没有隶属关系。</p>
+  </footer>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -2,8 +2,8 @@
 
 Runs on the owner's computer in the UMA environment. Cloudflare Tunnel connects it to the account Worker
 (deploy/account-worker.js, routes /uma/*), which checks the calling site, limits jobs per visitor, decides who may
-use which model (ANI-2x is for Pro members, the rest is free), blocks embargoed regions and adds the shared secret;
-this service accepts nothing without that secret and listens on 127.0.0.1 only.
+use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, blocks embargoed regions and adds the
+shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
     python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
 
@@ -11,21 +11,24 @@ Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and A
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
 MACE-OMOL-0 and MACE-MDP run in mace_worker.py under the MACE environment's Python (--mace-python), because
 mace-torch and fairchem need different e3nn versions. A model whose package or environment is missing is simply
-reported as not ready.
+reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
+calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
 Three lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
 others are kept), ANI-2x, and the MACE models (one GPU process, taking turns). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
-Finished molecules are cached by canonical SMILES and answered at once.
+Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
 
 The secret is read from tools/uma-server/secret.local (written by new-secret.mjs, kept out of git) or from the
-environment variable MOLASTRIA_UMA_SECRET.
+environment variable MOLASTRIA_UMA_SECRET (with --fake the environment variable comes first, for tests).
 
-API (JSON; every request carries the header X-MolAstria-Key):
-    GET  /health      {ok, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
-    POST /jobs        {smiles, model?, job: "ipea" | "opt" | "polar", charge?, spin?, who?}  ->  {id, status, position} or a cached result
-    GET  /jobs/<id>   {id, status: queued | running | done | error, position, result?, error?}
+API v3 (JSON; every request carries the header X-MolAstria-Key):
+    GET  /health      {ok, api: 3, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
+    POST /jobs        {model, job, smiles? | xyz?, charge?, spin?, params?, who?}  ->  {id, status, position} or a cached result
+                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir. The old form {smiles, model?, job:
+                      ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
+    GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
 Same definitions as the desktop runner and the Meta page scripts: RDKit ETKDG (seed 42) + MMFF, then the model,
 LBFGS to fmax 0.02 eV/A; adiabatic IP = E(+1) - E(0) and EA = E(0) - E(-1) in eV, each charge state relaxed.
@@ -33,9 +36,10 @@ LBFGS to fmax 0.02 eV/A; adiabatic IP = E(+1) - E(0) and EA = E(0) - E(-1) in eV
 """
 import argparse
 import collections
+import hashlib
 import hmac
-import io
 import json
+import math
 import os
 import queue as queue_mod
 import re
@@ -46,10 +50,26 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import numpy as np
+
+import chemjobs as cj
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 UMA = "uma-s-1p2p1"
 OFF_ELEMENTS = ("H", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I")
-# id -> name, lane (which worker computes it), jobs, whether charged / open-shell input is allowed, elements (None: any).
+OMOL_ELEMENTS = tuple(cj.chemical_symbols[1:84])  # H to Bi, the elements of OMol25
+# Jobs by kind of model: A takes charges and spin states, B and C neutral closed-shell molecules only, D is MACE-MDP.
+A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa")
+B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn")
+D_JOBS = ("polar", "ir")
+JOBS = A_JOBS + D_JOBS
+SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
+INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
+TIME_LIMITS = {"sp": 120, "opt": 120}  # seconds; every other job 600
+DEFAULT_LIMIT = 600
+
+
+# id -> name, lane (which worker computes it), jobs, whether charged / open-shell input is allowed, elements, direct.
 # Which models offer IP / EA was decided by vertical IPs at the ETKDG geometry, measured on 2026-11-05 (benzene /
 # ethanol / water; experiment about 9.2 / 10.5 / 12.6 eV). Models whose charge-state energies came out unreliable
 # take neutral closed-shell molecules only, so a "cation" never silently returns a neutral answer:
@@ -57,9 +77,14 @@ OFF_ELEMENTS = ("H", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I")
 #   UMA-S 1.2.1 9.28 / 10.56 / 6.41 and its D4rev fine-tune 9.38 / 10.66 / 6.11 (water too low; offered, with a note);
 #   UMA-S 1.1 9.26 / 5.11 / 5.89, eSEN-sm conserving 9.21 / 4.84 / 0.03, eSEN direct models about 0, MACE-OMOL-0
 #   9.11 / 5.02 / 0.04: neutral only. UMA-M 1.1 (an 11 GB checkpoint) does not fit this computer (15 GB RAM, 8 GB GPU).
-def _fair(name, ipea):
-    jobs = ("ipea", "opt") if ipea else ("opt",)
-    return {"name": name, "lane": "fair", "jobs": jobs, "charged": ipea, "elements": None}
+# "direct" models predict forces directly instead of as the energy gradient; their results say so.
+def _fair(name, charged, direct=False):
+    return {"name": name, "lane": "fair", "jobs": A_JOBS if charged else B_JOBS, "charged": charged,
+            "elements": OMOL_ELEMENTS, "direct": direct}
+
+
+def _mace(name, jobs, elements):
+    return {"name": name, "lane": "mace", "jobs": jobs, "charged": False, "elements": elements, "direct": False}
 
 
 MODELS = {
@@ -68,25 +93,27 @@ MODELS = {
     "uma-s-1p2p1-ft-d4rev": _fair("UMA-S 1.2.1 D4rev", True),
     "uma-s-1p1": _fair("UMA-S 1.1", False),
     "allscaip-md-conserving-all-omol": _fair("AllScAIP-md conserving (OMol25)", True),
-    "allscaip-md-direct-all-omol": _fair("AllScAIP-md direct (OMol25)", True),
+    "allscaip-md-direct-all-omol": _fair("AllScAIP-md direct (OMol25)", True, direct=True),
     "esen-sm-conserving-all-omol": _fair("eSEN-sm conserving (OMol25)", False),
-    "esen-sm-direct-all-omol": _fair("eSEN-sm direct (OMol25)", False),
-    "esen-md-direct-all-omol": _fair("eSEN-md direct (OMol25)", False),
-    "ani-2x": {"name": "ANI-2x", "lane": "ani", "jobs": ("opt",), "charged": False,
-               "elements": ("H", "C", "N", "O", "F", "S", "Cl")},
-    "mace-off23-small": {"name": "MACE-OFF23 small", "lane": "mace", "jobs": ("opt",), "charged": False, "elements": OFF_ELEMENTS},
-    "mace-off23-medium": {"name": "MACE-OFF23 medium", "lane": "mace", "jobs": ("opt",), "charged": False, "elements": OFF_ELEMENTS},
-    "mace-off23-large": {"name": "MACE-OFF23 large", "lane": "mace", "jobs": ("opt",), "charged": False, "elements": OFF_ELEMENTS},
-    "mace-omol-0": {"name": "MACE-OMOL-0", "lane": "mace", "jobs": ("opt",), "charged": False, "elements": None},  # 83 elements, H to Bi
-    "mace-mdp": {"name": "MACE-MDP", "lane": "mace", "jobs": ("polar",), "charged": False, "elements": OFF_ELEMENTS},
+    "esen-sm-direct-all-omol": _fair("eSEN-sm direct (OMol25)", False, direct=True),
+    "esen-md-direct-all-omol": _fair("eSEN-md direct (OMol25)", False, direct=True),
+    "ani-2x": {"name": "ANI-2x", "lane": "ani", "jobs": B_JOBS, "charged": False,
+               "elements": ("H", "C", "N", "O", "F", "S", "Cl"), "direct": False},
+    "mace-off23-small": _mace("MACE-OFF23 small", B_JOBS, OFF_ELEMENTS),
+    "mace-off23-medium": _mace("MACE-OFF23 medium", B_JOBS, OFF_ELEMENTS),
+    "mace-off23-large": _mace("MACE-OFF23 large", B_JOBS, OFF_ELEMENTS),
+    "mace-omol-0": _mace("MACE-OMOL-0", B_JOBS, OMOL_ELEMENTS),  # 83 elements, H to Bi
+    "mace-mdp": _mace("MACE-MDP", D_JOBS, OFF_ELEMENTS),
 }
-JOBS = ("ipea", "opt", "polar")
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
-MAX_HEAVY, MAX_ATOMS, MAX_QUEUE, MAX_STEPS = 30, 120, 25, 400
+MAX_HEAVY, MAX_ATOMS, MAX_QUEUE = 30, 120, 25
+MAX_BODY = 32768  # bytes; an XYZ of 120 atoms fits easily
 MACE_TIMEOUT = 900  # seconds one MACE call may take before its process is restarted
-E_A_TO_DEBYE = 4.803204  # 1 e*Angstrom in debye
-POL_TO_A3 = 14.399645  # 1 e*Angstrom^2/V as a polarizability volume, in Angstrom^3 (e^2 / 4 pi eps0 in eV*Angstrom)
+
+
+class BadRequest(ValueError):
+    pass
 
 
 def uma_settings():
@@ -99,24 +126,101 @@ def uma_settings():
         return "batch"
 
 
-def read_secret():
+def read_secret(prefer_env=False):
+    env = os.environ.get("MOLASTRIA_UMA_SECRET", "").strip()
+    if prefer_env and env:
+        return env
     path = os.path.join(HERE, "secret.local")
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             value = f.read().strip()
         if value:
             return value
-    return os.environ.get("MOLASTRIA_UMA_SECRET", "").strip()
+    return env
 
 
-def lbfgs(atoms):
-    from ase.optimize import LBFGS
+# ---- params --------------------------------------------------------------------------------------------------------
+def _number(p, key, lo, hi, default, integer=False):
+    v = p.get(key, default)
+    ok = isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and lo <= v <= hi
+    if not ok or (integer and v != int(v)):
+        raise BadRequest(f"params.{key} must be {'an integer' if integer else 'a number'} from {lo:g} to {hi:g}")
+    return int(v) if integer else float(v)
 
-    opt = LBFGS(atoms, logfile=None)
-    opt.run(fmax=0.02, steps=MAX_STEPS)
-    return atoms.get_positions().tolist(), float(atoms.get_potential_energy()), int(opt.nsteps)
+
+def _flag(p, key, default=False):
+    v = p.get(key, default)
+    if not isinstance(v, bool):
+        raise BadRequest(f"params.{key} must be true or false")
+    return v
 
 
+def _choice(p, key, options, default):
+    v = p.get(key, default)
+    if v not in options:
+        raise BadRequest(f"params.{key} must be one of: {', '.join(options)}")
+    return v
+
+
+def _indices(p, key, length):
+    v = p.get(key)
+    if not (isinstance(v, list) and len(v) == length and
+            all(isinstance(x, int) and not isinstance(x, bool) and x >= 0 for x in v) and len(set(v)) == length):
+        raise BadRequest(f"params.{key} must be {length} different non-negative integers")
+    return [int(x) for x in v]
+
+
+def job_params(job, raw):
+    """The request's params for one job, checked against the allowed ranges, with defaults filled in. Unknown keys
+    are ignored. Checks that need the molecule (atom indices, spin parity) come later."""
+    if not isinstance(raw, dict):
+        raise BadRequest("params must be an object")
+    temperature = lambda: _number(raw, "temperature", 10, 2000, 298.15)  # noqa: E731
+    if job == "opt":
+        return {"fmax": _number(raw, "fmax", 0.001, 0.1, 0.02)}
+    if job == "freq":
+        return {"temperature": temperature(), "symmetry": _number(raw, "symmetry", 1, 24, 1, True)}
+    if job == "conf":
+        return {"n": _number(raw, "n", 2, 30, 10, True), "temperature": temperature(),
+                "window_kcal": _number(raw, "window_kcal", 1, 30, 10)}
+    if job == "scan":
+        out = {"atoms": _indices(raw, "atoms", 4), "start": _number(raw, "start", -360, 360, -180),
+               "end": _number(raw, "end", -360, 360, 180), "points": _number(raw, "points", 3, 24, 13, True)}
+        if out["end"] <= out["start"]:
+            raise BadRequest("params.end must be greater than params.start")
+        return out
+    if job == "md":
+        return {"temperature": _number(raw, "temperature", 10, 1500, 300), "timestep_fs": _number(raw, "timestep_fs", 0.1, 2.0, 0.5),
+                "steps": _number(raw, "steps", 100, 2000, 1000, True), "friction": _number(raw, "friction", 0.001, 0.1, 0.01)}
+    if job == "rxn":
+        reaction = raw.get("reaction")
+        if not isinstance(reaction, str) or not reaction.strip() or len(reaction) > 400:
+            raise BadRequest("params.reaction must be a reaction SMILES (A.B>>C.D) of at most 400 characters")
+        return {"reaction": reaction.strip(), "thermo": _flag(raw, "thermo"), "temperature": temperature()}
+    if job == "ipea":
+        return {"mode": _choice(raw, "mode", ("vertical", "adiabatic", "both"), "adiabatic")}
+    if job == "spin":
+        if "spins" not in raw:
+            return {"spins": None}  # the two lowest multiplicities that fit the electron count, filled in later
+        v = raw["spins"]
+        if not (isinstance(v, list) and len(v) == 2 and all(isinstance(x, int) and not isinstance(x, bool) and 1 <= x <= 4 for x in v)
+                and v[0] != v[1]):
+            raise BadRequest("params.spins must be two different multiplicities from 1 to 4")
+        return {"spins": [int(x) for x in v]}
+    if job == "bde":
+        return {"bond": _indices(raw, "bond", 2), "thermo": _flag(raw, "thermo"), "temperature": temperature()}
+    if job == "pa":
+        site = raw.get("site")
+        if not (isinstance(site, int) and not isinstance(site, bool) and site >= 0):
+            raise BadRequest("params.site must be a non-negative integer (a heavy-atom index)")
+        return {"site": site, "mode": _choice(raw, "mode", ("protonate", "deprotonate"), "protonate"),
+                "thermo": _flag(raw, "thermo"), "temperature": temperature()}
+    if job == "polar":
+        return {"average": _flag(raw, "average"), "n": _number(raw, "n", 2, 20, 8, True)}
+    return {}  # sp, ir
+
+
+# ---- the backends: each turns a model into ef(symbols, positions, charge, spin) -> (energy, forces) -----------------
 class FairchemBackend:
     """The fairchem checkpoints (UMA, eSEN, AllScAIP). UMA-S 1.2.1 stays loaded; the others are loaded when asked
     for and the least recently used one is dropped, so at most KEEP of them share the 8 GB GPU with it."""
@@ -144,14 +248,20 @@ class FairchemBackend:
         print(f"  loaded {model} in {time.time() - t:.1f} s", flush=True)
         return self.units[model]
 
-    def relax(self, model, symbols, positions, q, s):
+    def ef(self, model):
         from ase import Atoms
+        from ase.calculators.calculator import all_changes
         from fairchem.core import FAIRChemCalculator
 
-        atoms = Atoms(symbols, positions=positions)
-        atoms.info.update({"charge": q, "spin": s})
-        atoms.calc = FAIRChemCalculator(self.unit(model), task_name="omol")
-        return lbfgs(atoms)
+        calc = FAIRChemCalculator(self.unit(model), task_name="omol")
+
+        def ef(symbols, positions, q, s):
+            atoms = Atoms(symbols, positions=positions)
+            atoms.info.update({"charge": q, "spin": s})
+            calc.calculate(atoms, ["energy", "forces"], all_changes)
+            return calc.results["energy"], calc.results["forces"]
+
+        return ef
 
 
 class AniBackend:
@@ -160,12 +270,18 @@ class AniBackend:
 
         self.model = torchani.models.ANI2x(periodic_table_index=True).to(device)
 
-    def relax(self, model, symbols, positions, q, s):
+    def ef(self, model):
         from ase import Atoms
+        from ase.calculators.calculator import all_changes
 
-        atoms = Atoms(symbols, positions=positions)
-        atoms.calc = self.model.ase()
-        return lbfgs(atoms)
+        calc = self.model.ase()
+
+        def ef(symbols, positions, q, s):  # neutral closed-shell only, checked on submission
+            atoms = Atoms(symbols, positions=positions)
+            calc.calculate(atoms, ["energy", "forces"], all_changes)
+            return calc.results["energy"], calc.results["forces"]
+
+        return ef
 
 
 class MaceBackend:
@@ -209,12 +325,19 @@ class MaceBackend:
             raise RuntimeError(reply.get("error") or "MACE failed")
         return reply
 
-    def relax(self, model, symbols, positions, q, s):
-        r = self.call({"op": "relax", "model": model, "symbols": symbols, "positions": positions, "charge": q, "spin": s})
-        return r["positions"], float(r["energy_ev"]), int(r["steps"])
+    def ef(self, model):
+        def ef(symbols, positions, q, s):
+            r = self.call({"op": "calc", "model": model, "symbols": list(symbols),
+                           "positions": [[float(x) for x in row] for row in positions], "charge": q, "spin": s})
+            return float(r["energy_ev"]), r["forces"]
 
-    def polar(self, symbols, positions):
-        return self.call({"op": "polar", "model": "mace-mdp", "symbols": symbols, "positions": positions})
+        return ef
+
+    def dp(self, symbols, positions):
+        """MACE-MDP dipole in e*A and polarizability converted from e*A^2/V to a volume in A^3."""
+        r = self.call({"op": "polar", "model": "mace-mdp", "symbols": list(symbols),
+                       "positions": [[float(x) for x in row] for row in positions]})
+        return np.array(r["dipole"], float), np.array(r["polarizability"], float) * cj.POL_TO_A3
 
 
 class Service:
@@ -240,7 +363,7 @@ class Service:
 
     # ---- loading --------------------------------------------------------------------------------------------
     def load(self):
-        if self.fake:  # for tests: no models, made-up numbers marked as such
+        if self.fake:  # for tests: no models; a toy calculator, numbers marked as made up
             self.device = "fake"
             self.backends = {lane: None for lane in self.queues}
         else:
@@ -269,6 +392,15 @@ class Service:
     def ready(self, model):
         return MODELS[model]["lane"] in self.backends
 
+    def calculator(self, model):
+        """The model as one ASE calculator."""
+        if self.fake:
+            return cj.EFCalculator(cj.toy_ef)
+        return cj.EFCalculator(self.backends[MODELS[model]["lane"]].ef(model))
+
+    def dp(self):
+        return cj.toy_dp if self.fake else self.backends["mace"].dp
+
     # ---- the workers, one per lane ----------------------------------------------------------------------------
     def work(self, lane):
         while True:
@@ -285,8 +417,14 @@ class Service:
                         continue
                     job["status"], job["started"] = "running", time.time()
                     self.running[lane] = jid
+                spec = job["spec"]
+
+                def report(progress, job=job):
+                    with self.lock:
+                        job["progress"] = progress
+
                 try:
-                    result = self.compute(job["params"])
+                    result = self.compute(spec, cj.Budget(TIME_LIMITS.get(spec["job"], DEFAULT_LIMIT), report))
                     with self.lock:
                         job.update(status="done", result=result)
                         self.cache[job["key"]] = result
@@ -299,66 +437,67 @@ class Service:
                     with self.lock:
                         self.running[lane] = None
                         job["finished"] = time.time()
-                p = job["params"]
-                print(f"{job['status']}: {p['model']} {p['job']} {p['smiles']} ({job['finished'] - job['started']:.1f} s)", flush=True)
+                print(f"{job['status']}: {spec['model']} {spec['job']} {spec['smiles'] or ('xyz' if spec['xyz'] else '')} "
+                      f"({job['finished'] - job['started']:.1f} s)", flush=True)
             self.prune()
 
-    def compute(self, p):
-        model, job, q, s = p["model"], p["job"], p["charge"], p["spin"]
-        out = {"model": model, "job": job, "smiles": p["smiles"], "charge": q, "spin": s}
-        if self.fake:
-            time.sleep(0.3)
-            h = sum(map(ord, p["smiles"])) % 100 / 100
-            out.update(energy_ev=-1000 - h, steps=1, xyz="", seconds=0.3, fake=True)
-            if job == "ipea":
-                out.update(ip_ev=round(10 + h, 4), ea_ev=round(-0.5 + h, 4))
-                if model == UMA:
-                    out.update(ip_uma_s=out["ip_ev"], ea_uma_s=out["ea_ev"])
-            if job == "polar":
-                out.update(geometry_model="mace-off23-medium", dipole_debye=round(4 + h, 3), dipole_vector=[1.0, 0.0, 0.0],
-                           polarizability_a3=round(6 + h, 3), polarizability_tensor_a3=[[6 + h, 0, 0], [0, 6 + h, 0], [0, 0, 6 + h]])
-            return out
-        from rdkit import Chem
-        from rdkit.Chem import AllChem
-
+    def compute(self, spec, budget):
+        Chem = cj._rdkit()
+        model, job, q, s, prm = spec["model"], spec["job"], spec["charge"], spec["spin"], spec["params"]
         t = time.time()
-        mol = Chem.AddHs(Chem.MolFromSmiles(p["smiles"]))
-        params = AllChem.ETKDGv3()
-        params.randomSeed = 42
-        if AllChem.EmbedMolecule(mol, params) != 0:
-            raise RuntimeError("RDKit could not build a 3D structure")
-        if AllChem.MMFFHasAllMoleculeParams(mol):
-            AllChem.MMFFOptimizeMolecule(mol)
-        symbols = [a.GetSymbol() for a in mol.GetAtoms()]
-        start = mol.GetConformer().GetPositions().tolist()
-        backend = self.backends[MODELS[model]["lane"]]
-
-        def xyz(positions, comment):
-            from ase import Atoms
-
-            buf = io.StringIO()
-            Atoms(symbols, positions=positions).write(buf, format="xyz", comment=comment)
-            return buf.getvalue()
-
-        if job == "polar":
-            pos, e0, steps = backend.relax("mace-off23-medium", symbols, start, 0, 1)
-            r = backend.polar(symbols, pos)
-            pol = [[round(x * POL_TO_A3, 4) for x in row] for row in r["polarizability"]]
-            dip = [round(x * E_A_TO_DEBYE, 4) for x in r["dipole"]]
-            out.update(geometry_model="mace-off23-medium", energy_ev=round(e0, 6), steps=steps,
-                       dipole_debye=round(sum(x * x for x in dip) ** 0.5, 4), dipole_vector=dip,
-                       polarizability_a3=round((pol[0][0] + pol[1][1] + pol[2][2]) / 3, 4), polarizability_tensor_a3=pol,
-                       xyz=xyz(pos, f"{p['smiles']} relaxed with MACE-OFF23 medium"))
+        out = {"model": model, "job": job, "smiles": spec["smiles"], "charge": q, "spin": s, "params": prm}
+        st = None
+        if spec["xyz"]:
+            symbols, positions = cj.parse_xyz(spec["xyz"])
+            st = cj.Structure(symbols, positions, q, s, "XYZ input")
+        elif spec["source"]:
+            mol_h = Chem.AddHs(Chem.MolFromSmiles(spec["source"]))
+            symbols, positions = cj.embed(Chem.Mol(mol_h))
+            st = cj.Structure(symbols, positions, q, s, spec["smiles"], mol_h)
+        label = f"{st.title} {MODELS[model]['name']}" if st else ""
+        if job in D_JOBS:
+            geo = self.calculator("mace-off23-medium")
+            if job == "polar":
+                r = cj.run_polar(st, geo, self.dp(), budget, prm["average"], prm["n"])
+            else:
+                r = cj.run_ir(st, geo, self.dp(), budget)
         else:
-            pos, e0, steps = backend.relax(model, symbols, start, q, s)
-            out.update(energy_ev=round(e0, 6), steps=steps, xyz=xyz(pos, f"{p['smiles']} {MODELS[model]['name']} E = {e0:.6f} eV"))
-            if job == "ipea":
-                ion = 2 if s == 1 else s - 1
-                _, e_cat, _ = backend.relax(model, symbols, pos, q + 1, ion)
-                _, e_an, _ = backend.relax(model, symbols, pos, q - 1, ion)
-                out.update(ip_ev=round(e_cat - e0, 4), ea_ev=round(e0 - e_an, 4))
-                if model == UMA:  # the AI Lab's column names
-                    out.update(ip_uma_s=out["ip_ev"], ea_uma_s=out["ea_ev"])
+            calc = self.calculator(model)
+            if job == "sp":
+                r = cj.run_sp(st, calc, budget, label)
+            elif job == "opt":
+                r = cj.run_opt(st, calc, budget, label, prm["fmax"])
+            elif job == "freq":
+                r = cj.run_freq(st, calc, budget, label, prm["temperature"], prm["symmetry"])
+            elif job == "conf":
+                r = cj.run_conf(st, calc, budget, label, prm["n"], prm["temperature"], prm["window_kcal"])
+            elif job == "scan":
+                r = cj.run_scan(st, calc, budget, label, prm["atoms"], prm["start"], prm["end"], prm["points"])
+            elif job == "md":
+                r = cj.run_md(st, calc, budget, label, prm["temperature"], prm["timestep_fs"], prm["steps"], prm["friction"])
+            elif job == "rxn":
+                species, _ = cj.parse_reaction(prm["reaction"])
+                r = cj.run_rxn(species, calc, budget, prm["thermo"], prm["temperature"])
+                r["reaction"] = prm["reaction"]
+            elif job == "ipea":
+                r = cj.run_ipea(st, calc, budget, label, prm["mode"])
+            elif job == "spin":
+                r = cj.run_spin(st, calc, budget, label, prm["spins"])
+            elif job == "bde":
+                frags = cj.bde_fragments(st.mol, *prm["bond"])
+                r = cj.run_bde(st, frags, calc, budget, label, prm["bond"], prm["thermo"], prm["temperature"])
+            elif job == "pa":
+                partner = cj.pa_partner(st.mol, prm["site"], prm["mode"])
+                r = cj.run_pa(st, partner, calc, budget, label, prm["site"], prm["mode"], prm["thermo"], prm["temperature"])
+            else:
+                raise ValueError(f"unknown job {job}")
+        out.update(r)
+        if job == "ipea" and model == UMA and "ip_ev" in out:  # the AI Lab's column names
+            out.update(ip_uma_s=out["ip_ev"], ea_uma_s=out["ea_ev"])
+        if MODELS[model]["direct"]:
+            out["direct_forces"] = True
+        if self.fake:
+            out["fake"] = True
         out["seconds"] = round(time.time() - t, 1)
         return out
 
@@ -377,15 +516,128 @@ class Service:
                 del self.jobs[jid]
 
     # ---- requests -------------------------------------------------------------------------------------------
-    def submit(self, body):
-        from rdkit import Chem, RDLogger
+    def parse(self, body):
+        """A request -> the job's spec {model, job, smiles, xyz, charge, spin, params, input}. Raises BadRequest."""
         from rdkit.Chem import Descriptors
 
-        RDLogger.DisableLog("rdApp.*")  # visitors send broken SMILES; the reply says so, the console stays readable
+        Chem = cj._rdkit()  # visitors send broken SMILES; the reply says so, the console stays readable
+        model, job = str(body.get("model") or UMA), str(body.get("job", "ipea"))
+        m = MODELS[model]
+        smiles, xyz = body.get("smiles"), body.get("xyz")
+        has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
+        params = job_params(job, body.get("params") if body.get("params") is not None else {})
+        if job == "rxn":
+            if has_smiles or has_xyz:
+                raise BadRequest("rxn takes the reaction in params.reaction, not smiles or xyz")
+        elif has_smiles == has_xyz:
+            raise BadRequest("give exactly one of smiles and xyz")
+        if has_xyz and (job in SMILES_JOBS or (job == "polar" and params["average"])):
+            raise BadRequest(f"{job}{' with average' if job == 'polar' else ''} needs a SMILES, not xyz")
 
-        smiles = str(body.get("smiles", "")).strip()
-        model = str(body.get("model") or UMA)
-        job = str(body.get("job", "ipea"))
+        def charge_spin(default_charge, default_spin):
+            try:
+                charge = int(body.get("charge", default_charge))
+                spin = int(body.get("spin", default_spin(charge)))
+            except (TypeError, ValueError):
+                raise BadRequest("charge and spin must be integers") from None
+            if not (-2 <= charge <= 2 and 1 <= spin <= 4):
+                raise BadRequest("charge must be -2..2 and spin multiplicity 1..4")
+            return charge, spin
+
+        def check_elements(found):
+            outside = sorted(set(found) - set(m["elements"]))
+            if outside:
+                raise BadRequest(f"{m['name']} does not know {', '.join(outside)}")
+
+        spec = {"model": model, "job": job, "smiles": None, "source": None, "xyz": None}
+        mol_h, symbols = None, None
+        if job == "rxn":
+            species, canonical = self.reaction(params["reaction"], m)
+            params["reaction"] = canonical
+            charge = sum(sp["charge"] * sp["count"] for sp in species if sp["side"] == "reactant")
+            spec.update(charge=charge, spin=None, input="rxn")
+        elif has_smiles:
+            smiles = str(smiles).strip()
+            if not SMILES_OK.match(smiles):
+                raise BadRequest("SMILES has unsupported characters or is too long")
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is None:
+                raise BadRequest("RDKit cannot parse this SMILES")
+            mol_h = Chem.AddHs(mol)
+            if mol.GetNumHeavyAtoms() > MAX_HEAVY or mol_h.GetNumAtoms() > MAX_ATOMS:
+                raise BadRequest(f"at most {MAX_HEAVY} heavy atoms and {MAX_ATOMS} atoms in all")
+            check_elements(a.GetSymbol() for a in mol.GetAtoms())
+            radicals = Descriptors.NumRadicalElectrons(mol)
+            charge, spin = charge_spin(Chem.GetFormalCharge(mol), lambda _: radicals + 1)
+            if not m["charged"] and (charge != 0 or spin != 1 or radicals):
+                raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            canonical = Chem.MolToSmiles(mol)
+            symbols = [a.GetSymbol() for a in mol_h.GetAtoms()]
+            # Atom indices in params follow the SMILES as sent, so those jobs build the molecule from it (and cache
+            # by it); the others from the canonical SMILES, as before.
+            source = smiles if job in INDEX_JOBS else canonical
+            spec.update(smiles=canonical, source=source, charge=charge, spin=spin,
+                        input=canonical if source == canonical else f"{canonical}@{source}")
+        else:
+            try:
+                symbols, positions = cj.parse_xyz(xyz)
+            except ValueError as e:
+                raise BadRequest(str(e)) from None
+            check_elements(symbols)
+            charge, spin = charge_spin(0, lambda q: 1 if cj.electrons(symbols, q) % 2 == 0 else 2)
+            if not cj.spin_fits(symbols, charge, spin):
+                raise BadRequest("this charge and spin multiplicity do not fit the number of electrons")
+            if not m["charged"] and (charge != 0 or spin != 1):
+                raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            text = "".join(f"{s} {x:.8f} {y:.8f} {z:.8f}\n" for s, (x, y, z) in zip(symbols, positions))
+            spec.update(xyz=f"{len(symbols)}\n\n{text}", charge=charge, spin=spin,
+                        input="xyz:" + hashlib.sha256(text.encode()).hexdigest())
+        n_atoms = len(symbols) if symbols else 0
+        if job == "scan" and max(params["atoms"]) >= n_atoms:
+            raise BadRequest(f"params.atoms must be atom indices below {n_atoms}")
+        if job == "spin":
+            if params["spins"] is None:
+                params["spins"] = [1, 3] if cj.electrons(symbols, spec["charge"]) % 2 == 0 else [2, 4]
+            if not all(cj.spin_fits(symbols, spec["charge"], x) for x in params["spins"]):
+                raise BadRequest("params.spins must fit the number of electrons (odd multiplicities for an even count)")
+        if job == "bde":
+            if (spec["charge"], spec["spin"]) != cj.species_of(mol_h):
+                raise BadRequest("bde takes the charge and spin the SMILES implies")
+            try:
+                cj.bde_fragments(mol_h, *params["bond"])
+            except ValueError as e:
+                raise BadRequest(str(e)) from None
+        if job == "pa":
+            try:
+                partner = cj.pa_partner(mol_h, params["site"], params["mode"])
+            except ValueError as e:
+                raise BadRequest(str(e)) from None
+            if not -2 <= spec["charge"] + partner["delta"] <= 2:
+                raise BadRequest("the charge after the proton moves must stay within -2..2")
+        spec["params"] = params
+        return spec
+
+    def reaction(self, text, m):
+        Chem = cj._rdkit()
+        try:
+            species, canonical = cj.parse_reaction(text, lambda s: bool(SMILES_OK.match(s)))
+        except ValueError as e:
+            raise BadRequest(str(e)) from None
+        for sp in species:
+            mol = Chem.MolFromSmiles(sp["smiles"])
+            if mol.GetNumHeavyAtoms() > MAX_HEAVY or Chem.AddHs(mol).GetNumAtoms() > MAX_ATOMS:
+                raise BadRequest(f"each species may have at most {MAX_HEAVY} heavy atoms and {MAX_ATOMS} atoms in all")
+            outside = sorted({a.GetSymbol() for a in mol.GetAtoms()} - set(m["elements"]))
+            if outside:
+                raise BadRequest(f"{m['name']} does not know {', '.join(outside)}")
+            if not m["charged"] and (sp["charge"] != 0 or sp["spin"] != 1):
+                raise BadRequest(f"{m['name']} handles neutral closed-shell species only ({sp['smiles']})")
+            if not (-2 <= sp["charge"] <= 2 and 1 <= sp["spin"] <= 4):
+                raise BadRequest(f"each species needs charge -2..2 and spin multiplicity 1..4 ({sp['smiles']})")
+        return species, canonical
+
+    def submit(self, body):
+        model, job = str(body.get("model") or UMA), str(body.get("job", "ipea"))
         who = str(body.get("who") or "")
         if model not in MODELS:
             return 400, {"error": "unknown model"}
@@ -396,35 +648,18 @@ class Service:
             return 503, {"error": "the model is still loading" if self.loading else f"{m['name']} is not available on this computer"}
         if who and not WHO_OK.match(who):
             return 400, {"error": "bad visitor id"}
-        if not SMILES_OK.match(smiles):
-            return 400, {"error": "SMILES has unsupported characters or is too long"}
-        mol = Chem.MolFromSmiles(smiles)
-        if mol is None:
-            return 400, {"error": "RDKit cannot parse this SMILES"}
-        heavy = mol.GetNumHeavyAtoms()
-        total = Chem.AddHs(mol).GetNumAtoms()
-        if heavy > MAX_HEAVY or total > MAX_ATOMS:
-            return 400, {"error": f"at most {MAX_HEAVY} heavy atoms and {MAX_ATOMS} atoms in all"}
-        if m["elements"]:
-            outside = sorted({a.GetSymbol() for a in mol.GetAtoms()} - set(m["elements"]))
-            if outside:
-                return 400, {"error": f"{m['name']} does not know {', '.join(outside)}"}
         try:
-            charge = int(body.get("charge", Chem.GetFormalCharge(mol)))
-            spin = int(body.get("spin", Descriptors.NumRadicalElectrons(mol) + 1))
-        except (TypeError, ValueError):
-            return 400, {"error": "charge and spin must be integers"}
-        if not (-2 <= charge <= 2 and 1 <= spin <= 4):
-            return 400, {"error": "charge must be -2..2 and spin multiplicity 1..4"}
-        if not m["charged"] and (charge != 0 or spin != 1 or Descriptors.NumRadicalElectrons(mol)):
-            return 400, {"error": f"{m['name']} handles neutral closed-shell molecules only"}
-        canonical = Chem.MolToSmiles(mol)
-        key = f"{model}|{job}|{canonical}|{charge}|{spin}"
+            spec = self.parse(body)
+        except BadRequest as e:
+            return 400, {"error": str(e)}
+        # v3: input, charge, spin and params all decide the answer; results cached before v3 lack the new fields.
+        key = "|".join(["v3", model, job, spec.pop("input"), str(spec["charge"]), str(spec["spin"]),
+                        json.dumps(spec["params"], sort_keys=True)])
         lane = m["lane"]
         with self.lock:
             if key in self.cache:
                 return 200, {"status": "done", "cached": True, "result": self.cache[key]}
-            for jid, v in self.jobs.items():  # the same molecule already waiting or running
+            for jid, v in self.jobs.items():  # the same job already waiting or running
                 if v["key"] == key and v["status"] in ("queued", "running"):
                     return 202, self.view(jid)
             if who and any(v.get("who") == who and v["status"] in ("queued", "running") for v in self.jobs.values()):
@@ -432,8 +667,7 @@ class Service:
             if len(self.queues[lane]) >= MAX_QUEUE:
                 return 503, {"error": "the queue is full, try again in a few minutes"}
             jid = secrets.token_hex(8)
-            self.jobs[jid] = {"key": key, "who": who, "status": "queued", "created": time.time(), "lane": lane,
-                              "params": {"smiles": canonical, "model": model, "job": job, "charge": charge, "spin": spin}}
+            self.jobs[jid] = {"key": key, "who": who, "status": "queued", "created": time.time(), "lane": lane, "spec": spec}
             self.queues[lane].append(jid)
         self.wakes[lane].set()
         return 202, self.view(jid)
@@ -442,12 +676,14 @@ class Service:
         v = self.jobs.get(jid)
         if not v:
             return None
-        out = {"id": jid, "status": v["status"], "model": v["params"]["model"], "job": v["params"]["job"],
-               "smiles": v["params"]["smiles"]}
+        out = {"id": jid, "status": v["status"], "model": v["spec"]["model"], "job": v["spec"]["job"],
+               "smiles": v["spec"]["smiles"]}
         if v["status"] == "queued":
             q = self.queues[v["lane"]]
             # jobs ahead in this model's lane, plus the one it is computing now
             out["position"] = (list(q).index(jid) + 1 if jid in q else 0) + (1 if self.running[v["lane"]] else 0)
+        if v["status"] == "running" and v.get("progress"):
+            out["progress"] = v["progress"]
         if v["status"] == "done":
             out["result"] = v["result"]
         if v["status"] == "error":
@@ -459,19 +695,19 @@ class Service:
             models = {}
             for mid, m in MODELS.items():
                 lane = m["lane"]
-                waiting = sum(1 for j in self.queues[lane] if self.jobs.get(j, {}).get("params", {}).get("model") == mid)
+                waiting = sum(1 for j in self.queues[lane] if self.jobs.get(j, {}).get("spec", {}).get("model") == mid)
                 run = self.running[lane]
                 models[mid] = {"ready": lane in self.backends, "jobs": list(m["jobs"]), "queue": waiting,
-                               "running": bool(run and self.jobs.get(run, {}).get("params", {}).get("model") == mid)}
-            return {"ok": not self.loading and bool(self.backends), "ready": bool(self.backends), "loading": self.loading,
-                    "errors": self.errors, "model": UMA, "device": self.device, "gpu": self.gpu,
+                               "running": bool(run and self.jobs.get(run, {}).get("spec", {}).get("model") == mid)}
+            return {"ok": not self.loading and bool(self.backends), "api": 3, "ready": bool(self.backends),
+                    "loading": self.loading, "errors": self.errors, "model": UMA, "device": self.device, "gpu": self.gpu,
                     "queue": sum(len(q) for q in self.queues.values()), "running": any(self.running.values()),
                     "done": self.done, "cached": len(self.cache), "models": models}
 
 
 def make_handler(service, secret):
     class Handler(BaseHTTPRequestHandler):
-        server_version = "MolAstriaModels/2"
+        server_version = "MolAstriaModels/3"
         timeout = 15  # seconds a connection may stay idle; a stalled client cannot hold a thread
 
         def log_message(self, fmt, *args):  # quiet; the workers print one line per job
@@ -510,7 +746,7 @@ def make_handler(service, secret):
             if self.path != "/jobs":
                 return self.reply(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
-            if n > 8192:
+            if n > MAX_BODY:
                 return self.reply(413, {"error": "request too large"})
             try:
                 body = json.loads(self.rfile.read(n) or b"{}")
@@ -529,11 +765,11 @@ def main():
     ap.add_argument("--mace-python", default=os.environ.get("MOLASTRIA_MACE_PYTHON", ""),
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
     ap.add_argument("--cache", default="", help="result cache (default cache.local.json; cache.fake.local.json with --fake)")
-    ap.add_argument("--fake", action="store_true", help="tests only: no models, made-up numbers")
+    ap.add_argument("--fake", action="store_true", help="tests only: no models, a toy calculator, made-up numbers")
     args = ap.parse_args()
     if os.name == "nt" and not sys.flags.utf8_mode:
         sys.exit("Start Python in UTF-8 mode (python -X utf8 ...), as start.ps1 does: otherwise fairchem reads its data files with the local code page and fails.")
-    secret = read_secret()
+    secret = read_secret(prefer_env=args.fake)
     if len(secret) < 32:
         sys.exit("No secret: run  node tools/uma-server/new-secret.mjs  first (it also gives the account service the same value).")
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")

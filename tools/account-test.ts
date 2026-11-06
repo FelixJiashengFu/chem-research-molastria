@@ -30,7 +30,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
     if (umaOffline) throw new TypeError("connection refused");
     umaCalls.push({ path: url.pathname, key: req.headers.get("X-MolAstria-Key"), access: req.headers.get("CF-Access-Client-Id"), body: req.method === "POST" ? await req.json() : null });
     if (req.headers.get("X-MolAstria-Key") !== "uma-secret-for-tests-0123456789abcdef") return ok({ error: "unauthorized" }, 401);
-    if (url.pathname === "/health") return ok({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt"], queue: 1, running: true }, "mace-mdp": { ready: false, jobs: ["polar", "rm -rf"], queue: 0, running: false }, "evil-model": { ready: true, jobs: ["opt"] } } });
+    if (url.pathname === "/health") return ok({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt", "md", "bde", "rm -rf"], queue: 1, running: true }, "mace-mdp": { ready: false, jobs: ["polar", "ir", "md", "rm -rf"], queue: 0, running: false }, "evil-model": { ready: true, jobs: ["opt"] } } });
     if (url.pathname === "/jobs" && (umaCalls.at(-1)?.body as any)?.smiles === "CCCC") return ok({ error: "one job at a time" }, 429);
     if (url.pathname === "/jobs") return ok({ id: "0123456789abcdef", status: "queued", position: 2 }, 202);
     if (url.pathname === "/jobs/0123456789abcdef") return ok({ id: "0123456789abcdef", status: "done", result: { ip_uma_s: 10.9, ea_uma_s: -0.4 } });
@@ -524,12 +524,12 @@ await test("UMA: off until configured, then health, jobs and polling through the
   eq(await call("GET", "/uma/health").then((r) => r.data), { online: false, configured: false });
   Object.assign(env, { UMA_ORIGIN: "https://uma.test/", UMA_SERVER_SECRET: "uma-secret-for-tests-0123456789abcdef", UMA_DAILY: "2" });
   const h = await call("GET", "/uma/health");
-  eq(h.data, { online: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt"], queue: 1, running: true, tier: "fair" }, "mace-mdp": { ready: false, jobs: ["polar"], queue: 0, running: false, tier: "asl" } } }, "only known models and jobs are passed on");
+  eq(h.data, { online: true, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, cached: 7, api: 3, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt", "md", "bde"], queue: 1, running: true, tier: "fair" }, "mace-mdp": { ready: false, jobs: ["polar", "ir"], queue: 0, running: false, tier: "asl" } } }, "only known models and each model's own jobs are passed on, with the API version");
   if (JSON.stringify(h.data).includes("secret")) throw new Error("health leaked the secret");
   eq(umaCalls.at(-1)?.key, "uma-secret-for-tests-0123456789abcdef", "secret sent to the computer");
   const bad = await call("POST", "/uma/jobs", { smiles: "C; rm -rf /", job: "ipea" });
   eq(bad.status, 400);
-  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "md" })).status, 400, "only ipea, opt and polar");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "tddft" })).status, 400, "only the jobs of the contract");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "__proto__" })).status, 400, "only known models");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", charge: 9 })).status, 400, "charge range");
   const ok = await call("POST", "/uma/jobs", { smiles: "O=C1OCC(F)O1", job: "ipea", extra: "dropped", path: "../../etc" });
@@ -555,7 +555,7 @@ await test("online models: ANI-2x only for Pro, MACE free and the same for every
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true })).status, 202);
   eq((umaCalls.at(-1)?.body as any).academic, undefined, "the box is checked here, not forwarded");
   // Busy visitor: the computer refuses, and the refused job is not counted.
-  const busy = await call("POST", "/uma/jobs", { smiles: "CCCC", job: "opt", model: "mace-mdp", academic: true });
+  const busy = await call("POST", "/uma/jobs", { smiles: "CCCC", job: "polar", model: "mace-mdp", academic: true });
   eq([busy.status, busy.data.error?.message], [429, "你已经有一个任务在排队或计算，等它完成再提交下一个"]);
   eq((await call("POST", "/uma/jobs", { smiles: "CCN", job: "polar", model: "mace-mdp", academic: true })).status, 202, "the refused job gave its use back");
   eq((await call("POST", "/uma/jobs", { smiles: "CCN", job: "polar", model: "mace-mdp", academic: true }, pro)).status, 429, "Pro gets no extra MACE runs (same visitor address)");
@@ -573,6 +573,153 @@ await test("UMA: embargoed regions are refused, an optional Access token is sent
   const r = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com", "CF-Connecting-IP": "203.0.113.10" }, body: JSON.stringify({ smiles: "CCO", job: "opt" }) }), env);
   eq([r.status, (await r.json()).error?.message], [503, "站长的 GPU 现在离线，请稍后再试"]);
   umaOffline = false;
+});
+
+// ── online model API v3: 13 jobs, checked params, uses counted by cost ──
+const used = (key: string) => (sqlite.prepare("SELECT n FROM throttle WHERE key = ?").get(key) as any)?.n ?? 0;
+const resetUses = () => sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'uma:%' OR key LIKE 'asl:%'").run();
+const WATER = "3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
+const sentBody = () => { const b = { ...(umaCalls.at(-1)?.body as any) }; delete b.who; return b; };
+
+await test("API v3: every job passes with valid params and only the checked fields reach the computer", async () => {
+  resetUses();
+  Object.assign(env, { UMA_DAILY: "1000", ASL_DAILY: "1000" });
+  const U = "uma-s-1p2p1", M = "mace-mdp";
+  const cases: [any, any][] = [
+    [{ smiles: "CCO", job: "sp", model: U, params: { bogus: 1 } }, { smiles: "CCO", job: "sp", model: U }],
+    [{ xyz: WATER, job: "sp", model: U, charge: 1, spin: 2 }, { xyz: WATER, job: "sp", model: U, charge: 1, spin: 2 }],
+    [{ smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true, params: { fmax: 0.05 } }, { smiles: "CCO", job: "opt", model: "mace-off23-small", params: { fmax: 0.05 } }],
+    [{ smiles: "CCO", job: "freq", model: "esen-sm-direct-all-omol", charge: 0, spin: 1, params: { temperature: 400, symmetry: 2, extra: "x" } }, { smiles: "CCO", job: "freq", model: "esen-sm-direct-all-omol", charge: 0, spin: 1, params: { temperature: 400, symmetry: 2 } }],
+    [{ smiles: "CCCO", job: "conf", model: U, params: { n: 12, temperature: 298.15, window_kcal: 5 } }, { smiles: "CCCO", job: "conf", model: U, params: { n: 12, temperature: 298.15, window_kcal: 5 } }],
+    [{ smiles: "CCCC", job: "scan", model: U, params: { atoms: [0, 1, 2, 3], start: -180, end: 180, points: 13 } }, null], // "CCCC" is the busy visitor in the fake; checked below
+    [{ smiles: "CCCO", job: "scan", model: U, params: { atoms: [0, 1, 2, 3], start: -90, end: 90, points: 3 } }, { smiles: "CCCO", job: "scan", model: U, params: { atoms: [0, 1, 2, 3], start: -90, end: 90, points: 3 } }],
+    [{ smiles: "CCO", job: "md", model: U, params: { temperature: 300, timestep_fs: 0.5, steps: 1000, friction: 0.01 } }, { smiles: "CCO", job: "md", model: U, params: { temperature: 300, timestep_fs: 0.5, steps: 1000, friction: 0.01 } }],
+    [{ job: "rxn", model: U, params: { reaction: "C=C.[H][H]>>CC", thermo: true, temperature: 298.15 } }, { job: "rxn", model: U, params: { reaction: "C=C.[H][H]>>CC", thermo: true, temperature: 298.15 } }],
+    [{ smiles: "c1ccccc1", job: "ipea", model: U, params: { mode: "both" } }, { smiles: "c1ccccc1", job: "ipea", model: U, params: { mode: "both" } }],
+    [{ smiles: "O=O", job: "spin", model: U, params: { spins: [3, 1] } }, { smiles: "O=O", job: "spin", model: U, params: { spins: [3, 1] } }],
+    [{ smiles: "O=O", job: "spin", model: U }, { smiles: "O=O", job: "spin", model: U }], // the computer picks the two lowest multiplicities
+    [{ job: "rxn", model: U, params: { reaction: "C.C.C>>CC.C.C" } }, { job: "rxn", model: U, params: { reaction: "C.C.C>>CC.C.C" } }], // six in all
+    [{ smiles: "CCN", job: "pa", model: U, params: { site: 2 } }, { smiles: "CCN", job: "pa", model: U, params: { site: 2 } }], // mode defaults to protonate
+    [{ smiles: "CCO", job: "bde", model: U, params: { bond: [1, 2], thermo: false } }, { smiles: "CCO", job: "bde", model: U, params: { bond: [1, 2], thermo: false } }],
+    [{ smiles: "CCN", job: "pa", model: "allscaip-md-direct-all-omol", params: { site: 2, mode: "protonate", thermo: true, temperature: 300 } }, { smiles: "CCN", job: "pa", model: "allscaip-md-direct-all-omol", params: { site: 2, mode: "protonate", thermo: true, temperature: 300 } }],
+    [{ smiles: "CCO", job: "polar", model: M, academic: true, params: { average: true, n: 8 } }, { smiles: "CCO", job: "polar", model: M, params: { average: true, n: 8 } }],
+    [{ xyz: WATER, job: "ir", model: M, academic: true, params: { anything: 1 } }, { xyz: WATER, job: "ir", model: M }],
+  ];
+  for (const [body, want] of cases) {
+    const r = await call("POST", "/uma/jobs", body);
+    if (!want) { eq(r.status, 429, "the computer's busy answer"); continue; }
+    eq(r.status, 202, `${body.job}: ${JSON.stringify(r.data)}`);
+    eq(sentBody(), want, `${body.job} forwarded`);
+  }
+});
+
+await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are refused and cost nothing", async () => {
+  resetUses();
+  const before = umaCalls.length;
+  const big = `121\nbig\n${"C 0 0 0\n".repeat(121)}`;
+  const long = `2\n${"x".repeat(12000)}\nH 0 0 0\nH 0 0 0.74\n`;
+  const refused: [any, string][] = [
+    [{ smiles: "CCO", job: "tddft" }, "unknown job"],
+    [{ smiles: "CCO", job: "md", model: "mace-mdp", academic: true }, "MACE-MDP has no MD"],
+    [{ smiles: "CCO", job: "ir", model: "uma-s-1p2p1" }, "IR is MACE-MDP's"],
+    [{ smiles: "CCO", job: "ipea", model: "uma-s-1p1" }, "neutral model has no IP / EA"],
+    [{ smiles: "CCO", job: "opt", model: "esen-md-direct-all-omol", charge: 1, spin: 2 }, "neutral model refuses a cation"],
+    [{ smiles: "CCO", job: "opt", model: "mace-off23-large", academic: true, spin: 3 }, "neutral model refuses a triplet"],
+    [{ smiles: "CCO", job: "opt", params: { fmax: 0.5 } }, "fmax too large"],
+    [{ smiles: "CCO", job: "opt", params: "fmax=0.5" }, "params must be an object"],
+    [{ smiles: "CCO", job: "freq", params: { temperature: 5 } }, "temperature too low"],
+    [{ smiles: "CCO", job: "freq", params: { symmetry: 1.5 } }, "symmetry number must be an integer"],
+    [{ smiles: "CCO", job: "conf", params: { n: 31 } }, "too many conformers"],
+    [{ smiles: "CCCC", job: "scan" }, "scan needs atoms"],
+    [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 1, 2] } }, "atoms must differ"],
+    [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 2, -3] } }, "atoms are non-negative"],
+    [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 2, 3], start: 90, end: 90 } }, "end must exceed start"],
+    [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 2, 3], points: 25 } }, "too many points"],
+    [{ smiles: "CCO", job: "md", params: { steps: 5000 } }, "too many MD steps"],
+    [{ smiles: "CCO", job: "md", params: { timestep_fs: "0.5" } }, "a number as text"],
+    [{ job: "rxn", params: { reaction: "C=C.[H][H]" } }, "a reaction needs >>"],
+    [{ job: "rxn", params: { reaction: "C.C.C.C.C.C.C>>CCCCCCC" } }, "eight species in all"],
+    [{ job: "rxn", params: { reaction: "C.C.C.C>>C.C.C.C" } }, "four a side is eight in all"],
+    [{ job: "rxn", params: { reaction: "C.C>>" } }, "a side with no species"],
+    [{ job: "rxn", params: { reaction: "C=C>>C; rm" } }, "reaction charset"],
+    [{ smiles: "C=C", job: "rxn", params: { reaction: "C=C.[H][H]>>CC" } }, "a reaction takes no SMILES"],
+    [{ job: "rxn", params: { reaction: "C=C>>C=C", thermo: "yes" } }, "thermo must be a boolean"],
+    [{ smiles: "O=O", job: "spin", params: { spins: [3, 3] } }, "two different spins"],
+    [{ smiles: "O=O", job: "spin", params: { spins: [1, 5] } }, "spin up to 4"],
+    [{ smiles: "CCO", job: "pa", params: { site: 2, mode: "oxidise" } }, "pa mode"],
+    [{ smiles: "CCO", job: "pa", params: { mode: "protonate" } }, "pa needs a site"],
+    [{ smiles: "CCO", job: "ipea", params: { mode: "diabatic" } }, "ipea mode"],
+    [{ xyz: WATER, job: "conf" }, "conformers start from SMILES"],
+    [{ xyz: WATER, job: "bde", params: { bond: [0, 1] } }, "BDE starts from SMILES"],
+    [{ xyz: WATER, job: "polar", model: "mace-mdp", academic: true, params: { average: true } }, "averaged polarisability starts from SMILES"],
+    [{ smiles: "O", xyz: WATER, job: "sp" }, "SMILES and XYZ both given"],
+    [{ job: "sp" }, "neither SMILES nor XYZ"],
+    [{ xyz: big, job: "sp" }, "121 atoms"],
+    [{ xyz: long, job: "sp" }, "XYZ over 12000 characters"],
+    [{ xyz: "3\nwater\nO 0 0 0\nH 0 0 x\nH 1 0 0\n", job: "sp" }, "a coordinate that is not a number"],
+    [{ xyz: "3\nwater\nO 0 0 0\nH 0 0 1\n", job: "sp" }, "fewer atom lines than the count"],
+  ];
+  for (const [body, why] of refused) {
+    const r = await call("POST", "/uma/jobs", body);
+    eq(r.status, 400, `${why}: ${JSON.stringify(r.data)}`);
+  }
+  eq(umaCalls.length, before, "nothing refused reached the computer");
+  eq([used("uma:local"), used("asl:local")], [0, 0], "refused jobs cost nothing");
+  const huge = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ xyz: "x".repeat(16001), job: "sp" }) }), env);
+  eq(huge.status, 413);
+});
+
+await test("API v3: uses are counted by cost, a job that does not fit is refused, refusals give the whole cost back", async () => {
+  resetUses();
+  Object.assign(env, { UMA_DAILY: "6" });
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "md" })).status, 202, "md costs 5");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "conf" })).status, 429, "conf (5) does not fit in the 1 left");
+  const left = await call("POST", "/uma/jobs", { smiles: "CCO", job: "freq" });
+  eq([left.status, /还剩 1 次.*要用 3 次/.test(left.data.error?.message)], [429, true], `says how many are left: ${left.data.error?.message}`);
+  eq(used("uma:local"), 5, "the refused jobs were not counted");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" })).status, 202, "opt (1) fits");
+  const out = await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" });
+  eq([out.status, out.data.error?.message], [429, "今天的 UMA / OMol25 模型计算次数已用完（每天 6 次，Pro 会员每天更多），明天再来"]);
+  eq(used("uma:local"), 6);
+  // An offline computer and a busy visitor give back everything the job would have cost.
+  resetUses();
+  umaOffline = true;
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "scan", params: { atoms: [0, 1, 2, 3] } })).status, 503);
+  umaOffline = false;
+  eq(used("uma:local"), 0, "offline: refunded");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCCC", job: "md" })).status, 429, "busy on the computer");
+  eq(used("uma:local"), 0, "busy: refunded");
+  // Thermochemistry and conformer averaging cost more.
+  Object.assign(env, { UMA_DAILY: "1000", ASL_DAILY: "1000" });
+  const costs: [any, number][] = [
+    [{ smiles: "CCO", job: "sp" }, 1], [{ smiles: "CCO", job: "ipea" }, 1], [{ smiles: "O=O", job: "spin", params: { spins: [1, 3] } }, 2],
+    [{ smiles: "CCO", job: "bde", params: { bond: [0, 1] } }, 2], [{ smiles: "CCO", job: "bde", params: { bond: [0, 1], thermo: true } }, 5],
+    [{ smiles: "CCO", job: "pa", params: { site: 2, mode: "deprotonate" } }, 2], [{ smiles: "CCO", job: "pa", params: { site: 2, mode: "deprotonate", thermo: true } }, 5],
+    [{ smiles: "CCO", job: "freq" }, 3], [{ job: "rxn", params: { reaction: "C=C.[H][H]>>CC" } }, 3], [{ job: "rxn", params: { reaction: "C=C.[H][H]>>CC", thermo: true } }, 5],
+    [{ smiles: "CCO", job: "conf" }, 5], [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 2, 3] } }, 5], [{ smiles: "CCO", job: "md" }, 5],
+  ];
+  for (const [body, cost] of costs) {
+    const n0 = used("uma:local");
+    eq((await call("POST", "/uma/jobs", body)).status, 202, body.job);
+    eq(used("uma:local") - n0, cost, `${body.job}${body.params?.thermo ? " with thermo" : ""} costs ${cost}`);
+  }
+  for (const [body, cost] of [[{ smiles: "CCO", job: "polar" }, 1], [{ smiles: "CCO", job: "polar", params: { average: true } }, 5], [{ smiles: "CCO", job: "ir" }, 3]] as [any, number][]) {
+    const n0 = used("asl:local");
+    eq((await call("POST", "/uma/jobs", { ...body, model: "mace-mdp", academic: true })).status, 202);
+    eq(used("asl:local") - n0, cost, `MACE-MDP ${body.job} costs ${cost}`);
+  }
+});
+
+await test("API v3: the old Meta page's requests behave as before", async () => {
+  resetUses();
+  eq((await call("POST", "/uma/jobs", { smiles: "O=C1OCC(F)O1", model: "uma-s-1p2p1", job: "ipea", charge: 0, spin: 1 })).status, 202);
+  eq(sentBody(), { smiles: "O=C1OCC(F)O1", job: "ipea", model: "uma-s-1p2p1", charge: 0, spin: 1 });
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", model: "mace-mdp", job: "polar", charge: 0, spin: 1, academic: true })).status, 202);
+  eq(sentBody(), { smiles: "CCO", job: "polar", model: "mace-mdp", charge: 0, spin: 1 });
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", model: "esen-sm-conserving-all-omol", job: "opt", charge: 0, spin: 1 })).status, 202);
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO" })).status, 202, "job and model default to ipea on UMA-S 1.2.1");
+  eq(sentBody(), { smiles: "CCO", job: "ipea", model: "uma-s-1p2p1" });
+  eq((await call("GET", "/uma/jobs/0123456789abcdef")).data.result.ip_uma_s, 10.9, "polling unchanged");
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");

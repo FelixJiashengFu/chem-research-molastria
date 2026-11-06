@@ -23,26 +23,72 @@ const sessions: Record<string, unknown> = {
 };
 
 const realFetch = globalThis.fetch;
-let umaLast: { model?: string; job?: string } = {}; // the last job sent to the pretend owner computer
+let umaLast: any = {}; // the last job sent to the pretend owner computer
+let umaPolls = 0;
+
+/** A result with the fields of API v3 for each job; the numbers are made up (fake: true). */
+function fakeResult(b: any) {
+  const p = b.params || {}, job = b.job || "ipea", model = b.model || "uma-s-1p2p1";
+  const xyz = "3\nfake\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
+  const E = -2079.62, T = p.temperature ?? 298.15, kcal = 23.0605;
+  const base: any = { model, job, smiles: b.smiles ?? null, charge: b.charge ?? 0, spin: b.spin ?? 1, params: p, seconds: 1, fake: true, xyz };
+  if (/direct/.test(model)) base.direct_forces = true;
+  const thermo = { temperature_k: T, h_corr_ev: 0.664, s_ev_k: 0.00195, g_corr_ev: 0.083, h_ev: E + 0.664, g_ev: E + 0.083 };
+  switch (job) {
+    case "sp": return { ...base, energy_ev: E, forces_ev_a: [[0, 0, 0.012], [0, 0, -0.006], [0.004, 0, -0.006]], fmax_ev_a: 0.012 };
+    case "opt": return { ...base, energy_ev: E, steps: 22, converged: true, fmax_ev_a: 0.018 };
+    case "freq": return { ...base, energy_ev: E, steps: 12, frequencies_cm1: [-112.4, 1595.2, 3657.1, 3756.0], n_imag: 1, zpe_ev: 0.561, linear: false, thermo };
+    case "conf": return { ...base, conformers: [[0, 0.712], [0.62, 0.249], [1.85, 0.039]].map(([rel, w], i) => ({ rank: i + 1, energy_ev: E + rel / kcal, rel_kcal: rel, weight: w, xyz })), n_generated: p.n ?? 10, n_unique: 3, temperature_k: T };
+    case "scan": {
+      const a = p.start ?? -180, z = p.end ?? 180, n = p.points ?? 13;
+      const points = Array.from({ length: n }, (_, i) => { const d = a + (i * (z - a)) / (n - 1), rel = 1.4 * (1 + Math.cos((3 * d * Math.PI) / 180)); return { angle_deg: d, energy_ev: E + rel / kcal, rel_kcal: rel, converged: true }; });
+      const m = Math.min(...points.map((x) => x.rel_kcal));
+      return { ...base, atoms: p.atoms, points: points.map((x) => ({ ...x, rel_kcal: x.rel_kcal - m })), xyz: xyz + xyz };
+    }
+    case "md": {
+      const steps = p.steps ?? 1000, dt = p.timestep_fs ?? 0.5;
+      const series = Array.from({ length: 11 }, (_, i) => ({ t_fs: (i * steps * dt) / 10, epot_ev: E + 0.02 * Math.sin(i), ekin_ev: 0.116 + 0.01 * Math.cos(i), temperature_k: (p.temperature ?? 300) + 12 * Math.sin(i * 1.3) }));
+      return { ...base, series, mean_temperature_k: 301.2, xyz: xyz + xyz };
+    }
+    case "rxn": {
+      const [l, r] = String(p.reaction || "C=C.[H][H]>>CC").split(">>");
+      const species = [...l.split(".").map((s) => [s, "reactant"]), ...r.split(".").map((s) => [s, "product"])].map(([s, side], i) => ({ smiles: s, side, count: 1, charge: 0, spin: 1, energy_ev: -1000 - 100 * i, ...(p.thermo ? { g_ev: -1000 - 100 * i + 0.5 } : {}) }));
+      return { ...base, smiles: null, reaction: p.reaction, species, delta_e_ev: -1.37, delta_e_kcal: -31.6, ...(p.thermo ? { delta_g_ev: -1.05, delta_g_kcal: -24.2, temperature_k: T } : {}) };
+    }
+    case "ipea": {
+      const mode = p.mode ?? "adiabatic", adia = mode !== "vertical", vert = mode !== "adiabatic";
+      return { ...base, energy_ev: E, mode, ...(adia ? { ip_ev: 10.9, ea_ev: -0.4 } : {}), ...(vert ? { ip_vertical_ev: 11.32, ea_vertical_ev: -0.95 } : {}), ...(model === "uma-s-1p2p1" && adia ? { ip_uma_s: 10.9, ea_uma_s: -0.4 } : {}) };
+    }
+    case "spin": return { ...base, states: (p.spins || [1, 3]).map((s: number, i: number) => ({ spin: s, energy_ev: E + i * 1.02, xyz })), gap_ev: 1.02, gap_kcal: 23.52, vertical_gap_ev: 1.31 };
+    case "bde": return { ...base, bond: p.bond, parent_energy_ev: E, fragments: [{ smiles: "[CH3]", spin: 2, energy_ev: -1080.1 }, { smiles: "[CH2]O", spin: 2, energy_ev: -995.67 }], bde_ev: 3.85, bde_kcal: 88.8, ...(p.thermo ? { bdh298_kcal: 86.1 } : {}) };
+    case "pa": return { ...base, site: p.site, mode: p.mode, energies: { base_ev: E, acid_ev: E - 9.4 }, value_ev: 9.4, value_kcal: 216.8, ...(p.thermo ? { enthalpy_kcal: 218.3 } : {}) };
+    case "polar": {
+      const one = { dipole_debye: 4.81, dipole_vector: [-4.24, 2.02, -1.06], polarizability_a3: 6.78, polarizability_tensor_a3: [[8.34, -0.41, -0.26], [-0.41, 6.46, 0.15], [-0.26, 0.15, 5.53]] };
+      return { ...base, geometry_model: "mace-off23-medium", energy_ev: E, steps: 22, ...one, ...(p.average ? { conformers: 2, weights: [0.8, 0.2] } : {}) }; // as server.py: how many conformers, and their weights
+    }
+    case "ir": return { ...base, geometry_model: "mace-off23-medium", frequencies_cm1: [1595.2, 3657.1, 3756.0], ir_intensity_km_mol: [68.2, 4.1, 45.7], raman_activity_a4_amu: [3.2, 98.4, 41.0], n_imag: 0 };
+  }
+  return base;
+}
 globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
   const fake = Deno.env.get("FAKE_AI");
   const reply = (data: unknown) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
   if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
   if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
-  if (url.hostname === "uma.test") { // e2e: a pretend owner computer (tools/uma-server --fake behaves the same)
-    const jobs: Record<string, string[]> = { "uma-s-1p2p1": ["ipea", "opt"], "uma-s-1p2": ["ipea", "opt"], "uma-s-1p2p1-ft-d4rev": ["ipea", "opt"], "uma-s-1p1": ["opt"], "allscaip-md-conserving-all-omol": ["ipea", "opt"], "allscaip-md-direct-all-omol": ["ipea", "opt"], "esen-sm-conserving-all-omol": ["opt"], "esen-sm-direct-all-omol": ["opt"], "esen-md-direct-all-omol": ["opt"], "ani-2x": ["opt"], "mace-off23-small": ["opt"], "mace-off23-medium": ["opt"], "mace-off23-large": ["opt"], "mace-omol-0": ["opt"], "mace-mdp": ["polar"] };
-    if (url.pathname === "/health") return reply({ ok: true, ready: true, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
+  if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
+    const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"];
+    const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"] };
+    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"] };
+    if (url.pathname === "/health") return reply({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
     if (url.pathname === "/jobs") {
       umaLast = JSON.parse(String(init?.body ?? (input instanceof Request ? await input.clone().text() : "{}")));
+      umaPolls = 0;
       return new Response(JSON.stringify({ id: "00000000000000e2", status: "queued", position: 1 }), { status: 202, headers: { "Content-Type": "application/json" } });
     }
-    if (url.pathname === "/jobs/00000000000000e2") {
-      const { model = "uma-s-1p2p1", job = "ipea" } = umaLast;
-      const base = { model, job, smiles: "O=C1OCC(F)O1", energy_ev: -12034.1, steps: 22, seconds: 1, fake: true, xyz: "" };
-      const result = job === "polar" ? { ...base, geometry_model: "mace-off23-medium", dipole_debye: 4.81, dipole_vector: [-4.24, 2.02, -1.06], polarizability_a3: 6.78, polarizability_tensor_a3: [[8.34, -0.41, -0.26], [-0.41, 6.46, 0.15], [-0.26, 0.15, 5.53]] }
-        : job === "ipea" ? { ...base, ip_ev: 10.9, ea_ev: -0.4, ip_uma_s: 10.9, ea_uma_s: -0.4 } : base;
-      return reply({ id: "00000000000000e2", status: "done", result });
+    if (url.pathname === "/jobs/00000000000000e2") { // one poll reports progress, the next one the result
+      if (umaPolls++ === 0) return reply({ id: "00000000000000e2", status: "running", progress: { done: 1, total: 3, note: "test step" } });
+      return reply({ id: "00000000000000e2", status: "done", result: fakeResult(umaLast) });
     }
   }
   if (fake && url.hostname === "api.deepseek.com" && JSON.parse(String(init?.body ?? "{}")).response_format && !JSON.parse(String(init?.body ?? "{}")).stream) {
@@ -73,5 +119,7 @@ const env = {
   // UMA on the owner computer: UMA_ORIGIN / UMA_SERVER_SECRET from this process (e.g. tools/uma-server --fake), else the e2e stand-in.
   UMA_ORIGIN: Deno.env.get("UMA_ORIGIN") ?? (Deno.env.get("FAKE_AI") ? "https://uma.test" : ""),
   UMA_SERVER_SECRET: Deno.env.get("UMA_SERVER_SECRET") ?? (Deno.env.get("FAKE_AI") ? "e2e-secret-0123456789abcdef0123456789" : ""),
+  // e2e runs every job many times from one address; the daily limits themselves are tested in tools/account-test.ts.
+  ...(Deno.env.get("FAKE_AI") ? { UMA_DAILY: "100000", ASL_DAILY: "100000" } : {}),
 };
 Deno.serve({ port, hostname: "127.0.0.1" }, (req) => worker.fetch(req, env));

@@ -13,6 +13,7 @@
     ['radar', 'radar/index.html', '预印本雷达'],
     ['lab', 'lab/index.html', 'AI 实验室'],
     ['meta', 'meta/index.html', 'Meta', true],
+    ['models', 'models/index.html', '模型接口', true],
     ['qchem', 'qchem/index.html', '量子化学', true],
     ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']

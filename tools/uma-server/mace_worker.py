@@ -4,13 +4,14 @@ mace-torch pins e3nn 0.4.4 and fairchem needs e3nn 0.5 or later, so the MACE mod
 environment. server.py starts this script with the MACE environment's Python and talks to it over stdin/stdout,
 one JSON object per line; nothing else reaches it. It only loads the official MACE weights (MACE-OFF23, MACE-OMOL-0,
 MACE-MDP: Academic Software License, academic non-commercial use) from the mace cache folder, downloading a
-missing one from its official address once.
+missing one from its official address once. The calculations themselves (optimisation, frequencies, MD, ...) run in
+server.py, which uses "calc" as an ASE calculator.
 
     {"op": "ping"}                                                        -> {"ok": true, "models": [...]}
-    {"op": "relax", "model", "symbols", "positions", "charge", "spin"}    -> {"ok": true, "positions", "energy_ev", "steps"}
+    {"op": "calc", "model", "symbols", "positions", "charge", "spin"}     -> {"ok": true, "energy_ev", "forces"}
     {"op": "polar", "model": "mace-mdp", "symbols", "positions"}          -> {"ok": true, "dipole", "polarizability"}
 
-Positions are in Angstrom; dipole in e*A and polarizability in e*A^2/V (MACE-MDP's own units).
+Positions are in Angstrom, forces in eV/Angstrom; dipole in e*A and polarizability in e*A^2/V (MACE-MDP's own units).
 """
 import json
 import os
@@ -23,7 +24,6 @@ PROTOCOL = sys.stdout
 sys.stdout = sys.stderr  # library prints go to the service console, never into the protocol
 warnings.filterwarnings("ignore")
 
-MAX_STEPS = 400
 KEEP_LOADED = 3  # models kept in GPU memory at once; the least recently used one is dropped
 
 # id -> (loader, model argument)
@@ -39,11 +39,11 @@ MODELS = {
 def main():
     import torch
     from ase import Atoms
-    from ase.optimize import LBFGS
     from mace.calculators import foundations_models as fm
 
     device = os.environ.get("MOLASTRIA_MACE_DEVICE") or ("cuda" if torch.cuda.is_available() else "cpu")
-    # float64, as MACE recommends for geometry optimisation; for molecules this small it costs only a second or two.
+    # float64, as MACE recommends for geometry optimisation and finite-difference Hessians; for molecules this small
+    # it costs only a second or two.
     dtype = os.environ.get("MOLASTRIA_MACE_DTYPE") or "float64"
     gpu = torch.cuda.get_device_name(0) if device == "cuda" else ""
     loaded = OrderedDict()
@@ -79,15 +79,13 @@ def main():
         op = req.get("op")
         if op == "ping":
             return {"ok": True, "models": list(MODELS), "device": device, "gpu": gpu, "dtype": dtype}
-        if op == "relax":
+        if op == "calc":
             if req.get("model") == "mace-mdp":
                 raise ValueError("MACE-MDP predicts dipoles and polarizabilities, not energies or forces")
-            atoms = atoms_from(req)
-            atoms.calc = calculator(req["model"])
-            opt = LBFGS(atoms, logfile=None)
-            opt.run(fmax=0.02, steps=MAX_STEPS)
-            return {"ok": True, "positions": atoms.get_positions().tolist(),
-                    "energy_ev": float(atoms.get_potential_energy()), "steps": int(opt.nsteps)}
+            calc = calculator(req["model"])
+            calc.calculate(atoms_from(req))  # always computed afresh: the server keeps its own cache
+            return {"ok": True, "energy_ev": float(calc.results["energy"]),
+                    "forces": [[float(x) for x in row] for row in calc.results["forces"].reshape(-1, 3).tolist()]}
         if op == "polar":
             calc = calculator("mace-mdp")
             atoms = atoms_from(req)
