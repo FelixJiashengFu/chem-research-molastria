@@ -10051,6 +10051,9 @@
  "括号组合条件": [
   "radar/app/app.js"
  ],
+ "例如：\"C-H activation\" photoredox -review": [
+  "radar/app/app.js"
+ ],
  "请输入关键词": [
   "radar/app/app.js"
  ],
@@ -10166,6 +10169,9 @@
   "radar/app/app.js"
  ],
  "例如：AI × 化学": [
+  "radar/app/app.js"
+ ],
+ "逗号或换行分隔 = 或；空格 = 且；\"引号\" = 短语；* = 前缀；-词 = 排除": [
   "radar/app/app.js"
  ],
  "其他分类代码，逗号分隔，如 cond-mat.supr-con": [

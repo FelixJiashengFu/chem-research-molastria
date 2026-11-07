@@ -1217,6 +1217,11 @@ check('English: account page and radar are translated, paper-free UI has no Chin
   const f = p.frame({ url: /radar\/app\/index\.html/ });
   await f.waitForSelector('#nav a');
   await f.waitForFunction(() => !document.documentElement.dataset.i18n && !/[㐀-鿿]/.test(document.getElementById('nav').textContent), null, { timeout: 8000 });
+  // Single-quoted placeholders (the topic query syntax hint) are translated too.
+  await f.click('[data-act=new-topic]');
+  await f.waitForSelector('#tq');
+  await f.waitForFunction(() => !/[㐀-鿿]/.test(document.getElementById('tq').placeholder), null, { timeout: 5000 });
+  assert.match(await f.getAttribute('#tq', 'placeholder'), /Comma or new line = OR/);
   await finish(p);
 });
 
