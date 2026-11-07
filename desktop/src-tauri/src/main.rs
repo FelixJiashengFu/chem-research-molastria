@@ -1,4 +1,4 @@
-// MolAstria desktop: serves public/ from inside the app, opens outside links in the system browser,
+// MolAstria desktop: serves the site (public/, staged into desktop/web/ by stage-web.mjs) from inside the app, opens outside links in the system browser,
 // installs signed updates published on GitHub Releases, runs UMA with the user's own Python (uma.rs),
 // and sends every download through the system Save dialog (save.rs).
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]

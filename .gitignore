@@ -30,3 +30,4 @@ tools/uma-server/secret.local
 tools/uma-server/cache*.json
 tools/uma-server/cache*.json.tmp
 tools/e2e/shots/
+desktop/web/

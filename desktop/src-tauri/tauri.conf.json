@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.molastria.desktop",
   "build": {
-    "frontendDist": "../../public"
+    "frontendDist": "../web",
+    "beforeBuildCommand": "node stage-web.mjs",
+    "beforeDevCommand": "node stage-web.mjs"
   },
   "app": {
     "windows": [],

@@ -36,7 +36,7 @@ public/               发布目录，推到 main 就上线
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
-desktop/              Tauri 2 桌面版，打包时内置 public/；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口
+desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试

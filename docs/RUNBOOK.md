@@ -84,7 +84,7 @@ git tag -a desktop-v0.1.4 -m "Desktop 0.1.4: 这个版本改了什么" origin/ma
 git -c credential.helper= -c "credential.helper=!gh auth git-credential" push origin desktop-v0.1.4
 ```
 
-版本号来自标签。CI 大约 6–8 分钟。完成后 `node tools/e2e/live.mjs` 会核对更新清单和 Release 是否一致。已安装的应用下次启动时提示更新。
+版本号来自标签。CI 大约 6–8 分钟。打包的网页不是直接取 `public/`：Tauri 每次构建前运行 `desktop/stage-web.mjs`，把 `public/` 复制到 `desktop/web/` 并去掉 App 里用不到的部分（目前是 `watch/` 视频导览，约 95 MB）。以后往 `public/` 放大文件时先想一下桌面版要不要它，不要的就加进脚本的 `LEAVE_OUT`；发版后看一眼 Release 里安装包的大小（0.1.14 约 6 MB / 13 MB，Windows / Mac）。完成后 `node tools/e2e/live.mjs` 会核对更新清单和 Release 是否一致。已安装的应用下次启动时提示更新。
 
 本地构建（不发布）：`cd desktop && npm ci && npx tauri build --bundles nsis`。只想试功能：`npx.cmd tauri build --debug --no-bundle`，产物是 `desktop/src-tauri/target/debug/molastria.exe`。它和已安装的应用共用应用数据和 WebView2 存储（同一个 identifier）。
 
