@@ -139,6 +139,7 @@
  ],
  "排序": [
   "index.html",
+  "fundamental-science/index.html",
   "hub/index.html",
   "models/models.js",
   "radar/app/app.js"
@@ -308,6 +309,12 @@
  "量子化学计算": [
   "index.html",
   "qchem/index.html"
+ ],
+ "进一步基础科学发现": [
+  "index.html",
+  "fundamental-science/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
  ],
  "训练化学 Agent": [
   "index.html"
@@ -685,7 +692,8 @@
  ],
  "回到顶部 ↑": [
   "atlas/index.html",
-  "manual/index.html"
+  "manual/index.html",
+  "fundamental-science/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -835,7 +843,8 @@
  ],
  "本页内容": [
   "journals/index.html",
-  "scimodels/index.html"
+  "scimodels/index.html",
+  "fundamental-science/index.html"
  ],
  "筛选期刊": [
   "journals/index.html"
@@ -868,6 +877,7 @@
  ],
  "模型接口": [
   "scimodels/index.html",
+  "fundamental-science/index.html",
   "shared-nav.js"
  ],
  "里的 UMA、MACE、ANI-2x 不是一类：那些机器学习势输入原子坐标、输出能量和力；这里的模型输入输出是文字和科学表示，用来理解问题、整理文献、提出假设和写代码。两类模型可以放进同一条研究流程，但不能互相替代。": [
@@ -931,6 +941,198 @@
  ],
  "模型名、机构、能力或关键词": [
   "scimodels/index.html"
+ ],
+ "进一步基础科学发现 · Advancing Fundamental Science · MolAstria": [
+  "fundamental-science/index.html"
+ ],
+ "跳到研究支柱": [
+  "fundamental-science/index.html"
+ ],
+ "五大研究支柱": [
+  "fundamental-science/index.html"
+ ],
+ "三条重点主线": [
+  "fundamental-science/index.html"
+ ],
+ "交互式理论实验室": [
+  "fundamental-science/index.html"
+ ],
+ "科研文献": [
+  "fundamental-science/index.html"
+ ],
+ "核心研究理念": [
+  "fundamental-science/index.html"
+ ],
+ "每个支柱下面都有完整的理论说明：核心公式、关键概念（逐条标注研究状态）、重点问题的解答和参考文献。": [
+  "fundamental-science/index.html"
+ ],
+ "研究支柱详解": [
+  "fundamental-science/index.html"
+ ],
+ "三条重点研究主线": [
+  "fundamental-science/index.html"
+ ],
+ "MolAstria 希望长期投入的三个方向。它们都处于计划阶段：卡片写明研究问题、所需的数学与计算方法、潜在应用、开放问题和当前状态，不包含任何已取得的成果。": [
+  "fundamental-science/index.html"
+ ],
+ "理论比较：量子力学的其他表述与理论": [
+  "fundamental-science/index.html"
+ ],
+ "三个演示都在浏览器里直接求解对应的数学模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。": [
+  "fundamental-science/index.html"
+ ],
+ "演示 1": [
+  "fundamental-science/index.html"
+ ],
+ "量子叠加与坍缩": [
+  "fundamental-science/index.html"
+ ],
+ "两峰间距 2a": [
+  "fundamental-science/index.html"
+ ],
+ "波包宽度 σ": [
+  "fundamental-science/index.html"
+ ],
+ "局域化宽度 r_C": [
+  "fundamental-science/index.html"
+ ],
+ "随机发生一次局域化": [
+  "fundamental-science/index.html"
+ ],
+ "回到叠加态": [
+  "fundamental-science/index.html"
+ ],
+ "模型说明与局限": [
+  "fundamental-science/index.html"
+ ],
+ "演示 2": [
+  "fundamental-science/index.html"
+ ],
+ "分子量子相干：标准振荡与附加退相干": [
+  "fundamental-science/index.html"
+ ],
+ "隧穿劈裂 Δ（cm⁻¹）": [
+  "fundamental-science/index.html"
+ ],
+ "环境退相干率 γ_env": [
+  "fundamental-science/index.html",
+  "fundamental-science/fundamental.js"
+ ],
+ "坍缩模型（CSL，理论假说）": [
+  "fundamental-science/index.html"
+ ],
+ "坍缩率 λ（每个核子）": [
+  "fundamental-science/index.html"
+ ],
+ "运动的质量 m": [
+  "fundamental-science/index.html"
+ ],
+ "两构型的间距 d": [
+  "fundamental-science/index.html"
+ ],
+ "恢复氨分子参数": [
+  "fundamental-science/index.html"
+ ],
+ "演示 3": [
+  "fundamental-science/index.html"
+ ],
+ "圆锥交叉与 Berry 相位": [
+  "fundamental-science/index.html"
+ ],
+ "κ（x 方向耦合）": [
+  "fundamental-science/index.html"
+ ],
+ "λ（y 方向耦合）": [
+  "fundamental-science/index.html"
+ ],
+ "Δ（打开简并）": [
+  "fundamental-science/index.html"
+ ],
+ "环路中心 x": [
+  "fundamental-science/index.html"
+ ],
+ "环路中心 y": [
+  "fundamental-science/index.html"
+ ],
+ "环路半径 r": [
+  "fundamental-science/index.html"
+ ],
+ "上下两个势能面 E±(x, y) 与环路（可拖动旋转）": [
+  "fundamental-science/index.html"
+ ],
+ "沿环路时下层电子态的 Bloch 矢量 n = −d̂": [
+  "fundamental-science/index.html"
+ ],
+ "平行输运下本征矢的两个分量（实部）随环路角度的变化": [
+  "fundamental-science/index.html"
+ ],
+ "尚未解决的科学问题": [
+  "fundamental-science/index.html"
+ ],
+ "这些问题都没有公认的答案；标注表示它属于活跃研究还是依赖于尚未证实的假说。": [
+  "fundamental-science/index.html"
+ ],
+ "理论研究路线图": [
+  "fundamental-science/index.html"
+ ],
+ "这是建议的学习与研究阶段，不是已经完成的项目里程碑。每个阶段都还没有开始。": [
+  "fundamental-science/index.html"
+ ],
+ "研究领域": [
+  "fundamental-science/index.html"
+ ],
+ "全部领域": [
+  "fundamental-science/index.html"
+ ],
+ "研究状态": [
+  "fundamental-science/index.html"
+ ],
+ "全部状态": [
+  "fundamental-science/index.html"
+ ],
+ "按年份（早到晚）": [
+  "fundamental-science/index.html"
+ ],
+ "按年份（晚到早）": [
+  "fundamental-science/index.html"
+ ],
+ "MolAstria · 进一步基础科学发现": [
+  "fundamental-science/index.html"
+ ],
+ "本页区分已确立的科学、活跃研究、理论假说与计划方向；计划方向尚未开展，不声称任何新发现。": [
+  "fundamental-science/index.html"
+ ],
+ "量子化学计算（浏览器里运行 HF、FCI、CCSD）": [
+  "fundamental-science/index.html"
+ ],
+ "讲解手册": [
+  "fundamental-science/index.html",
+  "shared-nav.js",
+  "hub/network.js"
+ ],
+ "研究状态的四种标注": [
+  "fundamental-science/index.html"
+ ],
+ "按类别筛选": [
+  "fundamental-science/index.html"
+ ],
+ "概率密度曲线": [
+  "fundamental-science/index.html"
+ ],
+ "左侧构型的概率随时间变化": [
+  "fundamental-science/index.html"
+ ],
+ "两个势能面与环路": [
+  "fundamental-science/index.html"
+ ],
+ "下层电子态的 Bloch 矢量路径": [
+  "fundamental-science/index.html"
+ ],
+ "平行输运下的本征矢分量": [
+  "fundamental-science/index.html"
+ ],
+ "筛选文献": [
+  "fundamental-science/index.html"
  ],
  "论文与社区 · MolAstria": [
   "hub/index.html"
@@ -1491,6 +1693,7 @@
   "meta/index.html",
   "train/index.html",
   "pro/index.html",
+  "fundamental-science/fundamental.js",
   "radar/app/app.js"
  ],
  "通过": [
@@ -4626,10 +4829,6 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
- "讲解手册": [
-  "shared-nav.js",
-  "hub/network.js"
- ],
  "量子化学": [
   "shared-nav.js",
   "tags",
@@ -5405,6 +5604,231 @@
  ],
  "没有公开权重，也没有在线服务。": [
   "scimodels/scimodels.js"
+ ],
+ "阅读详解 →": [
+  "fundamental-science/fundamental.js"
+ ],
+ "重点问题": [
+  "fundamental-science/fundamental.js"
+ ],
+ "核心公式": [
+  "fundamental-science/fundamental.js"
+ ],
+ "关键概念": [
+  "fundamental-science/fundamental.js"
+ ],
+ "本节参考文献": [
+  "fundamental-science/fundamental.js"
+ ],
+ "相关的理论详解 →": [
+  "fundamental-science/fundamental.js"
+ ],
+ "核心思想": [
+  "fundamental-science/fundamental.js"
+ ],
+ "与标准量子力学的关系": [
+  "fundamental-science/fundamental.js"
+ ],
+ "在化学中的作用": [
+  "fundamental-science/fundamental.js"
+ ],
+ "共 {0} 篇。每一篇的题目、作者、年份、期刊和 DOI 都在 {1} 于 Crossref 核对过（XENONnT 的论文另在 arXiv 核对）。可以按研究领域和状态筛选；每条都通过 DOI 链接到出版方。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "显示 {0} / {1} 篇": [
+  "fundamental-science/fundamental.js"
+ ],
+ "引用于": [
+  "fundamental-science/fundamental.js"
+ ],
+ "FCI 维数计算器": [
+  "fundamental-science/fundamental.js"
+ ],
+ "电子数 N": [
+  "fundamental-science/fundamental.js"
+ ],
+ "自旋轨道数 K（偶数）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "远超任何计算机": [
+  "fundamental-science/fundamental.js"
+ ],
+ "请输入 1 ≤ N ≤ K、K 为偶数（K ≤ 400，N ≤ 80）。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "全部行列式": [
+  "fundamental-science/fundamental.js"
+ ],
+ "固定 S": [
+  "fundamental-science/fundamental.js"
+ ],
+ "= {0}，{1} 个空间轨道）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "存一个 CI 向量所需内存（每个系数 8 字节）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "局域化前 |ψ|²": [
+  "fundamental-science/fundamental.js"
+ ],
+ "叠加态 |ψ|²": [
+  "fundamental-science/fundamental.js"
+ ],
+ "局域化后 |ψ|²": [
+  "fundamental-science/fundamental.js"
+ ],
+ "局域化中心的分布 p(x₀)": [
+  "fundamental-science/fundamental.js"
+ ],
+ "位置 x（nm）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "概率密度": [
+  "fundamental-science/fundamental.js"
+ ],
+ "左侧波包的概率": [
+  "fundamental-science/fundamental.js"
+ ],
+ "局域化中心落在左侧的概率": [
+  "fundamental-science/fundamental.js"
+ ],
+ "最近一次的中心 x₀": [
+  "fundamental-science/fundamental.js"
+ ],
+ "系综平均后两峰的相干因子": [
+  "fundamental-science/fundamental.js"
+ ],
+ "单个核子的平均局域化间隔 1/λ（λ = 10⁻¹⁶ s⁻¹）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "≈ 3.2 × 10⁸ 年": [
+  "fundamental-science/fundamental.js"
+ ],
+ "含 10²³ 个核子的刚性物体（速率 Nλ）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "实线：叠加态的概率密度；点线：局域化中心 x₀ 的概率分布。点“随机发生一次局域化”按这个分布抽取 x₀。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "远大于": [
+  "fundamental-science/fundamental.js"
+ ],
+ "不远大于": [
+  "fundamental-science/fundamental.js"
+ ],
+ "所以另一个波包几乎完全消失": [
+  "fundamental-science/fundamental.js"
+ ],
+ "所以两个波包都还在，只是比例改变": [
+  "fundamental-science/fundamental.js"
+ ],
+ "第 {0} 次抽样：x₀ = {1} nm。两峰间距 {2} nm {3} r_C = {4} nm，{5}。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "概率密度曲线；左侧波包概率 {0}": [
+  "fundamental-science/fundamental.js"
+ ],
+ "无（孤立）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "时间（{0}）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "左侧构型的概率 P_L": [
+  "fundamental-science/fundamental.js"
+ ],
+ "孤立分子（标准量子力学）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "环境 + 坍缩项": [
+  "fundamental-science/fundamental.js"
+ ],
+ "只有坍缩项": [
+  "fundamental-science/fundamental.js"
+ ],
+ "振荡周期 2π/ω": [
+  "fundamental-science/fundamental.js"
+ ],
+ "坍缩模型退相干率 Γ_CSL": [
+  "fundamental-science/fundamental.js"
+ ],
+ "动力学区域": [
+  "fundamental-science/fundamental.js"
+ ],
+ "无阻尼": [
+  "fundamental-science/fundamental.js"
+ ],
+ "过阻尼：停在初始构型": [
+  "fundamental-science/fundamental.js"
+ ],
+ "欠阻尼：仍在振荡": [
+  "fundamental-science/fundamental.js"
+ ],
+ "局域化态的弛豫时间": [
+  "fundamental-science/fundamental.js"
+ ],
+ "相干衰减时间 2/γ": [
+  "fundamental-science/fundamental.js"
+ ],
+ "坍缩项比环境退相干小约 {0} 个数量级，“只有坍缩项”的曲线与孤立分子几乎重合：在单个分子上，坍缩模型的效应被环境完全掩盖。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "退相干率超过 2ω，振荡消失，分子停留在初始构型：这就是环境“冻结”隧穿、稳定手性构型的机制。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "同一个方程里，环境退相干和坍缩项形式相同：只看衰减曲线，无法判断它来自哪一种。": [
+  "fundamental-science/fundamental.js"
+ ],
+ "左侧构型的概率随时间变化，时间范围 {0} {1}，周期 {2} {3}": [
+  "fundamental-science/fundamental.js"
+ ],
+ "Berry 相位 γ（数值）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "环路与简并点": [
+  "fundamental-science/fundamental.js"
+ ],
+ "0 打开能隙）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "环路经过交叉点（相位无定义）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "包围圆锥交叉": [
+  "fundamental-science/fundamental.js"
+ ],
+ "不包围交叉点": [
+  "fundamental-science/fundamental.js"
+ ],
+ "环路上的最小能隙 E₊ − E₋": [
+  "fundamental-science/fundamental.js"
+ ],
+ "回到起点时的本征矢": [
+  "fundamental-science/fundamental.js"
+ ],
+ "变号（× −1）": [
+  "fundamental-science/fundamental.js"
+ ],
+ "不变": [
+  "fundamental-science/fundamental.js"
+ ],
+ "乘以 e^(−iγ)": [
+  "fundamental-science/fundamental.js"
+ ],
+ "解析对照 Ω/2": [
+  "fundamental-science/fundamental.js"
+ ],
+ "两个势能面与环路；Berry 相位 {0} π": [
+  "fundamental-science/fundamental.js"
+ ],
+ "E₊（上层）· E₋（下层）· 环路 · ● 简并点": [
+  "fundamental-science/fundamental.js"
+ ],
+ "沿环路的角度": [
+  "fundamental-science/fundamental.js"
+ ],
+ "分量": [
+  "fundamental-science/fundamental.js"
  ],
  "软件/官网": [
   "hub/app.js",
@@ -9224,6 +9648,9 @@
   "tools/build-seo.ts"
  ],
  "期刊发表：计算化学期刊投稿与发表指南": [
+  "tools/build-seo.ts"
+ ],
+ "进一步基础科学发现 · Advancing Fundamental Science": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [

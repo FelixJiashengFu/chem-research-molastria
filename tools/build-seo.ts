@@ -264,6 +264,7 @@ const mains = [
   await injectHead("manual/index.html", "manual/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "计算化学数据库说明讲解手册 · 阅读器", inLanguage: "zh-CN", url: SITE + "manual/" }] }),
   await injectHead("journals/index.html", "journals/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "期刊发表：计算化学期刊投稿与发表指南", inLanguage: "zh-CN", url: SITE + "journals/", isAccessibleForFree: true, about: ["computational chemistry journals", "quantum chemistry", "scholarly publishing", "peer review", "preprints"] }, crumbs([["首页", ""], ["期刊发表", "journals/"]])] }),
   await injectHead("scimodels/index.html", "scimodels/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "科学领域语言模型与多模态基础模型", inLanguage: "zh-CN", url: SITE + "scimodels/", isAccessibleForFree: true, about: ["scientific large language models", "multimodal foundation models", "chemistry language models", "AI for science", "LLM API pricing"] }, crumbs([["首页", ""], ["科学大模型", "scimodels/"]])] }),
+  await injectHead("fundamental-science/index.html", "fundamental-science/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "进一步基础科学发现 · Advancing Fundamental Science", inLanguage: "zh-CN", url: SITE + "fundamental-science/", isAccessibleForFree: true, about: ["foundations of quantum mechanics", "quantum chemistry", "reduced density matrices", "Berry phase", "conical intersections", "objective collapse models", "open quantum systems"] }, crumbs([["首页", ""], ["进一步基础科学发现", "fundamental-science/"]])] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
   await injectHead("pro/index.html", "pro/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "MolAstria Pro", inLanguage: "zh-CN", url: SITE + "pro/" }] }),
@@ -302,7 +303,7 @@ await write("404.html", `<!doctype html>
 `);
 const urls = [
   ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
-  ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
+  ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["fundamental-science/", "0.8", "monthly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>

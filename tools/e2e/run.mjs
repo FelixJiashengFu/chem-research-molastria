@@ -963,7 +963,8 @@ check('top bar: one row at every desktop width in both languages, the rest goes 
   await p.click('.cr-more-btn');
   await p.click('#breadcrumb');
   assert.ok(await p.locator('.cr-more-menu').isHidden(), 'a click outside closes the menu');
-  await p.setViewportSize({ width: 1920, height: 800 });
+  // With 15 links (进一步基础科学发现 added 2026-11-07) every link fits from about 2000 px; at 1920 px Agent 工程 sits in 更多.
+  await p.setViewportSize({ width: 2560, height: 800 });
   await p.waitForFunction(() => !document.querySelector('.cr-more-btn').offsetWidth);
   await p.setViewportSize({ width: 900, height: 800 });
   await p.waitForFunction((n) => document.querySelectorAll('.cr-more-menu a').length > n, tucked.length);
@@ -1328,8 +1329,61 @@ check('home: the 收藏夹 button counts favourites from home and the database p
   await finish(p);
 });
 
+check('fundamental science: nav entry, pillars and tabs, MathML formulas, three working demos, references, English', async () => {
+  const p = await open();
+  await go(p, '/fundamental-science/index.html');
+  const setRange = (sel, v) => p.$eval(sel, (el, val) => { el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); }, String(v));
+  assert.equal(await p.locator('.cr-header a[data-id=fundamental]').count(), 1, 'nav entry');
+  assert.equal(await p.locator('.fs-pillar').count(), 5);
+  assert.equal(await p.locator('.fs-tab').count(), 6);
+  assert.equal(await p.locator('.fs-dir').count(), 3);
+  assert.equal(await p.locator('.fs-dir .fs-st[data-s=proposed]').count(), 3, 'every priority direction is labelled proposed');
+  assert.ok(await p.locator('#s-qm math').count() >= 4, 'MathML formulas render');
+  assert.equal(await p.locator('#s-qm .fs-topic').count(), 10);
+  // A pillar card opens its tab; the FCI calculator counts exactly.
+  await p.click('.fs-pillar[data-tab=math]');
+  assert.equal(await p.isVisible('#s-math'), true);
+  assert.equal(await p.isVisible('#s-qm'), false);
+  assert.match(await text(p, '#calc-out'), /847,660,528/);
+  await p.fill('#calc-n', '14'); await p.fill('#calc-k', '60');
+  assert.match(await text(p, '#calc-out'), /17,345,898,649,800[\s\S]*4,144,481,640,000/); // C(60,14) and C(30,7)², checked with Python's math.comb
+  // Demo 3: Berry phase π around the conical intersection, 0 when the loop misses it, Ω/2 once Δ opens a gap.
+  assert.match(await text(p, '#b-read'), /1\.0000 π/);
+  await setRange('#b-cx', 1.2); await setRange('#b-r', 0.5);
+  assert.match(await text(p, '#b-read'), /0\.0000 π/);
+  await setRange('#b-cx', 0); await setRange('#b-delta', 0.3);
+  const ci = await text(p, '#b-read');
+  const [num, ana] = [...ci.matchAll(/(-?\d\.\d{4}) π/g)].map((m) => Math.abs(Number(m[1])));
+  assert.ok(Math.abs(num - ana) < 1e-3 && num < 1, `numerical vs analytic Berry phase: ${ci}`);
+  // Demo 1: one localization picks a packet when the peaks are far apart compared with r_C.
+  await p.click('#g-hit');
+  const left = Number((await text(p, '#g-read')).match(/(\d\.\d{3})/)[1]);
+  assert.ok(left < 0.01 || left > 0.99, `left-packet probability after a hit: ${left}`);
+  // Demo 2: ammonia oscillates with a 42 ps period; strong decoherence freezes it.
+  assert.match(await text(p, '#c-read'), /42 ps/);
+  await setRange('#c-env', 13);
+  assert.match(await text(p, '#c-read'), /过阻尼/);
+  // Theory explorer and library filters.
+  await p.click('.fs-chip[data-kind=modification]');
+  assert.equal(await p.locator('.fs-theory').count(), 3);
+  assert.equal(await p.locator('.fs-ref').count(), 36);
+  await p.selectOption('#fs-lib-status', 'hypothesis');
+  assert.equal(await p.locator('.fs-ref').count(), 4); // GRW 1986, Pearle 1989, GPR 1990, Smirne & Bassi 2015
+  assert.match(await p.locator('.fs-ref').first().locator('a[href^="https://doi.org/"]').getAttribute('href'), /^https:\/\/doi\.org\/10\./);
+  await finish(p);
+  // English: content comes from the English half of the data, interface text from the dictionary.
+  const e = await open();
+  await go(e, '/fundamental-science/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#fs-h1'), /Advancing Fundamental Science/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

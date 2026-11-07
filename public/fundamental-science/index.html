@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 的基础理论研究方向：量子力学的基础与局限、量子化学的数学重构、分子量子动力学的几何基础（Berry 相位、圆锥交叉）、GRW 与 CSL 等修正动力学及其分子检验。每一条内容都标明是已确立的科学、活跃研究、理论假说还是计划方向，附可交互的数学演示与经过核对的参考文献。">
+  <meta name="theme-color" content="#173f34">
+  <title>进一步基础科学发现 · Advancing Fundamental Science · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="fundamental.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="fs-data.js" defer></script>
+  <script src="fs-math.js" defer></script>
+  <script src="fs-models.js" defer></script>
+  <script src="fundamental.js" defer></script>
+</head>
+<body data-section="fundamental">
+<a class="skip" href="#fs-pillars">跳到研究支柱</a>
+<main>
+  <section class="fs-hero" aria-labelledby="fs-h1">
+    <p class="eyebrow">MOLASTRIA · FUNDAMENTAL SCIENCE</p>
+    <h1 id="fs-h1">进一步基础科学发现<span class="fs-h1-en" lang="en" translate="no">Advancing Fundamental Science</span></h1>
+    <blockquote class="fs-question" id="fs-question"></blockquote>
+    <p class="lead" id="fs-lead"></p>
+    <p class="fs-honest" id="fs-honest"></p>
+    <ul class="fs-legend" id="fs-legend" aria-label="研究状态的四种标注"></ul>
+    <nav class="fs-jump" aria-label="本页内容">
+      <a class="button primary" href="#fs-pillars">五大研究支柱 <span aria-hidden="true">↓</span></a>
+      <a class="button" href="#fs-directions">三条重点主线</a>
+      <a class="button" href="#fs-lab">交互式理论实验室</a>
+      <a class="button" href="#fs-library">科研文献</a>
+    </nav>
+  </section>
+
+  <section class="fs-block" id="fs-intro" aria-labelledby="fs-intro-h">
+    <h2 id="fs-intro-h">核心研究理念</h2>
+    <div class="fs-prose" id="fs-intro-text"></div>
+  </section>
+
+  <section class="fs-block" id="fs-pillars" aria-labelledby="fs-pillars-h" tabindex="-1">
+    <h2 id="fs-pillars-h">五大研究支柱</h2>
+    <p class="muted">每个支柱下面都有完整的理论说明：核心公式、关键概念（逐条标注研究状态）、重点问题的解答和参考文献。</p>
+    <div class="fs-pillar-grid" id="fs-pillar-grid"></div>
+  </section>
+
+  <section class="fs-block fs-reader" id="fs-sections" aria-labelledby="fs-sections-h">
+    <h2 id="fs-sections-h">研究支柱详解</h2>
+    <div class="fs-tabs" role="tablist" aria-label="研究支柱详解" id="fs-tabs"></div>
+    <div id="fs-panels"></div>
+  </section>
+
+  <section class="fs-block" id="fs-directions" aria-labelledby="fs-directions-h" tabindex="-1">
+    <h2 id="fs-directions-h">三条重点研究主线</h2>
+    <p class="muted">MolAstria 希望长期投入的三个方向。它们都处于计划阶段：卡片写明研究问题、所需的数学与计算方法、潜在应用、开放问题和当前状态，不包含任何已取得的成果。</p>
+    <div class="fs-dir-grid" id="fs-dir-grid"></div>
+  </section>
+
+  <section class="fs-block" id="fs-theories" aria-labelledby="fs-theories-h" tabindex="-1">
+    <h2 id="fs-theories-h">理论比较：量子力学的其他表述与理论</h2>
+    <p class="muted" id="fs-explorer-note"></p>
+    <div class="fs-kind-filter" role="group" aria-label="按类别筛选" id="fs-kind-filter"></div>
+    <div class="fs-theory-grid" id="fs-theory-grid"></div>
+  </section>
+
+  <section class="fs-block fs-lab" id="fs-lab" aria-labelledby="fs-lab-h" tabindex="-1">
+    <h2 id="fs-lab-h">交互式理论实验室</h2>
+    <p class="muted">三个演示都在浏览器里直接求解对应的数学模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。</p>
+
+    <article class="fs-demo" id="demo-grw" aria-labelledby="demo-grw-h">
+      <header><p class="fs-demo-n">演示 1</p><h3 id="demo-grw-h">量子叠加与坍缩</h3>
+        <p class="muted" data-demo-intro="grw"></p></header>
+      <div class="fs-formula" data-math="grwHit"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>两峰间距 2a<span><input type="range" id="g-sep" min="20" max="1200" step="10" value="800"><output id="g-sep-v"></output></span></label>
+          <label>波包宽度 σ<span><input type="range" id="g-sigma" min="5" max="120" step="1" value="40"><output id="g-sigma-v"></output></span></label>
+          <label>局域化宽度 r_C<span><input type="range" id="g-rc" min="10" max="600" step="5" value="100"><output id="g-rc-v"></output></span></label>
+          <div class="fs-btns"><button type="button" class="button primary" id="g-hit">随机发生一次局域化</button><button type="button" class="button" id="g-reset">回到叠加态</button></div>
+          <dl class="fs-readout" id="g-read" aria-live="polite"></dl>
+        </div>
+        <figure class="fs-figure"><canvas id="g-canvas" width="720" height="360" role="img" aria-label="概率密度曲线"></canvas>
+          <figcaption id="g-cap"></figcaption></figure>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="grw"></p>
+      </details>
+    </article>
+
+    <article class="fs-demo" id="demo-coherence" aria-labelledby="demo-coh-h">
+      <header><p class="fs-demo-n">演示 2</p><h3 id="demo-coh-h">分子量子相干：标准振荡与附加退相干</h3>
+        <p class="muted" data-demo-intro="coherence"></p></header>
+      <div class="fs-formula" data-math="twoLevel"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>隧穿劈裂 Δ（cm⁻¹）<span><input type="range" id="c-delta" min="-2" max="1" step="0.01" value="-0.1"><output id="c-delta-v"></output></span></label>
+          <label>环境退相干率 γ_env<span><input type="range" id="c-env" min="8" max="13" step="0.05" value="10.5"><output id="c-env-v"></output></span></label>
+          <fieldset class="fs-sub"><legend>坍缩模型（CSL，理论假说）</legend>
+            <label>坍缩率 λ（每个核子）<span><input type="range" id="c-lambda" min="-20" max="-4" step="0.5" value="-16"><output id="c-lambda-v"></output></span></label>
+            <label>运动的质量 m<span><input type="range" id="c-mass" min="0" max="6" step="0.01" value="1.23"><output id="c-mass-v"></output></span></label>
+            <label>两构型的间距 d<span><input type="range" id="c-d" min="-1" max="5" step="0.01" value="-0.12"><output id="c-d-v"></output></span></label>
+          </fieldset>
+          <div class="fs-btns"><button type="button" class="button" id="c-nh3">恢复氨分子参数</button></div>
+          <dl class="fs-readout" id="c-read" aria-live="polite"></dl>
+        </div>
+        <figure class="fs-figure"><canvas id="c-canvas" width="720" height="360" role="img" aria-label="左侧构型的概率随时间变化"></canvas>
+          <figcaption id="c-cap"></figcaption></figure>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="coherence"></p>
+      </details>
+    </article>
+
+    <article class="fs-demo" id="demo-ci" aria-labelledby="demo-ci-h">
+      <header><p class="fs-demo-n">演示 3</p><h3 id="demo-ci-h">圆锥交叉与 Berry 相位</h3>
+        <p class="muted" data-demo-intro="ci"></p></header>
+      <div class="fs-formula" data-math="ci"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>κ（x 方向耦合）<span><input type="range" id="b-kappa" min="0.3" max="2" step="0.05" value="1"><output id="b-kappa-v"></output></span></label>
+          <label>λ（y 方向耦合）<span><input type="range" id="b-lam" min="0.3" max="2" step="0.05" value="1"><output id="b-lam-v"></output></span></label>
+          <label>Δ（打开简并）<span><input type="range" id="b-delta" min="0" max="1" step="0.01" value="0"><output id="b-delta-v"></output></span></label>
+          <label>环路中心 x<span><input type="range" id="b-cx" min="-1.2" max="1.2" step="0.02" value="0"><output id="b-cx-v"></output></span></label>
+          <label>环路中心 y<span><input type="range" id="b-cy" min="-1.2" max="1.2" step="0.02" value="0"><output id="b-cy-v"></output></span></label>
+          <label>环路半径 r<span><input type="range" id="b-r" min="0.1" max="1" step="0.02" value="0.6"><output id="b-r-v"></output></span></label>
+          <dl class="fs-readout" id="b-read" aria-live="polite"></dl>
+        </div>
+        <div class="fs-figure fs-figure-ci">
+          <figure><canvas id="b-surface" width="560" height="420" role="img" aria-label="两个势能面与环路"></canvas>
+            <figcaption>上下两个势能面 E±(x, y) 与环路（可拖动旋转）</figcaption></figure>
+          <figure><canvas id="b-sphere" width="300" height="300" role="img" aria-label="下层电子态的 Bloch 矢量路径"></canvas>
+            <figcaption>沿环路时下层电子态的 Bloch 矢量 n = −d̂</figcaption></figure>
+          <figure class="fs-wide"><canvas id="b-transport" width="560" height="170" role="img" aria-label="平行输运下的本征矢分量"></canvas>
+            <figcaption>平行输运下本征矢的两个分量（实部）随环路角度的变化</figcaption></figure>
+        </div>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="ci"></p>
+      </details>
+    </article>
+  </section>
+
+  <section class="fs-block" id="fs-questions" aria-labelledby="fs-questions-h" tabindex="-1">
+    <h2 id="fs-questions-h">尚未解决的科学问题</h2>
+    <p class="muted">这些问题都没有公认的答案；标注表示它属于活跃研究还是依赖于尚未证实的假说。</p>
+    <ol class="fs-open" id="fs-open"></ol>
+  </section>
+
+  <section class="fs-block" id="fs-roadmap" aria-labelledby="fs-roadmap-h" tabindex="-1">
+    <h2 id="fs-roadmap-h">理论研究路线图</h2>
+    <p class="fs-note">这是建议的学习与研究阶段，不是已经完成的项目里程碑。每个阶段都还没有开始。</p>
+    <ol class="fs-road" id="fs-road"></ol>
+  </section>
+
+  <section class="fs-block" id="fs-library" aria-labelledby="fs-library-h" tabindex="-1">
+    <h2 id="fs-library-h">科研文献</h2>
+    <p class="muted" id="fs-lib-intro"></p>
+    <div class="fs-lib-filters" role="search" aria-label="筛选文献">
+      <label>研究领域<select id="fs-lib-area"><option value="">全部领域</option></select></label>
+      <label>研究状态<select id="fs-lib-status"><option value="">全部状态</option></select></label>
+      <label>排序<select id="fs-lib-sort"><option value="year-asc">按年份（早到晚）</option><option value="year-desc">按年份（晚到早）</option></select></label>
+    </div>
+    <p class="fs-count" id="fs-lib-count" role="status" aria-live="polite"></p>
+    <ol class="fs-refs" id="fs-refs"></ol>
+  </section>
+
+  <footer class="fs-foot">
+    <strong>MolAstria · 进一步基础科学发现</strong>
+    <p>本页区分已确立的科学、活跃研究、理论假说与计划方向；计划方向尚未开展，不声称任何新发现。</p>
+    <p><a href="../qchem/index.html">量子化学计算（浏览器里运行 HF、FCI、CCSD）</a> · <a href="../models/index.html">模型接口</a> · <a href="../manual/index.html">讲解手册</a> · <a href="#fs-h1">回到顶部 ↑</a></p>
+  </footer>
+</main>
+</body>
+</html>

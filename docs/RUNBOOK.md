@@ -103,6 +103,16 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 
 需要环境变量 `DEEPSEEK_API_KEY`。检查 `git diff i18n/en.json` 里的新译文，品牌词和按钮文字常要手改；手改时保持 1 空格缩进，再运行一次 `i18n-translate` 生成 `public/i18n/en.js`。
 
+## 基础科学栏目（/fundamental-science/）
+
+内容全部在 `public/fundamental-science/fs-data.js`，中英两版并排写（`T(中文, English)`），页面按站点语言取用，不经过 i18n 翻译。
+
+- **每一条都要有研究状态：** `established` 已确立、`active` 活跃研究、`hypothesis` 理论假说、`proposed` 计划方向。计划方向和假说不能写成成果；`tools/fundamental-test.mjs` 会检查三条主线的状态都写着“计划方向”。
+- **加文献：** 先在 Crossref（或 arXiv）查到 DOI，把题目、作者、年份、期刊、卷、页码照原样写进 `refs`，然后运行 `NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs` 逐条核对；不核对的不要放上去。正文用 `refs` 的 id 引用。
+- **加公式：** 在 `math` 里写 LaTeX，运行 `node tools/fundamental-math.mjs`（用 KaTeX 转成 MathML，写进 `fs-math.js`，需要联网一次），再跑 `node --test tools/fundamental-test.mjs`。页面用浏览器原生的 MathML 排版，不加载公式脚本，离线和桌面版里都能显示。
+- **演示的数学** 在 `fs-models.js`（纯函数）；改动后让 `fundamental-test.mjs` 里的解析解对照通过。
+- **界面文字**（标题、按钮、控件标签）写中文，照常 `i18n-extract`；英文译文由维护者自己写进 `i18n/en.json`，不要留空，否则 `i18n-translate` 会把空项发给 DeepSeek。
+
 ## 刷新数据
 
 训练页的模型核对：`node tools/train-models.mjs`（每周四随目录刷新自动跑；本机有 HTTPS 扫描时加 `NODE_USE_SYSTEM_CA=1`）。它只更新 `public/train/models-live.js`，手写的模型介绍要人来改。

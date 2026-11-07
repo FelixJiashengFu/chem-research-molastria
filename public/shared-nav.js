@@ -18,6 +18,7 @@
     ['meta', 'meta/index.html', 'Meta', true],
     ['models', 'models/index.html', '模型接口', true],
     ['qchem', 'qchem/index.html', '量子化学', true],
+    ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', true],
     ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']
   ];

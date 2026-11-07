@@ -29,6 +29,8 @@ jobs:
         run: node --test tools/lab-test.mjs
       - name: Network engine tests
         run: node --test tools/net-test.mjs
+      - name: Fundamental Science models and content
+        run: node --test tools/fundamental-test.mjs
       - name: Account service tests
         run: deno run --allow-read tools/account-test.ts
       - name: Rebuild SEO pages and sitemap

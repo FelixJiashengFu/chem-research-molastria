@@ -97,6 +97,17 @@ check('scientific models page: 27 model cards and the price chart with its table
   assert.deepEqual(p.errors, []);
 });
 
+check('fundamental science page: pillars, MathML formulas, the three demos and the reference library', async () => {
+  const p = await page('/fundamental-science/');
+  await p.waitForSelector('.fs-pillar');
+  assert.equal(await p.locator('.fs-pillar').count(), 5);
+  assert.ok(await p.locator('math').count() >= 20, 'formulas render as MathML');
+  assert.match(await p.textContent('#b-read'), /1\.0000 π/);
+  assert.match(await p.textContent('#c-read'), /42 ps/);
+  assert.equal(await p.locator('.fs-ref').count(), 36);
+  assert.deepEqual(p.errors, []);
+});
+
 check('installable web app: manifest and its icons, a CI-stamped sw.js, the offline page, the head tags', async () => {
   const get = (path) => fetch(`${SITE}/${path}${path.includes('?') ? '&' : '?'}${bust}`);
   const m = await (await get('manifest.webmanifest')).json();
