@@ -1382,6 +1382,51 @@ check('fundamental science: nav entry, pillars and tabs, MathML formulas, three 
   await finish(e);
 });
 
+check('display settings: scale, reading size and typeface apply, carry to other pages, are capped in narrow windows and reset', async () => {
+  const p = await open({ viewport: { width: 1280, height: 900 } });
+  await go(p, '/index.html');
+  await p.click('#cr-disp');
+  await p.waitForSelector('.cr-disp[data-open=true]');
+  await p.click('[data-step=zoom][data-dir="1"]');
+  await p.click('[data-step=text][data-dir="1"]');
+  await p.click('[data-font-id=serif]');
+  const s = () => p.evaluate(() => ({ zoom: document.documentElement.style.zoom, text: getComputedStyle(document.querySelector('main')).zoom, font: getComputedStyle(document.body).fontFamily }));
+  let v = await s();
+  assert.equal(v.zoom, '1.1');
+  assert.equal(v.text, '1.1');
+  assert.match(v.font, /Songti|Serif/);
+  await p.keyboard.press('Escape');
+  assert.equal(await p.getAttribute('#cr-disp', 'aria-expanded'), 'false');
+  await go(p, '/journals/index.html');
+  v = await s();
+  assert.deepEqual([v.zoom, v.text], ['1.1', '1.1'], 'kept on the next page');
+  // A narrow window cannot hold 150 % × 140 %: the reading size gives way, nothing scrolls sideways, the panel says why.
+  await p.evaluate(() => { localStorage.setItem('molastria-zoom', '1.5'); localStorage.setItem('molastria-text', '1.4'); });
+  await p.setViewportSize({ width: 820, height: 900 });
+  await go(p, '/index.html');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await p.click('#cr-disp');
+  assert.equal(await p.isVisible('.cr-disp-note'), true);
+  assert.equal(await p.isDisabled('[data-step=text][data-dir="1"]'), true);
+  await p.click('.cr-disp-reset');
+  v = await s();
+  assert.deepEqual([v.zoom, v.text], ['', '1']);
+  assert.doesNotMatch(v.font, /Songti/);
+  await finish(p);
+});
+
+check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html']) {
+    const p = await open();
+    await go(p, path);
+    assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
+    assert.equal(await p.evaluate(() => document.body.innerText.includes('↗')), false, `${path}: no ↗ characters`);
+    assert.match(await p.$eval('.ico-ext', (i) => getComputedStyle(i).backgroundImage), /linear-gradient/, `${path}: gold fill`);
+    if (path === '/index.html') assert.match(await p.$eval('#fav-open', (b) => getComputedStyle(b).backgroundImage), /linear-gradient/);
+    await finish(p);
+  }
+});
+
 check('phone width: no sideways scrolling', async () => {
   for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });

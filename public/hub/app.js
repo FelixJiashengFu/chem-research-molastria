@@ -25,7 +25,7 @@ function cardHTML(it){
     excerpt + mirror +
     '<div class="chips">' + chips + "</div>" +
     '<div class="card-foot"><span>' + meta + '</span>' +
-    '<a class="open-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener">原文 ↗</a></div></article>';
+    '<a class="open-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener">原文 <i class="ico-ext" aria-hidden="true"></i></a></div></article>';
 }
 function bindChips(root){
   root.querySelectorAll("[data-tag]").forEach((b) => b.addEventListener("click", () => {
@@ -114,7 +114,7 @@ function renderAll(){
       '<span class="badge ' + esc(s.status) + '">' + esc(s.statusLabel) + "</span>" +
       '<div class="meter"><i style="width:' + (cnt / maxCount * 100).toFixed(1) + '%"></i></div>' +
       '<div class="meta">' + cnt + ' 条 · 快照采集于 ' + new Date(s.fetchedAt).toLocaleString("zh-CN") +
-      (s.url ? '<br><a href="' + esc(s.url) + '" target="_blank" rel="noopener">访问原站 ↗</a>' : '<br>点下方卡片进各官网') + "</div></article>";
+      (s.url ? '<br><a href="' + esc(s.url) + '" target="_blank" rel="noopener">访问原站 <i class="ico-ext" aria-hidden="true"></i></a>' : '<br>点下方卡片进各官网') + "</div></article>";
   }).join("");
   donut(bySrc);
   const tagCount = {}; items.forEach((i) => (i.tags || []).forEach((t) => tagCount[t] = (tagCount[t] || 0) + 1));

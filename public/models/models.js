@@ -669,7 +669,7 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 →</button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}</div>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}</div>`;
       const foot = `<p class="muted small">${x.r.seconds ?? '?'} 秒 · 机器学习势的预测，不是 DFT 计算${x.r.direct_forces ? ' · 直接受力型模型：力不是能量的导数，频率由受力差分得到' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
       html += `<div class="md-res" data-i="${i}">${head}${body}${btns}${foot}</div>`;

@@ -20,7 +20,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"闭环电解液分子发现 · AI 实验室","applicationCategory":"ScientificApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://molastria.com/lab/","isAccessibleForFree":true,"description":"用 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层分配 DFT 验证。"}</script>
   <!-- seo:end -->
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
   <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
@@ -40,9 +40,9 @@
       <h1>让 AI 提出分子，<br><em>也让它知道何时不可信。</em></h1>
       <p class="lead">从“替人计算已知分子”到“自己发现新分子”。语言模型扮演化学家提出电解液溶剂候选，RDKit 拦下不合理的结构，UMA 机器学习势在 Rowan 云端快速筛选，可靠性层再决定把有限的 DFT 预算花在哪些“有希望但可疑”的分子上。</p>
       <div class="actions">
-        <a class="button primary" href="#workbench">打开工作台 <span aria-hidden="true">↓</span></a>
+        <a class="button primary" href="#workbench">打开工作台 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a>
         <button class="button" type="button" id="hero-demo">载入演示数据</button>
-        <a class="button ghost" href="#method">方法与边界 <span aria-hidden="true">↓</span></a>
+        <a class="button ghost" href="#method">方法与边界 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a>
       </div>
       <p class="fine">AI 由你自己的 DeepSeek 或 Meta Muse API key 驱动；量化计算在 Rowan 上运行，结果导回本页。所有项目数据只保存在你的浏览器。</p>
     </div>

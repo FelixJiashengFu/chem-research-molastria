@@ -378,7 +378,7 @@
       `<h4><a href="${esc(d.url)}" target="${d.type === 'handbook' ? '_self' : '_blank'}" rel="noopener">${mark(d.title)}</a></h4>` +
       (excerpt ? `<p>${mark(excerpt.slice(0, 220))}</p>` : '') +
       (ents.length ? `<div class="net-item-ents">${ents.map((e) => entityChip(e)).join('')}</div>` : '') +
-      `<div class="card-foot"><span>${meta}</span>${mirrors}<a class="open-btn" href="${esc(d.url)}" target="${d.type === 'handbook' ? '_self' : '_blank'}" rel="noopener">${d.type === 'handbook' ? '阅读 →' : '原文 ↗'}</a></div></article>`;
+      `<div class="card-foot"><span>${meta}</span>${mirrors}<a class="open-btn" href="${esc(d.url)}" target="${d.type === 'handbook' ? '_self' : '_blank'}" rel="noopener">${d.type === 'handbook' ? '阅读 <i class="ico-ext ico-right" aria-hidden="true"></i>' : '原文 <i class="ico-ext" aria-hidden="true"></i>'}</a></div></article>`;
   }
   function renderFocus() {
     const f = $('netFocus');
@@ -390,7 +390,7 @@
         (R.corrected ? `<p class="focus-note">${esc(`按「${display(e)}」查询，你输入的是「${R.q}」。`)}</p>` : '') +
         (e.desc ? `<p class="focus-desc">${esc(e.desc)}</p>` : '') +
         `<div class="focus-stats"><span>${primary.length} 条直接相关</span><span>${R.related.length} 个关联概念</span><span>${srcN} 个来源</span></div>` +
-        (e.url ? `<a class="btn primary focus-link" href="${esc(e.url)}" target="_blank" rel="noopener">访问官网 ↗</a>` : '');
+        (e.url ? `<a class="btn primary focus-link" href="${esc(e.url)}" target="_blank" rel="noopener">访问官网 <i class="ico-ext" aria-hidden="true"></i></a>` : '');
     } else if (R.mode === 'text') {
       f.innerHTML = `<div class="focus-kind k-query">全文检索</div><h2 id="resultTitle">「${esc(R.q)}」</h2>` +
         `<div class="focus-stats"><span>${primary.length} 条命中</span><span>${R.related.length} 个关联概念</span></div>` +
@@ -398,7 +398,7 @@
     } else if (R.mode === 'source') {
       f.innerHTML = `<div class="focus-kind k-source">来源</div><h2 id="resultTitle">${esc(R.source.name)}</h2><p class="focus-desc">${esc(R.source.role || '')}</p>` +
         `<div class="focus-stats"><span>${primary.length} 条条目</span><span>${R.related.length} 个常见概念</span></div>` +
-        (R.source.url ? `<a class="btn primary focus-link" href="${esc(R.source.url)}" target="_blank" rel="noopener">访问原站 ↗</a>` : '');
+        (R.source.url ? `<a class="btn primary focus-link" href="${esc(R.source.url)}" target="_blank" rel="noopener">访问原站 <i class="ico-ext" aria-hidden="true"></i></a>` : '');
     } else {
       f.innerHTML = `<div class="focus-kind k-hub">全网概览</div><h2 id="resultTitle">从任意一个词开始</h2>` +
         `<p class="focus-desc">图里是条目最多的软件、方法与概念。点一个节点，或在上方搜索，网就以它为中心展开。</p>`;
@@ -523,10 +523,10 @@
     const groups = new Map();
     for (const d of officials) { const c = d.category || '未分类'; if (!groups.has(c)) groups.set(c, []); groups.get(c).push(d); }
     $('dbDirectory').innerHTML = [...groups.entries()].map(([cat, list]) => `<div class="db-group"><h3>${esc(cat)}（${list.length}）</h3><div class="db-table">` +
-      list.map((d) => `<div class="db-cell"><h4>${esc(d.title)}</h4><p>${esc(d.excerpt || d.metric || '')}</p><div class="db-actions"><button class="btn locate-btn" type="button" data-q="${esc(d.title)}">在网中查看</button><a class="btn primary" href="${esc(d.url)}" target="_blank" rel="noopener">访问官网 ↗</a></div></div>`).join('') + '</div></div>').join('') +
+      list.map((d) => `<div class="db-cell"><h4>${esc(d.title)}</h4><p>${esc(d.excerpt || d.metric || '')}</p><div class="db-actions"><button class="btn locate-btn" type="button" data-q="${esc(d.title)}">在网中查看</button><a class="btn primary" href="${esc(d.url)}" target="_blank" rel="noopener">访问官网 <i class="ico-ext" aria-hidden="true"></i></a></div></div>`).join('') + '</div></div>').join('') +
       `<div class="db-group"><h3>数据源入口（${NET.sources.length} 个来源）</h3><div class="db-table">` + NET.sources.map((s) => {
         const n = NET.docs.filter((d) => d.sources.includes(s.id)).length;
-        return `<div class="db-cell"><h4>${esc(s.name)}</h4><p><span>${esc(s.role || '')}</span> · <span>共 ${n} 条</span></p><div class="db-actions"><button class="btn locate-btn" type="button" data-src="${esc(s.id)}">在网中查看</button>${s.url ? `<a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">访问原站 ↗</a>` : ''}</div></div>`;
+        return `<div class="db-cell"><h4>${esc(s.name)}</h4><p><span>${esc(s.role || '')}</span> · <span>共 ${n} 条</span></p><div class="db-actions"><button class="btn locate-btn" type="button" data-src="${esc(s.id)}">在网中查看</button>${s.url ? `<a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">访问原站 <i class="ico-ext" aria-hidden="true"></i></a>` : ''}</div></div>`;
       }).join('') + '</div></div>';
   }
   document.addEventListener('click', (ev) => {

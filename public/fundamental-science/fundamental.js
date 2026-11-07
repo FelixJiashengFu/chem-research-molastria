@@ -33,7 +33,7 @@
 
   // ── 五大支柱与详解 ──────────────────────────────────────────────────────
   $('#fs-pillar-grid').innerHTML = D.pillars.map((p) => `<a class="fs-pillar" href="#s-${p.id}" data-tab="${p.id}">
-    <span class="fs-num">${p.num}</span>${C(esc(tx(p.title)), 'h3')}${C(esc(tx(p.summary)), 'p')}<span class="fs-more">阅读详解 →</span></a>`).join('');
+    <span class="fs-num">${p.num}</span>${C(esc(tx(p.title)), 'h3')}${C(esc(tx(p.summary)), 'p')}<span class="fs-more">阅读详解 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>`).join('');
 
   const tabs = $('#fs-tabs'), panels = $('#fs-panels');
   tabs.innerHTML = D.sections.map((s, i) => `<button class="fs-tab" type="button" role="tab" id="tab-${s.id}" aria-controls="s-${s.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}"><b>${s.num}</b>${C(esc(tx(s.title)))}</button>`).join('');
@@ -82,7 +82,7 @@
     ${C(esc(tx(d.title)), 'h3')}${en ? '' : `<p class="fs-en" lang="en" translate="no">${esc(d.title.en)}</p>`}
     ${C(esc(tx(d.tagline)), 'p', 'fs-tag')}
     <dl>${Object.keys(D.fieldNames).map((k) => `<div><dt>${C(esc(tx(D.fieldNames[k])))}</dt>${C(rich(tx(d.fields[k])), 'dd', k === 'status' ? 'fs-status-text' : '')}</div>`).join('')}</dl>
-    <p class="fs-cite"><a href="#s-${d.pillar}" data-tab="${d.pillar}">相关的理论详解 →</a></p>
+    <p class="fs-cite"><a href="#s-${d.pillar}" data-tab="${d.pillar}">相关的理论详解 <i class="ico-ext ico-right" aria-hidden="true"></i></a></p>
   </article>`).join('');
 
   // ── 理论比较 ────────────────────────────────────────────────────────────

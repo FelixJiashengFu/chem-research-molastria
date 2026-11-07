@@ -570,7 +570,7 @@
       const v = id === 'custom' ? VENDORS.find(([vid]) => vid === f.vendor.value) : null;
       const url = v ? v[3] : p.keyUrl, label = v ? v[1] : p.label;
       const a = dialog.querySelector('[data-keyurl]');
-      a.hidden = !url; a.href = url || '#'; a.textContent = url ? `在 ${label} 控制台创建 key ↗` : '';
+      a.hidden = !url; a.href = url || '#'; a.textContent = url ? `在 ${label} 控制台创建 key ` : ''; if (url) a.insertAdjacentHTML('beforeend', '<i class="ico-ext" aria-hidden="true"></i>');
     };
     const collect = () => {
       const id = current();

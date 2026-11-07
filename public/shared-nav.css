@@ -219,3 +219,65 @@ html{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inse
 @media (max-width:599px),(display-mode:standalone){.cr-dl{display:none!important}}
 @media (prefers-reduced-motion:reduce){.cr-dl{animation:none}.cr-dl *{transition:none!important}}
 @media print{.cr-dl{display:none!important}}
+
+/* Arrows: the site's own icons in every direction, used instead of the ↗ → ← ↑ ↓ characters (iPad and iPhone draw ↗ as a blue emoji).
+   Each is a stroked shape used as a mask and filled with polished gold: a deeper gold on light surfaces, a brighter one on dark
+   surfaces and filled (primary) buttons. Sized to the text; it nudges toward its direction on hover.
+   Markup: <i class="ico-ext" aria-hidden="true"></i> (up-right), add ico-right / ico-left / ico-up / ico-down for the others. */
+:root{--ico-ext:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20stroke%3D'%23000'%20stroke-width%3D'2.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M3.7%2012.3%2011.9%204.1'%2F%3E%3Cpath%20d%3D'M5.6%203.7h6.7v6.7'%2F%3E%3C%2Fsvg%3E");--ico-right:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20stroke%3D'%23000'%20stroke-width%3D'2.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M2.6%208h10.4'%2F%3E%3Cpath%20d%3D'M8.9%203.6%2013.3%208l-4.4%204.4'%2F%3E%3C%2Fsvg%3E");--ico-left:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20stroke%3D'%23000'%20stroke-width%3D'2.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M13.4%208H3'%2F%3E%3Cpath%20d%3D'M7.1%203.6%202.7%208l4.4%204.4'%2F%3E%3C%2Fsvg%3E");--ico-down:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20stroke%3D'%23000'%20stroke-width%3D'2.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M8%202.6V13'%2F%3E%3Cpath%20d%3D'M3.6%208.9%208%2013.3l4.4-4.4'%2F%3E%3C%2Fsvg%3E");--ico-up:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20stroke%3D'%23000'%20stroke-width%3D'2.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M8%2013.4V3'%2F%3E%3Cpath%20d%3D'M3.6%207.1%208%202.7l4.4%204.4'%2F%3E%3C%2Fsvg%3E");
+  --metal-deep:linear-gradient(135deg,#6a470d 0%,#b07f25 30%,#e6c26a 47%,#a77722 63%,#73500f 100%);
+  --metal-bright:linear-gradient(135deg,#c2953f 0%,#f3d98f 30%,#fff5d0 45%,#deb459 62%,#b38634 100%);
+  --metal:var(--metal-deep)}
+:root[data-theme=dark]{--metal:var(--metal-bright)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--metal:var(--metal-bright)}}
+.primary,.primary-button,.note-cta,.cr-pro,.hero-login{--metal:var(--metal-bright)}
+.ico-ext{display:inline-block;flex:none;width:.86em;height:.86em;vertical-align:-.08em;background:var(--metal);-webkit-mask:var(--ico-ext) center/contain no-repeat;mask:var(--ico-ext) center/contain no-repeat;font-style:normal;transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.ico-ext.ico-right{-webkit-mask-image:var(--ico-right);mask-image:var(--ico-right)}
+.ico-ext.ico-left{-webkit-mask-image:var(--ico-left);mask-image:var(--ico-left)}
+.ico-ext.ico-down{-webkit-mask-image:var(--ico-down);mask-image:var(--ico-down)}
+.ico-ext.ico-up{-webkit-mask-image:var(--ico-up);mask-image:var(--ico-up)}
+a:hover .ico-ext,button:hover .ico-ext,a:focus-visible .ico-ext,button:focus-visible .ico-ext{transform:translate(1.5px,-1.5px)}
+a:hover .ico-right,button:hover .ico-right,a:focus-visible .ico-right,button:focus-visible .ico-right{transform:translateX(2px)}
+a:hover .ico-left,button:hover .ico-left,a:focus-visible .ico-left,button:focus-visible .ico-left{transform:translateX(-2px)}
+a:hover .ico-down,button:hover .ico-down,a:focus-visible .ico-down,button:focus-visible .ico-down{transform:translateY(1.5px)}
+a:hover .ico-up,button:hover .ico-up,a:focus-visible .ico-up,button:focus-visible .ico-up{transform:translateY(-1.5px)}
+@media (prefers-reduced-motion:reduce){.ico-ext{transition:none}}
+@media print{.ico-ext{display:none}}
+
+/* Display settings (shared-nav.js): reading text size scales <main>; the typeface replaces --font-sans on every page.
+   Interface scale is CSS zoom on <html> (website, iPad home-screen app) or the WebView's own zoom (desktop app). */
+main{zoom:var(--cr-text-zoom,1)}
+:root[data-font=system]{--font-sans:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+:root[data-font=serif]{--font-sans:"Songti SC","Noto Serif SC","Source Han Serif SC",STSong,SimSun,Georgia,serif}
+:root[data-font=kai]{--font-sans:"Kaiti SC",STKaiti,KaiTi,"Kaiti TC",serif}
+.cr-disp{position:fixed;z-index:86;display:none;width:min(340px,calc(100vw - 16px));max-height:calc(100vh - 90px);overflow:auto;padding:14px 16px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);font:13px/1.5 var(--font-sans)}
+.cr-disp[data-open=true]{display:block}
+.cr-disp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.cr-disp-head b{font-size:14px}
+.cr-disp-x{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:6px}
+.cr-disp-x:hover{background:var(--surface-2)}
+.cr-disp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cr-disp-row b{display:block;font-size:13px}
+.cr-disp-row small{display:block;color:var(--muted);font-size:12px}
+.cr-disp-row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--accent);margin:2px 0 0}
+.cr-disp-step{display:flex;align-items:center;gap:6px}
+.cr-disp-step button{width:34px;height:34px;border:1px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);font-size:17px;line-height:1;cursor:pointer}
+.cr-disp-step button:hover:not(:disabled){background:var(--surface-2)}
+.cr-disp-step button:disabled{opacity:.4;cursor:default}
+.cr-disp-step output{min-width:52px;text-align:center;font:600 14px/1 var(--font-num)}
+.cr-disp-fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 0 4px}
+.cr-disp-fonts>b{grid-column:1/-1;font-size:13px}
+.cr-disp-fonts button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;min-height:44px}
+.cr-disp-fonts button span{font-size:12.5px;font-weight:600}
+.cr-disp-fonts button i{font-style:normal;font-size:16px;color:var(--ink-2)}
+.cr-disp-fonts button:hover{border-color:var(--line-strong)}
+.cr-disp-fonts button[aria-pressed=true]{border-color:var(--accent-2);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-2) 40%,transparent)}
+.cr-disp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px}
+.cr-disp-foot small{color:var(--muted);font-size:11.5px}
+.cr-disp-reset{border:1px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);padding:7px 12px;min-height:34px;cursor:pointer;font-size:12.5px;white-space:nowrap}
+.cr-disp-reset:disabled{opacity:.45;cursor:default}
+.cr-disp :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media print{.cr-disp{display:none!important}main{zoom:1}}
+.cr-disp-note{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--warn) 10%,transparent);color:var(--ink);font-size:12px;line-height:1.55}
+/* The display-settings button made the first header row 12 px too wide on 390 px phones: narrower tool buttons there. */
+@media(max-width:430px){.cr-tools{gap:4px}.cr-icon-btn{width:32px}.cr-ai-btn{padding:0 10px}}

@@ -19,7 +19,7 @@
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="description" content="聚合计算化学公社、Sobereva、X-MOL、CCL、Stack Exchange、matsci.org 等国际论坛与博客、arXiv、ChemRxiv、Crossref 期刊、GitHub 与官方软件数据库目录的真实标题与链接">
-<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
 <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
 <link rel="stylesheet" href="../shared-nav.css">
@@ -50,8 +50,8 @@
       <p class="lead">本页所有条目都来自真实页面与官方 API：论坛、博客、文献平台、预印本、期刊元数据、开源仓库与软件官网，
       这里展示随合并包保存的标题、短摘要与原文链接快照；日期与接入状态对应采集时刻。使用上方「统一搜索」也可以同时检索数据库导航。</p>
       <div class="hero-cta">
-        <a class="btn primary" href="#explore">开始探索 ↓</a>
-        <a class="btn ghost" href="network.html">网状查询：所有数据库 →</a>
+        <a class="btn primary" href="#explore">开始探索 <i class="ico-ext ico-down" aria-hidden="true"></i></a>
+        <a class="btn ghost" href="network.html">网状查询：所有数据库 <i class="ico-ext ico-right" aria-hidden="true"></i></a>
         <a class="btn ghost" href="#method">数据是怎么来的？</a>
       </div>
       <p id="refreshMsg" class="small muted" role="status"></p>
@@ -96,7 +96,7 @@
     <div class="section-head"><h2>网状查询 · 合并资源图谱</h2><p>数据库导航已与社区、文献及开源索引合并到同一张网：点节点跨库查询，点某个软件官网可查找相关条目。</p></div>
     <div class="panel" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
       <p style="margin:0;color:var(--muted);line-height:1.8;max-width:820px">例如点主题「Multiwfn」看全库相关长文，或点数据库「Basis Set Exchange」再用关键词缩小范围——关系与连线粗细都由真实条目数算出，不是示意图。</p>
-      <a class="btn primary" href="network.html">打开网状查询页 →</a>
+      <a class="btn primary" href="network.html">打开网状查询页 <i class="ico-ext ico-right" aria-hidden="true"></i></a>
     </div>
   </section>
 

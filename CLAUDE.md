@@ -92,6 +92,8 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - 原生 JS，没有框架和构建步骤；页面用 `<script defer>` 加载。写代码前先看同目录的现有写法并照着写。
 - **中文是源语言。** 界面文字直接写中文，改完运行 `i18n-extract` 和 `i18n-translate`。数据内容（论文标题、论坛帖、AI 回答）不翻译，选择器加进 `public/i18n.js` 的 `SKIP`。
 - 用户偏好只存 `localStorage`，读写要包 `try/catch`；键名沿用 `chemhub-*`、`molastria-*`。
+- **箭头用图标，不用字符：** 按钮和链接上的箭头写 `<i class="ico-ext" aria-hidden="true"></i>`（右上，外链 / 打开），其他方向加 `ico-right`、`ico-left`、`ico-up`、`ico-down`；样式在 `shared-nav.css`，是金属金色的遮罩图形。不要再写 ↗ → ← ↑ ↓ 字符（iPad 和 iPhone 把 ↗ 画成蓝色 emoji）；句子里表示流程的箭头（如“UMA → DFT”）照常用字符。
+- **显示设置：** 顶栏“Tт”按钮（`shared-nav.js` 的 `DISPLAY`）调界面缩放、正文字号和字体，存在 `molastria-zoom`、`molastria-text`、`molastria-font`；每页 `<head>` 的小脚本先套用，避免跳动。界面缩放在网站和 iPad 主屏幕应用里是 `<html>` 的 CSS zoom，在桌面版是 WebView 自己的缩放（Rust 命令 `set_zoom`）；正文字号是 `main{zoom}`；字体改 `--font-sans`。CSS zoom 不改变媒体查询看到的宽度，所以窗口窄时自动压低倍数（`roomFor()`），新页面的宽元素也要能在约 520 px 的排版宽度里放下。
 - 颜色用 `shared-nav.css` 的 CSS 变量，深浅两种主题都要看。
 - 预印本雷达保持书香风格，是有意和站点其他部分不同。`D:\ChemDraw\PreprintRadar` 是独立仓库，MolAstria 只复制它的构建结果。
 - AI 实验室的演示数值是合成的，页面上要一直标明。Muse 指 Meta 的 Muse 模型（`api.meta.ai`）。

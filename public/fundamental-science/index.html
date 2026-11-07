@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#173f34">
   <title>进一步基础科学发现 · Advancing Fundamental Science · MolAstria</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
   <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
@@ -29,7 +29,7 @@
     <p class="fs-honest" id="fs-honest"></p>
     <ul class="fs-legend" id="fs-legend" aria-label="研究状态的四种标注"></ul>
     <nav class="fs-jump" aria-label="本页内容">
-      <a class="button primary" href="#fs-pillars">五大研究支柱 <span aria-hidden="true">↓</span></a>
+      <a class="button primary" href="#fs-pillars">五大研究支柱 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a>
       <a class="button" href="#fs-directions">三条重点主线</a>
       <a class="button" href="#fs-lab">交互式理论实验室</a>
       <a class="button" href="#fs-library">科研文献</a>
@@ -170,7 +170,7 @@
   <footer class="fs-foot">
     <strong>MolAstria · 进一步基础科学发现</strong>
     <p>本页区分已确立的科学、活跃研究、理论假说与计划方向；计划方向尚未开展，不声称任何新发现。</p>
-    <p><a href="../qchem/index.html">量子化学计算（浏览器里运行 HF、FCI、CCSD）</a> · <a href="../models/index.html">模型接口</a> · <a href="../manual/index.html">讲解手册</a> · <a href="#fs-h1">回到顶部 ↑</a></p>
+    <p><a href="../qchem/index.html">量子化学计算（浏览器里运行 HF、FCI、CCSD）</a> · <a href="../models/index.html">模型接口</a> · <a href="../manual/index.html">讲解手册</a> · <a href="#fs-h1">回到顶部 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
   </footer>
 </main>
 </body>

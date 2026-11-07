@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#173f34">
   <title>期刊发表 · 计算化学期刊投稿与发表指南 · MolAstria</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
   <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
@@ -25,7 +25,7 @@
     <h1>期刊发表</h1>
     <p class="lead">主流量子化学与计算化学期刊的投稿要点，以及从做研究到论文上线的完整指导。期刊信息只写能在期刊或出版社官网核实的内容，每条都附出处链接和核对日期；影响因子、版面费这类每年会变的数字，只收录官网明确写出的。</p>
     <p class="jr-meta" id="jr-meta"></p>
-    <nav class="jr-jump" aria-label="本页内容"><a class="button primary" href="#jr-directory">期刊目录 <span aria-hidden="true">↓</span></a><a class="button" href="#jr-guide">从研究到发表的指导 <span aria-hidden="true">↓</span></a></nav>
+    <nav class="jr-jump" aria-label="本页内容"><a class="button primary" href="#jr-directory">期刊目录 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a><a class="button" href="#jr-guide">从研究到发表的指导 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a></nav>
   </section>
 
   <section id="jr-directory" class="jr-directory" aria-labelledby="jr-dir-h" tabindex="-1">
@@ -57,7 +57,7 @@
   <footer class="jr-foot">
     <strong>MolAstria · 期刊发表</strong>
     <p>期刊名称和商标归各出版社所有，MolAstria 与本页列出的出版社没有隶属关系。期刊的规定和费用会变，投稿前请以官网为准。</p>
-    <p><a href="../manual/index.html">说明讲解手册</a> · <a href="../radar/index.html">预印本雷达</a> · <a href="../models/index.html">量子化学模型接口</a> · <a href="#jr-directory">回到期刊目录 ↑</a></p>
+    <p><a href="../manual/index.html">说明讲解手册</a> · <a href="../radar/index.html">预印本雷达</a> · <a href="../models/index.html">量子化学模型接口</a> · <a href="#jr-directory">回到期刊目录 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
   </footer>
 </main>
 </body>

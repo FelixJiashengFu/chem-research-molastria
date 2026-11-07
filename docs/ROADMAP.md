@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 显示设置与金属箭头（2026-11-07，桌面版 0.1.16）：只在 Chromium（无头 Chrome）里测过。要在真机上看一次：iPad 主屏幕应用里的界面缩放（Safari 的 CSS zoom 与 Chrome 的坐标换算可能不同，网状查询的拖动和基础科学页的演示 3 拖动要试）、Mac 桌面版的原生缩放（WKWebView）和 Ctrl / ⌘ 加 = − 0、Windows 桌面版的原生缩放；楷体在 Windows 上是否装有 KaiTi。
 - 基础科学栏目（`/fundamental-science/`，2026-11-07）上线后：跑一次 `node tools/e2e/live.mjs`；在 iPhone / Mac 的 Safari 和桌面版里看一眼 MathML 公式的排版（只在 Chromium 里测过）；单文件离线版（`tools/bundle-single.ts`）里打开这一页确认演示能用（没有实测）。之后可以考虑：演示 2 加入随机薛定谔方程的单次轨迹、演示 3 加入两个以上电子态，以及把文献库扩充到 GRW/CSL 的参数排除图。
 - 在线模型已开通（2026-11-05）：15 个模型（UMA 四个、OMol25 的 AllScAIP 两个和 eSEN 三个、MACE 五个、ANI-2x 只给 Pro），隧道 `molastria-uma` → `uma-origin.molastria.com`。FEC 实测每个模型 1–14 秒（RTX 2080）。各档每天次数 2026-11-07 翻倍到 40 / 200 / 40 / 200（匿名 UMA 与 OMol25 / Pro / MACE / ANI-2x）。待办：观察一周的用量再调各档次数；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）；UMA-M 1.1 要更大的内存和显存；可以向 MACE 作者要在线服务的书面许可；UMA-S 1.2.1 水的 IP 偏低，可以反馈给 fairchem。
 - 模型接口（API v3，2026-11-06）：新页面 `/models/`，13 种计算（sp、opt、freq、conf、scan、md、rxn、ipea、spin、bde、pa、polar、ir），按计算量计次。站长电脑要用新版 `tools/uma-server/server.py` 重启 `start.ps1`（health 里有 `api: 3`）。真实模型试跑见 `tools/uma-server/realrun.py`：A 类最坏情况（30 个重原子）都在 600 s 内；MACE-OMOL-0、MACE-OFF23 large、MACE-MDP 的最坏情况还没测，MACE-OMOL-0 跑大分子的 md、freq 可能超时。

@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#173f34">
   <title>科学领域语言模型与多模态基础模型 · 科学大模型 · MolAstria</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
   <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
@@ -25,7 +25,7 @@
     <p class="lead">用科学文献、科学数据和科研任务训练的语言模型与多模态模型，处理的是科学文本、分子与晶体表示、科学图像这类对象。这里为数据库第 17 类的每个模型写了一张卡片：能做什么、输入输出、规模与许可、已知限制、官方体验入口和发布原文，以及访问方式和费用；页面最后按官方价格，把有公开价格的科学模型和当前主流大模型放在一起比较。信息只取自官方页面，核实不了的项不写。</p>
     <p class="sm-note">和本站<a href="../models/index.html">模型接口</a>里的 UMA、MACE、ANI-2x 不是一类：那些机器学习势输入原子坐标、输出能量和力；这里的模型输入输出是文字和科学表示，用来理解问题、整理文献、提出假设和写代码。两类模型可以放进同一条研究流程，但不能互相替代。</p>
     <p class="sm-meta" id="sm-meta"></p>
-    <nav class="sm-jump" aria-label="本页内容"><a class="button primary" href="#sm-directory">模型目录 <span aria-hidden="true">↓</span></a><a class="button" href="#sm-prices">价格对比 <span aria-hidden="true">↓</span></a><a class="button" href="../manual/index.html#p11c-cat17">讲解手册：本类专章</a><a class="button" href="../atlas/index.html#resources">数据库</a></nav>
+    <nav class="sm-jump" aria-label="本页内容"><a class="button primary" href="#sm-directory">模型目录 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a><a class="button" href="#sm-prices">价格对比 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a><a class="button" href="../manual/index.html#p11c-cat17">讲解手册：本类专章</a><a class="button" href="../atlas/index.html#resources">数据库</a></nav>
   </section>
 
   <section id="sm-directory" class="sm-directory" aria-labelledby="sm-dir-h" tabindex="-1">
@@ -57,7 +57,7 @@
   <footer class="sm-foot">
     <strong>MolAstria · 科学大模型</strong>
     <p>价格、额度和服务会变，使用前请以各官方页面为准。</p>
-    <p><a href="../manual/index.html#p11c-cat17">说明讲解手册：科学语言模型与多模态</a> · <a href="../atlas/index.html#resources">数据库</a> · <a href="../models/index.html">量子化学模型接口</a> · <a href="#sm-directory">回到模型目录 ↑</a></p>
+    <p><a href="../manual/index.html#p11c-cat17">说明讲解手册：科学语言模型与多模态</a> · <a href="../atlas/index.html#resources">数据库</a> · <a href="../models/index.html">量子化学模型接口</a> · <a href="#sm-directory">回到模型目录 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
   </footer>
 </main>
 </body>

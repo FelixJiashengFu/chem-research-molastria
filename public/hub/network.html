@@ -18,7 +18,7 @@
   <!-- seo:end -->
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="description" content="输入一个词，看它连着什么：把计算化学资源目录、讲解手册与中英术语表织成以查询为中心的关系网，支持同义词、拼写纠错与离线浏览。">
-<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
 <script src="../i18n.js" defer></script>
   <script src="../backdrop.js" defer></script>
 <link rel="stylesheet" href="../shared-nav.css">
@@ -69,7 +69,7 @@
       <div class="net-graph-head">
         <h2 id="graphTitle">全网概览</h2>
         <div class="net-tools">
-          <button id="netBack" class="btn ghost small-btn" type="button">← 上一步</button>
+          <button id="netBack" class="btn ghost small-btn" type="button"><i class="ico-ext ico-left" aria-hidden="true"></i> 上一步</button>
           <button id="relayoutBtn" class="btn ghost small-btn" type="button">重新布局</button>
           <button id="fitBtn" class="btn ghost small-btn" type="button">复位视图</button>
         </div>

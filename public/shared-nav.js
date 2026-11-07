@@ -28,6 +28,7 @@
   const moon = '<svg class="cr-theme-dark" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>';
   const sun = '<svg class="cr-theme-light" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>';
   const spark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z"/></svg>';
+  const textSize = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5h10M8 5.5v13M13.5 11h7.5M17.25 11v7.5"/></svg>';
   const chevron = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
 
   // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
@@ -42,6 +43,7 @@
     + `<div class="cr-more" hidden><button class="cr-more-btn" type="button" aria-expanded="false" aria-controls="cr-more-menu">更多${chevron}</button><div class="cr-more-menu" id="cr-more-menu" hidden></div></div>`
     + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
     + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
+    + `<button class="cr-icon-btn" type="button" id="cr-disp" aria-label="${en ? 'Display: scale, text size and typeface' : '显示设置：缩放、字号与字体'}" title="${en ? 'Display' : '显示设置'}" aria-haspopup="dialog" aria-expanded="false" translate="no">${textSize}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-bg" aria-label="更换背景" title="更换背景" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-theme" aria-label="切换浅色 / 深色">${moon}${sun}</button>`
     + `<button class="cr-ai-btn" type="button" id="cr-ai" aria-haspopup="dialog">${spark}<span class="cr-label">AI 助手</span><span class="cr-dot" aria-hidden="true"></span></button></div>`;
@@ -105,6 +107,134 @@
   });
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (!root.dataset.theme) announce(); });
   nav.querySelector('#cr-bg').addEventListener('click', (e) => window.ChemBackdrop?.toggle(e.currentTarget));
+
+  // 显示设置：界面缩放（整个页面）、正文字号（<main> 里的内容）、字体。每页 <head> 的小脚本先套用保存的值，避免页面跳一下。
+  // 桌面版用 WebView 自己的缩放（Rust 命令 set_zoom，排版和浏览器缩放一样重新流动）；网站和 iPad 主屏幕应用用 CSS zoom。
+  const DISPLAY = {
+    zoom: [0.8, 0.9, 1, 1.1, 1.25, 1.4, 1.5],
+    text: [0.9, 1, 1.1, 1.2, 1.3, 1.4],
+    fonts: [['', '默认', 'Default', 'Inter,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif'], ['system', '系统字体', 'System', 'system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif'],
+      ['serif', '宋体（衬线）', 'Serif', '"Songti SC","Noto Serif SC","Source Han Serif SC",STSong,SimSun,Georgia,serif'], ['kai', '楷体', 'Kaiti', '"Kaiti SC",STKaiti,KaiTi,"Kaiti TC",serif']],
+  };
+  const desktopApp = !!(window.__MOLASTRIA_DESKTOP__ && window.__TAURI_INTERNALS__);
+  const homeScreenApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch {} } };
+  const display = () => ({ zoom: Number(store.get('molastria-zoom')) || 1, text: Number(store.get('molastria-text')) || 1, font: store.get('molastria-font') || '' });
+  // CSS zoom does not change the width that media queries see, so the page keeps its wide layout in less room. Cap the combined
+  // factor to what this window holds: at least 520 px of layout on tablets and desktops, 330 px on phones. The desktop app's own
+  // zoom does change that width, so there only the reading size counts. Saved choices stay; the shown values are the capped ones.
+  const roomFor = () => { const w = innerWidth; return w >= 760 ? w / 520 : w / 330; };
+  const below = (key, v) => { const list = DISPLAY[key], i = list.findIndex((x) => Math.abs(x - v) < 1e-6); return i > 0 ? list[i - 1] : v; };
+  function effective(d = display()) {
+    let z = d.zoom, t = d.text;
+    const room = roomFor(), factor = () => (desktopApp ? t : z * t);
+    while (factor() > room + 1e-9 && t > 1) t = below('text', t);
+    while (!desktopApp && factor() > room + 1e-9 && z > 1) z = below('zoom', z);
+    return { zoom: z, text: t, capped: z !== d.zoom || t !== d.text };
+  }
+  function applyDisplay() {
+    const d = display(), e = effective(d);
+    if (desktopApp) { root.style.zoom = ''; window.__TAURI_INTERNALS__.invoke('set_zoom', { value: d.zoom }).catch(() => { root.style.zoom = e.zoom === 1 ? '' : String(e.zoom); }); }
+    else root.style.zoom = e.zoom === 1 ? '' : String(e.zoom);
+    if (e.text === 1) root.style.removeProperty('--cr-text-zoom'); else root.style.setProperty('--cr-text-zoom', String(e.text));
+    if (d.font) root.dataset.font = d.font; else delete root.dataset.font;
+  }
+  let resizing = 0;
+  addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(() => { applyDisplay(); renderDisplay(); }); });
+  const pct = (v) => `${Math.round(v * 100)}%`;
+  let dispPanel = null;
+  const dispBtn = nav.querySelector('#cr-disp');
+  function setDisplay(key, value) {
+    store.set(`molastria-${key}`, value === 1 || value === '' ? null : String(value));
+    applyDisplay();
+    renderDisplay();
+  }
+  function step(key, dir) {
+    const list = DISPLAY[key], cur = display()[key];
+    let i = list.findIndex((v) => Math.abs(v - cur) < 1e-6);
+    if (i < 0) i = list.indexOf(1);
+    setDisplay(key, list[Math.max(0, Math.min(list.length - 1, i + dir))]);
+  }
+  function renderDisplay() {
+    if (!dispPanel) return;
+    const d = display(), e = effective(d);
+    for (const key of ['zoom', 'text']) {
+      const list = DISPLAY[key], i = list.findIndex((v) => Math.abs(v - d[key]) < 1e-6);
+      const next = list[i + 1], wouldFit = next !== undefined && !effective({ ...d, [key]: next }).capped;
+      dispPanel.querySelector(`[data-out=${key}]`).textContent = pct(e[key]);
+      dispPanel.querySelector(`[data-step=${key}][data-dir="-1"]`).disabled = i === 0;
+      dispPanel.querySelector(`[data-step=${key}][data-dir="1"]`).disabled = !wouldFit;
+      dispPanel.querySelector(`input[data-range=${key}]`).value = String(Math.max(0, list.findIndex((v) => Math.abs(v - e[key]) < 1e-6)));
+    }
+    const note = dispPanel.querySelector('.cr-disp-note');
+    note.hidden = !e.capped;
+    note.textContent = en ? `This window is too narrow for ${pct(d.zoom)} × ${pct(d.text)}; showing the largest that fits. A wider window gets your full setting back.` : `窗口太窄，放不下 ${pct(d.zoom)} × ${pct(d.text)}，先按能放下的最大值显示；窗口变宽后自动恢复你的设置。`;
+    for (const b of dispPanel.querySelectorAll('[data-font-id]')) b.setAttribute('aria-pressed', String(b.dataset.fontId === d.font));
+    dispPanel.querySelector('.cr-disp-reset').disabled = d.zoom === 1 && d.text === 1 && !d.font;
+  }
+  function buildDisplay() {
+    const t = (zh, e) => (en ? e : zh);
+    const stepper = (key, label, hint) => `<div class="cr-disp-row"><div><b>${label}</b><small>${hint}</small></div>
+      <div class="cr-disp-step"><button type="button" data-step="${key}" data-dir="-1" aria-label="${t('缩小', 'Smaller')} ${label}">−</button><output data-out="${key}" aria-live="polite"></output><button type="button" data-step="${key}" data-dir="1" aria-label="${t('放大', 'Larger')} ${label}">+</button></div>
+      <input type="range" data-range="${key}" min="0" max="${DISPLAY[key].length - 1}" step="1" aria-label="${label}"></div>`;
+    dispPanel = document.createElement('div');
+    dispPanel.className = 'cr-disp';
+    dispPanel.setAttribute('role', 'dialog');
+    dispPanel.setAttribute('aria-label', t('显示设置', 'Display settings'));
+    dispPanel.setAttribute('translate', 'no');
+    dispPanel.innerHTML = `<div class="cr-disp-head"><b>${t('显示', 'Display')}</b><button type="button" class="cr-disp-x" aria-label="${t('关闭', 'Close')}">×</button></div>
+      ${stepper('zoom', t('界面缩放', 'Interface scale'), t('整个页面，包括顶栏', 'The whole page, header included'))}
+      ${stepper('text', t('正文字号', 'Reading text size'), t('页面正文与内容区', 'Page content and text'))}
+      <p class="cr-disp-note" role="status" hidden></p>
+      <div class="cr-disp-fonts" role="group" aria-label="${t('字体', 'Typeface')}"><b>${t('字体', 'Typeface')}</b>
+        ${DISPLAY.fonts.map(([id, zh, e, stack]) => `<button type="button" data-font-id="${id}" aria-pressed="false"><span style='font-family:${stack}'>${t(zh, e)}</span><i style='font-family:${stack}'>Aa 计算化学</i></button>`).join('')}</div>
+      <div class="cr-disp-foot">${desktopApp || homeScreenApp ? `<small>${t('快捷键：Ctrl / ⌘ 加 = − 0 调整界面缩放', 'Shortcuts: Ctrl / ⌘ with = − 0 change the interface scale')}</small>` : `<small>${t('设置保存在这台设备上，所有页面通用', 'Saved on this device for every page')}</small>`}<button type="button" class="cr-disp-reset">${t('恢复默认', 'Reset')}</button></div>`;
+    document.body.append(dispPanel);
+    dispPanel.addEventListener('click', (e) => {
+      const s = e.target.closest('[data-step]'), f = e.target.closest('[data-font-id]');
+      if (s) step(s.dataset.step, Number(s.dataset.dir));
+      if (f) setDisplay('font', f.dataset.fontId);
+      if (e.target.closest('.cr-disp-reset')) { for (const k of ['zoom', 'text', 'font']) store.set(`molastria-${k}`, null); applyDisplay(); renderDisplay(); }
+      if (e.target.closest('.cr-disp-x')) closeDisplay(true);
+    });
+    for (const r of dispPanel.querySelectorAll('input[data-range]')) r.addEventListener('input', () => setDisplay(r.dataset.range, DISPLAY[r.dataset.range][Number(r.value)]));
+    document.addEventListener('pointerdown', (e) => { if (dispPanel.dataset.open === 'true' && !dispPanel.contains(e.target) && !dispBtn.contains(e.target)) closeDisplay(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dispPanel.dataset.open === 'true') closeDisplay(true); });
+    addEventListener('resize', placeDisplay);
+  }
+  function placeDisplay() {
+    if (!dispPanel || dispPanel.dataset.open !== 'true') return;
+    const r = dispBtn.getBoundingClientRect(), z = parseFloat(root.style.zoom) || 1;
+    dispPanel.style.top = `${Math.round(r.bottom / z + 8)}px`;
+    dispPanel.style.right = `${Math.max(8, Math.round(innerWidth / z - r.right / z))}px`;
+  }
+  function openDisplay() {
+    if (!dispPanel) buildDisplay();
+    window.ChemBackdrop?.close?.();
+    dispPanel.dataset.open = 'true';
+    dispBtn.setAttribute('aria-expanded', 'true');
+    renderDisplay();
+    placeDisplay();
+    dispPanel.querySelector('[data-step]:not(:disabled)')?.focus();
+  }
+  function closeDisplay(refocus) {
+    if (!dispPanel) return;
+    dispPanel.dataset.open = 'false';
+    dispBtn.setAttribute('aria-expanded', 'false');
+    if (refocus) dispBtn.focus();
+  }
+  dispBtn.addEventListener('click', () => (dispPanel?.dataset.open === 'true' ? closeDisplay() : openDisplay()));
+  // In the desktop app and the home-screen app the browser's own zoom keys are missing: Ctrl / ⌘ with = − 0 change the scale.
+  if (desktopApp || homeScreenApp) {
+    document.addEventListener('keydown', (e) => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+      if (e.key === '=' || e.key === '+') { e.preventDefault(); step('zoom', 1); }
+      else if (e.key === '-' || e.key === '_') { e.preventDefault(); step('zoom', -1); }
+      else if (e.key === '0') { e.preventDefault(); setDisplay('zoom', 1); }
+    });
+  }
+  applyDisplay();
+  window.MolAstriaDisplay = { open: openDisplay, close: closeDisplay, set: setDisplay, get: display };
   // Language: remembered per browser; the page reloads so every module renders once in the chosen language.
   nav.querySelector('#cr-lang').addEventListener('click', () => {
     const next = en ? 'zh' : 'en';

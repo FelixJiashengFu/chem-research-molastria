@@ -54,7 +54,8 @@
  ],
  "论文": [
   "index.html",
-  "meta/index.html"
+  "meta/index.html",
+  "train/index.html"
  ],
  "工具": [
   "index.html"
@@ -89,13 +90,13 @@
  "统一资源检索": [
   "index.html"
  ],
- "导出筛选结果 ↓": [
+ "导出筛选结果": [
   "index.html"
  ],
  "搜索名称、摘要、分类与关键词": [
   "index.html"
  ],
- "在图谱中搜索 ↗": [
+ "在图谱中搜索": [
   "index.html"
  ],
  "内容范围": [
@@ -165,7 +166,7 @@
  "AI 助手会先在本站目录里检索，再用 DeepSeek 或 Muse 作答，并标出引用的条目。": [
   "index.html"
  ],
- "用 AI 回答当前问题 →": [
+ "用 AI 回答当前问题": [
   "index.html"
  ],
  "试着搜索": [
@@ -219,7 +220,7 @@
  "用网状查询看相关主题": [
   "index.html"
  ],
- "显示更多资源 ↓": [
+ "显示更多资源": [
   "index.html"
  ],
  "01 / 读懂背景": [
@@ -277,8 +278,9 @@
  "Muse 从图片识别分子结构、生成在自己 GPU 上跑 UMA 的脚本，以及 FAIR Chemistry 开放的模型和数据集": [
   "index.html"
  ],
- "打开 ↗": [
-  "index.html"
+ "打开": [
+  "index.html",
+  "radar/app/app.js"
  ],
  "由 ChemDB Atlas 与 ChemVis Hub 合并而来": [
   "index.html"
@@ -690,7 +692,7 @@
  "目录版本 2026.11.05 · 收藏保存在当前浏览器": [
   "atlas/index.html"
  ],
- "回到顶部 ↑": [
+ "回到顶部": [
   "atlas/index.html",
   "manual/index.html",
   "fundamental-science/index.html"
@@ -732,18 +734,18 @@
  "中文": [
   "manual/index.html"
  ],
- "打印当前章节 ↗": [
+ "打印当前章节": [
   "manual/index.html"
  ],
- "← 上一章": [
+ "上一章": [
   "manual/index.html",
   "tools/build-seo.ts"
  ],
- "下一章 →": [
+ "下一章": [
   "manual/index.html",
   "tools/build-seo.ts"
  ],
- "讲解静态版 ↗": [
+ "讲解静态版": [
   "manual/index.html"
  ],
  "讲解目录": [
@@ -838,7 +840,7 @@
   "scimodels/index.html",
   "models/index.html"
  ],
- "回到期刊目录 ↑": [
+ "回到期刊目录": [
   "journals/index.html"
  ],
  "本页内容": [
@@ -932,7 +934,7 @@
  "说明讲解手册：科学语言模型与多模态": [
   "scimodels/index.html"
  ],
- "回到模型目录 ↑": [
+ "回到模型目录": [
   "scimodels/index.html"
  ],
  "筛选模型": [
@@ -1194,10 +1196,10 @@
  "本页所有条目都来自真实页面与官方 API：论坛、博客、文献平台、预印本、期刊元数据、开源仓库与软件官网， 这里展示随合并包保存的标题、短摘要与原文链接快照；日期与接入状态对应采集时刻。使用上方「统一搜索」也可以同时检索数据库导航。": [
   "hub/index.html"
  ],
- "开始探索 ↓": [
+ "开始探索": [
   "hub/index.html"
  ],
- "网状查询：所有数据库 →": [
+ "网状查询：所有数据库": [
   "hub/index.html"
  ],
  "数据是怎么来的？": [
@@ -1273,7 +1275,7 @@
  "例如点主题「Multiwfn」看全库相关长文，或点数据库「Basis Set Exchange」再用关键词缩小范围——关系与连线粗细都由真实条目数算出，不是示意图。": [
   "hub/index.html"
  ],
- "打开网状查询页 →": [
+ "打开网状查询页": [
   "hub/index.html"
  ],
  "快照中的论文与预印本": [
@@ -1400,7 +1402,7 @@
   "hub/network.html",
   "hub/network.js"
  ],
- "← 上一步": [
+ "上一步": [
   "hub/network.html"
  ],
  "重新布局": [
@@ -2160,9 +2162,10 @@
   "meta/index.html"
  ],
  "生成 UMA 脚本": [
-  "meta/index.html"
+  "meta/index.html",
+  "meta/meta.js"
  ],
- "浏览开放资源 ↓": [
+ "浏览开放资源": [
   "meta/index.html"
  ],
  "MolAstria 是独立项目，与 Meta 没有隶属关系。Muse、UMA、OMol25 等名称归 Meta 所有；数据集和模型请按各自的许可证使用。": [
@@ -2177,7 +2180,7 @@
  "每轮提出电解液溶剂分子和设计理由，被 DFT 推翻的判断会反馈给它。": [
   "meta/index.html"
  ],
- "打开 AI 实验室 →": [
+ "打开 AI 实验室": [
   "meta/index.html"
  ],
  "全站 AI 助手与识图": [
@@ -2186,7 +2189,7 @@
  "先检索本站目录再作答；能看图，本页用它把结构图转成 SMILES。": [
   "meta/index.html"
  ],
- "试试识图 →": [
+ "试试识图": [
   "meta/index.html"
  ],
  "机器学习势筛选": [
@@ -2195,7 +2198,7 @@
  "AI 实验室的 Tier 1 在 Rowan 云端跑 UMA；也可以用本页生成的脚本在自己的 GPU 上跑。": [
   "meta/index.html"
  ],
- "生成脚本 →": [
+ "生成脚本": [
   "meta/index.html"
  ],
  "可靠性先验与 DFT 约定": [
@@ -2204,7 +2207,7 @@
  "UMA 的训练数据；DFT 验证沿用它的 ωB97M-V/def2-TZVPD，误差先验来自 OMol25 系列模型的基准。": [
   "meta/index.html"
  ],
- "看方法说明 →": [
+ "看方法说明": [
   "meta/index.html"
  ],
  "1 亿+": [
@@ -2354,7 +2357,7 @@
  "站长 GPU 上的 15 个机器学习势（UMA、OMol25 系列、MACE、ANI-2x）可以免费在线计算：单点、优化、频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、IP / EA、自旋态能隙、键解离能、质子亲和能、极化率和红外 / 拉曼光谱。": [
   "meta/index.html"
  ],
- "打开量子化学模型接口 →": [
+ "打开量子化学模型接口": [
   "meta/index.html"
  ],
  "MACE-OFF23 用它在 SPICE 数据上训练的力场独立复核 UMA 的结构：只覆盖中性、闭壳层、由 H C N O F P S Cl Br I 组成的分子，所以算不了离子，也就没有电离能和电子亲和能。桌面版的“在本机运行”只支持 UMA，MACE 请用上面的脚本。": [
@@ -2637,7 +2640,8 @@
   "models/index.html"
  ],
  "科学大模型栏目": [
-  "models/index.html"
+  "models/index.html",
+  "atlas/app.js"
  ],
  "和": [
   "models/index.html"
@@ -3271,7 +3275,7 @@
  "原生函数调用与 JSON 输出，另有推理版": [
   "train/index.html"
  ],
- "14B 推理 ↗": [
+ "14B 推理": [
   "train/index.html"
  ],
  "原生函数调用和 JSON 输出，带视觉能力，支持中文等数十种语言。": [
@@ -3467,9 +3471,6 @@
   "train/index.html"
  ],
  "用强化学习训练的化学推理模型，输出 SMILES": [
-  "train/index.html"
- ],
- "论文 ↗": [
   "train/index.html"
  ],
  "在 Mistral-Small-24B 上经微调和强化学习，用英文推理、最后给出一个分子（SMILES）。": [
@@ -3929,7 +3930,7 @@
  "月付": [
   "pro/index.html"
  ],
- "已购买？登录账号 →": [
+ "已购买？登录账号": [
   "pro/index.html"
  ],
  "免费": [
@@ -4088,7 +4089,7 @@
  "macOS 11+ · Apple 芯片与 Intel 通用": [
   "pro/index.html"
  ],
- "安装说明、校验与离线单文件版 →": [
+ "安装说明、校验与离线单文件版": [
   "pro/index.html"
  ],
  "套餐对比": [
@@ -4254,7 +4255,7 @@
   "pro/index.html",
   "ai/ai.js"
  ],
- "前往安全支付 ↗": [
+ "前往安全支付": [
   "pro/index.html"
  ],
  "付款由 Stripe 安全处理，本站不接触你的卡号。": [
@@ -4271,6 +4272,7 @@
  ],
  "关闭": [
   "pro/index.html",
+  "shared-nav.js",
   "ai/ai.js",
   "radar/app/app.js"
  ],
@@ -4355,7 +4357,7 @@
  "我有 VIP 卡": [
   "pro/account.html"
  ],
- "管理订阅、付款方式与发票 ↗": [
+ "管理订阅、付款方式与发票": [
   "pro/account.html"
  ],
  "需要取消或修改订阅时，打开 Stripe 收据邮件里的“管理订阅”链接。": [
@@ -4860,6 +4862,12 @@
   "shared-nav.js",
   "ai/ai.js"
  ],
+ "显示设置：缩放、字号与字体": [
+  "shared-nav.js"
+ ],
+ "显示设置": [
+  "shared-nav.js"
+ ],
  "更换背景": [
   "shared-nav.js"
  ],
@@ -4867,6 +4875,58 @@
   "shared-nav.js"
  ],
  "AI 助手": [
+  "shared-nav.js"
+ ],
+ "默认": [
+  "shared-nav.js"
+ ],
+ "系统字体": [
+  "shared-nav.js"
+ ],
+ "宋体（衬线）": [
+  "shared-nav.js"
+ ],
+ "楷体": [
+  "shared-nav.js"
+ ],
+ "窗口太窄，放不下 {0} × {1}，先按能放下的最大值显示；窗口变宽后自动恢复你的设置。": [
+  "shared-nav.js"
+ ],
+ "缩小": [
+  "shared-nav.js"
+ ],
+ "放大": [
+  "shared-nav.js"
+ ],
+ "显示": [
+  "shared-nav.js",
+  "ai/ai.js"
+ ],
+ "界面缩放": [
+  "shared-nav.js"
+ ],
+ "整个页面，包括顶栏": [
+  "shared-nav.js"
+ ],
+ "正文字号": [
+  "shared-nav.js"
+ ],
+ "页面正文与内容区": [
+  "shared-nav.js"
+ ],
+ "字体": [
+  "shared-nav.js"
+ ],
+ "Aa 计算化学": [
+  "shared-nav.js"
+ ],
+ "快捷键：Ctrl / ⌘ 加 = − 0 调整界面缩放": [
+  "shared-nav.js"
+ ],
+ "设置保存在这台设备上，所有页面通用": [
+  "shared-nav.js"
+ ],
+ "恢复默认": [
   "shared-nav.js"
  ],
  "AI 模块加载失败": [
@@ -5101,7 +5161,7 @@
   "atlas/app.js",
   "radar/app/app.js"
  ],
- "来源与资源说明 ↗": [
+ "来源与资源说明": [
   "app.js"
  ],
  "已显示 {0} / {1} 条": [
@@ -5148,7 +5208,7 @@
  "接入状态：{0}。适配器状态不代表 MCP 工具入口已完成。": [
   "app.js"
  ],
- "查看数据库详情与工程说明 ↗": [
+ "查看数据库详情与工程说明": [
   "app.js"
  ],
  "保留的原始出处": [
@@ -5157,7 +5217,7 @@
  "合并目录仅整理已有快照。访问条件、最新内容与使用许可请以原始网站为准。": [
   "app.js"
  ],
- "访问原始资源 ↗": [
+ "访问原始资源": [
   "app.js"
  ],
  "名称": [
@@ -5209,10 +5269,10 @@
  "化": [
   "atlas/app.js"
  ],
- "查看资源 ↗": [
+ "查看资源": [
   "atlas/app.js"
  ],
- "每个模型的详细介绍见科学大模型栏目 →": [
+ "每个模型的详细介绍见科学大模型栏目": [
   "atlas/app.js"
  ],
  "当前主题：{0}": [
@@ -5238,9 +5298,6 @@
  "2026-10-27 · 来源记录，未在本网页重新验证": [
   "atlas/app.js"
  ],
- "科学大模型栏目 →": [
-  "atlas/app.js"
- ],
  "数据源模块与 MCP 工具入口的完成度不同；请在 Agent 工程页查看实际状态。": [
   "atlas/app.js"
  ],
@@ -5262,7 +5319,7 @@
  "材料日期": [
   "atlas/app.js"
  ],
- "访问原站 ↗": [
+ "访问原站": [
   "atlas/app.js",
   "hub/app.js",
   "hub/network.js"
@@ -5605,7 +5662,7 @@
  "没有公开权重，也没有在线服务。": [
   "scimodels/scimodels.js"
  ],
- "阅读详解 →": [
+ "阅读详解": [
   "fundamental-science/fundamental.js"
  ],
  "重点问题": [
@@ -5620,7 +5677,7 @@
  "本节参考文献": [
   "fundamental-science/fundamental.js"
  ],
- "相关的理论详解 →": [
+ "相关的理论详解": [
   "fundamental-science/fundamental.js"
  ],
  "核心思想": [
@@ -5869,7 +5926,7 @@
  "对应博文": [
   "hub/app.js"
  ],
- "原文 ↗": [
+ "原文": [
   "hub/app.js",
   "hub/network.js"
  ],
@@ -5999,7 +6056,7 @@
  "全文检索的关键词": [
   "hub/network.js"
  ],
- "阅读 →": [
+ "阅读": [
   "hub/network.js"
  ],
  "按「{0}」查询，你输入的是「{1}」。": [
@@ -6014,7 +6071,7 @@
  "{0} 个来源": [
   "hub/network.js"
  ],
- "访问官网 ↗": [
+ "访问官网": [
   "hub/network.js"
  ],
  "全文检索": [
@@ -6258,7 +6315,7 @@
  "第 {0} 轮：收到 {1} 个，通过过滤 {2} 个{3}{4}。": [
   "lab/lab.js"
  ],
- "查看过滤结果 →": [
+ "查看过滤结果": [
   "lab/lab.js"
  ],
  "已停止。": [
@@ -6390,7 +6447,7 @@
  "电子亲和能 EA（eV，向上越低）→ 越抗还原": [
   "lab/lab.js"
  ],
- "↗ 更好：高 IP、低 EA": [
+ "更好：高 IP、低 EA": [
   "lab/lab.js"
  ],
  "Pareto 前沿散点图：横轴电离能，纵轴电子亲和能": [
@@ -6833,9 +6890,6 @@
  "分子 {0}": [
   "meta/meta.js"
  ],
- "生成 UMA 脚本 ↓": [
-  "meta/meta.js"
- ],
  "先输入一个 SMILES。": [
   "meta/meta.js",
   "models/models.js"
@@ -6970,7 +7024,7 @@
  "D4rev 微调": [
   "meta/meta.js"
  ],
- "导入 AI 实验室 →": [
+ "导入 AI 实验室": [
   "meta/meta.js",
   "models/models.js"
  ],
@@ -7006,7 +7060,7 @@
  "暂时读不到 GitHub 和 Hugging Face。": [
   "meta/meta.js"
  ],
- "直接去 GitHub 看 ↗": [
+ "直接去 GitHub 看": [
   "meta/meta.js"
  ],
  "MACE-OFF23 有机分子力场（在 SPICE 数据上训练，ωB97M-D3BJ），只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子；small 最快，large 最准。": [
@@ -7948,9 +8002,6 @@
  "获取模型列表": [
   "ai/ai.js"
  ],
- "显示": [
-  "ai/ai.js"
- ],
  "在这台设备上记住 key（存入本浏览器的 localStorage）。不勾选时，关掉标签页后 key 即清除。公用电脑请不要勾选。": [
   "ai/ai.js"
  ],
@@ -7973,7 +8024,7 @@
  "（在下方填写模型 ID）": [
   "ai/ai.js"
  ],
- "在 {0} 控制台创建 key ↗": [
+ "在 {0} 控制台创建 key": [
   "ai/ai.js"
  ],
  "隐藏": [
@@ -9050,9 +9101,6 @@
  "文件已移动或删除": [
   "radar/app/app.js"
  ],
- "打开": [
-  "radar/app/app.js"
- ],
  "还没有导出过": [
   "radar/app/app.js"
  ],
@@ -9560,7 +9608,7 @@
  "首页": [
   "tools/build-seo.ts"
  ],
- "在阅读器中打开 ↗": [
+ "在阅读器中打开": [
   "tools/build-seo.ts"
  ],
  "MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 {0}。全文、更新日期与使用许可以各资源原站为准。": [

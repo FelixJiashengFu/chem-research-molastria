@@ -25,7 +25,7 @@ load("atlas/content.js");
 load("merged-data.js");
 const content = (globalThis as any).CHEMDB_CONTENT;
 const data = (globalThis as any).CHEMRESEARCH_DATA;
-const THEME_BOOT = '<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>';
+const THEME_BOOT = '<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>';
 
 // ── head blocks ──────────────────────────────────────────────────────────
 function seoHead(o: { path: string; title: string; description: string; type?: string; jsonld?: unknown[] }) {
@@ -165,12 +165,12 @@ for (const [i, g] of guides.entries()) {
   const body = `<main class="sg">
 ${toc(i)}
 <div class="sg-main">
-  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">说明讲解手册</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../manual/index.html#${esc(g.id)}">在阅读器中打开 ↗</a></div>
+  <div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><a href="index.html">说明讲解手册</a><span>/</span><span>${esc(LABELS[i] || g.title)}</span></nav><a href="../manual/index.html#${esc(g.id)}">在阅读器中打开 <i class="ico-ext" aria-hidden="true"></i></a></div>
   <p class="en-only" translate="no">This chapter is written in Chinese. Your browser’s translate feature gives a full English version.</p>
   <article class="guide-article">
 ${html}
   </article>
-  <nav class="sg-pager" aria-label="翻页">${prev ? `<a href="${esc(prev.id)}.html"><small>← 上一章</small>${esc(LABELS[i - 1] || prev.title)}</a>` : "<span></span>"}${next ? `<a href="${esc(next.id)}.html"><small>下一章 →</small>${esc(LABELS[i + 1] || next.title)}</a>` : ""}</nav>
+  <nav class="sg-pager" aria-label="翻页">${prev ? `<a href="${esc(prev.id)}.html"><small><i class="ico-ext ico-left" aria-hidden="true"></i> 上一章</small>${esc(LABELS[i - 1] || prev.title)}</a>` : "<span></span>"}${next ? `<a href="${esc(next.id)}.html"><small>下一章 <i class="ico-ext ico-right" aria-hidden="true"></i></small>${esc(LABELS[i + 1] || next.title)}</a>` : ""}</nav>
 </div>
 <footer class="sg-foot">MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 ${esc(content.date)}。全文、更新日期与使用许可以各资源原站为准。</footer>
 </main>`;
@@ -186,7 +186,7 @@ await write("guide/index.html", page({
   rel: "../", path: "guide/", section: "manual", css: ["theme-auto.css", "guide/guide.css"],
   title: `计算化学数据库说明讲解手册（${guides.length} 章）· ${NAME}`,
   description: `从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据集与计算软件，${guides.length} 章讲解帮你判断该去哪个数据库、能拿到什么、边界在哪里。`,
-  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>说明讲解手册</span></nav><a href="../manual/index.html">在阅读器中打开 ↗</a></div><article class="guide-article"><h1>计算化学数据库说明讲解手册</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
+  body: `<main class="sg">${toc(-1)}<div class="sg-main"><div class="sg-tools"><nav class="sg-crumbs" aria-label="位置"><a href="../index.html">首页</a><span>/</span><span>说明讲解手册</span></nav><a href="../manual/index.html">在阅读器中打开 <i class="ico-ext" aria-hidden="true"></i></a></div><article class="guide-article"><h1>计算化学数据库说明讲解手册</h1><p class="lead">一百零三个数据库与资源入口，按研究问题分层讲解：先分清去哪一层，再决定用哪个库。下面是全部 ${guides.length} 章。</p><ol>${guides.map((g, i) => `<li><a href="${esc(g.id)}.html">${esc(LABELS[i] || g.title)}</a> — ${esc(g.title)}</li>`).join("")}</ol></article></div><footer class="sg-foot">材料版本 ${esc(content.date)}。</footer></main>`,
   jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学数据库说明讲解手册", inLanguage: "zh-CN", url: SITE + "guide/", hasPart: guides.map((g) => ({ "@type": "TechArticle", headline: g.title, url: `${SITE}guide/${g.id}.html` })) }, crumbs([["首页", ""], ["说明讲解手册", "guide/"]])],
 }));
 
@@ -297,7 +297,7 @@ await write("404.html", `<!doctype html>
   <script src="${SITE}shared-nav.js" defer></script>
 </head>
 <body data-section="">
-<main class="rs"><h1>这个页面不存在</h1><p class="lead">链接可能已经改名。可以从这些入口继续：</p><ul class="rs-types"><li><a href="${SITE}">统一搜索<span>↗</span></a></li><li><a href="${SITE}resources/">资源目录<span>↗</span></a></li><li><a href="${SITE}guide/">说明讲解手册<span>↗</span></a></li><li><a href="${SITE}lab/">AI 实验室<span>↗</span></a></li></ul></main>
+<main class="rs"><h1>这个页面不存在</h1><p class="lead">链接可能已经改名。可以从这些入口继续：</p><ul class="rs-types"><li><a href="${SITE}">统一搜索<span><i class="ico-ext" aria-hidden="true"></i></span></a></li><li><a href="${SITE}resources/">资源目录<span><i class="ico-ext" aria-hidden="true"></i></span></a></li><li><a href="${SITE}guide/">说明讲解手册<span><i class="ico-ext" aria-hidden="true"></i></span></a></li><li><a href="${SITE}lab/">AI 实验室<span><i class="ico-ext" aria-hidden="true"></i></span></a></li></ul></main>
 </body>
 </html>
 `);

@@ -103,6 +103,13 @@ fn update_progress(progress: State<'_, Progress>) -> (u64, u64) {
     (progress.done.load(Ordering::Relaxed), progress.total.load(Ordering::Relaxed))
 }
 
+/// Interface scale from the site's display settings (shared-nav.js): the WebView's own zoom, so pages reflow
+/// exactly as with browser zoom. The website and the iPad home-screen app use CSS zoom instead.
+#[tauri::command]
+fn set_zoom(window: tauri::WebviewWindow, value: f64) -> Result<(), String> {
+    window.set_zoom(value.clamp(0.5, 2.0)).map_err(|e| e.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
@@ -117,6 +124,7 @@ fn main() {
             check_update,
             install_update,
             update_progress,
+            set_zoom,
             uma::uma_find,
             uma::uma_inspect,
             uma::uma_start,

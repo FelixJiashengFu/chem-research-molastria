@@ -137,8 +137,8 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     return `<article class="mx-mol" data-i="${i}"><div class="art">${art || '<span class="muted small">无结构图</span>'}</div><div>`
       + `<h4>${esc(m.name || `分子 ${i + 1}`)}</h4><div>${tags}</div><p class="smi">${esc(s)}</p>${facts}${m.note ? `<p class="why">${esc(m.note)}</p>` : ''}`
       + `<div class="btns"><button type="button" class="button small" data-act="copy" data-smiles="${esc(s)}">复制 SMILES</button>`
-      + (info ? `<button type="button" class="button small" data-act="uma" data-smiles="${esc(s)}" data-name="${esc(m.name || '')}">生成 UMA 脚本 ↓</button>` : '')
-      + `<a class="button small ghost" href="https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(s)}" target="_blank" rel="noopener">PubChem ↗</a></div></div></article>`;
+      + (info ? `<button type="button" class="button small" data-act="uma" data-smiles="${esc(s)}" data-name="${esc(m.name || '')}">生成 UMA 脚本 <i class="ico-ext ico-down" aria-hidden="true"></i></button>` : '')
+      + `<a class="button small ghost" href="https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(s)}" target="_blank" rel="noopener">PubChem <i class="ico-ext" aria-hidden="true"></i></a></div></div></article>`;
   }
   $('v-results').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-act]');
@@ -643,7 +643,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
         const row = r.row || {};
         const cols = [['UMA-S', 'uma_s'], ['UMA-M', 'uma_m'], ['D4rev 微调', 'd4rev']].filter(([, c]) => `ip_${c}` in row);
         body = `<table class="mx-res-table"><thead><tr><th>模型</th><th>IP（eV）</th><th>EA（eV）</th></tr></thead><tbody>${cols.map(([n, c]) => `<tr><td>${n}</td><td>${f4(row[`ip_${c}`])}</td><td>${f4(row[`ea_${c}`])}</td></tr>`).join('')}</tbody></table>`
-          + (cols.some(([, c]) => c !== 'd4rev') ? '<div class="btns"><button type="button" class="button primary small" data-act="lab">导入 AI 实验室 →</button><button type="button" class="button small" data-act="csv">复制 CSV</button></div>' : '<p class="muted small">D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。</p>');
+          + (cols.some(([, c]) => c !== 'd4rev') ? '<div class="btns"><button type="button" class="button primary small" data-act="lab">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button><button type="button" class="button small" data-act="csv">复制 CSV</button></div>' : '<p class="muted small">D4rev 的数值不进 AI 实验室（实验室只读 UMA-S / UMA-M 列）。</p>');
         out.csv = `${Object.keys(row).join(',')}\n${Object.values(row).join(',')}\n`;
       } else if (r.job === 'conf') {
         body = `<p>最低能量 E = ${r.energy_ev.toFixed(6)} eV。各构象的相对能量（kcal/mol）：${(r.relative_kcal || []).slice(0, 20).map((v) => v.toFixed(2)).join('、')}</p>`;
@@ -714,7 +714,7 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     const safe = (u) => (/^https:\/\/github\.com\//.test(u) ? u : 'https://github.com/facebookresearch/fairchem/releases');
     const rows = data.releases.map((r) => `<li><a href="${esc(safe(r.url))}" target="_blank" rel="noopener">${esc(r.name)}</a><span>${esc(r.date)}</span></li>`);
     if (data.uma) rows.push(`<li><a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">facebook/UMA</a><span>模型库最近更新 ${esc(data.uma)}</span></li>`);
-    $('live-list').innerHTML = rows.join('') || '<li><span>暂时读不到 GitHub 和 Hugging Face。</span><a href="https://github.com/facebookresearch/fairchem/releases" target="_blank" rel="noopener">直接去 GitHub 看 ↗</a></li>';
+    $('live-list').innerHTML = rows.join('') || '<li><span>暂时读不到 GitHub 和 Hugging Face。</span><a href="https://github.com/facebookresearch/fairchem/releases" target="_blank" rel="noopener">直接去 GitHub 看 <i class="ico-ext" aria-hidden="true"></i></a></li>';
   }
   live().catch(() => {});
 })();

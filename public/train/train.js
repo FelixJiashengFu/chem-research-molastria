@@ -121,14 +121,14 @@
       a.dataset.live = '1';
       const s = document.createElement('small');
       s.className = 'hf-stats';
-      if (m.ok) { s.innerHTML = `<span>↓ ${short(m.downloads)}</span> <span>♥ ${short(m.likes)}</span>`; s.title = `近 30 天下载 ${m.downloads ?? '?'} · 点赞 ${m.likes ?? '?'} · 更新于 ${m.updated}`; }
+      if (m.ok) { s.innerHTML = `<span><i class="ico-ext ico-down" aria-hidden="true"></i> ${short(m.downloads)}</span> <span>♥ ${short(m.likes)}</span>`; s.title = `近 30 天下载 ${m.downloads ?? '?'} · 点赞 ${m.likes ?? '?'} · 更新于 ${m.updated}`; }
       else { s.textContent = '本周检查打不开'; s.classList.add('hf-dead'); }
       a.after(s);
     }
     const box = document.getElementById('model-news');
     if (box && live.fresh?.length) {
       box.innerHTML = `<h3>近 ${live.newDays} 天的新模型（每周自动发现）</h3><p>从各家实验室的 Hugging Face 官方账号自动找出、上表还没收录的 40B 以下文本或图文模型，按下载量排序。尚未人工评测，用于化学 Agent 前先读模型卡。</p><div class="news-list">` +
-        live.fresh.map((m) => `<div class="news-item"><a href="https://huggingface.co/${m.id}" target="_blank" rel="noopener" translate="no">${m.id.split('/')[1]}</a><small translate="no">${m.lab} · ${(m.params / 1e9).toFixed(1)}B · ${m.license || '—'}</small><small>${m.created} · ↓ ${short(m.downloads)}</small></div>`).join('') + '</div>';
+        live.fresh.map((m) => `<div class="news-item"><a href="https://huggingface.co/${m.id}" target="_blank" rel="noopener" translate="no">${m.id.split('/')[1]}</a><small translate="no">${m.lab} · ${(m.params / 1e9).toFixed(1)}B · ${m.license || '—'}</small><small>${m.created} · <i class="ico-ext ico-down" aria-hidden="true"></i> ${short(m.downloads)}</small></div>`).join('') + '</div>';
       box.hidden = false;
     }
   }
