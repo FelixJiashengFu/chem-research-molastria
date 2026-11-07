@@ -16,16 +16,16 @@ One place to search computational-chemistry databases, software, tutorials, pape
 三段短片，都有声音：先看 80 秒的介绍，再看网状查询导览和深色模式下的全站导览。 · Three short films with sound: an 80-second introduction, then a tour of the network and a tour of the whole site in dark mode.
 
 ### 介绍短片 · Introduction
+https://github.com/user-attachments/assets/0bb5cc3d-f832-4ef3-95ef-c0ed371b0911
 
-<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-introduction.mp4 拖到这一行 / drag MolAstria-introduction.mp4 onto this line -->
 
 ### 网状查询导览 · Network tour
+https://github.com/user-attachments/assets/701d454d-34fd-414a-8e73-a1f41ff7e14f
 
-<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-network-tour.mp4 拖到这一行 / drag MolAstria-network-tour.mp4 onto this line -->
 
 ### 深色模式导览 · Dark-mode tour
+https://github.com/user-attachments/assets/31c3bf7b-e4e8-4121-bd8b-750b62277c0a
 
-<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-dark-tour.mp4 拖到这一行 / drag MolAstria-dark-tour.mp4 onto this line -->
 
 ## 栏目 · Sections
 
