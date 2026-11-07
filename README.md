@@ -17,7 +17,6 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 [在播放页面观看完整视频 · Watch the full video tour](https://molastria.com/watch/)
 
-https://github.com/user-attachments/assets/879a28c3-d4e2-4244-aa9b-3e5f0cbb5ea0
 
 
 三段短片，都有声音：先看 80 秒的介绍，再看网状查询导览和深色模式下的全站导览。 · Three short films with sound: an 80-second introduction, then a tour of the network and a tour of the whole site in dark mode.
