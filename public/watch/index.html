@@ -1,27 +1,68 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f5ee">
-  <meta http-equiv="refresh" content="0; url=https://github.com/user-attachments/assets/879a28c3-d4e2-4244-aa9b-3e5f0cbb5ea0">
-  <title>视频导览 · MolAstria</title>
-  <link rel="stylesheet" href="../shared-nav.css">
-  <style>
-    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-sans); }
-    main { width: min(100% - 2rem, 44rem); margin: 0 auto; padding: 3rem 0; }
-    h1 { font-family: var(--font-serif); }
-    p { color: var(--muted); line-height: 1.7; }
-    a { color: var(--accent-text); text-underline-offset: .2em; }
-    a:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="观看 MolAstria 计算化学研究导航的完整视频导览。">
+<title>视频导览 · MolAstria</title>
+<link rel="stylesheet" href="../shared-nav.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-sans)}
+main{width:min(100% - 2rem,60rem);margin:auto;padding:2rem 0 4rem}.brand{color:var(--accent-text);font-family:var(--font-serif);font-weight:700;text-decoration:none}.eyebrow{margin:3rem 0 .75rem;color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.12em}h1{margin:0 0 .75rem;font-family:var(--font-serif);font-size:clamp(2rem,6vw,3.25rem)}p{color:var(--muted);line-height:1.7}video{display:block;width:100%;aspect-ratio:16/9;margin-top:2rem;background:#101613}a{color:var(--accent-text);text-underline-offset:.2em}a:focus-visible,video:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+</style>
 </head>
 <body>
-  <main>
-    <h1>MolAstria 视频导览</h1>
-    <p>正在打开视频。如果没有自动打开，请点击下面的链接。</p>
-    <p><a href="https://github.com/user-attachments/assets/879a28c3-d4e2-4244-aa9b-3e5f0cbb5ea0">点击观看完整视频 ↗</a></p>
-    <p><a href="/">访问 MolAstria</a></p>
-  </main>
+<main><a class="brand" href="/">MolAstria</a><p class="eyebrow">MOLASTRIA · VIDEO TOUR</p><h1>一起探索 MolAstria</h1><p>计算化学研究导航 · 完整视频导览（约 15 分钟，有声音）</p>
+<video id="video" controls playsinline preload="metadata" aria-label="MolAstria 完整视频导览"></video>
+<p id="status" role="status">视频正在加载，请稍候。</p><p><a href="/">访问 MolAstria ↗</a></p>
+</main>
+<script>
+(async () => {
+  const video = document.getElementById('video');
+  const status = document.getElementById('status');
+  const paths = Array.from({length: 5}, (_, i) => 'video-0' + i + '.bin');
+  const mime = 'video/mp4; codecs="avc1.640028, mp4a.40.2"';
+  async function getPart(path) {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error('视频加载失败');
+    return response.arrayBuffer();
+  }
+  async function loadWhole() {
+    status.textContent = '正在加载视频，请稍候（约 95 MB）。';
+    const parts = [];
+    for (const path of paths) parts.push(await getPart(path));
+    video.src = URL.createObjectURL(new Blob(parts, {type:'video/mp4'}));
+    status.textContent = '视频已就绪，点击播放。';
+  }
+  video.addEventListener('canplay', () => { status.textContent = '点击播放。'; }, {once:true});
+  try {
+    if (!window.MediaSource || !MediaSource.isTypeSupported(mime)) {
+      await loadWhole();
+      return;
+    }
+    const media = new MediaSource();
+    video.src = URL.createObjectURL(media);
+    await new Promise((resolve, reject) => {
+      media.addEventListener('sourceopen', resolve, {once:true});
+      media.addEventListener('error', reject, {once:true});
+    });
+    const buffer = media.addSourceBuffer(mime);
+    media.duration = 868.904;
+    for (const path of paths) {
+      const data = await getPart(path);
+      await new Promise((resolve, reject) => {
+        const failed = () => reject(new Error('视频缓冲失败'));
+        buffer.addEventListener('error', failed, {once:true});
+        buffer.addEventListener('updateend', () => { buffer.removeEventListener('error', failed); resolve(); }, {once:true});
+        try { buffer.appendBuffer(data); } catch (error) { buffer.removeEventListener('error', failed); reject(error); }
+      });
+    }
+    if (media.readyState === 'open') media.endOfStream();
+  } catch (error) {
+    try { await loadWhole(); }
+    catch (err) { status.textContent = '视频暂时无法加载，请检查网络后刷新页面重试。'; }
+  }
+})();
+</script>
 </body>
 </html>
