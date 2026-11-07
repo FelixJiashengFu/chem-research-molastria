@@ -47,13 +47,18 @@
     $$('.filter').forEach(b => {b.classList.toggle('active',b.dataset.filter === filter); b.setAttribute('aria-pressed',String(b.dataset.filter === filter));});
     $$('.category-button').forEach(b => {b.classList.toggle('active',b.dataset.category === category); b.setAttribute('aria-pressed',String(b.dataset.category === category));});
     $('#active-category').hidden = !category;
-    $('#active-category').innerHTML = category ? `当前主题：${escape(categories.find(c=>c[0]===category)?.[1] || '')}<button id="clear-category">清除主题 ×</button>` : '';
+    $('#active-category').innerHTML = category ? `当前主题：${escape(categories.find(c=>c[0]===category)?.[1] || '')}<button id="clear-category">清除主题 ×</button>${category === '17' ? ' <a href="../scimodels/index.html" style="margin-left:9px;text-decoration:underline">每个模型的详细介绍见科学大模型栏目 →</a>' : ''}` : '';
   }
   function showResource(number) {
     const r = resources.find(item=>item.number === number);
     if (!r) return;
     const implemented = ['adapter','optimade'].includes(r.integration);
-    $('#dialog-body').innerHTML = `<h2 id="dialog-title">${escape(r.name)}</h2><p>${escape(r.description)}</p><dl class="dialog-facts"><dt>研究主题</dt><dd>${escape(r.category)}</dd><dt>访问方式</dt><dd>${escape(r.access)}</dd><dt>工程状态</dt><dd>${escape(stateNames[r.integration])}${implemented?' · 源码已有模块':''}</dd><dt>接入备注</dt><dd>${escape(r.detail)}</dd><dt>来源网址</dt><dd>${escape(r.url)}</dd><dt>材料日期</dt><dd>2026-10-27 · 来源记录，未在本网页重新验证</dd></dl><div class="dialog-actions"><a class="primary-button" href="${escape(r.url)}" target="_blank" rel="noopener noreferrer">访问原站 ↗</a><button class="secondary-button" id="dialog-save" data-number="${r.number}">${saved.has(r.number)?'取消收藏 ★':'收藏资源 ☆'}</button></div><p class="small-note">${implemented?'数据源模块与 MCP 工具入口的完成度不同；请在 Agent 工程页查看实际状态。':'本条提供资源导航，请按原站要求访问与使用。'}</p>`;
+    // Category 17 entries have their own card on the Science LLMs page (scimodels-data.js, checked link by link).
+    const sm = window.MOLASTRIA_SCIMODELS?.models.find(m=>m.n === r.number);
+    const smText = t => t ? (document.documentElement.lang === 'en' ? t.en : t.zh) : '';
+    const smLinks = list => list.map(l=>`<a href="${escape(l.url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:underline;text-underline-offset:2px">${escape(smText(l))}</a>`).join('<br>');
+    const smFacts = sm ? `<dt>在线体验</dt><dd>${sm.try?.length ? smLinks(sm.try) : escape(smText(sm.tryNone))}</dd><dt>发布原文</dt><dd>${smLinks(sm.announce)}</dd>` : '';
+    $('#dialog-body').innerHTML = `<h2 id="dialog-title">${escape(r.name)}</h2><p>${escape(r.description)}</p><dl class="dialog-facts"><dt>研究主题</dt><dd>${escape(r.category)}</dd><dt>访问方式</dt><dd>${escape(r.access)}</dd><dt>工程状态</dt><dd>${escape(stateNames[r.integration])}${implemented?' · 源码已有模块':''}</dd><dt>接入备注</dt><dd>${escape(r.detail)}</dd><dt>来源网址</dt><dd>${escape(r.url)}</dd>${smFacts}<dt>材料日期</dt><dd>${sm ? `${escape(window.MOLASTRIA_SCIMODELS.checked)} · 已对照官方页面逐条核对` : '2026-10-27 · 来源记录，未在本网页重新验证'}</dd></dl><div class="dialog-actions"><a class="primary-button" href="${escape(r.url)}" target="_blank" rel="noopener noreferrer">访问原站 ↗</a>${sm ? `<a class="secondary-button" href="../scimodels/index.html#m-${escape(sm.slug)}">科学大模型栏目 →</a>` : ''}<button class="secondary-button" id="dialog-save" data-number="${r.number}">${saved.has(r.number)?'取消收藏 ★':'收藏资源 ☆'}</button></div><p class="small-note">${implemented?'数据源模块与 MCP 工具入口的完成度不同；请在 Agent 工程页查看实际状态。':'本条提供资源导航，请按原站要求访问与使用。'}</p>`;
     $('#dialog-save').onclick = () => toggleSaved(number);
     if (!$('#resource-dialog').open) $('#resource-dialog').showModal();
     history.replaceState(null,'',`#resources/${number}`);

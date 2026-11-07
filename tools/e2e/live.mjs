@@ -88,6 +88,31 @@ check('Meta page: the UMA script builds once RDKit loads', async () => {
   assert.deepEqual(p.errors, []);
 });
 
+check('scientific models page: 27 model cards and the price chart with its table', async () => {
+  const p = await page('/scimodels/');
+  await p.waitForSelector('.sm-card');
+  assert.equal(await p.locator('.sm-card').count(), 27);
+  const rows = await p.locator('.sm-row').count();
+  assert.ok(rows >= 14 && rows === await p.locator('#sm-table tbody tr').count(), `${rows} chart rows`);
+  assert.deepEqual(p.errors, []);
+});
+
+check('installable web app: manifest and its icons, a CI-stamped sw.js, the offline page, the head tags', async () => {
+  const get = (path) => fetch(`${SITE}/${path}${path.includes('?') ? '&' : '?'}${bust}`);
+  const m = await (await get('manifest.webmanifest')).json();
+  assert.equal(m.display, 'standalone');
+  for (const i of [...m.icons, { src: 'assets/pwa/apple-touch-icon.png' }]) assert.equal((await get(i.src)).status, 200, i.src);
+  const sw = await get('sw.js');
+  assert.equal(sw.status, 200);
+  const src = await sw.text();
+  assert.match(src, /const KILL = false;/);
+  assert.doesNotMatch(src, /const VERSION = 'dev'/, 'build-seo.ts stamps the version on deploy');
+  const off = await get('offline.html');
+  assert.equal(off.status, 200);
+  assert.match(await off.text(), /noindex/);
+  assert.match(await (await get('')).text(), /<link rel="manifest" href="manifest\.webmanifest">/);
+});
+
 check('catalogue page lists its sources, ChemRxiv among them', async () => {
   const p = await page('/hub/');
   await p.waitForSelector('#sourceCards .source-card');

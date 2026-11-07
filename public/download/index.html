@@ -53,21 +53,38 @@
     <li>收藏、偏好和实验室项目保存在本机，和浏览器里的数据互不影响；可以用“导出项目”在两边迁移。</li>
   </ul>
 
+  <h2 id="home-screen" style="scroll-margin-top:calc(var(--cr-nav-height,64px) + 16px)">iPad / iPhone / 安卓：添加到主屏幕</h2>
+  <p>在平板和手机上，可以把网站添加到主屏幕：从 MolAstria 图标打开时全屏显示，没有浏览器地址栏，打开过的页面断网也能读。</p>
+  <div class="box">
+    <p><b>iPad 和 iPhone（Safari）：</b>用 Safari 打开 molastria.com，点 <b>分享</b> 按钮（方框加向上的箭头；地址栏旁只有 <b>⋯</b> 时先点它，再点 <b>分享</b>），选 <b>添加到主屏幕</b>。出现“作为网页 App 打开”时保持开启，再点 <b>添加</b> 即可。</p>
+    <p><b>安卓（Chrome）：</b>用 Chrome 打开 molastria.com，点右上角的 <b>⋮</b> 菜单，选 <b>添加到主屏幕</b>（有的版本叫 <b>安装应用</b>），再点 <b>安装</b> 即可。</p>
+    <p class="pwa-install" hidden><button type="button" class="btn primary">安装 MolAstria</button></p>
+  </div>
+  <p class="fine">AI 助手、账号和在线模型计算仍然需要联网。</p>
+
   <h2>从源码构建</h2>
   <p>桌面版用 <a href="https://tauri.app/" target="_blank" rel="noopener">Tauri</a> 打包，源码在仓库的 <code>desktop/</code> 目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。</p>
 </main>
 <script>
   // The intro film plays once, muted, and stops on its last frame. Its poster is that last frame, so it is
   // dropped while the film plays from the start (no flash of the end) and is what reduced motion shows.
+  // The logo-animation switch (backdrop.js: html[data-logo-motion=off], event molastria:logo-motion) also leaves only
+  // the poster, without fetching the film; turning it off stops the film, turning it on plays it once from the start.
   addEventListener('DOMContentLoaded', () => {
     const v = document.querySelector('.dl-intro video[data-src]');
     if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const poster = v.getAttribute('poster'), still = () => v.setAttribute('poster', poster);
-    v.removeAttribute('poster');
-    v.addEventListener('error', still);
-    setTimeout(() => { if (v.readyState < 2) still(); }, 3000); // no frame yet (slow or failed load): show the logo still
-    v.src = v.dataset.src;
-    v.play().catch(still);
+    const play = () => {
+      v.removeAttribute('poster');
+      setTimeout(() => { if (v.readyState < 2) still(); }, 3000); // no frame yet (slow or failed load): show the logo still
+      v.src = v.dataset.src;
+      v.play().catch(still);
+    };
+    v.addEventListener('error', () => { if (v.getAttribute('src')) still(); });
+    addEventListener('molastria:logo-motion', (e) => {
+      if (e.detail?.on) play(); else { v.pause(); v.removeAttribute('src'); v.load(); still(); }
+    });
+    if (document.documentElement.dataset.logoMotion !== 'off') play();
   });
 </script>
 <script>
@@ -75,6 +92,16 @@
     const ua = navigator.userAgent, os = /Mac|iPhone|iPad/.test(ua) ? 'mac' : /Windows/.test(ua) ? 'win' : '';
     if (os) document.querySelectorAll(`.dl[data-os="${os}"]`).forEach((a) => a.classList.add('mine'));
   });
+</script>
+<script>
+  // Browsers that can install the site in one step (Chrome, Edge) say so with beforeinstallprompt: offer a button.
+  addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    const box = document.querySelector('.pwa-install');
+    box.hidden = false;
+    box.querySelector('button').onclick = () => { box.hidden = true; e.prompt(); };
+  });
+  addEventListener('appinstalled', () => { document.querySelector('.pwa-install').hidden = true; });
 </script>
 </body>
 </html>

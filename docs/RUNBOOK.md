@@ -15,6 +15,32 @@ gh run watch --repo FelixJiashengFu/chem-research-molastria "$(gh run list --rep
 node tools/e2e/live.mjs
 ```
 
+`live.mjs` 也核对线上的 `manifest.webmanifest`、图标、`sw.js`（版本号必须已由 CI 写入，不是 `'dev'`）和 `offline.html`。
+
+## 可添加到主屏幕（PWA）
+
+`public/sw.js` 由 `shared-nav.js` 注册，只在线上网站（https、不是 localhost）注册；各页的 manifest 等头部标签和 sw.js 的版本号由 `tools/build-seo.ts` 在 CI 里写入。仓库里的 `sw.js` 保持 `VERSION = 'dev'`。
+
+**关掉 PWA（kill switch）：**
+
+1. `public/sw.js`：把 `const KILL = false;` 改成 `true`。
+2. `public/shared-nav.js`：把 `const SW = true;` 改成 `false`。
+3. 两处在同一次推送里上线（`/ship-site`）。
+
+访客下一次打开任何页面时，浏览器会绕过缓存检查 `/sw.js`，装上关闭版并立即接管：它不再处理任何请求，删掉所有 `molastria-*` 缓存，然后注销自己。新的 shared-nav.js 不再注册，也会注销残留的 worker、删掉缓存。再下一次打开时就完全没有 Service Worker 了。
+
+不要直接删除 sw.js：检查更新时拿到 404，浏览器会让旧的 worker 继续运行。恢复时把两处改回去再推送，版本号由 CI 重新写入。
+
+**本地测 PWA：** localhost 不注册 sw.js，本地预览也没有 PWA 头部标签。测试步骤：
+
+1. 把 `public/`、`tools/build-seo.ts`、`tools/serve.ts`、`site.config.json` 复制到仓库外的目录（保持同样的相对结构）。
+2. 在副本里运行 `deno run --allow-read --allow-write <副本>/tools/build-seo.ts`。
+3. 用 `deno run --allow-net --allow-read <副本>/tools/serve.ts 8851` 起服务。
+4. 启动 Chrome，加参数 `--host-resolver-rules="MAP molastria.test 127.0.0.1" --unsafely-treat-insecure-origin-as-secure=http://molastria.test:8851`，打开 `http://molastria.test:8851/`。
+5. 在 DevTools → Application 里看 Manifest、Service workers 和 Cache storage；在 Network 里勾选 Offline 测离线。
+
+上线后在 iPad 的 Safari 里实际添加到主屏幕看一次：图标、全屏、状态栏下的深绿色条，以及断网打开看过的页面。
+
 ## 部署账号服务
 
 ```bash
@@ -90,6 +116,10 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **量子化学计算：** 先在 qchem-web 仓库运行 `python3 tools/build.py`（它的测试是 `node tests/run_all.js`），再回到这里运行 `deno run --allow-read --allow-write --allow-run=git tools/vendor-qchem.ts [qchem-web 的路径]`，默认找同级目录 `../qchem-web`。它自带中英文词典，复制后不用走翻译；只有外层页面 `public/qchem/index.html` 的文字改了才要走。
 - **chemdb-agent 下载包：** 源码在 `agent/chemdb-agent/`。改完先在那里跑离线测试（`uv sync` 后 `uv run python -m pytest`，或 venv 里 `pip install -e . pytest vcrpy` 后 `python -m pytest`；联网冒烟测试加 `CHEMDB_LIVE=1`），再回到仓库根目录运行 `python tools/pack-chemdb-agent.py`，重新生成 `public/atlas/downloads/chemdb-agent.zip`。同样的源码打出同样的 zip；脚本发现 .env、缓存、本机路径或 token 时会中止，不要手放 zip。
 - **训练 Agent 页的模型表：** 模型信息要对照 Hugging Face（`huggingface.co/api/models/<id>?expand[]=safetensors`）和模型卡核实。刷新时要按作者加 `sort=createdAt` 逐家查最新的仓库，不能只查已知的系列名，否则会漏掉刚发布的新系列（发生过）。
+- **科学大模型的价格（`public/scimodels/scimodels-data.js` 的 `prices`）：** 每月核对一次，已知的变动日期过后马上核对。逐行打开 `src` 指向的官方价格页读原文（多数是脚本渲染的，用浏览器看），只改官方写明的每百万 token 标准价（`in` / `out`）和 `note`；没有官方按 token 价格的不进图，不要用第三方聚合价。人民币行：`rate.cny` 换成核对当天中国外汇交易中心公布的人民币兑美元汇率中间价（`chinamoney.com.cn` 的人民币汇率中间价页），同时改 `rate.date`；最后改 `prices.checked`。模型卡片的链接和事实另有 `checked`（文件开头），重核链接时一起改。改完跑 `node tools/e2e/run.mjs scimodels`。已知的变动：
+  - Gemini 4 Argon：2026-12-01 起从 2 / 10 美元涨到 4 / 20 美元。到期后改 `in` / `out`，并改掉说明里“此价格到 2026-11-30”那句。
+  - Hydrogen-1.0：现在是 NeuroSpark 的发布价（Launch Price），核对时看是否已换成正式价格。
+  - Kimi：K2 系列 2026-10-31 起不再向新用户开放，年底下线；图里只有 K3.1 Pro，K2 下线后改掉它说明里提到 K2 的那句。Kimi 出了在售的小型模型就补一行。
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 
 ## 在线模型：站长电脑的 GPU，对所有访客开放（UMA、OMol25、MACE、ANI-2x）
@@ -244,6 +274,6 @@ npx.cmd wrangler secret put DEEPSEEK_API_KEY
 ## 定期看一眼
 
 - **每年：** Porkbun 域名续费（确认自动续费和银行卡）。
-- **每月：** D1 备份；DeepSeek 余额。
+- **每月：** D1 备份；DeepSeek 余额；科学大模型的价格和汇率（见“刷新数据”）。
 - **每周（自动）：** 健康检查失败时 GitHub 发邮件。
 - **价格：** `ARCHITECTURE.md` 的费用表写了查询日期，隔一段时间核对一次。

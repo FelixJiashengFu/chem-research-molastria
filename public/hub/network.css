@@ -85,7 +85,6 @@
 .net-combo-icon{font-size:22px;color:var(--muted);line-height:1}
 .net-combo input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:16px;padding:9px 0;outline:none}
 .net-combo input::-webkit-search-cancel-button{cursor:pointer}
-.net-combo kbd{font:11px var(--font-mono,monospace);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
 .net-suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;margin:0;padding:6px;list-style:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);max-height:360px;overflow:auto}
 .net-suggest li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:9px 12px;border-radius:5px;cursor:pointer;color:var(--ink)}
 .net-suggest li[aria-selected=true],.net-suggest li:hover{background:var(--accent-soft)}
@@ -135,7 +134,7 @@
 .tip-hint{margin-top:4px;color:var(--accent-text)}
 .tip-title{overflow-wrap:anywhere}
 @media(max-width:1080px){.net-stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.net-stats{grid-template-columns:1fr 1fr}.net-combo kbd{display:none}.net-combo input{font-size:15px}.net-focus h2{font-size:19px}}
+@media(max-width:640px){.net-stats{grid-template-columns:1fr 1fr}.net-combo input{font-size:15px}.net-focus h2{font-size:19px}}
 .filter-line{display:flex;gap:8px;align-items:baseline}
 .filter-line .breakdown{flex:1}
 .filter-label{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:3px;min-width:2.5em}

@@ -15,6 +15,7 @@ const PAGES: Record<string, { file: string; title: string }> = {
   network: { file: "hub/network.html", title: "网状查询" },
   manual: { file: "manual/index.html", title: "讲解手册" },
   journals: { file: "journals/index.html", title: "期刊发表" },
+  scimodels: { file: "scimodels/index.html", title: "科学大模型" },
   atlas: { file: "atlas/index.html", title: "数据库" },
   hub: { file: "hub/index.html", title: "论文与社区" },
   lab: { file: "lab/index.html", title: "AI 实验室" },
@@ -82,6 +83,7 @@ const SHIM = `window.__CHEM_PAGE_CONFIG__ = __CHEM_CONFIG_PLACEHOLDER__;
 async function bundlePage(file: string) {
   let html = await read(file);
   html = html.replace(/\s*<!-- seo:start -->[\s\S]*?<!-- seo:end -->/, "");
+  html = html.replace(/\s*<!-- pwa:start -->[\s\S]*?<!-- pwa:end -->/, ""); // manifest and home-screen tags (build-seo.ts) are for the website only
   html = html.replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${favicon}" type="image/svg+xml">`);
   // Decorative videos are not inlined (too large): each one is replaced by its poster image, inlined like the favicon.
   for (const [tag, poster] of [...html.matchAll(/<video\b[^>]*\bposter="([^"]+)"[^>]*><\/video>/g)]) {

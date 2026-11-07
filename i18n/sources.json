@@ -23,6 +23,10 @@
  "阅读说明讲解手册": [
   "index.html"
  ],
+ "收藏夹": [
+  "index.html",
+  "atlas/index.html"
+ ],
  "目录快照": [
   "index.html"
  ],
@@ -32,33 +36,31 @@
  "研究笔记": [
   "index.html"
  ],
- "数据库、文献和方法经统一检索连接的功能示意，并非条目统计关系图": [
-  "index.html"
- ],
  "检索": [
   "index.html"
  ],
  "数据库": [
   "index.html",
+  "scimodels/index.html",
   "shared-nav.js",
   "app.js",
   "hub/app.js",
   "hub/network.js",
   "tools/build-seo.ts"
  ],
+ "方法": [
+  "index.html",
+  "lab/index.html"
+ ],
  "论文": [
   "index.html",
   "meta/index.html"
  ],
- "教程": [
-  "index.html"
- ],
  "工具": [
   "index.html"
  ],
- "方法": [
-  "index.html",
-  "lab/index.html"
+ "教程": [
+  "index.html"
  ],
  "一处检索，多条研究路径。": [
   "index.html"
@@ -109,11 +111,6 @@
  "论文、教程与社区": [
   "index.html"
  ],
- "我的收藏": [
-  "index.html",
-  "atlas/index.html",
-  "radar/app/app.js"
- ],
  "来源": [
   "index.html",
   "hub/index.html",
@@ -158,7 +155,8 @@
  "清除筛选": [
   "index.html",
   "atlas/index.html",
-  "journals/index.html"
+  "journals/index.html",
+  "scimodels/index.html"
  ],
  "想要一段带出处的回答？": [
   "index.html"
@@ -196,6 +194,16 @@
   "index.html"
  ],
  "可以缩短关键词，或清除筛选。": [
+  "index.html"
+ ],
+ "还没有收藏": [
+  "index.html",
+  "radar/app/app.js"
+ ],
+ "点任意资源右侧的 ☆，或在数据库页的资源详情里点「收藏资源 ☆」，收藏的资源会出现在这里，保存在当前浏览器。": [
+  "index.html"
+ ],
+ "浏览全部资源": [
   "index.html"
  ],
  "目录里的结果不多，还可以：": [
@@ -289,6 +297,11 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
+ "科学大模型": [
+  "index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
  "Meta × 化学": [
   "index.html"
  ],
@@ -302,6 +315,7 @@
  "下载桌面版": [
   "index.html",
   "pro/success.html",
+  "shared-nav.js",
   "radar/app/app.js"
  ],
  "站点地图": [
@@ -317,6 +331,9 @@
   "index.html"
  ],
  "合并内容说明": [
+  "index.html"
+ ],
+ "数据库、文献和方法经统一检索连接的功能示意，并非条目统计关系图": [
   "index.html"
  ],
  "合并统计": [
@@ -531,7 +548,8 @@
  "说明": [
   "atlas/index.html",
   "train/index.html",
-  "atlas/app.js"
+  "atlas/app.js",
+  "scimodels/scimodels.js"
  ],
  "资源目录检索": [
   "atlas/index.html"
@@ -747,13 +765,15 @@
  ],
  "搜索": [
   "journals/index.html",
+  "scimodels/index.html",
   "hub/index.html",
   "radar/app/app.js"
  ],
  "类别": [
   "journals/index.html",
   "train/index.html",
-  "journals/journals.js"
+  "journals/journals.js",
+  "scimodels/scimodels.js"
  ],
  "全部类别": [
   "journals/index.html"
@@ -769,7 +789,8 @@
   "journals/index.html"
  ],
  "全部方式": [
-  "journals/index.html"
+  "journals/index.html",
+  "scimodels/index.html"
  ],
  "文章类型": [
   "journals/index.html"
@@ -806,13 +827,15 @@
  ],
  "量子化学模型接口": [
   "journals/index.html",
+  "scimodels/index.html",
   "models/index.html"
  ],
  "回到期刊目录 ↑": [
   "journals/index.html"
  ],
  "本页内容": [
-  "journals/index.html"
+  "journals/index.html",
+  "scimodels/index.html"
  ],
  "筛选期刊": [
   "journals/index.html"
@@ -822,6 +845,92 @@
  ],
  "指导目录": [
   "journals/index.html"
+ ],
+ "科学领域语言模型与多模态基础模型 · 科学大模型 · MolAstria": [
+  "scimodels/index.html"
+ ],
+ "跳到模型目录": [
+  "scimodels/index.html"
+ ],
+ "科学领域语言模型与多模态基础模型": [
+  "scimodels/index.html",
+  "tools/build-seo.ts",
+  "atlas data",
+  "guide titles",
+  "tags",
+  "categories"
+ ],
+ "用科学文献、科学数据和科研任务训练的语言模型与多模态模型，处理的是科学文本、分子与晶体表示、科学图像这类对象。这里为数据库第 17 类的每个模型写了一张卡片：能做什么、输入输出、规模与许可、已知限制、官方体验入口和发布原文，以及访问方式和费用；页面最后按官方价格，把有公开价格的科学模型和当前主流大模型放在一起比较。信息只取自官方页面，核实不了的项不写。": [
+  "scimodels/index.html"
+ ],
+ "和本站": [
+  "scimodels/index.html"
+ ],
+ "模型接口": [
+  "scimodels/index.html",
+  "shared-nav.js"
+ ],
+ "里的 UMA、MACE、ANI-2x 不是一类：那些机器学习势输入原子坐标、输出能量和力；这里的模型输入输出是文字和科学表示，用来理解问题、整理文献、提出假设和写代码。两类模型可以放进同一条研究流程，但不能互相替代。": [
+  "scimodels/index.html"
+ ],
+ "模型目录": [
+  "scimodels/index.html"
+ ],
+ "价格对比": [
+  "scimodels/index.html"
+ ],
+ "讲解手册：本类专章": [
+  "scimodels/index.html"
+ ],
+ "按主要用途分成六个子类，同一个模型可能同时属于几个方向。可以组合筛选和搜索；点“查看详情”看特点、输入输出、规模、许可、费用和已知限制。": [
+  "scimodels/index.html"
+ ],
+ "子类": [
+  "scimodels/index.html"
+ ],
+ "全部子类": [
+  "scimodels/index.html"
+ ],
+ "访问方式": [
+  "scimodels/index.html",
+  "atlas/app.js"
+ ],
+ "没有符合条件的模型。换个关键词，或者放宽筛选条件。": [
+  "scimodels/index.html"
+ ],
+ "“体验”只列模型方自己的在线对话、演示或 API 控制台；第三方托管平台不在此列。“发布”指官方博客、新闻或第一篇论文。模型名称和商标归各自的机构所有，MolAstria 与这些机构没有隶属关系。": [
+  "scimodels/index.html"
+ ],
+ "价格对比：科学模型与主流大模型": [
+  "scimodels/index.html"
+ ],
+ "价格表（含原价与出处）": [
+  "scimodels/index.html"
+ ],
+ "没有公开按 token 价格的科学模型": [
+  "scimodels/index.html"
+ ],
+ "这些模型没有在官方页面上写出按 token 计费的价格，所以不放进上面的图里，也不估算价格。": [
+  "scimodels/index.html"
+ ],
+ "MolAstria · 科学大模型": [
+  "scimodels/index.html"
+ ],
+ "价格、额度和服务会变，使用前请以各官方页面为准。": [
+  "scimodels/index.html"
+ ],
+ "说明讲解手册：科学语言模型与多模态": [
+  "scimodels/index.html"
+ ],
+ "回到模型目录 ↑": [
+  "scimodels/index.html"
+ ],
+ "筛选模型": [
+  "scimodels/index.html",
+  "train/index.html"
+ ],
+ "模型名、机构、能力或关键词": [
+  "scimodels/index.html"
  ],
  "论文与社区 · MolAstria": [
   "hub/index.html"
@@ -1926,6 +2035,7 @@
   "meta/index.html",
   "models/index.html",
   "train/index.html",
+  "scimodels/scimodels.js",
   "meta/meta.js",
   "models/models.js",
   "ai/ai.js"
@@ -2323,6 +2433,12 @@
  "这里的模型预测原子体系的能量和力；处理科学文本和科学数据的语言模型（如 Hydrogen-1.0、Intern-S1）见": [
   "models/index.html"
  ],
+ "科学大模型栏目": [
+  "models/index.html"
+ ],
+ "和": [
+  "models/index.html"
+ ],
  "讲解手册的科学语言模型一章": [
   "models/index.html"
  ],
@@ -2711,7 +2827,8 @@
   "train/index.html"
  ],
  "许可证": [
-  "train/index.html"
+  "train/index.html",
+  "scimodels/scimodels.js"
  ],
  "发布": [
   "train/index.html"
@@ -3582,9 +3699,6 @@
  "按显存筛选": [
   "train/index.html"
  ],
- "筛选模型": [
-  "train/index.html"
- ],
  "MolAstria Pro · 价格与套餐": [
   "pro/index.html"
  ],
@@ -4407,6 +4521,70 @@
  "收藏、偏好和实验室项目保存在本机，和浏览器里的数据互不影响；可以用“导出项目”在两边迁移。": [
   "download/index.html"
  ],
+ "iPad / iPhone / 安卓：添加到主屏幕": [
+  "download/index.html"
+ ],
+ "在平板和手机上，可以把网站添加到主屏幕：从 MolAstria 图标打开时全屏显示，没有浏览器地址栏，打开过的页面断网也能读。": [
+  "download/index.html"
+ ],
+ "iPad 和 iPhone（Safari）：": [
+  "download/index.html"
+ ],
+ "用 Safari 打开 molastria.com，点": [
+  "download/index.html"
+ ],
+ "分享": [
+  "download/index.html"
+ ],
+ "按钮（方框加向上的箭头；地址栏旁只有": [
+  "download/index.html"
+ ],
+ "时先点它，再点": [
+  "download/index.html"
+ ],
+ "），选": [
+  "download/index.html"
+ ],
+ "添加到主屏幕": [
+  "download/index.html",
+  "shared-nav.js"
+ ],
+ "。出现“作为网页 App 打开”时保持开启，再点": [
+  "download/index.html"
+ ],
+ "添加": [
+  "download/index.html"
+ ],
+ "即可。": [
+  "download/index.html"
+ ],
+ "安卓（Chrome）：": [
+  "download/index.html"
+ ],
+ "用 Chrome 打开 molastria.com，点右上角的": [
+  "download/index.html"
+ ],
+ "菜单，选": [
+  "download/index.html"
+ ],
+ "（有的版本叫": [
+  "download/index.html"
+ ],
+ "安装应用": [
+  "download/index.html"
+ ],
+ "），再点": [
+  "download/index.html"
+ ],
+ "安装": [
+  "download/index.html"
+ ],
+ "安装 MolAstria": [
+  "download/index.html"
+ ],
+ "AI 助手、账号和在线模型计算仍然需要联网。": [
+  "download/index.html"
+ ],
  "从源码构建": [
   "download/index.html"
  ],
@@ -4451,9 +4629,6 @@
  "讲解手册": [
   "shared-nav.js",
   "hub/network.js"
- ],
- "模型接口": [
-  "shared-nav.js"
  ],
  "量子化学": [
   "shared-nav.js",
@@ -4502,6 +4677,27 @@
   "shared-nav.js"
  ],
  "AI 助手：先在设置里填入 DeepSeek 或 Muse 的 API key": [
+  "shared-nav.js"
+ ],
+ "桌面版下载": [
+  "shared-nav.js"
+ ],
+ "全屏使用 · 离线可读": [
+  "shared-nav.js"
+ ],
+ "收起添加到主屏幕卡片": [
+  "shared-nav.js"
+ ],
+ "收起下载卡片": [
+  "shared-nav.js"
+ ],
+ "收起": [
+  "shared-nav.js"
+ ],
+ "展开添加到主屏幕卡片": [
+  "shared-nav.js"
+ ],
+ "展开桌面版下载": [
   "shared-nav.js"
  ],
  "软件更新": [
@@ -4676,6 +4872,9 @@
  "没有逐字匹配的结果，按相关度列出 {0} 条近似资源": [
   "app.js"
  ],
+ "收藏夹里有 {0} 条资源": [
+  "app.js"
+ ],
  "· 多个关键词同时匹配": [
   "app.js"
  ],
@@ -4709,6 +4908,19 @@
  "已显示 {0} / {1} 条": [
   "app.js",
   "atlas/app.js"
+ ],
+ "已收藏，保存在当前浏览器": [
+  "app.js",
+  "atlas/app.js"
+ ],
+ "已收藏，本次访问期间有效": [
+  "app.js",
+  "atlas/app.js"
+ ],
+ "已取消收藏": [
+  "app.js",
+  "atlas/app.js",
+  "radar/app/app.js"
  ],
  "原站未提供摘要。": [
   "app.js"
@@ -4748,19 +4960,6 @@
  ],
  "访问原始资源 ↗": [
   "app.js"
- ],
- "已收藏，保存在当前浏览器": [
-  "app.js",
-  "atlas/app.js"
- ],
- "已收藏，本次访问期间有效": [
-  "app.js",
-  "atlas/app.js"
- ],
- "已取消收藏": [
-  "app.js",
-  "atlas/app.js",
-  "radar/app/app.js"
  ],
  "名称": [
   "app.js",
@@ -4814,13 +5013,33 @@
  "查看资源 ↗": [
   "atlas/app.js"
  ],
+ "每个模型的详细介绍见科学大模型栏目 →": [
+  "atlas/app.js"
+ ],
  "当前主题：{0}": [
   "atlas/app.js"
  ],
  "清除主题 ×": [
   "atlas/app.js"
  ],
+ "在线体验": [
+  "atlas/app.js",
+  "scimodels/scimodels.js"
+ ],
+ "发布原文": [
+  "atlas/app.js",
+  "scimodels/scimodels.js"
+ ],
  "· 源码已有模块": [
+  "atlas/app.js"
+ ],
+ "{0} · 已对照官方页面逐条核对": [
+  "atlas/app.js"
+ ],
+ "2026-10-27 · 来源记录，未在本网页重新验证": [
+  "atlas/app.js"
+ ],
+ "科学大模型栏目 →": [
   "atlas/app.js"
  ],
  "数据源模块与 MCP 工具入口的完成度不同；请在 Agent 工程页查看实际状态。": [
@@ -4830,9 +5049,6 @@
   "atlas/app.js"
  ],
  "研究主题": [
-  "atlas/app.js"
- ],
- "访问方式": [
   "atlas/app.js"
  ],
  "工程状态": [
@@ -4845,9 +5061,6 @@
   "atlas/app.js"
  ],
  "材料日期": [
-  "atlas/app.js"
- ],
- "2026-10-27 · 来源记录，未在本网页重新验证": [
   "atlas/app.js"
  ],
  "访问原站 ↗": [
@@ -5011,7 +5224,8 @@
   "tools/build-seo.ts"
  ],
  "17 · 科学语言模型与多模态": [
-  "manual/app.js"
+  "manual/app.js",
+  "tools/build-seo.ts"
  ],
  "10 · 软件：量化与动力学": [
   "manual/app.js",
@@ -5050,7 +5264,8 @@
   "journals/journals.js"
  ],
  "查看详情": [
-  "journals/journals.js"
+  "journals/journals.js",
+  "scimodels/scimodels.js"
  ],
  "全称": [
   "journals/journals.js"
@@ -5074,7 +5289,122 @@
   "journals/journals.js"
  ],
  "收起详情": [
-  "journals/journals.js"
+  "journals/journals.js",
+  "scimodels/scimodels.js"
+ ],
+ "特点": [
+  "scimodels/scimodels.js"
+ ],
+ "输入": [
+  "scimodels/scimodels.js"
+ ],
+ "输出": [
+  "scimodels/scimodels.js"
+ ],
+ "规模": [
+  "scimodels/scimodels.js"
+ ],
+ "访问与费用": [
+  "scimodels/scimodels.js"
+ ],
+ "已知限制": [
+  "scimodels/scimodels.js"
+ ],
+ "没有 Hugging Face 页面": [
+  "scimodels/scimodels.js"
+ ],
+ "官方代码": [
+  "scimodels/scimodels.js"
+ ],
+ "数据库条目": [
+  "scimodels/scimodels.js"
+ ],
+ "数据库第 17 类 #{0}": [
+  "scimodels/scimodels.js"
+ ],
+ "以上信息与链接核对于 {0}；模型、服务和价格会更新，使用前以官方页面为准。": [
+  "scimodels/scimodels.js"
+ ],
+ "数据库编号": [
+  "scimodels/scimodels.js"
+ ],
+ "共 {0} 个模型": [
+  "scimodels/scimodels.js"
+ ],
+ "显示 {0} 个，共 {1} 个模型": [
+  "scimodels/scimodels.js"
+ ],
+ "收录 {0} 个模型 · {1} 个子类 · 信息核对于 {2}": [
+  "scimodels/scimodels.js"
+ ],
+ "旗舰": [
+  "scimodels/scimodels.js"
+ ],
+ "小型": [
+  "scimodels/scimodels.js"
+ ],
+ "· 科学模型": [
+  "scimodels/scimodels.js"
+ ],
+ "输入（每百万 token）": [
+  "scimodels/scimodels.js"
+ ],
+ "输出（每百万 token）": [
+  "scimodels/scimodels.js"
+ ],
+ "底色标出的是科学模型": [
+  "scimodels/scimodels.js"
+ ],
+ "美元，对数刻度": [
+  "scimodels/scimodels.js"
+ ],
+ "价格条形图，数据见下方价格表": [
+  "scimodels/scimodels.js"
+ ],
+ "每百万 token 的官方价格，输入和输出分开显示，核对日期 {0}。人民币价格按 1 美元 = {1} 元（{2}，{3}）换算成美元，表格里同时给出原价。{4} 个科学模型中只有 {5} 个有公开的按 token 价格，其余列在下面。图用对数刻度，便于同时看清不到 1 美元和几十美元的价格。": [
+  "scimodels/scimodels.js"
+ ],
+ "科学模型": [
+  "scimodels/scimodels.js"
+ ],
+ "每百万 token 的官方价格（美元）；人民币价格按 1 美元 = {0} 元换算，原价见“原价”一列。核对日期 {1}，汇率出处：": [
+  "scimodels/scimodels.js"
+ ],
+ "中国外汇交易中心": [
+  "scimodels/scimodels.js"
+ ],
+ "提供方": [
+  "scimodels/scimodels.js"
+ ],
+ "原价（输入 / 输出）": [
+  "scimodels/scimodels.js"
+ ],
+ "官方出处": [
+  "scimodels/scimodels.js"
+ ],
+ "免费，需注册": [
+  "scimodels/scimodels.js"
+ ],
+ "官方 API 注册后可用，测试期间每月有免费额度；没有公开的按 token 价格。": [
+  "scimodels/scimodels.js"
+ ],
+ "免费在线演示": [
+  "scimodels/scimodels.js"
+ ],
+ "模型方提供免费的在线演示。": [
+  "scimodels/scimodels.js"
+ ],
+ "只提供权重，需自行部署": [
+  "scimodels/scimodels.js"
+ ],
+ "模型免费下载，算力自己准备。": [
+  "scimodels/scimodels.js"
+ ],
+ "仅论文": [
+  "scimodels/scimodels.js"
+ ],
+ "没有公开权重，也没有在线服务。": [
+  "scimodels/scimodels.js"
  ],
  "软件/官网": [
   "hub/app.js",
@@ -7288,6 +7618,9 @@
  "你是一位严谨的计算化学与电化学研究助手，服务于 MolAstria 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。": [
   "ai/ai.js"
  ],
+ "点击或按 Esc 跳过": [
+  "ai/ai.js"
+ ],
  "AI 研究助手": [
   "ai/ai.js"
  ],
@@ -7298,9 +7631,6 @@
   "ai/ai.js"
  ],
  "输入问题": [
-  "ai/ai.js"
- ],
- "发送": [
   "ai/ai.js"
  ],
  "拖动调整宽度": [
@@ -7321,6 +7651,9 @@
  "输入问题，回车发送，Shift+回车换行": [
   "ai/ai.js"
  ],
+ "发送": [
+  "ai/ai.js"
+ ],
  "未配置 · 点此设置": [
   "ai/ai.js"
  ],
@@ -7330,12 +7663,6 @@
  "直接与模型对话，不检索目录": [
   "ai/ai.js"
  ],
- "先配置一个 AI 服务。": [
-  "ai/ai.js"
- ],
- "支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。": [
-  "ai/ai.js"
- ],
  "问目录": [
   "ai/ai.js"
  ],
@@ -7343,6 +7670,12 @@
   "ai/ai.js"
  ],
  "直接向模型提问，适合概念与方法问题。": [
+  "ai/ai.js"
+ ],
+ "先配置一个 AI 服务。": [
+  "ai/ai.js"
+ ],
+ "支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。": [
   "ai/ai.js"
  ],
  "{0} · 输入 {1} / 输出 {2} token{3}{4}": [
@@ -7840,6 +8173,9 @@
  "兴趣主题": [
   "radar/app/app.js"
  ],
+ "我的收藏": [
+  "radar/app/app.js"
+ ],
  "导出记录": [
   "radar/app/app.js"
  ],
@@ -8276,9 +8612,6 @@
   "radar/app/app.js"
  ],
  "全选": [
-  "radar/app/app.js"
- ],
- "还没有收藏": [
   "radar/app/app.js"
  ],
  "在推荐或搜索结果里点「收藏」。": [
@@ -9617,12 +9950,6 @@
  ],
  "非共价相互作用基准数据库，收录 S22、S66 等高精度参考数据。": [
   "atlas data"
- ],
- "科学领域语言模型与多模态基础模型": [
-  "atlas data",
-  "guide titles",
-  "tags",
-  "categories"
  ],
  "深度原理（Deep Principle）在 GLM-5.3 上用化学、材料与生命科学数据后训练的科研辅助模型，约 753B 参数，官方部署示例用 8 张 GPU。": [
   "atlas data"

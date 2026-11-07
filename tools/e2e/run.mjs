@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1149,6 +1149,71 @@ check('journals: the top bar marks 期刊发表 current, also when it sits in �
   assert.ok(tucked > 0, 'some tested width puts 期刊发表 into 更多');
 });
 
+check('scimodels: 27 model cards by subcategory with official links, filters and search, details by address, price chart with its table', async () => {
+  const p = await open();
+  await go(p, '/scimodels/index.html');
+  assert.equal(await p.getAttribute('.cr-links a[data-id=scimodels]', 'aria-current'), 'page');
+  const visible = () => p.$$eval('.sm-card:not([hidden])', (c) => c.map((x) => x.dataset.slug).sort());
+  const all = await visible();
+  assert.equal(all.length, 27);
+  assert.equal(await p.locator('.sm-group').count(), 6);
+  // Every card has a release link, and a trial link or a plain statement that there is none; external links open safely.
+  const incomplete = await p.$$eval('.sm-card', (cards) => cards.filter((c) => { const [, trial, release] = c.querySelectorAll('.sm-links > div'); return !release.querySelector('a[href^="https://"]') || !(trial.querySelector('a[href^="https://"]') || trial.querySelector('.sm-none').textContent.trim()); }).map((c) => c.dataset.slug));
+  assert.deepEqual(incomplete, []);
+  const unsafe = await p.$$eval('main a[href]', (a) => a.filter((x) => new URL(x.href).origin !== location.origin && (x.target !== '_blank' || !/noopener/.test(x.rel) || !/noreferrer/.test(x.rel))).map((x) => x.href));
+  assert.deepEqual(unsafe, []);
+  assert.match(await text(p, '#m-mechgpt .sm-links'), /没有 Hugging Face 页面/);
+  assert.match(await text(p, '#m-s1-base .sm-links'), /只提供权重，需自行部署/);
+  // Filters alone and combined, search, the empty state and its reset.
+  await p.selectOption('#sm-access', 'paid');
+  assert.deepEqual(await visible(), ['hydrogen-1-0']);
+  await p.selectOption('#sm-access', 'paper');
+  assert.deepEqual(await visible(), ['chemmllm', 'mechgpt']);
+  await p.selectOption('#sm-group', 'mat');
+  assert.deepEqual(await visible(), ['mechgpt']);
+  assert.ok(await p.locator('.sm-group[data-group=chem]').isHidden(), 'empty groups are hidden');
+  await p.click('#sm-reset');
+  await p.fill('#sm-q', 'MOF');
+  assert.ok((await visible()).includes('mofreasoner'));
+  await p.fill('#sm-q', 'zzzz');
+  assert.ok(await p.locator('#sm-empty').isVisible(), 'empty-state message');
+  await p.click('#sm-empty-reset');
+  assert.equal((await visible()).length, 27);
+  // Details open in place and give the card an address.
+  await p.click('#m-ether0 .sm-toggle');
+  assert.equal(await p.getAttribute('#m-ether0 .sm-toggle', 'aria-expanded'), 'true');
+  assert.match(await text(p, '#md-ether0'), /Apache-2\.0/);
+  assert.match(p.url(), /#m-ether0$/);
+  // The chart and the table hold the same rows; one science model has a public price; each row names its official source.
+  const rows = await p.locator('.sm-row').count();
+  assert.ok(rows >= 14 && rows === await p.locator('#sm-table tbody tr').count(), `${rows} chart rows`);
+  assert.equal(await p.locator('.sm-row.sci').count(), 1);
+  assert.ok(await p.$$eval('#sm-table tbody tr', (r) => r.every((tr) => tr.lastElementChild.querySelector('a[href^="https://"]'))));
+  assert.ok(await p.$$eval('.sm-track', (t) => t.every((x) => { const [i, o] = x.querySelectorAll('.sm-bar'); return i.offsetWidth > 0 && i.offsetWidth <= o.offsetWidth; })), 'input bar no longer than output bar');
+  assert.equal(await p.locator('#sm-unpriced li a[href^="#m-"]').count(), 26);
+  await finish(p);
+  // From the database: a category-17 entry links to its card, which opens; other entries keep their old wording.
+  const d = await open();
+  await go(d, '/atlas/index.html#resources/205');
+  assert.match(await text(d, '#dialog-body'), /2026-11-06 · 已对照官方页面逐条核对/);
+  assert.match(await d.getAttribute('#dialog-body a[href*="scimodels"]', 'href'), /#m-mofreasoner$/);
+  await d.click('#dialog-body a[href*="scimodels"]');
+  await d.waitForSelector('#md-mofreasoner:not([hidden])');
+  await go(d, '/atlas/index.html#resources/80');
+  assert.match(await text(d, '#dialog-body'), /2026-10-27/);
+  assert.equal(await d.locator('#dialog-body a[href*="scimodels"]').count(), 0);
+  await go(d, '/manual/index.html#p11c-cat17');
+  await d.waitForSelector('a[href$="scimodels/index.html"]');
+  await finish(d);
+  // English: the model data is in English.
+  const en = await open();
+  await go(en, '/scimodels/index.html?lang=en#m-hydrogen-1-0');
+  await en.waitForSelector('#md-hydrogen-1-0:not([hidden])');
+  const left = await en.evaluate(() => [...document.querySelectorAll('.sm-card [translate=no], #sm-table [translate=no], #sm-unpriced a')].flatMap((n) => n.textContent.match(/[㐀-鿿]+/g) || []));
+  assert.deepEqual(left, []);
+  await finish(en);
+});
+
 check('decor: the home logo loop and the download intro film play muted, are hidden decoration, and stay still under reduced motion', async () => {
   for (const [path, sel, loop] of [['/index.html', '.brand-loop video', true], ['/download/index.html', '.dl-intro video', false]]) {
     const p = await open();
@@ -1164,8 +1229,107 @@ check('decor: the home logo loop and the download intro film play muted, are hid
   }
 });
 
+check('AI panel intro film: plays on open, Esc skips it, the logo-animation switch turns the films off and is remembered', async () => {
+  const p = await open();
+  let films = 0;
+  p.on('request', (r) => { if (r.url().includes('intro.mp4')) films++; });
+  await go(p, '/index.html');
+  assert.equal(films, 0, 'not fetched before the panel opens');
+  await p.click('#cr-ai');
+  await p.waitForSelector('.cai-film[data-frame]', { timeout: 5000 });
+  assert.deepEqual(await p.$eval('.cai-film video', (v) => [v.muted, v.loop, v.parentElement.getAttribute('aria-hidden')]), [true, false, 'true']);
+  await p.keyboard.press('Escape');
+  await p.waitForFunction(() => document.querySelector('.cai-film').hidden);
+  assert.equal(await p.$eval('.cai-drawer', (d) => d.dataset.open), 'true', 'Esc skips the film, not the panel');
+  await p.keyboard.press('Escape');
+  await p.click('#cr-bg');
+  await p.uncheck('.cr-bgpick input[data-logo-motion]');
+  await p.keyboard.press('Escape');
+  await p.reload({ waitUntil: 'networkidle' });
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.logoMotion), 'off');
+  await p.click('#cr-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  await p.waitForTimeout(300);
+  assert.equal(await p.$('.cai-film:not([hidden])'), null, 'no film with the switch off');
+  await go(p, '/download/index.html');
+  assert.deepEqual(await p.$eval('.dl-intro video', (v) => [v.currentSrc, !!v.getAttribute('poster')]), ['', true], 'download film: poster only');
+  await finish(p);
+  const still = await open({ reducedMotion: 'reduce' });
+  await go(still, '/index.html');
+  await still.click('#cr-ai');
+  await still.waitForSelector('.cai-drawer[data-open=true]');
+  assert.equal(await still.$('.cai-film'), null, 'no film under reduced motion');
+  await finish(still);
+});
+
+check('download card: bottom-left on web pages, × folds it and is remembered, absent on the download page and phones', async () => {
+  const p = await open();
+  await go(p, '/index.html');
+  assert.match(await p.getAttribute('.cr-dl-card', 'href'), /download\/index\.html$/);
+  await p.click('.cr-dl-x');
+  await p.reload({ waitUntil: 'networkidle' });
+  assert.equal(await p.$eval('.cr-dl', (d) => d.dataset.folded), 'true');
+  await p.click('.cr-dl-fab');
+  assert.equal(await p.$eval('.cr-dl', (d) => d.dataset.folded), 'false');
+  await go(p, '/download/index.html');
+  assert.equal(await p.$('.cr-dl'), null);
+  await finish(p);
+  const phone = await open({ viewport: { width: 390, height: 844 } });
+  await go(phone, '/index.html');
+  assert.equal(await phone.isVisible('.cr-dl'), false);
+  await finish(phone);
+});
+
+check('PWA: no service worker on localhost, valid manifest, tablets get 添加到主屏幕 linking to the download page steps', async () => {
+  // sw.js never registers on localhost (it would bypass the page.route mocks here); the full PWA checks need a secure
+  // non-local host and the build-seo.ts head tags, see docs/RUNBOOK.md.
+  const p = await open();
+  await go(p, '/index.html');
+  await p.waitForTimeout(500);
+  assert.equal(await p.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)), 0);
+  const m = await (await fetch(`${SITE}/manifest.webmanifest`)).json();
+  assert.deepEqual([m.short_name, m.display, m.start_url, m.scope, m.icons.map((i) => `${i.sizes} ${i.purpose}`)], ['MolAstria', 'standalone', './', './', ['192x192 any', '512x512 any', '512x512 maskable']]);
+  for (const i of [...m.icons, { src: 'assets/pwa/apple-touch-icon.png' }, { src: 'sw.js' }, { src: 'offline.html' }]) assert.equal((await fetch(`${SITE}/${i.src}`)).status, 200, i.src);
+  await finish(p);
+  // iPadOS Safari reports a Mac user agent; its touch screen (maxTouchPoints 5) tells it apart.
+  const iPad = { viewport: { width: 820, height: 1180 }, hasTouch: true, userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15' };
+  const tablet = await open({ ...iPad, init: () => Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: () => 5 }) });
+  await go(tablet, '/index.html');
+  assert.equal(await tablet.textContent('.cr-dl[data-variant=home] .cr-dl-tx b'), '添加到主屏幕');
+  await tablet.click('.cr-dl-card');
+  await tablet.waitForURL(/download\/index\.html#home-screen$/);
+  assert.ok(await tablet.isVisible('#home-screen'));
+  assert.equal(await tablet.isVisible('.pwa-install'), false, 'install button only after beforeinstallprompt');
+  await finish(tablet);
+  const app = await open({ ...iPad, init: () => { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: () => 5 }); Object.defineProperty(Navigator.prototype, 'standalone', { get: () => true }); } });
+  await go(app, '/index.html');
+  assert.equal(await app.$('.cr-dl'), null, 'no card when the site already runs from the home screen');
+  await finish(app);
+});
+
+check('home: the 收藏夹 button counts favourites from home and the database page, opens them in place, and removes from both', async () => {
+  const p = await open();
+  await go(p, '/index.html');
+  assert.equal(await text(p, '#fav-count'), '0');
+  await p.click('#fav-open');
+  assert.equal(await p.inputValue('#collection'), 'saved');
+  assert.ok(await p.isVisible('#empty-saved'), 'empty state explains how to save');
+  // Saved on the database page (ORCA is atlas #80), then the home page reloaded.
+  await go(p, '/atlas/index.html#resources/80');
+  await p.click('#dialog-save');
+  await go(p, '/index.html');
+  assert.equal(await text(p, '#fav-count'), '1');
+  await p.click('#fav-open');
+  assert.match(await text(p, '.result-row h3'), /ORCA/);
+  await p.click('.result-row .save');
+  assert.equal(await text(p, '#fav-count'), '0');
+  assert.equal(await p.evaluate(() => localStorage.getItem('chemdb-atlas-saved')), '[]');
+  assert.ok(await p.isVisible('#empty-saved'));
+  await finish(p);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

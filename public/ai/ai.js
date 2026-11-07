@@ -391,55 +391,89 @@
 
   // ── styles ──────────────────────────────────────────────────────────────
   const CSS = `
-.cai-drawer{position:fixed;top:0;right:0;bottom:0;z-index:80;width:min(var(--cai-w,460px),100vw);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-left:1px solid var(--line);box-shadow:-18px 0 48px rgb(0 0 0/.12);font:14px/1.7 var(--font-sans);transform:translateX(102%);transition:transform .22s ease;visibility:hidden}
+.cai-drawer{--cai-raise:var(--surface);position:fixed;top:0;right:0;bottom:0;z-index:80;width:min(var(--cai-w,460px),100vw);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-left:1px solid var(--line);box-shadow:-24px 0 60px rgb(0 0 0/.14);font:14px/1.7 var(--font-sans);transform:translateX(102%);transition:transform .22s ease;visibility:hidden}
+:root[data-theme=dark] .cai-drawer{--cai-raise:var(--surface-3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cai-drawer{--cai-raise:var(--surface-3)}}
+.cai-drawer [hidden]{display:none!important}
 .cai-drawer[data-open=true]{transform:none;visibility:visible}
 .cai-drawer[data-resizing]{transition:none;user-select:none}
-.cai-grip{position:absolute;left:-6px;top:0;bottom:0;width:12px;cursor:ew-resize;touch-action:none;z-index:1}
+.cai-drawer :is(button,a):focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+.cai-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.cai-grip{position:absolute;left:-6px;top:0;bottom:0;width:12px;cursor:ew-resize;touch-action:none;z-index:3}
 .cai-grip::after{content:"";position:absolute;left:4px;top:50%;width:4px;height:48px;margin-top:-24px;border-radius:3px;background:var(--line-strong);opacity:0;transition:opacity .15s}
 .cai-grip:hover::after,.cai-grip:focus-visible::after,.cai-drawer[data-resizing] .cai-grip::after{opacity:1}
 .cai-grip:focus-visible{outline:none}
-.cai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
-.cai-head h2{margin:0;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.cai-chip{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;background:var(--paper);cursor:pointer;font-family:inherit}
-.cai-head .cai-sp{flex:1}
-.cai-ib{width:32px;height:32px;display:grid;place-items:center;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1}
+.cai-head{display:flex;align-items:center;gap:11px;padding:14px 10px 10px 16px}
+.cai-orb{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:15px;line-height:1;color:var(--gold);background:radial-gradient(130% 130% at 22% 12%,var(--gold-soft),var(--accent-soft) 72%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 20%,transparent)}
+.cai-id{flex:1;min-width:0;display:grid;justify-items:start}
+.cai-head h2{margin:0;max-width:100%;font-size:15px;line-height:1.35;font-weight:650;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cai-chip{max-width:100%;min-width:0;display:inline-flex;align-items:center;gap:3px;margin:0 0 0 -5px;padding:0 5px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:12px/1.6 var(--font-sans);cursor:pointer;transition:background .15s,color .15s}
+.cai-chip span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cai-chip svg{flex:none;opacity:.75}
+.cai-chip:hover{background:var(--surface-2);color:var(--ink)}
+.cai-tools{flex:none;display:flex;gap:1px}
+.cai-ib{width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
 .cai-ib:hover{background:var(--surface-2);color:var(--ink)}
-.cai-modes{display:flex;gap:4px;padding:10px 16px 0}
-.cai-modes button{flex:1;font:600 12.5px/1 var(--font-sans);padding:9px 8px;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:4px;cursor:pointer}
-.cai-modes button[aria-selected=true]{background:var(--accent-soft);color:var(--ink);border-color:var(--line-strong)}
-.cai-log{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain}
+.cai-modes{display:flex;gap:2px;margin:4px 16px 0;padding:3px;border-radius:12px;background:var(--surface-2)}
+.cai-modes button{flex:1;min-width:0;font:600 12.5px/1.35 var(--font-sans);padding:7px 10px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background .18s,color .18s,box-shadow .18s}
+.cai-modes button:hover{color:var(--ink)}
+.cai-modes button[aria-selected=true]{background:var(--cai-raise);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0/.08),0 2px 8px rgb(0 0 0/.06)}
+.cai-log{flex:1;overflow-y:auto;padding:18px 16px 12px;display:flex;flex-direction:column;gap:18px;overscroll-behavior:contain;scrollbar-width:thin}
 .cai-msg{max-width:100%}
-.cai-msg.user{align-self:flex-end;max-width:88%;background:var(--accent-soft);border:1px solid var(--line);border-radius:8px 8px 2px 8px;padding:8px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
-.cai-msg.bot{overflow-wrap:anywhere}
+.cai-msg.user{align-self:flex-end;max-width:85%;background:var(--accent);color:var(--accent-ink);border-radius:18px 18px 6px 18px;padding:9px 14px;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 20%,transparent)}
+.cai-msg.bot{align-self:stretch;overflow-wrap:anywhere}
+.cai-bubble{background:var(--surface-2);border-radius:6px 18px 18px 18px;padding:11px 15px 12px}
+.cai-bubble .cai-body>:last-child{margin-bottom:0}
 .cai-msg.bot p{margin:0 0 8px}.cai-msg.bot ul,.cai-msg.bot ol{margin:0 0 8px;padding-left:20px}.cai-msg.bot li{margin:2px 0}
 .cai-msg.bot h4{margin:10px 0 6px;font-size:14px}
-.cai-msg.bot pre{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:10px;overflow:auto;font:12px/1.6 var(--font-mono)}
-.cai-msg.bot code{font-family:var(--font-mono);font-size:.92em;background:var(--surface-2);padding:0 4px;border-radius:3px}
+.cai-msg.bot pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;overflow:auto;font:12px/1.6 var(--font-mono)}
+.cai-msg.bot code{font-family:var(--font-mono);font-size:.92em;background:color-mix(in srgb,var(--ink) 7%,transparent);padding:0 5px;border-radius:5px}
 .cai-msg.bot pre code{background:none;padding:0}
 .cai-msg.bot a{color:var(--accent-text)}
-.cai-who{font-size:11px;letter-spacing:.06em;color:var(--faint);margin-bottom:4px;display:flex;gap:8px;align-items:center}
+.cai-who{font-size:11.5px;color:var(--faint);margin:0 0 6px 1px;display:flex;gap:7px;align-items:center}
+.cai-who .cai-orb{width:20px;height:20px;border-radius:7px;font-size:10px}
 .cai-cite{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;margin:0 1px;border-radius:9px;background:var(--accent-soft);color:var(--accent-text)!important;font-size:10.5px;font-weight:700;text-decoration:none;vertical-align:2px}
 .cai-cite:hover{background:var(--accent);color:var(--accent-ink)!important}
-.cai-think{font-size:12px;color:var(--muted);border-left:2px solid var(--line-strong);padding-left:10px;margin-bottom:8px}
+.cai-think{font-size:12px;color:var(--muted);border-left:2px solid var(--line-strong);border-radius:1px;padding-left:10px;margin-bottom:10px}
 .cai-think summary{cursor:pointer;color:var(--faint)}
 .cai-think div{white-space:pre-wrap;max-height:180px;overflow:auto}
-.cai-refs{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px;display:grid;gap:4px;font-size:12px}
-.cai-refs a{color:var(--ink-2);text-decoration:none;display:flex;gap:6px}
-.cai-refs a:hover{color:var(--accent-text)}
-.cai-refs b{color:var(--accent-text);min-width:18px}
+.cai-refs{margin-top:10px;border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent);padding-top:8px;display:grid;gap:1px;font-size:12px}
+.cai-refs a{color:var(--ink-2);text-decoration:none;display:flex;align-items:baseline;gap:8px;padding:4px 7px;margin:0 -7px;border-radius:8px;transition:background .15s,color .15s}
+.cai-refs a:hover{background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--accent-text)}
+.cai-refs b{flex:none;display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:var(--accent-soft);color:var(--accent-text);font-size:10.5px}
 .cai-refs small{color:var(--faint);margin-left:auto;white-space:nowrap}
-.cai-usage{font-size:11px;color:var(--faint);margin-top:6px}
-.cai-err{color:var(--danger);font-size:13px;border:1px solid color-mix(in srgb,var(--danger) 35%,transparent);background:color-mix(in srgb,var(--danger) 7%,transparent);padding:8px 10px;border-radius:4px}
-.cai-welcome{border:1px dashed var(--line-strong);border-radius:6px;padding:14px;color:var(--muted);font-size:13px}
-.cai-welcome strong{color:var(--ink)}
-.cai-sugs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.cai-sugs button{font:12px/1.4 var(--font-sans);border:1px solid var(--line);background:var(--paper);color:var(--ink-2);border-radius:3px;padding:6px 9px;cursor:pointer;text-align:left}
-.cai-sugs button:hover{border-color:var(--line-strong);background:var(--surface-2)}
-.cai-compose{border-top:1px solid var(--line);padding:10px 12px 12px;display:grid;gap:8px}
-.cai-compose textarea{width:100%;box-sizing:border-box;resize:none;min-height:64px;max-height:200px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink);font:14px/1.6 var(--font-sans);padding:9px 11px}
-.cai-compose textarea:focus{outline:2px solid color-mix(in srgb,var(--accent-2) 55%,transparent);outline-offset:0}
-.cai-row{display:flex;align-items:center;gap:8px}
-.cai-row small{color:var(--faint);font-size:11px;margin-right:auto}
+.cai-usage{font-size:11px;color:var(--faint);margin:6px 0 0 2px}
+.cai-err{color:var(--danger);font-size:13px;border:1px solid color-mix(in srgb,var(--danger) 18%,transparent);background:color-mix(in srgb,var(--danger) 8%,var(--surface));padding:10px 14px;border-radius:14px}
+.cai-welcome{display:grid;gap:16px;padding-top:4px;color:var(--muted);font-size:13px}
+.cai-intro{display:flex;gap:12px;align-items:flex-start}
+.cai-intro .cai-orb{width:40px;height:40px;border-radius:13px;font-size:17px}
+.cai-intro strong{display:block;color:var(--ink);font-size:14.5px;line-height:1.5}
+.cai-intro p{margin:2px 0 0;line-height:1.6}
+.cai-intro .cai-btn{margin-top:12px}
+.cai-sugs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.cai-sugs button{display:flex;align-items:center;gap:10px;min-width:0;padding:9px 12px 9px 9px;border:1px solid transparent;border-radius:14px;background:color-mix(in srgb,var(--surface-2) 72%,var(--surface));color:var(--ink-2);font:13px/1.5 var(--font-sans);text-align:left;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.cai-sugs button:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.cai-sugs i{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-text)}
+.cai-sugs span{flex:1;min-width:0}
+.cai-sugs b{flex:none;display:grid;color:var(--faint);opacity:0;transition:opacity .15s,transform .15s}
+.cai-sugs button:hover b,.cai-sugs button:focus-visible b{opacity:1;transform:translateX(2px)}
+.cai-compose{padding:8px 14px max(14px,env(safe-area-inset-bottom))}
+.cai-box{border:1px solid var(--line-strong);border-radius:18px;background:var(--cai-raise);box-shadow:0 1px 2px rgb(0 0 0/.04),0 6px 22px rgb(0 0 0/.06);transition:border-color .15s,box-shadow .15s}
+.cai-box:focus-within{border-color:var(--accent-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-2) 22%,transparent),0 6px 22px rgb(0 0 0/.06)}
+.cai-box textarea{display:block;width:100%;box-sizing:border-box;resize:none;min-height:52px;max-height:200px;margin:0;border:0;outline:none;background:transparent;color:var(--ink);font:14px/1.6 var(--font-sans);padding:11px 15px 2px}
+.cai-box textarea::placeholder{color:var(--faint)}
+.cai-row{display:flex;align-items:flex-end;gap:8px;padding:2px 7px 7px 15px}
+.cai-row small{color:var(--faint);font-size:11px;line-height:1.45;margin-right:auto;padding-bottom:7px}
+.cai-send{flex:none;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:background .15s}
+.cai-send:hover{background:var(--accent-hover)}
+.cai-stop{flex:none;height:32px;margin-bottom:2px;padding:0 13px;border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);border-radius:999px;background:transparent;color:var(--danger);font:600 12px/1 var(--font-sans);cursor:pointer}
+.cai-stop:hover{background:color-mix(in srgb,var(--danger) 8%,transparent)}
+.cai-drawer .cai-btn{border-radius:10px}
+.cai-film{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;background:#082d21;cursor:pointer;transition:opacity .45s ease}
+.cai-film[data-state=out]{opacity:0;pointer-events:none}
+.cai-film video{display:block;width:100%;height:auto;max-height:100%;object-fit:contain;opacity:0;transition:opacity .3s ease;-webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.cai-film[data-frame] video{opacity:1}
+.cai-film span{position:absolute;right:16px;bottom:max(14px,env(safe-area-inset-bottom));font-size:11.5px;color:rgb(214 245 228/.62)}
 .cai-btn{font:600 12.5px/1 var(--font-sans);height:34px;padding:0 14px;border-radius:4px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .cai-btn:hover{background:var(--surface-2)}
 .cai-btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -469,7 +503,7 @@
 .cai-actions .cai-sp{flex:1}
 .cai-fineprint{font-size:11.5px;color:var(--faint);line-height:1.7;border-top:1px solid var(--line);padding-top:12px}
 @media(max-width:560px){.cai-two{grid-template-columns:1fr}.cai-drawer{width:100vw}.cai-grip{display:none}}
-@media(prefers-reduced-motion:reduce){.cai-drawer{transition:none}}
+@media(prefers-reduced-motion:reduce){.cai-drawer,.cai-drawer *{transition:none!important}.cai-sugs button:hover b{transform:none}}
 `;
   function installStyles() {
     if (document.getElementById('cai-style')) return;
@@ -483,6 +517,7 @@
   let dialog = null;
   function openSettings() {
     installStyles();
+    endFilm();
     if (!dialog) {
       dialog = document.createElement('dialog');
       dialog.className = 'cai-settings';
@@ -619,6 +654,78 @@
     free: '你是一位严谨的计算化学与电化学研究助手，服务于 MolAstria 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。'
   };
 
+  const svgIcon = (d, size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
+  const ICON = {
+    reset: '<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4.5v4.6h4.6"/>',
+    tune: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    close: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+    caret: '<path d="M7 10l5 5 5-5"/>',
+    send: '<path d="M12 19V5.5M5.5 12 12 5.5 18.5 12"/>',
+    catalog: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.6-4.6"/>',
+    free: '<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7.5L7 19.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+    go: '<path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/>'
+  };
+
+  // ── intro film ──────────────────────────────────────────────────────────
+  // The logo film (assets/brand/intro.mp4: silent, 960×540, 10 s) plays once over the panel each time it opens, then
+  // fades out to reveal it. A click on it, Esc or any key typed in the panel skips it. It is first fetched on the first
+  // open. It is not shown under reduced motion, with the logo-animation switch off (backdrop.js sets
+  // html[data-logo-motion=off]; pages without backdrop.js read the stored value), in the single-file build, or in the
+  // desktop app's tauri:// pages (macOS / Linux WebKit), which cannot stream video because that protocol has no Range
+  // support. A load error, a refused play(), no frame within FILM_START_MS or a stall of FILM_STALL_MS drops it at once
+  // and for the rest of the page's life, so a broken path never shows an empty overlay twice.
+  const FILM_START_MS = 1500, FILM_STALL_MS = 2500, FILM_MAX_MS = 14000;
+  let film = null, filmBroken = false;
+  const filmAllowed = () => !filmBroken && !window.__CHEM_LOCATION__ && location.protocol !== 'tauri:'
+    && !matchMedia('(prefers-reduced-motion: reduce)').matches
+    && document.documentElement.dataset.logoMotion !== 'off'
+    && safe(() => localStorage.getItem('chemhub-logo-motion'), null) !== 'off';
+  function playFilm() {
+    if (film || !filmAllowed()) return;
+    let el = drawer.querySelector('.cai-film');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'cai-film';
+      el.setAttribute('aria-hidden', 'true');
+      el.hidden = true;
+      el.innerHTML = '<video muted playsinline preload="auto" disablepictureinpicture disableremoteplayback tabindex="-1"></video><span>点击或按 Esc 跳过</span>';
+      el.addEventListener('pointerdown', () => endFilm());
+      drawer.append(el);
+    }
+    const v = el.querySelector('video');
+    v.muted = true;
+    const timers = [];
+    let started = false, stall = 0;
+    const fail = () => { if (film === run) { filmBroken = true; endFilm(); } };
+    const on = {
+      playing: () => { started = true; clearTimeout(stall); el.dataset.frame = ''; },
+      waiting: () => { clearTimeout(stall); stall = setTimeout(fail, FILM_STALL_MS); },
+      ended: () => { if (film === run) endFilm(); },
+      error: fail
+    };
+    const run = film = {
+      el, v,
+      stop: () => { timers.forEach(clearTimeout); clearTimeout(stall); for (const [k, f] of Object.entries(on)) v.removeEventListener(k, f); }
+    };
+    for (const [k, f] of Object.entries(on)) v.addEventListener(k, f);
+    timers.push(setTimeout(() => { if (!started) fail(); }, FILM_START_MS), setTimeout(() => { if (film === run) endFilm(); }, FILM_MAX_MS));
+    delete el.dataset.frame;
+    el.dataset.state = 'play';
+    el.hidden = false;
+    v.pause(); // a reopen during the previous fade-out: play() from paused fires a fresh 'playing'
+    if (v.getAttribute('src')) v.currentTime = 0; else v.src = link('assets/brand/intro.mp4');
+    const p = v.play();
+    if (p) p.catch(fail); // autoplay refused or format unsupported; a pause() from endFilm leaves film !== run
+  }
+  function endFilm() {
+    const f = film;
+    if (!f) return;
+    film = null;
+    f.stop();
+    f.el.dataset.state = 'out';
+    setTimeout(() => { if (film) return; f.el.hidden = true; delete f.el.dataset.frame; f.v.pause(); }, 480);
+  }
+
   function buildDrawer() {
     installStyles();
     drawer = document.createElement('aside');
@@ -626,12 +733,15 @@
     drawer.setAttribute('role', 'dialog');
     drawer.setAttribute('aria-modal', 'false');
     drawer.setAttribute('aria-labelledby', 'cai-title');
-    drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><h2 id="cai-title"><span aria-hidden="true" style="color:var(--gold)">✦</span>AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"></button><span class="cai-sp"></span><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">⟲</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">⚙</button><button type="button" class="cai-ib" data-act="close" aria-label="关闭">×</button></div>
+    drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><span class="cai-orb" aria-hidden="true">✦</span><div class="cai-id"><h2 id="cai-title">AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"><span></span>${svgIcon(ICON.caret, 14)}</button></div><div class="cai-tools"><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">${svgIcon(ICON.reset)}</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">${svgIcon(ICON.tune)}</button><button type="button" class="cai-ib" data-act="close" title="关闭" aria-label="关闭">${svgIcon(ICON.close)}</button></div></div>
       <div class="cai-modes" role="tablist" aria-label="提问方式"><button type="button" role="tab" data-mode="catalog">问目录（带出处）</button><button type="button" role="tab" data-mode="free">自由提问</button></div>
       <div class="cai-log" aria-live="polite"></div>
-      <form class="cai-compose"><label class="sr-only" for="cai-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">输入问题</label><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行"></textarea><div class="cai-row"><small data-hint></small><button type="button" class="cai-btn danger" data-act="stop" hidden>停止</button><button type="submit" class="cai-btn primary">发送</button></div></form>`;
+      <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行"></textarea><div class="cai-row"><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
     document.body.append(drawer);
     setupGrip(drawer.querySelector('.cai-grip'));
+    // Typing in the panel while the film plays skips it (Esc is handled below, so it skips instead of closing).
+    drawer.addEventListener('keydown', (e) => { if (film && e.key !== 'Escape') endFilm(); });
+    addEventListener('molastria:logo-motion', (e) => { if (!e.detail?.on) endFilm(); });
     drawer.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'close') closeDrawer();
@@ -647,7 +757,7 @@
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); drawer.querySelector('form').requestSubmit(); } });
     input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = `${Math.min(200, input.scrollHeight)}px`; });
     drawer.querySelector('form').addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (q) { input.value = ''; input.style.height = ''; ask(q); } });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) closeDrawer(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) { if (film) endFilm(); else closeDrawer(); } });
     document.addEventListener('chemhub:ai-config', refreshDrawer);
   }
   // Drag the left edge (or use ←/→ on it) to change the drawer's width; double-click restores 460 px.
@@ -693,7 +803,7 @@
   function refreshDrawer() {
     if (!drawer) return;
     const s = settings();
-    const chip = drawer.querySelector('.cai-chip');
+    const chip = drawer.querySelector('.cai-chip span');
     chip.textContent = isReady(s) ? `${PROVIDERS[s.provider].label} · ${modelOf(s)}` : '未配置 · 点此设置';
     drawer.querySelector('[data-hint]').textContent = mode === 'catalog' ? '先检索本站目录，再由 AI 作答并标注出处' : '直接与模型对话，不检索目录';
     renderLog();
@@ -704,7 +814,10 @@
     drawer.querySelector('[data-hint]').textContent = mode === 'catalog' ? '先检索本站目录，再由 AI 作答并标注出处' : '直接与模型对话，不检索目录';
     const log = drawer.querySelector('.cai-log');
     const ready = isReady();
-    const welcome = `<div class="cai-welcome">${ready ? '' : '<p style="margin:0 0 8px"><strong>先配置一个 AI 服务。</strong>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>'}${ready ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong>：${mode === 'catalog' ? '从 1,600 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}` : ''}<div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}">${esc(T(q))}</button>`).join('')}</div></div>`;
+    const intro = ready
+      ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong><p>${mode === 'catalog' ? '从 1,600 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}</p>`
+      : '<strong>先配置一个 AI 服务。</strong><p>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>';
+    const welcome = `<div class="cai-welcome"><div class="cai-intro"><span class="cai-orb" aria-hidden="true">✦</span><div>${intro}</div></div><div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}"><i>${svgIcon(ICON[mode], 15)}</i><span>${esc(T(q))}</span><b>${svgIcon(ICON.go, 15)}</b></button>`).join('')}</div></div>`;
     log.innerHTML = history[mode].length ? history[mode].map(renderMsg).join('') : welcome;
     log.scrollTop = log.scrollHeight;
   }
@@ -718,7 +831,7 @@
     if (m.error) return `<div class="cai-err">${esc(m.error)}${m.code === 'no-key' ? ' <button type="button" class="cai-btn" data-act="settings" style="margin-left:6px;height:28px">去设置</button>' : ''}</div>`;
     const cited = new Set([...String(m.content).matchAll(/\[(\d{1,2}(?:\s*[,，]\s*\d{1,2})*)\]/g)].flatMap((x) => x[1].split(/[,，]/).map((n) => Number(n.trim()))));
     const refs = (m.refs || []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => cited.has(r.n));
-    return `<div class="cai-msg bot"><div class="cai-who">${m.refs ? `检索到 ${m.refs.length} 条目录资源` : 'AI'}${m.pending ? ' · 生成中…' : ''}</div>${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}${usageLine(m)}</div>`;
+    return `<div class="cai-msg bot"><div class="cai-who"><span class="cai-orb" aria-hidden="true">✦</span>${m.refs ? `检索到 ${m.refs.length} 条目录资源` : 'AI'}${m.pending ? ' · 生成中…' : ''}</div><div class="cai-bubble">${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}</div>${usageLine(m)}</div>`;
   }
   async function ask(question) {
     if (busy) return;
@@ -773,8 +886,10 @@
     // e.g. the account page's quota card asks for the hosted quota even when an own key is saved
     if (PROVIDERS[opts.provider]) { const s = settings(); if (s.provider !== opts.provider) { s.provider = opts.provider; save(s); } }
     lastFocus = document.activeElement;
+    const opening = drawer.dataset.open !== 'true';
     drawer.dataset.open = 'true';
     refreshDrawer();
+    if (opening) playFilm();
     const input = drawer.querySelector('textarea');
     if (opts.question) {
       if (opts.autoSend && isReady()) ask(opts.question); else input.value = opts.question;
@@ -784,6 +899,7 @@
   }
   function closeDrawer() {
     if (!drawer) return;
+    endFilm();
     drawer.dataset.open = 'false';
     if (lastFocus?.isConnected) lastFocus.focus();
   }

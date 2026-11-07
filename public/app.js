@@ -11,8 +11,14 @@
   const items = data.items.map(i => ({...i, searchable:[i.title,i.excerpt,i.category,i.url,...(i.tags||[]),...(i.sourceRecords||[]).flatMap(r=>[r.title,r.excerpt,r.category,...(r.tags||[])]),...(i.atlasRecords||[]).flatMap(r=>[r.name,r.description,r.detail,r.access])].join(' ').toLocaleLowerCase()}));
   const params = new URLSearchParams(location.search);
   const state = {q:params.get('q')||'',collection:params.get('collection')||'',source:params.get('source')||'',type:params.get('type')||'',sort:'relevance',shown:24};
-  let saved = new Set(), persistent = true, lastFocus = null, toastTimer;
-  try { const value=JSON.parse(localStorage.getItem('chemresearch-saved')||'[]'); if(Array.isArray(value)) saved=new Set(value.filter(x=>typeof x==='string')); } catch { persistent=false; }
+  // Favourites live in two stores, both kept in their original format: this page's 'chemresearch-saved' (merged item ids)
+  // and the database page's 'chemdb-atlas-saved' (atlas resource numbers). An item counts as saved if either store has it.
+  let saved = new Set(), atlasSaved = new Set(), persistent = true, lastFocus = null, toastTimer;
+  const readList = (key, ok) => { try { const value=JSON.parse(localStorage.getItem(key)||'[]'); return new Set(Array.isArray(value)?value.filter(ok):[]); } catch { persistent=false; return new Set(); } };
+  const loadSaved = () => { saved=readList('chemresearch-saved',x=>typeof x==='string'); atlasSaved=readList('chemdb-atlas-saved',Number.isInteger); };
+  loadSaved();
+  // shortcut: an atlas number with no merged item (merged-data.js not yet rebuilt after content.js grew) is not shown here; it reappears once maintenance/ regenerates the merged data.
+  const isSaved = i => saved.has(i.id) || !!i.atlasRecords?.some(r=>atlasSaved.has(r.number));
   const format = n => n.toLocaleString('zh-CN');
   const sourceNames = i => i.sourceIds.map(id=>sources.get(id)?.name||id);
   function toast(message) { $('toast').textContent=message; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2800); }
@@ -23,7 +29,7 @@
   function matches() {
     const T=window.MolAstriaTerms, terms=T?T.tokens(state.q):state.q.toLocaleLowerCase().split(/\s+/).filter(Boolean);
     const found=(text,t)=>T?T.matchesToken(text,t):text.includes(t);
-    const scope=i=>(!state.source||i.sourceIds.includes(state.source)) && (!state.type||i.type===state.type) && (!state.collection||(state.collection==='saved'?saved.has(i.id):i.origins.includes(state.collection)));
+    const scope=i=>(!state.source||i.sourceIds.includes(state.source)) && (!state.type||i.type===state.type) && (!state.collection||(state.collection==='saved'?isSaved(i):i.origins.includes(state.collection)));
     fuzzy=false;
     let result=items.filter(i=>terms.every(t=>found(i.searchable,t)) && scope(i));
     if(!result.length&&terms.length){
@@ -44,17 +50,31 @@
     $('network-query').href='hub/network.html'+(state.q?'?q='+encodeURIComponent(state.q):'');
   }
   function render() {
-    const list=matches(), limit=list.slice(0,state.shown);
-    $('result-count').textContent=fuzzy?`没有逐字匹配的结果，按相关度列出 ${format(list.length)} 条近似资源`:`找到 ${format(list.length)} 条资源${state.q?' · 多个关键词同时匹配':''}`;
-    $('saved-count').textContent=`收藏 ${saved.size}`;
-    $('results').innerHTML=limit.map(i=>`<article class="result-row"><div class="row-kind"><span class="kind-icon" aria-hidden="true">${icons[i.type]||'↗'}</span><span class="kind-name">${esc(labels[i.type]||i.type)}</span></div><div class="row-main"><h3><a href="${esc(safeURL(i.url))}" target="_blank" rel="noopener noreferrer">${esc(i.title)} <span aria-hidden="true">↗</span></a></h3><p class="excerpt">${esc(i.excerpt||i.atlasRecords?.[0]?.description||'原站目录未提供摘要，请点击标题查看原文。')}</p><div class="row-meta">${sourceNames(i).map(name=>`<span class="source-tag">${esc(name)}</span>`).join('')}${i.origins.length>1?'<span class="shared-tag">两站共同收录</span>':''}${i.mirror?'<span>目录交叉引用</span>':''}${i.date?`<time>${esc(i.date)}</time>`:''}${i.category?`<span>${esc(i.category)}</span>`:''}</div></div><div class="row-actions"><button class="save" data-save="${i.id}" aria-label="${saved.has(i.id)?'取消收藏':'收藏'} ${esc(i.title)}" aria-pressed="${saved.has(i.id)}">${saved.has(i.id)?'★':'☆'}</button><small>${esc(new URL(safeURL(i.url),'https://invalid.local').hostname)}</small><button class="detail-link" data-detail="${i.id}">来源与资源说明 ↗</button></div></article>`).join('');
-    $('empty').hidden=!!list.length;
+    const list=matches(), limit=list.slice(0,state.shown), savedN=items.filter(isSaved).length, inSaved=state.collection==='saved';
+    $('result-count').textContent=fuzzy?`没有逐字匹配的结果，按相关度列出 ${format(list.length)} 条近似资源`:inSaved&&!state.q?`收藏夹里有 ${format(list.length)} 条资源`:`找到 ${format(list.length)} 条资源${state.q?' · 多个关键词同时匹配':''}`;
+    $('saved-count').textContent=`收藏 ${savedN}`;
+    $('fav-count').textContent=format(savedN);$('fav-open').dataset.count=savedN;
+    $('results').innerHTML=limit.map(i=>`<article class="result-row"><div class="row-kind"><span class="kind-icon" aria-hidden="true">${icons[i.type]||'↗'}</span><span class="kind-name">${esc(labels[i.type]||i.type)}</span></div><div class="row-main"><h3><a href="${esc(safeURL(i.url))}" target="_blank" rel="noopener noreferrer">${esc(i.title)} <span aria-hidden="true">↗</span></a></h3><p class="excerpt">${esc(i.excerpt||i.atlasRecords?.[0]?.description||'原站目录未提供摘要，请点击标题查看原文。')}</p><div class="row-meta">${sourceNames(i).map(name=>`<span class="source-tag">${esc(name)}</span>`).join('')}${i.origins.length>1?'<span class="shared-tag">两站共同收录</span>':''}${i.mirror?'<span>目录交叉引用</span>':''}${i.date?`<time>${esc(i.date)}</time>`:''}${i.category?`<span>${esc(i.category)}</span>`:''}</div></div><div class="row-actions"><button class="save" data-save="${i.id}" aria-label="${isSaved(i)?'取消收藏':'收藏'} ${esc(i.title)}" aria-pressed="${isSaved(i)}">${isSaved(i)?'★':'☆'}</button><small>${esc(new URL(safeURL(i.url),'https://invalid.local').hostname)}</small><button class="detail-link" data-detail="${i.id}">来源与资源说明 ↗</button></div></article>`).join('');
+    const noSaved=inSaved&&!savedN;
+    $('empty').hidden=!!list.length||noSaved;$('empty-saved').hidden=!noSaved;
     $('search-next').hidden=!state.q||list.length>=5;
     $('next-network').href='hub/network.html?q='+encodeURIComponent(state.q);
     $('next-radar').href='radar/index.html?q='+encodeURIComponent(state.q);
     $('more').hidden=list.length<=state.shown;
     $('page-count').textContent=list.length?`已显示 ${format(Math.min(state.shown,list.length))} / ${format(list.length)} 条`:'';
     syncURL();
+  }
+  // A database resource is saved in both stores, so the database page's 收藏夹 filter lists it too; removing it clears both.
+  function toggleSaved(id) {
+    if(persistent)loadSaved(); // the database page or another tab may have changed the stores since this page read them
+    const i=items.find(x=>x.id===id);if(!i)return;
+    const on=!isSaved(i), nums=(i.atlasRecords||[]).map(r=>r.number);
+    if(on){saved.add(id);nums.forEach(n=>atlasSaved.add(n));}else{saved.delete(id);nums.forEach(n=>atlasSaved.delete(n));}
+    try{localStorage.setItem('chemresearch-saved',JSON.stringify([...saved]));if(nums.length)localStorage.setItem('chemdb-atlas-saved',JSON.stringify([...atlasSaved]));}catch{persistent=false;}
+    render();
+    // In the 收藏夹 view the removed row is gone: keep the keyboard on the list instead of dropping focus to the page.
+    (document.querySelector(`[data-save="${id}"]`)||$('results').querySelector('[data-save]')||$('saved-browse'))?.focus();
+    toast(on?(persistent?'已收藏，保存在当前浏览器':'已收藏，本次访问期间有效'):'已取消收藏');
   }
   function reset() {Object.assign(state,{q:'',collection:'',source:'',type:'',sort:'relevance',shown:24}); for(const k of ['q','collection','source','type','sort'])$(k==='q'?'search':k).value=state[k];render();}
   function showDetails(id) {
@@ -69,7 +89,7 @@
   $('details').addEventListener('click',e=>{if(e.target===$('details')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
   document.addEventListener('click',e=>{
     const detail=e.target.closest('[data-detail]');if(detail){showDetails(detail.dataset.detail);return;}
-    const save=e.target.closest('[data-save]');if(save){const id=save.dataset.save;saved.has(id)?saved.delete(id):saved.add(id);try{localStorage.setItem('chemresearch-saved',JSON.stringify([...saved]));}catch{persistent=false;}render();document.querySelector(`[data-save="${id}"]`)?.focus();toast(saved.has(id)?(persistent?'已收藏，保存在当前浏览器':'已收藏，本次访问期间有效'):'已取消收藏');return;}
+    const save=e.target.closest('[data-save]');if(save){toggleSaved(save.dataset.save);return;}
     const quick=e.target.closest('[data-query]');if(quick){state.q=quick.dataset.query;$('search').value=state.q;state.shown=24;render();}
   });
   $('source').innerHTML+=[...sources.values()].map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${format(s.itemCount)})</option>`).join('');
@@ -78,7 +98,13 @@
   $('search').value=state.q;
   $('search').addEventListener('input',()=>{state.q=$('search').value.trim();state.shown=24;render();});
   $('next-ai').onclick=()=>window.ChemHub?.loadAI().then(ai=>ai.openDrawer({mode:'free',question:state.q})).catch(e=>alert(e.message));
-  $('reset').onclick=reset;$('empty-reset').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
+  $('reset').onclick=reset;$('empty-reset').onclick=reset;$('saved-browse').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
+  // The 收藏夹 button opens this page's saved-items view in place (内容范围 = 收藏夹) with every favourite listed.
+  $('fav-open').onclick=()=>{Object.assign(state,{q:'',collection:'saved',source:'',type:'',shown:24});$('search').value='';for(const k of ['collection','source','type'])$(k).value=state[k];render();document.querySelector('.filterbar').scrollIntoView({block:'start'});};
+  // Favourites changed elsewhere (another tab, or the database page before Back restored this page from the cache).
+  const refreshSaved=()=>{if(persistent){loadSaved();render();}};
+  addEventListener('storage',e=>{if(!e.key||e.key==='chemresearch-saved'||e.key==='chemdb-atlas-saved')refreshSaved();});
+  addEventListener('pageshow',e=>{if(e.persisted)refreshSaved();});
   document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('search').focus();$('catalog').scrollIntoView();}});
   $('export').onclick=()=>{
     const list=matches();

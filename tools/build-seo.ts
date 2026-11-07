@@ -142,7 +142,7 @@ ${guideCss}`;
 await write("guide/guide.css", guideCss);
 
 // ── guide chapters ───────────────────────────────────────────────────────
-const LABELS = ["封面与阅读地图", "三分钟导读", "全景与分层逻辑", "01 · 综合化合物与化学信息", "02 · 量子化学基准与参数", "03 · 材料与晶体：计算库", "03 · 材料与晶体：实验库", "04 · 生物大分子结构", "05 · 药物与化学空间", "06–07 · 代谢与反应通路", "08 · 光谱与波谱", "09 · 机器学习：分子与催化", "09 · 机器学习：材料与工具", "10 · 软件：量化与动力学", "10 · 软件：分析与工作流", "11 · 社区与中文入口", "接入实况与边界", "细读质疑与使用提醒", "关键术语与附录"];
+const LABELS = ["封面与阅读地图", "三分钟导读", "全景与分层逻辑", "01 · 综合化合物与化学信息", "02 · 量子化学基准与参数", "03 · 材料与晶体：计算库", "03 · 材料与晶体：实验库", "04 · 生物大分子结构", "05 · 药物与化学空间", "06–07 · 代谢与反应通路", "08 · 光谱与波谱", "09 · 机器学习：分子与催化", "09 · 机器学习：材料与工具", "17 · 科学语言模型与多模态", "10 · 软件：量化与动力学", "10 · 软件：分析与工作流", "11 · 社区与中文入口", "接入实况与边界", "细读质疑与使用提醒", "关键术语与附录"];
 function cleanGuide(html: string) {
   return html
     .replace(/<(script|style|iframe|object|embed|form)\b[\s\S]*?<\/\1>/gi, "")
@@ -263,6 +263,7 @@ const mains = [
   await injectHead("atlas/index.html", "atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "ChemDB Atlas 计算化学数据库导航", inLanguage: "zh-CN", url: SITE + "atlas/" }] }),
   await injectHead("manual/index.html", "manual/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "计算化学数据库说明讲解手册 · 阅读器", inLanguage: "zh-CN", url: SITE + "manual/" }] }),
   await injectHead("journals/index.html", "journals/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "期刊发表：计算化学期刊投稿与发表指南", inLanguage: "zh-CN", url: SITE + "journals/", isAccessibleForFree: true, about: ["computational chemistry journals", "quantum chemistry", "scholarly publishing", "peer review", "preprints"] }, crumbs([["首页", ""], ["期刊发表", "journals/"]])] }),
+  await injectHead("scimodels/index.html", "scimodels/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "科学领域语言模型与多模态基础模型", inLanguage: "zh-CN", url: SITE + "scimodels/", isAccessibleForFree: true, about: ["scientific large language models", "multimodal foundation models", "chemistry language models", "AI for science", "LLM API pricing"] }, crumbs([["首页", ""], ["科学大模型", "scimodels/"]])] }),
   await injectHead("hub/index.html", "hub/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "计算化学论文与社区", inLanguage: "zh-CN", url: SITE + "hub/" }] }),
   await injectHead("hub/network.html", "hub/network.html"),
   await injectHead("pro/index.html", "pro/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "MolAstria Pro", inLanguage: "zh-CN", url: SITE + "pro/" }] }),
@@ -301,7 +302,7 @@ await write("404.html", `<!doctype html>
 `);
 const urls = [
   ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
-  ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
+  ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
@@ -311,4 +312,39 @@ ${urls.map(([p, pr, f]) => `  <url><loc>${esc(SITE + p)}</loc><lastmod>${TODAY}<
 `);
 await write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`);
 await write(".nojekyll", "");
-console.log(`site ${SITE}\n${mains.length} main pages, ${guidePages.length + 1} guide pages, ${resourcePages.length + 1} resource pages, ${urls.length} sitemap URLs`);
+
+// ── installable web app (PWA): head tags on every page, a fresh sw.js version per deploy ─────────────────
+// Manifest, home-screen icon, standalone mode and status bar for iPad / iPhone / Android, and viewport-fit=cover so
+// shared-nav.css can keep the top bar clear of the status bar. The media theme-colors come before a page's own one.
+// Skipped: radar/app and qchem/app (copied apps shown in frames) and offline.html (sw.js shows it under other pages'
+// addresses, so it has its own head). tools/bundle-single.ts strips the block again.
+const pwaHead = (rel: string) => `<!-- pwa:start -->
+  <link rel="manifest" href="${rel}manifest.webmanifest">
+  <link rel="apple-touch-icon" href="${rel}assets/pwa/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="${esc(NAME)}">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#173f34">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101613">
+  <!-- pwa:end -->`;
+const htmlFiles = async (dir: string): Promise<string[]> => {
+  const out: string[] = [];
+  for await (const e of Deno.readDir(new URL(dir, pub))) {
+    const path = dir + e.name;
+    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app") out.push(...await htmlFiles(path + "/"));
+    else if (e.isFile && path.endsWith(".html") && path !== "offline.html") out.push(path);
+  }
+  return out;
+};
+let pwaPages = 0;
+for (const file of await htmlFiles("")) {
+  const url = new URL(file, pub);
+  const rel = file === "404.html" ? SITE : "../".repeat(file.split("/").length - 1);
+  const html = (await Deno.readTextFile(url)).replace(/\s*<!-- pwa:start -->[\s\S]*?<!-- pwa:end -->/, "")
+    .replace(/<meta name="viewport" content="([^"]*)">/, (_m, c: string) => `<meta name="viewport" content="${/viewport-fit/.test(c) ? c : c + ",viewport-fit=cover"}">\n  ${pwaHead(rel)}`);
+  if (html.includes("<!-- pwa:start -->")) pwaPages++;
+  await Deno.writeTextFile(url, html);
+}
+const swUrl = new URL("sw.js", pub);
+await Deno.writeTextFile(swUrl, (await Deno.readTextFile(swUrl)).replace(/const VERSION = '[^']*';/, () => `const VERSION = '${new Date().toISOString().replace(/[-:.]/g, "")}';`));
+console.log(`site ${SITE}\n${mains.length} main pages, ${guidePages.length + 1} guide pages, ${resourcePages.length + 1} resource pages, ${urls.length} sitemap URLs, PWA head on ${pwaPages} pages`);

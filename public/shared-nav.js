@@ -13,6 +13,7 @@
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
     ['journals', 'journals/index.html', '期刊发表'],
+    ['scimodels', 'scimodels/index.html', '科学大模型', true],
     ['lab', 'lab/index.html', 'AI 实验室'],
     ['meta', 'meta/index.html', 'Meta', true],
     ['models', 'models/index.html', '模型接口', true],
@@ -162,6 +163,95 @@
   const measure = () => root.style.setProperty('--cr-nav-height', `${nav.offsetHeight}px`);
   measure();
   new ResizeObserver(measure).observe(nav);
+
+  // Floating card, bottom-left, on the web pages only: not in the desktop app, not on the download page itself, not on
+  // phones, and not when the site already runs as a home-screen app. Computers get "download the desktop app" (shared-nav.css
+  // also hides that one on narrow or touch-only screens); iPads and other tablets get "添加到主屏幕", which links to
+  // the download page's home-screen steps. iPadOS Safari reports itself as a Mac: its touch screen tells it apart.
+  // × folds the card into a round icon, remembered per browser; the icon unfolds it again.
+  const here = (window.__CHEM_LOCATION__ || location).pathname || '';
+  const ua = navigator.userAgent;
+  const tablet = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) || (/Android/.test(ua) && !/Mobile/.test(ua))
+    || (matchMedia('(hover:none) and (pointer:coarse)').matches && Math.min(screen.width, screen.height) >= 600 && !/iPhone|iPod|Mobile/.test(ua));
+  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  if (!window.__MOLASTRIA_DESKTOP__ && !window.__TAURI_INTERNALS__ && !standalone && !/\/download\/(index\.html)?$/.test(here) && (tablet || !/Android|iPhone|iPad|iPod|Mobile/i.test(ua))) {
+    const FOLD = 'molastria-dl-folded';
+    const offline = location.protocol === 'file:' || !!window.__CHEM_LOCATION__; // disk copy or single-file build
+    const arrow = (size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg>`;
+    const plus = (size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><path d="M12 8.5v7M8.5 12h7"/></svg>`;
+    const icon = tablet ? plus : arrow, to = tablet ? '#home-screen' : '';
+    const dl = document.createElement('aside');
+    dl.className = 'cr-dl';
+    if (tablet) dl.dataset.variant = 'home';
+    dl.setAttribute('aria-label', tablet ? '添加到主屏幕' : '桌面版下载');
+    dl.innerHTML = `<a class="cr-dl-card" href="${offline ? `https://molastria.com/download/${to}` : link(`download/index.html${to}`)}"${offline ? ' target="_blank" rel="noopener"' : ''}><span class="cr-dl-ic">${icon(18)}</span><span class="cr-dl-tx"><b>${tablet ? '添加到主屏幕' : '下载桌面版'}</b><small>${tablet ? '全屏使用 · 离线可读' : /Mac/.test(ua) ? 'macOS · Windows' : 'Windows · macOS'}</small></span></a>`
+      + `<button type="button" class="cr-dl-x" aria-label="${tablet ? '收起添加到主屏幕卡片' : '收起下载卡片'}" title="收起"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m3 3 6 6M9 3 3 9"/></svg></button>`
+      + `<button type="button" class="cr-dl-fab" aria-label="${tablet ? '展开添加到主屏幕卡片' : '展开桌面版下载'}" title="${tablet ? '添加到主屏幕' : '下载桌面版'}">${icon(19)}</button>`;
+    const fold = (on, focus) => {
+      dl.dataset.folded = String(on);
+      try { if (on) localStorage.setItem(FOLD, '1'); else localStorage.removeItem(FOLD); } catch {}
+      if (focus) dl.querySelector(on ? '.cr-dl-fab' : '.cr-dl-card').focus();
+    };
+    try { dl.dataset.folded = String(localStorage.getItem(FOLD) === '1'); } catch { dl.dataset.folded = 'false'; }
+    dl.querySelector('.cr-dl-x').addEventListener('click', () => fold(true, true));
+    dl.querySelector('.cr-dl-fab').addEventListener('click', () => fold(false, true));
+    document.body.append(dl);
+    // Keep clear of the page: start right of a fixed or sticky left column (atlas sidebar, handbook contents), stay
+    // hidden where the corner holds an embedded app or another pinned element (radar, qchem), and give scrolling
+    // pages room at the end so their footer can scroll above the card.
+    const space = document.createElement('div');
+    space.className = 'cr-dl-space';
+    space.setAttribute('aria-hidden', 'true');
+    const pinned = (el) => {
+      if (el.closest('.cr-bg, .cr-header')) return null;
+      for (; el && el !== document.body && el !== root; el = el.parentElement) if (/fixed|sticky/.test(getComputedStyle(el).position)) return el;
+      return null;
+    };
+    const under = (x, y) => document.elementsFromPoint(Math.max(0, Math.min(x, innerWidth - 1)), Math.max(0, Math.min(y, innerHeight - 1))).filter((el) => !dl.contains(el));
+    const place = () => {
+      if (getComputedStyle(dl).display === 'none') { space.remove(); return; }
+      let left = 18;
+      for (const x of [8, 40, 120]) for (const el of under(x, innerHeight - 40).slice(0, 3)) {
+        const r = pinned(el)?.getBoundingClientRect(); // a column: near the left edge, narrow, tall
+        if (r && r.left < 160 && r.width < innerWidth * 0.45 && r.height > innerHeight * 0.3) left = Math.max(left, Math.round(r.right + 18));
+      }
+      dl.style.setProperty('--cr-dl-left', `${left}px`);
+      const b = dl.getBoundingClientRect();
+      const blocked = [0.12, 0.5, 0.88].some((f) => under(b.left + b.width * f, b.top + b.height / 2).some((el) => el.tagName === 'IFRAME' || pinned(el)));
+      dl.toggleAttribute('data-blocked', blocked);
+      if (!blocked && getComputedStyle(document.body).display === 'block' && root.scrollHeight > innerHeight + 4) document.body.append(space); else space.remove();
+    };
+    let wait = 0;
+    const later = () => { clearTimeout(wait); wait = setTimeout(place, 200); };
+    addEventListener('load', () => { place(); setTimeout(place, 1200); });
+    new ResizeObserver(later).observe(document.body); // pages that render their columns after load
+    addEventListener('resize', later);
+    addEventListener('scroll', later, { passive: true });
+    document.addEventListener('chemhub:i18n', later);
+  }
+
+  // Website only: sw.js keeps visited pages readable offline and makes the site installable (home screen on iPad,
+  // iPhone, Android). Not registered in the desktop app (tauri: on macOS, http://tauri.localhost on Windows), the
+  // single-file build, a disk copy, or a local preview on localhost / 127.0.0.1: the browser tests (tools/e2e) mock
+  // same-origin files there, which a service worker would bypass. SW = false is the page half of the kill switch
+  // (docs/RUNBOOK.md, with KILL in sw.js): it removes the worker and its caches instead of registering it.
+  const SW = true;
+  const sw = navigator.serviceWorker;
+  if (sw && window.isSecureContext && /^https?:$/.test(location.protocol) && !window.__CHEM_LOCATION__ && !window.__MOLASTRIA_DESKTOP__
+    && !window.__TAURI_INTERNALS__ && !window.__TAURI__ && !/(^|\.)localhost$|^127\.|^\[::1\]$/.test(location.hostname)) {
+    addEventListener('load', () => {
+      if (!SW) {
+        sw.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+        caches.keys().then((ks) => ks.forEach((k) => { if (k.startsWith('molastria-')) caches.delete(k); })).catch(() => {});
+        return;
+      }
+      // On the first visit this page loaded before the worker existed: tell it what to keep, so it also opens offline.
+      const first = !sw.controller;
+      sw.register(link('sw.js')).then(() => sw.ready).then((r) => {
+        if (first) r.active?.postMessage({ cache: [location.href, ...performance.getEntriesByType('resource').map((e) => e.name)] });
+      }).catch(() => {});
+    });
+  }
 
   // Desktop app only: offer the newer version published on GitHub Releases. The app checks the signed feed
   // once per launch (cached for the session); "稍后" hides the prompt for that version for three days.

@@ -89,6 +89,14 @@ html{background:var(--paper)}
   .cr-links a{font-size:12.5px;padding:9px 10px}
 }
 @media print{.cr-header,.cr-drawer,.cr-fab{display:none!important}}
+/* Home-screen app on iPad / iPhone: pages use viewport-fit=cover and a translucent status bar (build-seo.ts adds the
+   tags), so the page runs under the status bar, the screen corners and the home indicator. The top bar and the AI
+   panel get a strip as tall as the status bar, dark enough for its white text; the page keeps clear of the notch in
+   landscape. Every env() inset is 0 in other browsers, so nothing changes there. */
+html{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.cr-header,.cai-drawer{border-top:env(safe-area-inset-top,0px) solid #173f34}
+:root[data-theme=dark] .cr-header,:root[data-theme=dark] .cai-drawer{border-top-color:#101613}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cr-header,:root:not([data-theme=light]) .cai-drawer{border-top-color:#101613}}
 @media(prefers-reduced-motion:reduce){.cr-header *,.cr-drawer{transition:none!important}}
 
 /* ── 背景层（backdrop.js 生成）：固定在内容之下，颜色取自主题变量 ── */
@@ -187,3 +195,27 @@ html{background:var(--paper)}
 .cr-update button:disabled{cursor:default;opacity:.75}
 @keyframes cr-update-in{from{opacity:0;transform:translateY(8px)}}
 @media(prefers-reduced-motion:reduce){.cr-update{animation:none}}
+/* Floating desktop-download card, bottom-left (shared-nav.js). shared-nav.js moves it right of a pinned left column
+   (--cr-dl-left) and hides it where the corner holds an embedded app (data-blocked). It stays under drawers, dialogs
+   and the background picker, and is not shown on phones or touch-only tablets. */
+.cr-dl{position:fixed;left:var(--cr-dl-left,18px);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:55;font:13px/1.3 var(--font-sans);animation:cr-dl-in .35s ease-out .5s both}
+.cr-dl[data-blocked]{visibility:hidden}
+.cr-dl-space{height:calc(76px + env(safe-area-inset-bottom,0px))}
+.cr-dl-card{display:flex;align-items:center;gap:10px;padding:7px 36px 7px 7px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:var(--shadow);color:var(--ink)!important;text-decoration:none!important;transition:border-color .15s,background .15s}
+.cr-dl-card:hover{border-color:var(--line-strong);background:color-mix(in srgb,var(--surface-2) 92%,transparent)}
+.cr-dl-ic{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--accent);color:var(--accent-ink)}
+.cr-dl-tx{display:grid;gap:1px;white-space:nowrap}
+.cr-dl-tx b{font-size:13px;font-weight:650}
+.cr-dl-tx small{font-size:11px;color:var(--muted);letter-spacing:.02em}
+.cr-dl-x{position:absolute;top:50%;right:7px;width:24px;height:24px;margin-top:-12px;display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--faint);cursor:pointer;transition:background .15s,color .15s}
+.cr-dl-x:hover{background:var(--surface-2);color:var(--ink)}
+.cr-dl-fab{width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:var(--shadow);color:var(--accent-text);cursor:pointer;transition:border-color .15s}
+.cr-dl-fab:hover{border-color:var(--line-strong)}
+.cr-dl[data-folded=true] .cr-dl-card,.cr-dl[data-folded=true] .cr-dl-x,.cr-dl:not([data-folded=true]) .cr-dl-fab{display:none}
+.cr-dl a:focus-visible,.cr-dl button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@keyframes cr-dl-in{from{opacity:0;transform:translateY(8px)}}
+@media (max-width:760px),(hover:none) and (pointer:coarse){.cr-dl:not([data-variant=home]){display:none!important}}
+/* The tablet card ("添加到主屏幕") shows on touch screens; it goes in narrow split view and once the site runs as an app. */
+@media (max-width:599px),(display-mode:standalone){.cr-dl{display:none!important}}
+@media (prefers-reduced-motion:reduce){.cr-dl{animation:none}.cr-dl *{transition:none!important}}
+@media print{.cr-dl{display:none!important}}

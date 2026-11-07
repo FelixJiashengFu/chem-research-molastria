@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="../shared-nav.js" defer></script>
   <script src="content.js" defer></script>
+  <script src="../scimodels/scimodels-data.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body data-section="atlas">
@@ -56,7 +57,7 @@
       <div class="metrics"><div><strong>214<span>条</span></strong><p>数据库与研究资源</p></div><div><strong>17<span>类</span></strong><p>从化合物到计算工具</p></div><div><strong>13<span>个</span></strong><p>已有数据源接入模块</p></div><a href="#agent" class="metric-note"><span class="status-icon">↗</span><span>让导航走进代码<small>查看 Agent 的真实接入进展</small></span><b>→</b></a></div>
       <section id="catalog" class="catalog" aria-labelledby="catalog-title"><div class="section-heading"><div><div class="eyebrow muted">THE RESOURCE COLLECTION</div><h2 id="catalog-title">找到你的研究入口<span> / 资源图谱</span></h2></div><button class="text-link" id="export-filter">导出当前结果 <span>↓</span></button></div>
         <div class="search-row"><div class="searchbox"><span aria-hidden="true">⌕</span><label class="sr-only" for="search">搜索资源名称、用途或关键词</label><input id="search" type="search" placeholder="搜索名称、用途或关键词，例如：晶体、PubChem、基组…" autocomplete="off"><kbd>Ctrl K</kbd></div><label class="sr-only" for="category-select">筛选研究主题</label><select id="category-select"><option value="">全部研究主题</option></select></div>
-        <div class="filter-row"><div class="filter-tabs" role="group" aria-label="资源筛选"><button class="filter active" data-filter="all">全部资源 <span>214</span></button><button class="filter" data-filter="integrated">已有接入模块 <span>13</span></button><button class="filter" data-filter="free">免费资源</button><button class="filter" data-filter="saved">我的收藏 <span id="saved-count">0</span></button></div><span id="results-count" role="status" aria-live="polite"></span></div>
+        <div class="filter-row"><div class="filter-tabs" role="group" aria-label="资源筛选"><button class="filter active" data-filter="all">全部资源 <span>214</span></button><button class="filter" data-filter="integrated">已有接入模块 <span>13</span></button><button class="filter" data-filter="free">免费资源</button><button class="filter" data-filter="saved">收藏夹 <span id="saved-count">0</span></button></div><span id="results-count" role="status" aria-live="polite"></span></div>
         <div id="active-category" class="active-category" hidden></div><div id="resource-grid" class="resource-grid"></div><div id="empty-state" class="empty-state" hidden><span>⌕</span><h3>还没有找到匹配的资源</h3><p>换一个关键词，或清除筛选后再试。</p><button class="secondary-button" id="reset-filters">清除筛选</button></div><div class="load-area"><button class="secondary-button" id="load-more">加载更多资源 <span>↓</span></button><span id="load-note"></span></div>
         <div class="source-note"><span>i</span><p>目录来自你提供的成果包（2026-10-27），接入状态按 chemdb-agent 0.2.0 核对（2026-11-06）；本页不联网测试外部端点。<b>“已有接入模块”表示 chemdb-agent 里有实现并通过了测试；各数据源的实测情况见 Agent 工程页。</b></p></div>
       </section>

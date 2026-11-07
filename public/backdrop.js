@@ -22,6 +22,16 @@
     get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } },
     set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }
   };
+  // One switch for every decorative logo animation (the AI panel's intro film, the home page's logo badge, the download
+  // page's intro film). Contract with those pages: off = <html data-logo-motion="off">, on = no attribute; each change
+  // dispatches `molastria:logo-motion` on window with detail {on}. Applied first thing, before any page loader reads it.
+  const LOGO_KEY = 'chemhub-logo-motion';
+  if (store.get(LOGO_KEY, 'on') === 'off') root.dataset.logoMotion = 'off';
+  function setLogoMotion(on) {
+    if (on) delete root.dataset.logoMotion; else root.dataset.logoMotion = 'off';
+    store.set(LOGO_KEY, on ? 'on' : 'off');
+    dispatchEvent(new CustomEvent('molastria:logo-motion', { detail: { on } }));
+  }
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const f1 = (v) => Math.round(v * 10) / 10;
   let uid = 0;
@@ -190,7 +200,8 @@
     picker.innerHTML = `<div class="cr-bgpick-head"><b>${zh() ? '背景' : 'Background'}</b><button type="button" class="cr-bgpick-x" aria-label="${zh() ? '关闭' : 'Close'}">×</button></div>
       <div class="cr-bgpick-grid">${BGS.map((b) => `<button type="button" data-bg-id="${b.id}" aria-pressed="${b.id === current}"><span class="cr-bg cr-bg-mini" data-kind="${b.id}">${b.id === 'paper' ? '' : CSS_ONLY.has(b.id) ? '<i class="b1"></i><i class="b2"></i>' : GEN[b.id](320, 200, 0)}</span><span class="cr-bgpick-name">${zh() ? b.zh : b.en}</span></button>`).join('')}</div>
       <label class="cr-bgpick-row">${zh() ? '浓淡' : 'Strength'}<input type="range" min="0.15" max="1" step="0.05" value="${getComputedStyle(root).getPropertyValue('--bg-strength').trim() || 0.7}"></label>
-      <label class="cr-bgpick-row cr-bgpick-check"><input type="checkbox" ${root.dataset.bgMotion !== 'off' ? 'checked' : ''}>${zh() ? '动态效果（星光、极光）' : 'Motion (twinkle, aurora)'}</label>`;
+      <label class="cr-bgpick-row cr-bgpick-check"><input type="checkbox" ${root.dataset.bgMotion !== 'off' ? 'checked' : ''}>${zh() ? '动态效果（星光、极光）' : 'Motion (twinkle, aurora)'}</label>
+      <label class="cr-bgpick-row cr-bgpick-check"><input type="checkbox" data-logo-motion ${root.dataset.logoMotion !== 'off' ? 'checked' : ''}>${zh() ? '徽标动画（片头、首页徽标）' : 'Logo animation (intro film, home badge)'}</label>`;
     document.body.append(picker);
     picker.addEventListener('click', (e) => {
       const b = e.target.closest('[data-bg-id]');
@@ -199,6 +210,7 @@
     });
     picker.querySelector('input[type=range]').addEventListener('input', (e) => setStrength(e.target.value));
     picker.querySelector('input[type=checkbox]').addEventListener('change', (e) => setMotion(e.target.checked));
+    picker.querySelector('input[data-logo-motion]').addEventListener('change', (e) => setLogoMotion(e.target.checked));
     document.addEventListener('pointerdown', (e) => { if (picker.dataset.open === 'true' && !picker.contains(e.target) && !anchor?.contains(e.target)) close(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && picker.dataset.open === 'true') { close(); anchor?.focus(); } });
   }
