@@ -28,7 +28,7 @@ function add(text: string, from: string, max = 600) {
 function fromHTML(html: string, from: string) {
   const body = html.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "").replace(/<!--[\s\S]*?-->/g, "");
   for (const seg of body.split(/<[^>]*>/)) add(seg, from);
-  for (const m of body.matchAll(/\s(?:placeholder|title|aria-label|alt)="([^"]*)"/g)) add(m[1], from);
+  for (const m of body.matchAll(/\s(?:placeholder|title|aria-label|alt)=(?:"([^"]*)"|'([^']*)')/g)) add(m[1] ?? m[2], from);
   const t = html.match(/<title>([\s\S]*?)<\/title>/);
   if (t) add(t[1], from);
 }
@@ -107,8 +107,8 @@ function fromJS(src: string, from: string) {
       const key = p.replace(/\u0000/g, () => `{${k++}}`);
       add(key, from, 400);
     }
-    // Attribute values inside the template's tags (aria-label="…", placeholder="…").
-    for (const m of joined.matchAll(/(?:placeholder|title|aria-label|alt)="([^"]*)"/g)) { let k = 0; add(m[1].replace(/\u0000/g, () => `{${k++}}`), from, 400); }
+    // Attribute values inside the template's tags (aria-label="…", placeholder="…"), in double or single quotes.
+    for (const m of joined.matchAll(/(?:placeholder|title|aria-label|alt)=(?:"([^"]*)"|'([^']*)')/g)) { let k = 0; add((m[1] ?? m[2]).replace(/\u0000/g, () => `{${k++}}`), from, 400); }
   }
 }
 
