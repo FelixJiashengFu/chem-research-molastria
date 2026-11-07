@@ -1687,6 +1687,81 @@ check('nav order: a long press opens the glass panel without leaving the page; d
   await finish(p);
 });
 
+check('nav order: modules are dragged straight along the header (mouse at once, touch after a hold); a plain click still opens the page', async () => {
+  const p = await open();
+  await go(p, '/manual/index.html');
+  const row = () => p.$$eval('.cr-links > a[data-id]:not(.cr-pro-link)', (a) => a.filter((x) => x.offsetWidth).map((x) => x.dataset.id));
+  const url = p.url();
+  const from = await (await p.$('.cr-links > a[data-id="search"]')).boundingBox(), to = await (await p.$('.cr-links > a[data-id="atlas"]')).boundingBox();
+  await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await p.mouse.down();
+  for (let i = 1; i <= 12; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + to.width / 2 + 4 - from.x - from.width / 2) * i) / 12, from.y + from.height / 2 + 1);
+  assert.ok(await p.locator('.cr-links a.cr-lifted[data-id="search"]').count(), 'the module is lifted as glass');
+  await p.mouse.up();
+  assert.deepEqual((await row()).slice(0, 4), ['network', 'manual', 'atlas', 'search'], 'dropped after 数据库');
+  assert.equal(p.url(), url, 'the drag did not open the page');
+  assert.equal(await p.locator('.cr-arrange.open').count(), 0, 'no panel after a drag');
+  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-nav-order'))).slice(0, 4), ['network', 'manual', 'atlas', 'search']);
+  await p.click('.cr-links > a[data-id="search"]');
+  await p.waitForURL(/\/index\.html/);
+  assert.deepEqual((await row()).slice(0, 4), ['network', 'manual', 'atlas', 'search'], 'kept on the next page');
+  await p.evaluate(() => localStorage.removeItem('molastria-nav-order'));
+  await finish(p);
+  // touch: a quick swipe leaves the order alone, a hold then a slide moves the module
+  const t = await open({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  await go(t, '/index.html');
+  const cdp = await t.context().newCDPSession(t);
+  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  const ids = () => t.$$eval('.cr-links > a[data-id]', (a) => a.map((x) => x.dataset.id).slice(0, 3));
+  const b = await (await t.$('.cr-links > a[data-id="search"]')).boundingBox();
+  let x = b.x + b.width / 2;
+  await touch('touchStart', x, b.y + b.height / 2);
+  for (let i = 0; i < 6; i++) await touch('touchMove', (x += 12), b.y + b.height / 2);
+  await touch('touchEnd');
+  assert.deepEqual(await ids(), ['search', 'network', 'manual'], 'a swipe does not reorder');
+  await t.waitForTimeout(800); // let the swipe's fling end: a touch during it cannot hold the page still
+  x = b.x + b.width / 2;
+  await touch('touchStart', x, b.y + b.height / 2);
+  await t.waitForTimeout(600);
+  for (let i = 0; i < 15; i++) { await touch('touchMove', (x += 10), b.y + b.height / 2); await t.waitForTimeout(16); }
+  await touch('touchEnd');
+  assert.deepEqual(await ids(), ['network', 'manual', 'search'], 'hold and slide reorders');
+  await finish(t);
+});
+
+check('language switch: every page stays where it was (radar view, calculator tab, tabs, filters, scroll)', async () => {
+  const p = await open();
+  const flip = async () => { await Promise.all([p.waitForEvent('load'), p.$eval('#cr-lang', (b) => b.click())]); await p.waitForTimeout(900); }; // a DOM click: Playwright's own would scroll the page first
+  await go(p, '/radar/index.html');
+  const radar = () => p.frames().find((f) => /radar\/app/.test(f.url()));
+  await p.waitForFunction(() => document.getElementById('radar-frame').contentDocument?.readyState === 'complete');
+  await radar().evaluate(() => { location.hash = '#/saved'; });
+  await p.waitForURL(/#\/saved$/);
+  await flip();
+  assert.equal(await p.evaluate(() => document.documentElement.lang), 'en');
+  assert.match(p.url(), /radar\/index\.html#\/saved$/, 'radar page and view kept');
+  await p.waitForFunction(() => /#\/saved$/.test(document.getElementById('radar-frame').contentWindow.location.hash));
+  await go(p, '/qchem/index.html#lab');
+  await p.waitForFunction(() => document.getElementById('qchem-frame').contentDocument?.querySelector('#tabs [data-v="qd"]'));
+  await p.frames().find((f) => /qchem\/app/.test(f.url())).click('#tabs [data-v="qd"]');
+  assert.match(p.url(), /#qd$/);
+  await flip();
+  assert.equal(await p.frames().find((f) => /qchem\/app/.test(f.url())).evaluate(() => document.querySelector('#tabs .on')?.dataset.v), 'qd', 'calculator tab kept');
+  await go(p, '/lab/index.html');
+  await p.click('[data-tab="pareto"]');
+  await flip();
+  assert.equal(await p.$eval('[role=tab][aria-selected=true]', (b) => b.dataset.tab), 'pareto', 'lab tab kept');
+  await go(p, '/journals/index.html');
+  const cat = await p.$eval('#jr-cat', (s) => s.options[2].value);
+  await p.selectOption('#jr-cat', cat);
+  await p.fill('#jr-q', 'chem');
+  await p.evaluate(() => scrollTo({ top: 400, behavior: 'instant' }));
+  await flip();
+  assert.deepEqual(await p.evaluate(() => [document.querySelector('#jr-cat').value, document.querySelector('#jr-q').value]), [cat, 'chem'], 'filters kept');
+  assert.ok(await p.evaluate(() => scrollY > 300), 'scroll kept');
+  await finish(p);
+});
+
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
   for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html']) {
     const p = await open();

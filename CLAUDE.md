@@ -16,7 +16,7 @@ MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源�
 ```text
 public/               发布目录，推到 main 就上线
   index.html, app.js  统一搜索与收藏夹（?collection=saved，合并首页和数据库页两个收藏库）；search-terms.js 是中英术语表
-  shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗；新栏目在这里加导航。长按入口（或 显示 → 调整导航顺序）打开玻璃面板拖动排序，存 molastria-nav-order，新加的入口排在它前一个入口后面
+  shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗；新栏目在这里加导航。入口可以在顶栏上直接拖动换位（鼠标一拖就起，触屏先按住约 0.4 秒），按住不动再松开（或 显示 → 调整导航顺序）打开玻璃面板排序，存 molastria-nav-order；切换语言时把地址、滚动位置、标签页和筛选存进 sessionStorage 的 molastria-lang-restore，刷新后复原，新加的入口排在它前一个入口后面
   backdrop.js         10 种背景和背景面板，含“徽标动画”开关（关时 html[data-logo-motion=off]，切换时派发 window 事件 molastria:logo-motion）
   assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}（以徽章为中心裁切的 256 px 正方形）；片头 intro.mp4 + intro-end.webp，只有下载页用（AI 面板改成了吉祥物进场动画）（ffmpeg 转码的小文件，原片不进仓库）
   sw.js, offline.html, manifest.webmanifest   可添加到主屏幕（PWA）：sw.js 离线保存看过的页面，由 shared-nav.js 注册（桌面版、单文件版、本地文件和 localhost 不注册）；各页的 PWA 头部标签和 sw.js 版本号由 build-seo.ts 在发布时写入，仓库里的 sw.js 保持 VERSION = 'dev'
