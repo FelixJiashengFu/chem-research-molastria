@@ -1,13 +1,26 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The main window may open http(s) links in the system browser.",
-  "windows": ["main"],
+  "description": "The main window may open http(s) links in the system browser and show system notifications.",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
+    "notification:default",
     {
       "identifier": "opener:allow-open-url",
-      "allow": [{ "url": "https://*" }, { "url": "http://*" }, { "url": "mailto:*" }]
+      "allow": [
+        {
+          "url": "https://*"
+        },
+        {
+          "url": "http://*"
+        },
+        {
+          "url": "mailto:*"
+        }
+      ]
     }
   ]
 }

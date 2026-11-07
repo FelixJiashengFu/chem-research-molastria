@@ -330,6 +330,7 @@ const longText = (n: number) => [{ role: "user", content: "x".repeat(n) }];
 
 await test("hosted AI limits: long requests, the stronger model and large outputs count for more", async () => {
   env.MONTHLY_ASKS = "100";
+  env.HOSTED_MODELS = "deepseek-flash,deepseek-v4-pro"; // the weights still work when a stronger model is offered
   sqlite.prepare("DELETE FROM usage").run();
   sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'ai:%'").run();
   const spend = async (o: Record<string, unknown>) => { const before = usage().asks; eq((await asked(o)).status, 200); return usage().asks - before; };
@@ -376,6 +377,17 @@ await test("hosted AI limits: a request bigger than what is left says so and is 
   await asked({ model: "deepseek-v4-pro" });
   upstreamStatus = 200;
   eq(usage().asks, 0, "a failed weighted call is fully refunded");
+  env.MONTHLY_ASKS = "3";
+});
+
+await test("hosted AI with Flash only: an old page asking for V4 Pro is answered by Flash and counted as Flash", async () => {
+  sqlite.prepare("DELETE FROM usage").run();
+  env.MONTHLY_ASKS = "100";
+  delete env.HOSTED_MODELS; // the code's default is what wrangler.toml now sets: Flash only
+  eq((await asked({ model: "deepseek-v4-pro" })).status, 200);
+  eq(lastUpstream.model, "deepseek-flash", "sent upstream as Flash");
+  eq(usage().asks, 1, "counted as one Flash answer, not three");
+  eq((await asked({ model: "muse-wonder-1.0" })).status, 400, "a model outside the list that is not DeepSeek is still refused");
   env.MONTHLY_ASKS = "3";
 });
 
@@ -428,10 +440,12 @@ await test("weekly picks: a failed model still gives a plain list; no sources gi
   await tick("build");
 });
 
-await test("weekly picks: visitors see titles only, Pro sees comments", async () => {
+await test("weekly picks: visitors see the first five picks with comments, the full issue needs Pro", async () => {
   const preview = await call("GET", "/digest/preview");
   eq(preview.status, 200);
-  if (preview.data.items[0].why_zh !== undefined) throw new Error("comments leaked in the preview");
+  // everyone sees the first five picks with their comments; the full issue stays behind Pro
+  if (!preview.data.items[0].why_zh) throw new Error("the public preview should carry the comments");
+  if (preview.data.items.length > 5) throw new Error("the preview shows at most five picks");
   if (!preview.headers.get("Cache-Control")?.includes("public")) throw new Error("preview should be cacheable");
   eq((await call("GET", "/digest/latest")).status, 401);
   sqlite.prepare("DELETE FROM sessions WHERE email = 'stranger@x.org'").run();

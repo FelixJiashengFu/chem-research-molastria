@@ -12,6 +12,7 @@
     ['atlas', 'atlas/index.html#resources', '数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
+    ['digest', 'digest/index.html', '每周精选', true],
     ['journals', 'journals/index.html', '期刊发表'],
     ['scimodels', 'scimodels/index.html', '科学大模型', true],
     ['lab', 'lab/index.html', 'AI 实验室'],
@@ -22,6 +23,17 @@
     ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']
   ];
+  // Each person's order of the modules (see arrange below); modules added later keep their place after the one before them.
+  const ORDER = 'molastria-nav-order';
+  const ordered = (() => {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(ORDER) || 'null'); } catch { /* private mode */ }
+    if (!Array.isArray(saved) || !saved.length) return links;
+    const rank = new Map(saved.map((id, i) => [id, i]));
+    const out = links.filter(([id]) => rank.has(id)).sort((a, b) => rank.get(a[0]) - rank.get(b[0]));
+    links.forEach((l, i) => { if (!rank.has(l[0])) out.splice(i ? out.indexOf(links[i - 1]) + 1 : 0, 0, l); });
+    return out;
+  })();
   // MolAstria mark: a benzene ring on an electron orbit, with a four-point star. Monochrome, inverts with the theme.
   const mark = '<svg class="cr-mark" viewBox="0 0 40 40" aria-hidden="true"><rect class="m-tile" width="40" height="40" rx="9"/><ellipse class="m-hair" cx="19" cy="21" rx="15" ry="5.6" transform="rotate(-28 19 21)"/><path class="m-line" d="M19 11.2 27.5 16.1v9.8L19 30.8l-8.5-4.9v-9.8Z"/><circle class="m-thin" cx="19" cy="21" r="4.9"/><circle class="m-dot" cx="5.7" cy="26" r="1.3"/><path class="m-star" d="M30.6 5.2c.45 2.9 1.5 3.95 4.4 4.4-2.9.45-3.95 1.5-4.4 4.4-.45-2.9-1.5-3.95-4.4-4.4 2.9-.45 3.95-1.5 4.4-4.4Z"/><circle class="m-dot" cx="35" cy="17.5" r=".7"/></svg>';
   const palette = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.9 1.2-1.8-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4C21 7 17 3 12 3Z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10.5" cy="7" r="1.1"/><circle cx="15" cy="7.5" r="1.1"/></svg>';
@@ -39,7 +51,7 @@
   nav.className = 'cr-header';
   const en = document.documentElement.lang === 'en';
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
-    + `<nav class="cr-links" aria-label="全站导航">${links.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
+    + `<nav class="cr-links" aria-label="全站导航">${ordered.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
     + `<div class="cr-more" hidden><button class="cr-more-btn" type="button" aria-expanded="false" aria-controls="cr-more-menu">更多${chevron}</button><div class="cr-more-menu" id="cr-more-menu" hidden></div></div>`
     + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
     + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
@@ -95,6 +107,165 @@
   // On phones the link row scrolls sideways: bring the current section into view.
   const current = row.querySelector('[aria-current]');
   if (current && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, current.offsetLeft - (row.clientWidth - current.offsetWidth) / 2);
+
+  // ── Brand notice (TRADEMARKS.md): one line under the page's footer, or after its content. Full-screen app pages skip it.
+  {
+    const legal = document.createElement('p');
+    legal.className = 'cr-legal';
+    legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <span>MolAstria 名称、徽标与吉祥物归 Jiasheng Fu 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a>`;
+    const place = () => {
+      if (document.body.classList.contains('radar-page')) return;
+      const foot = [...document.querySelectorAll('footer')].filter((f) => !f.closest('.cr-header, dialog, aside')).pop();
+      // below the footer, not inside it: footers here are rows and grids of their own
+      if (foot) foot.after(legal); else (document.querySelector('main') || document.body).append(legal);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place, { once: true }); else place();
+  }
+
+  // ── Arranging the modules: a long press on any of them (or 显示 → 调整导航顺序) opens a glass panel where they are
+  //    dragged, or moved with the arrow keys, into each person's order. Saved per browser; "恢复默认" goes back.
+  const arrange = (() => {
+    const t = (zh, e) => (en ? e : zh);
+    const defaults = links.map(([id]) => id);
+    const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const label = (id) => { const l = links.find(([x]) => x === id)?.[2] ?? id; return en && window.ChemI18n?.t ? window.ChemI18n.t(l) : l; };
+    let layer = null, grid = null, live = null, back = null, drag = null;
+    const order = () => [...grid.children].map((el) => el.dataset.id);
+    const save = (ids) => {
+      try { if (ids.join() === defaults.join()) localStorage.removeItem(ORDER); else localStorage.setItem(ORDER, JSON.stringify(ids)); } catch { /* private mode */ }
+      items.sort((a, b) => ids.indexOf(a.dataset.id) - ids.indexOf(b.dataset.id));
+      fit();
+    };
+    // The other tiles glide to their new places (FLIP). Rect differences are turned into the tiles' own CSS pixels,
+    // because page zoom scales getBoundingClientRect differently from transforms in Chrome and in WebKit.
+    const flip = (mutate) => {
+      const before = new Map([...grid.children].map((el) => [el, el.getBoundingClientRect()]));
+      mutate();
+      if (reduced()) return;
+      for (const el of grid.children) {
+        const a = before.get(el), b = el.getBoundingClientRect(), k = el.offsetWidth ? b.width / el.offsetWidth || 1 : 1;
+        const dx = (a.left - b.left) / k, dy = (a.top - b.top) / k;
+        if (Math.abs(dx) + Math.abs(dy) < 0.5) continue;
+        el.animate([{ translate: `${dx}px ${dy}px` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      }
+    };
+    const say = (id) => {
+      const ids = order(), n = ids.indexOf(id) + 1;
+      live.textContent = t(`${label(id)}：第 ${n} 位，共 ${ids.length} 个`, `${label(id)}: position ${n} of ${ids.length}`);
+    };
+    const tile = (id, current) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cr-arr-tile';
+      b.dataset.id = id;
+      b.setAttribute('role', 'listitem');
+      b.textContent = label(id);
+      if (id === current) b.setAttribute('aria-current', 'page');
+      return b;
+    };
+    function build() {
+      layer = document.createElement('div');
+      layer.className = 'cr-arrange';
+      layer.hidden = true;
+      layer.setAttribute('translate', 'no');
+      layer.innerHTML = `<div class="cr-arr-glass" role="dialog" aria-modal="true" aria-labelledby="cr-arr-h">
+        <div class="cr-arr-head"><b id="cr-arr-h">${t('调整导航顺序', 'Arrange the navigation')}</b><small>${t('拖动入口，排成你习惯的顺序；也可以用方向键。只保存在这台设备上。', 'Drag the modules into the order you like, or use the arrow keys. Saved on this device only.')}</small></div>
+        <div class="cr-arr-grid" role="list" aria-label="${t('导航入口', 'Modules')}"></div>
+        <p class="cr-arr-live" aria-live="polite"></p>
+        <div class="cr-arr-foot"><small>${t('以后长按顶栏的任一入口，也能回到这里', 'Next time, press and hold any module in the header to come back here')}</small><button type="button" class="cr-arr-reset">${t('恢复默认', 'Reset')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
+      document.body.append(layer);
+      grid = layer.querySelector('.cr-arr-grid');
+      live = layer.querySelector('.cr-arr-live');
+      layer.addEventListener('click', (e) => {
+        if (e.target === layer || e.target.closest('.cr-arr-done')) close();
+        else if (e.target.closest('.cr-arr-reset')) { flip(() => grid.append(...defaults.map((id) => grid.querySelector(`[data-id="${id}"]`)).filter(Boolean))); save(order()); live.textContent = t('已恢复默认顺序', 'Default order restored'); }
+      });
+      layer.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+        if (e.key === 'Tab') { // keep focus inside the panel
+          const f = [...layer.querySelectorAll('button')], i = f.indexOf(document.activeElement);
+          if (e.shiftKey ? i <= 0 : i === f.length - 1) { e.preventDefault(); f[e.shiftKey ? f.length - 1 : 0].focus(); }
+          return;
+        }
+        const el = e.target.closest?.('.cr-arr-tile'), k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1, Home: -999, End: 999 }[e.key];
+        if (!el || !k) return;
+        e.preventDefault();
+        const kids = [...grid.children], i = kids.indexOf(el), j = Math.max(0, Math.min(kids.length - 1, i + k));
+        if (i === j) return;
+        flip(() => grid.insertBefore(el, j > i ? kids[j].nextSibling : kids[j]));
+        el.focus();
+        save(order());
+        say(el.dataset.id);
+      });
+      // Dragging: the list holds the pointer; the tile under it says where the lifted one goes. After a swap that
+      // tile is left alone until the pointer moves on, so tiles of different widths do not flip back and forth.
+      grid.addEventListener('pointerdown', (e) => {
+        const el = e.target.closest('.cr-arr-tile');
+        if (!el || e.button > 0) return;
+        e.preventDefault();
+        grid.setPointerCapture(e.pointerId);
+        drag = { tile: el, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, last: null };
+      });
+      grid.addEventListener('pointermove', (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        if (!drag.moved) {
+          if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 4) return;
+          drag.moved = true;
+          drag.tile.classList.add('lifted');
+          layer.classList.add('dragging');
+        }
+        const over = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.cr-arr-tile');
+        if (!over || over === drag.tile) { if (over) drag.last = null; return; }
+        if (over === drag.last) return;
+        const kids = [...grid.children], i = kids.indexOf(drag.tile), j = kids.indexOf(over);
+        flip(() => grid.insertBefore(drag.tile, j > i ? over.nextSibling : over));
+        drag.last = over;
+      });
+      const drop = (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const { tile: el, moved } = drag;
+        drag = null;
+        el.classList.remove('lifted');
+        layer.classList.remove('dragging');
+        if (moved) { save(order()); say(el.dataset.id); }
+        el.focus({ preventScroll: true });
+      };
+      grid.addEventListener('pointerup', drop);
+      grid.addEventListener('pointercancel', drop);
+    }
+    function open(id) {
+      if (!layer) build();
+      const current = nav.querySelector('.cr-links [aria-current]')?.dataset.id;
+      grid.replaceChildren(...items.map((a) => tile(a.dataset.id, current)));
+      back = document.activeElement;
+      setMenu(false);
+      layer.hidden = false;
+      requestAnimationFrame(() => layer.classList.add('open'));
+      (grid.querySelector(`[data-id="${id}"]`) || grid.firstElementChild).focus({ preventScroll: true });
+    }
+    function close() {
+      layer.classList.remove('open');
+      setTimeout(() => { layer.hidden = true; }, reduced() ? 0 : 200);
+      if (back && document.contains(back)) back.focus({ preventScroll: true });
+    }
+    return { open };
+  })();
+
+  // A long press (about half a second, without moving) on a module opens the panel instead of the page.
+  let press = null, pressed = false;
+  const cancelPress = () => { if (press) clearTimeout(press.timer); press = null; };
+  nav.addEventListener('pointerdown', (e) => {
+    pressed = false;
+    const a = e.target.closest('.cr-links a[data-id]:not(.cr-pro-link)');
+    if (!a || e.button > 0) return;
+    press = { x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse', timer: setTimeout(() => { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }, 520) };
+  });
+  nav.addEventListener('pointermove', (e) => { if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) cancelPress(); });
+  for (const type of ['pointerup', 'pointercancel', 'pointerleave', 'dragstart']) nav.addEventListener(type, cancelPress);
+  // the click that ends a long press must not also open the page
+  nav.addEventListener('click', (e) => { if (pressed) { pressed = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  // touch screens open their own link menu on a long press
+  nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest('a[data-id]')) e.preventDefault(); });
 
   // 主题：未手动选择时跟随系统；点击后在浅色 / 深色之间切换并记住。
   const root = document.documentElement;
@@ -166,6 +337,7 @@
     store.set(`molastria-${key}`, value === 1 || value === '' ? null : String(value));
     applyDisplay();
     renderDisplay();
+    placeDisplay();
   }
   function step(key, dir) {
     const list = DISPLAY[key], cur = display()[key];
@@ -206,6 +378,7 @@
       <p class="cr-disp-note" role="status" hidden></p>
       <div class="cr-disp-fonts" role="group" aria-label="${t('字体', 'Typeface')}"><b>${t('字体', 'Typeface')}</b>
         ${DISPLAY.fonts.map(([id, zh, e, stack]) => `<button type="button" data-font-id="${id}" aria-pressed="false"><span style='font-family:${stack}'>${t(zh, e)}</span><i style='font-family:${stack}'>Aa 计算化学</i></button>`).join('')}</div>
+      <div class="cr-disp-row cr-disp-arr-row"><div><b>${t('导航顺序', 'Navigation order')}</b><small>${t('把顶栏的入口排成你习惯的顺序；也可以长按任一入口', 'Put the header modules in your order; or press and hold any module')}</small></div><button type="button" class="cr-disp-arr">${t('调整', 'Arrange')}</button></div>
       <div class="cr-disp-foot">${desktopApp || homeScreenApp ? `<small>${t('快捷键：Ctrl / ⌘ 加 = − 0 调整界面缩放', 'Shortcuts: Ctrl / ⌘ with = − 0 change the interface scale')}</small>` : `<small>${t('设置保存在这台设备上，所有页面通用', 'Saved on this device for every page')}</small>`}<button type="button" class="cr-disp-reset">${t('恢复默认', 'Reset')}</button></div>`;
     document.body.append(dispPanel);
     dispPanel.addEventListener('click', (e) => {
@@ -214,6 +387,7 @@
       if (f) setDisplay('font', f.dataset.fontId);
       if (e.target.closest('.cr-disp-reset')) { for (const k of ['zoom', 'text', 'font']) store.set(`molastria-${k}`, null); applyDisplay(); renderDisplay(); }
       if (e.target.closest('.cr-disp-x')) closeDisplay(true);
+      if (e.target.closest('.cr-disp-arr')) { closeDisplay(); arrange.open(); }
     });
     for (const r of dispPanel.querySelectorAll('input[data-range]')) r.addEventListener('input', () => setDisplay(r.dataset.range, DISPLAY[r.dataset.range][Number(r.value)]));
     document.addEventListener('pointerdown', (e) => { if (dispPanel.dataset.open === 'true' && !dispPanel.contains(e.target) && !dispBtn.contains(e.target)) closeDisplay(); });
@@ -225,6 +399,11 @@
     const r = dispBtn.getBoundingClientRect(), z = parseFloat(root.style.zoom) || 1;
     dispPanel.style.top = `${Math.round(r.bottom / z + 8)}px`;
     dispPanel.style.right = `${Math.max(8, Math.round(innerWidth / z - r.right / z))}px`;
+    // Chrome multiplies the 100vh in the panel's max-height by the page zoom, so at 150 % it ran past the window:
+    // shrink it to what is left below the button (measured, so it holds whatever the engine does with vh).
+    dispPanel.style.maxHeight = '';
+    const pr = dispPanel.getBoundingClientRect();
+    if (pr.height && pr.bottom > innerHeight - 8) dispPanel.style.maxHeight = `${Math.max(160, Math.floor((dispPanel.offsetHeight * (innerHeight - 8 - pr.top)) / pr.height))}px`;
   }
   function openDisplay() {
     if (!dispPanel) buildDisplay();

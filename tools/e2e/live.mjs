@@ -32,14 +32,14 @@ check('desktop update feed matches the latest release', async () => {
   console.log(`     desktop ${latest.version}`);
 });
 
-check('weekly picks: the preview is public and has no comments, the full issue needs an account', async () => {
+check('weekly picks: the preview is public (at most five picks), the full issue needs an account', async () => {
   const r = await fetch(`${API}/digest/preview`);
   assert.equal(r.status, 200);
   const d = await r.json();
   assert.ok(Array.isArray(d.items));
-  assert.ok(d.items.every((it) => it.title && !it.why_zh && !it.why_en));
+  assert.ok(d.items.length <= 5 && d.items.every((it) => it.title));
   assert.equal((await fetch(`${API}/digest/latest`)).status, 401);
-  console.log(`     ${d.week || 'no issue yet'}, ${d.total} papers`);
+  console.log(`     ${d.week || 'no issue yet'}, ${d.total} papers${d.items.some((it) => it.why_zh) ? ', comments public' : ''}`);
 });
 
 let browser;

@@ -16,27 +16,28 @@ MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源�
 ```text
 public/               发布目录，推到 main 就上线
   index.html, app.js  统一搜索与收藏夹（?collection=saved，合并首页和数据库页两个收藏库）；search-terms.js 是中英术语表
-  shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗；新栏目在这里加导航
+  shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗；新栏目在这里加导航。长按入口（或 显示 → 调整导航顺序）打开玻璃面板拖动排序，存 molastria-nav-order，新加的入口排在它前一个入口后面
   backdrop.js         10 种背景和背景面板，含“徽标动画”开关（关时 html[data-logo-motion=off]，切换时派发 window 事件 molastria:logo-motion）
-  assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}（以徽章为中心裁切的 256 px 正方形）；片头 intro.mp4 + intro-end.webp，下载页和 AI 面板共用（ffmpeg 转码的小文件，原片不进仓库）
+  assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}（以徽章为中心裁切的 256 px 正方形）；片头 intro.mp4 + intro-end.webp，只有下载页用（AI 面板改成了吉祥物进场动画）（ffmpeg 转码的小文件，原片不进仓库）
   sw.js, offline.html, manifest.webmanifest   可添加到主屏幕（PWA）：sw.js 离线保存看过的页面，由 shared-nav.js 注册（桌面版、单文件版、本地文件和 localhost 不注册）；各页的 PWA 头部标签和 sw.js 版本号由 build-seo.ts 在发布时写入，仓库里的 sw.js 保持 VERSION = 'dev'
   assets/pwa/         主屏幕和安装用的图标（按 favicon.svg 图案生成的新文件）
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
-  ai/ai.js            AI 助手：服务商、托管额度、可拖宽窗口；面板从关到开时播片头（随时可跳过，播不了就淡出）
+  ai/ai.js            AI 助手：服务商、托管额度（只有 DeepSeek V4 Flash）、可拖宽窗口；六个吉祥物（MASCOTS，点顶部头像换，存 molastria-ai-mascot），面板从关到开时吉祥物进场 5 秒（纯 CSS，可跳过；选吉祥物的面板里能关，存 molastria-ai-intro）
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
+  digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和前五篇带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
-  radar/              预印本雷达外层页面；app/ 是复制来的，不要手改
+  radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   qchem/              游乐场（地址仍是 /qchem/）：六个小游戏 play.js，物理是纯函数 play-models.js；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
-desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口
+desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口；src/notify.rs 把页面的通知（预印本雷达）转成系统通知；Mac 上 window.print() 改走 print_page 命令（WKWebView 自己不打印）
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试

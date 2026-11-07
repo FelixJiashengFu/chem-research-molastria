@@ -1,8 +1,9 @@
 // MolAstria desktop: serves the site (public/, staged into desktop/web/ by stage-web.mjs) from inside the app, opens outside links in the system browser,
 // installs signed updates published on GitHub Releases, runs UMA with the user's own Python (uma.rs),
-// and sends every download through the system Save dialog (save.rs).
+// sends every download through the system Save dialog (save.rs), and turns page notifications into system ones (notify.rs).
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod notify;
 mod save;
 mod uma;
 
@@ -32,6 +33,8 @@ const INIT_SCRIPT: &str = r#"
     const url = external(a.getAttribute('href'));
     if (url) { e.preventDefault(); openOutside(url); }
   }, true);
+  // macOS: WKWebView ignores window.print(), so print buttons (the handbook's 打印当前章节) open the system dialog through the app.
+  if (/Macintosh|Mac OS X/.test(navigator.userAgent)) window.print = () => { window.__TAURI_INTERNALS__.invoke('print_page').catch(() => {}); };
   const nativeOpen = window.open;
   window.open = function (href, ...rest) {
     const url = href ? external(String(href)) : null;
@@ -110,12 +113,19 @@ fn set_zoom(window: tauri::WebviewWindow, value: f64) -> Result<(), String> {
     window.set_zoom(value.clamp(0.5, 2.0)).map_err(|e| e.to_string())
 }
 
+/// Opens the system print dialog for the page (macOS: the WebView itself ignores window.print()).
+#[tauri::command]
+fn print_page(window: tauri::WebviewWindow) -> Result<(), String> {
+    window.print().map_err(|e| e.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         // Used from Rust only (save.rs); pages get no dialog permission in capabilities/default.json.
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .manage(PendingUpdate::default())
         .manage(Progress::default())
         .manage(uma::Uma::default())
@@ -125,6 +135,7 @@ fn main() {
             install_update,
             update_progress,
             set_zoom,
+            print_page,
             uma::uma_find,
             uma::uma_inspect,
             uma::uma_start,
@@ -141,6 +152,8 @@ fn main() {
                 .initialization_script(INIT_SCRIPT)
                 // All frames: the quantum-chemistry and preprint-radar pages save files from inside an iframe.
                 .initialization_script_for_all_frames(save::SCRIPT)
+                // All frames: the preprint radar notifies from inside its iframe.
+                .initialization_script_for_all_frames(notify::SCRIPT)
                 .build()?;
             Ok(())
         })

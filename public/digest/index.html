@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 每周精选：每周一从 ChemRxiv、arXiv 化学物理和 JCTC、JCP、PCCP、JPCL 的新论文里，挑出值得计算化学与分子模拟研究者读的十篇左右，每篇一句解读。前五篇和点评对所有人公开，完整一期和邮件推送是 Pro 功能。">
+  <meta name="theme-color" content="#173f34">
+  <title>每周精选 · 计算化学新论文与一句话解读 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="digest.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="digest.js" defer></script>
+</head>
+<body data-section="digest">
+<main class="dg">
+  <header class="dg-mast">
+    <p class="dg-eyebrow">MOLASTRIA · WEEKLY PICKS</p>
+    <h1>每周精选<span lang="en" translate="no">Weekly Picks</span></h1>
+    <p class="dg-lead">每周一，从计算化学的新论文里挑出值得读的十篇左右，每篇配一句解读。泡一杯茶，用五分钟看看这一周发生了什么。</p>
+    <p class="dg-issue" id="dg-issue" aria-live="polite"></p>
+  </header>
+
+  <section class="dg-letter" id="dg-letter" aria-labelledby="dg-picks-h" hidden>
+    <p class="dg-overview" id="dg-overview" translate="no"></p>
+    <h2 id="dg-picks-h" class="dg-h2">本周前五篇</h2>
+    <ol class="dg-picks" id="dg-picks"></ol>
+    <div class="dg-more" id="dg-more"></div>
+  </section>
+
+  <section class="dg-waiting" id="dg-waiting" hidden>
+    <p class="dg-waiting-mark" aria-hidden="true">✦</p>
+    <h2>这一期还在路上</h2>
+    <p id="dg-waiting-text">每周一更新。新的一期出来后，这里会第一时间换上。</p>
+  </section>
+
+  <section class="dg-how" aria-labelledby="dg-how-h">
+    <h2 id="dg-how-h" class="dg-h2">它是怎么来的</h2>
+    <ol class="dg-steps">
+      <li><b>每周一取最近七天的新论文</b><span>ChemRxiv 上与计算化学最相关的二十篇，arXiv 化学物理（physics.chem-ph）最新的二十篇，以及 JCTC、JCP、PCCP、JPCL 四本期刊最新的二十篇。</span></li>
+      <li><b>由 AI 像期刊编辑一样挑选</b><span>DeepSeek 只读标题和摘要，选出十篇左右最值得计算化学与分子模拟研究者读的，每篇写一句做了什么、为什么值得看，不许编造数值和结论。</span></li>
+      <li><b>链接永远来自原始记录</b><span>每篇都直接链到论文本身；解读只是帮你决定先读哪一篇，结论请以原文为准。</span></li>
+    </ol>
+  </section>
+
+  <section class="dg-pro" aria-labelledby="dg-pro-h">
+    <h2 id="dg-pro-h">完整的一期，每周一送到邮箱</h2>
+    <p>前五篇和点评对所有人公开。完整的十篇左右和中英文邮件推送是 MolAstria Pro 的功能，在账号页一键订阅，随时可以退订。</p>
+    <div class="dg-actions" id="dg-actions"><a class="dg-btn primary" href="../pro/index.html">了解 Pro <i class="ico-ext ico-right" aria-hidden="true"></i></a><a class="dg-btn" href="../pro/account.html">去账号页</a></div>
+  </section>
+</main>
+</body>
+</html>

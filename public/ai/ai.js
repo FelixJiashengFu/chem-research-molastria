@@ -72,6 +72,22 @@
   // ── settings ────────────────────────────────────────────────────────────
   const STORE = 'chemhub-ai';
   const safe = (fn, fallback) => { try { return fn(); } catch { return fallback; } };
+
+  // ── Mascots: the assistant's face in the header, the welcome card and above every answer. The header one is a
+  //    button that opens a picker; the choice is kept in molastria-ai-mascot. 星环 (the site's emblem) is the classic.
+  const MASCOT_KEY = 'molastria-ai-mascot';
+  const MASCOTS = [
+    { id: 'astra', zh: '星环', en: 'Astra', note: ['经典', 'Classic'], svg: '<ellipse class="mz-s mz-thin" cx="19" cy="21" rx="15" ry="5.6" transform="rotate(-28 19 21)"/><path class="mz-s" d="M19 11.2 27.5 16.1v9.8L19 30.8l-8.5-4.9v-9.8Z"/><circle class="mz-s mz-thin" cx="19" cy="21" r="4.9"/><path class="mz-solid" d="M30.6 4.2c.5 3 1.6 4.1 4.6 4.6-3 .5-4.1 1.6-4.6 4.6-.5-3-1.6-4.1-4.6-4.6 3-.5 4.1-1.6 4.6-4.6Z"/><circle class="mz-solid" cx="5.6" cy="26.2" r="1.3"/>' },
+    { id: 'benzo', zh: '苯苯', en: 'Benzo', note: ['苯环', 'Benzene ring'], svg: '<path class="mz-soft" d="M20 5 33 12.5v15L20 35 7 27.5v-15Z"/><path class="mz-s" d="M20 5 33 12.5v15L20 35 7 27.5v-15Z"/><circle class="mz-ink" cx="15.2" cy="19" r="2"/><circle class="mz-ink" cx="24.8" cy="19" r="2"/><circle class="mz-shine" cx="15.9" cy="18.2" r=".6"/><circle class="mz-shine" cx="25.5" cy="18.2" r=".6"/><path class="mz-s mz-thin" d="M16.6 24.2q3.4 2.9 6.8 0"/><circle class="mz-blush" cx="11.8" cy="23.4" r="1.9"/><circle class="mz-blush" cx="28.2" cy="23.4" r="1.9"/>' },
+    { id: 'electra', zh: '小电子', en: 'Electra', note: ['原子', 'Atom'], svg: '<ellipse class="mz-s mz-thin" cx="20" cy="20" rx="16.5" ry="6.2" transform="rotate(32 20 20)"/><ellipse class="mz-s mz-thin" cx="20" cy="20" rx="16.5" ry="6.2" transform="rotate(-32 20 20)"/><circle class="mz-solid" cx="20" cy="20" r="8.2"/><circle class="mz-eye" cx="17.3" cy="19.2" r="1.45"/><circle class="mz-eye" cx="22.7" cy="19.2" r="1.45"/><path class="mz-mouth" d="M17.7 22.5q2.3 1.9 4.6 0"/><circle class="mz-solid" cx="33.6" cy="10.8" r="1.7"/><circle class="mz-solid" cx="7" cy="30.4" r="1.2"/>' },
+    { id: 'flasky', zh: '烧瓶', en: 'Flasky', note: ['实验', 'Lab'], svg: '<path class="mz-soft" d="M12.8 23h14.4l3.3 6a3.5 3.5 0 0 1-3 5.2h-15a3.5 3.5 0 0 1-3-5.2Z"/><path class="mz-s" d="M15.6 5.6h8.8M17.5 5.6v8.9L9.5 29a3.5 3.5 0 0 0 3 5.2h15a3.5 3.5 0 0 0 3-5.2l-8-14.5V5.6"/><circle class="mz-ink" cx="16.4" cy="27.6" r="1.6"/><circle class="mz-ink" cx="23.6" cy="27.6" r="1.6"/><path class="mz-s mz-thin" d="M18.2 30.4q1.8 1.5 3.6 0"/><circle class="mz-s mz-thin" cx="21.4" cy="18.6" r="1.4"/><circle class="mz-solid" cx="18.6" cy="14.6" r=".9"/>' },
+    { id: 'aqua', zh: '水分子', en: 'Aqua', note: ['H₂O', 'H₂O'], svg: '<path class="mz-s" d="M13.4 16.4 10.6 12.8M26.6 16.4l2.8-3.6"/><circle class="mz-solid" cx="9.2" cy="10.6" r="4.2"/><circle class="mz-solid" cx="30.8" cy="10.6" r="4.2"/><circle class="mz-soft" cx="20" cy="23.5" r="10.5"/><circle class="mz-s" cx="20" cy="23.5" r="10.5"/><circle class="mz-ink" cx="16.4" cy="22.6" r="1.8"/><circle class="mz-ink" cx="23.6" cy="22.6" r="1.8"/><circle class="mz-shine" cx="17" cy="21.9" r=".55"/><circle class="mz-shine" cx="24.2" cy="21.9" r=".55"/><path class="mz-s mz-thin" d="M17.4 27.2q2.6 2.2 5.2 0"/>' },
+    { id: 'owl', zh: '猫头鹰博士', en: 'Dr. Owl', note: ['博学', 'Scholar'], svg: '<path class="mz-soft" d="M8 12 7 5.5l6.5 3.5Q20 6.6 26.5 9L33 5.5 32 12q2.5 4 2.5 9 0 13-14.5 13T5.5 21q0-5 2.5-9Z"/><path class="mz-s" d="M8 12 7 5.5l6.5 3.5Q20 6.6 26.5 9L33 5.5 32 12q2.5 4 2.5 9 0 13-14.5 13T5.5 21q0-5 2.5-9Z"/><path class="mz-s mz-thin" d="M14.5 14.4l4 2.3v4.6l-4 2.3-4-2.3v-4.6ZM25.5 14.4l4 2.3v4.6l-4 2.3-4-2.3v-4.6ZM18.5 19h3"/><circle class="mz-ink" cx="14.5" cy="19" r="1.8"/><circle class="mz-ink" cx="25.5" cy="19" r="1.8"/><path class="mz-solid" d="M20 24 18.4 26.2 20 28.3l1.6-2.1Z"/>' },
+  ];
+  let mascot = safe(() => localStorage.getItem(MASCOT_KEY)) || 'astra';
+  const mascotOf = (id = mascot) => MASCOTS.find((m) => m.id === id) || MASCOTS[0];
+  const mascotSvg = (id) => `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">${mascotOf(id).svg}</svg>`;
+  const orb = () => `<span class="cai-orb" data-mascot="${mascotOf().id}" aria-hidden="true">${mascotSvg()}</span>`;
   // Hosted quota for signed-in Pro accounts; follows sign-in and sign-out without a reload.
   const proToken = () => safe(() => localStorage.getItem('molastria-session'), '') || '';
   const proAccount = () => (proToken() ? safe(() => JSON.parse(localStorage.getItem('molastria-account') || 'null'), null) : null);
@@ -80,7 +96,7 @@
     if (!a?.pro || !a.api) { delete PROVIDERS.hosted; return; }
     const names = Object.fromEntries([...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models]);
     // An account cached before the service reported its models falls back to the service's own default list.
-    const ids = a.models?.length ? a.models : ['deepseek-flash', 'deepseek-v4-pro'];
+    const ids = a.models?.length ? a.models : ['deepseek-flash'];
     const HOSTED_LABEL = { 'deepseek-v4-pro': 'DeepSeek V4 Pro · 深度推理（每次计 3 次额度）' };
     const models = ids.map((id) => [id, HOSTED_LABEL[id] || names[id] || id]);
     PROVIDERS.hosted = { label: 'MolAstria Pro', base: `${a.api}/ai/chat`, models, efforts: ['off', 'low', 'high'], json: models.every(([id]) => id.startsWith('deepseek')), proxy: true, hosted: true, usage: a.usage };
@@ -130,7 +146,12 @@
     document.dispatchEvent(new Event('chemhub:ai-config'));
   }
   const isReady = (s = settings()) => !!PROVIDERS[s.provider]?.proxy || (!!keyFor(s) && (s.provider !== 'custom' || (!!s.customBase && !!s.models.custom)));
-  const modelOf = (s) => s.models[s.provider] || PROVIDERS[s.provider].models[0]?.[0] || '';
+  // A saved hosted model the quota no longer offers falls back to the first one it does (the service would switch it anyway).
+  const modelOf = (s) => {
+    const p = PROVIDERS[s.provider], m = s.models[s.provider];
+    if (p.hosted && p.models.length && !p.models.some(([id]) => id === m)) return p.models[0][0];
+    return m || p.models[0]?.[0] || '';
+  };
   function priceOf(model) {
     for (const p of Object.values(PROVIDERS)) if (p.prices?.[model]) return p.prices[model];
     return null;
@@ -431,7 +452,40 @@
 .cai-msg.bot pre code{background:none;padding:0}
 .cai-msg.bot a{color:var(--accent-text)}
 .cai-who{font-size:11.5px;color:var(--faint);margin:0 0 6px 1px;display:flex;gap:7px;align-items:center}
-.cai-who .cai-orb{width:20px;height:20px;border-radius:7px;font-size:10px}
+.cai-who .cai-orb{width:22px;height:22px;border-radius:7px;font-size:10px}
+.cai-orb svg{width:82%;height:82%;overflow:visible}
+.cai-orb .mz-s{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cai-orb .mz-thin{stroke-width:1.4}
+.cai-orb .mz-soft{fill:currentColor;opacity:.2}
+.cai-orb .mz-solid{fill:currentColor}
+.cai-orb .mz-ink{fill:var(--ink)}
+.cai-orb .mz-shine{fill:var(--surface)}
+.cai-orb .mz-eye{fill:var(--surface)}
+.cai-orb .mz-mouth{fill:none;stroke:var(--surface);stroke-width:1.4;stroke-linecap:round}
+.cai-orb .mz-blush{fill:var(--danger);opacity:.3}
+.cai-orb-btn{padding:0;border:0;cursor:pointer;transition:transform .2s cubic-bezier(.2,.9,.25,1.2),box-shadow .2s}
+.cai-orb-btn:hover{transform:scale(1.06) rotate(-3deg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 45%,transparent)}
+.cai-orb-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.cai-head{position:relative}
+.cai-mascots{position:absolute;left:14px;top:calc(100% - 4px);z-index:5;width:min(330px,calc(100% - 28px));padding:12px;border:1px solid var(--line-strong);border-radius:16px;background:var(--surface);box-shadow:var(--shadow),0 18px 40px -18px rgb(0 0 0/.35);animation:cai-pop .18s ease-out}
+@keyframes cai-pop{from{opacity:0;transform:translateY(-4px) scale(.98)}}
+.cai-mascots-h{margin:0 2px 10px;font-size:12.5px;color:var(--muted)}
+.cai-mascots-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cai-mascots-grid button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 8px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;font:inherit}
+.cai-mascots-grid button:hover{border-color:var(--accent-2)}
+.cai-mascots-grid button[aria-checked=true]{border-color:var(--gold);background:var(--gold-soft)}
+.cai-mascots-grid button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.cai-mascots-grid .cai-orb{width:40px;height:40px;border-radius:13px}
+.cai-mascots-grid b{font-size:12.5px;font-weight:600}
+.cai-mascots-grid small{font-size:11px;color:var(--muted)}
+.cai-intro-row{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.cai-intro-row label{flex:1;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.cai-intro-row input{width:16px;height:16px;accent-color:var(--accent)}
+.cai-intro-row button{min-height:30px;padding:0 12px;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);color:var(--ink);font:500 12px/1 var(--font-sans);cursor:pointer}
+.cai-intro-row button:hover{border-color:var(--accent-2)}
+.cai-name{font-family:"Snell Roundhand","Apple Chancery","Segoe Script","Brush Script MT","URW Chancery L",cursive;font-size:16px;line-height:1;color:var(--ink-2);letter-spacing:.01em}
+@media (prefers-reduced-motion:reduce){.cai-orb-btn,.cai-mascots{transition:none;animation:none}}
+.cai-film[hidden]{display:none}
 .cai-cite{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;margin:0 1px;border-radius:9px;background:var(--accent-soft);color:var(--accent-text)!important;font-size:10.5px;font-weight:700;text-decoration:none;vertical-align:2px}
 .cai-cite:hover{background:var(--accent);color:var(--accent-ink)!important}
 .cai-think{font-size:12px;color:var(--muted);border-left:2px solid var(--line-strong);border-radius:1px;padding-left:10px;margin-bottom:10px}
@@ -469,11 +523,22 @@
 .cai-stop{flex:none;height:32px;margin-bottom:2px;padding:0 13px;border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);border-radius:999px;background:transparent;color:var(--danger);font:600 12px/1 var(--font-sans);cursor:pointer}
 .cai-stop:hover{background:color-mix(in srgb,var(--danger) 8%,transparent)}
 .cai-drawer .cai-btn{border-radius:10px}
-.cai-film{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;background:#082d21;cursor:pointer;transition:opacity .45s ease}
+.cai-film{position:absolute;inset:0;z-index:2;display:grid;place-items:center;overflow:hidden;cursor:pointer;background:radial-gradient(120% 80% at 50% 42%,var(--gold-soft),var(--paper) 74%);transition:opacity .45s ease}
+.cai-stage{position:relative;width:280px;height:320px;display:grid;place-items:center}
+.cai-film .cai-hero{width:132px;height:132px;border-radius:40px;font-size:40px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 30%,transparent),0 18px 40px -16px color-mix(in srgb,var(--gold) 55%,transparent);animation:cai-hop 5s cubic-bezier(.3,.7,.3,1) both}
+.cai-floor{position:absolute;left:50%;top:calc(50% + 80px);width:112px;height:16px;margin-left:-56px;border-radius:50%;background:radial-gradient(closest-side,rgb(0 0 0/.22),transparent);animation:cai-floor 5s cubic-bezier(.3,.7,.3,1) both}
+.cai-star{position:absolute;left:50%;top:44%;width:14px;height:14px;margin:-7px;background:var(--gold);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);opacity:0;animation:cai-star 5s ease-out both}
+.cai-star.s1{--x:-100px;--y:-74px}.cai-star.s2{--x:96px;--y:-86px;width:18px;height:18px;margin:-9px}.cai-star.s3{--x:-118px;--y:18px;width:10px;height:10px;margin:-5px}.cai-star.s4{--x:112px;--y:10px}.cai-star.s5{--x:-56px;--y:-124px;width:10px;height:10px;margin:-5px}.cai-star.s6{--x:60px;--y:-128px;width:12px;height:12px;margin:-6px}
+.cai-hello{position:absolute;left:0;right:0;bottom:0;margin:0;text-align:center;opacity:0;animation:cai-hello 5s ease-out both}
+.cai-hello .cai-name{font-size:32px;color:var(--ink)}
+.cai-hello small{display:block;margin-top:8px;font-size:13px;color:var(--ink-2)}
+.cai-skip{position:absolute;right:16px;bottom:max(14px,env(safe-area-inset-bottom));font-size:11.5px;color:var(--muted)}
+/* hop in three times (squash on landing), spin once, then tilt into a pose */
+@keyframes cai-hop{0%{transform:translate(-170px,40px) scale(.5) rotate(-24deg);opacity:0}8%{transform:translate(-96px,-74px) scale(.78) rotate(-10deg);opacity:1}14%{transform:translate(-44px,0) scale(1.07,.86)}20%{transform:translate(-14px,-62px) scale(.95,1.06)}26%{transform:translate(8px,0) scale(1.07,.88)}31%{transform:translate(14px,-34px) scale(.97,1.04)}36%{transform:translate(0,0) scale(1.05,.93)}41%{transform:translate(0,0) scale(1)}45%{transform:translate(0,-28px) rotate(0)}61%{transform:translate(0,-28px) rotate(360deg)}67%{transform:translate(0,0) scale(1.07,.9) rotate(360deg)}73%,100%{transform:translate(0,0) scale(1.08) rotate(352deg)}}
+@keyframes cai-floor{0%{opacity:0;transform:translateX(-170px) scale(.4)}8%{opacity:.5;transform:translateX(-96px) scale(.5)}14%{opacity:1;transform:translateX(-44px) scale(1.1)}20%{transform:translateX(-14px) scale(.6)}26%{transform:translateX(8px) scale(1.1)}31%{transform:translateX(14px) scale(.78)}36%,41%{transform:translateX(0) scale(1.06)}45%,61%{transform:scale(.74)}67%{transform:scale(1.12)}73%,100%{opacity:1;transform:scale(1)}}
+@keyframes cai-star{0%,66%{opacity:0;transform:translate(0,0) scale(.2)}74%{opacity:1;transform:translate(var(--x),var(--y)) scale(1) rotate(30deg)}90%{opacity:1;transform:translate(var(--x),var(--y)) scale(.9) rotate(70deg)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.6) rotate(90deg)}}
+@keyframes cai-hello{0%,70%{opacity:0;transform:translateY(10px)}80%,100%{opacity:1;transform:none}}
 .cai-film[data-state=out]{opacity:0;pointer-events:none}
-.cai-film video{display:block;width:100%;height:auto;max-height:100%;object-fit:contain;opacity:0;transition:opacity .3s ease;-webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.cai-film[data-frame] video{opacity:1}
-.cai-film span{position:absolute;right:16px;bottom:max(14px,env(safe-area-inset-bottom));font-size:11.5px;color:rgb(214 245 228/.62)}
 .cai-btn{font:600 12.5px/1 var(--font-sans);height:34px;padding:0 14px;border-radius:4px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .cai-btn:hover{background:var(--surface-2)}
 .cai-btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -530,7 +595,7 @@
     dialog.innerHTML = `<form method="dialog" novalidate>
       <div><h2 id="cai-settings-title">AI 设置</h2></div>
       <p class="cai-note" data-note="own">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
-      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次问答计 1 次，每月 1 日重置；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
+      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次，每月 1 日重置；AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
       <fieldset class="cai-prov" style="border:0;padding:0;margin:0"><legend class="cai-field" style="margin-bottom:6px">服务商</legend>${providerCards}</fieldset>
       <div class="cai-two">
         <label class="cai-field">模型<select name="model"></select></label>
@@ -625,7 +690,7 @@
       // With a Pro account a provider without a key would quietly fall back to the hosted quota on the next read
       // (see settings()), which looks like the switch did nothing: say so instead of saving.
       if (PROVIDERS.hosted && !PROVIDERS[s.provider].proxy && s.provider !== 'custom' && !keys[s.provider] && !keyFor(s)) {
-        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度里可以选 V4 Flash 或 V4 Pro。`, 'err');
+        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度使用 V4 Flash。`, 'err');
         f.key.focus();
         return;
       }
@@ -666,64 +731,41 @@
     go: '<path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/>'
   };
 
-  // ── intro film ──────────────────────────────────────────────────────────
-  // The logo film (assets/brand/intro.mp4: silent, 960×540, 10 s) plays once over the panel each time it opens, then
-  // fades out to reveal it. A click on it, Esc or any key typed in the panel skips it. It is first fetched on the first
-  // open. It is not shown under reduced motion, with the logo-animation switch off (backdrop.js sets
-  // html[data-logo-motion=off]; pages without backdrop.js read the stored value), in the single-file build, or in the
-  // desktop app's tauri:// pages (macOS / Linux WebKit), which cannot stream video because that protocol has no Range
-  // support. A load error, a refused play(), no frame within FILM_START_MS or a stall of FILM_STALL_MS drops it at once
-  // and for the rest of the page's life, so a broken path never shows an empty overlay twice.
-  const FILM_START_MS = 1500, FILM_STALL_MS = 2500, FILM_MAX_MS = 14000;
-  let film = null, filmBroken = false;
-  const filmAllowed = () => !filmBroken && !window.__CHEM_LOCATION__ && location.protocol !== 'tauri:'
-    && !matchMedia('(prefers-reduced-motion: reduce)').matches
+  // ── entrance ────────────────────────────────────────────────────────────
+  // Each time the panel opens, the chosen mascot hops in, spins once and strikes a pose (5 s, CSS animation only, so it
+  // also plays in the desktop app and the single-file build), then fades to reveal the panel. A click on it, Esc or any
+  // key typed in the panel skips it. It is off under reduced motion, with the logo-animation switch off (backdrop.js sets
+  // html[data-logo-motion=off]; pages without backdrop.js read the stored value), or with 进场动画 off in the mascot picker.
+  const INTRO_KEY = 'molastria-ai-intro', FILM_MS = 5000;
+  let film = null;
+  const introOn = () => safe(() => localStorage.getItem(INTRO_KEY), null) !== 'off';
+  const filmAllowed = () => introOn() && !matchMedia('(prefers-reduced-motion: reduce)').matches
     && document.documentElement.dataset.logoMotion !== 'off'
     && safe(() => localStorage.getItem('chemhub-logo-motion'), null) !== 'off';
-  function playFilm() {
-    if (film || !filmAllowed()) return;
+  function playFilm(force = false) {
+    if (film || (!force && !filmAllowed())) return;
     let el = drawer.querySelector('.cai-film');
     if (!el) {
       el = document.createElement('div');
       el.className = 'cai-film';
       el.setAttribute('aria-hidden', 'true');
-      el.hidden = true;
-      el.innerHTML = '<video muted playsinline preload="auto" disablepictureinpicture disableremoteplayback tabindex="-1"></video><span>点击或按 Esc 跳过</span>';
       el.addEventListener('pointerdown', () => endFilm());
       drawer.append(el);
     }
-    const v = el.querySelector('video');
-    v.muted = true;
-    const timers = [];
-    let started = false, stall = 0;
-    const fail = () => { if (film === run) { filmBroken = true; endFilm(); } };
-    const on = {
-      playing: () => { started = true; clearTimeout(stall); el.dataset.frame = ''; },
-      waiting: () => { clearTimeout(stall); stall = setTimeout(fail, FILM_STALL_MS); },
-      ended: () => { if (film === run) endFilm(); },
-      error: fail
-    };
-    const run = film = {
-      el, v,
-      stop: () => { timers.forEach(clearTimeout); clearTimeout(stall); for (const [k, f] of Object.entries(on)) v.removeEventListener(k, f); }
-    };
-    for (const [k, f] of Object.entries(on)) v.addEventListener(k, f);
-    timers.push(setTimeout(() => { if (!started) fail(); }, FILM_START_MS), setTimeout(() => { if (film === run) endFilm(); }, FILM_MAX_MS));
-    delete el.dataset.frame;
+    const m = mascotOf(), en = document.documentElement.lang === 'en';
+    // a fresh copy each time restarts every animation
+    el.innerHTML = `<div class="cai-stage" translate="no"><i class="cai-floor"></i>${[1, 2, 3, 4, 5, 6].map((n) => `<i class="cai-star s${n}"></i>`).join('')}<span class="cai-orb cai-hero" data-mascot="${m.id}">${mascotSvg()}</span><p class="cai-hello"><span class="cai-name">MolAstria</span><small>${en ? `${m.en} is here to help` : `${m.zh}来陪你做研究了`}</small></p></div><span class="cai-skip" translate="no">${en ? 'Click or press Esc to skip' : '点击或按 Esc 跳过'}</span>`;
     el.dataset.state = 'play';
     el.hidden = false;
-    v.pause(); // a reopen during the previous fade-out: play() from paused fires a fresh 'playing'
-    if (v.getAttribute('src')) v.currentTime = 0; else v.src = link('assets/brand/intro.mp4');
-    const p = v.play();
-    if (p) p.catch(fail); // autoplay refused or format unsupported; a pause() from endFilm leaves film !== run
+    const run = film = { el, timer: setTimeout(() => { if (film === run) endFilm(); }, FILM_MS - 450) };
   }
   function endFilm() {
     const f = film;
     if (!f) return;
     film = null;
-    f.stop();
+    clearTimeout(f.timer);
     f.el.dataset.state = 'out';
-    setTimeout(() => { if (film) return; f.el.hidden = true; delete f.el.dataset.frame; f.v.pause(); }, 480);
+    setTimeout(() => { if (!film) { f.el.hidden = true; f.el.innerHTML = ''; } }, 480);
   }
 
   function buildDrawer() {
@@ -733,7 +775,7 @@
     drawer.setAttribute('role', 'dialog');
     drawer.setAttribute('aria-modal', 'false');
     drawer.setAttribute('aria-labelledby', 'cai-title');
-    drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><span class="cai-orb" aria-hidden="true">✦</span><div class="cai-id"><h2 id="cai-title">AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"><span></span>${svgIcon(ICON.caret, 14)}</button></div><div class="cai-tools"><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">${svgIcon(ICON.reset)}</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">${svgIcon(ICON.tune)}</button><button type="button" class="cai-ib" data-act="close" title="关闭" aria-label="关闭">${svgIcon(ICON.close)}</button></div></div>
+    drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><button type="button" class="cai-orb cai-orb-btn" data-act="mascot" data-mascot="${mascotOf().id}" aria-haspopup="true" aria-expanded="false" title="更换助手的形象" aria-label="更换助手的形象">${mascotSvg()}</button><div class="cai-mascots" role="menu" aria-label="选择助手的形象" hidden translate="no"></div><div class="cai-id"><h2 id="cai-title">AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"><span></span>${svgIcon(ICON.caret, 14)}</button></div><div class="cai-tools"><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">${svgIcon(ICON.reset)}</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">${svgIcon(ICON.tune)}</button><button type="button" class="cai-ib" data-act="close" title="关闭" aria-label="关闭">${svgIcon(ICON.close)}</button></div></div>
       <div class="cai-modes" role="tablist" aria-label="提问方式"><button type="button" role="tab" data-mode="catalog">问目录（带出处）</button><button type="button" role="tab" data-mode="free">自由提问</button></div>
       <div class="cai-log" aria-live="polite"></div>
       <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行"></textarea><div class="cai-row"><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
@@ -745,6 +787,7 @@
     drawer.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'close') closeDrawer();
+      else if (act === 'mascot') toggleMascots();
       else if (act === 'settings') openSettings();
       else if (act === 'stop') busy?.abort();
       else if (act === 'clear') { history[mode] = []; persist(); renderLog(); }
@@ -752,6 +795,21 @@
       if (m) { mode = m; renderLog(); }
       const sug = e.target.closest('[data-sug]');
       if (sug) ask(sug.dataset.sug);
+      const pick = e.target.closest('[data-mascot-pick]');
+      if (pick) chooseMascot(pick.dataset.mascotPick);
+      else if (e.target.closest('[data-intro-play]')) { toggleMascots(false); playFilm(true); }
+      else if (act !== 'mascot' && !e.target.closest('.cai-mascots')) toggleMascots(false);
+    });
+    drawer.addEventListener('change', (e) => {
+      if (e.target.matches?.('[data-intro-toggle]')) safe(() => (e.target.checked ? localStorage.removeItem(INTRO_KEY) : localStorage.setItem(INTRO_KEY, 'off')));
+    });
+    drawer.addEventListener('keydown', (e) => {
+      const menu = drawer.querySelector('.cai-mascots');
+      if (menu.hidden) return;
+      if (e.key === 'Escape') { e.stopPropagation(); toggleMascots(false); drawer.querySelector('.cai-orb-btn').focus(); return; }
+      const opts = [...menu.querySelectorAll('[data-mascot-pick]')], i = opts.indexOf(document.activeElement);
+      const k = { ArrowRight: 1, ArrowDown: 3, ArrowLeft: -1, ArrowUp: -3 }[e.key];
+      if (k && i >= 0) { e.preventDefault(); opts[(i + k + opts.length) % opts.length].focus(); }
     });
     const input = drawer.querySelector('textarea');
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); drawer.querySelector('form').requestSubmit(); } });
@@ -759,6 +817,26 @@
     drawer.querySelector('form').addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (q) { input.value = ''; input.style.height = ''; ask(q); } });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) { if (film) endFilm(); else closeDrawer(); } });
     document.addEventListener('chemhub:ai-config', refreshDrawer);
+  }
+  function toggleMascots(open) {
+    const menu = drawer?.querySelector('.cai-mascots'), btn = drawer?.querySelector('.cai-orb-btn');
+    if (!menu) return;
+    const show = open ?? menu.hidden;
+    if (show) {
+      const en = document.documentElement.lang === 'en';
+      menu.innerHTML = `<p class="cai-mascots-h">${en ? 'Who keeps you company?' : '选一位陪你做研究的伙伴'}</p><div class="cai-mascots-grid">${MASCOTS.map((m) => `<button type="button" role="menuitemradio" aria-checked="${m.id === mascot}" data-mascot-pick="${m.id}"><span class="cai-orb" data-mascot="${m.id}" aria-hidden="true">${mascotSvg(m.id)}</span><b>${en ? m.en : m.zh}</b><small>${m.note[en ? 1 : 0]}</small></button>`).join('')}</div><div class="cai-intro-row"><label><input type="checkbox" data-intro-toggle ${introOn() ? 'checked' : ''}><span>${en ? 'Entrance animation when the panel opens' : '打开面板时的进场动画'}</span></label><button type="button" data-intro-play>${en ? 'Play once' : '看一遍'}</button></div>`;
+    }
+    menu.hidden = !show;
+    btn?.setAttribute('aria-expanded', String(show));
+    if (show) (menu.querySelector('[aria-checked=true]') || menu.querySelector('button')).focus({ preventScroll: true });
+  }
+  function chooseMascot(id) {
+    mascot = mascotOf(id).id;
+    safe(() => (mascot === 'astra' ? localStorage.removeItem(MASCOT_KEY) : localStorage.setItem(MASCOT_KEY, mascot)));
+    // every face in the panel changes at once
+    for (const el of drawer.querySelectorAll('.cai-orb:not(.cai-mascots .cai-orb)')) { el.dataset.mascot = mascot; el.innerHTML = mascotSvg(); }
+    toggleMascots(false);
+    drawer.querySelector('.cai-orb-btn').focus({ preventScroll: true });
   }
   // Drag the left edge (or use ←/→ on it) to change the drawer's width; double-click restores 460 px.
   const WIDTH_KEY = 'chemhub-ai-width', DEFAULT_W = 460, MIN_W = 340;
@@ -817,7 +895,7 @@
     const intro = ready
       ? `<strong>${mode === 'catalog' ? '问目录' : '自由提问'}</strong><p>${mode === 'catalog' ? '从 1,600 多条资源里找出处，再让 AI 组织回答。' : '直接向模型提问，适合概念与方法问题。'}</p>`
       : '<strong>先配置一个 AI 服务。</strong><p>支持 DeepSeek、Meta Muse 或任意 OpenAI 兼容接口，key 只保存在你的浏览器。</p><button type="button" class="cai-btn primary" data-act="settings">配置 API key</button>';
-    const welcome = `<div class="cai-welcome"><div class="cai-intro"><span class="cai-orb" aria-hidden="true">✦</span><div>${intro}</div></div><div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}"><i>${svgIcon(ICON[mode], 15)}</i><span>${esc(T(q))}</span><b>${svgIcon(ICON.go, 15)}</b></button>`).join('')}</div></div>`;
+    const welcome = `<div class="cai-welcome"><div class="cai-intro">${orb()}<div>${intro}</div></div><div class="cai-sugs">${SUGGEST[mode].map((q) => `<button type="button" data-sug="${esc(T(q))}"><i>${svgIcon(ICON[mode], 15)}</i><span>${esc(T(q))}</span><b>${svgIcon(ICON.go, 15)}</b></button>`).join('')}</div></div>`;
     log.innerHTML = history[mode].length ? history[mode].map(renderMsg).join('') : welcome;
     log.scrollTop = log.scrollHeight;
   }
@@ -831,7 +909,7 @@
     if (m.error) return `<div class="cai-err">${esc(m.error)}${m.code === 'no-key' ? ' <button type="button" class="cai-btn" data-act="settings" style="margin-left:6px;height:28px">去设置</button>' : ''}</div>`;
     const cited = new Set([...String(m.content).matchAll(/\[(\d{1,2}(?:\s*[,，]\s*\d{1,2})*)\]/g)].flatMap((x) => x[1].split(/[,，]/).map((n) => Number(n.trim()))));
     const refs = (m.refs || []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => cited.has(r.n));
-    return `<div class="cai-msg bot"><div class="cai-who"><span class="cai-orb" aria-hidden="true">✦</span>${m.refs ? `检索到 ${m.refs.length} 条目录资源` : 'AI'}${m.pending ? ' · 生成中…' : ''}</div><div class="cai-bubble">${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}</div>${usageLine(m)}</div>`;
+    return `<div class="cai-msg bot"><div class="cai-who">${orb()}<span class="cai-name" translate="no">MolAstria</span>${m.refs ? ` · 检索到 ${m.refs.length} 条目录资源` : ''}${m.pending ? ' · 生成中…' : ''}</div><div class="cai-bubble">${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}</div>${usageLine(m)}</div>`;
   }
   async function ask(question) {
     if (busy) return;

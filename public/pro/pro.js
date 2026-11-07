@@ -60,7 +60,8 @@
   if (LIVE) fetch(`${String(PAY.accountApi).replace(/\/+$/, '')}/digest/preview`).then((r) => r.json()).then((d) => {
     if (!d.items?.length) return;
     const h = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
-    document.getElementById('digest-preview-list').innerHTML = d.items.map((it) => `<li><a href="${h(it.url)}" target="_blank" rel="noopener">${h(it.title)}</a><small>${h(it.source)}${it.date ? ` · ${h(it.date)}` : ''}</small></li>`).join('');
+    const why = (it) => (en() ? it.why_en : it.why_zh) || '';
+    document.getElementById('digest-preview-list').innerHTML = d.items.map((it) => `<li><a href="${h(it.url)}" target="_blank" rel="noopener" translate="no">${h(it.title)}</a><small translate="no">${h(it.source)}${it.date ? ` · ${h(it.date)}` : ''}</small>${why(it) ? `<p translate="no">${h(why(it))}</p>` : ''}</li>`).join('');
     document.getElementById('digest-preview').hidden = false;
   }).catch(() => {});
 

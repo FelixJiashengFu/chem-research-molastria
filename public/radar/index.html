@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。">
+  <meta name="description" content="预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN、SocArXiv、Knowledge Commons 等 28 个预印本平台与开放仓库的最新论文（理工、医学、社科到人文），按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。">
   <meta name="theme-color" content="#173f34">
-  <title>预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria</title>
+  <title>预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/radar/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
-  <meta property="og:title" content="预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria">
-  <meta property="og:description" content="预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。">
+  <meta property="og:title" content="预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria">
+  <meta property="og:description" content="预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN、SocArXiv、Knowledge Commons 等 28 个预印本平台与开放仓库的最新论文（理工、医学、社科到人文），按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。">
   <meta property="og:url" content="https://molastria.com/radar/">
   <meta property="og:image" content="https://molastria.com/og.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
   <meta property="og:locale" content="zh_CN">
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"预印本雷达 PreprintRadar","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://molastria.com/radar/","isAccessibleForFree":true,"codeRepository":"https://github.com/FelixJiashengFu/PreprintRadar","description":"同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"预印本雷达 PreprintRadar","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://molastria.com/radar/","isAccessibleForFree":true,"codeRepository":"https://github.com/FelixJiashengFu/PreprintRadar","description":"同时检索 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。"}</script>
   <!-- seo:end -->
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
@@ -37,7 +37,7 @@
 <!-- 预印本雷达 PreprintRadar（https://github.com/FelixJiashengFu/PreprintRadar）的网页版，由 tools/vendor-radar.ts 复制到 app/。
      它在浏览器里直接查询 DataCite 和 Crossref，主题、推荐和收藏只保存在访问者自己的浏览器里。 -->
 <h1 class="radar-about">预印本雷达</h1>
-<p class="radar-about">同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。</p>
+<p class="radar-about">同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN、SocArXiv、Knowledge Commons 等 28 个预印本平台与开放仓库的最新论文（理工、医学、社科到人文），按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。</p>
 <div class="radar-box"><iframe class="radar-frame" id="radar-frame" title="预印本雷达" allow="clipboard-write" data-display-frame></iframe></div>
 <noscript><p>预印本雷达需要启用 JavaScript。</p></noscript>
 <script>

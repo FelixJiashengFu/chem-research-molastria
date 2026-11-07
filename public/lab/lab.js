@@ -143,6 +143,14 @@
   }
   function renderAll() { renderStatus(); renderTab(tab); }
 
+  const DEMO_NOTE = 'molastria-lab-demo-note';
+  const demoNoteClosed = () => { try { return localStorage.getItem(DEMO_NOTE) === 'closed'; } catch { return false; } };
+  const setDemoNote = (closed) => { try { if (closed) localStorage.setItem(DEMO_NOTE, 'closed'); else localStorage.removeItem(DEMO_NOTE); } catch { /* private mode */ } renderStatus(); };
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#demo-close')) setDemoNote(true);
+    else if (e.target.closest('[data-demo-note]')) { setDemoNote(false); $('demo-banner').scrollIntoView({ block: 'nearest' }); }
+  });
+
   function renderStatus() {
     const a = active(), d = withData();
     const verified = a.filter((m) => L.verdict(m, cfg())).length;
@@ -155,9 +163,11 @@
       `<span class="pill">已完成 <b>${project.rounds.length}</b> 轮</span>`,
       `<span class="pill">通过过滤 <b>${a.length}</b> / ${all().length}</span>`,
       `<span class="pill">有 Tier 1 <b>${d.length}</b></span>`,
-      `<span class="pill">DFT 验证 <b>${verified}</b></span>`
+      `<span class="pill">DFT 验证 <b>${verified}</b></span>`,
+      // the numbers are synthetic: the page always says so, even after the long note is closed
+      project.demo ? `<button type="button" class="pill demo-pill" data-demo-note title="数值由规则随机生成，不是计算结果；点击查看说明">合成演示数据</button>` : ''
     ].join('');
-    $('demo-banner').hidden = !project.demo;
+    $('demo-banner').hidden = !project.demo || demoNoteClosed();
   }
 
   // ── ① propose ───────────────────────────────────────────────────────────

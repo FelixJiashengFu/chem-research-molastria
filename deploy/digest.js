@@ -121,7 +121,8 @@ export async function latestDigest(env) {
   return row ? JSON.parse(row.body) : null;
 }
 /** Titles only, for visitors without Pro. */
-export const previewOf = (d) => d && { week: d.week, items: d.items.slice(0, 5).map(({ source, title, url, date }) => ({ source, title, url, date })), total: d.items.length };
+/** The public preview: the week's overview and the first five picks with their comments; the rest of the issue and the email stay Pro. */
+export const previewOf = (d) => d && { week: d.week, overview_zh: d.overview_zh || '', overview_en: d.overview_en || '', items: d.items.slice(0, 5).map(({ source, title, url, date, authors, why_zh, why_en }) => ({ source, title, url, date, authors: authors || '', why_zh: why_zh || '', why_en: why_en || '' })), total: d.items.length };
 
 // ── the email ───────────────────────────────────────────────────────────
 export function digestMail(d, { en, unsubscribeUrl }) {

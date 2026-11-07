@@ -12,6 +12,9 @@
   --font-serif:"Songti SC","Noto Serif SC","Source Han Serif SC",SimSun,serif;
   --font-num:Georgia,"Times New Roman",serif;
   --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  /* glass (the panel for arranging the navigation): a tint, its rim, the highlight along the top edge, the drop shade */
+  --glass-tint:rgb(255 255 255/.5);--glass-tint-2:rgb(255 255 255/.22);--glass-rim:rgb(255 255 255/.72);--glass-hi:rgb(255 255 255/.95);--glass-shade:rgb(16 40 28/.4);
+  --glass-tile:rgb(255 255 255/.62);--glass-tile-2:rgb(255 255 255/.32);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){
   color-scheme:dark;
@@ -22,6 +25,8 @@
   --gold:#d5a85d;--gold-soft:#2c2618;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
   --graph-edge:rgba(170,200,180,.16);
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 28px rgb(0 0 0/.35);
+  --glass-tint:rgb(52 66 58/.55);--glass-tint-2:rgb(20 28 24/.32);--glass-rim:rgb(255 255 255/.14);--glass-hi:rgb(255 255 255/.22);--glass-shade:rgb(0 0 0/.6);
+  --glass-tile:rgb(255 255 255/.12);--glass-tile-2:rgb(255 255 255/.04);
 }}
 :root[data-theme=dark]{
   color-scheme:dark;
@@ -32,6 +37,8 @@
   --gold:#d5a85d;--gold-soft:#2c2618;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
   --graph-edge:rgba(170,200,180,.16);
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 28px rgb(0 0 0/.35);
+  --glass-tint:rgb(52 66 58/.55);--glass-tint-2:rgb(20 28 24/.32);--glass-rim:rgb(255 255 255/.14);--glass-hi:rgb(255 255 255/.22);--glass-shade:rgb(0 0 0/.6);
+  --glass-tile:rgb(255 255 255/.12);--glass-tile-2:rgb(255 255 255/.04);
 }
 html{background:var(--paper)}
 ::selection{background:color-mix(in srgb,var(--accent-2) 30%,transparent)}
@@ -281,3 +288,39 @@ main{zoom:var(--cr-text-zoom,1)}
 .cr-disp-note{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--warn) 10%,transparent);color:var(--ink);font-size:12px;line-height:1.55}
 /* The display-settings button made the first header row 12 px too wide on 390 px phones: narrower tool buttons there. */
 @media(max-width:430px){.cr-tools{gap:4px}.cr-icon-btn{width:32px}.cr-ai-btn{padding:0 10px}}
+
+/* 导航顺序：长按入口打开的玻璃面板 */
+.cr-links a{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.cr-arrange{position:fixed;inset:0;z-index:130;display:flex;justify-content:center;align-items:flex-start;padding:calc(var(--cr-nav-height,64px) + 18px) 16px 16px;background:color-mix(in srgb,var(--paper) 22%,transparent);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .2s ease}
+.cr-arrange[hidden]{display:none}
+.cr-arrange.open{opacity:1}
+.cr-arr-glass{position:relative;width:min(720px,100%);padding:22px 22px 16px;border-radius:28px;color:var(--ink);background:linear-gradient(155deg,var(--glass-tint),var(--glass-tint-2) 60%,var(--glass-tint));-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glass-rim);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 0 var(--glass-rim),0 30px 70px -24px var(--glass-shade);transform:translateY(-10px) scale(.97);transition:transform .34s cubic-bezier(.2,.9,.25,1.08)}
+.cr-arrange.open .cr-arr-glass{transform:none}
+.cr-arr-glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(130% 70% at 18% -10%,var(--glass-hi),transparent 52%);opacity:.5}
+.cr-arr-head{position:relative}
+.cr-arr-head b{display:block;font:600 18px/1.3 var(--font-serif);letter-spacing:.02em}
+.cr-arr-head small{display:block;margin-top:5px;color:var(--ink-2);font-size:13px;line-height:1.6}
+.cr-arr-grid{position:relative;display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px;touch-action:none}
+.cr-arr-tile{padding:10px 18px;border-radius:999px;font:500 14px/1.25 var(--font-sans);color:var(--ink);cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;background:linear-gradient(180deg,var(--glass-tile),var(--glass-tile-2));border:1px solid var(--glass-rim);box-shadow:inset 0 1px 0 var(--glass-hi),0 6px 16px -10px var(--glass-shade);transition:transform .22s cubic-bezier(.2,.9,.25,1.1),box-shadow .22s,opacity .2s}
+.cr-arr-tile:hover{transform:translateY(-1px)}
+.cr-arr-tile[aria-current]{color:var(--accent-text);font-weight:600}
+.cr-arr-tile.lifted{position:relative;z-index:2;cursor:grabbing;transform:scale(1.07);box-shadow:inset 0 1px 0 var(--glass-hi),0 18px 34px -12px var(--glass-shade)}
+.cr-arrange.dragging .cr-arr-tile:not(.lifted){opacity:.86}
+.cr-arr-tile:focus-visible,.cr-arr-reset:focus-visible,.cr-arr-done:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.cr-arr-live{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%)}
+.cr-arr-foot{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.cr-arr-foot small{flex:1 1 220px;color:var(--muted);font-size:12.5px}
+.cr-arr-reset,.cr-arr-done{min-height:38px;padding:0 18px;border-radius:999px;font:500 13.5px/1 var(--font-sans);cursor:pointer}
+.cr-arr-reset{border:1px solid var(--glass-rim);background:var(--glass-tile-2);color:var(--ink-2)}
+.cr-arr-done{border:0;background:var(--accent);color:var(--accent-ink);font-weight:600}
+.cr-disp-arr{flex:none;min-height:32px;padding:0 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--surface);color:var(--ink);font:500 13px/1 var(--font-sans);cursor:pointer}
+.cr-disp-arr:hover{border-color:var(--accent-2)}
+.cr-disp-arr-row{align-items:center}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.cr-arr-glass{background:var(--surface)}}
+@media (prefers-reduced-motion:reduce){.cr-arrange,.cr-arr-glass,.cr-arr-tile{transition:none}}
+
+/* 品牌说明（每页一行，见 TRADEMARKS.md） */
+.cr-legal{clear:both;max-width:1200px;margin:22px auto 10px;padding:0 16px;font:12px/1.7 var(--font-sans);color:var(--muted);text-align:center}
+.cr-legal a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.cr-legal a:hover{color:var(--accent-text)}
+@media print{.cr-legal{color:#555}}

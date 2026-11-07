@@ -6,7 +6,7 @@
 //   node tools/e2e/run.mjs --net    also run a real PreprintRadar search (calls Crossref and DataCite)
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -125,20 +125,21 @@ check('hosted AI: the quota button switches away from a saved own key, and the m
   await finish(p);
 });
 
-check('hosted AI: a Pro account can switch to V4 Pro, and a keyless provider is refused with a reason', async () => {
+check('hosted AI: a Pro account gets V4 Flash only (a saved V4 Pro falls back to it), and a keyless provider is refused with a reason', async () => {
   const p = await open();
   await go(p, '/pro/success.html?session_id=cs_test_localpro&plan=pro_year');
   await p.waitForSelector('#activate.ok');
-  // An account cached before the service listed its models still offers both hosted models.
+  // An account cached before the service listed its models falls back to the service's default: Flash only.
   await p.evaluate(() => { const a = JSON.parse(localStorage.getItem('molastria-account')); delete a.models; localStorage.setItem('molastria-account', JSON.stringify(a)); });
+  // a setting saved back when V4 Pro was offered
+  await p.evaluate(() => localStorage.setItem('chemhub-ai', JSON.stringify({ provider: 'hosted', remember: true, models: { hosted: 'deepseek-v4-pro' } })));
   await go(p, '/index.html');
   await p.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openSettings()));
   await p.waitForSelector('.cai-prov input[value=hosted]');
   await p.check('.cai-prov input[value=hosted]', { force: true });
-  assert.deepEqual(await p.$$eval('select[name=model] option', (o) => o.map((x) => x.value)), ['deepseek-flash', 'deepseek-v4-pro']);
-  await p.selectOption('select[name=model]', 'deepseek-v4-pro');
+  assert.deepEqual(await p.$$eval('select[name=model] option', (o) => o.map((x) => x.value)), ['deepseek-flash']);
   await p.click('[data-act=save]');
-  assert.deepEqual(await p.evaluate(() => { const s = window.ChemAI.settings(); return [s.provider, s.models.hosted]; }), ['hosted', 'deepseek-v4-pro']);
+  assert.deepEqual(await p.evaluate(() => { const s = window.ChemAI.settings(); return [s.provider, s.models.hosted]; }), ['hosted', 'deepseek-flash']);
   // DeepSeek without a key: the dialog stays open and explains, instead of silently going back to the quota.
   await p.evaluate(() => window.ChemAI.openSettings());
   await p.check('.cai-prov input[value=deepseek]', { force: true });
@@ -148,7 +149,7 @@ check('hosted AI: a Pro account can switch to V4 Pro, and a keyless provider is 
   await finish(p);
 });
 
-check('weekly picks: the admin builds an issue, Pro reads and subscribes, visitors see titles', async () => {
+check('weekly picks: the admin builds an issue, Pro reads and subscribes, visitors see the picks with comments', async () => {
   const admin = await open();
   await go(admin, '/pro/account.html');
   await signIn(admin, 'admin@example.com');
@@ -168,7 +169,7 @@ check('weekly picks: the admin builds an issue, Pro reads and subscribes, visito
   const visitor = await open();
   await go(visitor, '/pro/index.html');
   await visitor.waitForSelector('#digest-preview:not([hidden]) li');
-  assert.equal(await visitor.$$eval('#digest-preview li p', (l) => l.length), 0, 'no comments for visitors');
+  assert.equal(await visitor.$$eval('#digest-preview li p', (l) => l.length), 3, 'visitors see each pick with its comment (this issue has three)');
   await finish(visitor);
 
   const english = await open();
@@ -368,6 +369,53 @@ check('PreprintRadar: loads in its frame and follows the site theme', async () =
     await f.press('#sq', 'Enter');
     await f.waitForSelector('.paper', { timeout: 45000 });
   }
+  await finish(p);
+});
+
+check('PreprintRadar in the desktop app: notifications reach the system through the app, not the WebView', async () => {
+  // macOS's WKWebView has no Notification API, so the frame starts without one; desktop/src-tauri/src/notify.rs
+  // runs in every frame and sends notifications to the app, which is faked here (top window only, as in the app).
+  const NOTIFY = readFileSync(new URL('../../desktop/src-tauri/src/notify.rs', import.meta.url), 'utf8').match(/r#"([\s\S]*?)"#;/)[1];
+  const p = await open({ init: () => {
+    try { delete window.Notification; } catch { /* keep going */ }
+    if (window !== window.top) return;
+    window.__MOLASTRIA_DESKTOP__ = true;
+    window.__calls = [];
+    window.__TAURI_INTERNALS__ = { invoke: async (cmd, a) => {
+      window.__calls.push([cmd, a]);
+      if (cmd === 'plugin:notification|is_permission_granted') return true;
+      if (cmd === 'plugin:notification|request_permission') return 'granted';
+      return null;
+    } };
+  } });
+  await p.context().addInitScript({ content: NOTIFY });
+  await go(p, '/radar/index.html');
+  const f = p.frame({ url: /radar\/app\/index\.html/ });
+  await f.waitForSelector('#nav a');
+  await f.evaluate(() => { location.hash = '#/settings'; });
+  await f.click('[data-act=notify-test]');
+  await f.waitForFunction(() => document.body.innerText.includes('已发送测试通知'));
+  const sent = await p.evaluate(() => window.__calls.filter(([c]) => c === 'plugin:notification|notify').map(([, a]) => a.options));
+  assert.deepEqual(sent, [{ title: '预印本雷达：测试通知', body: '页面开着时，自动推荐有新文章会这样提醒你。' }]);
+  assert.equal(await f.evaluate(() => Notification.permission), 'granted');
+  await finish(p);
+});
+
+check('desktop app on macOS: the handbook\'s print button opens the system print dialog through the app', async () => {
+  // WKWebView ignores window.print(); the app's start-up script (desktop/src-tauri/src/main.rs) hands it to print_page.
+  const INIT = readFileSync(new URL('../../desktop/src-tauri/src/main.rs', import.meta.url), 'utf8').match(/const INIT_SCRIPT: &str = r#"([\s\S]*?)"#;/)[1];
+  const p = await open({
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_6) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+    init: () => {
+      if (window !== window.top) return;
+      window.__calls = [];
+      window.__TAURI_INTERNALS__ = { invoke: async (cmd, a) => { window.__calls.push([cmd, a]); return null; } };
+    },
+  });
+  await p.context().addInitScript({ content: INIT });
+  await go(p, '/manual/index.html');
+  await p.click('#print-guide');
+  assert.ok((await p.evaluate(() => window.__calls.map(([c]) => c))).includes('print_page'), 'print went to the app');
   await finish(p);
 });
 
@@ -597,6 +645,22 @@ check('MACE-OFF23: the Meta page writes a mace-torch script for neutral jobs, an
   await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
   await p.click('[data-tab=reliability]');
   await p.waitForFunction(() => document.getElementById('tab-reliability').textContent.includes('UMA 与 MACE-OFF23 不一致'), null, { timeout: 10000 });
+  await finish(p);
+});
+
+check('AI Lab demo data: the long note can be closed, the status row still says the numbers are synthetic and reopens it', async () => {
+  const p = await open();
+  await go(p, '/lab/index.html');
+  await p.click('#load-demo');
+  await p.waitForSelector('#demo-banner:not([hidden])', { timeout: 30000 });
+  await p.click('#demo-close');
+  assert.equal(await p.isHidden('#demo-banner'), true);
+  assert.match(await text(p, '#bench-status [data-demo-note]'), /合成演示数据/);
+  await go(p, '/lab/index.html'); // remembered in this browser
+  await p.waitForSelector('#bench-status [data-demo-note]', { timeout: 30000 });
+  assert.equal(await p.isHidden('#demo-banner'), true);
+  await p.click('#bench-status [data-demo-note]');
+  assert.equal(await p.isVisible('#demo-banner'), true);
   await finish(p);
 });
 
@@ -1318,28 +1382,45 @@ check('decor: the home logo loop and the download intro film play muted, are hid
   }
 });
 
-check('AI panel intro film: plays on open, Esc skips it, the logo-animation switch turns the films off and is remembered', async () => {
+check('AI panel entrance: the chosen mascot hops in on open (no video), Esc skips it, the logo-animation switch and the picker switch turn it off', async () => {
   const p = await open();
   let films = 0;
   p.on('request', (r) => { if (r.url().includes('intro.mp4')) films++; });
   await go(p, '/index.html');
-  assert.equal(films, 0, 'not fetched before the panel opens');
   await p.click('#cr-ai');
-  await p.waitForSelector('.cai-film[data-frame]', { timeout: 5000 });
-  assert.deepEqual(await p.$eval('.cai-film video', (v) => [v.muted, v.loop, v.parentElement.getAttribute('aria-hidden')]), [true, false, 'true']);
+  await p.waitForSelector('.cai-film[data-state=play] .cai-hero[data-mascot=astra] svg');
+  assert.match(await text(p, '.cai-film .cai-hello'), /MolAstria/);
+  assert.equal(films, 0, 'the old film is not fetched');
   await p.keyboard.press('Escape');
   await p.waitForFunction(() => document.querySelector('.cai-film').hidden);
-  assert.equal(await p.$eval('.cai-drawer', (d) => d.dataset.open), 'true', 'Esc skips the film, not the panel');
+  assert.equal(await p.$eval('.cai-drawer', (d) => d.dataset.open), 'true', 'Esc skips the entrance, not the panel');
+  // it ends by itself after about five seconds
+  await p.click('.cai-mascots ~ .cai-id, .cai-head h2').catch(() => {});
+  await p.click('.cai-orb-btn');
+  await p.click('[data-intro-play]');
+  await p.waitForSelector('.cai-film[data-state=play]');
+  await p.waitForFunction(() => document.querySelector('.cai-film').hidden, null, { timeout: 7000 });
+  // the switch in the mascot picker turns it off and is remembered
+  await p.click('.cai-orb-btn');
+  await p.uncheck('[data-intro-toggle]');
+  await p.keyboard.press('Escape');
+  await p.keyboard.press('Escape');
+  await p.reload({ waitUntil: 'networkidle' });
+  await p.click('#cr-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  await p.waitForTimeout(300);
+  assert.equal(await p.$('.cai-film:not([hidden])'), null, 'no entrance with the picker switch off');
+  await p.evaluate(() => localStorage.removeItem('molastria-ai-intro'));
+  // the site's logo-animation switch still turns it off
   await p.keyboard.press('Escape');
   await p.click('#cr-bg');
   await p.uncheck('.cr-bgpick input[data-logo-motion]');
   await p.keyboard.press('Escape');
   await p.reload({ waitUntil: 'networkidle' });
-  assert.equal(await p.evaluate(() => document.documentElement.dataset.logoMotion), 'off');
   await p.click('#cr-ai');
   await p.waitForSelector('.cai-drawer[data-open=true]');
   await p.waitForTimeout(300);
-  assert.equal(await p.$('.cai-film:not([hidden])'), null, 'no film with the switch off');
+  assert.equal(await p.$('.cai-film:not([hidden])'), null, 'no entrance with the logo-animation switch off');
   await go(p, '/download/index.html');
   assert.deepEqual(await p.$eval('.dl-intro video', (v) => [v.currentSrc, !!v.getAttribute('poster')]), ['', true], 'download film: poster only');
   await finish(p);
@@ -1347,8 +1428,27 @@ check('AI panel intro film: plays on open, Esc skips it, the logo-animation swit
   await go(still, '/index.html');
   await still.click('#cr-ai');
   await still.waitForSelector('.cai-drawer[data-open=true]');
-  assert.equal(await still.$('.cai-film'), null, 'no film under reduced motion');
+  assert.equal(await still.$('.cai-film'), null, 'no entrance under reduced motion');
   await finish(still);
+});
+
+check('AI mascots: the header face opens a picker of six; the choice changes every face, labels answers MolAstria and is remembered', async () => {
+  const p = await open({ init: () => { try { localStorage.setItem('molastria-ai-intro', 'off'); } catch {} } });
+  await go(p, '/index.html');
+  await p.click('#cr-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  await p.click('.cai-orb-btn');
+  assert.equal(await p.locator('.cai-mascots [data-mascot-pick]').count(), 6);
+  assert.equal(await p.getAttribute('.cai-mascots [data-mascot-pick=astra]', 'aria-checked'), 'true', 'the classic one by default');
+  await p.click('.cai-mascots [data-mascot-pick=owl]');
+  assert.equal(await p.isHidden('.cai-mascots'), true);
+  assert.deepEqual([...new Set(await p.$$eval('.cai-drawer .cai-orb:not(.cai-mascots .cai-orb)', (o) => o.map((x) => x.dataset.mascot)))], ['owl']);
+  await p.reload({ waitUntil: 'networkidle' });
+  await p.click('#cr-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  assert.equal(await p.getAttribute('.cai-orb-btn', 'data-mascot'), 'owl', 'remembered');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-ai-mascot')), 'owl');
+  await finish(p);
 });
 
 check('download card: bottom-left on web pages, × folds it and is remembered, absent on the download page and phones', async () => {
@@ -1503,6 +1603,90 @@ check('display settings: scale, reading size and typeface apply, carry to other 
   await finish(p);
 });
 
+check('weekly picks: the page, the homepage card and the pricing page show the first five picks with comments; an empty week waits politely', async () => {
+  const issue = {
+    week: '2026-11-02', overview_zh: '本周概览：机器学习势和激发态各有亮点。', overview_en: 'This week: machine-learning potentials and excited states.', total: 10,
+    items: Array.from({ length: 5 }, (_, i) => ({ source: i % 2 ? 'arXiv' : 'ChemRxiv', title: `Paper ${i + 1}`, url: `https://doi.org/10.1/p${i + 1}`, date: '2026-10-30', authors: 'A. Author', why_zh: `中文解读 ${i + 1}`, why_en: `English comment ${i + 1}` })),
+  };
+  const p = await open();
+  let body = issue;
+  await p.route(`${API}/digest/preview`, (route) => route.fulfill({ json: body }));
+  await go(p, '/digest/index.html');
+  await p.waitForSelector('#dg-letter:not([hidden])');
+  assert.equal(await p.locator('.dg-pick').count(), 5);
+  assert.match(await text(p, '.dg-pick:first-child .dg-why'), /中文解读 1/);
+  assert.match(await text(p, '#dg-overview'), /机器学习势/);
+  assert.match(await text(p, '#dg-more'), /还有 5 篇/);
+  assert.match(await text(p, '#dg-issue'), /下一期/);
+  assert.equal(await p.getAttribute('.cr-links a[data-id=digest]', 'aria-current'), 'page');
+  await go(p, '/digest/index.html?lang=en');
+  await p.waitForFunction(() => /English comment 1/.test(document.querySelector('.dg-pick .dg-why')?.textContent || ''));
+  await p.evaluate(() => localStorage.setItem('chemhub-lang', 'zh')); // ?lang=en is remembered; back to Chinese
+  await go(p, '/index.html');
+  await p.waitForSelector('#digest-card:not([hidden])');
+  assert.equal(await p.locator('#digest-card .dc-list li').count(), 3);
+  await go(p, '/pro/index.html');
+  await p.waitForSelector('#digest-preview:not([hidden])');
+  assert.match(await text(p, '#digest-preview-list li:first-child p'), /中文解读 1/);
+  body = { items: [], total: 0 };
+  await go(p, '/digest/index.html');
+  await p.waitForSelector('#dg-waiting:not([hidden])');
+  assert.equal(await p.isHidden('#dg-letter'), true);
+  await go(p, '/index.html');
+  await p.waitForTimeout(400);
+  assert.equal(await p.isHidden('#digest-card'), true, 'no card without an issue');
+  await finish(p);
+});
+
+check('brand notice: every page carries one copyright line linking to TRADEMARKS.md; the full-screen radar page does not', async () => {
+  const p = await open();
+  for (const path of ['/index.html', '/manual/index.html', '/digest/index.html', '/pro/account.html', '/qchem/index.html']) {
+    await go(p, path);
+    assert.equal(await p.locator('.cr-legal').count(), 1, path);
+    assert.match(await p.getAttribute('.cr-legal a', 'href'), /TRADEMARKS\.md$/, path);
+  }
+  await go(p, '/radar/index.html');
+  assert.equal(await p.locator('.cr-legal').count(), 0, 'not on the radar page');
+  await finish(p);
+});
+
+check('nav order: a long press opens the glass panel without leaving the page; drag and arrow keys reorder; kept after reload; reset', async () => {
+  const p = await open();
+  await go(p, '/manual/index.html');
+  const order = () => p.$$eval('.cr-links > a[data-id]:not(.cr-pro-link), .cr-more-menu a[data-id]', (a) => a.map((x) => x.dataset.id));
+  const url = p.url();
+  const box = await (await p.$('.cr-links > a[data-id="journals"]')).boundingBox();
+  await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await p.mouse.down();
+  await p.waitForTimeout(700);
+  await p.mouse.up();
+  await p.waitForSelector('.cr-arrange.open');
+  assert.equal(p.url(), url, 'the long press did not open the page');
+  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), 'journals', 'the pressed module has focus');
+  // drag journals onto the first tile
+  const from = await (await p.$('.cr-arr-tile[data-id="journals"]')).boundingBox(), to = await (await p.$('.cr-arr-tile[data-id="search"]')).boundingBox();
+  await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await p.mouse.down();
+  for (let i = 1; i <= 10; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + 8 - from.x - from.width / 2) * i) / 10, from.y + from.height / 2 + ((to.y + to.height / 2 - from.y - from.height / 2) * i) / 10);
+  await p.mouse.up();
+  assert.deepEqual((await order()).slice(0, 2), ['journals', 'search'], 'dragged to the front');
+  await p.keyboard.press('ArrowRight');
+  assert.deepEqual((await order()).slice(0, 2), ['search', 'journals'], 'moved one step with the keyboard');
+  await p.keyboard.press('Escape');
+  await p.waitForSelector('.cr-arrange', { state: 'hidden' });
+  await go(p, '/index.html');
+  assert.deepEqual((await order()).slice(0, 3), ['search', 'journals', 'network'], 'kept on the next page');
+  // the display panel leads here too; reset brings back the default order
+  await p.click('#cr-disp');
+  await p.click('.cr-disp-arr');
+  await p.waitForSelector('.cr-arrange.open');
+  await p.click('.cr-arr-reset');
+  await p.click('.cr-arr-done');
+  assert.deepEqual((await order()).slice(0, 3), ['search', 'network', 'manual']);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-nav-order')), null);
+  await finish(p);
+});
+
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
   for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html']) {
     const p = await open();
@@ -1516,7 +1700,7 @@ check('arrows: the site draws its own metallic arrow icons, no ↗ characters ar
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

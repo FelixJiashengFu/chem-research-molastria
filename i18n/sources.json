@@ -46,6 +46,7 @@
   "app.js",
   "hub/app.js",
   "hub/network.js",
+  "radar/app/app.js",
   "tools/build-seo.ts"
  ],
  "方法": [
@@ -85,6 +86,15 @@
   "index.html"
  ],
  "章双语讲解手册": [
+  "index.html"
+ ],
+ "每周精选 ·": [
+  "index.html"
+ ],
+ "这一周值得读的计算化学新论文": [
+  "index.html"
+ ],
+ "读本周精选": [
   "index.html"
  ],
  "统一资源检索": [
@@ -316,6 +326,14 @@
  "进一步基础科学发现": [
   "index.html",
   "fundamental-science/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "每周精选": [
+  "index.html",
+  "digest/index.html",
+  "pro/index.html",
+  "pro/account.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -1137,6 +1155,54 @@
  "筛选文献": [
   "fundamental-science/index.html"
  ],
+ "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
+  "digest/index.html"
+ ],
+ "每周一，从计算化学的新论文里挑出值得读的十篇左右，每篇配一句解读。泡一杯茶，用五分钟看看这一周发生了什么。": [
+  "digest/index.html"
+ ],
+ "本周前五篇": [
+  "digest/index.html"
+ ],
+ "这一期还在路上": [
+  "digest/index.html"
+ ],
+ "每周一更新。新的一期出来后，这里会第一时间换上。": [
+  "digest/index.html"
+ ],
+ "它是怎么来的": [
+  "digest/index.html"
+ ],
+ "每周一取最近七天的新论文": [
+  "digest/index.html"
+ ],
+ "ChemRxiv 上与计算化学最相关的二十篇，arXiv 化学物理（physics.chem-ph）最新的二十篇，以及 JCTC、JCP、PCCP、JPCL 四本期刊最新的二十篇。": [
+  "digest/index.html"
+ ],
+ "由 AI 像期刊编辑一样挑选": [
+  "digest/index.html"
+ ],
+ "DeepSeek 只读标题和摘要，选出十篇左右最值得计算化学与分子模拟研究者读的，每篇写一句做了什么、为什么值得看，不许编造数值和结论。": [
+  "digest/index.html"
+ ],
+ "链接永远来自原始记录": [
+  "digest/index.html"
+ ],
+ "每篇都直接链到论文本身；解读只是帮你决定先读哪一篇，结论请以原文为准。": [
+  "digest/index.html"
+ ],
+ "完整的一期，每周一送到邮箱": [
+  "digest/index.html"
+ ],
+ "前五篇和点评对所有人公开。完整的十篇左右和中英文邮件推送是 MolAstria Pro 的功能，在账号页一键订阅，随时可以退订。": [
+  "digest/index.html"
+ ],
+ "了解 Pro": [
+  "digest/index.html"
+ ],
+ "去账号页": [
+  "digest/index.html"
+ ],
  "论文与社区 · MolAstria": [
   "hub/index.html"
  ],
@@ -1593,7 +1659,8 @@
  ],
  "清空": [
   "lab/index.html",
-  "qchem/index.html"
+  "qchem/index.html",
+  "radar/app/app.js"
  ],
  "当前是合成演示数据。": [
   "lab/index.html"
@@ -2120,6 +2187,12 @@
   "lab/index.html"
  ],
  "方法要点": [
+  "lab/index.html"
+ ],
+ "关闭这条提示": [
+  "lab/index.html"
+ ],
+ "关闭这条提示（状态栏仍标着“合成演示数据”，点它可以再打开）": [
   "lab/index.html"
  ],
  "工作台步骤": [
@@ -4003,7 +4076,7 @@
  "新功能优先内测与需求投票": [
   "pro/index.html"
  ],
- "早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（deepseek-v4-pro 和 AI 实验室会多计次数）和每周精选；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。": [
+ "早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（DeepSeek V4 Flash，AI 实验室会多计次数）和每周精选的完整一期与邮件推送；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。": [
   "pro/index.html"
  ],
  "课题组": [
@@ -4069,7 +4142,10 @@
  "本周精选预览": [
   "pro/index.html"
  ],
- "每周一从 ChemRxiv、arXiv 和计算化学期刊里选新论文。这里可以看标题；Pro 还有每篇的解读和邮件推送。": [
+ "每周一从 ChemRxiv、arXiv 和计算化学期刊里选新论文。前 5 篇和解读对所有人公开；Pro 有完整的一期和邮件推送。": [
+  "pro/index.html"
+ ],
+ "打开每周精选": [
   "pro/index.html"
  ],
  "桌面版：离线浏览，接本地模型更方便": [
@@ -4143,14 +4219,10 @@
  "跨设备 + 组内共享": [
   "pro/index.html"
  ],
- "每周精选": [
-  "pro/index.html",
-  "pro/account.html"
- ],
- "标题预览": [
+ "前 5 篇 + 解读": [
   "pro/index.html"
  ],
- "解读 + 邮件推送": [
+ "完整一期 + 邮件推送": [
   "pro/index.html"
  ],
  "深度工作流库（模板、参数、报错）": [
@@ -4805,10 +4877,10 @@
  "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
   "download/index.html"
  ],
- "预印本雷达 · 12 个预印本平台搜索与定时推荐 · MolAstria": [
+ "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
  ],
- "同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。": [
+ "同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN、SocArXiv、Knowledge Commons 等 28 个预印本平台与开放仓库的最新论文（理工、医学、社科到人文），按兴趣主题定时推荐，一键导出 PDF 合集。主题、推荐和收藏只保存在你的浏览器里。": [
   "radar/index.html"
  ],
  "预印本雷达需要启用 JavaScript。": [
@@ -5144,6 +5216,36 @@
  "AI 助手": [
   "shared-nav.js"
  ],
+ "MolAstria 名称、徽标与吉祥物归 Jiasheng Fu 所有，保留所有权利；网站代码以 MIT 许可开源": [
+  "shared-nav.js"
+ ],
+ "品牌说明": [
+  "shared-nav.js"
+ ],
+ "{0}：第 {1} 位，共 {2} 个": [
+  "shared-nav.js"
+ ],
+ "调整导航顺序": [
+  "shared-nav.js"
+ ],
+ "拖动入口，排成你习惯的顺序；也可以用方向键。只保存在这台设备上。": [
+  "shared-nav.js"
+ ],
+ "导航入口": [
+  "shared-nav.js"
+ ],
+ "以后长按顶栏的任一入口，也能回到这里": [
+  "shared-nav.js"
+ ],
+ "恢复默认": [
+  "shared-nav.js"
+ ],
+ "完成": [
+  "shared-nav.js"
+ ],
+ "已恢复默认顺序": [
+  "shared-nav.js"
+ ],
  "默认": [
   "shared-nav.js"
  ],
@@ -5187,13 +5289,19 @@
  "Aa 计算化学": [
   "shared-nav.js"
  ],
+ "导航顺序": [
+  "shared-nav.js"
+ ],
+ "把顶栏的入口排成你习惯的顺序；也可以长按任一入口": [
+  "shared-nav.js"
+ ],
+ "调整": [
+  "shared-nav.js"
+ ],
  "快捷键：Ctrl / ⌘ 加 = − 0 调整界面缩放": [
   "shared-nav.js"
  ],
  "设置保存在这台设备上，所有页面通用": [
-  "shared-nav.js"
- ],
- "恢复默认": [
   "shared-nav.js"
  ],
  "AI 模块加载失败": [
@@ -6365,6 +6473,18 @@
  "目标": [
   "qchem/play.js"
  ],
+ "本期": [
+  "digest/digest.js"
+ ],
+ "下一期": [
+  "digest/digest.js"
+ ],
+ "完整的一期还有 {0} 篇，每周一随邮件送到 Pro 会员的邮箱": [
+  "digest/digest.js"
+ ],
+ "在账号页订阅邮件": [
+  "digest/digest.js"
+ ],
  "软件/官网": [
   "hub/app.js",
   "hub/network.js"
@@ -6709,6 +6829,12 @@
   "lab/lab.js"
  ],
  "DFT 验证": [
+  "lab/lab.js"
+ ],
+ "合成演示数据": [
+  "lab/lab.js"
+ ],
+ "数值由规则随机生成，不是计算结果；点击查看说明": [
   "lab/lab.js"
  ],
  "AI 模块未载入。": [
@@ -8013,7 +8139,8 @@
   "models/models.js"
  ],
  "原子": [
-  "models/models.js"
+  "models/models.js",
+  "ai/ai.js"
  ],
  "能量": [
   "models/models.js"
@@ -8378,6 +8505,36 @@
  "由服务商决定": [
   "ai/ai.js"
  ],
+ "星环": [
+  "ai/ai.js"
+ ],
+ "经典": [
+  "ai/ai.js"
+ ],
+ "苯苯": [
+  "ai/ai.js"
+ ],
+ "苯环": [
+  "ai/ai.js"
+ ],
+ "小电子": [
+  "ai/ai.js"
+ ],
+ "烧瓶": [
+  "ai/ai.js"
+ ],
+ "实验": [
+  "ai/ai.js"
+ ],
+ "水分子": [
+  "ai/ai.js"
+ ],
+ "猫头鹰博士": [
+  "ai/ai.js"
+ ],
+ "博学": [
+  "ai/ai.js"
+ ],
  "DeepSeek V4 Pro · 深度推理（每次计 3 次额度）": [
   "ai/ai.js"
  ],
@@ -8453,7 +8610,7 @@
  "选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。": [
   "ai/ai.js"
  ],
- "MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。每次问答计 1 次，每月 1 日重置；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
+ "MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次，每月 1 日重置；AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
   "ai/ai.js"
  ],
  "服务商": [
@@ -8535,7 +8692,7 @@
  "自定义接口需要填写接口地址和模型 ID。": [
   "ai/ai.js"
  ],
- "{0} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度里可以选 V4 Flash 或 V4 Pro。": [
+ "{0} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度使用 V4 Flash。": [
   "ai/ai.js"
  ],
  "分析分子静电势用什么软件，有哪些教程？": [
@@ -8568,6 +8725,9 @@
  "你是一位严谨的计算化学与电化学研究助手，服务于 MolAstria 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。": [
   "ai/ai.js"
  ],
+ "{0}来陪你做研究了": [
+  "ai/ai.js"
+ ],
  "点击或按 Esc 跳过": [
   "ai/ai.js"
  ],
@@ -8589,6 +8749,12 @@
  "拖动调整宽度，双击恢复默认": [
   "ai/ai.js"
  ],
+ "更换助手的形象": [
+  "ai/ai.js"
+ ],
+ "选择助手的形象": [
+  "ai/ai.js"
+ ],
  "切换服务商或模型": [
   "ai/ai.js"
  ],
@@ -8602,6 +8768,15 @@
   "ai/ai.js"
  ],
  "发送": [
+  "ai/ai.js"
+ ],
+ "选一位陪你做研究的伙伴": [
+  "ai/ai.js"
+ ],
+ "打开面板时的进场动画": [
+  "ai/ai.js"
+ ],
+ "看一遍": [
   "ai/ai.js"
  ],
  "未配置 · 点此设置": [
@@ -8634,7 +8809,7 @@
  "去设置": [
   "ai/ai.js"
  ],
- "检索到 {0} 条目录资源": [
+ "· 检索到 {0} 条目录资源": [
   "ai/ai.js"
  ],
  "· 生成中…": [
@@ -9003,7 +9178,10 @@
  "{0} 分钟后": [
   "radar/app/app.js"
  ],
- "{0} 小时{1}后": [
+ "{0} 小时 {1} 分钟后": [
+  "radar/app/app.js"
+ ],
+ "{0} 小时后": [
   "radar/app/app.js"
  ],
  "{0} 天后": [
@@ -9019,6 +9197,15 @@
   "radar/app/app.js"
  ],
  "每天 {0}": [
+  "radar/app/app.js"
+ ],
+ "每 {0} 分钟": [
+  "radar/app/app.js"
+ ],
+ "每 {0} 天": [
+  "radar/app/app.js"
+ ],
+ "每 {0} 小时": [
   "radar/app/app.js"
  ],
  "自动推荐": [
@@ -9042,7 +9229,13 @@
  "每日简报": [
   "radar/app/app.js"
  ],
+ "综合": [
+  "radar/app/app.js"
+ ],
  "（PDF 需在浏览器中下载）": [
+  "radar/app/app.js"
+ ],
+ "全选或取消这一组": [
   "radar/app/app.js"
  ],
  "常用": [
@@ -9090,6 +9283,441 @@
  "应用物理": [
   "radar/app/app.js"
  ],
+ "物理": [
+  "radar/app/app.js"
+ ],
+ "宇宙学与非星系天体物理": [
+  "radar/app/app.js"
+ ],
+ "地球与行星天体物理": [
+  "radar/app/app.js"
+ ],
+ "星系天体物理": [
+  "radar/app/app.js"
+ ],
+ "高能天体物理": [
+  "radar/app/app.js"
+ ],
+ "天体物理仪器与方法": [
+  "radar/app/app.js"
+ ],
+ "太阳与恒星天体物理": [
+  "radar/app/app.js"
+ ],
+ "无序系统与神经网络": [
+  "radar/app/app.js"
+ ],
+ "介观与纳米尺度物理": [
+  "radar/app/app.js"
+ ],
+ "其他凝聚态物理": [
+  "radar/app/app.js"
+ ],
+ "量子气体": [
+  "radar/app/app.js"
+ ],
+ "强关联电子": [
+  "radar/app/app.js"
+ ],
+ "超导": [
+  "radar/app/app.js"
+ ],
+ "广义相对论与量子宇宙学": [
+  "radar/app/app.js"
+ ],
+ "高能物理实验": [
+  "radar/app/app.js"
+ ],
+ "格点场论": [
+  "radar/app/app.js"
+ ],
+ "高能物理唯象": [
+  "radar/app/app.js"
+ ],
+ "高能物理理论": [
+  "radar/app/app.js"
+ ],
+ "数学物理": [
+  "radar/app/app.js"
+ ],
+ "适应与自组织系统": [
+  "radar/app/app.js"
+ ],
+ "元胞自动机与格气": [
+  "radar/app/app.js"
+ ],
+ "混沌动力学": [
+  "radar/app/app.js"
+ ],
+ "可积系统": [
+  "radar/app/app.js"
+ ],
+ "斑图与孤子": [
+  "radar/app/app.js"
+ ],
+ "核物理实验": [
+  "radar/app/app.js"
+ ],
+ "核物理理论": [
+  "radar/app/app.js"
+ ],
+ "加速器物理": [
+  "radar/app/app.js"
+ ],
+ "大气与海洋物理": [
+  "radar/app/app.js"
+ ],
+ "原子与分子团簇": [
+  "radar/app/app.js"
+ ],
+ "原子物理": [
+  "radar/app/app.js"
+ ],
+ "经典物理": [
+  "radar/app/app.js"
+ ],
+ "数据分析、统计与概率": [
+  "radar/app/app.js"
+ ],
+ "物理教育": [
+  "radar/app/app.js"
+ ],
+ "流体力学": [
+  "radar/app/app.js"
+ ],
+ "普通物理": [
+  "radar/app/app.js"
+ ],
+ "地球物理": [
+  "radar/app/app.js"
+ ],
+ "物理学史与物理哲学": [
+  "radar/app/app.js"
+ ],
+ "仪器与探测器": [
+  "radar/app/app.js"
+ ],
+ "医学物理": [
+  "radar/app/app.js"
+ ],
+ "光学": [
+  "radar/app/app.js"
+ ],
+ "等离子体物理": [
+  "radar/app/app.js"
+ ],
+ "大众物理": [
+  "radar/app/app.js"
+ ],
+ "物理与社会": [
+  "radar/app/app.js"
+ ],
+ "空间物理": [
+  "radar/app/app.js"
+ ],
+ "数学": [
+  "radar/app/app.js"
+ ],
+ "交换代数": [
+  "radar/app/app.js"
+ ],
+ "代数几何": [
+  "radar/app/app.js"
+ ],
+ "偏微分方程分析": [
+  "radar/app/app.js"
+ ],
+ "代数拓扑": [
+  "radar/app/app.js"
+ ],
+ "经典分析与常微分方程": [
+  "radar/app/app.js"
+ ],
+ "组合数学": [
+  "radar/app/app.js"
+ ],
+ "范畴论": [
+  "radar/app/app.js"
+ ],
+ "复变函数": [
+  "radar/app/app.js"
+ ],
+ "微分几何": [
+  "radar/app/app.js"
+ ],
+ "动力系统": [
+  "radar/app/app.js"
+ ],
+ "泛函分析": [
+  "radar/app/app.js"
+ ],
+ "一般数学": [
+  "radar/app/app.js"
+ ],
+ "一般拓扑": [
+  "radar/app/app.js"
+ ],
+ "群论": [
+  "radar/app/app.js"
+ ],
+ "几何拓扑": [
+  "radar/app/app.js"
+ ],
+ "数学史与综述": [
+  "radar/app/app.js"
+ ],
+ "K 理论与同调": [
+  "radar/app/app.js"
+ ],
+ "数理逻辑": [
+  "radar/app/app.js"
+ ],
+ "度量几何": [
+  "radar/app/app.js"
+ ],
+ "数值分析": [
+  "radar/app/app.js"
+ ],
+ "数论": [
+  "radar/app/app.js"
+ ],
+ "算子代数": [
+  "radar/app/app.js"
+ ],
+ "优化与控制": [
+  "radar/app/app.js"
+ ],
+ "概率论": [
+  "radar/app/app.js"
+ ],
+ "量子代数": [
+  "radar/app/app.js"
+ ],
+ "环与代数": [
+  "radar/app/app.js"
+ ],
+ "表示论": [
+  "radar/app/app.js"
+ ],
+ "辛几何": [
+  "radar/app/app.js"
+ ],
+ "谱理论": [
+  "radar/app/app.js"
+ ],
+ "统计理论": [
+  "radar/app/app.js"
+ ],
+ "计算机科学": [
+  "radar/app/app.js"
+ ],
+ "硬件体系结构": [
+  "radar/app/app.js"
+ ],
+ "计算复杂性": [
+  "radar/app/app.js"
+ ],
+ "计算工程、金融与科学": [
+  "radar/app/app.js"
+ ],
+ "计算几何": [
+  "radar/app/app.js"
+ ],
+ "计算与语言": [
+  "radar/app/app.js"
+ ],
+ "密码学与安全": [
+  "radar/app/app.js"
+ ],
+ "计算机视觉与模式识别": [
+  "radar/app/app.js"
+ ],
+ "计算机与社会": [
+  "radar/app/app.js"
+ ],
+ "分布式、并行与集群计算": [
+  "radar/app/app.js"
+ ],
+ "数字图书馆": [
+  "radar/app/app.js"
+ ],
+ "离散数学": [
+  "radar/app/app.js"
+ ],
+ "数据结构与算法": [
+  "radar/app/app.js"
+ ],
+ "新兴技术": [
+  "radar/app/app.js"
+ ],
+ "形式语言与自动机": [
+  "radar/app/app.js"
+ ],
+ "一般文献": [
+  "radar/app/app.js"
+ ],
+ "图形学": [
+  "radar/app/app.js"
+ ],
+ "计算机科学与博弈论": [
+  "radar/app/app.js"
+ ],
+ "人机交互": [
+  "radar/app/app.js"
+ ],
+ "信息检索": [
+  "radar/app/app.js"
+ ],
+ "信息论": [
+  "radar/app/app.js"
+ ],
+ "计算机科学中的逻辑": [
+  "radar/app/app.js"
+ ],
+ "多智能体系统": [
+  "radar/app/app.js"
+ ],
+ "多媒体": [
+  "radar/app/app.js"
+ ],
+ "数学软件": [
+  "radar/app/app.js"
+ ],
+ "神经与进化计算": [
+  "radar/app/app.js"
+ ],
+ "网络与互联网体系结构": [
+  "radar/app/app.js"
+ ],
+ "其他计算机科学": [
+  "radar/app/app.js"
+ ],
+ "操作系统": [
+  "radar/app/app.js"
+ ],
+ "性能": [
+  "radar/app/app.js"
+ ],
+ "程序设计语言": [
+  "radar/app/app.js"
+ ],
+ "机器人学": [
+  "radar/app/app.js"
+ ],
+ "符号计算": [
+  "radar/app/app.js"
+ ],
+ "声音": [
+  "radar/app/app.js"
+ ],
+ "软件工程": [
+  "radar/app/app.js"
+ ],
+ "社会与信息网络": [
+  "radar/app/app.js"
+ ],
+ "定量生物学": [
+  "radar/app/app.js"
+ ],
+ "细胞行为": [
+  "radar/app/app.js"
+ ],
+ "基因组学": [
+  "radar/app/app.js"
+ ],
+ "分子网络": [
+  "radar/app/app.js"
+ ],
+ "神经元与认知": [
+  "radar/app/app.js"
+ ],
+ "其他定量生物学": [
+  "radar/app/app.js"
+ ],
+ "种群与演化": [
+  "radar/app/app.js"
+ ],
+ "定量方法": [
+  "radar/app/app.js"
+ ],
+ "亚细胞过程": [
+  "radar/app/app.js"
+ ],
+ "组织与器官": [
+  "radar/app/app.js"
+ ],
+ "定量金融": [
+  "radar/app/app.js"
+ ],
+ "计算金融": [
+  "radar/app/app.js"
+ ],
+ "一般金融": [
+  "radar/app/app.js"
+ ],
+ "数理金融": [
+  "radar/app/app.js"
+ ],
+ "投资组合管理": [
+  "radar/app/app.js"
+ ],
+ "证券定价": [
+  "radar/app/app.js"
+ ],
+ "风险管理": [
+  "radar/app/app.js"
+ ],
+ "金融统计": [
+  "radar/app/app.js"
+ ],
+ "交易与市场微观结构": [
+  "radar/app/app.js"
+ ],
+ "统计学": [
+  "radar/app/app.js"
+ ],
+ "应用统计": [
+  "radar/app/app.js"
+ ],
+ "统计计算": [
+  "radar/app/app.js"
+ ],
+ "统计方法": [
+  "radar/app/app.js"
+ ],
+ "统计机器学习": [
+  "radar/app/app.js"
+ ],
+ "其他统计": [
+  "radar/app/app.js"
+ ],
+ "电子工程与系统科学": [
+  "radar/app/app.js"
+ ],
+ "音频与语音处理": [
+  "radar/app/app.js"
+ ],
+ "图像与视频处理": [
+  "radar/app/app.js"
+ ],
+ "信号处理": [
+  "radar/app/app.js"
+ ],
+ "系统与控制": [
+  "radar/app/app.js"
+ ],
+ "经济学": [
+  "radar/app/app.js"
+ ],
+ "计量经济学": [
+  "radar/app/app.js"
+ ],
+ "一般经济学": [
+  "radar/app/app.js"
+ ],
+ "理论经济学": [
+  "radar/app/app.js"
+ ],
  "AI × 化学": [
   "radar/app/app.js"
  ],
@@ -9106,6 +9734,9 @@
   "radar/app/app.js"
  ],
  "化学生物学 / 药物发现": [
+  "radar/app/app.js"
+ ],
+ "文学与数字人文": [
   "radar/app/app.js"
  ],
  "未知原因": [
@@ -9139,9 +9770,6 @@
   "radar/app/app.js"
  ],
  "等待添加兴趣主题": [
-  "radar/app/app.js"
- ],
- "自动推荐 · {0}": [
   "radar/app/app.js"
  ],
  "下次：{0}": [
@@ -9279,7 +9907,7 @@
  "新增 {0} 篇": [
   "radar/app/app.js"
  ],
- "上次 {0}：{1}": [
+ "上次推荐：{0}": [
   "radar/app/app.js"
  ],
  "还没有推荐过": [
@@ -9291,13 +9919,16 @@
  "先启用一个兴趣主题": [
   "radar/app/app.js"
  ],
- "· 网页版只在本页开着时推荐，关掉后再打开会自动补上": [
+ "网页版只在本页开着时推荐，关掉后再打开会自动补上": [
   "radar/app/app.js"
  ],
  "{0}修改频率": [
   "radar/app/app.js"
  ],
- "· {0} 篇未读": [
+ "{0} 篇未读": [
+  "radar/app/app.js"
+ ],
+ "共 {0} 篇": [
   "radar/app/app.js"
  ],
  "全选本批": [
@@ -9327,7 +9958,7 @@
  "推荐 {0}": [
   "radar/app/app.js"
  ],
- "按你的兴趣主题，从 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台自动挑选的新文章": [
+ "按你的兴趣主题，从 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库（理工、医学、社科到人文）自动挑选的新文章": [
   "radar/app/app.js"
  ],
  "{0}全部标为已读": [
@@ -9378,7 +10009,7 @@
  "相关度优先": [
   "radar/app/app.js"
  ],
- "实时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台；勾选结果即可一键导出 PDF": [
+ "实时检索 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库；勾选结果即可一键导出 PDF": [
   "radar/app/app.js"
  ],
  "{0}搜索": [
@@ -9523,6 +10154,9 @@
   "radar/app/app.js"
  ],
  "（可选；不选 = 在全部分类里按关键词找）": [
+  "radar/app/app.js"
+ ],
+ "全部 arXiv 分类（{0} 个，按学科）": [
   "radar/app/app.js"
  ],
  "「预览」会用最近 7 天的新文章试一试，不会保存": [
@@ -10056,7 +10690,7 @@
  "内容太长：这次约 {0} 字，托管额度一次最多 {1} 字。可以清空对话或缩短内容后重试。": [
   "deploy/account-worker.js"
  ],
- "本月 AI 托管额度还剩 {0} 次，这次请求要计 {1} 次（长内容、deepseek-v4-pro 和 AI 实验室会多计）。可以缩短内容、换成 deepseek-flash，或在 AI 设置里换成自己的 key。": [
+ "本月 AI 托管额度还剩 {0} 次，这次请求要计 {1} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。": [
   "deploy/account-worker.js"
  ],
  "本月 {0} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。": [
@@ -10173,6 +10807,12 @@
  "期刊发表：计算化学期刊投稿与发表指南": [
   "tools/build-seo.ts"
  ],
+ "MolAstria 每周精选 · Weekly Picks": [
+  "tools/build-seo.ts"
+ ],
+ "每周一从 ChemRxiv、arXiv 化学物理和计算化学期刊的新论文里挑出值得读的十篇左右，每篇一句解读；前五篇和点评公开。": [
+  "tools/build-seo.ts"
+ ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
   "tools/build-seo.ts"
  ],
@@ -10185,13 +10825,13 @@
  "预印本雷达 PreprintRadar": [
   "tools/build-seo.ts"
  ],
- "同时检索 arXiv、ChemRxiv、bioRxiv 等 12 个预印本平台的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。": [
+ "同时检索 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。": [
   "tools/build-seo.ts"
  ],
- "量子化学计算 QChem Web": [
+ "MolAstria 游乐场": [
   "tools/build-seo.ts"
  ],
- "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。": [
+ "用真实的物理公式玩量子化学的六个小游戏（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。": [
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [

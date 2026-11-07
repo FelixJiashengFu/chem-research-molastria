@@ -43,7 +43,7 @@ const MAX_INPUT_CHARS = 48000;
 const now = () => Math.floor(Date.now() / 1000);
 const monthKey = () => new Date().toISOString().slice(0, 7);
 const quota = (env) => Number(env.MONTHLY_ASKS || 300);
-const hostedModels = (env) => (list(env.HOSTED_MODELS).length ? list(env.HOSTED_MODELS) : ['deepseek-flash', 'deepseek-v4-pro']);
+const hostedModels = (env) => (list(env.HOSTED_MODELS).length ? list(env.HOSTED_MODELS) : ['deepseek-flash']);
 /** How many answers one call to this model counts as: "deepseek-v4-pro:3,other-model:2". */
 const modelWeight = (env, model) => Number(list(env.HOSTED_MODEL_WEIGHTS ?? 'deepseek-v4-pro:3').map((w) => w.split(':')).find(([m]) => m === model)?.[1]) || 1;
 const normEmail = (v) => {
@@ -651,6 +651,9 @@ async function route(request, env, cors) {
     const chars = messages.reduce((n, m) => n + m.content.length, 0);
     if (chars > MAX_INPUT_CHARS) throw fail(413, `内容太长：这次约 ${chars} 字，托管额度一次最多 ${MAX_INPUT_CHARS} 字。可以清空对话或缩短内容后重试。`);
     const tokens = Math.min(Number(body.max_tokens) || UNIT_TOKENS, Number(env.MAX_TOKENS || 12000));
+    // A DeepSeek model the quota no longer offers (an older page, or a saved setting) is answered by the first one it does offer.
+    const offered = hostedModels(env);
+    if (!offered.includes(body.model) && /^deepseek-/.test(String(body.model)) && /^deepseek-/.test(offered[0] || '')) body.model = offered[0];
     const weight = modelWeight(env, body.model);
     // Short calls get their own, larger allowance; anything longer counts as answers, in proportion to what it can cost.
     const aux = Number(body.max_tokens) > 0 && tokens <= AUX_TOKENS && chars <= AUX_CHARS;
@@ -663,7 +666,7 @@ async function route(request, env, cors) {
     if (aux ? u.aux > limit * 2 : u.asks > limit) {
       await counted(-units);
       const left = aux ? 0 : limit - (u.asks - units);
-      if (left > 0) throw fail(429, `本月 AI 托管额度还剩 ${left} 次，这次请求要计 ${units} 次（长内容、deepseek-v4-pro 和 AI 实验室会多计）。可以缩短内容、换成 deepseek-flash，或在 AI 设置里换成自己的 key。`);
+      if (left > 0) throw fail(429, `本月 AI 托管额度还剩 ${left} 次，这次请求要计 ${units} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。`);
       throw fail(429, `本月 ${limit} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。`);
     }
     const res = await forward(body, env, cors, hostedModels(env));
