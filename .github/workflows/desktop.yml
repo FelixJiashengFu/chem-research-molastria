@@ -117,4 +117,6 @@ jobs:
 
             首次打开说明见 https://molastria.com/download/ · First-launch notes: https://molastria.com/download/?lang=en
           files: out/*
-          make_latest: true
+          # Only version tags become "Latest": a manual run (desktop-latest, version 0.1.0 from tauri.conf.json) must not take over
+          # the download buttons and the update feed (it did on 2026-11-07).
+          make_latest: ${{ github.ref_type == 'tag' }}
