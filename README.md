@@ -5,11 +5,27 @@
 <p align="center"><b>计算化学研究导航 · A computational chemistry atlas</b><br>
 <a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a></p>
 
-数据库、软件、教程、论文与开源工具一处检索（2,600 多条，每周四自动更新），配 20 章中英双语讲解手册、计算化学期刊投稿指南、27 个科学大模型的官方链接与价格对比、以查询为中心的资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版；平板和手机上可以把网站添加到主屏幕，全屏使用，看过的页面断网也能读。
+数据库、软件、教程、论文与开源工具一处检索（2,600 多条，每周四自动更新），配 20 章中英双语讲解手册、计算化学期刊投稿指南、27 个科学大模型的官方链接与价格对比、用站长 GPU 上 15 个机器学习原子间势在线计算的模型接口（13 种计算）、以查询为中心的资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版；平板和手机上可以把网站添加到主屏幕，全屏使用，看过的页面断网也能读。
 
-One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (2,600+ entries, refreshed every Thursday), with a 20-chapter handbook in Chinese and English, a guide to computational chemistry journals, official links and a price comparison for 27 scientific language and multimodal models, a query-centred resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app, and on tablets and phones the site can be added to the Home Screen to run full screen, with pages you have opened readable offline.
+One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (2,600+ entries, refreshed every Thursday), with a 20-chapter handbook in Chinese and English, a guide to computational chemistry journals, official links and a price comparison for 27 scientific language and multimodal models, a Model API that runs 13 kinds of calculation on 15 machine-learning interatomic potentials hosted on the site owner's GPU, a query-centred resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app, and on tablets and phones the site can be added to the Home Screen to run full screen, with pages you have opened readable offline.
 
 纯静态网站：`public/` 就是发布目录，不需要后端。 · A static site: `public/` is the published folder; no backend is needed.
+
+## 视频导览 · Video tour
+
+三段短片，都有声音：先看 80 秒的介绍，再看网状查询导览和深色模式下的全站导览。 · Three short films with sound: an 80-second introduction, then a tour of the network and a tour of the whole site in dark mode.
+
+### 介绍短片 · Introduction
+
+<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-introduction.mp4 拖到这一行 / drag MolAstria-introduction.mp4 onto this line -->
+
+### 网状查询导览 · Network tour
+
+<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-network-tour.mp4 拖到这一行 / drag MolAstria-network-tour.mp4 onto this line -->
+
+### 深色模式导览 · Dark-mode tour
+
+<!-- 把 D:\ChemDraw\MolAstria-README-videos\MolAstria-dark-tour.mp4 拖到这一行 / drag MolAstria-dark-tour.mp4 onto this line -->
 
 ## 栏目 · Sections
 
@@ -28,7 +44,8 @@ One place to search computational-chemistry databases, software, tutorials, pape
 | Pro 与下载 Pro & downloads | `public/pro/`, `public/download/` | 价格页与结账窗口（Stripe 托管结账，填好 `public/pay/config.js` 的收款链接即可收款，步骤见 [PAYMENTS.md](PAYMENTS.md)），账号页（付款后自动登录、邮箱验证码登录、AI 托管额度、每周精选和邮件推送、课题组成员；站长永久 Pro，可以发 VIP 卡送朋友开通），服务条款、退款与隐私政策；Windows / macOS 桌面版下载（电脑浏览器里其他页面的左下角有可收起的“下载桌面版”浮窗），以及 iPad / iPhone / 安卓添加到主屏幕的步骤（平板上浮窗变成“添加到主屏幕”）。<br>Pricing page and checkout window (hosted Stripe checkout: add your links to `public/pay/config.js`, see PAYMENTS.md), account page (sign-in after payment or by email code, hosted AI quota, weekly picks by email, group members; the site admin has Pro for good and can issue VIP cards that give friends Pro), terms, refund and privacy pages; Windows and macOS downloads (on desktop browsers, other pages show a foldable "Download Desktop" card in the bottom-left corner), and steps for adding the site to the Home Screen on iPad, iPhone and Android (on tablets the card becomes "Add to Home Screen"). |
 | AI 实验室 AI Lab | `public/lab/index.html` | 闭环电解液分子发现工作台（见下）。<br>Closed-loop electrolyte discovery workbench (below). |
 | Meta × 化学 Meta × Chemistry | `public/meta/index.html` | Muse Spark 识图：从结构图得到 SMILES，RDKit 逐个校验；UMA 脚本生成器：按分子生成 fairchem + ASE 脚本（几何优化、构象搜索、分子动力学、绝热 IP/EA），IP/EA 结果可导入 AI 实验室；桌面版可以用本机 Python 一键运行；FAIR Chemistry 开放的模型与数据集目录（UMA、OMol25、OMat24、OC25、OPoly26 等）。<br>Muse Spark reads structure images into SMILES, checked by RDKit; a UMA script generator writes fairchem + ASE scripts (optimisation, conformers, MD, adiabatic IP/EA) whose IP/EA output imports into the AI Lab, and the desktop app runs it with your own Python; a catalogue of FAIR Chemistry's open models and datasets. |
-| AI 助手 AI assistant | 每页右上角 · top right | “问目录”先检索本站再带出处作答；“自由提问”直接对话。打开面板时播一段片头，点击或按任意键跳过，可在背景面板里关掉。<br>"Ask the catalogue" retrieves site entries and answers with citations; "Open question" talks to the model directly. Opening the panel plays a short intro film; click or press any key to skip it, or turn it off in the background panel. |
+| 模型接口 Model API | `public/models/index.html` | 站长 GPU 上的 15 个机器学习原子间势（Meta 的 UMA、AllScAIP、eSEN，MACE-OMOL-0、MACE-OFF23、MACE-MDP 和 ANI-2x），按类别分成 4 个窗口：带电荷与自旋的分子模型、中性分子通用模型、有机分子力场、分子性质模型。输入 SMILES 或 XYZ 就能在线做 13 种计算：单点能与受力、几何优化、振动频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、电离能与电子亲和能、自旋态能隙、键解离能、质子亲和能、偶极矩与极化率、红外与拉曼光谱，可以让几个模型跑同一个计算对比。请求经账号服务的 `api.molastria.com/uma/*` 转到站长电脑上的服务（`tools/uma-server/`），按计算花费扣每日次数：Meta 的模型（UMA、AllScAIP、eSEN）每位访客每天共 40 次、Pro 200 次，MACE 系列每人 40 次，ANI-2x 只给 Pro（200 次）。结果是机器学习势的预测，不是 DFT。<br>15 machine-learning interatomic potentials on the site owner's GPU (Meta's UMA, AllScAIP and eSEN, plus MACE-OMOL-0, MACE-OFF23, MACE-MDP and ANI-2x) in 4 windows by kind: charged and open-shell molecules, neutral molecules, organic force fields and molecular properties. Enter SMILES or XYZ and run 13 job types online: single point, optimisation, frequencies and thermochemistry, conformer search, dihedral scan, molecular dynamics, reaction energy, ionisation energy and electron affinity, spin-state gap, bond dissociation energy, proton affinity, dipole and polarisability, and IR and Raman spectra; several models can run the same job for comparison. Requests go through the account service at `api.molastria.com/uma/*` to the server on the owner's machine (`tools/uma-server/`), and each job costs part of a daily allowance: 40 a day per visitor shared across Meta's models (UMA, AllScAIP, eSEN; 200 with Pro), 40 for the MACE models for everyone, and ANI-2x for Pro only (200). Results are machine-learning predictions, not DFT. |
+| AI 研究助手 AI research assistant | 每页右上角 · top right（`public/ai/`） | 从右侧滑出的面板：“问目录”先检索本站再带出处作答，“自由提问”直接对话。标题旁可以切换服务商和模型（DeepSeek、Meta Muse、任意 OpenAI 兼容接口；登录 Pro 后多一个不用 key 的“MolAstria Pro”托管额度），左边缘可拖宽，双击恢复默认。打开面板时播一段片头，点击或按任意键跳过，可在背景面板里关掉。<br>A panel that slides in from the right: "Ask the catalogue" retrieves site entries and answers with citations; "Open question" talks to the model directly. The chip next to the title switches provider and model (DeepSeek, Meta Muse, any OpenAI-compatible API, and with Pro a hosted "MolAstria Pro" quota that needs no key); drag the left edge to widen it, double-click to reset. Opening the panel plays a short intro film; click or press any key to skip it, or turn it off in the background panel. |
 | 静态页 Static pages | `public/guide/`, `public/resources/` | 给搜索引擎的讲解章节与资源目录（`tools/build-seo.ts` 生成）。<br>Guide chapters and resource directory for search engines, generated by `tools/build-seo.ts`. |
 
 ## AI 实验室 · AI Lab
@@ -92,13 +109,18 @@ git tag desktop-v0.1.2; git push origin desktop-v0.1.2
 ```text
 public/                     发布目录 · published site
   index.html, app.js         统一搜索 · search
-  shared-nav.css/.js         顶栏、主题、语言与背景按钮 · header, theme, language and background buttons
+  shared-nav.css/.js         顶栏、主题、语言与背景按钮，Pro 与 AI 入口，左下角“下载桌面版”浮窗 · header, theme, language and background buttons, Pro and AI entries, bottom-left "Download Desktop" card
   i18n.js, i18n/en.js        中英切换与英文词典 · language switch and English dictionary
   backdrop.js                10 种艺术背景 · artistic backgrounds
   sw.js, offline.html, manifest.webmanifest, assets/pwa/   添加到主屏幕与离线阅读 · installable web app and offline reading
-  ai/                        AI 接入层与助手 · AI layer and assistant
+  assets/brand/              首页徽标动画与片头视频（转码的小文件）· logo animation and intro film
+  ai/                        AI 接入层与 AI 研究助手面板 · AI layer and the AI research assistant panel
   lab/                       AI 实验室 · AI Lab
   meta/                      Meta × 化学：Muse 识图、UMA 脚本、开放资源 · Meta × Chemistry
+  models/                    模型接口：15 个机器学习势、13 种在线计算 · Model API: 15 ML potentials, 13 job types
+  train/                     训练 Agent · train an agent
+  pro/, pay/                 价格、结账、账号页与条款，收款配置 · pricing, checkout, account, terms, payment config
+  download/                  桌面版下载与添加到主屏幕 · desktop downloads and Home Screen steps
   manual/                    讲解手册阅读器 · Explainer Handbook reader
   atlas/                     数据库与 Agent 工程（手册正文数据也在这里）· databases, Agent engineering, handbook text
   journals/                  期刊发表 · journals and publishing guide
@@ -114,6 +136,7 @@ PAYMENTS.md                  开通收款步骤 · how to turn on payments
 deploy/ai-proxy-worker.js    可选 AI 代理 · optional AI proxy
 deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENTS.md 第 4 节）· Pro accounts
 tools/                       构建、翻译、测试脚本 · build, translation and test scripts
+tools/uma-server/            模型接口的在线服务（站长电脑上的 server.py，经 api.molastria.com/uma/* 接入）· Model API server on the owner's machine
 docs/                        维护文档：结构、操作手册、决定记录、路线图 · maintainer docs
 CLAUDE.md                    给 Claude Code 的项目说明 · project notes for Claude Code
 maintenance/                 目录爬虫与合并（Python，每周四由 .github/workflows/refresh-data.yml 运行）· catalogue crawler
