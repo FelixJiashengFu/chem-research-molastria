@@ -308,9 +308,10 @@
  "Meta × 化学": [
   "index.html"
  ],
- "量子化学计算": [
+ "游乐场": [
   "index.html",
-  "qchem/index.html"
+  "qchem/index.html",
+  "shared-nav.js"
  ],
  "进一步基础科学发现": [
   "index.html",
@@ -1148,7 +1149,8 @@
  ],
  "总览": [
   "hub/index.html",
-  "hub/network.html"
+  "hub/network.html",
+  "qchem/index.html"
  ],
  "探索": [
   "hub/index.html",
@@ -1590,7 +1592,8 @@
   "lab/index.html"
  ],
  "清空": [
-  "lab/index.html"
+  "lab/index.html",
+  "qchem/index.html"
  ],
  "当前是合成演示数据。": [
   "lab/index.html"
@@ -4817,24 +4820,288 @@
  "苟日新，日日新": [
   "radar/app/index.html"
  ],
- "量子化学计算 · HF/DFT、CCSD(T)、VQE 与量子点 · MolAstria": [
+ "游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria": [
   "qchem/index.html"
  ],
- "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。": [
-  "qchem/index.html",
-  "tools/build-seo.ts"
+ "跳到游乐场内容": [
+  "qchem/index.html"
  ],
- "量子化学计算需要启用 JavaScript。": [
+ "量子化学计算器": [
+  "qchem/index.html"
+ ],
+ "盒中粒子调颜色": [
+  "qchem/index.html"
+ ],
+ "猜轨道": [
+  "qchem/index.html"
+ ],
+ "电子排布": [
+  "qchem/index.html"
+ ],
+ "量子隧穿闯关": [
+  "qchem/index.html"
+ ],
+ "芳香性判断": [
+  "qchem/index.html"
+ ],
+ "氢原子光谱": [
+  "qchem/index.html"
+ ],
+ "用真实的物理公式玩量子化学。六个小游戏各练一个概念，每个游戏背后的公式都写在“原理与局限”里，并用已知结果测试过；另有一个在浏览器里运行的量子化学计算器。": [
+  "qchem/index.html"
+ ],
+ "从零写成的量子化学程序：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。全部在你的浏览器里计算，每个模块都与 PySCF 逐项对拍。": [
+  "qchem/index.html"
+ ],
+ "打开计算器": [
+  "qchem/index.html"
+ ],
+ "把共轭分子的 π 电子看成盒子里的粒子：调链长和电子数，让分子吸收目标颜色的光。": [
+  "qchem/index.html"
+ ],
+ "开始": [
+  "qchem/index.html"
+ ],
+ "看一张氢原子波函数的截面图，数节点、看相位，说出它是哪个轨道。": [
+  "qchem/index.html"
+ ],
+ "按构造原理、泡利原理和洪特规则，把电子一个个放进轨道，排出前 36 号元素的基态。": [
+  "qchem/index.html"
+ ],
+ "调势垒的宽度、高度和粒子能量，让电子或质子按指定的概率穿过去，再发射一批粒子看看结果。": [
+  "qchem/index.html"
+ ],
+ "数一数环上的 π 电子，判断芳香还是反芳香，再用 Frost 圆看 Hückel 能级怎么填。": [
+  "qchem/index.html"
+ ],
+ "给你一条谱线的波长，找出是哪两个能级之间的跃迁发出的。": [
+  "qchem/index.html"
+ ],
+ "这些是教学模型，各有简化，每个游戏的“原理与局限”写明了它省略了什么。成绩只保存在当前浏览器里。": [
+  "qchem/index.html"
+ ],
+ "游戏 01 · 自由电子模型": [
+  "qchem/index.html"
+ ],
+ "共轭链上的 π 电子可以近似看成关在一维盒子里的粒子。最高占据能级（HOMO）的电子吸收一个光子跳到最低空能级（LUMO），吸收的波长由盒子长度和电子数决定。": [
+  "qchem/index.html"
+ ],
+ "目标：让分子吸收和左边色块一样颜色的光（误差 8 nm 以内）。": [
+  "qchem/index.html"
+ ],
+ "目标吸收色": [
+  "qchem/index.html"
+ ],
+ "你的分子吸收": [
+  "qchem/index.html"
+ ],
+ "溶液大致呈现": [
+  "qchem/index.html"
+ ],
+ "互补色": [
+  "qchem/index.html"
+ ],
+ "π 电子数 N": [
+  "qchem/index.html"
+ ],
+ "盒子长度 L": [
+  "qchem/index.html"
+ ],
+ "换一个目标": [
+  "qchem/index.html"
+ ],
+ "看目标波长": [
+  "qchem/index.html"
+ ],
+ "每条横线是一个能级 Eₙ ∝ n²，箭头是电子（每个能级最多两个）。彩色箭头是吸收光子的跃迁。": [
+  "qchem/index.html"
+ ],
+ "原理与局限": [
+  "qchem/index.html"
+ ],
+ "长度为 L 的一维盒子里，电子的能级是": [
+  "qchem/index.html"
+ ],
+ "N 个 π 电子两两成对填满前 N/2 个能级，HOMO 是 n = N/2，LUMO 是 n = N/2 + 1，所以吸收的波长是": [
+  "qchem/index.html"
+ ],
+ "这是 Kuhn 等人在 1940 年代用来解释花菁类染料颜色的自由电子模型。它忽略了电子之间的相互作用、链两端的杂原子和链上的键长交替，所以只能定性地给出“链越长、吸收越红”的趋势；对键长交替明显的多烯，误差会很大。色块用的是波长到 RGB 的近似换算，屏幕上的颜色只是示意，“互补色”也只是粗略的说法。": [
+  "qchem/index.html"
+ ],
+ "游戏 02 · 氢原子波函数": [
+  "qchem/index.html"
+ ],
+ "下面是一个氢原子轨道在 y = 0 平面上的截面。看节点（波函数为零、颜色断开的地方）和相位（两种颜色），选出它是哪一个。": [
+  "qchem/index.html"
+ ],
+ "数一数：圆形节点是径向节点（n − l − 1 个），穿过原子核的节线来自角向节面（l 个）。": [
+  "qchem/index.html"
+ ],
+ "下一题": [
+  "qchem/index.html"
+ ],
+ "金色是正相位，蓝色是负相位；亮度随 |ψ|² 增大（做了幂次压缩，外圈才看得清）。横轴是 x，纵轴是 z。": [
+  "qchem/index.html"
+ ],
+ "氢原子的波函数可以写成径向部分和角向部分的乘积，图里用的是实数形式的轨道（px、dxz 等是复数球谐函数的组合）：": [
+  "qchem/index.html"
+ ],
+ "径向部分 Rₙₗ 有 n − l − 1 个零点，在截面上是圆形节点；角向部分有 l 个节面（或节锥），在截面上是穿过原子核的直线。例如 3pz 有一个径向节点和一个节面（xy 平面），3dz² 的节面是两个圆锥（3cos²θ = 1）。": [
+  "qchem/index.html"
+ ],
+ "截面只看 y = 0 这一个平面：dx²−y² 的两个节面 x = ±y 在这个平面里只剩下 z 轴一条线，所以它的截面和 px 很像，要靠相位分辨（dx²−y² 两边同号，px 两边异号）。只画了 n ≤ 3 的轨道，坐标以玻尔半径 a₀ 为单位，各题的视野大小不同。": [
+  "qchem/index.html"
+ ],
+ "游戏 03 · 构造原理、泡利原理、洪特规则": [
+  "qchem/index.html"
+ ],
+ "点轨道格子放电子：点一次放一个，点两次成对，点三次清空。排好后检查，看是否是这个元素的基态电子排布。": [
+  "qchem/index.html"
+ ],
+ "检查": [
+  "qchem/index.html"
+ ],
+ "看答案": [
+  "qchem/index.html"
+ ],
+ "换一个元素": [
+  "qchem/index.html"
+ ],
+ "从下往上能量升高（中性原子的大致顺序）。每个格子是一个轨道，最多放两个自旋相反的电子。": [
+  "qchem/index.html"
+ ],
+ "三条规则：构造原理（按能量从低到高填，顺序是 1s 2s 2p 3s 3p 4s 3d 4p，即 n + l 小的先填，相同时 n 小的先填）；泡利原理（一个轨道最多两个电子，自旋相反）；洪特规则（同一亚层里先每个轨道各放一个、自旋平行，再成对）。": [
+  "qchem/index.html"
+ ],
+ "前 36 号元素里有两个例外：铬是 [Ar] 3d⁵4s¹，铜是 [Ar] 3d¹⁰4s¹，这是光谱实验测得的基态。教科书常说“半满和全满的 d 亚层更稳定”，更准确的原因是 3d 和 4s 能量非常接近，交换作用和电子排斥决定了谁更低，构造原理只是一个经验顺序。这里只考虑中性原子的基态；离子（例如 Fe²⁺ 先失去 4s 电子）不在游戏里。": [
+  "qchem/index.html"
+ ],
+ "游戏 04 · 一维方势垒": [
+  "qchem/index.html"
+ ],
+ "经典粒子能量不够就翻不过势垒，量子粒子却有一定概率穿过去，能量够了也可能被弹回来。完成四个关卡，再自由试试。": [
+  "qchem/index.html"
+ ],
+ "电子": [
+  "qchem/index.html"
+ ],
+ "质子": [
+  "qchem/index.html"
+ ],
+ "粒子能量 E": [
+  "qchem/index.html"
+ ],
+ "势垒高度 V₀": [
+  "qchem/index.html"
+ ],
+ "势垒宽度 a": [
+  "qchem/index.html"
+ ],
+ "发射 60 个粒子": [
+  "qchem/index.html"
+ ],
+ "灰色块是势垒，虚线是粒子能量，曲线是概率密度 |ψ|²（左边入射波和反射波干涉，右边是透射波）。下方是发射出去的粒子。": [
+  "qchem/index.html"
+ ],
+ "粒子从左边入射，在势垒两侧和内部分别写出薛定谔方程的解，要求波函数和它的导数在两个边界连续，就能精确求出透射概率 T 和反射概率 R（T + R = 1）。能量低于势垒时：": [
+  "qchem/index.html"
+ ],
+ "能量高于势垒时 sinh 换成 sin，κ 换成 k′ = √(2m(E − V₀))/ħ；当 k′a = π, 2π, … 时 T = 1，叫共振透射。质子比电子重 1836 倍，κ 大约 43 倍，所以同样的势垒它几乎穿不过去，这也是化学里氢转移隧穿效应只在很窄的势垒上明显的原因。": [
+  "qchem/index.html"
+ ],
+ "这里的势垒是理想的方形，粒子是单一能量的平面波；真实分子里的势垒是平滑的，常用 WKB 近似或更完整的量子动力学处理。发射粒子是按 T 随机决定每个粒子穿过还是弹回，所以每次的数目会有起伏。": [
+  "qchem/index.html"
+ ],
+ "游戏 05 · Hückel 理论": [
+  "qchem/index.html"
+ ],
+ "平面、单环、完全共轭的体系，π 电子数是 4n + 2 时是芳香的，是 4n 时是反芳香的。先数清楚 π 电子，再作答。": [
+  "qchem/index.html"
+ ],
+ "芳香：4n + 2 个 π 电子": [
+  "qchem/index.html"
+ ],
+ "反芳香：4n 个 π 电子": [
+  "qchem/index.html"
+ ],
+ "左边是环（假设为平面），右边是 Frost 圆：把正多边形顶点朝下内接在圆里，每个顶点的高度就是一个 π 轨道的能量。": [
+  "qchem/index.html"
+ ],
+ "N 元环的 Hückel π 轨道能量是": [
+  "qchem/index.html"
+ ],
+ "最低的能级只有一个，往上的能级两两简并。4n + 2 个电子正好填满成对的能级，形成闭壳层，比同样数目的孤立双键更稳定（苯的离域能是 2β）；4n 个电子会让最高一对简并能级各剩一个电子，在 Hückel 理论里是不稳定的开壳层。每个碳提供一个 p 电子，正电荷少一个、负电荷多一个。": [
+  "qchem/index.html"
+ ],
+ "局限：真实分子不一定是平面的。环辛四烯是澡盆形，π 键不共轭，实际上是非芳香的；环丁二烯会扭成长方形，但仍然很不稳定。游戏里的题目都按“假设它是平面的”来判断，“离域能”以同样数目的孤立双键为参照，是 Hückel 近似下的数值。": [
+  "qchem/index.html"
+ ],
+ "游戏 06 · 里德伯公式": [
+  "qchem/index.html"
+ ],
+ "电子从高能级跳到低能级时放出一个光子。给你一条谱线的波长，选出起点和终点能级，看能不能发出这条线。三次以内找到算赢。": [
+  "qchem/index.html"
+ ],
+ "从能级（上）": [
+  "qchem/index.html"
+ ],
+ "跳到能级（下）": [
+  "qchem/index.html"
+ ],
+ "发射光子": [
+  "qchem/index.html"
+ ],
+ "换一条谱线": [
+  "qchem/index.html"
+ ],
+ "上面是能级 Eₙ = −13.6 eV / n²（纵轴做了拉伸，高能级才分得开），下面是光谱（对数坐标）。金色虚线是要找的谱线，你发出的光子画在光谱上。": [
+  "qchem/index.html"
+ ],
+ "氢原子发出的光子波长满足里德伯公式：": [
+  "qchem/index.html"
+ ],
+ "n₁ = 1 是莱曼系（紫外），n₁ = 2 是巴耳末系（其中 4 条在可见光区），n₁ = 3 是帕邢系（红外）。R_H 已经按氢原子的约化质量修正，给出的是真空中的波长；空气中的波长短约 0.03%，所以手册里的 Hα 常写 656.28 nm，这里是 656.47 nm。精细结构、兰姆位移等更小的分裂没有考虑。": [
+  "qchem/index.html"
+ ],
+ "游乐场需要启用 JavaScript。": [
+  "qchem/index.html"
+ ],
+ "量子化学计算器 QChem Web": [
+  "qchem/index.html"
+ ],
+ "能级图：电子填充和 HOMO 到 LUMO 的跃迁": [
+  "qchem/index.html"
+ ],
+ "氢原子轨道的截面图": [
+  "qchem/index.html"
+ ],
+ "轨道格子，能量从下往上升高": [
+  "qchem/index.html"
+ ],
+ "关卡": [
+  "qchem/index.html"
+ ],
+ "粒子": [
+  "qchem/index.html"
+ ],
+ "势垒、粒子能量和概率密度": [
+  "qchem/index.html"
+ ],
+ "环的结构和 Frost 圆能级图": [
+  "qchem/index.html"
+ ],
+ "上能级": [
+  "qchem/index.html"
+ ],
+ "下能级": [
+  "qchem/index.html"
+ ],
+ "氢原子能级图和光谱": [
   "qchem/index.html"
  ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
- ],
- "量子化学": [
-  "shared-nav.js",
-  "tags",
-  "categories"
  ],
  "训练 Agent": [
   "shared-nav.js",
@@ -5886,6 +6153,217 @@
  ],
  "分量": [
   "fundamental-science/fundamental.js"
+ ],
+ "已过 {0} / {1} 关": [
+  "qchem/play.js"
+ ],
+ "已调出 {0} 种颜色": [
+  "qchem/play.js"
+ ],
+ "最佳连续答对 {0} 题": [
+  "qchem/play.js"
+ ],
+ "连续答对 {0} · 最佳 {1}": [
+  "qchem/play.js"
+ ],
+ "本次已调出 {0} 种 · 累计 {1} 种": [
+  "qchem/play.js"
+ ],
+ "{0} nm（紫外）": [
+  "qchem/play.js"
+ ],
+ "{0} nm（红外）": [
+  "qchem/play.js"
+ ],
+ "调出来了：吸收 {0} nm，目标 {1} nm。看过提示，这次不计分。": [
+  "qchem/play.js"
+ ],
+ "成功！吸收 {0} nm，目标 {1} nm。": [
+  "qchem/play.js"
+ ],
+ "吸收的波长太长（偏红）：缩短盒子，或增加 π 电子数。": [
+  "qchem/play.js"
+ ],
+ "吸收的波长太短（偏蓝）：加长盒子，或减少 π 电子数。": [
+  "qchem/play.js"
+ ],
+ "能量 (eV)": [
+  "qchem/play.js"
+ ],
+ "更低的 {0} 个能级也已填满": [
+  "qchem/play.js"
+ ],
+ "答对了！{0}：径向节点 {1} 个，角向节点 {2} 个。": [
+  "qchem/play.js"
+ ],
+ "不对，这是 {0}：径向节点 {1} 个，角向节点 {2} 个。": [
+  "qchem/play.js"
+ ],
+ "{0} 轨道 {1}：{2} 个电子": [
+  "qchem/play.js"
+ ],
+ "已放 {0} / {1} 个电子": [
+  "qchem/play.js"
+ ],
+ "正确！{0}：{1}": [
+  "qchem/play.js"
+ ],
+ "电子数不对：放了 {0} 个，{1} 有 {2} 个电子。": [
+  "qchem/play.js"
+ ],
+ "{0} 亚层不符合洪特规则：先在每个轨道各放一个自旋平行的电子，再成对。": [
+  "qchem/play.js"
+ ],
+ "{0} 亚层应该有 {1} 个电子，你放了 {2} 个。按 1s 2s 2p 3s 3p 4s 3d 4p 的顺序填。": [
+  "qchem/play.js"
+ ],
+ "铬是例外：实验测得的基态是 [Ar] 3d⁵4s¹，不是 3d⁴4s²。": [
+  "qchem/play.js"
+ ],
+ "铜是例外：实验测得的基态是 [Ar] 3d¹⁰4s¹，不是 3d⁹4s²。": [
+  "qchem/play.js"
+ ],
+ "答案：{0}": [
+  "qchem/play.js"
+ ],
+ "电子的能量是 0.5 eV，势垒高 1 eV。调势垒宽度，让 9% 到 11% 的电子穿过去。": [
+  "qchem/play.js"
+ ],
+ "势垒高 2 eV、宽 0.2 nm，电子的能量始终低于势垒。调能量，让透射率落在 50% 到 60%。": [
+  "qchem/play.js"
+ ],
+ "换成质子，能量和势垒高度与第 1 关相同。质子比电子重 1836 倍：势垒要窄到多少，才有 1% 以上的质子穿过去？": [
+  "qchem/play.js"
+ ],
+ "能量高过势垒，电子也可能被弹回来。势垒高 1 eV、宽 1 nm：找一个能量，让透射率超过 99.9%（共振透射）。": [
+  "qchem/play.js"
+ ],
+ "自由玩：随便调三个参数，换成质子试试，再发射一批粒子看看。": [
+  "qchem/play.js"
+ ],
+ "透射概率 T": [
+  "qchem/play.js"
+ ],
+ "反射概率 R": [
+  "qchem/play.js"
+ ],
+ "德布罗意波长": [
+  "qchem/play.js"
+ ],
+ "势垒里的衰减长度 1/κ": [
+  "qchem/play.js"
+ ],
+ "过关！透射率 {0}。": [
+  "qchem/play.js"
+ ],
+ "透射率 {0}，目标 {1}。": [
+  "qchem/play.js"
+ ],
+ "透射率 {0}，反射率 {1}。": [
+  "qchem/play.js"
+ ],
+ "弹回 {0}": [
+  "qchem/play.js"
+ ],
+ "穿过 {0}": [
+  "qchem/play.js"
+ ],
+ "穿过 {0} 个，弹回 {1} 个（理论透射率 {2}）。": [
+  "qchem/play.js"
+ ],
+ "第 {0} 关": [
+  "qchem/play.js"
+ ],
+ "自由玩": [
+  "qchem/play.js"
+ ],
+ "{0} 元环，电荷 {1}。假设环是平面的，它是芳香的还是反芳香的？": [
+  "qchem/play.js"
+ ],
+ "答对了！{0} 个 π 电子 = 4×{1} + 2，芳香。": [
+  "qchem/play.js"
+ ],
+ "不对。{0} 个 π 电子 = 4×{1} + 2，是芳香的。": [
+  "qchem/play.js"
+ ],
+ "答对了！{0} 个 π 电子 = 4×{1}，反芳香。": [
+  "qchem/play.js"
+ ],
+ "不对。{0} 个 π 电子 = 4×{1}，是反芳香的。": [
+  "qchem/play.js"
+ ],
+ "π 电子数": [
+  "qchem/play.js"
+ ],
+ "π 电子能量": [
+  "qchem/play.js"
+ ],
+ "离域能": [
+  "qchem/play.js"
+ ],
+ "电子结构": [
+  "qchem/play.js"
+ ],
+ "开壳层（Hückel 理论里不稳定）": [
+  "qchem/play.js"
+ ],
+ "闭壳层": [
+  "qchem/play.js"
+ ],
+ "真实分子": [
+  "qchem/play.js"
+ ],
+ "澡盆形，不共轭，实际上是非芳香的": [
+  "qchem/play.js"
+ ],
+ "扭成长方形，仍然极不稳定": [
+  "qchem/play.js"
+ ],
+ "{0} 元环": [
+  "qchem/play.js"
+ ],
+ "能量（β 为负，越往下越稳定）": [
+  "qchem/play.js"
+ ],
+ "位于紫外区，眼睛看不见": [
+  "qchem/play.js"
+ ],
+ "位于可见光区": [
+  "qchem/play.js"
+ ],
+ "位于红外区，眼睛看不见": [
+  "qchem/play.js"
+ ],
+ "目标谱线：λ = {0} nm": [
+  "qchem/play.js"
+ ],
+ "找到了！{0} → {1}，{2}，{3} nm。": [
+  "qchem/play.js"
+ ],
+ "超过三次，这条不计分。": [
+  "qchem/play.js"
+ ],
+ "{0} → {1} 发出 {2} nm（{3}），不是这条。": [
+  "qchem/play.js"
+ ],
+ "波长太长，说明能量差太小。": [
+  "qchem/play.js"
+ ],
+ "波长太短，说明能量差太大。": [
+  "qchem/play.js"
+ ],
+ "紫外": [
+  "qchem/play.js"
+ ],
+ "可见": [
+  "qchem/play.js"
+ ],
+ "红外": [
+  "qchem/play.js",
+  "models/models.js"
+ ],
+ "目标": [
+  "qchem/play.js"
  ],
  "软件/官网": [
   "hub/app.js",
@@ -7718,9 +8196,6 @@
   "models/models.js"
  ],
  "结构用 {0} 优化，偶极矩和极化率由 MACE-MDP 预测。": [
-  "models/models.js"
- ],
- "红外": [
   "models/models.js"
  ],
  "拉曼": [
@@ -9716,6 +10191,9 @@
  "量子化学计算 QChem Web": [
   "tools/build-seo.ts"
  ],
+ "在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。": [
+  "tools/build-seo.ts"
+ ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [
   "tools/build-seo.ts"
  ],
@@ -10791,6 +11269,10 @@
  ],
  "VASP/第一性原理": [
   "tags"
+ ],
+ "量子化学": [
+  "tags",
+  "categories"
  ],
  "化学信息与建模": [
   "tags",

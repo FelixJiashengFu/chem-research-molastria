@@ -3,50 +3,238 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="在浏览器里做量子化学和量子点计算：从零实现的 Gaussian 积分、HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点（核/壳有效质量模型、经验尺寸曲线）、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍，不上传任何数据。">
+  <meta name="description" content="MolAstria 游乐场：用真实的物理公式玩量子化学。盒中粒子调颜色、猜氢原子轨道、电子排布、量子隧穿闯关、Hückel 芳香性、氢原子光谱寻线六个小游戏，以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。">
   <meta name="theme-color" content="#173f34">
-  <title>量子化学计算 · HF/DFT、CCSD(T)、VQE 与量子点 · MolAstria</title>
+  <title>游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/qchem/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
-  <meta property="og:title" content="量子化学计算 · HF/DFT、CCSD(T)、VQE 与量子点 · MolAstria">
-  <meta property="og:description" content="在浏览器里做量子化学和量子点计算：从零实现的 Gaussian 积分、HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点（核/壳有效质量模型、经验尺寸曲线）、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍，不上传任何数据。">
+  <meta property="og:title" content="游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria">
+  <meta property="og:description" content="MolAstria 游乐场：用真实的物理公式玩量子化学。盒中粒子调颜色、猜氢原子轨道、电子排布、量子隧穿闯关、Hückel 芳香性、氢原子光谱寻线六个小游戏，以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。">
   <meta property="og:url" content="https://molastria.com/qchem/">
   <meta property="og:image" content="https://molastria.com/og.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
   <meta property="og:locale" content="zh_CN">
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"量子化学计算 QChem Web","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://molastria.com/qchem/","isAccessibleForFree":true,"codeRepository":"https://github.com/FelixJiashengFu/qchem-web","description":"在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MolAstria 游乐场","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"zh-CN","url":"https://molastria.com/qchem/","isAccessibleForFree":true,"description":"用真实的物理公式玩量子化学的六个小游戏（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），以及在浏览器里运行的量子化学计算器 QChem Web。"}</script>
   <!-- seo:end -->
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
   <script src="../i18n.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
-  <style>
-    html, body { height: 100%; }
-    body.qchem-page { display: flex; flex-direction: column; height: 100dvh; margin: 0; overflow: hidden; }
-    .qchem-frame { flex: 1; display: block; width: 100%; min-height: 0; border: 0; background: #0d1117; }
-    .qchem-page noscript p { padding: 24px; }
-    .qchem-about { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  </style>
+  <link rel="stylesheet" href="play.css">
   <script src="../shared-nav.js" defer></script>
+  <script src="play-models.js" defer></script>
+  <script src="play.js" defer></script>
 </head>
-<body data-section="qchem" class="qchem-page">
-<!-- 量子化学计算 QChem Web（https://github.com/FelixJiashengFu/qchem-web），由 tools/vendor-qchem.ts 复制到 app/。
-     全部计算在访问者的浏览器里完成，不请求网络。它自带中英文词典，界面只有深色一种。 -->
-<h1 class="qchem-about">量子化学计算</h1>
-<p class="qchem-about">在浏览器里做量子化学和量子点计算：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。每个模块都与 PySCF 逐项对拍。</p>
-<iframe class="qchem-frame" id="qchem-frame" title="量子化学计算"></iframe>
-<noscript><p>量子化学计算需要启用 JavaScript。</p></noscript>
+<body data-section="qchem" class="qchem-page" data-view="home">
+<!-- 游乐场：六个小游戏（play.js，物理在 play-models.js，tools/play-test.mjs 测）和量子化学计算器 QChem Web。
+     计算器来自 https://github.com/FelixJiashengFu/qchem-web，由 tools/vendor-qchem.ts 复制到 app/，在访问者的浏览器里计算，
+     自带中英文词典，界面只有深色一种。地址 #play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器（如 #qd）。 -->
+<a class="skip" href="#play-main">跳到游乐场内容</a>
+<nav class="play-tabs" id="play-tabs" aria-label="游乐场">
+  <a href="#play" data-view="home">总览</a>
+  <a href="#lab" data-view="lab" class="play-tab-lab">量子化学计算器</a>
+  <a href="#play-box" data-view="box">盒中粒子调颜色</a>
+  <a href="#play-orbital" data-view="orbital">猜轨道</a>
+  <a href="#play-config" data-view="config">电子排布</a>
+  <a href="#play-tunnel" data-view="tunnel">量子隧穿闯关</a>
+  <a href="#play-ring" data-view="ring">芳香性判断</a>
+  <a href="#play-lines" data-view="lines">氢原子光谱</a>
+</nav>
+<div class="qchem-box" id="play-lab" hidden><iframe class="qchem-frame" id="qchem-frame" title="量子化学计算器 QChem Web" data-display-frame></iframe></div>
+
+<main class="play-main" id="play-main" tabindex="-1">
+  <!-- 总览 -->
+  <section class="play-view" data-view="home" aria-labelledby="play-h1">
+    <header class="play-hero">
+      <p class="eyebrow">MOLASTRIA · PLAYGROUND</p>
+      <h1 id="play-h1">游乐场<span lang="en" translate="no">Playground</span></h1>
+      <p class="play-lead">用真实的物理公式玩量子化学。六个小游戏各练一个概念，每个游戏背后的公式都写在“原理与局限”里，并用已知结果测试过；另有一个在浏览器里运行的量子化学计算器。</p>
+    </header>
+    <div class="play-cards">
+      <a class="play-card play-card-lab" href="#lab"><span class="play-card-n">QCHEM WEB</span><h2>量子化学计算器</h2>
+        <p>从零写成的量子化学程序：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。全部在你的浏览器里计算，每个模块都与 PySCF 逐项对拍。</p>
+        <span class="play-go">打开计算器 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-box"><span class="play-card-n">01</span><h2>盒中粒子调颜色</h2>
+        <p>把共轭分子的 π 电子看成盒子里的粒子：调链长和电子数，让分子吸收目标颜色的光。</p>
+        <span class="play-best" data-best="box"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-orbital"><span class="play-card-n">02</span><h2>猜轨道</h2>
+        <p>看一张氢原子波函数的截面图，数节点、看相位，说出它是哪个轨道。</p>
+        <span class="play-best" data-best="orbital"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-config"><span class="play-card-n">03</span><h2>电子排布</h2>
+        <p>按构造原理、泡利原理和洪特规则，把电子一个个放进轨道，排出前 36 号元素的基态。</p>
+        <span class="play-best" data-best="config"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-tunnel"><span class="play-card-n">04</span><h2>量子隧穿闯关</h2>
+        <p>调势垒的宽度、高度和粒子能量，让电子或质子按指定的概率穿过去，再发射一批粒子看看结果。</p>
+        <span class="play-best" data-best="tunnel"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-ring"><span class="play-card-n">05</span><h2>芳香性判断</h2>
+        <p>数一数环上的 π 电子，判断芳香还是反芳香，再用 Frost 圆看 Hückel 能级怎么填。</p>
+        <span class="play-best" data-best="ring"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card" href="#play-lines"><span class="play-card-n">06</span><h2>氢原子光谱</h2>
+        <p>给你一条谱线的波长，找出是哪两个能级之间的跃迁发出的。</p>
+        <span class="play-best" data-best="lines"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+    </div>
+    <p class="play-honest">这些是教学模型，各有简化，每个游戏的“原理与局限”写明了它省略了什么。成绩只保存在当前浏览器里。</p>
+  </section>
+
+  <!-- 1 盒中粒子 -->
+  <section class="play-view" data-view="box" hidden aria-labelledby="box-h">
+    <header class="play-head"><p class="eyebrow">游戏 01 · 自由电子模型</p><h2 id="box-h">盒中粒子调颜色</h2>
+      <p class="play-lead">共轭链上的 π 电子可以近似看成关在一维盒子里的粒子。最高占据能级（HOMO）的电子吸收一个光子跳到最低空能级（LUMO），吸收的波长由盒子长度和电子数决定。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <p class="play-task">目标：让分子吸收和左边色块一样颜色的光（误差 8 nm 以内）。</p>
+        <div class="play-swatches">
+          <span class="play-swatch"><i id="box-target"></i>目标吸收色<b id="box-target-v">？</b></span>
+          <span class="play-swatch"><i id="box-mine"></i>你的分子吸收<b id="box-mine-v"></b></span>
+          <span class="play-swatch"><i id="box-seen"></i>溶液大致呈现<b>互补色</b></span>
+        </div>
+        <label>π 电子数 N<span><input type="range" id="box-n" min="2" max="16" step="2" value="6"><output id="box-n-v"></output></span></label>
+        <label>盒子长度 L<span><input type="range" id="box-l" min="0.40" max="2.40" step="0.01" value="1.10"><output id="box-l-v"></output></span></label>
+        <p class="play-msg" id="box-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="box-new">换一个目标</button><button type="button" class="button" id="box-hint">看目标波长</button></div>
+        <p class="play-score" data-score="box"></p>
+      </div>
+      <figure class="play-fig"><canvas id="box-cv" width="720" height="440" role="img" aria-label="能级图：电子填充和 HOMO 到 LUMO 的跃迁"></canvas>
+        <figcaption>每条横线是一个能级 Eₙ ∝ n²，箭头是电子（每个能级最多两个）。彩色箭头是吸收光子的跃迁。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>长度为 L 的一维盒子里，电子的能级是</p><span class="play-formula">Eₙ = n²h² / (8mₑL²)，n = 1, 2, 3, …</span>
+      <p>N 个 π 电子两两成对填满前 N/2 个能级，HOMO 是 n = N/2，LUMO 是 n = N/2 + 1，所以吸收的波长是</p>
+      <span class="play-formula">ΔE = (N + 1)h² / (8mₑL²)，λ = 8mₑcL² / (h(N + 1))</span>
+      <p>这是 Kuhn 等人在 1940 年代用来解释花菁类染料颜色的自由电子模型。它忽略了电子之间的相互作用、链两端的杂原子和链上的键长交替，所以只能定性地给出“链越长、吸收越红”的趋势；对键长交替明显的多烯，误差会很大。色块用的是波长到 RGB 的近似换算，屏幕上的颜色只是示意，“互补色”也只是粗略的说法。</p>
+    </div></details>
+  </section>
+
+  <!-- 2 猜轨道 -->
+  <section class="play-view" data-view="orbital" hidden aria-labelledby="orb-h">
+    <header class="play-head"><p class="eyebrow">游戏 02 · 氢原子波函数</p><h2 id="orb-h">猜轨道</h2>
+      <p class="play-lead">下面是一个氢原子轨道在 y = 0 平面上的截面。看节点（波函数为零、颜色断开的地方）和相位（两种颜色），选出它是哪一个。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <p class="play-task">数一数：圆形节点是径向节点（n − l − 1 个），穿过原子核的节线来自角向节面（l 个）。</p>
+        <div class="play-choices" id="orb-choices"></div>
+        <p class="play-msg" id="orb-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="orb-next">下一题</button></div>
+        <p class="play-score" data-score="orbital"></p>
+      </div>
+      <figure class="play-fig"><canvas id="orb-cv" width="560" height="560" role="img" aria-label="氢原子轨道的截面图"></canvas>
+        <figcaption>金色是正相位，蓝色是负相位；亮度随 |ψ|² 增大（做了幂次压缩，外圈才看得清）。横轴是 x，纵轴是 z。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>氢原子的波函数可以写成径向部分和角向部分的乘积，图里用的是实数形式的轨道（px、dxz 等是复数球谐函数的组合）：</p>
+      <span class="play-formula">ψₙₗₘ(r, θ, φ) = Rₙₗ(r) · Yₗₘ(θ, φ)</span>
+      <p>径向部分 Rₙₗ 有 n − l − 1 个零点，在截面上是圆形节点；角向部分有 l 个节面（或节锥），在截面上是穿过原子核的直线。例如 3pz 有一个径向节点和一个节面（xy 平面），3dz² 的节面是两个圆锥（3cos²θ = 1）。</p>
+      <p>截面只看 y = 0 这一个平面：dx²−y² 的两个节面 x = ±y 在这个平面里只剩下 z 轴一条线，所以它的截面和 px 很像，要靠相位分辨（dx²−y² 两边同号，px 两边异号）。只画了 n ≤ 3 的轨道，坐标以玻尔半径 a₀ 为单位，各题的视野大小不同。</p>
+    </div></details>
+  </section>
+
+  <!-- 3 电子排布 -->
+  <section class="play-view" data-view="config" hidden aria-labelledby="cfg-h">
+    <header class="play-head"><p class="eyebrow">游戏 03 · 构造原理、泡利原理、洪特规则</p><h2 id="cfg-h">电子排布</h2>
+      <p class="play-lead">点轨道格子放电子：点一次放一个，点两次成对，点三次清空。排好后检查，看是否是这个元素的基态电子排布。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <p class="cfg-el" id="cfg-el"></p>
+        <p class="cfg-count" id="cfg-count"></p>
+        <p class="play-msg" id="cfg-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="cfg-check">检查</button><button type="button" class="button" id="cfg-clear">清空</button><button type="button" class="button" id="cfg-show">看答案</button><button type="button" class="button" id="cfg-new">换一个元素</button></div>
+        <p class="play-score" data-score="config"></p>
+      </div>
+      <div><div class="cfg-grid" id="cfg-grid" aria-label="轨道格子，能量从下往上升高"></div>
+        <p class="cfg-hint">从下往上能量升高（中性原子的大致顺序）。每个格子是一个轨道，最多放两个自旋相反的电子。</p></div>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>三条规则：构造原理（按能量从低到高填，顺序是 1s 2s 2p 3s 3p 4s 3d 4p，即 n + l 小的先填，相同时 n 小的先填）；泡利原理（一个轨道最多两个电子，自旋相反）；洪特规则（同一亚层里先每个轨道各放一个、自旋平行，再成对）。</p>
+      <p>前 36 号元素里有两个例外：铬是 [Ar] 3d⁵4s¹，铜是 [Ar] 3d¹⁰4s¹，这是光谱实验测得的基态。教科书常说“半满和全满的 d 亚层更稳定”，更准确的原因是 3d 和 4s 能量非常接近，交换作用和电子排斥决定了谁更低，构造原理只是一个经验顺序。这里只考虑中性原子的基态；离子（例如 Fe²⁺ 先失去 4s 电子）不在游戏里。</p>
+    </div></details>
+  </section>
+
+  <!-- 4 隧穿 -->
+  <section class="play-view" data-view="tunnel" hidden aria-labelledby="tun-h">
+    <header class="play-head"><p class="eyebrow">游戏 04 · 一维方势垒</p><h2 id="tun-h">量子隧穿闯关</h2>
+      <p class="play-lead">经典粒子能量不够就翻不过势垒，量子粒子却有一定概率穿过去，能量够了也可能被弹回来。完成四个关卡，再自由试试。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="tun-missions" role="group" aria-label="关卡"></div>
+        <p class="play-task" id="tun-task"></p>
+        <div class="tun-particle" id="tun-particle" role="group" aria-label="粒子"><button type="button" data-p="e">电子</button><button type="button" data-p="p">质子</button></div>
+        <label>粒子能量 E<span><input type="range" id="tun-e" min="0.05" max="3" step="0.01" value="0.5"><output id="tun-e-v"></output></span></label>
+        <label>势垒高度 V₀<span><input type="range" id="tun-v" min="0.1" max="3" step="0.01" value="1"><output id="tun-v-v"></output></span></label>
+        <label>势垒宽度 a<span><input type="range" id="tun-a" min="0.05" max="1.5" step="0.01" value="0.2"><output id="tun-a-v"></output></span></label>
+        <dl class="play-read" id="tun-read"></dl>
+        <p class="play-msg" id="tun-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="tun-fire">发射 60 个粒子</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="tun-cv" width="720" height="460" role="img" aria-label="势垒、粒子能量和概率密度"></canvas>
+        <figcaption>灰色块是势垒，虚线是粒子能量，曲线是概率密度 |ψ|²（左边入射波和反射波干涉，右边是透射波）。下方是发射出去的粒子。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>粒子从左边入射，在势垒两侧和内部分别写出薛定谔方程的解，要求波函数和它的导数在两个边界连续，就能精确求出透射概率 T 和反射概率 R（T + R = 1）。能量低于势垒时：</p>
+      <span class="play-formula">T = [1 + V₀² sinh²(κa) / (4E(V₀ − E))]⁻¹，κ = √(2m(V₀ − E)) / ħ</span>
+      <p>能量高于势垒时 sinh 换成 sin，κ 换成 k′ = √(2m(E − V₀))/ħ；当 k′a = π, 2π, … 时 T = 1，叫共振透射。质子比电子重 1836 倍，κ 大约 43 倍，所以同样的势垒它几乎穿不过去，这也是化学里氢转移隧穿效应只在很窄的势垒上明显的原因。</p>
+      <p>这里的势垒是理想的方形，粒子是单一能量的平面波；真实分子里的势垒是平滑的，常用 WKB 近似或更完整的量子动力学处理。发射粒子是按 T 随机决定每个粒子穿过还是弹回，所以每次的数目会有起伏。</p>
+    </div></details>
+  </section>
+
+  <!-- 5 芳香性 -->
+  <section class="play-view" data-view="ring" hidden aria-labelledby="ring-h">
+    <header class="play-head"><p class="eyebrow">游戏 05 · Hückel 理论</p><h2 id="ring-h">芳香性判断</h2>
+      <p class="play-lead">平面、单环、完全共轭的体系，π 电子数是 4n + 2 时是芳香的，是 4n 时是反芳香的。先数清楚 π 电子，再作答。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <p class="play-task" id="ring-task"></p>
+        <div class="play-choices wide" id="ring-choices">
+          <button type="button" class="play-choice" data-a="aromatic">芳香：4n + 2 个 π 电子</button>
+          <button type="button" class="play-choice" data-a="antiaromatic">反芳香：4n 个 π 电子</button>
+        </div>
+        <p class="play-msg" id="ring-msg" aria-live="polite"></p>
+        <dl class="play-read" id="ring-read"></dl>
+        <div class="play-btns"><button type="button" class="button primary" id="ring-next">下一题</button></div>
+        <p class="play-score" data-score="ring"></p>
+      </div>
+      <figure class="play-fig"><canvas id="ring-cv" width="720" height="380" role="img" aria-label="环的结构和 Frost 圆能级图"></canvas>
+        <figcaption>左边是环（假设为平面），右边是 Frost 圆：把正多边形顶点朝下内接在圆里，每个顶点的高度就是一个 π 轨道的能量。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>N 元环的 Hückel π 轨道能量是</p><span class="play-formula">Eₖ = α + 2β cos(2πk/N)，k = 0, 1, …, N − 1（β &lt; 0）</span>
+      <p>最低的能级只有一个，往上的能级两两简并。4n + 2 个电子正好填满成对的能级，形成闭壳层，比同样数目的孤立双键更稳定（苯的离域能是 2β）；4n 个电子会让最高一对简并能级各剩一个电子，在 Hückel 理论里是不稳定的开壳层。每个碳提供一个 p 电子，正电荷少一个、负电荷多一个。</p>
+      <p>局限：真实分子不一定是平面的。环辛四烯是澡盆形，π 键不共轭，实际上是非芳香的；环丁二烯会扭成长方形，但仍然很不稳定。游戏里的题目都按“假设它是平面的”来判断，“离域能”以同样数目的孤立双键为参照，是 Hückel 近似下的数值。</p>
+    </div></details>
+  </section>
+
+  <!-- 6 氢原子光谱 -->
+  <section class="play-view" data-view="lines" hidden aria-labelledby="ln-h">
+    <header class="play-head"><p class="eyebrow">游戏 06 · 里德伯公式</p><h2 id="ln-h">氢原子光谱</h2>
+      <p class="play-lead">电子从高能级跳到低能级时放出一个光子。给你一条谱线的波长，选出起点和终点能级，看能不能发出这条线。三次以内找到算赢。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <p class="play-task" id="ln-task"></p>
+        <div class="ln-pick"><span>从能级（上）</span><div id="ln-up" role="group" aria-label="上能级"></div></div>
+        <div class="ln-pick"><span>跳到能级（下）</span><div id="ln-low" role="group" aria-label="下能级"></div></div>
+        <div class="play-btns"><button type="button" class="button primary" id="ln-emit" disabled>发射光子</button><button type="button" class="button" id="ln-next">换一条谱线</button></div>
+        <p class="play-msg" id="ln-msg" aria-live="polite"></p>
+        <p class="play-score" data-score="lines"></p>
+      </div>
+      <figure class="play-fig"><canvas id="ln-cv" width="720" height="560" role="img" aria-label="氢原子能级图和光谱"></canvas>
+        <figcaption>上面是能级 Eₙ = −13.6 eV / n²（纵轴做了拉伸，高能级才分得开），下面是光谱（对数坐标）。金色虚线是要找的谱线，你发出的光子画在光谱上。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>氢原子发出的光子波长满足里德伯公式：</p><span class="play-formula">1/λ = R_H (1/n₁² − 1/n₂²)，R_H = 1.0967758 × 10⁷ m⁻¹</span>
+      <p>n₁ = 1 是莱曼系（紫外），n₁ = 2 是巴耳末系（其中 4 条在可见光区），n₁ = 3 是帕邢系（红外）。R_H 已经按氢原子的约化质量修正，给出的是真空中的波长；空气中的波长短约 0.03%，所以手册里的 Hα 常写 656.28 nm，这里是 656.47 nm。精细结构、兰姆位移等更小的分裂没有考虑。</p>
+    </div></details>
+  </section>
+</main>
+<noscript><p style="padding:24px">游乐场需要启用 JavaScript。</p></noscript>
 <script>
-  // The frame takes the site's language from the address (its own switch is hidden with embed=1);
-  // switching the site's language reloads this page, so the frame follows.
+  // The calculator frame takes the site's language from the address (its own switch is hidden with embed=1);
+  // switching the site's language reloads this page, so the frame follows. play.js sets its src when the tab opens.
+  // Desktop app: its link script may only run in the top page, so links opened inside the frame
+  // (the source code, references) are handed to the system browser from here.
   (function () {
     var frame = document.getElementById('qchem-frame');
-    frame.src = 'app/index.html?embed=1&lang=' + (document.documentElement.lang === 'en' ? 'en' : 'zh') + location.hash;
-    // Desktop app: its link script may only run in the top page, so links opened inside the frame
-    // (the source code, references) are handed to the system browser from here.
     frame.addEventListener('load', function () {
       var w = frame.contentWindow, ipc = window.__TAURI_INTERNALS__;
       if (!window.__MOLASTRIA_DESKTOP__ || !ipc || !w || w.__MOLASTRIA_DESKTOP__) return;

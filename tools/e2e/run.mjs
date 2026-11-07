@@ -371,10 +371,11 @@ check('PreprintRadar: loads in its frame and follows the site theme', async () =
   await finish(p);
 });
 
-check('QChem Web: loads in its frame, computes a quantum dot, and follows the site language', async () => {
+check('playground calculator (QChem Web): loads in its frame, computes a quantum dot, and follows the site language', async () => {
   const p = await open();
-  await go(p, '/qchem/index.html#qd');
+  await go(p, '/qchem/index.html#qd'); // a hash the playground does not know goes to the calculator
   assert.equal(await p.getAttribute('.cr-links a[data-id=qchem]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('#play-tabs a[data-view=lab]', 'aria-current'), 'page');
   const f = p.frame({ url: /qchem\/app\/index\.html/ });
   await f.waitForSelector('#tabs button');
   assert.deepEqual(await f.$$eval('#tabs button', (b) => b.map((x) => x.textContent.trim())), ['电子结构', '量子计算', '量子点', '对拍与说明']);
@@ -386,6 +387,93 @@ check('QChem Web: loads in its frame, computes a quantum dot, and follows the si
   await en.waitForFunction(() => /eV/.test(document.getElementById('qdCards').textContent), null, { timeout: 10000 });
   const left = await en.evaluate(() => (document.getElementById('tabs').innerText + document.getElementById('view-qd').innerText).match(/[^\n]*[㐀-鿿][^\n]*/g));
   assert.equal(left, null, `Chinese left in the English frame: ${left}`);
+  await finish(p);
+});
+
+check('playground: overview, then each game plays by its rules (configuration, spectrum, tunnelling, orbitals, rings, box)', async () => {
+  const p = await open();
+  await go(p, '/qchem/index.html');
+  assert.equal((await text(p, '.cr-links a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
+  assert.equal(await p.locator('.play-card').count(), 7);
+  assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
+  // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
+  await p.click('#play-tabs a[data-view=config]');
+  await p.waitForSelector('.cfg-row');
+  const place = async (Z, boxes) => {
+    while (Number(await p.$eval('#cfg-el sub', (e) => e.textContent)) !== Z) await p.click('#cfg-new');
+    for (const [sub, counts] of Object.entries(boxes)) for (const [i, n] of counts.entries()) for (let k = 0; k < n; k++) await p.click(`.cfg-row[data-s="${sub}"] .cfg-box >> nth=${i}`);
+    await p.click('#cfg-check');
+    return p.$eval('#cfg-msg', (e) => [e.dataset.tone, e.textContent]);
+  };
+  let [tone, msg] = await place(3, { '1s': [2], '2s': [1] });
+  assert.equal(tone, 'ok', msg);
+  [tone, msg] = await place(7, { '1s': [2], '2s': [2], '2p': [2, 1] });
+  assert.equal(tone, 'bad'); assert.match(msg, /洪特/);
+  // hydrogen spectrum: find the transition for the target line
+  await p.click('#play-tabs a[data-view=lines]');
+  await p.waitForSelector('#ln-task:not(:empty)'); // tabs switch on hashchange, after the click returns
+  const lam = Number((await text(p, '#ln-task')).match(/λ = ([\d.]+)/)[1]);
+  const [nu, nl] = await p.evaluate((l) => { const P = window.MOLASTRIA_PLAY; for (let a = 1; a <= 3; a++) for (let b = a + 1; b <= 7; b++) if (Math.abs(P.lineNm(b, a) - l) < 0.01) return [b, a]; }, lam);
+  await p.click(`#ln-up button[data-n="${nu}"]`); await p.click(`#ln-low button[data-n="${nl}"]`); await p.click('#ln-emit');
+  assert.equal(await p.$eval('#ln-msg', (e) => e.dataset.tone), 'ok');
+  assert.match(await text(p, '[data-score=lines]'), /连续答对 1/);
+  // tunnelling level 1: a 0.50 nm barrier lets about 10 % through
+  await p.click('#play-tabs a[data-view=tunnel]');
+  await p.click('#tun-missions button >> nth=0');
+  assert.equal(await p.isDisabled('#tun-e'), true, 'level 1 locks the energy');
+  await p.$eval('#tun-a', (r) => { r.value = '0.5'; r.dispatchEvent(new Event('input')); });
+  assert.match(await text(p, '#tun-msg'), /过关/);
+  assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-play')).tunnel[0]), 0, 'progress saved');
+  await p.click('#tun-fire');
+  await p.waitForFunction(() => /穿过 \d+ 个，弹回 \d+ 个/.test(document.getElementById('tun-msg').textContent), null, { timeout: 8000 });
+  // orbitals and rings: answer once each, the answer is marked
+  await p.click('#play-tabs a[data-view=orbital]');
+  await p.click('#orb-choices .play-choice >> nth=0');
+  assert.equal(await p.locator('#orb-choices [data-mark=right]').count(), 1);
+  await p.click('#play-tabs a[data-view=ring]');
+  await p.click('#ring-choices .play-choice >> nth=0');
+  assert.equal(await p.locator('#ring-choices [data-mark=right]').count(), 1);
+  assert.match(await text(p, '#ring-read'), /离域能/);
+  // particle in a box: tuning the sliders to the target wins
+  await p.click('#play-tabs a[data-view=box]');
+  await p.click('#box-hint');
+  const target = Number((await text(p, '#box-target-v')).match(/\d+/)[0]);
+  await p.evaluate((t) => { const P = window.MOLASTRIA_PLAY, n = document.getElementById('box-n'), l = document.getElementById('box-l'); n.value = '8'; l.value = P.boxLengthFor(t, 8).toFixed(2); l.dispatchEvent(new Event('input')); }, target);
+  assert.equal(await p.$eval('#box-msg', (e) => e.dataset.tone), 'ok');
+  // the overview shows saved progress; the calculator tab loads the frame on first open
+  await p.click('#play-tabs a[data-view=home]');
+  assert.match(await text(p, '[data-best=tunnel]'), /已过 1 \/ 4 关/);
+  await p.click('#play-tabs a[data-view=lab]');
+  await p.waitForSelector('#play-lab:not([hidden])');
+  assert.match(await p.getAttribute('#qchem-frame', 'src'), /app\/index\.html\?embed=1&lang=zh/);
+  await finish(p);
+});
+
+check('playground in English: games and canvas labels are translated, no Chinese left', async () => {
+  const p = await open();
+  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital']) {
+    await go(p, '/qchem/index.html?lang=en' + v);
+    await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+    const left = await p.evaluate(() => [...document.querySelectorAll('main .play-view:not([hidden]), #play-tabs')].map((e) => e.innerText).join('\n').match(/[^\n]*[㐀-鿿][^\n]*/g));
+    assert.equal(left, null, `${v || 'overview'}: Chinese left: ${left}`);
+  }
+  assert.equal(await p.evaluate(() => window.ChemI18n.t('能量 (eV)')), 'Energy (eV)', 'canvas text goes through the dictionary');
+  await finish(p);
+});
+
+check('embedded apps follow the display scale: the frame cancels the page zoom and is scaled so the app gets the narrower viewport', async () => {
+  const p = await open({ viewport: { width: 1000, height: 800 }, init: () => { try { localStorage.setItem('molastria-zoom', '1.25'); localStorage.setItem('molastria-text', '1.2'); } catch {} } });
+  for (const path of ['/radar/index.html', '/qchem/index.html#lab']) {
+    await go(p, path);
+    const el = await p.waitForSelector('iframe[data-display-frame]');
+    const f = await el.contentFrame();
+    await f.waitForLoadState('load');
+    const box = await el.boundingBox(), inner = await f.evaluate(() => ({ w: innerWidth, sw: document.documentElement.scrollWidth }));
+    assert.ok(Math.abs(box.x + box.width - 1000) <= 2, `${path}: the frame spans the window (${box.x + box.width})`);
+    assert.ok(Math.abs(inner.w - Math.round(1000 / 1.5)) <= 3, `${path}: the app lays out at window ÷ 1.5 (${inner.w})`);
+    assert.ok(inner.sw <= inner.w + 1, `${path}: no sideways scroll inside the app`);
+    assert.ok(box.y + box.height <= 801, `${path}: the frame ends at the bottom of the window (${box.y + box.height})`);
+  }
   await finish(p);
 });
 

@@ -17,7 +17,7 @@
     ['lab', 'lab/index.html', 'AI 实验室'],
     ['meta', 'meta/index.html', 'Meta', true],
     ['models', 'models/index.html', '模型接口', true],
-    ['qchem', 'qchem/index.html', '量子化学', true],
+    ['qchem', 'qchem/index.html', '游乐场', true],
     ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', true],
     ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']
@@ -138,6 +138,24 @@
     else root.style.zoom = e.zoom === 1 ? '' : String(e.zoom);
     if (e.text === 1) root.style.removeProperty('--cr-text-zoom'); else root.style.setProperty('--cr-text-zoom', String(e.text));
     if (d.font) root.dataset.font = d.font; else delete root.dataset.font;
+    displayFrames(e);
+  }
+  // Pages that show a whole app in a frame (PreprintRadar, QChem Web; marked data-display-frame): the frame cancels the page's
+  // CSS zoom and the app is scaled inside its own document, which shares the site's origin. Engines differ on a zoomed frame:
+  // Chrome lays the app out at the smaller width, WebKit (iPad Safari) at the full width and then clips it, so the page's zoom
+  // must not reach the frame. In the desktop app the WebView's own zoom already scales frames; only the reading size goes inside.
+  // Embedded apps (radar, qchem) live in iframes marked data-display-frame. CSS zoom does not reach into a frame the
+  // same way in every engine (Chrome passes it in; WebKit, so iPad Safari, lays the app out at full width and clips
+  // it), so the frame cancels the page's zoom and is scaled with a transform: its viewport is its box divided by the
+  // factor, which media queries inside the app also see. The frame sits at the top left of a positioned box.
+  function displayFrames(e = effective()) {
+    for (const f of document.querySelectorAll('iframe[data-display-frame]')) {
+      const outer = desktopApp ? 1 : e.zoom, k = outer * e.text, s = f.style, on = k !== 1;
+      s.zoom = outer === 1 ? '' : String(1 / outer);
+      s.width = s.height = on ? `${100 / k}%` : '';
+      s.transform = on ? `scale(${k})` : '';
+      s.transformOrigin = on ? '0 0' : '';
+    }
   }
   let resizing = 0;
   addEventListener('resize', () => { cancelAnimationFrame(resizing); resizing = requestAnimationFrame(() => { applyDisplay(); renderDisplay(); }); });

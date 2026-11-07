@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -32,7 +32,7 @@ public/               发布目录，推到 main 就上线
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面；app/ 是复制来的，不要手改
-  qchem/              量子化学计算外层页面；app/ 是从 qchem-web 复制来的，不要手改
+  qchem/              游乐场（地址仍是 /qchem/）：六个小游戏 play.js，物理是纯函数 play-models.js；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
@@ -54,6 +54,7 @@ deno run --allow-read tools/account-test.ts             # 账号服务接口测�
 node --test tools/lab-test.mjs                          # 实验室逻辑测试
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
+node --test tools/play-test.mjs                         # 游乐场：游戏的物理对照已知结果，隧穿关卡都能过关
 node tools/fundamental-math.mjs                         # 基础科学栏目：把 fs-data.js 里的 LaTeX 用 KaTeX 转成 fs-math.js（MathML）
 NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：逐条在 Crossref 核对文献
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次
@@ -93,7 +94,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **中文是源语言。** 界面文字直接写中文，改完运行 `i18n-extract` 和 `i18n-translate`。数据内容（论文标题、论坛帖、AI 回答）不翻译，选择器加进 `public/i18n.js` 的 `SKIP`。
 - 用户偏好只存 `localStorage`，读写要包 `try/catch`；键名沿用 `chemhub-*`、`molastria-*`。
 - **箭头用图标，不用字符：** 按钮和链接上的箭头写 `<i class="ico-ext" aria-hidden="true"></i>`（右上，外链 / 打开），其他方向加 `ico-right`、`ico-left`、`ico-up`、`ico-down`；样式在 `shared-nav.css`，是金属金色的遮罩图形。不要再写 ↗ → ← ↑ ↓ 字符（iPad 和 iPhone 把 ↗ 画成蓝色 emoji）；句子里表示流程的箭头（如“UMA → DFT”）照常用字符。
-- **显示设置：** 顶栏“Tт”按钮（`shared-nav.js` 的 `DISPLAY`）调界面缩放、正文字号和字体，存在 `molastria-zoom`、`molastria-text`、`molastria-font`；每页 `<head>` 的小脚本先套用，避免跳动。界面缩放在网站和 iPad 主屏幕应用里是 `<html>` 的 CSS zoom，在桌面版是 WebView 自己的缩放（Rust 命令 `set_zoom`）；正文字号是 `main{zoom}`；字体改 `--font-sans`。CSS zoom 不改变媒体查询看到的宽度，所以窗口窄时自动压低倍数（`roomFor()`），新页面的宽元素也要能在约 520 px 的排版宽度里放下。
+- **显示设置：** 顶栏“Tт”按钮（`shared-nav.js` 的 `DISPLAY`）调界面缩放、正文字号和字体，存在 `molastria-zoom`、`molastria-text`、`molastria-font`；每页 `<head>` 的小脚本先套用，避免跳动。界面缩放在网站和 iPad 主屏幕应用里是 `<html>` 的 CSS zoom，在桌面版是 WebView 自己的缩放（Rust 命令 `set_zoom`）；正文字号是 `main{zoom}`；字体改 `--font-sans`。CSS zoom 不改变媒体查询看到的宽度，所以窗口窄时自动压低倍数（`roomFor()`），新页面的宽元素也要能在约 520 px 的排版宽度里放下。嵌入的应用（雷达、计算器）的 iframe 标 `data-display-frame`，放在一个 `position:relative` 的盒子里绝对定位：`displayFrames()` 用 zoom 抵消页面缩放，再用 transform 放大，这样 Chrome 和 iPad 的 WebKit 表现一致，应用拿到的视口也跟着变窄。整页高度用 `height:100%`，不要用 `100dvh`（Chrome 会把 vh 再乘一次 CSS zoom）。
 - 颜色用 `shared-nav.css` 的 CSS 变量，深浅两种主题都要看。
 - 预印本雷达保持书香风格，是有意和站点其他部分不同。`D:\ChemDraw\PreprintRadar` 是独立仓库，MolAstria 只复制它的构建结果。
 - AI 实验室的演示数值是合成的，页面上要一直标明。Muse 指 Meta 的 Muse 模型（`api.meta.ai`）。

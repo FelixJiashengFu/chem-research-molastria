@@ -65,9 +65,13 @@ check('PreprintRadar opens in its frame', async () => {
   assert.deepEqual(p.errors, []);
 });
 
-check('QChem Web opens in its frame and computes a quantum dot', async () => {
+check('playground: the games load, and the calculator opens in its frame and computes a quantum dot', async () => {
   const p = await page('/qchem/'); // page() appends ?v=…, which would land inside a #hash
-  const f = p.frame({ url: /qchem\/app/ });
+  await p.click('#play-tabs a[data-view=tunnel]');
+  await p.waitForFunction(() => /透射率/.test(document.getElementById('tun-msg').textContent));
+  await p.click('#play-tabs a[data-view=lab]');
+  await p.waitForSelector('#qchem-frame[src]');
+  const f = await (await p.$('#qchem-frame')).contentFrame();
   await f.click('#tabs button[data-v=qd]', { timeout: 20000 });
   await f.waitForFunction(() => /eV/.test(document.getElementById('qdCards')?.textContent || ''), null, { timeout: 20000 });
   assert.deepEqual(p.errors, []);
