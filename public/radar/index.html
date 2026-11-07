@@ -44,7 +44,20 @@
   // The frame follows the site's language on load and its light/dark switch live.
   (function () {
     var frame = document.getElementById('radar-frame'), root = document.documentElement;
-    frame.src = 'app/index.html' + (root.lang === 'en' ? '?lang=en' : '');
+    // The radar's own view (#/saved, #/topics …) is mirrored in this page's address, so a reload (switching the
+    // language) or a shared link opens the same view.
+    var view = /^#\/\w+$/.test(location.hash) ? location.hash : '';
+    frame.src = 'app/index.html' + (root.lang === 'en' ? '?lang=en' : '') + view;
+    frame.addEventListener('load', function () {
+      try {
+        var w = frame.contentWindow, mirror = function () {
+          var h = /^#\/\w+/.exec(w.location.hash), next = h && h[0] !== '#/feed' ? h[0] : '';
+          if (next !== location.hash && !(next === '' && !location.hash)) history.replaceState(history.state, '', location.pathname + location.search + next);
+        };
+        w.addEventListener('hashchange', mirror);
+        mirror();
+      } catch (e) {}
+    });
     function sync() {
       try {
         var r = frame.contentDocument && frame.contentDocument.documentElement;

@@ -51,7 +51,7 @@
   nav.className = 'cr-header';
   const en = document.documentElement.lang === 'en';
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
-    + `<nav class="cr-links" aria-label="全站导航">${ordered.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
+    + `<nav class="cr-links" aria-label="全站导航">${ordered.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}" draggable="false">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
     + `<div class="cr-more" hidden><button class="cr-more-btn" type="button" aria-expanded="false" aria-controls="cr-more-menu">更多${chevron}</button><div class="cr-more-menu" id="cr-more-menu" hidden></div></div>`
     + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
     + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
@@ -80,7 +80,9 @@
     const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
     return shown.reduce((w, el) => w + el.getBoundingClientRect().width, gap * (shown.length - 1)) <= row.clientWidth + 0.5;
   };
+  let navDragging = false; // while a module is lifted the row keeps its layout
   const fit = () => {
+    if (navDragging) return;
     const open = !menu.hidden, focused = document.activeElement;
     items.forEach((a) => row.insertBefore(a, more));
     more.hidden = true;
@@ -122,7 +124,14 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place, { once: true }); else place();
   }
 
-  // ── Arranging the modules: a long press on any of them (or 显示 → 调整导航顺序) opens a glass panel where they are
+  const saveOrder = (ids) => {
+    const defaults = links.map(([id]) => id);
+    try { if (ids.join() === defaults.join()) localStorage.removeItem(ORDER); else localStorage.setItem(ORDER, JSON.stringify(ids)); } catch { /* private mode */ }
+    items.sort((a, b) => ids.indexOf(a.dataset.id) - ids.indexOf(b.dataset.id));
+    fit();
+  };
+
+  // ── Arranging the modules: a long press on any of them without moving (or 显示 → 调整导航顺序) opens a glass panel where they are
   //    dragged, or moved with the arrow keys, into each person's order. Saved per browser; "恢复默认" goes back.
   const arrange = (() => {
     const t = (zh, e) => (en ? e : zh);
@@ -131,11 +140,7 @@
     const label = (id) => { const l = links.find(([x]) => x === id)?.[2] ?? id; return en && window.ChemI18n?.t ? window.ChemI18n.t(l) : l; };
     let layer = null, grid = null, live = null, back = null, drag = null;
     const order = () => [...grid.children].map((el) => el.dataset.id);
-    const save = (ids) => {
-      try { if (ids.join() === defaults.join()) localStorage.removeItem(ORDER); else localStorage.setItem(ORDER, JSON.stringify(ids)); } catch { /* private mode */ }
-      items.sort((a, b) => ids.indexOf(a.dataset.id) - ids.indexOf(b.dataset.id));
-      fit();
-    };
+    const save = saveOrder;
     // The other tiles glide to their new places (FLIP). Rect differences are turned into the tiles' own CSS pixels,
     // because page zoom scales getBoundingClientRect differently from transforms in Chrome and in WebKit.
     const flip = (mutate) => {
@@ -172,7 +177,7 @@
         <div class="cr-arr-head"><b id="cr-arr-h">${t('调整导航顺序', 'Arrange the navigation')}</b><small>${t('拖动入口，排成你习惯的顺序；也可以用方向键。只保存在这台设备上。', 'Drag the modules into the order you like, or use the arrow keys. Saved on this device only.')}</small></div>
         <div class="cr-arr-grid" role="list" aria-label="${t('导航入口', 'Modules')}"></div>
         <p class="cr-arr-live" aria-live="polite"></p>
-        <div class="cr-arr-foot"><small>${t('以后长按顶栏的任一入口，也能回到这里', 'Next time, press and hold any module in the header to come back here')}</small><button type="button" class="cr-arr-reset">${t('恢复默认', 'Reset')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
+        <div class="cr-arr-foot"><small>${t('在顶栏上也能直接拖动入口换位置；按住一个入口不动再松开，会回到这里', 'You can also drag the modules right in the header; press and hold one, then let go, to come back here')}</small><button type="button" class="cr-arr-reset">${t('恢复默认', 'Reset')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
       document.body.append(layer);
       grid = layer.querySelector('.cr-arr-grid');
       live = layer.querySelector('.cr-arr-live');
@@ -251,18 +256,123 @@
     return { open };
   })();
 
-  // A long press (about half a second, without moving) on a module opens the panel instead of the page.
+  // ── Dragging the modules right in the header. A mouse picks a module up as soon as it moves sideways; a finger (and a
+  //    held mouse) lifts it after a short press, so the row and the page still scroll under a quick swipe. The lifted module
+  //    turns to glass and follows the pointer, the others slide aside, and the new order is saved like the panel's.
+  //    Releasing a lifted module without moving it opens the arrange panel (which also reaches modules in "更多").
+  const HOLD = 420;
   let press = null, pressed = false;
   const cancelPress = () => { if (press) clearTimeout(press.timer); press = null; };
+  const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rowLinks = () => [...row.children].filter((el) => el.matches('a[data-id]:not(.cr-pro-link)') && el.offsetWidth);
+  function lift(p) {
+    const els = rowLinks(), i = els.indexOf(p.a);
+    if (i < 0) return false;
+    const rr = row.getBoundingClientRect(), k = row.offsetWidth ? rr.width / row.offsetWidth || 1 : 1;
+    // Layout positions in the row's own CSS pixels (scroll included), taken once: transforms during the drag do not move them.
+    const at = (x) => (x - rr.left) / k + row.scrollLeft;
+    const slots = els.map((el) => { const r = el.getBoundingClientRect(); return { el, mid: (at(r.left) + at(r.right)) / 2 }; });
+    const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+    p.drag = { els, i, j: i, k, at, slots, start: p.x, scroll0: row.scrollLeft, shift: p.a.offsetWidth + gap, moved: false, x: p.x, raf: 0 };
+    navDragging = true;
+    pressed = true;
+    nav.classList.add('cr-nav-sorting');
+    p.a.classList.add('cr-lifted');
+    try { nav.setPointerCapture(p.id); } catch { /* pointer already gone */ }
+    navigator.vibrate?.(8);
+    return true;
+  }
+  function follow(p, x) {
+    const d = p.drag;
+    d.x = x;
+    const dx = (x - d.start) / d.k + (row.scrollLeft - d.scroll0);
+    if (Math.abs(dx) > 3) d.moved = true;
+    p.a.style.translate = `${dx}px 0`;
+    const mid = d.slots[d.i].mid + dx;
+    let j = 0;
+    d.slots.forEach((s, m) => { if (m !== d.i && s.mid < mid) j++; });
+    d.j = j;
+    d.slots.forEach((s, m) => {
+      if (m === d.i) return;
+      const off = d.i < j && m > d.i && m <= j ? -d.shift : j < d.i && m >= j && m < d.i ? d.shift : 0;
+      s.el.style.translate = off ? `${off}px 0` : '';
+    });
+  }
+  // Phones: the row scrolls sideways, so a module held near either edge scrolls it along.
+  function edgeScroll(p) {
+    const d = p.drag;
+    if (!d || row.scrollWidth <= row.clientWidth) return;
+    const r = row.getBoundingClientRect(), edge = 36 * d.k;
+    const v = d.x < r.left + edge ? -7 : d.x > r.right - edge ? 7 : 0;
+    if (v) { row.scrollLeft += v; follow(p, d.x); }
+    d.raf = requestAnimationFrame(() => edgeScroll(p));
+  }
+  function settle(p, keep) {
+    const d = p.drag;
+    cancelAnimationFrame(d.raf);
+    navDragging = false;
+    const before = new Map(d.els.map((el) => [el, el.getBoundingClientRect()]));
+    for (const el of d.els) { el.style.transition = 'none'; el.style.translate = ''; }
+    p.a.classList.remove('cr-lifted');
+    nav.classList.remove('cr-nav-sorting');
+    if (keep && d.j !== d.i) {
+      const ids = items.map((a) => a.dataset.id), moved = ids.splice(ids.indexOf(p.a.dataset.id), 1)[0];
+      const order = d.els.map((el) => el.dataset.id);
+      order.splice(d.i, 1);
+      // after the j modules now left of it: before the next one in the row, or right after the row's last
+      ids.splice(d.j < order.length ? ids.indexOf(order[d.j]) : ids.indexOf(order[order.length - 1]) + 1, 0, moved);
+      saveOrder(ids);
+    }
+    // Everything glides from where it was shown to its new place.
+    for (const el of d.els) {
+      void el.offsetWidth;
+      el.style.transition = '';
+      if (reducedMotion()) continue;
+      const a = before.get(el), b = el.getBoundingClientRect(), dx = (a.left - b.left) / d.k;
+      if (Math.abs(dx) > 0.5) el.animate([{ translate: `${dx}px 0` }, { translate: '0 0' }], { duration: 320, easing: 'cubic-bezier(.2,.9,.25,1.1)' });
+    }
+  }
   nav.addEventListener('pointerdown', (e) => {
     pressed = false;
+    if (press?.drag) return;
+    cancelPress();
     const a = e.target.closest('.cr-links a[data-id]:not(.cr-pro-link)');
     if (!a || e.button > 0) return;
-    press = { x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse', timer: setTimeout(() => { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }, 520) };
+    const p = { a, id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse', inMenu: !!a.closest('.cr-more-menu') };
+    p.timer = setTimeout(() => {
+      // modules inside "更多" have no row to slide along: holding one opens the panel
+      if (p.inMenu || !lift(p)) { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }
+      else edgeScroll(p);
+    }, HOLD);
+    press = p;
   });
-  nav.addEventListener('pointermove', (e) => { if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) cancelPress(); });
-  for (const type of ['pointerup', 'pointercancel', 'pointerleave', 'dragstart']) nav.addEventListener(type, cancelPress);
-  // the click that ends a long press must not also open the page
+  nav.addEventListener('pointermove', (e) => {
+    const p = press;
+    if (!p || e.pointerId !== p.id) return;
+    if (p.drag) { e.preventDefault(); follow(p, e.clientX); return; }
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    if (Math.hypot(dx, dy) < 6) return;
+    // a mouse dragging sideways picks the module up at once; anything else before the hold ends is a scroll or a slip
+    if (!p.touch && !p.inMenu && Math.abs(dx) > Math.abs(dy) && lift(p)) { clearTimeout(p.timer); follow(p, e.clientX); edgeScroll(p); }
+    else cancelPress();
+  });
+  const release = (e) => {
+    const p = press;
+    if (!p || e.pointerId !== p.id) return;
+    clearTimeout(p.timer);
+    press = null;
+    if (!p.drag) return;
+    const moved = p.drag.moved;
+    settle(p, e.type === 'pointerup');
+    if (!moved && e.type === 'pointerup') arrange.open(p.a.dataset.id);
+  };
+  nav.addEventListener('pointerup', release);
+  nav.addEventListener('pointercancel', release);
+  nav.addEventListener('lostpointercapture', (e) => { if (press?.drag && e.pointerId === press.id) release({ type: 'pointerup', pointerId: e.pointerId }); });
+  // Links are not dragged out as URLs (that is what made a drag do nothing), and a lifted module keeps the page from scrolling.
+  nav.addEventListener('dragstart', (e) => { if (e.target.closest?.('.cr-links a[data-id]')) e.preventDefault(); });
+  nav.addEventListener('touchmove', (e) => { if (press?.drag) e.preventDefault(); }, { passive: false });
+  // the click that ends a press or a drag must not also open the page
   nav.addEventListener('click', (e) => { if (pressed) { pressed = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // touch screens open their own link menu on a long press
   nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest('a[data-id]')) e.preventDefault(); });
@@ -432,12 +542,71 @@
   }
   applyDisplay();
   window.MolAstriaDisplay = { open: openDisplay, close: closeDisplay, set: setDisplay, get: display };
-  // Language: remembered per browser; the page reloads so every module renders once in the chosen language.
+  // Language: remembered per browser; the page reloads so every module renders once in the chosen language. What the
+  // reader was looking at survives the reload: the address (embedded apps keep their view in it), the scroll position,
+  // and the tabs, filters and search boxes on the page, which a reload would otherwise put back to their defaults.
+  const RESTORE = 'molastria-lang-restore';
+  const scope = () => document.querySelector('main') || document.body;
+  const keyOf = (el) => {
+    const attr = el.id ? ['id', el.id] : [...el.attributes].find((a) => a.name.startsWith('data-') && a.name !== 'data-display-frame')?.name;
+    const sel = Array.isArray(attr) ? `#${CSS.escape(attr[1])}` : attr ? `${el.tagName.toLowerCase()}[${attr}="${CSS.escape(el.getAttribute(attr))}"]` : null;
+    if (!sel) return null;
+    return [sel, [...scope().querySelectorAll(sel)].indexOf(el)];
+  };
+  const find = ([sel, n]) => { try { return scope().querySelectorAll(sel)[n] || null; } catch { return null; } };
+  const mine = (el) => !el.closest('.cr-header, .cr-arrange, [data-no-restore]');
+  function snapshot() {
+    const s = scope(), state = { url: location.href, y: scrollY, toggles: [], fields: [] };
+    for (const el of s.querySelectorAll('[role=tab][aria-selected=true], [aria-pressed]')) {
+      if (!mine(el)) continue;
+      const k = keyOf(el);
+      if (k) state.toggles.push({ k, pressed: el.getAttribute('aria-pressed') });
+    }
+    for (const el of s.querySelectorAll('input, select, textarea')) {
+      if (!mine(el) || !el.id) continue;
+      if (el.tagName === 'INPUT' && !/^(text|search|number|range|url)$/.test(el.type)) continue;
+      const changed = el.tagName === 'SELECT' ? el.value !== ([...el.options].find((o) => o.defaultSelected) || el.options[0])?.value : el.value !== el.defaultValue;
+      if (changed && el.value.length < 4000) state.fields.push({ k: keyOf(el), v: el.value });
+    }
+    return state;
+  }
+  function restore() {
+    let state = null;
+    try { state = JSON.parse(sessionStorage.getItem(RESTORE) || 'null'); sessionStorage.removeItem(RESTORE); } catch { return; }
+    if (!state || state.url !== location.href) return;
+    let toggles = state.toggles, fields = state.fields, tries = 0;
+    const apply = () => {
+      toggles = toggles.filter((t) => {
+        const el = find(t.k);
+        if (!el) return true;
+        const on = t.pressed === null ? el.getAttribute('aria-selected') === 'true' : el.getAttribute('aria-pressed') === t.pressed;
+        if (!on) el.click();
+        return false;
+      });
+      fields = fields.filter((f) => {
+        const el = find(f.k);
+        if (!el) return true;
+        if (el.tagName === 'SELECT' && ![...el.options].some((o) => o.value === f.v)) return true; // options still loading
+        if (el.value !== f.v) { el.value = f.v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); }
+        return false;
+      });
+      scrollTo({ top: state.y, behavior: 'instant' });
+      if ((toggles.length || fields.length || document.documentElement.scrollHeight < state.y + innerHeight) && ++tries < 8) setTimeout(apply, 250 * tries);
+    };
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    const go = () => requestAnimationFrame(apply);
+    if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+  }
+  restore();
   nav.querySelector('#cr-lang').addEventListener('click', () => {
     const next = en ? 'zh' : 'en';
     try { localStorage.setItem('chemhub-lang', next); } catch {}
     const loc = window.__CHEM_LOCATION__ ? null : new URL(location.href);
-    if (loc && loc.searchParams.has('lang')) { loc.searchParams.delete('lang'); location.replace(loc); } else location.reload();
+    const dropLang = loc && loc.searchParams.has('lang');
+    if (dropLang) loc.searchParams.delete('lang');
+    try { const s = snapshot(); if (dropLang) s.url = loc.href; sessionStorage.setItem(RESTORE, JSON.stringify(s)); } catch { /* storage off: plain reload */ }
+    document.dispatchEvent(new CustomEvent('molastria:lang-switch', { detail: { lang: next } }));
+    if (dropLang) location.replace(loc); else location.reload();
   });
 
   // AI 助手：首次点击时再加载 ai/ai.js，平时不增加页面体积。

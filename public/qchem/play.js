@@ -598,7 +598,7 @@
     }
     if (view === 'lab') {
       if (!frame.getAttribute('src')) frame.src = `app/index.html?embed=1&lang=${en ? 'en' : 'zh'}${inner ? `#${inner}` : ''}`;
-      else if (inner) { try { frame.contentWindow.location.hash = inner; } catch { /* not loaded yet */ } }
+      else if (inner) { try { frame.contentDocument.querySelector(`#tabs [data-v="${CSS.escape(inner)}"]`)?.click(); } catch { /* not loaded yet */ } }
     } else if (games[view]) {
       if (!started.has(view)) { started.add(view); games[view].init(); }
       games[view].draw();
@@ -612,6 +612,16 @@
     else if (h.startsWith('play-') && games[h.slice(5)]) show(h.slice(5));
     else show('lab', h === 'lab' ? '' : h); // other hashes belong to the calculator (#qd, …)
   }
+  // The calculator's own tab (电子结构 / 量子计算 / 量子点 / 对拍) is mirrored in this page's address (#lab, #q, #qd, #bench),
+  // so a reload (switching the language) or a shared link opens the same tab.
+  frame.addEventListener('load', () => {
+    try {
+      frame.contentDocument.getElementById('tabs')?.addEventListener('click', (e) => {
+        const v = e.target.closest('[data-v]')?.dataset.v;
+        if (v && document.body.dataset.view === 'lab') history.replaceState(history.state, '', `${location.pathname}${location.search}#${v === 'es' ? 'lab' : v}`);
+      });
+    } catch { /* frame from another origin */ }
+  });
   addEventListener('hashchange', route);
   renderBest();
   route();
