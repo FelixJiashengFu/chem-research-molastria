@@ -421,11 +421,11 @@ async function uma(request, env, cors, path, ip) {
     let counter, limit, used;
     if (tier === 'pro') { // ANI-2x: Pro members only
       if (!pro) throw fail(403, 'ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费');
-      [counter, limit, used] = [`ani:${email}`, Number(env.ANI_DAILY_PRO || 100), '今天的 ANI-2x 计算次数已用完'];
+      [counter, limit, used] = [`ani:${email}`, Number(env.ANI_DAILY_PRO || 200), '今天的 ANI-2x 计算次数已用完'];
     } else if (tier === 'asl') { // the same for everyone: a paid plan must not buy more of an academic-only model
-      [counter, limit, used] = [`asl:${ip}`, Number(env.ASL_DAILY || 20), '今天的 MACE 计算次数已用完'];
+      [counter, limit, used] = [`asl:${ip}`, Number(env.ASL_DAILY || 40), '今天的 MACE 计算次数已用完'];
     } else { // UMA: signed-in Pro members get a larger daily allowance than anonymous visitors
-      [counter, limit, used] = [`uma:${pro ? email : ip}`, Number(pro ? env.UMA_DAILY_PRO || 100 : env.UMA_DAILY || 20), '今天的 UMA / OMol25 模型计算次数已用完'];
+      [counter, limit, used] = [`uma:${pro ? email : ip}`, Number(pro ? env.UMA_DAILY_PRO || 200 : env.UMA_DAILY || 40), '今天的 UMA / OMol25 模型计算次数已用完'];
     }
     // A job costs UMA_COST uses at once; one that does not fit in what is left is refused and costs nothing.
     const n = await bump(env, counter, 86400, cost);

@@ -722,5 +722,23 @@ await test("API v3: the old Meta page's requests behave as before", async () => 
   eq((await call("GET", "/uma/jobs/0123456789abcdef")).data.result.ip_uma_s, 10.9, "polling unchanged");
 });
 
+await test("online models: the code's daily allowances match wrangler.toml (40 / 200 / 40 / 200)", async () => {
+  const toml = await Deno.readTextFile(new URL("../deploy/wrangler.toml", import.meta.url));
+  const names = ["UMA_DAILY", "UMA_DAILY_PRO", "ASL_DAILY", "ANI_DAILY_PRO"];
+  const want = (name: string) => new RegExp(`^${name} = "(\\d+)"`, "m").exec(toml)?.[1];
+  eq(names.map(want), ["40", "200", "40", "200"]);
+  for (const k of names) delete env[k]; // from here on the worker uses its own fallbacks
+  // A counter that is already full makes the refusal quote the daily limit.
+  const limit = async (counter: string, body: any, token?: string) => {
+    sqlite.prepare("INSERT OR REPLACE INTO throttle (key, n, reset) VALUES (?, 100000, ?)").run(counter, nowS() + 86400);
+    const r = await call("POST", "/uma/jobs", body, token);
+    return [r.status, /每天 (\d+) 次/.exec(r.data.error?.message || "")?.[1]];
+  };
+  eq(await limit("uma:local", { smiles: "CCO", job: "opt" }), [429, want("UMA_DAILY")], "anonymous, UMA and OMol25 models");
+  eq(await limit("uma:boss@molastria.com", { smiles: "CCO", job: "opt" }, adminToken), [429, want("UMA_DAILY_PRO")], "Pro, UMA and OMol25 models");
+  eq(await limit("asl:local", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true }), [429, want("ASL_DAILY")], "MACE");
+  eq(await limit("ani:boss@molastria.com", { smiles: "CCO", job: "opt", model: "ani-2x" }, adminToken), [429, want("ANI_DAILY_PRO")], "ANI-2x");
+});
+
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 if (failed) Deno.exit(1);

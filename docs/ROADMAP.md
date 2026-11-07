@@ -4,7 +4,7 @@
 
 ## 现在
 
-- 在线模型已开通（2026-11-05）：15 个模型（UMA 四个、OMol25 的 AllScAIP 两个和 eSEN 三个、MACE 五个、ANI-2x 只给 Pro），隧道 `molastria-uma` → `uma-origin.molastria.com`。FEC 实测每个模型 1–14 秒（RTX 2080）。待办：观察一周的用量再调各档次数；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）；UMA-M 1.1 要更大的内存和显存；可以向 MACE 作者要在线服务的书面许可；UMA-S 1.2.1 水的 IP 偏低，可以反馈给 fairchem。
+- 在线模型已开通（2026-11-05）：15 个模型（UMA 四个、OMol25 的 AllScAIP 两个和 eSEN 三个、MACE 五个、ANI-2x 只给 Pro），隧道 `molastria-uma` → `uma-origin.molastria.com`。FEC 实测每个模型 1–14 秒（RTX 2080）。各档每天次数 2026-11-07 翻倍到 40 / 200 / 40 / 200（匿名 UMA 与 OMol25 / Pro / MACE / ANI-2x）。待办：观察一周的用量再调各档次数；考虑开启 Cloudflare Access 服务令牌；电脑开机自动启动（目前要手动运行 `start.ps1`）；UMA-M 1.1 要更大的内存和显存；可以向 MACE 作者要在线服务的书面许可；UMA-S 1.2.1 水的 IP 偏低，可以反馈给 fairchem。
 - 模型接口（API v3，2026-11-06）：新页面 `/models/`，13 种计算（sp、opt、freq、conf、scan、md、rxn、ipea、spin、bde、pa、polar、ir），按计算量计次。站长电脑要用新版 `tools/uma-server/server.py` 重启 `start.ps1`（health 里有 `api: 3`）。真实模型试跑见 `tools/uma-server/realrun.py`：A 类最坏情况（30 个重原子）都在 600 s 内；MACE-OMOL-0、MACE-OFF23 large、MACE-MDP 的最坏情况还没测，MACE-OMOL-0 跑大分子的 md、freq 可能超时。
 - 桌面版 0.1.14 装好后要人在真机上点一次：Mac 上点任意下载，应弹出系统“存储为”窗口（Mac 的保存窗口没有实测过）；Win 和 Mac 都从顶栏进“讲解手册”“数据库”“期刊发表”“科学大模型”看一眼，再看首页徽标和下载页片头视频有没有播放。Mac 桌面版的 WKWebView 从 Tauri 内置协议播视频可能要 Range 请求（内置协议只返回完整文件），没有实测；不支持时两处都退回 poster 静图。AI 面板片头：Windows 桌面版应正常播放（没在应用里实测，播不了会在 1.5 s 内淡出）；Mac 桌面版按 `location.protocol === 'tauri:'` 直接跳过，这个判断没在真机上验证过。
 - 科学大模型的价格：2026-12-01 Gemini 4 Argon 涨到 4 / 20 美元，到时按 RUNBOOK 改价格和说明；之后每月核对一次。

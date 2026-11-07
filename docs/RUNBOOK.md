@@ -162,7 +162,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 
 **每次上线：** 普通（非管理员）PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe -MacePython D:\ChemDraw\mace-env\Scripts\python.exe`（不给 `-MacePython` 时 MACE 模型不上线）。启动约 1 分钟；关掉这个窗口就同时下线服务和隧道。服务运行时设 `HF_HUB_OFFLINE=1`，不连 Hugging Face。
 
-**额度**（`wrangler.toml` 的 `[vars]`）：Meta 的 UMA 和 OMol25 模型共用一份，匿名访客每天 `UMA_DAILY`（20）次、Pro 每天 `UMA_DAILY_PRO`（100）次；MACE 系列每位访客每天 `ASL_DAILY`（20）次，Pro 不加（学术许可的模型不能变成付费功能）；ANI-2x 只给 Pro，每天 `ANI_DAILY_PRO`（100）次。被电脑拒绝的任务（已有任务在算、队列满、元素不支持）不计次数。
+**额度**（`wrangler.toml` 的 `[vars]`）：Meta 的 UMA 和 OMol25 模型共用一份，匿名访客每天 `UMA_DAILY`（40）次、Pro 每天 `UMA_DAILY_PRO`（200）次；MACE 系列每位访客每天 `ASL_DAILY`（40）次，Pro 不加（学术许可的模型不能变成付费功能）；ANI-2x 只给 Pro，每天 `ANI_DAILY_PRO`（200）次。被电脑拒绝的任务（已有任务在算、队列满、元素不支持）不计次数。改次数时要一起改 `account-worker.js` 里的默认值（`tools/account-test.ts` 会核对两边一致）和 `models/index.html` 的“每日额度”表，再跑 `i18n-extract`、补 `i18n/en.json` 的英文、跑 `i18n-translate`，最后 `npx.cmd wrangler deploy`。
 
 **电脑的安全：**
 - 不开任何入站端口：服务只听 127.0.0.1，隧道是电脑主动连出去的，家里的 IP 不公开；Windows 防火墙保持默认开启。
