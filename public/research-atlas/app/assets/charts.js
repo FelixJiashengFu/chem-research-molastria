@@ -7,7 +7,7 @@
   RA.col = v => (v && v.startsWith("--")) ? css(v) : v;
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   RA.esc = esc;
-  RA.fmt = { int: d3.format(","), k: v => v >= 10000 ? d3.format(".3~s")(v).replace("k", "k") : d3.format(",")(v), pct: v => (v == null ? "—" : d3.format(".1f")(v) + "%"), f1: d3.format(".1f"), f2: d3.format(".2f") };
+  RA.fmt = { int: d3.format(","), k: v => v >= 10000 ? d3.format(".3~s")(v) : d3.format(",")(v), pct: v => (v == null ? "—" : d3.format(".1f")(v) + "%"), f1: d3.format(".1f"), f2: d3.format(".2f") };
   let tip;
   RA.tip = {
     show(html, e) {

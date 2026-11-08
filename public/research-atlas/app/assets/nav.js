@@ -4,7 +4,7 @@
    the order is kept per browser (localStorage) and shared with the home page and the schools hub. */
 (function () {
   const me = document.currentScript, root = (me && me.dataset.root) || ".";
-  const R = p => (root.replace(/\/$/, "") + "/" + p).replace(/^\.\//, "./");
+  const R = p => root.replace(/\/$/, "") + "/" + p;
   // [key, number, name, path]
   const NAV = [
     ["schools", "01", "大学", "schools/"],
