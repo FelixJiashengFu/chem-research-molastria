@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="计算化学教学视频与课程：从 YouTube 和哔哩哔哩收集的量子化学、DFT、Gaussian、ORCA、VASP、Quantum ESPRESSO、GROMACS、LAMMPS、Multiwfn、机器学习势、RDKit 与分子对接等公开课程和软件教程，按主题分组，每条都核对过链接、标题和频道，可以在页面里直接播放。">
+  <meta name="theme-color" content="#173f34">
+  <title>计算化学教学视频 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="videos.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="videos-data.js" defer></script>
+  <script src="videos.js" defer></script>
+</head>
+<body data-section="videos">
+<a class="skip" href="#vd-directory">跳到视频目录</a>
+<main>
+  <section class="vd-hero">
+    <p class="eyebrow">MOLASTRIA · TEACHING VIDEOS</p>
+    <h1>计算化学教学视频</h1>
+    <p class="lead">从 YouTube 和哔哩哔哩收集的公开课程、暑期学校录像和软件官方教程，从量子力学基础、电子结构方法，到 Gaussian、ORCA、VASP、GROMACS 这些程序怎么上手，再到机器学习势、化学信息学和科学大模型。每一条都对照平台上的标题、简介和分集目录核对过：视频还在，标题和频道与平台上一致，内容确实是在教东西。</p>
+    <p class="vd-note-box">点封面就在本页播放；视频网站的播放器点了才加载，不点不会载入。平台不允许嵌入的视频，点封面会打开原视频，封面下面始终有原视频链接。课程类的条目是整个播放列表或分 P 合集，播放器里可以切换各讲。</p>
+    <p class="vd-note-box" id="vd-desktop" hidden>桌面版里点封面会在系统浏览器里打开原视频。</p>
+    <p class="vd-meta" id="vd-meta"></p>
+    <nav class="vd-jump" id="vd-jump" aria-label="按主题跳转"></nav>
+  </section>
+
+  <section id="vd-directory" class="vd-directory" aria-labelledby="vd-dir-h" tabindex="-1">
+    <h2 id="vd-dir-h">视频目录</h2>
+    <p class="muted">按主题分组，可以组合筛选和搜索。搜索会查标题、频道、软件名和说明；语言选“中文”时也包括带中文字幕的视频。</p>
+    <div class="vd-filters" role="search" aria-label="筛选视频">
+      <label class="vd-search">搜索<input type="search" id="vd-q" placeholder="软件名、方法、课程或频道" autocomplete="off" spellcheck="false"></label>
+      <label>主题<select id="vd-topic"><option value="">全部主题</option></select></label>
+      <label>平台<select id="vd-platform"><option value="">全部平台</option></select></label>
+      <label>语言<select id="vd-lang"><option value="">全部语言</option></select></label>
+      <label>程度<select id="vd-level"><option value="">全部程度</option></select></label>
+      <button type="button" class="text-button" id="vd-reset" hidden>清除筛选</button>
+    </div>
+    <p class="vd-count" id="vd-count" role="status" aria-live="polite"></p>
+    <div id="vd-list" class="vd-list"></div>
+    <div id="vd-empty" class="vd-empty" hidden><p>没有符合条件的视频。换个关键词，或者放宽筛选条件。</p><button type="button" class="button" id="vd-empty-reset">清除筛选</button></div>
+    <p class="vd-fine">视频的版权归各自的作者和机构所有，MolAstria 只链接和嵌入平台公开提供的播放器，不下载、不转存视频；封面图来自各平台，仅用于指向原视频。“转载”指非原作者上传的视频，只收录开放许可的课程或加了中文字幕的版本，并尽量给出原视频。视频会被删除或改为私密，看到失效的条目请到 <a href="https://github.com/FelixJiashengFu/chem-research-molastria/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a> 告诉我们。</p>
+  </section>
+
+  <footer class="vd-foot">
+    <strong>MolAstria · 教学视频</strong>
+    <p>标题和频道名保留平台上的原文；说明是 MolAstria 写的。</p>
+    <p><a href="../manual/index.html">讲解手册</a> · <a href="../atlas/index.html#resources">数据库</a> · <a href="../qchem/index.html">游乐场</a> · <a href="#vd-directory">回到视频目录 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
+  </footer>
+</main>
+</body>
+</html>

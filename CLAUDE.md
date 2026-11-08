@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是晨光科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是晨光科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -25,6 +25,7 @@ public/               发布目录，推到 main 就上线
   ai/ai.js            AI 助手：服务商、托管额度（只有 DeepSeek V4 Flash）、可拖宽窗口；六个吉祥物（MASCOTS，点顶部头像换，存 molastria-ai-mascot），面板从关到开时吉祥物进场 5 秒（纯 CSS，可跳过；选吉祥物的面板里能关，存 molastria-ai-intro）
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
+  videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和前五篇带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
@@ -88,7 +89,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`（用 `tools/fundamental-math.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`（用 `tools/fundamental-math.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 
@@ -128,6 +129,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。
+- **云端会话连不上 YouTube 和哔哩哔哩：** 教学视频的搜索和核对（`tools/video-search.mjs`）要在站长电脑或 GitHub Actions 上跑，做法见 RUNBOOK“教学视频”。哔哩哔哩对 GitHub 的服务器可以用（搜索要 wbi 签名和 buvid3 cookie），频繁请求会返回 -412，脚本遇到连续限流就停。
 - **桌面版不能用 `panic = "abort"`：** wry 在 Mac 上靠 `objc2::exception::catch` 接住 WKURLSchemeTask 的 Objective-C 异常（请求已被 WebKit 停掉时会抛），abort 模式下接不住，整个应用 SIGABRT 闪退（0.1.19 的崩溃，`docs/DECISIONS.md` 2026-11-08）。
 - **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。调试版和已安装的应用共用应用数据和 localStorage。
 - **UMA 在 Windows：** fairchem 的默认设置用 `torch.compile`，需要 Triton，Windows 没有，会报 `TritonMissing`；所有加载 UMA 的地方（`uma-server/server.py`、桌面版 `runner.py`、`batch_uma.py`、Meta 页生成的脚本）用 `uma_settings()`，没有 Triton 时改用 `batch` 预设（全精度、不编译）。中文 Windows 上 Python 还要用 UTF-8 模式（`-X utf8` 或 `PYTHONUTF8=1`），否则 fairchem 按 GBK 读自己的数据文件失败；桌面版已设 `PYTHONUTF8=1`，`start.ps1` 用 `-X utf8`。RTX 20 系（计算能力 7.5）用不了 UMA Nitro。

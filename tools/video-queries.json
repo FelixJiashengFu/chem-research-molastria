@@ -1,0 +1,58 @@
+{
+ "courses": {
+  "yt": ["MIT 5.61 physical chemistry quantum mechanics lectures", "MIT 8.04 quantum physics Allan Adams lecture", "MIT 8.05 quantum physics Zwiebach lecture", "MIT 5.73 introductory quantum mechanics", "quantum chemistry lecture course playlist", "quantum chemistry full course university", "NPTEL quantum chemistry lecture", "TMP Chem computational chemistry", "David Sherrill quantum chemistry lecture", "Hartree-Fock method lecture", "molecular orbital theory lecture course", "physical chemistry quantum mechanics lecture series", "Yale chemistry quantum mechanics lecture", "introduction to computational chemistry lecture", "computational chemistry course lecture 1"],
+  "bili": ["量子化学 课程", "结构化学 课程", "量子力学 课程 大学", "物理化学 量子力学 课程", "MIT 量子力学 中文字幕", "计算化学 入门 课程", "Hartree-Fock 讲解", "分子轨道理论 讲解"]
+ },
+ "theory": {
+  "yt": ["density functional theory lecture Kieron Burke", "density functional theory lecture series", "DFT tutorial lecture introduction", "Virtual Winter School on Computational Chemistry", "coupled cluster theory lecture", "electron correlation lecture quantum chemistry", "multireference methods CASSCF lecture", "basis sets quantum chemistry lecture", "dispersion correction DFT Grimme lecture", "post-Hartree-Fock methods lecture", "IPAM electronic structure tutorial", "Molpro summer school lecture", "time-independent perturbation theory MP2 quantum chemistry lecture", "exchange-correlation functional lecture", "density functional theory for chemists"],
+  "bili": ["密度泛函理论 讲座", "DFT 原理 讲解", "泛函 选择 Sobereva", "耦合簇 理论 讲解", "多参考态 CASSCF 讲解", "基组 讲解 量子化学", "电子相关 方法 讲座", "北京科音 量子化学 讲座"]
+ },
+ "molsw": {
+  "yt": ["Gaussian 16 tutorial", "GaussView tutorial geometry optimization", "ORCA quantum chemistry tutorial", "ORCA tutorial FACCTs", "ORCA input tutorial beginner", "Q-Chem webinar", "Psi4 tutorial quantum chemistry", "PySCF tutorial", "NWChem tutorial", "GAMESS tutorial", "xtb CREST tutorial Grimme", "OpenMolcas tutorial", "Molpro tutorial", "TURBOMOLE tutorial", "geometry optimization frequency calculation tutorial quantum chemistry"],
+  "bili": ["Gaussian 入门 教程", "Gaussian 计算 教程", "GaussView 使用", "ORCA 教程", "ORCA 入门", "xtb 使用 教程", "PySCF 教程", "量子化学软件 入门"]
+ },
+ "periodic": {
+  "yt": ["VASP tutorial", "VASP workshop lecture", "Quantum ESPRESSO school lecture", "Quantum ESPRESSO tutorial", "CP2K tutorial", "CP2K workshop", "SIESTA school tutorial", "GPAW tutorial", "FHI-aims tutorial", "ABINIT school", "CASTEP workshop tutorial", "phonopy tutorial phonon", "Wannier90 school", "band structure calculation DFT tutorial", "plane wave pseudopotential DFT lecture"],
+  "bili": ["VASP 入门 教程", "VASP 计算 教程", "Quantum ESPRESSO 教程", "QE 计算 教程", "CP2K 教程", "Materials Studio CASTEP 教程", "能带 计算 教程", "第一性原理 计算 入门"]
+ },
+ "md": {
+  "yt": ["GROMACS tutorial", "GROMACS protein ligand tutorial", "BioExcel webinar GROMACS", "LAMMPS tutorial", "LAMMPS workshop", "AMBER molecular dynamics tutorial", "OpenMM tutorial", "NAMD tutorial", "PLUMED masterclass", "enhanced sampling metadynamics lecture", "free energy perturbation tutorial", "molecular dynamics simulation lecture course", "statistical mechanics molecular simulation lecture", "umbrella sampling tutorial", "force field parameterization lecture"],
+  "bili": ["GROMACS 入门 教程", "GROMACS 教程", "LAMMPS 教程", "LAMMPS 入门", "分子动力学 模拟 课程", "AMBER 教程", "自由能 计算 教程", "增强采样 讲解"]
+ },
+ "analysis": {
+  "yt": ["Multiwfn tutorial", "VMD tutorial", "VMD molecular visualization tutorial", "Avogadro tutorial", "ChimeraX tutorial", "PyMOL tutorial", "NBO analysis tutorial", "QTAIM tutorial Bader analysis", "NCI plot tutorial noncovalent interaction", "electron density analysis lecture", "Bader charge analysis tutorial VASP", "IboView intrinsic bond orbitals", "molecular orbital visualization tutorial", "Jmol tutorial", "LOBSTER COHP tutorial"],
+  "bili": ["Multiwfn 教程", "Multiwfn 使用", "VMD 教程", "VMD 作图", "波函数分析 讲座", "NBO 分析 教程", "PyMOL 教程", "IGMH 弱相互作用 分析"]
+ },
+ "excited": {
+  "yt": ["TDDFT lecture", "time-dependent density functional theory tutorial", "excited state calculation tutorial Gaussian", "UV-Vis spectrum calculation tutorial", "NMR chemical shift calculation tutorial", "IR spectrum calculation DFT tutorial", "SHARC surface hopping tutorial", "Newton-X tutorial", "nonadiabatic dynamics lecture", "conical intersections lecture", "computational photochemistry lecture", "MCTDH lecture", "computational spectroscopy lecture", "ORCA excited states tutorial", "Raman spectrum calculation tutorial"],
+  "bili": ["激发态 计算 教程", "TDDFT 计算", "吸收光谱 计算 教程", "荧光 发射光谱 计算", "核磁 计算 教程", "红外 光谱 计算 高斯", "非绝热 动力学 讲座", "圆锥交叉 讲解"]
+ },
+ "reaction": {
+  "yt": ["transition state search tutorial Gaussian", "transition state optimization tutorial", "IRC calculation tutorial", "QST2 QST3 tutorial", "nudged elastic band tutorial", "NEB ASE tutorial", "reaction mechanism DFT tutorial", "thermochemistry calculation Gaussian tutorial", "Gibbs free energy calculation DFT tutorial", "solvation model PCM SMD tutorial", "conformer search CREST tutorial", "computational catalysis lecture", "potential energy surface lecture chemistry", "ORCA transition state tutorial", "microkinetic modeling lecture"],
+  "bili": ["过渡态 搜索 教程", "过渡态 计算 高斯", "IRC 计算", "反应机理 计算 教程", "NEB 计算 教程", "热力学 校正 计算", "溶剂 模型 计算", "构象 搜索 教程"]
+ },
+ "ml": {
+  "yt": ["MACE machine learning potential tutorial", "machine learning interatomic potentials lecture", "NequIP Allegro tutorial", "DeepMD-kit tutorial", "TorchANI tutorial", "Open Catalyst Project tutorial", "fairchem UMA tutorial", "equivariant neural networks lecture e3nn", "machine learning for molecules lecture", "graph neural networks chemistry lecture", "SchNet tutorial", "machine learning in chemistry course", "machine learning force fields lecture", "active learning interatomic potentials", "foundation models atomistic simulation"],
+  "bili": ["机器学习势 教程", "DeepMD 教程", "DeePMD-kit 入门", "机器学习 力场 讲座", "AI for Science 化学 讲座", "图神经网络 分子 讲解", "MACE 势函数", "深度学习 分子 性质 预测"]
+ },
+ "cheminf": {
+  "yt": ["RDKit tutorial", "RDKit UGM", "cheminformatics tutorial Python", "AutoDock Vina tutorial", "molecular docking tutorial", "PubChem tutorial", "ChEMBL tutorial", "DeepChem tutorial", "TeachOpenCADD", "QSAR tutorial", "virtual screening tutorial", "computer-aided drug design lecture", "SMILES tutorial cheminformatics", "molecular fingerprints similarity tutorial", "pharmacophore modeling tutorial"],
+  "bili": ["分子对接 教程", "AutoDock Vina 教程", "RDKit 教程", "化学信息学 课程", "计算机辅助药物设计 课程", "虚拟筛选 教程", "PubChem 使用 教程", "QSAR 建模 教程"]
+ },
+ "bio": {
+  "yt": ["AlphaFold tutorial", "AlphaFold webinar EMBL-EBI", "ColabFold tutorial", "AlphaFold 3 server tutorial", "protein structure prediction lecture", "PDB-101 tutorial", "RCSB PDB tutorial", "Rosetta tutorial", "PyRosetta tutorial", "cryo-EM data processing tutorial", "protein structure visualization tutorial", "homology modeling tutorial", "John Jumper AlphaFold lecture", "protein design lecture", "UniProt tutorial"],
+  "bili": ["AlphaFold 教程", "AlphaFold3 使用", "蛋白质结构预测 讲解", "ColabFold 使用", "Rosetta 教程", "冷冻电镜 数据处理 教程", "同源建模 教程", "PDB 数据库 使用"]
+ },
+ "workflow": {
+  "yt": ["pymatgen tutorial", "Materials Project workshop", "Materials Project API tutorial", "ASE atomic simulation environment tutorial", "AiiDA tutorial", "MolSSI Python workshop", "MolSSI education", "NOMAD tutorial", "atomate2 tutorial", "high-throughput DFT workflow lecture", "Python for chemists tutorial", "Jupyter notebooks chemistry tutorial", "QCArchive tutorial", "custodian fireworks workflow tutorial", "materials informatics lecture"],
+  "bili": ["pymatgen 教程", "ASE 教程", "Python 计算化学", "Python 化学 编程 教程", "高通量 计算 教程", "Materials Project 使用", "材料 数据库 使用 教程", "计算材料学 课程"]
+ },
+ "quantum": {
+  "yt": ["Qiskit Nature tutorial", "Qiskit quantum chemistry tutorial", "Qiskit Global Summer School quantum chemistry", "variational quantum eigensolver lecture", "VQE tutorial", "PennyLane quantum chemistry", "OpenFermion tutorial", "quantum computing for quantum chemistry lecture", "quantum phase estimation chemistry lecture", "CUDA-Q chemistry", "quantum simulation of molecules lecture", "IPAM quantum computing chemistry", "Tequila quantum chemistry", "quantum algorithms electronic structure", "quantum computing chemistry webinar"],
+  "bili": ["量子计算 化学", "量子计算 量子化学", "VQE 讲解", "VQE 教程", "Qiskit 教程", "量子算法 分子 模拟", "量子模拟 化学 讲座", "PennyLane 教程"]
+ },
+ "llm": {
+  "yt": ["large language models chemistry lecture", "LLM agents chemistry", "ChemCrow", "Coscientist autonomous chemistry", "FutureHouse ether0", "Andrew White LLM chemistry", "AI for science lecture chemistry", "language models for materials science", "LLM computational chemistry agent", "PaperQA FutureHouse", "AI scientist chemistry talk", "machine learning chemistry seminar LLM", "foundation models for chemistry talk", "Intern-S1 scientific model", "self-driving laboratory talk"],
+  "bili": ["科学大模型", "化学 大模型", "AI for Science 讲座", "大语言模型 化学", "书生 Intern-S1", "AI 科学家", "大模型 材料 科学", "化学 智能体"]
+ }
+}

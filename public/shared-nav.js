@@ -9,6 +9,7 @@
     ['search', 'index.html', '统一搜索'],
     ['network', 'hub/network.html', '网状查询'],
     ['manual', 'manual/index.html', '讲解手册'],
+    ['videos', 'videos/index.html', '教学视频', true],
     ['atlas', 'atlas/index.html#resources', '数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],

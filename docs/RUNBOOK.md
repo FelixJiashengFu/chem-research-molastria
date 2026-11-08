@@ -120,6 +120,15 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
 
+## 教学视频（/videos/）
+
+全部条目在 `public/videos/videos-data.js`，一行一条：`p`（`yt` / `bili`）、`k`（`video`、`playlist`、`multipart`）、`id`、标题和频道（照平台原文）、`topic`、`lang`（讲课语言）、`subs`（另加的字幕）、`level`、`official`、`reupload`、`sw`、`note`（中英两版，MolAstria 写的）。文件开头有字段说明。
+
+- **封面：** 不进 git。`pages.yml` 发布前、`desktop.yml` 打包前运行 `node tools/video-thumbs.mjs`（发布时加 `--check`），下载到 `public/videos/thumbs/`；视频没了或不让嵌入，只在 Actions 日志里出 `::warning::`，不会让发布失败。看到警告就把那条删掉或改 `embed: false`。本地预览没有封面时，页面先用平台的图片地址，再画占位图。
+- **加视频：** 在 YouTube 或哔哩哔哩核对标题、频道和能否嵌入（YouTube oEmbed 返回 401 就是不让嵌入，写 `embed: false`），照格式加一行，写中英两句说明，跑 `node tools/e2e/run.mjs videos`。只收教东西的课程、讲座和教程；不收中学化学、广告和培训班引流、破解安装、付费视频；转载只收开放许可的课程（MIT OCW、Yale、NPTEL），标 `reupload`。
+- **批量找候选：** `node tools/video-search.mjs yt search [主题 id]` 和 `bili search`，查询词在 `tools/video-queries.json`，结果写到 `tmp-videos/`（不进 git），附平台上的标题、简介、时长、分集、能否嵌入。`yt verify` / `bili verify` 逐条重查数据文件里的视频。要在能上 YouTube 和哔哩哔哩的机器上跑；云端会话上不去时，临时加一个在分支上 push 触发的工作流跑它、把 `tmp-videos/` 提交回分支（2026-11-08 就是这样做的，合并前删掉工作流和结果）。
+- **桌面版** 不嵌入播放器，点封面在系统浏览器里打开原视频（WebView 里嵌入 YouTube 常被拒绝）。
+
 ## 刷新数据
 
 训练页的模型核对：`node tools/train-models.mjs`（每周四随目录刷新自动跑；本机有 HTTPS 扫描时加 `NODE_USE_SYSTEM_CA=1`）。它只更新 `public/train/models-live.js`，手写的模型介绍要人来改。
