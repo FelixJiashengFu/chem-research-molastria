@@ -25,7 +25,7 @@
     <p><b>接下来</b></p>
     <ol>
       <li>Stripe 会把收据发到你在结账页填写的邮箱，请保留，用于报销或退款。</li>
-      <li>Pro 权益绑定在这个邮箱上。换设备或换浏览器时，在<a href="account.html">账号页</a>用它收验证码登录。还在开发中的功能上线后自动开通，并发邮件通知你。</li>
+      <li>Pro 权益绑定在这个邮箱上。换设备或换浏览器时，在<a href="account.html">账号页</a>用它收验证码登录。取消订阅后账号还在，变回免费账号。</li>
       <li>付款后 14 天内可以无理由全额退款，直接回复收据邮件或通过下面的联系方式说明即可。</li>
     </ol>
   </div>
@@ -36,7 +36,7 @@
   // Shows the plan and a short reference from the Stripe redirect (?plan=…&session_id=…).
   addEventListener('DOMContentLoaded', () => {
     const q = new URLSearchParams(location.search);
-    const names = { pro_year: 'MolAstria Pro · 年付', pro_month: 'MolAstria Pro · 月付', team_year: '课题组版 · 年付', sponsor: '支持作者' };
+    const names = { pro_year: 'MolAstria Pro 支持者 · 年付', pro_month: 'MolAstria Pro 支持者 · 月付', team_year: '课题组版 · 年付', sponsor: '捐助' };
     const plan = names[q.get('plan')] || '';
     const sid = q.get('session_id') || '';
     const ref = sid.slice(-10);
@@ -52,10 +52,10 @@
     box.hidden = false;
     box.textContent = T('正在开通 Pro…');
     acct.fromCheckout(sid).then((r) => {
-      if (r.sponsor) { box.textContent = T('感谢你的支持！这笔是一次性赞助，不需要登录。'); return; }
+      if (r.sponsor) { box.textContent = T('感谢你的支持！这笔是一次性捐助，不需要登录。'); return; }
       if (!r.pro) throw new Error(T('暂时没有查到这笔订阅。'));
       box.classList.add('ok');
-      box.innerHTML = `<b>${T('Pro 已开通，这台设备已登录。')}</b> ${T(`AI 托管额度现在就能用：本月 ${r.usage.limit} 次，在 AI 助手里选择“MolAstria Pro”即可。`)} <a href="account.html">${T('查看账号')}</a>`;
+      box.innerHTML = `<b>${T('Pro 已开通，这台设备已登录。')}</b> ${T(`AI 托管额度现在就能用：本月 ${r.usage.limit} 次，在 AI 助手里选择“MolAstria 托管”即可。`)} <a href="account.html">${T('查看账号')}</a>`;
     }).catch((e) => {
       box.classList.add('warn');
       box.innerHTML = `${T(e.message).replace(/[&<>]/g, (c) => `&#${c.charCodeAt(0)};`)} ${T('付款已经完成，稍后可以在账号页用付款邮箱登录。')} <a href="account.html">${T('去账号页')}</a>`;

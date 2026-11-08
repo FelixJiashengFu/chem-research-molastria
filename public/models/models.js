@@ -65,8 +65,8 @@
     'mace-off23-small': { name: 'MACE-OFF23 small', tier: 'asl', elements: OFF, dft: 'SPICE · ωB97M-D3(BJ)/def2-TZVPPD', license: '学术软件许可（ASL）', about: OFF_ABOUT, fine: OFF_FINE },
     'mace-off23-medium': { name: 'MACE-OFF23 medium', tier: 'asl', elements: OFF, dft: 'SPICE · ωB97M-D3(BJ)/def2-TZVPPD', license: '学术软件许可（ASL）', about: OFF_ABOUT, fine: OFF_FINE },
     'mace-off23-large': { name: 'MACE-OFF23 large', tier: 'asl', elements: OFF, dft: 'SPICE · ωB97M-D3(BJ)/def2-TZVPPD', license: '学术软件许可（ASL）', about: OFF_ABOUT, fine: OFF_FINE },
-    'ani-2x': { name: 'ANI-2x', tier: 'pro', elements: ['H', 'C', 'N', 'O', 'F', 'S', 'Cl'], dft: 'ωB97X/6-31G*', license: 'MIT',
-      about: 'ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。',
+    'ani-2x': { name: 'ANI-2x', tier: 'fair', elements: ['H', 'C', 'N', 'O', 'F', 'S', 'Cl'], dft: 'ωB97X/6-31G*', license: 'MIT',
+      about: 'ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。对所有人免费，和 UMA、OMol25 模型共用每天的次数。',
       fine: 'ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。' },
     'mace-mdp': { name: 'MACE-MDP', tier: 'asl', elements: OFF, dft: 'SPICE-α · ωB97M-D3BJ/def2-TZVPP', license: '学术软件许可（ASL）',
       about: '预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测；红外与拉曼光谱用 MACE-OFF23 medium 的振动模式加上 MACE-MDP 的偶极矩和极化率导数。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。',
@@ -123,7 +123,6 @@
 
   const umaApi = () => (window.MOLASTRIA_PAY?.accountApi || '').replace(/\/+$/, '');
   const session = () => store.get('molastria-session') || '';
-  const isPro = () => { try { return !!session() && !!JSON.parse(store.get('molastria-account') || 'null')?.pro; } catch { return false; } };
   async function umaCall(path, opts = {}) {
     const token = session();
     const res = await fetch(umaApi() + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
@@ -337,7 +336,6 @@
     if (j === 'bde' && !breakable().length) return '这个分子没有可以断开的非环单键。';
     if (j === 'pa' && p.mode === 'deprotonate' && !g?.atoms[p.site]?.h) return `${atomName(g.atoms[p.site])} 上没有氢，不能去质子。`;
     if (models.some((id) => MODELS[id].tier === 'asl') && !$('m-academic').checked) return '请先勾选学术用途确认。';
-    if (models.some((id) => MODELS[id].tier === 'pro') && !isPro()) return 'ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。';
     return '';
   }
 
@@ -348,7 +346,7 @@
     $('m-win-about').textContent = grp.intro;
     const msel = $('m-model'), jsel = $('m-job');
     if (msel.dataset.win !== S.win) { // a new window: its own models and jobs
-      msel.innerHTML = grp.models.map((id) => `<option value="${id}">${esc(MODELS[id].name)}${MODELS[id].tier === 'pro' ? '（Pro 会员）' : ''}</option>`).join('');
+      msel.innerHTML = grp.models.map((id) => `<option value="${id}">${esc(MODELS[id].name)}</option>`).join('');
       msel.value = S.model[S.win] || grp.models[0];
       jsel.innerHTML = grp.jobs.map((j) => `<option value="${j}">${esc(JOBS[j].name)}</option>`).join('');
       jsel.value = S.job[S.win] || grp.jobs[0];
@@ -408,8 +406,8 @@
     status();
   }
   function card(id) {
-    const M = MODELS[id], tierTag = { fair: '免费', asl: '免费 · 学术许可', pro: 'Pro 会员' }[M.tier];
-    return `<article class="md-model"><h3>${esc(M.name)}</h3><p><span class="tag${M.tier === 'pro' ? ' pro' : ''}">${tierTag}</span>${M.direct ? '<span class="tag">直接受力型</span>' : ''}<code>${esc(id)}</code></p><p>${esc(M.about)}</p><p class="muted small">训练数据：${esc(M.dft)} · 许可：${esc(M.license)}</p></article>`;
+    const M = MODELS[id], tierTag = { fair: '免费', asl: '免费 · 学术许可' }[M.tier];
+    return `<article class="md-model"><h3>${esc(M.name)}</h3><p><span class="tag">${tierTag}</span>${M.direct ? '<span class="tag">直接受力型</span>' : ''}<code>${esc(id)}</code></p><p>${esc(M.about)}</p><p class="muted small">训练数据：${esc(M.dft)} · 许可：${esc(M.license)}</p></article>`;
   }
   function status() {
     const box = $('m-status');

@@ -122,7 +122,7 @@ export async function latestDigest(env) {
 }
 /** Titles only, for visitors without Pro. */
 /** The public preview: the week's overview and the first five picks with their comments; the rest of the issue and the email stay Pro. */
-export const previewOf = (d) => d && { week: d.week, overview_zh: d.overview_zh || '', overview_en: d.overview_en || '', items: d.items.slice(0, 5).map(({ source, title, url, date, authors, why_zh, why_en }) => ({ source, title, url, date, authors: authors || '', why_zh: why_zh || '', why_en: why_en || '' })), total: d.items.length };
+export const previewOf = (d) => d && { week: d.week, overview_zh: d.overview_zh || '', overview_en: d.overview_en || '', items: d.items.map(({ source, title, url, date, authors, why_zh, why_en }) => ({ source, title, url, date, authors: authors || '', why_zh: why_zh || '', why_en: why_en || '' })), total: d.items.length };
 
 // ── the email ───────────────────────────────────────────────────────────
 export function digestMail(d, { en, unsubscribeUrl }) {
@@ -155,15 +155,12 @@ export async function sendPending(env, { access, sendMail }, now = Math.floor(Da
   const pending = (await env.DB.prepare('SELECT s.email, s.token, s.lang FROM digest_subs s WHERE NOT EXISTS (SELECT 1 FROM digest_sends x WHERE x.week = ?1 AND x.email = s.email) LIMIT ?2').bind(d.week, Math.min(SEND_BATCH, DAILY_MAIL_CAP - today.n)).all()).results;
   let sent = 0;
   for (const sub of pending) {
-    const a = await access(env, sub.email);
-    if (a.pro) {
-      const m = mailFor(env, d, sub);
-      try { await sendMail(env, sub.email, m.subject, m.text, { html: m.html, headers: m.headers }); }
-      catch (e) { console.error('digest: send failed, will retry', e.message); return sent; }
-      sent++;
-    }
-    // A lapsed subscriber is marked too, so they are not looked up again every run; they get the next digest if they renew.
-    await env.DB.prepare('INSERT INTO digest_sends (week, email, sent) VALUES (?1, ?2, ?3) ON CONFLICT DO NOTHING').bind(d.week, sub.email, a.pro ? now : 0).run();
+    // Every subscriber gets it, free or paid: the content is free; subscribing needed a signed-in account.
+    const m = mailFor(env, d, sub);
+    try { await sendMail(env, sub.email, m.subject, m.text, { html: m.html, headers: m.headers }); }
+    catch (e) { console.error('digest: send failed, will retry', e.message); return sent; }
+    sent++;
+    await env.DB.prepare('INSERT INTO digest_sends (week, email, sent) VALUES (?1, ?2, ?3) ON CONFLICT DO NOTHING').bind(d.week, sub.email, now).run();
   }
   return sent;
 }

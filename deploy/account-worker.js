@@ -1,22 +1,24 @@
-/* MolAstria · Pro 账号服务（Cloudflare Worker + D1）
+/* MolAstria · 账号服务（Cloudflare Worker + D1）
+   内容对所有人免费（每周精选全文、在线模型），收费的是服务的量：三档额度，像 OpenAlex 的“不用 key / 免费 key / 付费”：
+   匿名访客、免费账号（任何邮箱都能收验证码登录）、Pro 支持者（Stripe 订阅、课题组席位、VIP 卡、站长）。
    付款仍在 Stripe 的托管结账页完成；这个 Worker 只回答三件事：你是谁（邮箱登录）、你付过钱没有（向 Stripe 查询）、
-   这个月还剩多少 AI 托管额度（转发到 DeepSeek / Muse 并计数）。不需要 Stripe webhook。
+   还剩多少 AI 托管额度（转发到 DeepSeek / Muse 并计数）。不需要 Stripe webhook。
 
    接口（JSON；登录后用 Authorization: Bearer <令牌>）：
      POST /auth/checkout {session_id}   付款确认页自动登录（Stripe Checkout Session 24 小时内有效）
-     POST /auth/start {email, lang, card?}  给有订阅的邮箱发 6 位验证码（对任何邮箱都回答 ok，不泄露谁买过）；
-                                        带上未使用的 VIP 卡时也发，验证通过后卡才算兑换
+     POST /auth/start {email, lang, card?}  给任何邮箱发 6 位验证码（没付费也能登录，就是免费账号）；
+                                        带上未使用的 VIP 卡时，验证通过后卡才算兑换
      POST /auth/verify {email, code}    用验证码换登录令牌
      POST /auth/signout                 退出这台设备
      GET  /me                           订阅、额度、课题组成员
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
-     POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需 Pro
-     GET  /digest/preview               每周精选的标题预览，公开
-     GET  /digest/latest                每周精选全文和订阅状态，需 Pro
-     POST /digest/subscribe {lang}      订阅邮件，需 Pro；DELETE 同一路径退订
-     POST /digest/send-me               把最新一期发到自己的邮箱，需 Pro，每天 3 次
+     POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
+     GET  /digest/preview               每周精选的完整一期（概览、全部论文和点评），公开
+     GET  /digest/latest                每周精选全文和订阅状态，需登录
+     POST /digest/subscribe {lang}      订阅邮件，需登录（免费账号也可以）；DELETE 同一路径退订
+     POST /digest/send-me               把最新一期发到自己的邮箱，需登录，每天 3 次
      POST /admin/digest/build           站长：重新生成本周精选
      GET、POST /digest/unsubscribe?t=   邮件里的退订链接，不需要登录
    定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js）。
@@ -43,6 +45,8 @@ const MAX_INPUT_CHARS = 48000;
 const now = () => Math.floor(Date.now() / 1000);
 const monthKey = () => new Date().toISOString().slice(0, 7);
 const quota = (env) => Number(env.MONTHLY_ASKS || 300);
+// Free accounts: a small daily allowance of hosted answers (0 turns it off), counted in the throttle table over 24 hours.
+const freeQuota = (env) => Math.max(0, Number(env.FREE_DAILY_ASKS ?? 5) || 0);
 const hostedModels = (env) => (list(env.HOSTED_MODELS).length ? list(env.HOSTED_MODELS) : ['deepseek-flash']);
 /** How many answers one call to this model counts as: "deepseek-v4-pro:3,other-model:2". */
 const modelWeight = (env, model) => Number(list(env.HOSTED_MODEL_WEIGHTS ?? 'deepseek-v4-pro:3').map((w) => w.split(':')).find(([m]) => m === model)?.[1]) || 1;
@@ -58,6 +62,13 @@ function json(data, headers, status = 200) {
 async function sha256(text) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+/** A uniform 6-digit code: draws at or above the largest multiple of 10^6 below 2^32 are thrown away, so no code is likelier. */
+function sixDigits() {
+  const limit = 2 ** 32 - (2 ** 32 % 1e6);
+  let n;
+  do n = crypto.getRandomValues(new Uint32Array(1))[0]; while (n >= limit);
+  return String(n % 1e6).padStart(6, '0');
 }
 function randomToken() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -165,12 +176,25 @@ async function access(env, email) {
   return { ...own, pro: false, role: 'free' };
 }
 
+/** What is left of a throttle() window: { n, reset }, or zero uses when the window has passed. */
+async function windowOf(env, key) {
+  const row = await env.DB.prepare('SELECT n, reset FROM throttle WHERE key = ?1 AND reset >= ?2').bind(key, now()).first();
+  return row || { n: 0, reset: 0 };
+}
+
 async function view(env, a) {
   const month = monthKey();
-  const u = (await env.DB.prepare('SELECT asks FROM usage WHERE email = ?1 AND month = ?2').bind(a.email, month).first()) || { asks: 0 };
+  let usage;
+  if (a.pro) {
+    const u = (await env.DB.prepare('SELECT asks FROM usage WHERE email = ?1 AND month = ?2').bind(a.email, month).first()) || { asks: 0 };
+    usage = { period: 'month', month, asks: u.asks, limit: quota(env) };
+  } else { // a free account: the last 24 hours (old pages read month/asks/limit and only show it to Pro)
+    const w = await windowOf(env, `aifree:${a.email}`);
+    usage = { period: 'day', month, asks: w.n, limit: freeQuota(env), reset: w.reset };
+  }
   const out = {
     email: a.email, pro: a.pro, role: a.role, plan: a.plan, cycle: a.cycle, seats: a.seats, renews: a.renews, status: a.status,
-    usage: { month, asks: u.asks, limit: quota(env) }, models: hostedModels(env)
+    usage, models: hostedModels(env)
   };
   if (a.role === 'member') out.owner = a.owner;
   if (a.role === 'owner') out.members = (await env.DB.prepare('SELECT member FROM members WHERE owner = ?1 ORDER BY added').bind(a.email).all()).results.map((r) => r.member);
@@ -261,8 +285,8 @@ const inviteMail = (owner) => [
 // This service limits jobs per visitor, decides who may use which model, keeps embargoed regions out (the FAIR
 // Chemistry License requires following trade-control laws) and adds the shared secret the owner's computer checks.
 // The computer may be off; health then answers { online: false } instead of an error.
-//   fair: the Meta FAIR Chemistry models (UMA, eSEN, AllScAIP) free for everyone, sharing one daily allowance (Pro gets
-//         more runs a day); pro: ANI-2x (MIT) for Pro members only.
+//   fair: the Meta FAIR Chemistry models (UMA, eSEN, AllScAIP) and ANI-2x (MIT), free for everyone, sharing one daily
+//         allowance: anonymous visitors by address, free accounts and Pro supporters by email, each a larger one.
 //   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
 //        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
@@ -270,7 +294,7 @@ const UMA_MODELS = {
   'uma-s-1p2p1': 'fair', 'uma-s-1p2': 'fair', 'uma-s-1p2p1-ft-d4rev': 'fair', 'uma-s-1p1': 'fair',
   'allscaip-md-conserving-all-omol': 'fair', 'allscaip-md-direct-all-omol': 'fair',
   'esen-sm-conserving-all-omol': 'fair', 'esen-sm-direct-all-omol': 'fair', 'esen-md-direct-all-omol': 'fair',
-  'ani-2x': 'pro',
+  'ani-2x': 'fair',
   'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
@@ -418,24 +442,25 @@ async function uma(request, env, cors, path, ip) {
     const cost = (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
     const email = await signedIn(env, request).catch(() => null);
     const pro = email ? (await access(env, email)).pro : false;
-    let counter, limit, used;
-    if (tier === 'pro') { // ANI-2x: Pro members only
-      if (!pro) throw fail(403, 'ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费');
-      [counter, limit, used] = [`ani:${email}`, Number(env.ANI_DAILY_PRO || 200), '今天的 ANI-2x 计算次数已用完'];
-    } else if (tier === 'asl') { // the same for everyone: a paid plan must not buy more of an academic-only model
+    let counter, limit, used, more = '';
+    if (tier === 'asl') { // the same for everyone: an account or a paid plan must not buy more of an academic-only model
       [counter, limit, used] = [`asl:${ip}`, Number(env.ASL_DAILY || 40), '今天的 MACE 计算次数已用完'];
-    } else { // UMA: signed-in Pro members get a larger daily allowance than anonymous visitors
-      [counter, limit, used] = [`uma:${pro ? email : ip}`, Number(pro ? env.UMA_DAILY_PRO || 200 : env.UMA_DAILY || 40), '今天的 UMA / OMol25 模型计算次数已用完'];
+    } else if (pro) { // the three allowances: Pro supporters, free accounts, anonymous visitors
+      [counter, limit, used] = [`uma:${email}`, Number(env.UMA_DAILY_PRO || 200), '今天的在线模型计算次数已用完'];
+    } else if (email) {
+      [counter, limit, used, more] = [`uma:${email}`, Number(env.UMA_DAILY_ACCOUNT || 100), '今天的在线模型计算次数已用完', '，Pro 支持者每天更多'];
+    } else {
+      [counter, limit, used, more] = [`uma:${ip}`, Number(env.UMA_DAILY || 40), '今天的在线模型计算次数已用完', '，登录免费账号每天更多'];
     }
     // A job costs UMA_COST uses at once; one that does not fit in what is left is refused and costs nothing.
     const n = await bump(env, counter, 86400, cost);
     if (n > limit) {
       await refund(env, counter, cost);
-      const left = Math.max(0, limit - (n - cost)), more = tier === 'fair' && !pro ? '，Pro 会员每天更多' : '';
+      const left = Math.max(0, limit - (n - cost));
       if (!left) throw fail(429, `${used}（每天 ${limit} 次${more}），明天再来`);
       throw fail(429, `今天还剩 ${left} 次，这项计算要用 ${cost} 次（每天 ${limit} 次${more}）；换一项花费少的计算，或明天再来`);
     }
-    out.who = await visitorId(env, pro ? email : ip); // one job at a time per visitor, checked on the computer
+    out.who = await visitorId(env, email || ip); // one job at a time per visitor, checked on the computer
     let status, data;
     try {
       ({ status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) }));
@@ -507,17 +532,15 @@ async function route(request, env, cors) {
       if (!card) throw fail(400, 'VIP 卡号格式不对，应该像 VIP-XXXX-XXXX-XXXX');
       await usableCard(env, card, email);
     }
-    await account(env, email, { fresh: true }); // someone who just paid must not wait for the 6-hour cache
-    const a = await access(env, email);
+    // Anyone may have a free account, so every valid email gets a code (and nobody learns who has paid).
+    // Stripe is asked again on sign-in (/auth/verify), so someone who just paid does not wait for the 6-hour cache.
     const out = { ok: true };
-    if (a.pro || card) {
-      const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, '0');
-      await env.DB.prepare('INSERT INTO codes (email, hash, expires, tries, card) VALUES (?1, ?2, ?3, 0, ?4) ON CONFLICT(email) DO UPDATE SET hash = ?2, expires = ?3, tries = 0, card = ?4')
-        .bind(email, await sha256(`${email}:${code}`), now() + CODE_MINUTES * 60, card).run();
-      const [subject, text] = codeMail(code, body.lang === 'en');
-      await sendMail(env, email, subject, text);
-      if (env.DEV_SHOW_CODE === '1') out.devCode = code; // local testing only
-    }
+    const code = sixDigits();
+    await env.DB.prepare('INSERT INTO codes (email, hash, expires, tries, card) VALUES (?1, ?2, ?3, 0, ?4) ON CONFLICT(email) DO UPDATE SET hash = ?2, expires = ?3, tries = 0, card = ?4')
+      .bind(email, await sha256(`${email}:${code}`), now() + CODE_MINUTES * 60, card).run();
+    const [subject, text] = codeMail(code, body.lang === 'en');
+    await sendMail(env, email, subject, text);
+    if (env.DEV_SHOW_CODE === '1') out.devCode = code; // local testing only
     return json(out, cors);
   }
 
@@ -534,6 +557,7 @@ async function route(request, env, cors) {
     }
     if (row.card) await redeem(env, email, row.card);
     await env.DB.prepare('DELETE FROM codes WHERE email = ?1').bind(email).run();
+    await account(env, email, { fresh: true }).catch(() => {}); // a fresh look at Stripe; Stripe being down must not block signing in
     const token = await createSession(env, email);
     return json({ token, account: await view(env, await access(env, email)) }, cors);
   }
@@ -607,8 +631,7 @@ async function route(request, env, cors) {
   }
 
   if (path.startsWith('/digest/')) {
-    const me = await signedIn(env, request);
-    if (!(await access(env, me)).pro) throw fail(403, '每周精选是 Pro 功能');
+    const me = await signedIn(env, request); // every signed-in account, free or paid
     const sub = () => env.DB.prepare('SELECT token, lang FROM digest_subs WHERE email = ?1').bind(me).first();
     const lang = body.lang === 'en' ? 'en' : 'zh';
     if (key === 'GET /digest/latest') {
@@ -644,7 +667,7 @@ async function route(request, env, cors) {
   if (key === 'POST /ai/chat') {
     const me = await signedIn(env, request);
     const a = await access(env, me);
-    if (!a.pro) throw fail(403, '这个账号目前没有有效的 Pro 订阅');
+    if (!a.pro && !freeQuota(env)) throw fail(403, '免配 key 的 AI 托管额度是 Pro 支持者的服务；也可以在 AI 设置里填自己的 key，永久免费');
     if (!(await allow(env, `ai:${me}`, 30, 60))) throw fail(429, '请求太频繁，请稍后再试');
     const messages = Array.isArray(body.messages) ? body.messages : [];
     if (messages.some((m) => typeof m?.content !== 'string')) throw fail(400, '托管额度只支持文字内容');
@@ -658,6 +681,7 @@ async function route(request, env, cors) {
     // Short calls get their own, larger allowance; anything longer counts as answers, in proportion to what it can cost.
     const aux = Number(body.max_tokens) > 0 && tokens <= AUX_TOKENS && chars <= AUX_CHARS;
     const units = aux ? weight : weight * Math.max(1, Math.ceil(chars / UNIT_CHARS), Math.ceil(tokens / UNIT_TOKENS));
+    if (!a.pro) return freeChat(env, cors, me, body, { units, aux });
     const limit = quota(env), month = monthKey();
     const counted = (n) => env.DB.prepare(
       'INSERT INTO usage (email, month, asks, aux) VALUES (?1, ?2, ?3, ?4) ON CONFLICT(email, month) DO UPDATE SET asks = asks + ?3, aux = aux + ?4 RETURNING asks, aux'
@@ -676,6 +700,23 @@ async function route(request, env, cors) {
   }
 
   throw fail(404, '没有这个接口');
+}
+
+/** Hosted AI for a free account: FREE_DAILY_ASKS answers in 24 hours (short calls get twice as many), counted like Pro's. */
+async function freeChat(env, cors, me, body, { units, aux }) {
+  const limit = freeQuota(env), key = `${aux ? 'aifree-aux' : 'aifree'}:${me}`, cap = aux ? limit * 2 : limit;
+  const n = await bump(env, key, 86400, units);
+  if (n > cap) {
+    await refund(env, key, units);
+    const left = Math.max(0, cap - (n - units));
+    if (left > 0 && !aux) throw fail(429, `今天的免费 AI 次数还剩 ${left} 次，这次请求要计 ${units} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。`);
+    throw fail(429, `免费账号每天 ${limit} 次 AI 托管额度，今天的已用完，明天再来。Pro 支持者每月 ${quota(env)} 次；在 AI 设置里换成自己的 key 也可以继续用。`);
+  }
+  const res = await forward(body, env, cors, hostedModels(env));
+  if (!res.ok) { await refund(env, key, units); return res; }
+  const used = aux ? (await windowOf(env, `aifree:${me}`)).n : n;
+  res.headers.set('X-MolAstria-Usage', `${used}/${limit}`);
+  return res;
 }
 
 const BUILD_CRON = '0 12-20 * * 1'; // hourly on Mondays, so a failed run gets another chance; it only builds once a week

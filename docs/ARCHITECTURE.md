@@ -40,16 +40,16 @@ sequenceDiagram
   B->>W: POST /auth/checkout
   W->>S: 读取订单和订阅
   W-->>B: 登录令牌（90 天）
-  Note over B,R: 换设备，或用 VIP 卡开通
-  B->>W: POST /auth/start（邮箱，可带 VIP 卡号）
-  W->>S: 有没有有效订阅？
+  Note over B,R: 免费账号、换设备，或用 VIP 卡开通
+  B->>W: POST /auth/start（任何邮箱，可带 VIP 卡号）
   W->>R: 发 6 位验证码
   R-->>B: 验证码邮件（10 分钟有效）
   B->>W: POST /auth/verify（此时才兑换 VIP 卡）
+  W->>S: 有没有有效订阅？
   W-->>B: 登录令牌
 ```
 
-一个邮箱的权限按这个顺序判断（`access()`）：自己的 Stripe 订阅 → `grants` 里的站长 → 兑换过的 VIP 卡 → 别人课题组的席位 → 免费。
+一个邮箱的权限按这个顺序判断（`access()`）：自己的 Stripe 订阅 → `grants` 里的站长 → 兑换过的 VIP 卡 → 别人课题组的席位 → 免费账号。免费账号的托管 AI 每 24 小时 `FREE_DAILY_ASKS`（5）次，记在 `throttle` 表（`aifree:` 和短调用的 `aifree-aux:`），计法和 Pro 相同；Pro 记在 `usage` 表，按月。
 
 ## 托管 AI 怎么计次
 
@@ -71,9 +71,9 @@ sequenceDiagram
 | 步骤 | 什么时候 | 做什么 |
 | --- | --- | --- |
 | 生成 | 周一 12:00–20:00（UTC）每小时试一次，本周已有就跳过 | 从 Crossref（ChemRxiv、JCTC、JCP、PCCP、JPCL）和 DataCite（arXiv physics.chem-ph）取新论文，`deepseek-flash` 选题并写中英解读；失败时存不带解读的列表 |
-| 发送 | 每 15 分钟 | 给还没收到本周这一期的订阅者发最多 5 封，每天最多 80 封；已不是 Pro 的人记为跳过 |
+| 发送 | 每 15 分钟 | 给还没收到本周这一期的订阅者发最多 5 封，每天最多 80 封；免费账号也发 |
 
-论文标题公开（`GET /digest/preview`，Pro 页显示）；完整内容和邮件要 Pro。邮件里的退订链接带每人一个的随机令牌，退订时删除订阅和发送记录。
+完整一期和点评公开（`GET /digest/preview`，精选页和价格页显示）；订阅邮件要登录（免费账号即可）。邮件里的退订链接带每人一个的随机令牌，退订时删除订阅和发送记录。
 
 ## 账号服务接口
 

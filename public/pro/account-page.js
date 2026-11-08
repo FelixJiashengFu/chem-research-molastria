@@ -52,12 +52,15 @@
     $('manage-text').hidden = !!portal;
     if (portal) { const u = new URL(PAY.portalUrl); u.searchParams.set('prefilled_email', a.email); $('manage-link').href = u.href; }
 
-    $('quota-card').hidden = !a.pro;
+    // Pro counts AI by the month; a free account has a small allowance over 24 hours (none when the service turns it off).
+    const daily = a.usage?.period === 'day';
+    $('quota-card').hidden = !a.pro && !(daily && a.usage.limit > 0);
     $('lapsed-card').hidden = a.pro;
-    if (a.pro) {
+    if (!$('quota-card').hidden) {
       const { asks, limit } = a.usage;
       $('quota-used').textContent = asks;
       $('quota-limit').textContent = limit;
+      $('quota-reset').textContent = daily ? T('免费账号 · 从当天第一次提问起 24 小时后重置') : T('每月 1 日重置');
       const share = limit ? Math.min(1, asks / limit) : 1;
       $('quota-bar').style.width = `${(share * 100).toFixed(1)}%`;
       const meter = $('quota-meter');
@@ -69,9 +72,9 @@
     // A card can be redeemed by a free account, or to extend a card that runs out.
     $('redeem-card').hidden = !(a.role === 'free' || (gifted(a) && a.grant.source === 'card' && a.grant.expires));
     $('admin-card').hidden = !a.admin;
-    $('digest-card').hidden = !a.pro;
+    $('digest-card').hidden = false; // free for every account
     $('digest-build').hidden = !a.admin;
-    if (a.pro && !digestAsked) { digestAsked = true; loadDigest(); }
+    if (!digestAsked) { digestAsked = true; loadDigest(); }
     if (a.admin && !cardsLoaded) { cardsLoaded = true; loadCards(); }
 
     $('team-card').hidden = a.role !== 'owner';
@@ -91,9 +94,8 @@
   function cardMode(on) {
     $('card-field').hidden = !on;
     $('card-toggle').hidden = on;
-    $('login-h').textContent = T(on ? '用 VIP 卡开通 Pro' : '用付款邮箱登录');
-    $('login-sub').textContent = T(on ? '填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。' : '我们会给这个邮箱发一个 6 位验证码，不需要密码。');
-    $('login-email').placeholder = T(on ? '你的邮箱' : '付款时填写的邮箱');
+    $('login-h').textContent = T(on ? '用 VIP 卡开通 Pro' : '用邮箱登录');
+    $('login-sub').textContent = T(on ? '填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。' : '我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。');
   }
   $('card-toggle').addEventListener('click', () => { cardMode(true); $('login-card').focus(); });
   function codeStep(on) {
@@ -118,7 +120,7 @@
         pendingCard = card;
         codeStep(true);
         say(msg, card ? T('验证码已发到你的邮箱，填进来后 VIP 卡立即生效。没收到请看看垃圾邮件。')
-          : T('如果这个邮箱有有效的 Pro 订阅，验证码会在一分钟内送达。没收到请看看垃圾邮件，或确认是付款时填写的邮箱。'), 'ok');
+          : T('验证码会在一分钟内送达，没收到请看看垃圾邮件。'), 'ok');
         if (r.devCode) $('login-code').value = r.devCode; // local test server only
         $('login-code').focus();
       } else {

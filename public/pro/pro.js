@@ -17,15 +17,15 @@
     team: () => 'team_year',
     sponsor: () => 'sponsor'
   };
-  const TITLE = { pro_year: 'MolAstria Pro · 年付早鸟', pro_month: 'MolAstria Pro · 月付', team_year: 'MolAstria 课题组版 · 年付', sponsor: '支持 MolAstria' };
-  // Once the account service is configured, the hosted AI quota works right after payment.
+  const TITLE = { pro_year: 'MolAstria Pro 支持者 · 年付', pro_month: 'MolAstria Pro 支持者 · 月付', team_year: 'MolAstria 课题组版 · 年付', sponsor: '捐助 MolAstria' };
+  // Once the account service is configured, the supporter allowances work right after payment.
   const LIVE = !!PAY.accountApi;
-  const SOON = LIVE ? ['AI 托管额度每月 300 次和每周精选，付款后立即可用', '云同步、深度工作流库：开发中，上线后自动开通，暂无确定日期'] : ['AI 托管额度、云同步、每周精选、深度工作流库：开发中，上线后自动开通，暂无确定日期'];
+  const QUOTA = LIVE ? ['付款后立即可用：AI 托管额度每月 300 次，在线模型每天 200 次'] : ['AI 托管额度：账号服务开通后自动生效'];
   const ITEMS = {
-    pro_year: ['锁定早鸟价，续费不涨价', ...SOON, '14 天内无理由全额退款'],
-    pro_month: ['随时取消，当前周期结束后不再续费', ...SOON, '14 天内无理由全额退款'],
-    team_year: [...(LIVE ? ['成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度'] : []), '组内共享资料库与实验室项目：开发中，上线后自动开通，暂无确定日期', 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
-    sponsor: ['金额在结账页自行填写', '全部用于服务器、AI 测试与持续开发']
+    pro_year: [...QUOTA, '你的钱用来付服务器、GPU 电费和 AI 费用，让内容对所有人保持免费', '14 天内无理由全额退款'],
+    pro_month: ['随时取消，当前周期结束后不再续费', ...QUOTA, '14 天内无理由全额退款'],
+    team_year: [...(LIVE ? ['成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度、在线模型每天 200 次'] : []), 'Stripe 收据可用于报销；需要正式发票请联系我们', '14 天内无理由全额退款'],
+    sponsor: ['金额在结账页自行填写，不需要账号', '全部用于服务器、GPU 电费、AI 费用与持续开发']
   };
   const METHOD = { card: '银行卡', applepay: 'Apple Pay', googlepay: 'Google Pay', alipay: '支付宝', wechat: '微信支付', paypal: 'PayPal' };
 
@@ -56,7 +56,7 @@
   }));
 
   if (LIVE) document.querySelectorAll('[data-live]').forEach((el) => { el.className = 'st ok'; el.textContent = T('开通即享'); });
-  // This week's titles, when there is an issue yet; nothing shows if the account service cannot be reached.
+  // This week's issue, when there is one yet; nothing shows if the account service cannot be reached.
   if (LIVE) fetch(`${String(PAY.accountApi).replace(/\/+$/, '')}/digest/preview`).then((r) => r.json()).then((d) => {
     if (!d.items?.length) return;
     const h = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);

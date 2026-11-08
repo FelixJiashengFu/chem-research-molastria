@@ -63,7 +63,9 @@ plans: {
 
 ## 4. 开通 Pro 账号服务 · Turn on Pro accounts
 
-账号服务是一个 Cloudflare Worker（`deploy/account-worker.js`，数据存在 Cloudflare D1）。开通后：付款回到本站自动登录；换设备用付款邮箱收 6 位验证码登录；Pro 每月 300 次免配 key 的 AI 托管额度；课题组购买者在账号页添加成员。谁付了款以 Stripe 为准，Worker 直接向 Stripe 查询，**不需要 webhook**。没开通之前，账号页显示“账号服务正在开通”，其余功能照常。
+账号服务是一个 Cloudflare Worker（`deploy/account-worker.js`，数据存在 Cloudflare D1）。开通后：付款回到本站自动登录；换设备用付款邮箱收 6 位验证码登录；Pro 每月 300 次免配 key 的 AI 托管额度；课题组购买者在账号页添加成员。谁付了款以 Stripe 为准，Worker 直接向 Stripe 查询，**不需要 webhook**。
+
+**2026-11-08 起（学 OpenAlex，见 `docs/DECISIONS.md`）：** 任何邮箱都能登录成免费账号（在线模型每天 100 次、每天 5 次 AI 托管、可订阅每周精选），付费的叫“Pro 支持者”，额度最多。Stripe 里的产品、价格和付款链接都没有变，不需要到后台改任何设置。没开通之前，账号页显示“账号服务正在开通”，其余功能照常。
 
 需要三个账户：Cloudflare（免费套餐即可）、[Resend](https://resend.com)（发验证码邮件，免费额度够起步）、DeepSeek（托管额度的模型费用从这里扣）。
 
