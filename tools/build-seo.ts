@@ -34,20 +34,20 @@ function seoHead(o: { path: string; title: string; description: string; type?: s
   const lines = [
     `<link rel="canonical" href="${esc(url)}">`,
     `<meta property="og:type" content="${o.type || "website"}">`,
-    `<meta property="og:site_name" content="${esc(NAME)} · ${esc(cfg.siteNameZh)}">`,
+    `<meta property="og:site_name" content="${esc(NAME)}">`, // the bare brand: Google reads it (with the WebSite JSON-LD) as the site name above each result
     `<meta property="og:title" content="${esc(o.title)}">`,
     `<meta property="og:description" content="${esc(o.description)}">`,
     `<meta property="og:url" content="${esc(url)}">`,
     `<meta property="og:image" content="${esc(SITE)}og.png">`,
     `<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`,
-    `<meta property="og:locale" content="zh_CN">`,
+    `<meta property="og:locale" content="zh_CN"><meta property="og:locale:alternate" content="en_US">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     cfg.googleSiteVerification ? `<meta name="google-site-verification" content="${esc(cfg.googleSiteVerification)}">` : "",
     ld.length ? `<script type="application/ld+json">${JSON.stringify(ld.length === 1 ? ld[0] : ld).replace(/</g, "\\u003c")}</script>` : "",
   ].filter(Boolean);
   return `<!-- seo:start -->\n  ${lines.join("\n  ")}\n  <!-- seo:end -->`;
 }
-const website = { "@context": "https://schema.org", "@type": "WebSite", name: NAME, alternateName: cfg.siteNameZh, url: SITE, inLanguage: "zh-CN", description: "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。" };
+const website = { "@context": "https://schema.org", "@type": "WebSite", name: NAME, alternateName: [cfg.siteNameZh, "molastria.com"], url: SITE, inLanguage: ["zh-CN", "en"], description: "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。" };
 const crumbs = (items: [string, string][]) => ({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: SITE + path })) });
 
 async function injectHead(file: string, path: string, extra: { type?: string; jsonld?: unknown[] } = {}) {

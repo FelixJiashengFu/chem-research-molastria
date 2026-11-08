@@ -87,6 +87,7 @@ async function bundlePage(file: string) {
   html = html.replace(/\s*<!-- seo:start -->[\s\S]*?<!-- seo:end -->/, "");
   html = html.replace(/\s*<!-- pwa:start -->[\s\S]*?<!-- pwa:end -->/, ""); // manifest and home-screen tags (build-seo.ts) are for the website only
   html = html.replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${favicon}" type="image/svg+xml">`);
+  html = html.replace(/\s*<link rel="icon" href="[^"]*favicon-\d+\.png"[^>]*>/g, ""); // the PNG sizes are for search engines; the inlined SVG covers the single file
   // Decorative videos are not inlined (too large): each one is replaced by its poster image, inlined like the favicon.
   for (const [tag, poster] of [...html.matchAll(/<video\b[^>]*\bposter="([^"]+)"[^>]*><\/video>/g)]) {
     let bin = "";
