@@ -8,7 +8,7 @@
 - **图标：** `favicon.svg` 从深底浅线改成深色主题里的样子（底 `#e3e9df`，线 `#101613`），浏览器标签页也跟着变；首页另外链接 48、96、192 px 的 PNG（Google 要求方形、48 px 的倍数），根目录放 `favicon.ico`（16/32/48）。PNG 由 svg 在无头 Chrome 里渲染。主屏幕图标（`assets/pwa/`）没动，仍是深底。
 - **首页 `<title>` 改成英文** “MolAstria · Computational Chemistry Research Atlas”，中文界面的标签页标题也是这个。其他页面标题不变。
 - **描述先英文后中文，控制在两行内**（英文约 100 字符 + 中文约 30 字），否则 Google 截断时只剩英文。Google 也可能改用页面正文做摘要，这不由我们决定。
-- **`og:site_name` 只写 “MolAstria”**，WebSite 结构化数据的 `alternateName` 加上 “molastria.com”：Google 选站点名时读这两处，原来带中文副标题的写法会让它退回显示域名。
+- **`og:site_name` 只写 “MolAstria”**，WebSite 结构化数据的 `alternateName` 加上 “molastria.com”：Google 选站点名时参考这两处，短而一致的品牌名更容易被采用（现在结果里显示的是域名）。
 **代价：** Google 按自己的节奏重新抓取，图标通常要几天到几周才换。
 
 ## 2026-11-08 付费模式学 OpenAlex：内容免费，按服务的量分三档
