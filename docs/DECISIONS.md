@@ -2,6 +2,11 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-08 桌面版去掉 panic = "abort"
+
+Mac 版 0.1.19 在后台运行约 25 分钟后闪退（SIGABRT，tokio-rt-worker 线程）。按崩溃报告里的偏移反汇编发布包，调用链是：异步回应应用内置协议请求时调用 WKURLSchemeTask 的 `didFinish`，WebKit 已经停掉了这个请求（页面换了、iframe 或视频取消了请求），于是抛出 Objective-C 异常。wry 用 `objc2::exception::catch` 包住了这个调用，本来只会丢掉这次回应；但 `Cargo.toml` 的发布配置写了 `panic = "abort"`，objc2 的文档写明这种设置下接不住异常，Rust 只能报“panic in a function that cannot unwind”并结束整个进程。
+**原因：** 应用体积只多一点（unwind 表），换来 wry 的防护真正生效；顺带，命令或后台任务里偶然的 Rust panic 也只结束那一个任务，不再带走整个应用。Windows 不会遇到这个 Objective-C 异常，但两边共用这份配置。以后不要再加回 `panic = "abort"`。
+
 ## 2026-11-07 每周精选公开前五篇和点评；导航可排序；AI 助手换成吉祥物；托管额度只留 Flash
 
 站长的几个决定和要求，一起记在这里：
