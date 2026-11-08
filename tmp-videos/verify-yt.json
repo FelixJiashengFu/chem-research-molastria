@@ -1,0 +1,2336 @@
+{
+ "checked": "2026-11-08T03:49:08.721Z",
+ "total": 116,
+ "rows": [
+  {
+   "id": "PLUl4u3cNGP62RsEHXe48Imi9-87FzQaJg",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "MIT 5.61 Physical Chemistry, Fall 2017",
+   "channel": "MIT OpenCourseWare",
+   "thumb": "https://i.ytimg.com/vi/XxRjzphItU0/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 36,
+    "description": "Instructor: Professor Robert Field\nView the complete course: https://ocw.mit.edu/5-61F17\n\nThis course is an introduction to quantum chemistry. Topics include particles and waves; wave mechanics; matrix mechanics; perturbation theory; molecular orbital theory; molecular structure; and photochemistry.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu",
+    "owner": "MIT OpenCourseWare"
+   }
+  },
+  {
+   "id": "PLUl4u3cNGP61-9PEhRognw5vryrSEVLPr",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "MIT 8.04 Quantum Physics I, Spring 2013 (2013)",
+   "channel": "MIT OpenCourseWare",
+   "thumb": "https://i.ytimg.com/vi/lZ3bPUKo5zc/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 25,
+    "description": "View the complete course: http://ocw.mit.edu/8-04S13\nInstructor: Allan Adams\n\nThis course covers the experimental basis of quantum physics. It introduces wave mechanics, Schrödinger's equation in a single dimension, and Schrödinger's equation in three dimensions.\n\nLicense: Creative Commons BY-NC-SA\nMore information at http://ocw.mit.edu/terms\nMore courses at http://ocw.mit.edu",
+    "owner": "MIT OpenCourseWare"
+   }
+  },
+  {
+   "id": "PLbMVogVj5nJRiUhnP3bleX5Kp3ljZaX1C",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Chemistry - Introductory Quantum Chemistry",
+   "channel": "nptelhrd",
+   "thumb": "https://i.ytimg.com/vi/pFgIKuFWKo8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 49,
+    "description": "Introductory Quantum Chemistry by Prof. K.L. Sebastian, Department of Inorganic and Physical Chemistry, Indian Institute of Science, Bangalore.For more details on NPTEL visit http://nptel.iitm.ac.in",
+    "owner": "nptelhrd"
+   }
+  },
+  {
+   "id": "PLOzRYVm0a65eW1kTGOrjBetXFMl4eaYVi",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "September 2020 - Quantum Chemistry of Atoms and Molecules",
+   "channel": "NPTEL IIT Bombay",
+   "thumb": "https://i.ytimg.com/vi/VZWg6_5KupY/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 68,
+    "description": "",
+    "owner": "NPTEL IIT Bombay"
+   }
+  },
+  {
+   "id": "PLm8ZSArAXicL3jKr_0nHHs5TwfhdkMFhh",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Quantum Chemistry and Spectroscopy",
+   "channel": "TMP Chem",
+   "thumb": "https://i.ytimg.com/vi/vuIbInrmUDM/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 160,
+    "description": "Short lectures covering the topics of an undergraduate physical chemistry course on quantum chemistry and spectroscopy.\n\nTopics include the need for quantum theory, the classical wave equation, the principles of quantum mechanics, particle in a box, harmonic oscillator, rigid rotor, hydrogen atom, approximate methods, multielectron atoms, diatomic bonding, polyatomic bonding, symmetry and group theory, NMR, and particle in a ring.",
+    "owner": "TMP Chem"
+   }
+  },
+  {
+   "id": "PLYHaXvNA5JrevMbLhoazFQbDdw8pfCm-O",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Physical Chemistry II - Quantum Mechanics and Spectroscopy",
+   "channel": "Professor Derricotte",
+   "thumb": "https://i.ytimg.com/vi/pNFyo9DvhYQ/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 46,
+    "description": "",
+    "owner": "Professor Derricotte"
+   }
+  },
+  {
+   "id": "PL0F530F3BAF8C6FCC",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Core - Quantum Physics",
+   "channel": "nptelhrd",
+   "thumb": "https://i.ytimg.com/vi/y3ARLfm-52w/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 31,
+    "description": "Lecture Series on Quantum Physics by Prof.V.Balakrishnan, Department of Physics, IIT Madras.",
+    "owner": "nptelhrd"
+   }
+  },
+  {
+   "id": "PLFYoDkTAQWKBarFNED2smakjXwK5hkUrP",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Introduction to Computational Chemistry",
+   "channel": "David Sherrill",
+   "thumb": "https://i.ytimg.com/vi/EqUPF6NO348/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 21,
+    "description": "",
+    "owner": "David Sherrill"
+   }
+  },
+  {
+   "id": "PLkNVwyLvX_TFBLHCvApmvafqqQUHb6JwF",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "ComputationalChemistryUMN",
+   "channel": "Chris Cramer",
+   "thumb": "https://i.ytimg.com/vi/pu4uL7deCNw/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 49,
+    "description": "Contains all videos used to teach Chem 4021/8021 Computational Chemistry at the Univ. of Minnesota (a class taken by seniors and 1st-year graduate students). PDF copies of all slides may be obtained at http://pollux.chem.umn.edu/8021/Lectures/.",
+    "owner": "Chris Cramer"
+   }
+  },
+  {
+   "id": "PLOzRYVm0a65dxrPkx3HXYfUEMF12RghnH",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Jan 2025 - Computational Quantum Chemistry",
+   "channel": "NPTEL IIT Bombay",
+   "thumb": "https://i.ytimg.com/vi/bcG8gTkRdEI/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 74,
+    "description": "",
+    "owner": "NPTEL IIT Bombay"
+   }
+  },
+  {
+   "id": "PLOzRYVm0a65dvuwnODIT72Ydyhu_OlKR8",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Jan 2024 - Many body methods in quantum chemistry",
+   "channel": "NPTEL IIT Bombay",
+   "thumb": "https://i.ytimg.com/vi/2OpWXZTiTA8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 76,
+    "description": "",
+    "owner": "NPTEL IIT Bombay"
+   }
+  },
+  {
+   "id": "PL_Jxd1JMsQnNNxtjL6LIdd74lxRQdUS23",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Computational Chemistry",
+   "channel": "Stephan P. A. Sauer",
+   "thumb": "https://i.ytimg.com/vi/PWH_idTfH_c/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 97,
+    "description": "",
+    "owner": "Stephan P. A. Sauer"
+   }
+  },
+  {
+   "id": "PLDDCux6-RwmX5ffJedljH3gAbNdM8hvZz",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Density Functional Theory",
+   "channel": "Vincent Meunier",
+   "thumb": "https://i.ytimg.com/vi/7Ycp86kSbvw/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 19,
+    "description": "This graduate course introduced DFT from the fundamental theorems to modern techniques. Check the slides and quizzes at this site: https://sites.psu.edu/icmp/dft24/",
+    "owner": "Vincent Meunier"
+   }
+  },
+  {
+   "id": "kYxOWYWxYcQ",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Intro to DFT - Day 1: Density-functional theory - Nicola Marzari",
+   "channel": "Materials Cloud",
+   "thumb": "https://i.ytimg.com/vi/kYxOWYWxYcQ/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "mwbk1TfOOfo",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Hartree-Fock and post-Hartree-Fock methods: Computational aspects (P.-F. Loos)",
+   "channel": "Francesco Sottile",
+   "thumb": "https://i.ytimg.com/vi/mwbk1TfOOfo/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLb2sOICmu-FRwimbyzrDFE9dVBkqr-j6j",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "GaussView 6 Fundamentals",
+   "channel": "Gaussian, Inc.",
+   "thumb": "https://i.ytimg.com/vi/WrM-U8esioc/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 6,
+    "description": "",
+    "owner": "Gaussian, Inc."
+   }
+  },
+  {
+   "id": "xTUaSqcuzTk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "VWSCC25 - A Quick Introduction to Using ORCA",
+   "channel": "FACCTs",
+   "thumb": "https://i.ytimg.com/vi/xTUaSqcuzTk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "7KvuPIGuipU",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Week 1: Lecture 4: Introduction to ORCA, Quantum Chemistry Package",
+   "channel": "NPTEL IIT Bombay",
+   "thumb": "https://i.ytimg.com/vi/7KvuPIGuipU/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLJIwRG-f5Gjd95jUG4cGjfSxs2gQfQAza",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Computational Chemistry: Avogadro+ORCA Tutorial",
+   "channel": "Dr. S. Kishor",
+   "thumb": "https://i.ytimg.com/vi/-_F8yzV_DSw/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 21,
+    "description": "The videos are from the lab modules of the short term course on \"Computational Chemistry\" developed by Molecular Modeling Research Group of Department of Chemistry, J. V. College, Baraut, Uttar Pradesh, India. ",
+    "owner": "Dr. S. Kishor"
+   }
+  },
+  {
+   "id": "Z0gmVDI5mkQ",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Psi4 for beginners",
+   "channel": "psicode",
+   "thumb": "https://i.ytimg.com/vi/Z0gmVDI5mkQ/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "KooiB7N9DOA",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "PySCF: The Python Based Simulations of Chemistry Framework- Qiming Sun | SciPy 2022",
+   "channel": "Enthought",
+   "thumb": "https://i.ytimg.com/vi/KooiB7N9DOA/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLUhYFZgYOn8eyto8fKCjzzcUo_5bcVMWk",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "TURBOMOLE Tutorials for Beginners",
+   "channel": "Phys Whiz",
+   "thumb": "https://i.ytimg.com/vi/5ZlbBYxjwX8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 18,
+    "description": "Detailed walkthroughs and hands-on tutorials on how to perform different kinds of quantum chemistry simulations using the TURBOMOLE program package. These tutorials serve as a supplement to the Turbomole's documentation and manual.\n\nThe tutorials are created by one of the developer's of Turbomole program who also holds a PhD in Physics.",
+    "owner": "Phys Whiz"
+   }
+  },
+  {
+   "id": "8YFSGCxkNaI",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "How to CASSCF, tutorial with ORCA",
+   "channel": "Prof Nicolas",
+   "thumb": "https://i.ytimg.com/vi/8YFSGCxkNaI/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLDXXy07OggSGRK0ZonZP128pSJ6i9jcFp",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Getting started with VASP",
+   "channel": "VASP",
+   "thumb": "https://i.ytimg.com/vi/j3PMcAhXWUY/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 10,
+    "description": "This playlist contains a selection of our videos for people starting new to VASP. It covers performing your first ab-initio calculation, electronic optimization, structure optimization, phonons, molecular dynamics, symmetry, hybrid functionals, high-performance computing, and linear response. These will cover a broad basis for using VASP. Examples of calculations can be found in the tutorials on our website (https://www.vasp.at/tutorials/latest/). There are then additional details on our wiki (https://www.vasp.at/wiki/The_VASP_Manual), and you can ask any further questions in our forum (https:",
+    "owner": "VASP"
+   }
+  },
+  {
+   "id": "a4FhoH0Kxww",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "MaX School on QE: Quantum ESPRESSO overview and basic functionalities - GEBAUER",
+   "channel": "Quantum ESPRESSO (QE)",
+   "thumb": "https://i.ytimg.com/vi/a4FhoH0Kxww/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLGntAYRT8AVmQMyurFoncyOdHljqeGU_R",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Projects: Quantum Espresso Tutorial 2019",
+   "channel": "QuantumNerd",
+   "thumb": "https://i.ytimg.com/vi/jhhi7xbq3Jc/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 42,
+    "description": "",
+    "owner": "QuantumNerd"
+   }
+  },
+  {
+   "id": "PLrmNhuZo9sgYJqeTWUhdhtYu3Ol988prg",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Introduction to CP2K (March 2019)",
+   "channel": "HPC-UGent",
+   "thumb": "https://i.ytimg.com/vi/v2vnZbhNEpw/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 7,
+    "description": "",
+    "owner": "HPC-UGent"
+   }
+  },
+  {
+   "id": "PLeBrR2z7Wz568HmEJTnlSuKbvhKp9V8OF",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Exciton Science online tutorials",
+   "channel": "Exciton Science",
+   "thumb": "https://i.ytimg.com/vi/pGRM0EZrWqo/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 6,
+    "description": "",
+    "owner": "Exciton Science"
+   }
+  },
+  {
+   "id": "PLYw9QdU0Pp9mBOMfzkUQ8mE2cwsc4eorW",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "FHI-aims tutorial series",
+   "channel": "MS1P e.V.",
+   "thumb": "https://i.ytimg.com/vi/LFN5lYPER6Q/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 11,
+    "description": "",
+    "owner": "MS1P e.V."
+   }
+  },
+  {
+   "id": "PLYc-eBoIpXTJIlUVgoqhJMa2CunCTUReR",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Wannier 2022 Summer School | (smr 3705)",
+   "channel": "ICTP Condensed Matter and Statistical Physics",
+   "thumb": "https://i.ytimg.com/vi/T8r_3vzWCUM/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 26,
+    "description": "",
+    "owner": "ICTP Condensed Matter and Statistical Physics"
+   }
+  },
+  {
+   "id": "PL19kfLn4sO_-H8yUQZuvUGjvGk7AcBmDc",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Advanced Quantum ESPRESSO school 2023",
+   "channel": "Materials Cloud",
+   "thumb": "https://i.ytimg.com/vi/bPn8NFUrlz8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 20,
+    "description": "Playlist for lectures recorded at the Advanced Quantum ESPRESSO school:\nHubbard and Koopmans functionals from linear response, in University of Pavia, 2023. https://sites.google.com/view/hubbard-koopmans-2023",
+    "owner": "Materials Cloud"
+   }
+  },
+  {
+   "id": "PLuIpgNT2hMwRQKFy4okoNQKiJwM8li3Sz",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Molecular Biophysics - all lectures as concepts",
+   "channel": "Erik Lindahl",
+   "thumb": "https://i.ytimg.com/vi/TDzzvKoDOuQ/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 298,
+    "description": "Playlist for entire class as concepts, in order.",
+    "owner": "Erik Lindahl"
+   }
+  },
+  {
+   "id": "PLOzRYVm0a65fCJJQendwEEcSrC8iwvgBn",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Computational Chemistry and Classical Molecular Dynamics",
+   "channel": "NPTEL IIT Bombay",
+   "thumb": "https://i.ytimg.com/vi/najTlj2_lN8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 41,
+    "description": "",
+    "owner": "NPTEL IIT Bombay"
+   }
+  },
+  {
+   "id": "XrdcGZppwI4",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "25. Statistical Foundation for Molecular Dynamics Simulation",
+   "channel": "MIT OpenCourseWare",
+   "thumb": "https://i.ytimg.com/vi/XrdcGZppwI4/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "D_We9YYxpkM",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Fundamental concepts of relative binding Free Energy Perturbation (FEP) calculations",
+   "channel": "SchrödingerTV",
+   "thumb": "https://i.ytimg.com/vi/D_We9YYxpkM/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLmmuclhRK8_CViS4NRheSOTCkdF2bsuSr",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Free Energy Workshop 2023",
+   "channel": "Chodera lab",
+   "thumb": "https://i.ytimg.com/vi/fhMjOYvnGcY/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 32,
+    "description": "",
+    "owner": "Chodera lab"
+   }
+  },
+  {
+   "id": "PLmdKEn2znJEld8l6Hp9PXf4EursC4-8nC",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "PLUMED Masterclass 21",
+   "channel": "Plumed Org",
+   "thumb": "https://i.ytimg.com/vi/2eGhMSdIJEs/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 14,
+    "description": "",
+    "owner": "Plumed Org"
+   }
+  },
+  {
+   "id": "jWPAMlutwJg",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Bioexcel webinar #87: The GROMACS tutorial suite: from basic to advanced applications",
+   "channel": "BioExcel CoE",
+   "thumb": "https://i.ytimg.com/vi/jWPAMlutwJg/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "pPN4ll7cSrU",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "LAMMPS Tutorial 2024",
+   "channel": "Axel Kohlmeyer",
+   "thumb": "https://i.ytimg.com/vi/pPN4ll7cSrU/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLWk-zl-RHnbdXGCmn5p5cmb_tSWlWxGJP",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Noncovalent Interactions (NCI) Tutorials | Gaussian, ORCA, Multiwfn, VMD & Gnuplot",
+   "channel": "Wisdom Center",
+   "thumb": "https://i.ytimg.com/vi/ZINn1g6egVg/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 7,
+    "description": "This playlist is dedicated to Noncovalent Interactions (NCIs) — the weak but crucial forces that govern molecular recognition, protein folding, drug design, supramolecular chemistry, and material properties.\n\nIn this series, you’ll learn step by step how to:\n\nUnderstand the theory of NCIs (hydrogen bonding, π–π stacking, van der Waals, halogen bonding).\n\nGenerate .fchk files from Gaussian and .molden.input files from ORCA.\n\nPerform QTAIM (Atoms in Molecules) and NCI analyses using Multiwfn.\n\nVisualize interactions and molecular surfaces with VMD.\n\nPlot data and results with Gnuplot.\n\n👉 I’ve a",
+    "owner": "Wisdom Center"
+   }
+  },
+  {
+   "id": "jaWnas5pxi4",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "03.03 Localized Molecular Orbitals and NBO Theory",
+   "channel": "Michael Evans",
+   "thumb": "https://i.ytimg.com/vi/jaWnas5pxi4/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "JSJb0Opa4u4",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "ELFCAR and Bader Charges Calculation Using VASP (Emil Jaffal)",
+   "channel": "Materials Informatics Tutorials from Oliynyk Lab",
+   "thumb": "https://i.ytimg.com/vi/JSJb0Opa4u4/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PL3dxdlKx_Pccw7CXrgeF6_zWQFT7zifyl",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Visualizing Science with PyMOL 3",
+   "channel": "SchrödingerTV",
+   "thumb": "https://i.ytimg.com/vi/o7IZ726D5Uk/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 17,
+    "description": "This playlist contains all of the video tutorials from the Visualizing Science with PyMOL 3 Schrödinger Online Certification Course. Earn a certificate by completing the course here: https://www.schrodinger.com/life-science/learn/education/courses/pymol/?utm_source=youtube&utm_medium=organic&utm_campaign=edu-soc-all-pymol-3&utm_content=post+link",
+    "owner": "SchrödingerTV"
+   }
+  },
+  {
+   "id": "PLHib7JgKNUUeTZONxd0h0WBiZzAJmXmva",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Exploring PDB structures with UCSF Chimera",
+   "channel": "RCSBProteinDataBank",
+   "thumb": "https://i.ytimg.com/vi/OHJD8tzigGo/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 7,
+    "description": "This tutorial series will enable viewers to become proficient in using UCSF Chimera, an extensible molecular modeling software. Topics covered range from foundational selections and actions to more complex subjects like structure analysis and animation.",
+    "owner": "RCSBProteinDataBank"
+   }
+  },
+  {
+   "id": "_skmrS6X4Ys",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Molecular visualization with VMD",
+   "channel": "WestDRI",
+   "thumb": "https://i.ytimg.com/vi/_skmrS6X4Ys/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PL4eF1KHNgDfIYSKCS3_S0PTRYtYTV9Myi",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "ChimeraX Tutorials",
+   "channel": "Brown Lab",
+   "thumb": "https://i.ytimg.com/vi/8XmbMROKNnQ/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 8,
+    "description": "",
+    "owner": "Brown Lab"
+   }
+  },
+  {
+   "id": "Jsi8b1M45bg",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "CompChem.07.06 Excited Electronic States: Conical Intersections and Dynamics",
+   "channel": "Chris Cramer",
+   "thumb": "https://i.ytimg.com/vi/Jsi8b1M45bg/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "_h4IfKQ0XPI",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "basics of TDDFT linear response",
+   "channel": "Teaching the Theory in Density Functional Theory",
+   "thumb": "https://i.ytimg.com/vi/_h4IfKQ0XPI/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLD59gCifE4d_hgsmxFrEiU58n3rdiDGDi",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Theoretical Spectroscopy Lectures 2024",
+   "channel": "Francesco Sottile",
+   "thumb": "https://i.ytimg.com/vi/BNjhM_F-m1c/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 11,
+    "description": "A series of lectures of the Cecam School \"Theoretical Spectroscopy Lectures\", held in Lausanne, 11-15 March 2024. \nThe school aims at covering theoretical and numerical aspects of TDDFT and Many-Body Perturbation Theory, resorting also to practical hands-on codes (ABINIT, DP, 2Light, EXC) implementing them.\n\nMore details at the website of the event : https://www.cecam.org/workshop-details/theoretical-spectroscopy-lectures-1195",
+    "owner": "Francesco Sottile"
+   }
+  },
+  {
+   "id": "j8I9jIJ3q2c",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "\"Optical Spectroscopy\" by Prof. Frank Neese",
+   "channel": "MPI für Chemische Energiekonversion ",
+   "thumb": "https://i.ytimg.com/vi/j8I9jIJ3q2c/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "35JrGTmwCLo",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "2023 VWSCC: Session 09 — Coupled Cluster Methods for Excited States to Model Spectroscopy",
+   "channel": "QChemSoftware",
+   "thumb": "https://i.ytimg.com/vi/35JrGTmwCLo/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "arTPHW28qNM",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Optical excitations and excitons: BSE and TDDFT | VASP Lecture",
+   "channel": "VASP",
+   "thumb": "https://i.ytimg.com/vi/arTPHW28qNM/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "RXdEHNXSCq0",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Avogadro with ORCA Tutorial: UV-Vis calculation",
+   "channel": "IaNiusha",
+   "thumb": "https://i.ytimg.com/vi/RXdEHNXSCq0/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "2qaBN7eniQc",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Modern Computational Photophysics using the SHARC Package: Part 1 Lectured by Dr. Sebastian Mai",
+   "channel": "QCHEM LAB at KNU",
+   "thumb": "https://i.ytimg.com/vi/2qaBN7eniQc/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PL-YC3wOQNjnoBn2ei44SRPFTx3ta-4GDv",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Webinars on Computational Photochemistry",
+   "channel": "Antonio Carlos Borin",
+   "thumb": "https://i.ytimg.com/vi/Nom9GgavLEY/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 16,
+    "description": "",
+    "owner": "Antonio Carlos Borin"
+   }
+  },
+  {
+   "id": "hpQnRwVjhDk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "37.  Potential Energy Surfaces, Transition State Theory and Reaction Mechanism",
+   "channel": "YaleCourses",
+   "thumb": "https://i.ytimg.com/vi/hpQnRwVjhDk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "R_rBEfEZ3ZA",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Short Course: ORCA Advanced Topics (Fall 2021)",
+   "channel": "Texas A&M HPRC",
+   "thumb": "https://i.ytimg.com/vi/R_rBEfEZ3ZA/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "FycOHebcOhs",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Finding Transition States in ORCA (Part I)",
+   "channel": "Prof Nicolas",
+   "thumb": "https://i.ytimg.com/vi/FycOHebcOhs/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "0p7RyEmtwyc",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Nudged Elastic Band (NEB) Tutorial with Orca",
+   "channel": "Prof Nicolas",
+   "thumb": "https://i.ytimg.com/vi/0p7RyEmtwyc/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "An35qX0fX7Q",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Example of Thermochemistry Calculation in Gaussian 09",
+   "channel": "Pchem Lab",
+   "thumb": "https://i.ytimg.com/vi/An35qX0fX7Q/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "UcKgmVk-u0s",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Tutorial 08 | Describing Chemical Reactions With Gaussian | Dr M A Hashmi",
+   "channel": "Wisdom Center",
+   "thumb": "https://i.ytimg.com/vi/UcKgmVk-u0s/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "YFNqq3XUGB4",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "NANO266 Lecture 11 - Modeling Transition States",
+   "channel": "Materialyze",
+   "thumb": "https://i.ytimg.com/vi/YFNqq3XUGB4/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "42FITOyPirc",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "DAY 1 \"Estimation of kinetic parameters and microkinetic modeling\"",
+   "channel": "MultiscaleCatalysisPolimi",
+   "thumb": "https://i.ytimg.com/vi/42FITOyPirc/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "h_o3O01gVyA",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "5.6 Marcus Theory I",
+   "channel": "Michael Evans",
+   "thumb": "https://i.ytimg.com/vi/h_o3O01gVyA/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "tWeBrPTrSDE",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "ML Meets Molecular Dynamics: A Crash Course in ML Interatomic Potentials",
+   "channel": "Atoms to Materials",
+   "thumb": "https://i.ytimg.com/vi/tWeBrPTrSDE/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "xPgDmYAteOk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Crash Course: Applied Machine Learning for Chemistry",
+   "channel": "Ichigaku Takigawa",
+   "thumb": "https://i.ytimg.com/vi/xPgDmYAteOk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "4CHuIyW1oNg",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Generative AI for Molecular Design & Synthesis",
+   "channel": "Massachusetts Institute of Technology (MIT)",
+   "thumb": "https://i.ytimg.com/vi/4CHuIyW1oNg/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "f1VXKVlVhg4",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Basics of machine learning force fields | VASP Lecture",
+   "channel": "VASP",
+   "thumb": "https://i.ytimg.com/vi/f1VXKVlVhg4/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "Mg79qEteShM",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Daniel Schwalbe Koda: Machine learning for interatomic potentials",
+   "channel": "FAIRmat and NOMAD",
+   "thumb": "https://i.ytimg.com/vi/Mg79qEteShM/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLEjVJ0F11Nmn8Rc0OblMtzFfOGI1rAeIf",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Applied AI for Materials Science - Winter '21",
+   "channel": "Logan Ward",
+   "thumb": "https://i.ytimg.com/vi/6ofUaBAIF0U/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 16,
+    "description": "Lecture recordings from \"Applied Artificial Intelligence for Materials Science and Engineering,\" a course I taught at the University of Chicago in Winter 2021. \n\nThese lectures cover topics ranging from training machine learning models to predict materials properties, natural language processing for extracting scientific data from papers, and reinforcement learning for creating new designs for materials (e.g., tailored molecular structures).\n\nThe course is accompanied by some practical exercises on GitHub: https://github.com/WardLT/applied-ai-for-materials",
+    "owner": "Logan Ward"
+   }
+  },
+  {
+   "id": "PLeYIhs60ZS3ag-wt250z---Gh_QsgVsES",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "9th iCoMSE School: Machine Learning for Molecules (2025)",
+   "channel": "i-CoMSE",
+   "thumb": "https://i.ytimg.com/vi/srKU5C-qVeY/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 8,
+    "description": "9th i-CoMSE workshop: Virtual School on Machine Learning for Molecules 2025\n\nWorkshop dates: April 28-May 2, 2025\nThis workshop is supported by funding from National Science Foundation Office of Advanced Cyberinfrastructure\n\nDescription: This workshop will provide an overview of machine learning applied to molecules and materials systems. It will feature of mix of lectures and hands-on interactive exercises in Python. The session will run for five days, 3 hours a day, 3-6 EDT / 2-5 CDT / 1-4 MDT / 12-3 PDT.",
+    "owner": "i-CoMSE"
+   }
+  },
+  {
+   "id": "j6vjEGBDCyo",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Ilyes Batatia - Tutorial: How to Train and Use MACE Interatomic Potentials (Part 1) - GPMLFF 2026",
+   "channel": "General-Purpose MLFFs in Theory and Practice",
+   "thumb": "https://i.ytimg.com/vi/j6vjEGBDCyo/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "KLFd5WylGyA",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Universal Models for Atoms (UMA) Tutorial",
+   "channel": "Center for Computer-Assisted Synthesis",
+   "thumb": "https://i.ytimg.com/vi/KLFd5WylGyA/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLHkpAtVF6hp-2_6SKjKyMtfBXH4zKKC5B",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "2022 CSI Workshop: Deep Modeling for Molecular Simulation",
+   "channel": "DeepModeling",
+   "thumb": "https://i.ytimg.com/vi/7JuIC37dx3E/hqdefault.jpg",
+   "extra": {
+    "titles": [
+     "Lecture 1: Deep Potential Method for Molecular Simulation, Roberto Car (38:01)",
+     "Lecture 2: Deep Potential at Scale, Linfeng Zhang 张林峰 (36:43)",
+     "Lecture 3: Towards a Realistic Description of H3O+ and OH- Transport, Robert A. DiStasio Jr. (41:07)",
+     "Lecture 4: Next Generation Quantum and Deep Learning Potentials,  Darrin York (35:14)",
+     "Lecture 5: Linear Response Theory of Transport in Condensed Matter, Stefano Baroni (40:45)",
+     "Lecture 6: Deep Modeling with Long-Range Electrostatic Interactions, Chunyi Zhang 张春一 (32:19)",
+     "Hands-on session 4: Machine learning of Wannier centers and dipoles (22:29)",
+     "Hands-on session 5: Long range electrostatic interactions with DPLR (30:18)",
+     "Hands-on session 6: Concurrent learning with DP-GEN (50:19)"
+    ],
+    "first": "7JuIC37dx3E",
+    "total": 9,
+    "description": "",
+    "owner": "by DeepModeling"
+   }
+  },
+  {
+   "id": "PLyqSpQzTE6M9FEUejpQGsxcaRmKB1SdcU",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Computer Aided Drug Design",
+   "channel": "NPTEL-NOC IITM",
+   "thumb": "https://i.ytimg.com/vi/hEUj-ZcxkcM/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 40,
+    "description": "",
+    "owner": "NPTEL-NOC IITM"
+   }
+  },
+  {
+   "id": "ERvUf_lNopo",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Introduction to RDKit Part 1",
+   "channel": "Jan Jensen",
+   "thumb": "https://i.ytimg.com/vi/ERvUf_lNopo/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "kBk8HbjWwCw",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "13. Molecular Strings and Fingerprints (RDKit tutorial)",
+   "channel": "Taylor Sparks",
+   "thumb": "https://i.ytimg.com/vi/kBk8HbjWwCw/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLp87YSBTuvIleCf5eROrrm1UO3NyCIaBs",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "DeepChem Introduction Tutorials",
+   "channel": "DeepChem",
+   "thumb": "https://i.ytimg.com/vi/O1Y8s0Rr6lI/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 6,
+    "description": "",
+    "owner": "DeepChem"
+   }
+  },
+  {
+   "id": "Yi8RllYseS8",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "A guide to exploring drug like compounds and their biological targets using ChEMBL",
+   "channel": "EMBL's European Bioinformatics Institute EMBL-EBI",
+   "thumb": "https://i.ytimg.com/vi/Yi8RllYseS8/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "-GVZP0X0Tg8",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "AutoDock Vina Video Tutorial",
+   "channel": "Dr. Oleg Trott",
+   "thumb": "https://i.ytimg.com/vi/-GVZP0X0Tg8/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLOPGDACSd6qy6DUgvZLV5uj6LMHsTdYKK",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "OECD QSAR Toolbox",
+   "channel": "EUchemicals",
+   "thumb": "https://i.ytimg.com/vi/fOX_nseJPSU/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 43,
+    "description": "This comprehensive playlist features in-depth video tutorials covering a wide range of topics related to the Quantitative Structure-Activity Relationship (QSAR) Toolbox. Whether you're a seasoned expert or just starting with the QSAR Toolbox, these tutorials are designed to help you master various aspects of this powerful software. \n\nEach tutorial is designed to provide you with valuable insights and practical guidance, whether you're conducting chemical assessments, predicting properties, or working with databases. Start watching the videos now and elevate your QSAR Toolbox skills!\n\nMore on h",
+    "owner": "EUchemicals"
+   }
+  },
+  {
+   "id": "PLoVkjhDgBOt3NyXcTGg_fi-H8qBzNnKgk",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "ML for Drug Discovery Summer School",
+   "channel": "Valence Labs",
+   "thumb": "https://i.ytimg.com/vi/P5mz8bgp9-I/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 28,
+    "description": "June 12th - 21st, 2024: includes MoML 2024 and a hackathon",
+    "owner": "Valence Labs"
+   }
+  },
+  {
+   "id": "PLugOo5eIVY3GDYcuR5kKIXwHIKKP8Vj0B",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "2025 RDKit UGM",
+   "channel": "RDKit",
+   "thumb": "https://i.ytimg.com/vi/Q0Za1rCrDO0/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 22,
+    "description": "2025 RDKit UGM in Prague",
+    "owner": "RDKit"
+   }
+  },
+  {
+   "id": "PLHn7WmALbthnAwbJ4mWw5gk8dgqsjRL87",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Computational Protein Structure Prediction and Design (JHU)",
+   "channel": "Prof. Jeffrey J. Gray at Johns Hopkins University",
+   "thumb": "https://i.ytimg.com/vi/TUyo8NFi_3Q/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 12,
+    "description": "These videos were recorded from the advanced undergraduate and graduate course (540.414 and 540.614) taught at the Whiting School of Engineering of Johns Hopkins University in the Fall semester of 2014.  \n\nThe course included a workshop component based on the PyRosetta tutorials available at http://www.pyrosetta.org/tutorials.\n\nVideography by Lauren Elise Villone\nMusic by Should",
+    "owner": "Prof. Jeffrey J. Gray at Johns Hopkins University"
+   }
+  },
+  {
+   "id": "PLFavr8uo6kSpbIQKodSYA6reiG-RDXnWq",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Machine Learning Methods for Protein Modeling and Design - A Rosetta Bootcamp",
+   "channel": "RosettaCommons",
+   "thumb": "https://i.ytimg.com/vi/ekeXqoPSusI/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 18,
+    "description": "Want to learn the leading Machine Learning-based computation biomolecular structure prediction and design methods? These videos capture the 2024 Rosetta-sponsored Machine Learning Bootcamp. This series is instructed by Nick Randolph (UNC Chapel Hill) and was supported by the Rosetta Commons, the National Science Foundation, and UC Davis. \n\nTopics and methods covered include:\n1. Introduction to Protein Design with ML\n2. PyMol and VS Code Mini-session\n3. Structure Prediction Introduction\n4. Structure Prediction with AlphaFold2 and OpenFold\n5. Version Control with Git Mini-session\n6. Structure Pr",
+    "owner": "RosettaCommons"
+   }
+  },
+  {
+   "id": "UqeQfRDA8Yk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "How to interpret AlphaFold structures",
+   "channel": "EMBL's European Bioinformatics Institute EMBL-EBI",
+   "thumb": "https://i.ytimg.com/vi/UqeQfRDA8Yk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "Rfw7thgGTwI",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "ColabFold - Making protein folding accessible to all via Google Colab!",
+   "channel": "Boston Protein Design and Modeling Club",
+   "thumb": "https://i.ytimg.com/vi/Rfw7thgGTwI/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLJ0WcPQS7xJVJr6ceIPFSkAGAgrkmw1c9",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "AlphaFold Decoded - Implementing AlphaFold 2 from Scratch",
+   "channel": "Kilian Mandon",
+   "thumb": "https://i.ytimg.com/vi/NSvp7RFegEs/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 10,
+    "description": "This is a nine-part series where we'll do a full implementation of AlphaFold 2 in PyTorch. You don't need any prerequisites except python, we'll start from the ground up with introductions to PyTorch, machine learning and attention.",
+    "owner": "Kilian Mandon"
+   }
+  },
+  {
+   "id": "PLHib7JgKNUUeG1kMKLMtWwds-pIvvf4iU",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Exploring PDB structures in 3D with Mol* (MolStar)",
+   "channel": "RCSBProteinDataBank",
+   "thumb": "https://i.ytimg.com/vi/4w-D_5P4VXk/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 14,
+    "description": "This tutorial series is an introductory guide to visualizing PDB structures and creating graphics and animations with the Mol* Viewer available at http://www.rcsb.org.\n\nAccess the full series here:\nlhttps://pdb101.rcsb.org/learn/videos/exploring-pdb-structures-in-3d-with-molstar",
+    "owner": "RCSBProteinDataBank"
+   }
+  },
+  {
+   "id": "PL8_xPU5epJdctoHdQjpfHmd_z9WvGxK8-",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Getting Started in Cryo-EM",
+   "channel": "caltech",
+   "thumb": "https://i.ytimg.com/vi/q17nGZPCeoA/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 49,
+    "description": "Lectures by Grant Jensen, Professor of Biology, Caltech; Investigator, Howard Hughes Medical Institute. Recorded at Caltech in 2013 -14.\n\nVisit the course website: http://cryo-em-course.caltech.edu\nLearn more about the Jensen Lab at Caltech: http://www.jensenlab.caltech.edu\nAfter completing these videos, go to the next unit on Sample Preparation: http://bit.ly/2GvBT5V",
+    "owner": "caltech"
+   }
+  },
+  {
+   "id": "yqeUH4RsJp8",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Nazim Bouatta | Machine learning for protein structure prediction, Part 1: Algorithm space",
+   "channel": "Harvard CMSA",
+   "thumb": "https://i.ytimg.com/vi/yqeUH4RsJp8/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLtkeUZItwHK5On0noijO_pbC6EpekeScy",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "MolSSI Python Data and Scripting",
+   "channel": "nanohubtechtalks",
+   "thumb": "https://i.ytimg.com/vi/xdrJNgsFko4/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 9,
+    "description": "This course can be found on nanoHUB at https://nanohub.org/courses/MolSSI_Python\n\nThis course is designed for students who are currently involved in, or planning to start computational chemistry research. This workshop is designed to help students develop practical programming skills that will benefit their undergraduate research, and will take students through introductory programming and scripting with Python to version control and sharing their code with others.\n\nThe course concludes with a module on scientific data visualization using matplotlib, plotly, and visulizing molecular structures",
+    "owner": "nanohubtechtalks"
+   }
+  },
+  {
+   "id": "PLTjFYVNE7LTi6kGvPAF7DDQYj0KDL-vQL",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "2021 Materials Project Workshop",
+   "channel": "MaterialsProject",
+   "thumb": "https://i.ytimg.com/vi/kMClBnOejXk/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 12,
+    "description": "",
+    "owner": "MaterialsProject"
+   }
+  },
+  {
+   "id": "PL7gkuUui8u7-kk87QbzROpiFE6ibv12s_",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Tutorials (Materials Science)",
+   "channel": "Atoms to Materials",
+   "thumb": "https://i.ytimg.com/vi/dRknShlZtMQ/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 9,
+    "description": "Step-by-step tutorials on Python tools for materials research, including pymatgen, matcalc, and the Materials Project API.",
+    "owner": "Atoms to Materials"
+   }
+  },
+  {
+   "id": "FqRqsFWf8Dw",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Atomate2 tutorial #1: Simulate Materials Properties on Your Computer",
+   "channel": "Atoms to Materials",
+   "thumb": "https://i.ytimg.com/vi/FqRqsFWf8Dw/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PL19kfLn4sO_89dA95wsQ8Mndf5KRJvDRB",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "AiIDA virtual tutorial, July 2021",
+   "channel": "Materials Cloud",
+   "thumb": "https://i.ytimg.com/vi/0lWYphVDSJc/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 19,
+    "description": "Video presentations from the 2nd AiiDA Virtual Tutorial of July 2021. (Some videos are repeated from the previous year.)\nMore details:\n➤ https://www.aiida.net/aiida-virtual-tutorial-july-2021/\n➤ https://aiida-tutorials.readthedocs.io/en/tutorial-2021-intro/",
+    "owner": "Materials Cloud"
+   }
+  },
+  {
+   "id": "Xbo-qNlCAEA",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Jakob Schiøtz: Introduction to ASE",
+   "channel": "GPAWTV",
+   "thumb": "https://i.ytimg.com/vi/Xbo-qNlCAEA/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLL0SWcFqypCl4lrzk1dMWwTUrzQZFt7y0",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Materials Informatics",
+   "channel": "Taylor Sparks",
+   "thumb": "https://i.ytimg.com/vi/DDliZDwiAoU/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 72,
+    "description": "This course covers machine learning techniques applied to materials research. There is an accompanying github site at https://github.com/sp8rks/MaterialsInformatics",
+    "owner": "Taylor Sparks"
+   }
+  },
+  {
+   "id": "PLHyI3Fbmv0ScvpNBkhR1wiKMy7EoVMTtw",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "2023 Complex Scientific Workflows at Extreme Computational Scales",
+   "channel": "Institute for Pure & Applied Mathematics (IPAM)",
+   "thumb": "https://i.ytimg.com/vi/qv54YtaLWak/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 22,
+    "description": "One of the key changes in the landscape of high-performance computing in materials science in the last decade is the explosion of high-throughput applications where massive amounts of relatively small quantum calculations fuel the rapid exploration of the chemical space of materials. Such high throughput workflows are prime candidates for the efficient exploitation of exascale resources. This workshop proposes to build on these early successes and to take the next logical step by exploring the challenges and opportunities associated with integrating massive-scale compute-intensive simulations ",
+    "owner": "Institute for Pure & Applied Mathematics (IPAM)"
+   }
+  },
+  {
+   "id": "hHRMk5zx2Qw",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Quantum chemistry calculations with python: S1 - Molecular input for DFT calculations with RDkit.",
+   "channel": "Chemistry with code",
+   "thumb": "https://i.ytimg.com/vi/hHRMk5zx2Qw/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLppkbh3UUiHC4pJwnLJalx2Oi5YhjlPbC",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Quantum Computing 4 Quantum Chemistry Intro Lectures",
+   "channel": "Artur Izmaylov",
+   "thumb": "https://i.ytimg.com/vi/0cYq9yJFYkc/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 8,
+    "description": "",
+    "owner": "Artur Izmaylov"
+   }
+  },
+  {
+   "id": "PLOFEBzvs-VvrXTMy5Y2IqmSaUjfnhvBHR",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Introduction to Quantum Computing and Quantum Hardware",
+   "channel": "Qiskit",
+   "thumb": "https://i.ytimg.com/vi/Rs2TzarBX5I/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 38,
+    "description": "This course is an introduction to the world of quantum computing, with an exploration of some of the key quantum algorithms and their implementations using quantum circuits, as well as the quantum hardware that is designed to run these algorithms. The course was first offered during the Qiskit Global Summer School in July 2020 as a two-week intensive summer school.",
+    "owner": "Qiskit"
+   }
+  },
+  {
+   "id": "PLOFEBzvs-Vvo5o97bYt8o1l8Ra1poMASQ",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Qiskit Global Summer School - 2022",
+   "channel": "Qiskit",
+   "thumb": "https://i.ytimg.com/vi/P47zObtHsPM/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 19,
+    "description": "The Qiskit Global Summer School 2022 was a two-week intensive summer program made up of nineteen lectures, four lab exercises and nine live Q & A’s. This third-annual summer school provided a focused introduction to quantum computing and its applications in quantum simulation, with a specific focus on quantum chemistry.",
+    "owner": "Qiskit"
+   }
+  },
+  {
+   "id": "qiRtUUZ5s9s",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Variational Quantum Eigensolver (VQE) | PennyLane Tutorial",
+   "channel": "PennyLane",
+   "thumb": "https://i.ytimg.com/vi/qiRtUUZ5s9s/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLHyI3Fbmv0SfcpAXd1RwP3m2WExfemWeY",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "2024 Winter School on Quantum Information Science for Chemistry",
+   "channel": "Institute for Pure & Applied Mathematics (IPAM)",
+   "thumb": "https://i.ytimg.com/vi/lc4-9sJca-0/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 10,
+    "description": "Overview\nThe Challenge Institute for Quantum Computation (CIQC), the Advanced Molecular Architectures for Quantum Information Science (AMAQIS), and IPAM are pleased to present the fourth annual Winter School in Quantum Information Science. This year’s school will turn its focus to Quantum Information Science for Chemistry and will provide both in-depth primers and surveys of current areas of active research in atomic, molecular, and materials systems for quantum information science applications, as well as quantum algorithms alongside methods of “usual” quantum chemistry.  Topics that will be ",
+    "owner": "Institute for Pure & Applied Mathematics (IPAM)"
+   }
+  },
+  {
+   "id": "WuaoaknYDrk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Quantum Algorithms Pt.2 Sample-based Methods for Quantum Simulation Javier Robledo Moreno | QGSS26",
+   "channel": "Qiskit",
+   "thumb": "https://i.ytimg.com/vi/WuaoaknYDrk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "PLvqjbKCkOZu8_aYhc8K4KJS_Xx9CzKyBd",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Quantum Computing for Quantum Chemistry",
+   "channel": "Thom Group",
+   "thumb": "https://i.ytimg.com/vi/yh3aC3zXWds/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 24,
+    "description": "Informal discussion group focusing on the application of Quantum Computing to Quantum Chemistry, based at the Yusuf Hamied Department of Chemistry, University of Cambridge, UK.\n\n💬 A summary of previous and future talks can be found on the group website:\nhttps://www.ch.cam.ac.uk/group/thom/quantum-computing-quantum-chemistry-discussion-group-qcqcdg\n\n📧 Join the mailing list to be notified about upcoming meetings:\nhttps://lists.cam.ac.uk/sympa/subscribe/ucam-qcdg",
+    "owner": "Thom Group"
+   }
+  },
+  {
+   "id": "PLgKuh-lKre1025XhpsFXsZcUfABb9XPWj",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Quantum Advantage for Computational Chemistry",
+   "channel": "Simons Institute for the Theory of Computing",
+   "thumb": "https://i.ytimg.com/vi/qU2dwurdmdE/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 9,
+    "description": "Friday, May 29, 2026\n\nThe Quantum Advantage for Computational Chemistry satellite meeting will precede ICQC2026, taking place on Friday May 29, at the Simons Institute for the Theory of Computing, on the Berkeley campus. The meeting will focus on quantum algorithms with promise of significant quantum advantage in chemistry, considering electronic structure and dynamics, as well as integration of quantum and classical high performance to solve complex chemical problems beyond the reach of classical computers.",
+    "owner": "Simons Institute for the Theory of Computing"
+   }
+  },
+  {
+   "id": "PLp6ek2hDcoNDDRINFiWGDlPKUwW-g1Hjk",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "Introduction to Large Language Models (LLMs)",
+   "channel": "NPTEL IIT Delhi",
+   "thumb": "https://i.ytimg.com/vi/-DGMjrOiyO8/hqdefault.jpg",
+   "extra": {
+    "titles": [],
+    "first": "",
+    "total": 38,
+    "description": "This course introduces the fundamental concepts underlying Large Language Models (LLMs). It starts with an introduction to the various problems in NLP, and discusses how to approach the problem of language modeling using deep learning. It describes the architectural intricacies of Transformers and the pre-training objectives of the differen Transformer-based models. It also discusses the recent advances in LLM research, including LLM alignment, prompting, parameter-efficient adaptation, hallucination, bias and ethical considerations. This course prepares a student to comprehend, critique and a",
+    "owner": "NPTEL IIT Delhi"
+   }
+  },
+  {
+   "id": "PLlrxD0HtieHgKcRjd5-8DT9TbwdlDO-OC",
+   "p": "yt",
+   "k": "playlist",
+   "status": 200,
+   "title": "AI Agents for Beginners",
+   "channel": "Microsoft Developer",
+   "thumb": "https://i.ytimg.com/vi/OhI005_aJkA/hqdefault.jpg",
+   "extra": {
+    "titles": [
+     "Full Course (Lessons 1-10) AI Agents for Beginners (1:04:28)",
+     "What are AI agents? (5:57)",
+     "Which AI agent framework to use (8:21)",
+     "How to design good AI agents (5:24)",
+     "What Is agentic RAG? (7:18)",
+     "What Is the Agent Tool Use Design Pattern? (6:15)",
+     "How to deploy AI agents into production (5:55)",
+     "Context engineering for AI agents (16:48)",
+     "Using Agentic Protocols (MCP, A2A, and NLWeb) (15:09)",
+     "How to use a multi-AI agent system (7:04)",
+     "How to build effective AI agents (5:55)",
+     "What Is the AI Agent Planning Design Pattern? (5:29)",
+     "AI Agent Memory: Building Self-Improving Agents (13:21)",
+     "How can AI agents improve? (7:13)",
+     "Building Computer Use Agents (CUA) (16:40)"
+    ],
+    "first": "OhI005_aJkA",
+    "total": 15,
+    "description": "In this 10-lesson course we take you from concept to code while covering the fundamentals of building AI agents. Find the full \"AI Agents for Beginners\" Course and code samples here ➡️ aka.ms/ai-agents-beginners",
+    "owner": "by Microsoft Developer"
+   }
+  },
+  {
+   "id": "zUgz0r3nldU",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "From ML Potentials to Agents That Write the Paper: AI for Computational Chemistry",
+   "channel": "Prof. Pavlo O. Dral",
+   "thumb": "https://i.ytimg.com/vi/zUgz0r3nldU/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "2GSEWl0uy3Y",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "AI4Chemistry Caltech Bootcamp 2026 – 13 Agentic AI",
+   "channel": "Jules Schleinitz",
+   "thumb": "https://i.ytimg.com/vi/2GSEWl0uy3Y/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "sUl8ovLgK4Q",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "33. Large Language Models in Materials Science",
+   "channel": "Taylor Sparks",
+   "thumb": "https://i.ytimg.com/vi/sUl8ovLgK4Q/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "XzpJaNhEKyw",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "MIA: Sam Cox, Automating Chemistry With LLM-Based Agents; Primer: Andrew White",
+   "channel": "Broad Institute",
+   "thumb": "https://i.ytimg.com/vi/XzpJaNhEKyw/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "uAI3MbVZiYk",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Andrés M Bran | Augmenting Large Language Models with Chemistry tools | MLiS 2024",
+   "channel": "MLinScience",
+   "thumb": "https://i.ytimg.com/vi/uAI3MbVZiYk/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  },
+  {
+   "id": "cRmIyg3TdyI",
+   "p": "yt",
+   "k": "video",
+   "status": 200,
+   "title": "Gabe Gomes: Autonomous chemical research with large language models",
+   "channel": "BIDMaP",
+   "thumb": "https://i.ytimg.com/vi/cRmIyg3TdyI/hqdefault.jpg",
+   "extra": {
+    "status": 200,
+    "playable": "LOGIN_REQUIRED",
+    "title": "",
+    "channel": "",
+    "channelId": "",
+    "seconds": 0,
+    "views": 0,
+    "description": "",
+    "keywords": [],
+    "date": "",
+    "category": "",
+    "captions": [],
+    "live": false
+   }
+  }
+ ]
+}
