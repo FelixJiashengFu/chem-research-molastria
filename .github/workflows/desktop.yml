@@ -37,6 +37,8 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: desktop/src-tauri -> target
+      - name: Teaching-video covers (bundled into the app; never fails the build)
+        run: node tools/video-thumbs.mjs
       - name: Install Tauri CLI
         working-directory: desktop
         run: npm install --no-audit --no-fund

@@ -1,0 +1,35 @@
+# Temporary: finds teaching-video candidates for public/videos/ on YouTube and Bilibili and commits them to the
+# branch (tmp-videos/), because the machines that edit the site cannot reach either site. Removed before merging.
+name: Teaching videos search (temporary)
+
+on:
+  push:
+    branches: [claude/project-thread-ckm1yf]
+    paths: [tmp-videos/run.txt]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: video-search
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run tools/video-search.mjs with the arguments in tmp-videos/run.txt
+        run: node tools/video-search.mjs $(cat tmp-videos/run.txt)
+      - name: Commit the results to the branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f tmp-videos
+          git commit -m "Teaching videos: results of '$(cat tmp-videos/run.txt)' from CI" || exit 0
+          for i in 1 2 3; do git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && break; sleep 5; done

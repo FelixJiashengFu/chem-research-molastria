@@ -16,6 +16,7 @@ const PAGES: Record<string, { file: string; title: string }> = {
   manual: { file: "manual/index.html", title: "讲解手册" },
   journals: { file: "journals/index.html", title: "期刊发表" },
   scimodels: { file: "scimodels/index.html", title: "科学大模型" },
+  videos: { file: "videos/index.html", title: "教学视频" },
   fundamental: { file: "fundamental-science/index.html", title: "进一步基础科学发现" },
   atlas: { file: "atlas/index.html", title: "数据库" },
   hub: { file: "hub/index.html", title: "论文与社区" },

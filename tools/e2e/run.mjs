@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1372,6 +1372,92 @@ check('scimodels: 27 model cards by subcategory with official links, filters and
   await finish(en);
 });
 
+check('teaching videos: cards by topic with original links, covers with fallbacks, play on click, filters, desktop opens outside', async () => {
+  // No real video sites in tests: covers come back as a tiny PNG (or fail), players as a stub page.
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+  const stub = async (p, covers) => {
+    await p.context().route(/^https:\/\/(i\.ytimg\.com|[^/]*\.hdslb\.com)\//, (r) => (covers ? r.fulfill({ contentType: 'image/png', body: png }) : r.abort()));
+    await p.context().route(/^https:\/\/(www\.youtube-nocookie\.com|player\.bilibili\.com)\//, (r) => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>player</title><p>player</p>' }));
+  };
+  const p = await open();
+  await stub(p, true);
+  await go(p, '/videos/index.html');
+  assert.equal(await p.getAttribute('.cr-links a[data-id=videos]', 'aria-current'), 'page');
+  const data = await p.evaluate(() => window.MOLASTRIA_VIDEOS);
+  const n = data.items.length;
+  assert.ok(n >= 100, `${n} videos`);
+  assert.equal(new Set(data.items.map((v) => v.id)).size, n, 'no duplicate ids');
+  assert.ok(data.items.every((v) => (v.p === 'yt' ? /^([\w-]{11}|PL[\w-]{16,})$/.test(v.id) : /^BV[0-9A-Za-z]{10}$/.test(v.id))), 'ids look like YouTube / Bilibili ids');
+  assert.ok(data.items.every((v) => v.title && v.channel && v.note?.zh && v.note?.en && data.topics.some((t) => t.id === v.topic)), 'every video has a title, channel, both notes and a topic');
+  assert.ok(data.items.some((v) => v.p === 'bili') && data.items.some((v) => v.lang === 'zh'), 'Chinese material from Bilibili');
+  const visible = () => p.$$eval('.vd-card:not([hidden])', (c) => c.map((x) => x.dataset.id));
+  assert.equal((await visible()).length, n);
+  assert.equal(await p.locator('.vd-group').count(), new Set(data.items.map((v) => v.topic)).size);
+  // Every card links to its original on YouTube or Bilibili; external links open safely.
+  const noLink = await p.$$eval('.vd-card', (cards) => cards.filter((c) => !c.querySelector('.vd-link a[href^="https://www.youtube.com/"], .vd-link a[href^="https://www.bilibili.com/video/"]')).map((c) => c.dataset.id));
+  assert.deepEqual(noLink, []);
+  const unsafe = await p.$$eval('main a[href]', (a) => a.filter((x) => new URL(x.href).origin !== location.origin && (x.target !== '_blank' || !/noopener/.test(x.rel) || !/noreferrer/.test(x.rel))).map((x) => x.href));
+  assert.deepEqual(unsafe, []);
+  // Covers: thumbs/<id>.jpg is not in git, so locally the platform's image stands in (YouTube always has one).
+  const yt = data.items.find((v) => v.p === 'yt' && v.k === 'video' && v.embed !== false);
+  await p.locator(`#v-${yt.id} img`).scrollIntoViewIfNeeded();
+  await p.waitForFunction((id) => document.querySelector(`#v-${id} img`)?.src.startsWith('https://i.ytimg.com/'), yt.id);
+  assert.equal(await p.locator('iframe').count(), 0, 'no player before a click');
+  // Click: the player loads in place, from youtube-nocookie, and the card gets an address.
+  await p.click(`#v-${yt.id} button.vd-cover`);
+  const src = await p.getAttribute(`#v-${yt.id} iframe`, 'src');
+  assert.match(src, new RegExp(`^https://www\\.youtube-nocookie\\.com/embed/${yt.id}\\?`));
+  assert.match(await p.getAttribute(`#v-${yt.id} iframe`, 'allow'), /fullscreen/);
+  assert.match(p.url(), new RegExp(`#v-${yt.id}$`));
+  const bili = data.items.find((v) => v.p === 'bili' && v.embed !== false);
+  await p.click(`#v-${bili.id} button.vd-cover`);
+  assert.match(await p.getAttribute(`#v-${bili.id} iframe`, 'src'), new RegExp(`^https://player\\.bilibili\\.com/player\\.html\\?bvid=${bili.id}&`));
+  // A video whose platform does not allow embedding opens the original instead.
+  const off = data.items.find((v) => v.embed === false);
+  if (off) assert.equal(await p.getAttribute(`#v-${off.id} .vd-cover`, 'target'), '_blank');
+  // Filters alone and combined, search, the empty state and its reset.
+  await p.selectOption('#vd-platform', 'bili');
+  assert.ok((await visible()).every((id) => data.items.find((v) => v.id === id).p === 'bili'));
+  await p.selectOption('#vd-platform', '');
+  await p.selectOption('#vd-lang', 'zh');
+  const zh = await visible();
+  assert.ok(zh.length && zh.every((id) => { const v = data.items.find((x) => x.id === id); return v.lang === 'zh' || v.subs === 'zh'; }));
+  await p.selectOption('#vd-level', 'intro');
+  assert.ok((await visible()).every((id) => data.items.find((v) => v.id === id).level === 'intro'));
+  await p.click('#vd-reset');
+  await p.fill('#vd-q', 'ORCA');
+  const orca = await visible();
+  assert.ok(orca.length >= 1 && orca.length < n, `${orca.length} ORCA videos`);
+  await p.fill('#vd-q', 'zzzzqqq');
+  assert.ok(await p.locator('#vd-empty').isVisible(), 'empty-state message');
+  await p.click('#vd-empty-reset');
+  assert.equal((await visible()).length, n);
+  await finish(p);
+  // An address opens straight to its video, even past a filter; with no cover at all a placeholder is drawn.
+  const a = await open();
+  await stub(a, false);
+  const last = data.items[data.items.length - 1];
+  await go(a, `/videos/index.html#v-${last.id}`);
+  assert.ok(await a.locator(`#v-${last.id}`).isVisible());
+  await a.waitForSelector(`#v-${last.id} .vd-cover.no-img .vd-ph`);
+  await finish(a);
+  // Desktop app: no embedded players; every cover opens the original in the system browser.
+  const dsk = await open({ init: () => { window.__MOLASTRIA_DESKTOP__ = true; } });
+  await stub(dsk, true);
+  await go(dsk, '/videos/index.html');
+  assert.equal(await dsk.locator('button.vd-cover').count(), 0);
+  assert.equal(await dsk.locator('a.vd-cover[target=_blank]').count(), n);
+  assert.ok(await dsk.locator('#vd-desktop').isVisible());
+  await finish(dsk);
+  // English: notes, facts and topic names are English (titles and channels keep their original language).
+  const en = await open();
+  await stub(en, true);
+  await go(en, '/videos/index.html?lang=en');
+  const left = await en.evaluate(() => [...document.querySelectorAll('.vd-note, .vd-facts, .vd-group h3, #vd-jump, #vd-topic option, #vd-lang option, #vd-level option, #vd-platform option')].flatMap((x) => x.textContent.match(/[㐀-鿿]+/g) || []));
+  assert.deepEqual(left, []);
+  await finish(en);
+});
+
 check('decor: the home logo loop and the download intro film play muted, are hidden decoration, and stay still under reduced motion', async () => {
   for (const [path, sel, loop] of [['/index.html', '.brand-loop video', true], ['/download/index.html', '.dl-intro video', false]]) {
     const p = await open();
@@ -1780,7 +1866,7 @@ check('arrows: the site draws its own metallic arrow icons, no ↗ characters ar
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

@@ -37,6 +37,8 @@ jobs:
         run: deno run --allow-read tools/account-test.ts
       - name: Rebuild SEO pages and sitemap
         run: deno run --allow-read --allow-write tools/build-seo.ts
+      - name: Teaching-video covers (never fails the build; gone videos show as warnings)
+        run: node tools/video-thumbs.mjs --check
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
