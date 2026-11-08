@@ -1361,7 +1361,7 @@ check('scimodels: 27 model cards by subcategory with official links, filters and
   assert.match(await text(d, '#dialog-body'), /2026-10-27/);
   assert.equal(await d.locator('#dialog-body a[href*="scimodels"]').count(), 0);
   await go(d, '/manual/index.html#p11c-cat17');
-  await d.waitForSelector('a[href$="scimodels/index.html"]');
+  await d.waitForSelector('#guide-article a[href$="scimodels/index.html"]');
   await finish(d);
   // English: the model data is in English.
   const en = await open();
@@ -1789,13 +1789,13 @@ check('nav order: modules are dragged straight along the header (mouse at once, 
   for (let i = 1; i <= 12; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + to.width / 2 + 4 - from.x - from.width / 2) * i) / 12, from.y + from.height / 2 + 1);
   assert.ok(await p.locator('.cr-links a.cr-lifted[data-id="search"]').count(), 'the module is lifted as glass');
   await p.mouse.up();
-  assert.deepEqual((await row()).slice(0, 4), ['network', 'manual', 'atlas', 'search'], 'dropped after 数据库');
+  assert.deepEqual((await row()).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search'], 'dropped after 数据库');
   assert.equal(p.url(), url, 'the drag did not open the page');
   assert.equal(await p.locator('.cr-arrange.open').count(), 0, 'no panel after a drag');
-  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-nav-order'))).slice(0, 4), ['network', 'manual', 'atlas', 'search']);
+  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-nav-order'))).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search']);
   await p.click('.cr-links > a[data-id="search"]');
   await p.waitForURL(/\/index\.html/);
-  assert.deepEqual((await row()).slice(0, 4), ['network', 'manual', 'atlas', 'search'], 'kept on the next page');
+  assert.deepEqual((await row()).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search'], 'kept on the next page');
   await p.evaluate(() => localStorage.removeItem('molastria-nav-order'));
   await finish(p);
   // touch: a quick swipe leaves the order alone, a hold then a slide moves the module
