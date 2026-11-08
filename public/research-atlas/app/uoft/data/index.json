@@ -1,0 +1,86 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写、大型合作、研究相似等全部关系。",
+  "nodes": 6274,
+  "edges": 24618
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 200,
+  "edges": 362
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 281,
+  "edges": 932
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 409,
+  "edges": 1129
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授（三校区）、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 201,
+  "edges": 796
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "物理系教授（三校区）、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 230,
+  "edges": 912
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授（三校区）、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 341,
+  "edges": 1380
+ },
+ {
+  "id": "campus-st",
+  "title": "圣乔治校区子网",
+  "description": "圣乔治校区数理化教授之间的合作与相似关系。",
+  "nodes": 206,
+  "edges": 571
+ },
+ {
+  "id": "campus-utm",
+  "title": "密西沙加 UTM校区子网",
+  "description": "密西沙加 UTM校区数理化教授之间的合作与相似关系。",
+  "nodes": 56,
+  "edges": 64
+ },
+ {
+  "id": "campus-utsc",
+  "title": "士嘉堡 UTSC校区子网",
+  "description": "士嘉堡 UTSC校区数理化教授之间的合作与相似关系。",
+  "nodes": 36,
+  "edges": 35
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 362,
+  "edges": 2045
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业 / 产业合作网",
+  "description": "教授与企业研发机构的合作：OpenAlex 中与公司（如 Google、IBM、药企、初创公司）作者合写的论文（≤100 作者），紫色为企业节点。",
+  "nodes": 374,
+  "edges": 754
+ }
+]

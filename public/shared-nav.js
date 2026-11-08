@@ -13,6 +13,7 @@
     ['atlas', 'atlas/index.html#resources', '数据库'],
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
+    ['research', 'research-atlas/index.html', '研究图谱', true],
     ['digest', 'digest/index.html', '每周精选', true],
     ['journals', 'journals/index.html', '期刊发表'],
     ['scimodels', 'scimodels/index.html', '科学大模型', true],
@@ -117,7 +118,7 @@
     legal.className = 'cr-legal';
     legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">晨光科技（Morning Glory）旗下项目</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a>`;
     const place = () => {
-      if (document.body.classList.contains('radar-page')) return;
+      if (document.body.matches('.radar-page, .atlas-page')) return;
       const foot = [...document.querySelectorAll('footer')].filter((f) => !f.closest('.cr-header, dialog, aside')).pop();
       // below the footer, not inside it: footers here are rows and grids of their own
       if (foot) foot.after(legal); else (document.querySelector('main') || document.body).append(legal);

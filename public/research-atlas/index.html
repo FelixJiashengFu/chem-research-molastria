@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="中美·研究图谱：中美二十所大学的数学、物理、化学教授合作网络；北美与中国量子化学 / 计算化学课题组的真实地图；北美与中国 Top 20 学者档案和个人合作网络；中美六个细分方向的统计对比；北美计算化学产业报告。数据来自 OpenAlex。">
+  <meta name="theme-color" content="#173f34">
+  <title>研究图谱 · 中美大学数理化网络与量子化学地图 · MolAstria</title>
+  <!-- seo:start -->
+  <!-- seo:end -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <style>
+    html, body { height: 100%; }
+    body.atlas-page { display: flex; flex-direction: column; height: 100%; margin: 0; overflow: hidden; }
+    .atlas-box { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+    .atlas-frame { position: absolute; top: 0; left: 0; display: block; width: 100%; height: 100%; border: 0; background: var(--paper); }
+    .atlas-page noscript p { padding: 24px; }
+    .atlas-about { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  </style>
+  <script src="../shared-nav.js" defer></script>
+</head>
+<body data-section="research" class="atlas-page">
+<!-- 中美·研究图谱（https://github.com/FelixJiashengFu/university-science-research-network）的静态网站，由 tools/vendor-atlas.mjs 复制到 app/。
+     它是一组纯静态页面，自带导航；外层只负责 MolAstria 顶栏、深浅色、显示缩放和地址同步。 -->
+<h1 class="atlas-about">研究图谱</h1>
+<p class="atlas-about">中美二十所大学的数学、物理、化学教授合作网络；北美与中国量子化学 / 计算化学课题组的真实地图；北美与中国 Top 20 学者档案；中美细分方向统计对比；北美计算化学产业报告。</p>
+<div class="atlas-box"><iframe class="atlas-frame" id="atlas-frame" title="研究图谱" data-display-frame></iframe></div>
+<noscript><p>研究图谱需要启用 JavaScript。</p></noscript>
+<script>
+  (function () {
+    var frame = document.getElementById('atlas-frame'), root = document.documentElement;
+    // The atlas page being shown is mirrored in this page's address (#/top20/#A5…), so a reload (switching the
+    // language) or a shared link opens the same page. Only paths inside app/ are accepted.
+    function target() {
+      var m = /^#\/([\w\-\/]*(?:index\.html)?)(#[\w\-=&%.]*)?$/.exec(location.hash);
+      return m && !/\.\./.test(m[1]) ? m[1] + (m[2] || '') : '';
+    }
+    var start = target();
+    // The desktop app leaves the atlas out of its bundle (about 100 MB of network data) and shows the website's copy.
+    var desktop = window.__MOLASTRIA_DESKTOP__;
+    var app = desktop ? 'https://molastria.com/research-atlas/app/' : 'app/';
+    frame.src = app + start;
+    var appPath = new URL(app, location.href).pathname;
+    function mirror() {
+      try {
+        var w = frame.contentWindow, p = w.location.pathname;
+        if (p.indexOf(appPath) !== 0) return;
+        var rest = p.slice(appPath.length).replace(/index\.html$/, '') + w.location.hash;
+        var next = rest ? '#/' + rest : '';
+        if (next !== location.hash && !(next === '' && !location.hash)) history.replaceState(history.state, '', location.pathname + location.search + next);
+        var t = w.document.title; if (t) document.title = t + ' · 研究图谱 · MolAstria';
+      } catch (e) {}
+    }
+    function sync() {
+      try {
+        var r = frame.contentDocument && frame.contentDocument.documentElement;
+        if (!r) return;
+        if (root.dataset.theme) r.dataset.theme = root.dataset.theme; else delete r.dataset.theme;
+      } catch (e) {}
+    }
+    frame.addEventListener('load', function () {
+      sync(); mirror();
+      try { frame.contentWindow.addEventListener('hashchange', mirror); } catch (e) {}
+    });
+    document.addEventListener('chemhub:theme', sync);
+    // A changed address (a link to another atlas page, typing a new #/…) loads that page in the frame.
+    addEventListener('hashchange', function () { frame.src = app + target(); });
+    // Links to other sites (OpenAlex, DOIs, ORCID, the GitHub repository) open outside the frame: a new tab on the
+    // website, the system browser in the desktop app.
+    frame.addEventListener('load', function () {
+      var w; try { w = frame.contentWindow; w.document; } catch (e) { return; }
+      var ipc = window.__TAURI_INTERNALS__;
+      function outside(href) {
+        try { var u = new URL(href, w.location.href); return /^https?:$/.test(u.protocol) && u.origin !== w.location.origin ? u.href : null; } catch (e) { return null; }
+      }
+      w.document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[href]') : null, url = a && outside(a.getAttribute('href'));
+        if (!url || e.defaultPrevented) return;
+        e.preventDefault();
+        if (desktop && ipc && !w.__MOLASTRIA_DESKTOP__) ipc.invoke('plugin:opener|open_url', { url: url });
+        else window.open(url, '_blank', 'noopener');
+      }, true);
+    });
+  })();
+</script>
+</body>
+</html>

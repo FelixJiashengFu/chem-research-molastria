@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中国量化计算化学 Top 20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/nav.js" data-root=".." defer></script>
+<script src="../assets/vendor/d3.min.js"></script>
+<script src="../assets/charts.js"></script>
+<style>
+.rank-tbl td:first-child { font: 600 15px var(--display); color: var(--accent); width: 42px; }
+.rank-tbl tbody tr { cursor: pointer; }
+.rank-tbl .nm { font-weight: 500; color: var(--ink); }
+.rank-tbl .in { color: var(--muted); font-size: 12px; }
+.bar { display: inline-block; height: 8px; border-radius: 0 4px 4px 0; background: var(--accent); vertical-align: middle; margin-right: 8px; opacity: .8; }
+.criteria { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 22px; }
+.criteria div { border-top: 2px solid var(--line); padding-top: 8px; font-size: 13px; color: var(--ink-2); }
+.criteria b { display: block; font: 600 24px var(--display); color: var(--ink); }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 14px; }
+a.pc { display: block; background: var(--raise); border: 1px solid var(--line); border-radius: 12px; padding: 16px; color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; position: relative; }
+a.pc:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+.pc .rk { position: absolute; top: 12px; right: 14px; font: 900 26px var(--display); color: var(--line); }
+.pc h3 { font-size: 17px; margin: 0 40px 2px 0; }
+.pc .in { font-size: 12.5px; color: var(--muted); }
+.pc .tg { font-size: 13px; color: var(--ink-2); margin: 10px 0 8px; min-height: 40px; }
+.pc svg { display: block; }
+/* detail */
+.back { font-size: 13px; display: inline-block; margin: 24px 0 0; }
+.dh { padding: 26px 0 8px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; }
+.dh .big { font: 900 72px/1 var(--display); color: var(--line); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 18px 0 8px; }
+.tiles div { padding: 14px 12px 12px 0; font-size: 12px; color: var(--muted); }
+.tiles b { display: block; font: 600 26px/1.15 var(--display); color: var(--ink); }
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; } .dh .big { font-size: 48px; } }
+.summary { font-size: 16px; line-height: 1.85; color: var(--ink); }
+.contrib { list-style: none; padding: 0; margin: 14px 0 0; }
+.contrib li { padding: 8px 0 8px 22px; border-bottom: 1px dashed var(--line); position: relative; font-size: 14px; }
+.contrib li::before { content: ""; position: absolute; left: 4px; top: 16px; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+.paper { padding: 9px 0; border-bottom: 1px solid var(--line-2); font-size: 14px; line-height: 1.5; }
+.paper .m { font: 11.5px var(--mono); color: var(--muted); margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips a { font-size: 12.5px; border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px; color: var(--ink); background: var(--raise); }
+.chips a span { font-family: var(--mono); color: var(--muted); margin-left: 4px; font-size: 11px; }
+#ego { position: relative; }
+#ego svg { display: block; width: 100%; }
+.h-label { font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+</style>
+</head>
+<body data-nav="bar">
+<main id="app"><div class="wrap" style="padding:80px 20px;color:var(--muted)">正在载入…</div></main>
+<footer class="site"><div class="wrap">数据：OpenAlex（CC0），2000–2026 年中国（含港澳）量子化学 / 计算化学论文语料；研究综述为人工撰写，依据公开论文与课题组介绍。单位取自 OpenAlex 最近机构并经人工校正，OpenAlex 对中文姓名的消歧较弱，个别档案可能合并或拆分了同名学者，页面中已注明。排名只反映该语料内的论文表现，不是对学者的整体评价。</div></footer>
+<script>
+(async function () {
+const D = await fetch("data/top20.json").then(r => r.json());
+const AREA = Object.fromEntries(D.areas), byId = Object.fromEntries(D.profs.map(p => [p.id, p]));
+const esc = RA.esc, F = RA.fmt, app = document.getElementById("app");
+const CAT = { pi: ["中国图谱内教授", "--cn"], edu: ["其他高校学者", "--a-md"], lab: ["国家实验室 / 研究机构", "--a-mat"], company: ["企业", "--us"], intl: ["海外机构", "--a-rd"] };
+const where = p => p.profile?.where || [p.city, p.reg].filter(Boolean).join(", ") + ({ HK: " · 中国香港", MO: " · 中国澳门" }[p.cc] || " · 中国内地");
+const INST = p => p.profile?.inst || p.inst;
+function spark(p, w = 220, h = 34) {
+  const ys = p.years.filter(r => r[0] >= 2000), max = d3.max(ys, r => r[1]) || 1, bw = w / ys.length;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">${ys.map((r, i) => `<rect x="${i * bw + .5}" y="${h - r[1] / max * h}" width="${Math.max(1, bw - 1.5)}" height="${r[1] / max * h}" rx="1" fill="var(--a-${p.a})" opacity=".75"/>`).join("")}</svg>`;
+}
+function home() {
+  document.title = "中国量化计算化学 Top 20";
+  const P = D.profs, maxS = d3.max(P, p => p.score);
+  app.innerHTML = `
+  <div class="wrap"><section class="hero">
+    <div class="eyebrow">05 · China Top 20</div>
+    <h1>中国量子化学与<br>计算化学二十位代表学者</h1>
+    <p class="lede">从中国地图的 513 位课题组负责人（内地、港澳高校与中科院研究所）中，用与北美 Top 20 完全相同的公式排出前 20 位。每位学者都有研究综述、代表性贡献、发表时间线、主要论文和个人合作网络图。</p>
+    <div class="criteria">
+      <div><b>40%</b>语料内论文被引总数<br><span class="muted">2000 年以来量化 / 计算化学论文</span></div>
+      <div><b>20%</b>h 指数<br><span class="muted">OpenAlex 全部论文</span></div>
+      <div><b>20%</b>语料内论文数<br><span class="muted">产出与持续性</span></div>
+      <div><b>20%</b>网内合作者数<br><span class="muted">与其他中国 PI 的合作广度</span></div>
+    </div>
+    <p class="note" style="margin-top:14px">每项先换算成在 513 位 PI 中的百分位，再加权求和（满分 1）。百分位让被引数这种长尾指标不至于压倒其他三项。</p>
+  </section></div>
+  <div class="wrap">
+  <section class="block"><div class="sec-head"><div class="no">A</div><div><h2>排名总表</h2><p>点击任一行进入该学者的详细页面。</p></div></div>
+    <div class="tbl-wrap"><table class="data rank-tbl"><thead><tr><th>#</th><th>学者</th><th>方向</th><th>综合分</th><th class="n">语料被引</th><th class="n">论文</th><th class="n">h 指数</th><th class="n">网内合作者</th></tr></thead><tbody>
+    ${P.map(p => `<tr data-id="${p.id}"><td>${p.rank}</td><td><div class="nm">${esc(p.n)}</div><div class="in">${esc(INST(p))}</div></td><td><span class="pill"><span class="dot" style="background:var(--a-${p.a})"></span>${AREA[p.a]}</span></td>
+      <td class="mono"><span class="bar" style="width:${Math.round((p.score - .9) / (maxS - .9) * 80) + 4}px"></span>${p.score.toFixed(3)}</td><td class="n">${F.int(p.cit)}</td><td class="n">${p.np}</td><td class="n">${p.h}</td><td class="n">${p.deg}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="note" style="margin-top:10px">第 21–30 名：${D.next.slice(0, 10).map(r => `${esc(r.n)}（${esc(r.inst)}）`).join("、")}。</p>
+  </section>
+  <section class="block"><div class="sec-head"><div class="no">B</div><div><h2>二十人的位置</h2><p>横轴是语料内论文数，纵轴是这些论文的被引总数（对数坐标）。前 20 名着色，第 21–50 名为灰点作对照。</p></div></div>
+    <div class="charts">
+      <figure class="chart"><div class="cno">图 T1</div><h3>产出与影响力</h3><div class="sub">每个点一位学者，颜色为研究方向，点大小为 h 指数</div><div id="t1" class="plot"></div>
+        <figcaption>前 20 名的被引差距比北美小得多：多数人落在 5,000–15,000 次之间。严以京论文不多（122 篇）但单篇被引高，位于左上；苏忠民、方维海、杨金龙则以高产出见长。</figcaption></figure>
+      <figure class="chart"><div class="cno">图 T2</div><h3>前 20 名的方向构成</h3><div class="sub">按每人论文最多的方向归类，与全部 513 位 PI 对比</div><div id="t2" class="plot"></div>
+        <figcaption>与北美不同，中国前 20 名几乎被电子结构方法（10 位）和计算材料（8 位）包揽；分子动力学在全部 PI 中占 28%，前 20 名只有张增辉一位。机器学习方向由江俊入榜。</figcaption></figure>
+    </div>
+  </section>
+  <section class="block"><div class="sec-head"><div class="no">C</div><div><h2>学者档案</h2><p>柱条为 2000 年以来每年的语料内论文数。</p></div></div>
+    <div class="pgrid">${P.map(p => `<a class="pc" href="#${p.id}"><span class="rk">${String(p.rank).padStart(2, "0")}</span><h3>${esc(p.n)}</h3><div class="in">${esc(INST(p))}</div><div class="tg">${esc(p.profile?.tag || "")}</div>${spark(p)}</a>`).join("")}</div>
+  </section></div>`;
+  app.querySelectorAll(".rank-tbl tbody tr").forEach(tr => tr.onclick = () => location.hash = tr.dataset.id);
+  const pts = D.profs.map(p => ({ x: p.np, y: p.cit, r: 3 + p.h / 22, color: `--a-${p.a}`, label: p.rank <= 20 ? p.n.split(" ").slice(-1)[0] : null, href: "#" + p.id,
+    tip: `<b>#${p.rank} ${esc(p.n)}</b><div class="m">${esc(p.inst)}</div><div>论文 ${p.np} · 被引 ${F.int(p.cit)} · h ${p.h}</div>` }))
+    .concat(D.next.map((r, i) => ({ x: r.np, y: r.cit, r: 3 + r.h / 22, color: "--axis", hl: false, tip: `<b>#${21 + i} ${esc(r.n)}</b><div class="m">${esc(r.inst)}</div><div>论文 ${r.np} · 被引 ${F.int(r.cit)} · h ${r.h}</div>` })));
+  RA.scatter(document.getElementById("t1"), { points: pts, xLabel: "语料内论文数", yLabel: "语料被引总数", yLog: true, xLog: true, h: 360,
+    legend: D.areas.filter(([a]) => D.profs.some(p => p.a === a)).map(([a, n]) => ({ name: n, color: `--a-${a}` })) });
+  const cnt = c => d3.rollup(c, v => v.length, p => p.a);
+  const t = cnt(D.profs);
+  RA.hbar(document.getElementById("t2"), { cats: D.areas.map(([a, n]) => ({ key: a, label: n })), series: [{ key: "top", name: "前 20 名占比", color: "--accent" }, { key: "all", name: "全部 513 位 PI 占比", color: "--axis" }],
+    value: (c, s) => s.key === "top" ? 100 * (t.get(c.key) || 0) / 20 : 100 * (D.all_area[c.key] || 0) / D.all_n, fmt: F.pct, labelW: 160 });
+}
+
+function detail(p) {
+  document.title = p.n + " · 中国 Top 20";
+  const pr = p.profile || {}, i = D.profs.indexOf(p), prev = D.profs[i - 1], next = D.profs[i + 1];
+  const pub = w => `<div class="paper"><a href="${w.doi ? "https://doi.org/" + esc(w.doi) : "https://openalex.org/" + w.w}" target="_blank" rel="noopener">${esc(w.t || "(无标题)")}</a><div class="m">${w.y} · ${esc(w.v || "—")} · 被引 ${F.int(w.c)} · ${w.na} 位作者</div></div>`;
+  const last5 = p.years.filter(r => r[0] >= 2021 && r[0] <= 2025).reduce((s, r) => s + r[1], 0);
+  app.innerHTML = `<div class="wrap">
+    <a class="back" href="#">← 返回 Top 20 总览</a>
+    <div class="dh"><div><div class="eyebrow">第 ${p.rank} 名 · ${AREA[p.a]}</div><h1 style="font-size:clamp(30px,4.5vw,46px);margin-top:6px">${esc(p.n)}</h1>
+      <div class="lede" style="margin-top:6px">${esc(INST(p))}<span class="muted"> · ${esc(p.inst_en || "")}</span> · ${esc(where(p))}</div>
+      <div style="margin-top:10px;font-size:17px;font-family:var(--display);color:var(--accent)">${esc(pr.tag || "")}</div></div>
+      <div class="big">${String(p.rank).padStart(2, "0")}</div></div>
+    <div class="tiles">
+      <div><b>${p.score.toFixed(3)}</b>综合分</div><div><b>${F.int(p.cit)}</b>语料论文被引</div><div><b>${p.np}</b>语料论文 ${p.y0}–${p.y1}</div>
+      <div><b>${p.h}</b>h 指数（全部论文）</div><div><b>${F.int(p.cit_all)}</b>全部论文被引</div><div><b>${p.deg}</b>中国网内合作教授</div><div><b>${F.int(p.coauthors_total)}</b>语料内合作者</div><div><b>${last5}</b>2021–25 年论文</div>
+    </div>
+    <section class="block" style="border-top:0;padding-top:28px"><div class="two">
+      <div><div class="h-label">研究综述</div><p class="summary">${esc(pr.summary || "")}</p>
+        <div class="h-label" style="margin-top:22px">代表性贡献</div><ul class="contrib">${(pr.contrib || []).map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+        <div class="h-label" style="margin-top:22px">OpenAlex 主题标签</div><div class="chips">${p.kw.map(k => `<a>${esc(k)}</a>`).join("")}</div>
+        <div class="h-label" style="margin-top:22px">链接</div><div class="chips"><a href="https://openalex.org/${p.id}" target="_blank" rel="noopener">OpenAlex 档案</a>${p.orcid ? `<a href="https://orcid.org/${esc(p.orcid)}" target="_blank" rel="noopener">ORCID</a>` : ""}<a href="https://scholar.google.com/scholar?q=${encodeURIComponent('author:"' + p.n + '"')}" target="_blank" rel="noopener">Google Scholar</a><a href="../cn-quantum-chem-map/#p=${p.id}">在中国地图上查看</a></div>
+      </div>
+      <div><figure class="chart"><div class="cno">图 1</div><h3>合作网络</h3><div class="sub">中心是 ${esc(p.n)}；周围是共同发表 ≥ 2 篇的前 45 位合作者，点越大合作越多；线表示两位合作者也互相合写（≥ 2 篇）。</div><div id="ego"></div></figure></div>
+    </div></section>
+    <section class="block"><div class="charts">
+      <figure class="chart"><div class="cno">图 2</div><h3>每年论文数</h3><div class="sub">语料内（量子化学 / 计算化学）论文，按发表年份</div><div id="d1" class="plot"></div></figure>
+      <figure class="chart"><div class="cno">图 3</div><h3>各年论文的累计被引</h3><div class="sub">按论文发表年份汇总其至今的被引数；早年论文积累时间更长</div><div id="d2" class="plot"></div></figure>
+      <figure class="chart"><div class="cno">图 4</div><h3>研究方向构成</h3><div class="sub">语料内论文按主题归入六个方向</div><div id="d3" class="plot"></div></figure>
+      <figure class="chart"><div class="cno">图 5</div><h3>最常发表的期刊</h3><div class="sub">语料内论文数</div><div id="d4" class="plot"></div></figure>
+    </div></section>
+    <section class="block"><div class="two">
+      <div><div class="h-label">主要论文（按被引）</div>${p.top.map(pub).join("")}<div class="h-label" style="margin-top:24px">近期论文</div>${p.recent.map(pub).join("")}</div>
+      <div><div class="h-label">合作最多的机构</div><div class="tbl-wrap"><table class="data"><thead><tr><th>机构</th><th>类型</th><th class="n">合写论文</th></tr></thead><tbody>
+        ${p.partners.map(r => `<tr><td style="white-space:normal">${esc(r[0])}</td><td>${({ education: "高校", company: "企业", facility: "研究设施", government: "政府机构", nonprofit: "非营利", healthcare: "医疗", funder: "资助机构", other: "其他", archive: "档案" })[r[1]] || esc(r[1] || "—")}${r[2] && !["CN", "HK", "MO"].includes(r[2]) ? " · " + esc(r[2]) : ""}</td><td class="n">${r[3]}</td></tr>`).join("")}</tbody></table></div>
+        <div class="h-label" style="margin-top:24px">中国图谱内的合作教授（共同论文数）</div><div class="chips">${p.net_pi.map(([id, k, n]) => `<a href="${byId[id] ? "#" + id : "../cn-quantum-chem-map/#p=" + id}">${esc(n)}<span>${k}</span></a>`).join("")}</div></div>
+    </div></section>
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0 20px;font-size:14px">${prev ? `<a href="#${prev.id}">← #${prev.rank} ${esc(prev.n)}</a>` : "<span></span>"}${next ? `<a href="#${next.id}">#${next.rank} ${esc(next.n)} →</a>` : "<span></span>"}</div>
+  </div>`;
+  const yrs = p.years.filter(r => r[0] >= 2000 && r[0] <= 2025);
+  RA.cols(document.getElementById("d1"), { cats: yrs.map(r => ({ key: r[0], label: r[0] % 5 === 0 ? r[0] : "", tip: r[0] })), series: [{ name: "论文数", color: `--a-${p.a}` }], value: c => yrs.find(r => r[0] === c.key)[1], h: 220, allLabels: true });
+  RA.line(document.getElementById("d2"), { x: yrs.map(r => r[0]), series: [{ name: "累计被引", color: `--a-${p.a}`, values: yrs.map(r => r[2]) }], h: 220, area: true, endLabels: false });
+  RA.hbar(document.getElementById("d3"), { cats: D.areas.filter(([a]) => p.areas[a]).map(([a, n]) => ({ key: a, label: n })).sort((x, y) => p.areas[y.key] - p.areas[x.key]), series: [{ name: "论文数", color: "--accent" }], value: c => p.areas[c.key], labelW: 170 });
+  RA.hbar(document.getElementById("d4"), { cats: p.venues.slice(0, 6).map(([v]) => ({ key: v, label: v.replace(/^The Journal of /, "J. ").replace(/^Journal of /, "J. ").replace(/^The /, "").slice(0, 26) + (v.length > 30 ? "…" : ""), full: v })), series: [{ name: "论文数", color: "--axis" }], value: c => p.venues.find(v => v[0] === c.key)[1], labelW: 220 });
+  ego(document.getElementById("ego"), p);
+  scrollTo(0, 0);
+}
+
+function ego(el, p) {
+  RA.mount(el, (el, W) => {
+    const H = Math.min(520, Math.max(360, W * .9)), css = RA.css;
+    const lg = document.createElement("div"); lg.className = "legend";
+    lg.innerHTML = Object.entries(CAT).filter(([k]) => p.ego.nodes.some(n => n.c === k)).map(([k, [nm, c]]) => `<span><i style="background:${css(c)};border-radius:50%"></i>${nm}</span>`).join(""); el.appendChild(lg);
+    const nodes = [{ id: p.id, n: p.n, k: 0, c: "me", fx: W / 2, fy: H / 2 }].concat(p.ego.nodes.map(n => ({ ...n })));
+    const maxk = d3.max(p.ego.nodes, n => n.k) || 1;
+    const links = p.ego.nodes.map(n => ({ source: p.id, target: n.id, k: n.k, spoke: true })).concat(p.ego.edges.map(([a, b, k]) => ({ source: a, target: b, k })));
+    const r = n => n.c === "me" ? 16 : 4 + 9 * Math.sqrt(n.k / maxk);
+    const sim = d3.forceSimulation(nodes).force("link", d3.forceLink(links).id(d => d.id).distance(l => l.spoke ? 70 + Math.min(W, H) * .32 * (1 - Math.sqrt(l.k / maxk)) : 70).strength(l => l.spoke ? .7 : .08))
+      .force("charge", d3.forceManyBody().strength(-160)).force("collide", d3.forceCollide(n => r(n) + 3)).force("x", d3.forceX(W / 2).strength(.04)).force("y", d3.forceY(H / 2).strength(.06)).stop();
+    for (let i = 0; i < 300; i++) sim.tick();
+    for (const n of nodes) { n.x = Math.max(r(n) + 4, Math.min(W - r(n) - 4, n.x)); n.y = Math.max(r(n) + 4, Math.min(H - r(n) - 4, n.y)); }
+    const s = d3.select(el).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("height", H);
+    const L = s.append("g").selectAll("line").data(links).join("line").attr("x1", l => l.source.x).attr("y1", l => l.source.y).attr("x2", l => l.target.x).attr("y2", l => l.target.y)
+      .attr("stroke", css("--axis")).attr("stroke-width", l => l.spoke ? .6 + 2.4 * Math.sqrt(l.k / maxk) : .7).attr("opacity", l => l.spoke ? .55 : .35);
+    const col = n => n.c === "me" ? css("--ink") : css(CAT[n.c][1]);
+    const N = s.append("g").selectAll("circle").data(nodes).join("circle").attr("cx", n => n.x).attr("cy", n => n.y).attr("r", r).attr("fill", col).attr("stroke", css("--surface")).attr("stroke-width", 2)
+      .style("cursor", n => n.pi && byId[n.id] ? "pointer" : n.pi ? "pointer" : null)
+      .on("mousemove", (e, n) => {
+        L.attr("opacity", l => l.source === n || l.target === n ? .95 : .08);
+        RA.tip.show(n.c === "me" ? `<b>${RA.esc(n.n)}</b>` : `<b>${RA.esc(n.n)}</b><div class="m">${RA.esc(n.inst || "")}</div><div>合写 ${n.k} 篇 · ${CAT[n.c][0]}</div>${n.pi ? '<div class="m">点击查看</div>' : ""}`, e);
+      })
+      .on("mouseleave", () => { L.attr("opacity", l => l.spoke ? .55 : .35); RA.tip.hide(); })
+      .on("click", (e, n) => { if (n.c === "me") return; if (byId[n.id]) location.hash = n.id; else if (n.pi) location.href = "../cn-quantum-chem-map/#p=" + n.id; });
+    const lab = nodes.filter(n => n.c !== "me").sort((a, b) => b.k - a.k).slice(0, W < 500 ? 8 : 14).concat(nodes[0]);
+    s.append("g").selectAll("text").data(lab).join("text").attr("x", n => n.c === "me" ? n.x : n.x + r(n) + 3).attr("y", n => n.c === "me" ? n.y + r(n) + 12 : n.y).attr("text-anchor", n => n.c === "me" ? "middle" : "start").attr("dy", ".32em").attr("font-size", n => n.c === "me" ? 13 : 11)
+      .attr("font-weight", n => n.c === "me" ? 700 : 400).attr("fill", css("--ink")).attr("paint-order", "stroke").attr("stroke", css("--surface")).attr("stroke-width", 3).style("pointer-events", "none")
+      .text(n => n.c === "me" ? n.n : n.n.split(" ").slice(-1)[0]);
+  });
+}
+function route() { RA.reset(); const id = location.hash.slice(1); id && byId[id] ? detail(byId[id]) : home(); }
+addEventListener("hashchange", () => { RA.tip.hide(); route(); });
+route();
+})();
+</script>
+</body>
+</html>

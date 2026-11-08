@@ -1,0 +1,2 @@
+中美·研究图谱 https://github.com/FelixJiashengFu/university-science-research-network ffe0f48
+copied by tools/vendor-atlas.mjs

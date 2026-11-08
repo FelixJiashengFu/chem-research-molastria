@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -387,6 +387,29 @@ check('PreprintRadar: loads in its frame and follows the site theme', async () =
   await finish(p);
 });
 
+check('research atlas: the copied site loads in its frame, follows the theme, mirrors its page in the address and opens other sites outside', async () => {
+  const p = await open();
+  await go(p, '/research-atlas/index.html#/cn-top20/');
+  assert.equal(await p.getAttribute('.cr-links a[data-id=research]', 'aria-current'), 'page');
+  const f = p.frame({ url: /research-atlas\/app\/cn-top20\// });
+  await f.waitForSelector('.rank-tbl tbody tr');
+  assert.equal(await f.$$eval('.rank-tbl tbody tr', (r) => r.length), 20);
+  assert.equal(await f.evaluate(() => document.documentElement.dataset.embed), '1', 'the atlas knows it is embedded');
+  assert.equal(await f.locator('.ra-theme').count(), 0, 'no second light/dark switch inside');
+  await p.click('#cr-theme');
+  await p.waitForFunction(() => document.getElementById('atlas-frame').contentDocument.documentElement.dataset.theme === 'dark');
+  await f.click('.rank-tbl tbody tr');
+  await p.waitForFunction(() => /^#\/cn-top20\/#A\d+$/.test(location.hash));
+  await f.click('.ra-pill[data-key=schools]');
+  await f.waitForSelector('.ra-pop:not([hidden]) .ra-sch li');
+  assert.equal(await f.$$eval('.ra-pop .ra-sch li', (l) => l.length), 20, 'the school list');
+  await p.evaluate(() => { window.__opened = []; window.open = (u) => { window.__opened.push(u); return null; }; });
+  await f.evaluate(() => { const a = document.createElement('a'); a.href = 'https://openalex.org/'; a.textContent = 'x'; document.body.append(a); a.click(); });
+  assert.deepEqual(await p.evaluate(() => window.__opened), ['https://openalex.org/'], 'other sites open outside the frame');
+  assert.match(f.url(), /research-atlas\/app\//, 'the frame stayed on the atlas');
+  await finish(p);
+});
+
 check('PreprintRadar in the desktop app: notifications reach the system through the app, not the WebView', async () => {
   // macOS's WKWebView has no Notification API, so the frame starts without one; desktop/src-tauri/src/notify.rs
   // runs in every frame and sends notifications to the app, which is faked here (top window only, as in the app).
@@ -526,7 +549,7 @@ check('playground in English: games and canvas labels are translated, no Chinese
 
 check('embedded apps follow the display scale: the frame cancels the page zoom and is scaled so the app gets the narrower viewport', async () => {
   const p = await open({ viewport: { width: 1000, height: 800 }, init: () => { try { localStorage.setItem('molastria-zoom', '1.25'); localStorage.setItem('molastria-text', '1.2'); } catch {} } });
-  for (const path of ['/radar/index.html', '/qchem/index.html#lab']) {
+  for (const path of ['/radar/index.html', '/qchem/index.html#lab', '/research-atlas/index.html']) {
     await go(p, path);
     const el = await p.waitForSelector('iframe[data-display-frame]');
     const f = await el.contentFrame();
@@ -1903,7 +1926,7 @@ check('about: Morning Glory page, every non-MolAstria direction labelled planned
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

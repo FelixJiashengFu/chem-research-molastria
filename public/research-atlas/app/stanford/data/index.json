@@ -1,0 +1,128 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 3844,
+  "edges": 12312
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 113,
+  "edges": 370
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 132,
+  "edges": 420
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×应用物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 337,
+  "edges": 1440
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 128,
+  "edges": 448
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "物理系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 148,
+  "edges": 800
+ },
+ {
+  "id": "dept-applied-physics",
+  "title": "应用物理系子网",
+  "description": "应用物理系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 120,
+  "edges": 359
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 159,
+  "edges": 516
+ },
+ {
+  "id": "area-theory-hep",
+  "title": "方向子网：理论物理：高能 · 量子引力 · 量子信息",
+  "description": "院系官网标注为「Stanford Leinweber Institute for Theoretical Physics / Theoretical Astrophysics and Cosmology」方向的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 62,
+  "edges": 249
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理与宇宙学",
+  "description": "院系官网标注为「Theoretical Astrophysics and Cosmology / Experimental and Observational Astrophysics and Cosmology」方向的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 45,
+  "edges": 231
+ },
+ {
+  "id": "area-cmp-amo",
+  "title": "方向子网：凝聚态 · 原子分子光学",
+  "description": "院系官网标注为「Experimental Condensed Matter Physics / Atomic, Molecular and Optical Physics」方向的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 78,
+  "edges": 267
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：化学生物学与有机化学",
+  "description": "院系官网标注为「Chemistry-Biology Interface / Organic Chemistry」方向的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 118,
+  "edges": 350
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 理论化学 · 材料与催化",
+  "description": "院系官网标注为「Physical Chemistry / Theoretical Chemistry / Materials Chemistry / Catalysis / Inorganic Chemistry」方向的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 125,
+  "edges": 377
+ },
+ {
+  "id": "area-math-geom",
+  "title": "方向子网：数学：几何 · 拓扑 · 分析",
+  "description": "数学系官网标注为 Geometry / Topology / Analysis / Symplectic / Partial Differential 等方向的教授。",
+  "nodes": 46,
+  "edges": 124
+ },
+ {
+  "id": "area-math-nt",
+  "title": "方向子网：数学：数论 · 代数 · 表示论 · 组合",
+  "description": "数学系官网标注为 Number Theory / Algebra / Representation / Combinatorics 等方向的教授。",
+  "nodes": 30,
+  "edges": 87
+ },
+ {
+  "id": "area-math-prob",
+  "title": "方向子网：数学：概率 · 应用与计算数学",
+  "description": "数学系官网标注为 Probability / Applied / Computational / Numerical 等方向的教授。",
+  "nodes": 55,
+  "edges": 134
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 301,
+  "edges": 2139
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 278,
+  "edges": 660
+ }
+]

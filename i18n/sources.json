@@ -5524,6 +5524,9 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
+ "研究图谱": [
+  "shared-nav.js"
+ ],
  "计算化学研究导航": [
   "shared-nav.js"
  ],
@@ -11244,6 +11247,12 @@
   "tools/build-seo.ts"
  ],
  "同时检索 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。": [
+  "tools/build-seo.ts"
+ ],
+ "中美·研究图谱": [
+  "tools/build-seo.ts"
+ ],
+ "中美二十所大学的数学、物理、化学教授合作网络，北美与中国量子化学 / 计算化学课题组地图，Top 20 学者档案，中美细分方向对比与北美计算化学产业报告。数据来自 OpenAlex。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 游乐场": [

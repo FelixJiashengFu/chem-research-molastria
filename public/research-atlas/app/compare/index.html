@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中美量化计算化学对比</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/nav.js" data-root=".." defer></script>
+<script src="../assets/vendor/d3.min.js"></script>
+<script src="../assets/charts.js"></script>
+<style>
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.toc a { font-size: 13px; border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px; color: var(--ink-2); background: var(--raise); }
+.toc a i { font: 500 11px var(--mono); font-style: normal; color: var(--muted); margin-right: 6px; }
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .vs { grid-template-columns: 1fr; } }
+.flag { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.flag .dot { width: 10px; height: 10px; }
+.tbl-title { font: 600 16px var(--display); margin: 0 0 10px; }
+.scope { background: var(--raise); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; font-size: 13.5px; color: var(--ink-2); margin-top: 26px; }
+.scope b { color: var(--ink); }
+td.ar { white-space: nowrap; }
+.ratio { font: 11px var(--mono); color: var(--muted); }
+</style>
+</head>
+<body data-nav="bar">
+<main id="app"><div class="wrap" style="padding:80px 20px;color:var(--muted)">正在载入…</div></main>
+<footer class="site"><div class="wrap">数据：OpenAlex（CC0）论文元数据，2026 年 11 月抓取；中国 = 至少一位作者单位在中国内地、香港或澳门；美国 = 至少一位作者单位在美国（中美合写论文两边各计一次）。课题组负责人名单由两张地图同一套规则从论文记录推断。方法和局限见页末。</div></footer>
+<script>
+(async function () {
+const C = await fetch("data/compare.json").then(r => r.json());
+const AREAS = C.meta.areas, AN = Object.fromEntries(AREAS), F = RA.fmt, esc = RA.esc;
+const ORDER = ["es", "ex", "md", "mat", "rd", "ml"];  // validated categorical order
+const Y = C.meta.years, iy = y => Y.indexOf(y), Y24 = Y.filter(y => y <= 2024);
+const US = { key: "US", name: "美国", color: "--us" }, CN = { key: "CN", name: "中国", color: "--cn" };
+const cut = arr => arr.slice(0, iy(2024) + 1);
+const A = C.area, cats = AREAS.map(([a, n]) => ({ key: a, label: n }));
+const sum = (c, y0, y1) => d3.sum(Y.filter(y => y >= y0 && y <= y1), y => C.yearly[c][iy(y)]);
+const cross = Y24.find(y => C.yearly.CN[iy(y)] > C.yearly.US[iy(y)]);
+const ratio = (a, b) => (a / b).toFixed(2) + "×";
+const app = document.getElementById("app");
+const fig = (id, no, title, sub, cap, wide) => `<figure class="chart${wide ? " wide" : ""}"><div class="cno">图 ${no}</div><h3>${title}</h3><div class="sub">${sub}</div><div id="${id}" class="plot"></div>${cap ? `<figcaption>${cap}</figcaption>` : ""}</figure>`;
+const win = (u, c, higher = true) => (higher ? u > c : u < c) ? ["win-us", ""] : ["", "win-cn"];
+const mlCross = Y24.find(y => C.yearly_area.CN.ml[iy(y)] > C.yearly_area.US.ml[iy(y)]);
+
+app.innerHTML = `
+<div class="wrap"><section class="hero">
+  <div class="eyebrow">06 · China vs United States</div>
+  <h1>中美量子化学与<br>计算化学：细分领域对比</h1>
+  <p class="lede">用同一套 OpenAlex 语料与同一套规则，把中国和美国在六个细分方向上的论文产出、影响力、增长、课题组负责人、合作网络与机构分布放在一起比较。共 ${F.int(C.meta.works_us + C.meta.works_cn - C.meta.works_both)} 篇论文，其中中美合写 ${F.int(C.meta.works_both)} 篇。</p>
+  <div class="hero-figs">
+    <div><b>${cross}</b><span>中国年发文量首次超过美国</span></div>
+    <div><b>${ratio(C.yearly.CN[iy(2024)], C.yearly.US[iy(2024)])}</b><span>2024 年中国 / 美国论文数</span></div>
+    <div><b>${C.all.US.mcit.toFixed(1)} : ${C.all.CN.mcit.toFixed(1)}</b><span>篇均被引 美 : 中（2010–19 论文）</span></div>
+    <div><b>${C.all.US.top10.toFixed(1)}% : ${C.all.CN.top10.toFixed(1)}%</b><span>前 10% 高被引论文占比 美 : 中</span></div>
+    <div><b>${C.pi.US.n} : ${C.pi.CN.n}</b><span>识别出的课题组负责人 美 : 中</span></div>
+  </div>
+  <nav class="toc" aria-label="本页目录">
+    <a href="#s1"><i>A</i>核心结论</a><a href="#s2"><i>B</i>产出规模</a><a href="#s3"><i>C</i>研究结构</a><a href="#s4"><i>D</i>增长</a><a href="#s5"><i>E</i>影响力</a><a href="#s6"><i>F</i>合作与团队</a><a href="#s7"><i>G</i>课题组负责人</a><a href="#s8"><i>H</i>机构与地域</a><a href="#s9"><i>I</i>代表学者</a><a href="#s10"><i>J</i>方法</a>
+  </nav>
+</section></div>
+<div class="wrap">
+<section class="block" id="s1"><div class="sec-head"><div class="no">A</div><div><h2>核心结论</h2><p>下面每一条都能在后面的图表中找到出处。</p></div></div>
+  <div class="findings">
+    <div class="finding"><b>规模：中国 ${cross} 年反超</b>中国年发文从 2000 年的 ${F.int(C.yearly.CN[0])} 篇增至 2024 年的 ${F.int(C.yearly.CN[iy(2024)])} 篇；美国同期在 ${F.int(C.yearly.US[0])}–${F.int(d3.max(cut(C.yearly.US)))} 篇之间平稳。（图 1）</div>
+    <div class="finding"><b>结构：中国偏材料，美国偏方法</b>中国 ${(100 * A.CN.mat.n / C.all.CN.n).toFixed(0)}% 的论文属于计算材料与 DFT，美国这一比例为 ${(100 * A.US.mat.n / C.all.US.n).toFixed(0)}%；电子结构方法在美国占 ${(100 * A.US.es.n / C.all.US.n).toFixed(0)}%，在中国占 ${(100 * A.CN.es.n / C.all.CN.n).toFixed(0)}%。（图 3）</div>
+    <div class="finding"><b>影响力：美国仍领先</b>2010–2019 年发表的论文，美国篇均被引 ${C.all.US.mcit}，中国 ${C.all.CN.mcit}；六个方向里美国的前 10% 高被引占比（全部年份）都高于中国；不过 2020 年后发表的论文，两国进入前 10% 的比例已基本持平。（图 6、7、8）</div>
+    <div class="finding"><b>机器学习：双方都在爆发</b>机器学习方向 2010–2024 年复合增长率美国 ${C.cagr.US.ml}%、中国 ${C.cagr.CN.ml}%，是唯一两国都高速增长的方向${mlCross ? `；中国在 ${mlCross} 年在该方向发文量超过美国` : ""}。（图 5、9）</div>
+    <div class="finding"><b>合作网络：美国更紧密</b>美国课题组负责人平均与 ${C.net.US.mean_degree} 位同行合写，最大连通分量覆盖 ${C.net.US.giant_pct}%；中国分别是 ${C.net.CN.mean_degree} 位和 ${C.net.CN.giant_pct}%，${C.net.CN.isolated_pct}% 的中国 PI 在网内没有合作者。（表 2）</div>
+    <div class="finding"><b>中美合作在收缩</b>中美合写论文 ${Y24[d3.maxIndex(cut(C.collab))]} 年达到 ${F.int(d3.max(cut(C.collab)))} 篇的峰值，2024 年为 ${F.int(C.collab[iy(2024)])} 篇；占美国论文的比例从峰值 ${d3.max(cut(C.collab_share.US)).toFixed(1)}% 降至 ${C.collab_share.US[iy(2024)].toFixed(1)}%。（图 11）</div>
+  </div>
+</section>
+
+<section class="block" id="s2"><div class="sec-head"><div class="no">B</div><div><h2>产出规模</h2><p>年度论文数与各细分方向的体量。</p></div></div>
+  <div class="charts">
+    ${fig("c1", 1, "年度论文数", "量子化学 / 计算化学语料，2000–2024", `中国的论文数在 ${cross} 年超过美国，之后差距持续扩大。2025 年 OpenAlex 主题重新标注导致两国数据同时跳升，所以趋势图截至 2024 年。`, true)}
+    ${fig("c2", 2, "各细分方向论文数（2020–2024）", "近五年，两国在每个方向上的论文数", "中国在分子动力学、计算材料两个应用面最广的方向上体量已超过美国（计算材料约为美国的 3 倍）；电子结构方法、激发态、反应动力学和机器学习四个方向仍是美国更多。")}
+    ${fig("c3", 3, "研究结构", "每个国家全部论文（2000–2025）在六个方向上的分布", "美国的产出更均衡，理论方法类（电子结构 + 激发态 + 反应动力学）合计约四成；中国接近四成集中在计算材料与 DFT。")}
+  </div>
+  <div class="tbl-title" style="margin-top:30px">表 1 · 细分领域对比总表</div>
+  <div class="tbl-wrap"><table class="data"><thead><tr><th>细分方向</th><th class="n">论文 美</th><th class="n">论文 中</th><th class="n">2020–24 美</th><th class="n">2020–24 中</th><th class="n">增长率 美</th><th class="n">增长率 中</th><th class="n">篇均被引 美</th><th class="n">篇均被引 中</th><th class="n">前10% 美</th><th class="n">前10% 中</th><th class="n">作者数 美</th><th class="n">作者数 中</th><th class="n">PI 美</th><th class="n">PI 中</th></tr></thead><tbody>
+  ${AREAS.map(([a, n]) => { const u = A.US[a], c = A.CN[a]; const cell = (x, y, f, hi = true) => { const [wu, wc] = win(x, y, hi); return `<td class="n ${wu}">${f(x)}</td><td class="n ${wc}">${f(y)}</td>`; };
+    return `<tr><td class="ar"><span class="dot" style="background:var(--a-${a})"></span> ${n}</td>${cell(u.n, c.n, F.int)}${cell(u.n21, c.n21, F.int)}${cell(C.cagr.US[a], C.cagr.CN[a], v => v == null ? "—" : v.toFixed(1) + "%")}${cell(u.mcit, c.mcit, F.f1)}${cell(u.top10, c.top10, v => v.toFixed(1) + "%")}<td class="n">${u.team}</td><td class="n">${c.team}</td>${cell(C.pi.US.area[a] || 0, C.pi.CN.area[a] || 0, F.int)}</tr>`; }).join("")}
+  <tr><td><b>合计</b></td>${(() => { const u = C.all.US, c = C.all.CN; return `<td class="n">${F.int(u.n)}</td><td class="n">${F.int(c.n)}</td><td class="n">${F.int(u.n21)}</td><td class="n">${F.int(c.n21)}</td><td class="n">—</td><td class="n">—</td><td class="n">${u.mcit}</td><td class="n">${c.mcit}</td><td class="n">${u.top10}%</td><td class="n">${c.top10}%</td><td class="n">${u.team}</td><td class="n">${c.team}</td><td class="n">${C.pi.US.n}</td><td class="n">${C.pi.CN.n}</td>`; })()}</tr>
+  </tbody></table></div>
+  <p class="note" style="margin-top:8px">颜色标出每对指标中较高的一方（<span class="win-us">美国</span> / <span class="win-cn">中国</span>）。增长率 = 2010→2024 年发文量复合年增长率；篇均被引只算 2010–2019 年发表的论文，让被引有足够积累时间；前 10% = 在同方向、同年份的中美论文里被引排前 10%，两国合计期望值约 10%；作者数 = 每篇论文平均作者数。</p>
+</section>
+
+<section class="block" id="s3"><div class="sec-head"><div class="no">C</div><div><h2>此消彼长</h2><p>中国论文在“中美合计”中的占比，按方向逐年变化。</p></div></div>
+  <div class="charts">${fig("c4", 4, "中国在中美合计产出中的占比", "每个方向每年：中国论文 ÷（中国 + 美国论文）；50% 线以上表示中国更多", "计算材料在 2008 年前后最早越过 50%，2024 年已达近八成；分子动力学在 2021 年前后越过 50%。电子结构方法、激发态和反应动力学至今仍在 50% 以下，是美国保持优势的理论核心；机器学习在 2010 年代中期美国先发、占比一度回落到两成，2024 年回升到接近一半。", true)}</div>
+</section>
+
+<section class="block" id="s4"><div class="sec-head"><div class="no">D</div><div><h2>增长</h2><p>2010→2024 年的复合年增长率，以及机器学习方向的轨迹。</p></div></div>
+  <div class="charts">
+    ${fig("c5", 5, "各方向复合年增长率", "2010→2024 年发文量 CAGR（%）", "中国在每个方向都是正增长；美国除机器学习外各方向持平或略降，说明美国的量化计算化学已进入成熟期，新增量主要来自机器学习。")}
+    ${fig("c9", 9, "机器学习与数据驱动化学", "该方向年度论文数", "两国在 2017 年前后同时起飞，增长曲线几乎平行。")}
+  </div>
+</section>
+
+<section class="block" id="s5"><div class="sec-head"><div class="no">E</div><div><h2>影响力</h2><p>被引是滞后指标：比较同一时期、同一方向的论文才公平。</p></div></div>
+  <div class="charts">
+    ${fig("c6", 6, "篇均被引", "2010–2019 年发表的论文，截至 2026 年的平均被引次数", "美国在六个方向都更高，差距最大的是机器学习（美国早期奠基性论文被引极高）和电子结构方法。")}
+    ${fig("c7", 7, "前 10% 高被引论文占比", "竖线 = 10% 期望值；高于 10% 表示该国在高被引论文中占比超过其体量", "美国每个方向都在 11–13% 左右，中国在 5–10%；分子动力学和计算材料是中国最接近期望值的方向。")}
+    ${fig("c8", 8, "前 10% 高被引占比的变化", "按发表年份", "中国的高被引占比从 2000 年代的 3–5% 一路上升，2020 年前后与美国持平（都在 10–11%）。也就是说，按全部年份平均美国领先，但近五年发表的论文里两国进入高被引的比例已无明显差距。最近两三年的论文被引尚未稳定，读数仅供参考。", true)}
+  </div>
+</section>
+
+<section class="block" id="s6"><div class="sec-head"><div class="no">F</div><div><h2>合作与团队</h2><p>团队规模、中美合作和发表渠道。</p></div></div>
+  <div class="charts">
+    ${fig("c10", 10, "平均每篇论文作者数", "团队规模随时间变化", "两国团队都在扩大；中国论文的平均作者数比美国多 0.5–1.2 人，且差距在扩大，与中国实验—计算联合发表更普遍的模式一致。")}
+    ${fig("c11", 11, "中美合写论文占比", "中美合写论文 ÷ 各自全部论文", "对美国而言，中美合写占比 2020 年达到 13% 的峰值，2024 年回落到约 10%；对中国而言，2016 年前后约 15% 的峰值之后一路降到 6% 左右，既因为合作数减少，也因为中国自身产出增长更快。")}
+    ${fig("c12", 12, "核心理论期刊发表占比", "发表在 J. Chem. Phys.、JCTC、J. Comput. Chem.、WIREs CMS、IJQC、TCA 的论文比例", "美国约四分之一的论文发在核心理论期刊上，中国不到一成，更多发表在应用与材料类期刊，这与研究结构的差异一致。")}
+  </div>
+  <div class="vs" style="margin-top:26px">
+    <div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--us)"></span>美国</span> · 2021 年后最常用期刊</div><div class="tbl-wrap"><table class="data"><tbody>${C.venues.US.slice(0, 10).map(([v, k], i) => `<tr><td class="n" style="width:32px">${i + 1}</td><td style="white-space:normal">${esc(v)}</td><td class="n">${F.int(k)}</td></tr>`).join("")}</tbody></table></div></div>
+    <div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--cn)"></span>中国</span> · 2021 年后最常用期刊</div><div class="tbl-wrap"><table class="data"><tbody>${C.venues.CN.slice(0, 10).map(([v, k], i) => `<tr><td class="n" style="width:32px">${i + 1}</td><td style="white-space:normal">${esc(v)}</td><td class="n">${F.int(k)}</td></tr>`).join("")}</tbody></table></div></div>
+  </div>
+</section>
+
+<section class="block" id="s7"><div class="sec-head"><div class="no">G</div><div><h2>课题组负责人与合作网络</h2><p>用北美地图和中国地图同一套规则识别出的课题组负责人（PI）。</p></div></div>
+  <div class="charts">
+    ${fig("c13", 13, "各方向 PI 人数", "按每位 PI 论文最多的方向归类", "美国 PI 集中在分子动力学与电子结构方法；中国最多的是计算材料方向。")}
+    ${fig("c14", 14, "PI 的 h 指数分布", "占本国 PI 的百分比，按 10 分一档", `美国 PI 的 h 指数中位数 ${C.pi.US.h_median}，中国 ${C.pi.CN.h_median}；h ≥ 60 的 PI 美国占 ${(100 * d3.sum(Object.entries(C.pi.US.h_hist).filter(([k]) => +k >= 60), d => d[1]) / C.pi.US.n).toFixed(0)}%，中国 ${(100 * d3.sum(Object.entries(C.pi.CN.h_hist).filter(([k]) => +k >= 60), d => d[1]) / C.pi.CN.n).toFixed(0)}%。`)}
+    ${fig("c15", 15, "PI 的学术代际", "首篇语料内论文的年份（五年一档），占本国 PI 的百分比", "美国七成 PI 在 2005 年前已有相关论文；中国 PI 更年轻，2010 年后起步的占比约为美国的两倍。")}
+  </div>
+  <div class="tbl-title" style="margin-top:30px">表 2 · 合作网络结构</div>
+  <div class="tbl-wrap"><table class="data"><thead><tr><th>指标</th><th class="n">美国</th><th class="n">中国</th><th>含义</th></tr></thead><tbody>
+    ${[["PI 人数", "pis", F.int, "两张地图中识别出的课题组负责人"], ["合作连线", "edges", F.int, "至少合写 1 篇语料内论文的 PI 对"], ["平均合作者数", "mean_degree", F.f2, "每位 PI 在网内的合作者"], ["网络密度", "density", v => v.toFixed(4), "实际连线 ÷ 可能连线"], ["孤立 PI 比例", "isolated_pct", F.pct, "网内没有合作者的 PI"], ["最大连通分量", "giant_pct", F.pct, "通过合作链能互相到达的最大群体"], ["聚类系数", "clustering", F.f2, "合作者之间彼此也合作的程度"], ["同单位合作占比", "same_inst_edge_pct", F.pct, "连线两端在同一所学校"], ["平均合写篇数", "mean_weight", F.f2, "每对合作者的共同论文"]]
+      .map(([n, k, f, d]) => `<tr><td>${n}</td><td class="n">${f(C.net.US[k])}</td><td class="n">${f(C.net.CN[k])}</td><td class="muted" style="white-space:normal">${d}</td></tr>`).join("")}
+  </tbody></table></div>
+</section>
+
+<section class="block" id="s8"><div class="sec-head"><div class="no">H</div><div><h2>机构与地域</h2><p>PI 在机构之间、地区之间的分布。</p></div></div>
+  <div class="charts">
+    ${fig("c16", 16, "机构集中度（洛伦兹曲线）", "横轴：按 PI 数从少到多排列的机构累计比例；纵轴：PI 累计比例。越偏离对角线越集中", `前 10 个机构占美国 PI 的 ${C.pi.US.top10_inst_pct}%、中国的 ${C.pi.CN.top10_inst_pct}%；基尼系数美国 ${C.pi.US.gini}、中国 ${C.pi.CN.gini}。`)}
+    ${fig("c17", 17, "PI 最多的地区", "美国按州，中国按省级行政区（前 10）", "美国以加州、纽约州、得州为三极；中国以北京、上海、山东、江苏为主，东部沿海集中度更高。")}
+  </div>
+  <div class="vs" style="margin-top:26px">
+    <div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--us)"></span>美国</span> · PI 最多的机构</div><div class="tbl-wrap"><table class="data"><tbody>${C.pi.US.top_inst.slice(0, 12).map(([z, e, k], i) => `<tr><td class="n" style="width:32px">${i + 1}</td><td style="white-space:normal">${esc(e)}</td><td class="n">${k}</td></tr>`).join("")}</tbody></table></div></div>
+    <div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--cn)"></span>中国</span> · PI 最多的机构</div><div class="tbl-wrap"><table class="data"><tbody>${C.pi.CN.top_inst.slice(0, 12).map(([z, e, k], i) => `<tr><td class="n" style="width:32px">${i + 1}</td><td style="white-space:normal">${esc(z)} <span class="muted" style="font-size:12px">${esc(e)}</span></td><td class="n">${k}</td></tr>`).join("")}</tbody></table></div></div>
+  </div>
+</section>
+
+<section class="block" id="s9"><div class="sec-head"><div class="no">I</div><div><h2>代表学者与代表论文</h2><p>两国按同一综合分（40% 语料被引 + 20% h 指数 + 20% 论文数 + 20% 网内合作者，各取本国百分位）排出的前 20 位，以及 2021 年后被引最高的论文。</p></div></div>
+  <div class="vs">
+    ${["US", "CN"].map(c => `<div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--${c.toLowerCase()})"></span>${c === "US" ? "美国" : "中国"}</span> · 前 20 位</div><div class="tbl-wrap"><table class="data"><thead><tr><th>#</th><th>学者</th><th>方向</th><th class="n">被引</th><th class="n">h</th></tr></thead><tbody>
+      ${C.rank[c].map((r, i) => `<tr><td class="n">${i + 1}</td><td style="white-space:normal"><a href="${c === "US" ? "../top20/#" + r.id : "../cn-quantum-chem-map/#p=" + r.id}">${esc(r.n)}</a><div class="muted" style="font-size:12px">${esc(r.inst)}</div></td><td><span class="dot" style="background:var(--a-${r.a})" title="${AN[r.a]}"></span> <span style="font-size:12px">${AN[r.a].slice(0, 6)}</span></td><td class="n">${F.int(r.cit)}</td><td class="n">${r.h}</td></tr>`).join("")}</tbody></table></div></div>`).join("")}
+  </div>
+  <div class="vs" style="margin-top:26px">
+    ${["US", "CN"].map(c => `<div><div class="tbl-title"><span class="flag"><span class="dot" style="background:var(--${c.toLowerCase()})"></span>${c === "US" ? "美国" : "中国"}</span> · 2021 年后被引最高的论文</div>${C.top_papers[c].slice(0, 8).map(p => `<div style="padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13.5px"><a href="${p.doi ? "https://doi.org/" + esc(p.doi) : "https://openalex.org/" + p.w}" target="_blank" rel="noopener">${esc(p.t)}</a><div class="ratio">${p.y} · ${esc(p.v || "—")} · 被引 ${F.int(p.c)} · ${AN[p.ar]}</div></div>`).join("")}</div>`).join("")}
+  </div>
+</section>
+
+<section class="block" id="s10"><div class="sec-head"><div class="no">J</div><div><h2>方法与局限</h2></div></div>
+  <div class="narrow" style="font-size:14.5px;color:var(--ink-2)">
+    <p><b>语料。</b>OpenAlex 中 2000 年以来、与北美地图完全相同的五个查询的并集（四个化学物理主主题；量子化学、相对论量子化学、TDDFT、耦合簇等概念；DFT 概念；分子动力学概念；六本理论化学期刊），分别限定作者单位国家为美国 / 加拿大和中国内地 / 香港 / 澳门，再合并去重。台湾地区高校不在本统计范围内。</p>
+    <p><b>细分方向。</b>每篇论文按 OpenAlex 主主题，或命中的查询，归入六个方向之一，规则与两张地图相同。“反应动力学与速率理论”只有主主题明确时才归入，两国都偏少。</p>
+    <p><b>课题组负责人。</b>没有全国院系名单可用，按发表记录推断：至少 10 篇语料论文、2021 年后仍在发表、多作者论文中末位作者比例 ≥ 30%、当前单位为本国高校（中国另含中科院等研究所）、语料论文占其全部论文 ≥ 25%（或 ≥ 8% 且有 ≥ 20 篇核心理论论文）、标题中理论 / 方法词比例 ≥ 25%。OpenAlex 对中文姓名的作者消歧较弱：同名学者被合并会使“语料论文占比”下降而被过滤，一人被拆成多个档案也会让 PI 数偏少，因此中国 PI 数（${C.pi.CN.n}）很可能被低估，篇均与网络类指标受影响较小。</p>
+    <p><b>被引与年份。</b>被引次数来自 2026 年 11 月的 OpenAlex 快照；篇均被引只比较 2010–2019 年的论文。2025 年的论文数受 OpenAlex 重新标注主题影响出现跳升，因此趋势图截至 2024 年。</p>
+    <p><b>重跑。</b>仓库 <code>cn-quantum-chem-map/scripts/</code> 与 <code>analysis/build_atlas_data.py</code>；API key 只通过环境变量提供。</p>
+  </div>
+</section>
+</div>`;
+
+// ---- charts
+RA.line(document.getElementById("c1"), { x: Y24, series: [{ ...US, values: cut(C.yearly.US) }, { ...CN, values: cut(C.yearly.CN) }], h: 300 });
+RA.hbar(document.getElementById("c2"), { cats, series: [US, CN], value: (c, s) => A[s.key][c.key].n21, labelW: 170 });
+const areaParts = c => ORDER.map(a => ({ name: AN[a], color: `--a-${a}`, v: A[c][a].n, dark: a === "mat" }));
+RA.stack(document.getElementById("c3"), { rows: [{ label: "美国", parts: areaParts("US") }, { label: "中国", parts: areaParts("CN") }], labelW: 44 });
+RA.line(document.getElementById("c4"), { x: Y24, yFmt: v => v.toFixed(0) + "%", yMax: 100, ref: { y: 50, label: "50%：中美持平" }, h: 340,
+  series: ORDER.map(a => ({ name: AN[a], short: AN[a].slice(0, 4), color: `--a-${a}`, values: Y24.map(y => { const u = C.yearly_area.US[a][iy(y)], c = C.yearly_area.CN[a][iy(y)]; return u + c >= 30 ? 100 * c / (u + c) : null; }) })) });
+RA.dumbbell(document.getElementById("c5"), { cats, a: { ...US, get: c => C.cagr.US[c.key] }, b: { ...CN, get: c => C.cagr.CN[c.key] }, fmt: v => v == null ? "—" : v.toFixed(0) + "%" });
+RA.line(document.getElementById("c9"), { x: Y24.filter(y => y >= 2010), series: [{ ...US, values: Y24.filter(y => y >= 2010).map(y => C.yearly_area.US.ml[iy(y)]) }, { ...CN, values: Y24.filter(y => y >= 2010).map(y => C.yearly_area.CN.ml[iy(y)]) }], h: 280 });
+RA.hbar(document.getElementById("c6"), { cats, series: [US, CN], value: (c, s) => A[s.key][c.key].mcit, fmt: F.f1, labelW: 170 });
+RA.hbar(document.getElementById("c7"), { cats, series: [US, CN], value: (c, s) => A[s.key][c.key].top10, fmt: v => v.toFixed(1) + "%", ref: 10, labelW: 170 });
+const Y20 = Y24.filter(y => y <= 2023);
+RA.line(document.getElementById("c8"), { x: Y20, series: [{ ...US, values: Y20.map(y => C.top10_year.US[iy(y)]) }, { ...CN, values: Y20.map(y => C.top10_year.CN[iy(y)]) }], yFmt: v => v.toFixed(0) + "%", ref: { y: 10, label: "10% 期望值" }, h: 280 });
+RA.line(document.getElementById("c10"), { x: Y24, series: [{ ...US, values: cut(C.team_year.US) }, { ...CN, values: cut(C.team_year.CN) }], yFmt: F.f1, yMin: 0, h: 260 });
+RA.line(document.getElementById("c11"), { x: Y24, series: [{ name: "占美国论文", short: "占美国", color: "--us", values: cut(C.collab_share.US) }, { name: "占中国论文", short: "占中国", color: "--cn", values: cut(C.collab_share.CN) }], yFmt: v => v.toFixed(0) + "%", h: 260 });
+RA.line(document.getElementById("c12"), { x: Y24, series: [{ ...US, values: cut(C.core_year.US) }, { ...CN, values: cut(C.core_year.CN) }], yFmt: v => v.toFixed(0) + "%", h: 260 });
+RA.hbar(document.getElementById("c13"), { cats, series: [US, CN], value: (c, s) => C.pi[s.key].area[c.key] || 0, labelW: 170 });
+const hb = d3.range(0, 160, 10);
+RA.cols(document.getElementById("c14"), { cats: hb.map(b => ({ key: b, label: b === 150 ? "150+" : String(b), tip: b === 150 ? "h ≥ 150" : `h ${b}–${b + 9}` })), series: [US, CN], value: (c, s) => 100 * (C.pi[s.key].h_hist[c.key] || 0) / C.pi[s.key].n, fmt: v => v.toFixed(1) + "%", yFmt: v => v + "%", h: 250, allLabels: false });
+const sb = [2000, 2005, 2010, 2015, 2020];
+RA.cols(document.getElementById("c15"), { cats: sb.map(b => ({ key: b, label: b === 2000 ? "≤2004" : `${b}–${b + 4}` })), series: [US, CN], value: (c, s) => 100 * (C.pi[s.key].start_hist[c.key] || 0) / C.pi[s.key].n, fmt: v => v.toFixed(1) + "%", yFmt: v => v + "%", h: 250, allLabels: true });
+const grid = d3.range(0, 1.0001, .02).map(v => +v.toFixed(2));
+const interp = L => grid.map(x => { const i = L.findIndex(p => p[0] >= x); if (i <= 0) return L[Math.max(0, i)][1] * 100; const [x0, y0] = L[i - 1], [x1, y1] = L[i]; return 100 * (y0 + (y1 - y0) * (x - x0) / ((x1 - x0) || 1)); });
+RA.line(document.getElementById("c16"), { x: grid.map(v => Math.round(v * 100)), xFmt: v => v + "%", yFmt: v => v.toFixed(0) + "%", yMax: 100, h: 300,
+  series: [{ ...US, values: interp(C.pi.US.lorenz) }, { ...CN, values: interp(C.pi.CN.lorenz) }, { name: "完全均匀", color: "--axis", values: grid.map(v => v * 100), w: 1 }] });
+const regs = c => C.pi[c].regions.filter(r => r[0] !== "?").slice(0, 10);
+RA.hbar(document.getElementById("c17"), { cats: regs("US").map((r, i) => ({ key: i, label: `${r[0]}　｜　${regs("CN")[i]?.[0] || ""}` })), series: [US, CN], value: (c, s) => s.key === "US" ? regs("US")[c.key][1] : regs("CN")[c.key]?.[1], labelW: 210 });
+if (location.hash) setTimeout(() => document.querySelector(location.hash)?.scrollIntoView(), 50);
+})();
+</script>
+</body>
+</html>
