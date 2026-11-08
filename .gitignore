@@ -34,3 +34,6 @@ desktop/web/
 
 # Teaching-video covers: downloaded in CI by tools/video-thumbs.mjs
 public/videos/thumbs/
+
+# Teaching-video search output (tools/video-search.mjs)
+tmp-videos/

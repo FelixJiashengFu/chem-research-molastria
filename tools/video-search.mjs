@@ -1,6 +1,7 @@
 // Teaching videos (public/videos/): find candidate videos on YouTube and Bilibili, and re-check the chosen ones.
-// YouTube and Bilibili are not reachable from every machine that edits the site, so this runs on GitHub Actions
-// (.github/workflows/video-search.yml) and the workflow commits what it found to tmp-videos/ on the branch.
+// Run it on a machine that reaches YouTube and Bilibili (the owner's PC, or a GitHub Actions runner: the cloud sessions
+// that edit the site cannot reach either platform; docs/RUNBOOK.md 教学视频 has the temporary-workflow recipe).
+// Output goes to tmp-videos/ (not in git); public/videos/videos-data.js is written by hand from it.
 //   node tools/video-search.mjs yt search [topic,…]     YouTube: every query in tools/video-queries.json → tmp-videos/yt.json
 //   node tools/video-search.mjs bili search [topic,…]   Bilibili: the same → tmp-videos/bili.json
 //   node tools/video-search.mjs yt verify               re-read the YouTube videos in public/videos/videos-data.js → tmp-videos/verify-yt.json
