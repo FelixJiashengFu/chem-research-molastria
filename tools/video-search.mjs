@@ -302,7 +302,9 @@ async function save(file, topics, cands, extra = {}) {
 }
 async function queries(only) {
   const Q = JSON.parse(await fs.readFile(path.join(root, 'tools/video-queries.json'), 'utf8'));
-  return { Q, topics: Object.keys(Q).filter((t) => !only.length || only.includes(t)) };
+  // Words that are not topic ids (such as a run label in run.txt) are ignored.
+  const want = only.filter((t) => Q[t]);
+  return { Q, topics: Object.keys(Q).filter((t) => !want.length || want.includes(t)) };
 }
 
 async function searchYt(only) {
