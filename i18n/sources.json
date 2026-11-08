@@ -344,7 +344,6 @@
  "每周精选": [
   "index.html",
   "digest/index.html",
-  "pro/index.html",
   "pro/account.html",
   "about/index.html",
   "shared-nav.js",
@@ -1291,16 +1290,13 @@
  "每篇都直接链到论文本身；解读只是帮你决定先读哪一篇，结论请以原文为准。": [
   "digest/index.html"
  ],
- "完整的一期，每周一送到邮箱": [
+ "每周一送到邮箱，免费": [
   "digest/index.html"
  ],
- "前五篇和点评对所有人公开。完整的十篇左右和中英文邮件推送是 MolAstria Pro 的功能，在账号页一键订阅，随时可以退订。": [
+ "完整的一期和点评对所有人公开。想每周一收到中文或英文邮件，用邮箱登录一个免费账号，在账号页一键订阅，随时可以退订。": [
   "digest/index.html"
  ],
- "了解 Pro": [
-  "digest/index.html"
- ],
- "去账号页": [
+ "免费订阅邮件": [
   "digest/index.html"
  ],
  "论文与社区 · MolAstria": [
@@ -1856,7 +1852,6 @@
   "lab/index.html",
   "meta/index.html",
   "train/index.html",
-  "pro/index.html",
   "fundamental-science/fundamental.js",
   "radar/app/app.js"
  ],
@@ -2907,19 +2902,25 @@
   "models/index.html",
   "radar/app/app.js"
  ],
- "Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）": [
+ "Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）与 ANI-2x": [
   "models/index.html"
  ],
- "每位访客共 40 次，Pro 会员 200 次": [
+ "共用：不登录 40 次，": [
+  "models/index.html"
+ ],
+ "免费账号": [
+  "models/index.html",
+  "pro/index.html",
+  "pro/account.html",
+  "pro/account-page.js"
+ ],
+ "100 次，Pro 支持者 200 次": [
   "models/index.html"
  ],
  "MACE 系列（学术许可）": [
   "models/index.html"
  ],
  "每位访客 40 次，对所有人相同": [
-  "models/index.html"
- ],
- "只给 Pro 会员，每天 200 次": [
   "models/index.html"
  ],
  "消耗": [
@@ -3143,7 +3144,6 @@
  ],
  "推荐": [
   "train/index.html",
-  "pro/index.html",
   "ai/ai.js",
   "radar/app/app.js"
  ],
@@ -4072,22 +4072,22 @@
  "按显存筛选": [
   "train/index.html"
  ],
- "MolAstria Pro · 价格与套餐": [
+ "MolAstria · 免费账号与 Pro 支持者": [
   "pro/index.html"
  ],
  "跳到套餐": [
   "pro/index.html"
  ],
- "核心功能永久免费。": [
+ "内容永远免费。": [
   "pro/index.html"
  ],
- "Pro 让你少配置、多做研究。": [
+ "支持者付的是服务器、GPU 和 AI 的账单。": [
   "pro/index.html"
  ],
- "搜索、讲解、关系网、AI 实验室和训练指南对所有人免费开放，自带 key 的 AI 也永远免费。Pro 面向每天都在用的研究者：现在可用的是不用自己配 key 的 AI 额度和每周精选；跨设备同步和工作流库正在开发，上线后自动开通。": [
+ "MolAstria 学的是": [
   "pro/index.html"
  ],
- "早鸟预售中 · 锁定早鸟价": [
+ "的做法：数据和内容对所有人开放，收费的只是“服务的量”。搜索、讲解手册、关系网、每周精选全文、AI 实验室、在线模型（包括 ANI-2x）都免费；登录一个免费账号，额度更多；成为 Pro 支持者，额度最多，你的钱让这个网站一直开着。": [
   "pro/index.html"
  ],
  "年付": [
@@ -4099,56 +4099,62 @@
  "月付": [
   "pro/index.html"
  ],
- "已购买？登录账号": [
+ "登录或注册免费账号": [
   "pro/index.html"
- ],
- "免费": [
-  "pro/index.html",
-  "atlas/app.js",
-  "models/models.js",
-  "pro/account-page.js",
-  "atlas data"
  ],
  "永久": [
   "pro/index.html",
   "pro/account.html",
   "pro/account-page.js"
  ],
- "每个人都能用的完整研究导航。": [
+ "不登录也能用全部内容；用邮箱登录，每天的额度更多。": [
   "pro/index.html"
  ],
- "开始使用": [
+ "用邮箱免费登录": [
   "pro/index.html"
  ],
- "统一搜索 1,600 多条资源与网状查询": [
+ "全部内容免费": [
   "pro/index.html"
  ],
- "20 章中英双语讲解手册与资源目录": [
+ "：搜索、关系网、讲解手册、数据库、期刊、教学视频": [
   "pro/index.html"
  ],
- "AI 助手（自带 DeepSeek / Muse key）": [
+ "每周精选完整一期，免费订阅邮件": [
   "pro/index.html"
  ],
- "AI 实验室：RDKit 过滤、可靠性层、Pareto 前沿": [
+ "开通即享": [
+  "pro/index.html",
+  "pro/pro.js"
+ ],
+ "在线模型每天 100 次（不登录 40 次），含 ANI-2x": [
   "pro/index.html"
  ],
- "训练你自己的化学 Agent 指南": [
+ "每天 5 次免配 key 的 AI 问答": [
+  "pro/index.html"
+ ],
+ "自带 DeepSeek / Muse key 的 AI 助手，永久免费": [
   "pro/index.html"
  ],
  "Windows / macOS 桌面版": [
+  "pro/index.html"
+ ],
+ "支持 MolAstria": [
+  "pro/index.html"
+ ],
+ "Pro 支持者": [
   "pro/index.html"
  ],
  "/ 年": [
   "pro/index.html",
   "pro/pro.js"
  ],
- "给每天都在用的研究者。早鸟价续费不涨。": [
+ "内容一样，额度最多。适合每天都在用的人，也适合想让它继续存在的人。": [
   "pro/index.html"
  ],
- "开通 Pro（早鸟价）": [
+ "成为支持者": [
   "pro/index.html"
  ],
- "包含免费版全部功能": [
+ "包含免费账号的全部内容": [
   "pro/index.html"
  ],
  "AI 托管额度：免配 key，每月 300 次带出处问答": [
@@ -4157,29 +4163,25 @@
  "开发中": [
   "pro/index.html"
  ],
- "云同步：收藏、笔记、AI 对话与实验室项目": [
+ "在线模型每天 200 次": [
   "pro/index.html"
  ],
- "每周精选：ChemRxiv、arXiv 和计算化学期刊的新论文，附解读和邮件推送": [
+ "问题和功能需求优先处理": [
   "pro/index.html"
  ],
- "深度工作流库：输入模板、参数解释、报错对照": [
+ "以后需要服务器或 GPU 的新服务，额度同样按这一档给": [
   "pro/index.html"
  ],
- "新功能优先内测与需求投票": [
+ "AI 托管额度使用 DeepSeek V4 Flash，AI 实验室和特别长的内容会多计次数。付款后 14 天内无理由全额退款，随时可以取消续费。": [
   "pro/index.html"
  ],
- "早鸟预售：现在付款锁定价格。付款后立即可用的是 AI 托管额度（DeepSeek V4 Flash，AI 实验室会多计次数）和每周精选的完整一期与邮件推送；标“开发中”的功能上线后自动开通，无需另付，暂无确定日期。付款后 14 天内无理由全额退款。": [
+ "课题组 / 机构": [
   "pro/index.html"
- ],
- "课题组": [
-  "pro/index.html",
-  "pro/account-page.js"
  ],
  "/ 年 · 5 席位": [
   "pro/index.html"
  ],
- "一次开通多个席位，组内成员用自己的邮箱登录，各用各的 AI 额度。": [
+ "给整个组买支持者额度。成员用自己的邮箱登录，各用各的额度，适合走经费报销。": [
   "pro/index.html"
  ],
  "购买课题组版": [
@@ -4191,7 +4193,7 @@
  "，每加 1 席 ¥298 / 年": [
   "pro/index.html"
  ],
- "每个席位每月 300 次 AI 托管额度": [
+ "每个席位每月 300 次 AI 托管额度、在线模型每天 200 次": [
   "pro/index.html"
  ],
  "在账号页添加、移除成员": [
@@ -4200,18 +4202,9 @@
  "Stripe 收据可用于报销": [
   "pro/index.html"
  ],
- "开通即享": [
+ "捐助": [
   "pro/index.html",
-  "pro/pro.js"
- ],
- "组内共享资料库与实验室项目": [
-  "pro/index.html"
- ],
- "成员角色（PI / 成员 / 只读）与用量看板": [
-  "pro/index.html"
- ],
- "支持作者": [
-  "pro/index.html"
+  "pro/refund.html"
  ],
  "随心": [
   "pro/index.html"
@@ -4220,22 +4213,109 @@
   "pro/index.html",
   "pro/pro.js"
  ],
- "觉得 MolAstria 有用，可以请作者喝杯咖啡，帮忙支付服务器和 AI 测试费用。": [
+ "不需要额度，只想让它继续免费？一次性捐助同样有用。": [
   "pro/index.html"
  ],
- "支持一下": [
+ "捐助一下": [
   "pro/index.html"
  ],
- "金额由你决定": [
+ "金额由你决定，不需要账号": [
   "pro/index.html"
  ],
- "全部用于维护和开发": [
+ "全部用于服务器、GPU 电费、AI 费用和开发": [
   "pro/index.html"
  ],
- "本周精选预览": [
+ "三档额度：内容一样，量不一样": [
   "pro/index.html"
  ],
- "每周一从 ChemRxiv、arXiv 和计算化学期刊里选新论文。前 5 篇和解读对所有人公开；Pro 有完整的一期和邮件推送。": [
+ "每档能用多少": [
+  "pro/index.html"
+ ],
+ "不登录": [
+  "pro/index.html"
+ ],
+ "搜索、关系网、讲解手册、数据库、期刊、教学视频": [
+  "pro/index.html"
+ ],
+ "每周精选完整一期": [
+  "pro/index.html"
+ ],
+ "✓ 网页上看": [
+  "pro/index.html"
+ ],
+ "✓ 可订阅邮件": [
+  "pro/index.html"
+ ],
+ "AI 助手（自带 key，直连服务商）": [
+  "pro/index.html"
+ ],
+ "✓ 永久免费": [
+  "pro/index.html"
+ ],
+ "AI 托管额度（免配 key，DeepSeek V4 Flash）": [
+  "pro/index.html"
+ ],
+ "每天 5 次": [
+  "pro/index.html"
+ ],
+ "每月 300 次": [
+  "pro/index.html"
+ ],
+ "在线模型：UMA、OMol25 系列、ANI-2x": [
+  "pro/index.html"
+ ],
+ "每天 40 次": [
+  "pro/index.html"
+ ],
+ "每天 100 次": [
+  "pro/index.html"
+ ],
+ "每天 200 次": [
+  "pro/index.html"
+ ],
+ "在线模型：MACE 系列（学术许可）": [
+  "pro/index.html"
+ ],
+ "问题和需求优先处理": [
+  "pro/index.html"
+ ],
+ "MACE 的学术软件许可只允许非商业使用，所以它对所有人一样，付费也不会多给。课题组版的每个席位等同一位 Pro 支持者。": [
+  "pro/index.html"
+ ],
+ "钱花在哪": [
+  "pro/index.html"
+ ],
+ "GPU 和电费：": [
+  "pro/index.html"
+ ],
+ "15 个在线模型跑在站长自己的显卡上，对所有人开放。": [
+  "pro/index.html"
+ ],
+ "AI 费用：": [
+  "pro/index.html"
+ ],
+ "免配 key 的托管问答和每周精选的解读都按次付给 DeepSeek。": [
+  "pro/index.html"
+ ],
+ "服务和发信：": [
+  "pro/index.html"
+ ],
+ "账号服务、登录验证码和每周精选邮件的发送，量大了都要升级付费套餐。": [
+  "pro/index.html"
+ ],
+ "持续开发：": [
+  "pro/index.html"
+ ],
+ "新栏目、桌面版、数据每周更新，以及以后的代码签名。": [
+  "pro/index.html"
+ ],
+ "我们不卖数据，不放广告，也不会把已经免费的内容收回去变成付费。": [
+  "pro/index.html"
+ ],
+ "本周精选": [
+  "pro/index.html"
+ ],
+ "每周一从 ChemRxiv、arXiv 和计算化学期刊里选新论文，完整一期和点评对所有人公开。": [
   "pro/index.html"
  ],
  "打开每周精选": [
@@ -4264,70 +4344,25 @@
  "安装说明、校验与离线单文件版": [
   "pro/index.html"
  ],
- "套餐对比": [
-  "pro/index.html"
- ],
- "功能": [
-  "pro/index.html"
- ],
- "统一搜索、网状查询、资源目录": [
-  "pro/index.html"
- ],
- "20 章双语讲解手册、训练 Agent 指南": [
-  "pro/index.html"
- ],
- "AI 助手（自带 key，直连服务商）": [
-  "pro/index.html"
- ],
- "✓ 永久免费": [
-  "pro/index.html"
- ],
- "AI 实验室（RDKit、可靠性层、Pareto）": [
-  "pro/index.html"
- ],
- "桌面版（Windows / macOS）": [
-  "pro/index.html"
- ],
- "AI 托管额度（免配 key）": [
-  "pro/index.html"
- ],
- "每月 300 次": [
-  "pro/index.html"
- ],
- "每席位 300 次": [
-  "pro/index.html"
- ],
- "成员管理（添加、移除成员）": [
-  "pro/index.html"
- ],
- "云同步：收藏、笔记、对话、实验室项目": [
-  "pro/index.html"
- ],
- "本机浏览器": [
-  "pro/index.html"
- ],
- "跨设备": [
-  "pro/index.html"
- ],
- "跨设备 + 组内共享": [
-  "pro/index.html"
- ],
- "前 5 篇 + 解读": [
-  "pro/index.html"
- ],
- "完整一期 + 邮件推送": [
-  "pro/index.html"
- ],
- "深度工作流库（模板、参数、报错）": [
-  "pro/index.html"
- ],
- "成员角色、用量看板": [
-  "pro/index.html"
- ],
- "“开发中”的功能暂无确定日期，上线后自动开通，这张表的状态也会同步更新。": [
-  "pro/index.html"
- ],
  "常见问题": [
+  "pro/index.html"
+ ],
+ "为什么这么多东西免费？": [
+  "pro/index.html"
+ ],
+ "计算化学的资料本来就应该谁都能用。开放的东西被用得越多越有价值；真正花钱的是“提供服务”：GPU、AI 调用、服务器和发信。所以 MolAstria 像 OpenAlex 一样，内容免费，按服务的量分档，支持者多付一点，让所有人继续免费用。": [
+  "pro/index.html"
+ ],
+ "免费账号和不登录有什么区别？": [
+  "pro/index.html"
+ ],
+ "内容完全一样。登录后每天的在线模型次数从 40 次变成 100 次，可以订阅每周精选邮件，还有每天 5 次免配 key 的 AI 问答。登录只要邮箱和 6 位验证码，不需要密码，也不用付款。": [
+  "pro/index.html"
+ ],
+ "我以前买过 Pro，有什么变化？": [
+  "pro/index.html"
+ ],
+ "你的权益只多不少：AI 托管额度、在线模型次数照旧，价格和续费日期不变。以前价格页上写着“开发中、上线后自动开通”的功能（云同步、深度工作流库），上线时照样给你，不另收费。": [
   "pro/index.html"
  ],
  "付款安全吗？": [
@@ -4345,7 +4380,7 @@
  "可以退款吗？": [
   "pro/index.html"
  ],
- "付款后 14 天内无理由全额退款；早鸟预售期间，如果你订阅的功能迟迟没有上线，任何时候都可以申请退还未使用部分。详见": [
+ "付款后 14 天内无理由全额退款。详见": [
   "pro/index.html"
  ],
  "退款政策": [
@@ -4354,16 +4389,10 @@
   "pro/refund.html",
   "pro/privacy.html"
  ],
- "免费版以后会变少吗？": [
+ "免费的部分以后会变少吗？": [
   "pro/index.html"
  ],
- "不会。现有的免费功能会一直免费，自带 key 使用 AI 也永久免费。Pro 只增加需要服务器和人工维护的新功能。": [
-  "pro/index.html"
- ],
- "学生有优惠吗？": [
-  "pro/index.html"
- ],
- "早鸟价已经按学生预算定价。课题组版适合整个组一起用，人均更便宜。": [
+ "不会。已经免费的内容会一直免费，自带 key 使用 AI 也永久免费。额度的具体数字可能随成本调整，调整会在这一页写明。": [
   "pro/index.html"
  ],
  "能开发票或用于报销吗？": [
@@ -4382,13 +4411,13 @@
   "pro/index.html",
   "pro/success.html"
  ],
- "，用付款邮箱收 6 位验证码登录即可，不需要密码。登录后 AI 助手的设置里会出现“MolAstria Pro”，不用自备 key。": [
+ "，用付款邮箱收 6 位验证码登录即可。登录后 AI 助手的设置里会出现“MolAstria 托管”，不用自备 key。": [
   "pro/index.html"
  ],
  "怎么取消订阅？": [
   "pro/index.html"
  ],
- "Stripe 收据邮件里有管理订阅的链接，可以随时取消，当前周期结束后不再续费。": [
+ "Stripe 收据邮件里有管理订阅的链接，可以随时取消，当前周期结束后不再续费。取消后账号还在，变回免费账号。": [
   "pro/index.html"
  ],
  "服务条款": [
@@ -4462,7 +4491,7 @@
  "Pro 权益绑定在这个邮箱上。换设备或换浏览器时，在": [
   "pro/success.html"
  ],
- "用它收验证码登录。还在开发中的功能上线后自动开通，并发邮件通知你。": [
+ "用它收验证码登录。取消订阅后账号还在，变回免费账号。": [
   "pro/success.html"
  ],
  "付款后 14 天内可以无理由全额退款，直接回复收据邮件或通过下面的联系方式说明即可。": [
@@ -4480,23 +4509,23 @@
  "我的账号": [
   "pro/account.html"
  ],
- "Pro 权益绑定在付款邮箱上。换设备或换浏览器时，用这个邮箱收验证码登录即可。": [
+ "任何邮箱都能登录，账号本身免费。Pro 支持者的权益绑定在付款邮箱上，换设备或换浏览器时用这个邮箱收验证码登录即可。": [
   "pro/account.html"
  ],
  "账号服务正在开通": [
   "pro/account.html"
  ],
- "已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效，我们也会发邮件通知你。": [
+ "已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效。": [
   "pro/account.html"
  ],
  "返回 Pro 页面": [
   "pro/account.html"
  ],
- "用付款邮箱登录": [
+ "用邮箱登录": [
   "pro/account.html",
   "pro/account-page.js"
  ],
- "我们会给这个邮箱发一个 6 位验证码，不需要密码。": [
+ "我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。": [
   "pro/account.html",
   "pro/account-page.js"
  ],
@@ -4516,10 +4545,10 @@
   "pro/account.html",
   "pro/account-page.js"
  ],
- "还没有 Pro？": [
+ "想支持 MolAstria？": [
   "pro/account.html"
  ],
- "查看套餐": [
+ "看看 Pro 支持者": [
   "pro/account.html"
  ],
  "我有 VIP 卡": [
@@ -4534,10 +4563,14 @@
  "AI 托管额度": [
   "pro/account.html"
  ],
- "次 · 每月 1 日重置": [
+ "次 ·": [
   "pro/account.html"
  ],
- "在 AI 助手的设置里选择“MolAstria Pro”，不用自备 key。每次问答计 1 次；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。关键词提取、连接测试这类短调用不计入。": [
+ "每月 1 日重置": [
+  "pro/account.html",
+  "pro/account-page.js"
+ ],
+ "在 AI 助手的设置里选择“MolAstria 托管”，不用自备 key。每次问答计 1 次；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。关键词提取、连接测试这类短调用不计入。": [
   "pro/account.html"
  ],
  "打开 AI 助手": [
@@ -4605,23 +4638,25 @@
  "兑换": [
   "pro/account.html"
  ],
- "这个邮箱没有有效的 Pro 订阅": [
+ "内容对所有人免费，账号给的是更多的量：在线模型每天": [
   "pro/account.html"
  ],
- "订阅可能已经到期或取消。重新订阅后，用同一个邮箱登录即可恢复。": [
+ "次（不登录是 40 次），每周精选可以订阅邮件。以前订过 Pro 的，订阅可能已经到期或取消，用同一个邮箱重新订阅即可恢复。": [
+  "pro/account.html"
+ ],
+ "觉得 MolAstria 有用，可以成为 Pro 支持者：AI 每月 300 次，在线模型每天 200 次，你的钱用来付服务器、GPU 电费和 AI 费用。": [
+  "pro/account.html"
+ ],
+ "成为 Pro 支持者": [
   "pro/account.html"
  ],
  "退出登录": [
   "pro/account.html"
  ],
- "付款时填写的邮箱": [
-  "pro/account.html",
-  "pro/account-page.js"
- ],
  "6 位数字": [
   "pro/account.html"
  ],
- "本月已用 AI 托管额度": [
+ "已用 AI 托管额度": [
   "pro/account.html"
  ],
  "成员邮箱": [
@@ -4645,16 +4680,16 @@
  "详见关于页": [
   "pro/terms.html"
  ],
- "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
+ "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。网站的内容对所有访客免费开放；任何人都可以用邮箱免费注册账号。Pro 支持者与课题组版提供更多的服务额度（AI 托管额度、在线模型次数等），具体内容以价格页说明为准。": [
   "pro/terms.html"
  ],
- "付费权益绑定在付款邮箱上，用邮箱验证码登录使用。AI 托管额度按自然月计算，未用完的次数不累计到下个月，并设有防滥用的频率限制；较贵的模型、AI 实验室和特别长的内容会多计次数，具体规则见账号页。同一账号最多同时在 5 台设备上登录，超过时最早登录的设备会退出。每周精选里的解读由 AI 根据论文标题和摘要生成，可能有误，请以原文为准；邮件可以随时退订。课题组版每个席位单独计算额度，购买者可以在账号页添加或移除成员，成员被移除后立即失去付费权益。": [
+ "付费权益绑定在付款邮箱上，用邮箱验证码登录使用。Pro 的 AI 托管额度按自然月计算，免费账号的额度按 24 小时计算，未用完的次数不累计，并设有防滥用的频率限制；较贵的模型、AI 实验室和特别长的内容会多计次数，具体规则见账号页。同一账号最多同时在 5 台设备上登录，超过时最早登录的设备会退出。每周精选里的解读由 AI 根据论文标题和摘要生成，可能有误，请以原文为准；邮件可以随时退订。课题组版每个席位单独计算额度，购买者可以在账号页添加或移除成员，成员被移除后立即失去付费权益。": [
   "pro/terms.html"
  ],
- "2. 早鸟预售": [
+ "2. 早鸟预售期间付款的用户": [
   "pro/terms.html"
  ],
- "价格页中标注为“开发中”的功能处于预售阶段。你在预售期间付款，即锁定当时的早鸟价格；这些功能上线后会自动为你的账户开通，不另收费，价格页的状态也会同步更新。这些功能目前没有确定的上线日期。如果你对进度不满意，可以按退款政策申请退款。": [
+ "2026-11-08 之前，价格页把部分功能标为“开发中”并预售。在那之前付款的用户，这些功能（云同步、深度工作流库等）上线后照样自动开通，不另收费；这些功能目前没有确定的上线日期。如果你对进度不满意，可以按退款政策申请退款。": [
   "pro/terms.html"
  ],
  "3. 付款、续费与取消": [
@@ -4732,7 +4767,7 @@
  "首次付款或续费后 14 天内申请，全额退还该笔款项。": [
   "pro/refund.html"
  ],
- "早鸟预售期间：": [
+ "2026-11-08 之前的早鸟用户：": [
   "pro/refund.html"
  ],
  "如果你付款时标注“开发中”的功能尚未上线，你可以在任何时候申请退还当前周期未使用部分的费用。": [
@@ -4747,10 +4782,7 @@
  "超过以上情形的，取消订阅后当前周期仍可使用，到期不再扣费，已付款项不予退还。": [
   "pro/refund.html"
  ],
- "赞助": [
-  "pro/refund.html"
- ],
- "赞助是对开发的自愿支持，不对应具体服务。如果是误操作或金额填错，请在 14 天内联系我们，我们会全额退还。": [
+ "捐助是对开发的自愿支持，不对应具体服务。如果是误操作或金额填错，请在 14 天内联系我们，我们会全额退还。": [
   "pro/refund.html"
  ],
  "怎么申请": [
@@ -4798,10 +4830,10 @@
  "处理。我们只会从 Stripe 后台看到你的邮箱、所购套餐、金额与付款状态，用于开通服务、发送上线通知和处理退款，不会出售或转让给第三方。": [
   "pro/privacy.html"
  ],
- "Pro 账号": [
+ "账号": [
   "pro/privacy.html"
  ],
- "购买 Pro 或课题组版后，账号服务（运行在 Cloudflare 上）会保存：你的付款邮箱；从 Stripe 查到的订阅状态（套餐、席位数、续费或到期时间）；登录会话（只保存不可逆的摘要）；每月 AI 托管额度的使用次数；课题组购买者添加的成员邮箱。登录验证码和课题组邀请通过 Resend 发送到你的邮箱。": [
+ "用邮箱登录（免费账号）或购买 Pro、课题组版后，账号服务（运行在 Cloudflare 上）会保存：你的邮箱；从 Stripe 查到的订阅状态（套餐、席位数、续费或到期时间）；登录会话（只保存不可逆的摘要）；AI 托管额度和在线模型的使用次数；课题组购买者添加的成员邮箱。登录验证码和课题组邀请通过 Resend 发送到你的邮箱。": [
   "pro/privacy.html"
  ],
  "订阅每周精选邮件时，账号服务会保存你的邮箱、语言和发送记录，邮件通过 Resend 发出；退订后删除这些记录。每封邮件都有退订链接。": [
@@ -5957,6 +5989,12 @@
  "收藏资源 ☆": [
   "atlas/app.js"
  ],
+ "免费": [
+  "atlas/app.js",
+  "models/models.js",
+  "pro/account-page.js",
+  "atlas data"
+ ],
  "共 {0} 条资源": [
   "atlas/app.js"
  ],
@@ -6858,7 +6896,7 @@
  "下一期": [
   "digest/digest.js"
  ],
- "完整的一期还有 {0} 篇，每周一随邮件送到 Pro 会员的邮箱": [
+ "这一期还有 {0} 篇，登录免费账号后在账号页能看到，也可以订阅邮件": [
   "digest/digest.js"
  ],
  "在账号页订阅邮件": [
@@ -8121,7 +8159,7 @@
  "MACE-OMOL-0 采用学术软件许可（ASL），只限学术、非商业研究；论文里请注明 MACE-OMOL-0 和 OMol25 数据集（Levine et al., 2025）。": [
   "models/models.js"
  ],
- "ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。Pro 会员专用。": [
+ "ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。对所有人免费，和 UMA、OMol25 模型共用每天的次数。": [
   "models/models.js"
  ],
  "ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。": [
@@ -8421,12 +8459,6 @@
  "请先勾选学术用途确认。": [
   "models/models.js"
  ],
- "ANI-2x 是 Pro 会员的模型，请先登录 Pro 账号；其余模型对所有人免费。": [
-  "models/models.js"
- ],
- "（Pro 会员）": [
-  "models/models.js"
- ],
  "· 形式电荷 {0}{1}": [
   "models/models.js"
  ],
@@ -8449,9 +8481,6 @@
   "models/models.js"
  ],
  "免费 · 学术许可": [
-  "models/models.js"
- ],
- "Pro 会员": [
   "models/models.js"
  ],
  "直接受力型": [
@@ -8917,10 +8946,16 @@
  "DeepSeek V4 Pro · 深度推理（每次计 3 次额度）": [
   "ai/ai.js"
  ],
- "免配 key · 本月剩余 {0} 次": [
+ "MolAstria 托管": [
   "ai/ai.js"
  ],
  "免配 key": [
+  "ai/ai.js"
+ ],
+ "免配 key · 今天剩余 {0} 次": [
+  "ai/ai.js"
+ ],
+ "免配 key · 本月剩余 {0} 次": [
   "ai/ai.js"
  ],
  "接口地址必须是 https:// 开头（本机调试可用 http://localhost）": [
@@ -8989,7 +9024,7 @@
  "选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。": [
   "ai/ai.js"
  ],
- "MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次，每月 1 日重置；AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
+ "MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
   "ai/ai.js"
  ],
  "服务商": [
@@ -9071,7 +9106,7 @@
  "自定义接口需要填写接口地址和模型 ID。": [
   "ai/ai.js"
  ],
- "{0} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度使用 V4 Flash。": [
+ "{0} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4 Flash。": [
   "ai/ai.js"
  ],
  "分析分子静电势用什么软件，有哪些教程？": [
@@ -9266,28 +9301,25 @@
  "{0} 个 Pro 席位起，每加 1 席 {1} / 年，席位数在结账页调整": [
   "pro/pro.js"
  ],
- "MolAstria Pro · 年付早鸟": [
+ "MolAstria Pro 支持者 · 年付": [
   "pro/pro.js"
  ],
- "MolAstria Pro · 月付": [
+ "MolAstria Pro 支持者 · 月付": [
   "pro/pro.js"
  ],
  "MolAstria 课题组版 · 年付": [
   "pro/pro.js"
  ],
- "支持 MolAstria": [
+ "捐助 MolAstria": [
   "pro/pro.js"
  ],
- "AI 托管额度每月 300 次和每周精选，付款后立即可用": [
+ "付款后立即可用：AI 托管额度每月 300 次，在线模型每天 200 次": [
   "pro/pro.js"
  ],
- "云同步、深度工作流库：开发中，上线后自动开通，暂无确定日期": [
+ "AI 托管额度：账号服务开通后自动生效": [
   "pro/pro.js"
  ],
- "AI 托管额度、云同步、每周精选、深度工作流库：开发中，上线后自动开通，暂无确定日期": [
-  "pro/pro.js"
- ],
- "锁定早鸟价，续费不涨价": [
+ "你的钱用来付服务器、GPU 电费和 AI 费用，让内容对所有人保持免费": [
   "pro/pro.js"
  ],
  "14 天内无理由全额退款": [
@@ -9296,19 +9328,16 @@
  "随时取消，当前周期结束后不再续费": [
   "pro/pro.js"
  ],
- "成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度": [
-  "pro/pro.js"
- ],
- "组内共享资料库与实验室项目：开发中，上线后自动开通，暂无确定日期": [
+ "成员用自己的邮箱登录，每个席位每月 300 次 AI 托管额度、在线模型每天 200 次": [
   "pro/pro.js"
  ],
  "Stripe 收据可用于报销；需要正式发票请联系我们": [
   "pro/pro.js"
  ],
- "金额在结账页自行填写": [
+ "金额在结账页自行填写，不需要账号": [
   "pro/pro.js"
  ],
- "全部用于服务器、AI 测试与持续开发": [
+ "全部用于服务器、GPU 电费、AI 费用与持续开发": [
   "pro/pro.js"
  ],
  "银行卡": [
@@ -9354,9 +9383,6 @@
  "已在新窗口打开安全结账页。付款完成后会回到本站的确认页，收据会发到你的邮箱。": [
   "pro/pro.js"
  ],
- "免费账号": [
-  "pro/account-page.js"
- ],
  "站长 · 永久 Pro": [
   "pro/account-page.js"
  ],
@@ -9390,10 +9416,16 @@
  "{0} 自动续费": [
   "pro/account-page.js"
  ],
+ "课题组": [
+  "pro/account-page.js"
+ ],
  "课题组成员": [
   "pro/account-page.js"
  ],
  "站长": [
+  "pro/account-page.js"
+ ],
+ "免费账号 · 从当天第一次提问起 24 小时后重置": [
   "pro/account-page.js"
  ],
  "已用 {0} / {1} 个席位（含你自己），每位成员每月 {2} 次 AI 托管额度。成员用自己的邮箱在本页登录。": [
@@ -9411,9 +9443,6 @@
  "填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。": [
   "pro/account-page.js"
  ],
- "你的邮箱": [
-  "pro/account-page.js"
- ],
  "登录": [
   "pro/account-page.js"
  ],
@@ -9423,7 +9452,7 @@
  "验证码已发到你的邮箱，填进来后 VIP 卡立即生效。没收到请看看垃圾邮件。": [
   "pro/account-page.js"
  ],
- "如果这个邮箱有有效的 Pro 订阅，验证码会在一分钟内送达。没收到请看看垃圾邮件，或确认是付款时填写的邮箱。": [
+ "验证码会在一分钟内送达，没收到请看看垃圾邮件。": [
   "pro/account-page.js"
  ],
  "请输入邮件里的 6 位验证码。": [
@@ -10950,19 +10979,16 @@
  "这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1": [
   "deploy/account-worker.js"
  ],
- "ANI-2x 是 Pro 会员的在线模型，登录 Pro 账号后可用；其余模型对所有人免费": [
-  "deploy/account-worker.js"
- ],
- "今天的 ANI-2x 计算次数已用完": [
-  "deploy/account-worker.js"
- ],
  "今天的 MACE 计算次数已用完": [
   "deploy/account-worker.js"
  ],
- "今天的 UMA / OMol25 模型计算次数已用完": [
+ "今天的在线模型计算次数已用完": [
   "deploy/account-worker.js"
  ],
- "，Pro 会员每天更多": [
+ "，Pro 支持者每天更多": [
+  "deploy/account-worker.js"
+ ],
+ "，登录免费账号每天更多": [
   "deploy/account-worker.js"
  ],
  "{0}（每天 {1} 次{2}），明天再来": [
@@ -11055,9 +11081,6 @@
  "没有这张 VIP 卡": [
   "deploy/account-worker.js"
  ],
- "每周精选是 Pro 功能": [
-  "deploy/account-worker.js"
- ],
  "今天发得太多了，明天再试": [
   "deploy/account-worker.js"
  ],
@@ -11067,7 +11090,7 @@
  "这周的新论文太少，或者论文接口暂时不可用": [
   "deploy/account-worker.js"
  ],
- "这个账号目前没有有效的 Pro 订阅": [
+ "免配 key 的 AI 托管额度是 Pro 支持者的服务；也可以在 AI 设置里填自己的 key，永久免费": [
   "deploy/account-worker.js"
  ],
  "托管额度只支持文字内容": [
@@ -11080,6 +11103,12 @@
   "deploy/account-worker.js"
  ],
  "本月 {0} 次 AI 托管额度已用完，下个月 1 日恢复。也可以在 AI 设置里换成自己的 key 继续使用。": [
+  "deploy/account-worker.js"
+ ],
+ "今天的免费 AI 次数还剩 {0} 次，这次请求要计 {1} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。": [
+  "deploy/account-worker.js"
+ ],
+ "免费账号每天 {0} 次 AI 托管额度，今天的已用完，明天再来。Pro 支持者每月 {1} 次；在 AI 设置里换成自己的 key 也可以继续用。": [
   "deploy/account-worker.js"
  ],
  "这个网站没有使用账号服务的权限": [

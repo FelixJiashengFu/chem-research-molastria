@@ -1,6 +1,6 @@
 /* ChemAI — DeepSeek / Meta Muse / OpenAI 兼容接口的浏览器端接入层与「AI 研究助手」抽屉。
    API key 只保存在当前浏览器（默认仅本次会话），请求直接发往所选服务商；配置了站点代理时改发代理；
-   登录了 MolAstria Pro（pay/account.js）时多一个「MolAstria Pro」服务商，走账号服务的托管额度。
+   登录了 MolAstria 账号（pay/account.js）时多一个「MolAstria 托管」服务商，走账号服务的托管额度：Pro 支持者每月一份，免费账号每天少量。
    Public API: ChemAI.chat(), ChemAI.retrieve(), ChemAI.openDrawer(), ChemAI.openSettings(), ChemAI.isReady(). */
 (() => {
   'use strict';
@@ -88,18 +88,19 @@
   const mascotOf = (id = mascot) => MASCOTS.find((m) => m.id === id) || MASCOTS[0];
   const mascotSvg = (id) => `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">${mascotOf(id).svg}</svg>`;
   const orb = () => `<span class="cai-orb" data-mascot="${mascotOf().id}" aria-hidden="true">${mascotSvg()}</span>`;
-  // Hosted quota for signed-in Pro accounts; follows sign-in and sign-out without a reload.
+  // Hosted quota for signed-in accounts (Pro by the month, free accounts by the day); follows sign-in and sign-out without a reload.
   const proToken = () => safe(() => localStorage.getItem('molastria-session'), '') || '';
   const proAccount = () => (proToken() ? safe(() => JSON.parse(localStorage.getItem('molastria-account') || 'null'), null) : null);
   function syncHosted() {
     const a = proAccount();
-    if (!a?.pro || !a.api) { delete PROVIDERS.hosted; return; }
+    // A free account has hosted AI only while the service gives free accounts an allowance (usage.limit > 0).
+    if (!a?.api || !(a.pro || (a.usage?.period === 'day' && a.usage.limit > 0))) { delete PROVIDERS.hosted; return; }
     const names = Object.fromEntries([...PROVIDERS.deepseek.models, ...PROVIDERS.muse.models]);
     // An account cached before the service reported its models falls back to the service's own default list.
     const ids = a.models?.length ? a.models : ['deepseek-flash'];
     const HOSTED_LABEL = { 'deepseek-v4-pro': 'DeepSeek V4 Pro · 深度推理（每次计 3 次额度）' };
     const models = ids.map((id) => [id, HOSTED_LABEL[id] || names[id] || id]);
-    PROVIDERS.hosted = { label: 'MolAstria Pro', base: `${a.api}/ai/chat`, models, efforts: ['off', 'low', 'high'], json: models.every(([id]) => id.startsWith('deepseek')), proxy: true, hosted: true, usage: a.usage };
+    PROVIDERS.hosted = { label: 'MolAstria 托管', base: `${a.api}/ai/chat`, models, efforts: ['off', 'low', 'high'], json: models.every(([id]) => id.startsWith('deepseek')), proxy: true, hosted: true, usage: a.usage };
   }
   syncHosted();
   document.addEventListener('molastria:account', syncHosted);
@@ -112,7 +113,7 @@
     safe(() => localStorage.setItem('molastria-account', JSON.stringify(a)));
     document.dispatchEvent(new CustomEvent('molastria:account', { detail: a })); // the account page's meter follows
   }
-  const hostedLine = () => { const u = PROVIDERS.hosted?.usage; return u ? `免配 key · 本月剩余 ${Math.max(0, u.limit - u.asks)} 次` : '免配 key'; };
+  const hostedLine = () => { const u = PROVIDERS.hosted?.usage; return !u ? '免配 key' : u.period === 'day' ? `免配 key · 今天剩余 ${Math.max(0, u.limit - u.asks)} 次` : `免配 key · 本月剩余 ${Math.max(0, u.limit - u.asks)} 次`; };
   function settings() {
     const saved = safe(() => JSON.parse(localStorage.getItem(STORE) || 'null'), null) || {};
     const provider = PROVIDERS[saved.provider] ? saved.provider : (PROVIDERS.hosted ? 'hosted' : SITE.proxy ? 'proxy' : (PROVIDERS[SITE.defaultProvider] ? SITE.defaultProvider : 'deepseek'));
@@ -595,7 +596,7 @@
     dialog.innerHTML = `<form method="dialog" novalidate>
       <div><h2 id="cai-settings-title">AI 设置</h2></div>
       <p class="cai-note" data-note="own">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
-      <p class="cai-note" data-note="hosted" hidden>MolAstria Pro 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次，每月 1 日重置；AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
+      <p class="cai-note" data-note="hosted" hidden>MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
       <fieldset class="cai-prov" style="border:0;padding:0;margin:0"><legend class="cai-field" style="margin-bottom:6px">服务商</legend>${providerCards}</fieldset>
       <div class="cai-two">
         <label class="cai-field">模型<select name="model"></select></label>
@@ -690,7 +691,7 @@
       // With a Pro account a provider without a key would quietly fall back to the hosted quota on the next read
       // (see settings()), which looks like the switch did nothing: say so instead of saving.
       if (PROVIDERS.hosted && !PROVIDERS[s.provider].proxy && s.provider !== 'custom' && !keys[s.provider] && !keyFor(s)) {
-        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria Pro」，托管额度使用 V4 Flash。`, 'err');
+        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4 Flash。`, 'err');
         f.key.focus();
         return;
       }
