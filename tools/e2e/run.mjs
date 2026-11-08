@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1779,8 +1779,29 @@ check('arrows: the site draws its own metallic arrow icons, no ↗ characters ar
   }
 });
 
+check('about: Morning Glory page, every non-MolAstria direction labelled planned, footer link, English', async () => {
+  const p = await open();
+  await go(p, '/about/index.html');
+  assert.match(await text(p, 'h1'), /Intelligence Beyond Boundaries/);
+  assert.match(await text(p, '.mg-facts'), /16513778 Canada Inc\.[\s\S]*Toronto, Ontario, Canada/);
+  assert.equal(await p.locator('.mg-branches .mg-node').count(), 4);
+  assert.equal(await p.locator('.mg-branches .mg-tag.live').count(), 1, 'only MolAstria is live');
+  assert.equal(await p.locator('.mg-dir').count(), 4);
+  assert.equal(await p.locator('.mg-dir .mg-plan').count(), 4, 'every direction says what is still planned');
+  assert.equal(await p.locator('img[src*="openai.com"]').count(), 0);
+  // Every page's footer line links here.
+  await go(p, '/download/index.html');
+  await p.click('.cr-legal a[href*="about/"]');
+  await p.waitForURL(/\/about\//);
+  await go(p, '/about/index.html?lang=en');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.match(await text(p, '.lead-left'), /AI & Scientific Computing project of Morning Glory/);
+  assert.match(await text(p, '.cr-legal'), /A Morning Glory project/);
+  await finish(p);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

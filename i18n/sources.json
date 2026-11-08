@@ -276,6 +276,7 @@
   "index.html",
   "hub/index.html",
   "train/index.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -307,11 +308,13 @@
  "期刊发表": [
   "index.html",
   "journals/index.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "科学大模型": [
   "index.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -326,6 +329,7 @@
  "进一步基础科学发现": [
   "index.html",
   "fundamental-science/index.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -334,6 +338,7 @@
   "digest/index.html",
   "pro/index.html",
   "pro/account.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -850,6 +855,7 @@
  ],
  "预印本雷达": [
   "journals/index.html",
+  "about/index.html",
   "radar/index.html",
   "radar/app/index.html",
   "shared-nav.js"
@@ -899,6 +905,7 @@
  "模型接口": [
   "scimodels/index.html",
   "fundamental-science/index.html",
+  "about/index.html",
   "shared-nav.js"
  ],
  "里的 UMA、MACE、ANI-2x 不是一类：那些机器学习势输入原子坐标、输出能量和力；这里的模型输入输出是文字和科学表示，用来理解问题、整理文献、提出假设和写代码。两类模型可以放进同一条研究流程，但不能互相替代。": [
@@ -1128,6 +1135,7 @@
  ],
  "讲解手册": [
   "fundamental-science/index.html",
+  "about/index.html",
   "shared-nav.js",
   "hub/network.js"
  ],
@@ -1225,6 +1233,7 @@
  "网状查询": [
   "hub/index.html",
   "hub/network.html",
+  "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -2720,7 +2729,8 @@
   "atlas/app.js"
  ],
  "和": [
-  "models/index.html"
+  "models/index.html",
+  "about/index.html"
  ],
  "讲解手册的科学语言模型一章": [
   "models/index.html"
@@ -4540,10 +4550,16 @@
  "服务条款 · MolAstria": [
   "pro/terms.html"
  ],
- "生效日期：2026-10-28 · 最后更新：2026-10-31 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
+ "生效日期：2026-10-28 · 最后更新：2026-11-08 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
   "pro/terms.html"
  ],
  "1. 服务内容": [
+  "pro/terms.html"
+ ],
+ "MolAstria 由 Jiasheng Fu 以个人身份运营，本条款中的“我们”指运营者本人，付款也由运营者本人收取。MolAstria 是 Morning Glory（晨光科技）品牌旗下的项目，名称与徽标归 16513778 Canada Inc. 所有。": [
+  "pro/terms.html"
+ ],
+ "详见关于页": [
   "pro/terms.html"
  ],
  "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
@@ -4675,7 +4691,7 @@
  "隐私政策 · MolAstria": [
   "pro/privacy.html"
  ],
- "生效日期：2026-10-28 · 更新：2026-10-31（新增每周精选）": [
+ "生效日期：2026-10-28 · 更新：2026-11-08（写明运营者）": [
   "pro/privacy.html"
  ],
  "我们不收集什么": [
@@ -4724,6 +4740,10 @@
   "pro/privacy.html"
  ],
  "联系": [
+  "pro/privacy.html",
+  "about/index.html"
+ ],
+ "MolAstria 由 Jiasheng Fu 以个人身份运营（Morning Glory 品牌旗下项目），本政策中的“我们”指运营者本人。": [
   "pro/privacy.html"
  ],
  "请通过": [
@@ -4877,6 +4897,223 @@
  "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
   "download/index.html"
  ],
+ "关于 · Morning Glory 晨光科技与 MolAstria": [
+  "about/index.html",
+  "tools/build-seo.ts"
+ ],
+ "MORNING GLORY · 晨光科技": [
+  "about/index.html"
+ ],
+ "智能无界，探索未知。": [
+  "about/index.html"
+ ],
+ "从人工智能到科学发现。": [
+  "about/index.html"
+ ],
+ "MolAstria 是晨光科技（Morning Glory）旗下的 AI 与科学计算项目。": [
+  "about/index.html"
+ ],
+ "Morning Glory 是 16513778 Canada Inc. 在多伦多发展的新兴科技品牌，关注 AI 应用、智能自动化、数据分析与科学计算。": [
+  "about/index.html"
+ ],
+ "我们的长期愿景是连接人工智能、计算科学与先进技术，开发实用的工具和智能系统，支持科学发现、产业创新和数据驱动的决策。": [
+  "about/index.html"
+ ],
+ "我们希望探索 AI 与科学研究的交叉领域，尤其关注计算化学、量子化学、科学机器学习和高性能计算。": [
+  "about/index.html"
+ ],
+ "法律实体": [
+  "about/index.html"
+ ],
+ "公司名称": [
+  "about/index.html"
+ ],
+ "品牌名称": [
+  "about/index.html"
+ ],
+ "中文名称": [
+  "about/index.html"
+ ],
+ "晨光科技 / 晨光实验室": [
+  "about/index.html"
+ ],
+ "企业性质": [
+  "about/index.html"
+ ],
+ "加拿大联邦注册公司": [
+  "about/index.html"
+ ],
+ "所在地": [
+  "about/index.html"
+ ],
+ "MolAstria 运营者": [
+  "about/index.html"
+ ],
+ "Jiasheng Fu（个人运营；名称与徽标归公司所有）": [
+  "about/index.html"
+ ],
+ "品牌架构": [
+  "about/index.html"
+ ],
+ "加拿大联邦注册公司 · 法律实体": [
+  "about/index.html"
+ ],
+ "晨光科技 · 科技品牌": [
+  "about/index.html"
+ ],
+ "AI 与科学计算": [
+  "about/index.html"
+ ],
+ "已上线": [
+  "about/index.html"
+ ],
+ "AI 应用与自动化": [
+  "about/index.html"
+ ],
+ "规划中": [
+  "about/index.html"
+ ],
+ "数据分析与预测": [
+  "about/index.html"
+ ],
+ "未来研究方向": [
+  "about/index.html"
+ ],
+ "这是规划中的品牌与业务架构，不代表这些部门、团队或科研能力已经全部正式成立。目前对外的产品只有 MolAstria；标为“规划中”的方向还没有对外的产品或服务。": [
+  "about/index.html"
+ ],
+ "四个业务方向": [
+  "about/index.html"
+ ],
+ "每个方向下面列出 MolAstria 里已经能用的部分，其余是规划。": [
+  "about/index.html"
+ ],
+ "AI 应用开发": [
+  "about/index.html"
+ ],
+ "AI Agent 系统、大语言模型应用、多智能体协作、AI 产品与软件开发。": [
+  "about/index.html"
+ ],
+ "MolAstria 里已有：": [
+  "about/index.html"
+ ],
+ "：大模型提出分子、RDKit 过滤、机器学习势打分的闭环（演示数值是合成的）": [
+  "about/index.html"
+ ],
+ "顶栏里的 AI 助手": [
+  "about/index.html"
+ ],
+ "：计算化学 MCP 服务器": [
+  "about/index.html"
+ ],
+ "训练 Agent": [
+  "about/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "：用开源小模型训练化学研究 Agent 的指南": [
+  "about/index.html"
+ ],
+ "规划中：": [
+  "about/index.html"
+ ],
+ "多智能体协作和对外的 AI 软件开发。": [
+  "about/index.html"
+ ],
+ "智能自动化": [
+  "about/index.html"
+ ],
+ "企业工作流自动化、AI 助手、API 集成、自动化业务系统。": [
+  "about/index.html"
+ ],
+ "MolAstria 自己用到的：": [
+  "about/index.html"
+ ],
+ "资源目录每周四自动抓取、去重和发布": [
+  "about/index.html"
+ ],
+ "：每周一由 AI 从新论文里选文并写点评": [
+  "about/index.html"
+ ],
+ "：按兴趣主题定时推荐": [
+  "about/index.html"
+ ],
+ "面向企业的工作流自动化与业务系统，目前没有对外服务。": [
+  "about/index.html"
+ ],
+ "数据科学与预测建模": [
+  "about/index.html"
+ ],
+ "数据分析、统计建模、机器学习、预测系统。": [
+  "about/index.html"
+ ],
+ "2,600 多条资源的合并与去重目录": [
+  "about/index.html"
+ ],
+ "：由目录现算实体和关系": [
+  "about/index.html"
+ ],
+ "：用 15 个机器学习原子间势预测分子能量与性质": [
+  "about/index.html"
+ ],
+ "对外的数据分析与预测系统。": [
+  "about/index.html"
+ ],
+ "人工智能科学研究与计算科学": [
+  "about/index.html"
+ ],
+ "计算化学、量子化学、科学机器学习、高性能计算、AI 辅助科学发现。": [
+  "about/index.html"
+ ],
+ "量子化学计算器": [
+  "about/index.html",
+  "qchem/index.html"
+ ],
+ "：在浏览器里算 HF/DFT 到 CCSD(T)，每个模块与 PySCF 对拍": [
+  "about/index.html"
+ ],
+ "：27 个模型的能力与价格对比": [
+  "about/index.html"
+ ],
+ "：20 章双语讲解与投稿指南": [
+  "about/index.html"
+ ],
+ "更大规模的高性能计算。目前的计算跑在单张 GPU 和按需租用的云端 GPU 上。": [
+  "about/index.html"
+ ],
+ "长期愿景：三个阶段": [
+  "about/index.html"
+ ],
+ "我们不想让 Morning Glory 只做普通的 AI 外包或软件开发，而是逐步走向三个层次。这是路线图，不是现状。": [
+  "about/index.html"
+ ],
+ "第一阶段：AI 应用、自动化、软件开发。": [
+  "about/index.html"
+ ],
+ "第二阶段：科学计算、计算化学、科研 AI。MolAstria 现有的栏目属于这一层。": [
+  "about/index.html"
+ ],
+ "第三阶段：探索 AI 与基础科学、数学、物理之间的新框架。": [
+  "about/index.html"
+ ],
+ "这个方向的起点：": [
+  "about/index.html"
+ ],
+ "（其中的研究主线都还处在计划阶段，不声称任何新发现）": [
+  "about/index.html"
+ ],
+ "定位": [
+  "about/index.html"
+ ],
+ "一家以加拿大为起点、面向国际市场，逐步融合人工智能、自动化、数据科学和计算科学的科技企业。我们的特色是不仅使用 AI，还参与 AI 与基础科学的交叉研究，探索新的科学计算方法和理论框架。": [
+  "about/index.html"
+ ],
+ "合作与问题：": [
+  "about/index.html"
+ ],
+ "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 晨光科技，再下面是 MolAstria 与三个规划中的方向": [
+  "about/index.html"
+ ],
  "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
  ],
@@ -4896,9 +5133,6 @@
   "qchem/index.html"
  ],
  "跳到游乐场内容": [
-  "qchem/index.html"
- ],
- "量子化学计算器": [
   "qchem/index.html"
  ],
  "盒中粒子调颜色": [
@@ -5175,10 +5409,6 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
- "训练 Agent": [
-  "shared-nav.js",
-  "tools/build-seo.ts"
- ],
  "计算化学研究导航": [
   "shared-nav.js"
  ],
@@ -5216,7 +5446,10 @@
  "AI 助手": [
   "shared-nav.js"
  ],
- "MolAstria 名称、徽标与吉祥物归 Jiasheng Fu 所有，保留所有权利；网站代码以 MIT 许可开源": [
+ "晨光科技（Morning Glory）旗下项目": [
+  "shared-nav.js"
+ ],
+ "由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源": [
   "shared-nav.js"
  ],
  "品牌说明": [
@@ -5234,7 +5467,7 @@
  "导航入口": [
   "shared-nav.js"
  ],
- "以后长按顶栏的任一入口，也能回到这里": [
+ "在顶栏上也能直接拖动入口换位置；按住一个入口不动再松开，会回到这里": [
   "shared-nav.js"
  ],
  "恢复默认": [
@@ -10352,7 +10585,8 @@
   "radar/app/app.js"
  ],
  "关于": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "tools/build-seo.ts"
  ],
  "浏览器通知": [
   "radar/app/app.js"
@@ -10823,6 +11057,12 @@
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
+  "tools/build-seo.ts"
+ ],
+ "晨光科技": [
+  "tools/build-seo.ts"
+ ],
+ "晨光实验室": [
   "tools/build-seo.ts"
  ],
  "用开源小模型训练你自己的化学研究 Agent": [

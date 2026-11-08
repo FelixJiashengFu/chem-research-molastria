@@ -17,6 +17,7 @@
 - 科学大模型的价格：2026-12-01 Gemini 4 Argon 涨到 4 / 20 美元，到时按 RUNBOOK 改价格和说明；之后每月核对一次。
 - PWA 上线后要人在真机上看一次（只在 Chromium 里测过）：iPad / iPhone 的 Safari 添加到主屏幕后的图标、标题、全屏、状态栏下的深色条、从主屏幕第一次打开、断网打开看过的页面、开着 Service Worker 时视频能不能播（Range 请求绕过只在 Chromium 验证过）；iOS“作为网页 App 打开”开关的中文名和 iOS 26 分享菜单的写法；安卓 Chrome 的安装、maskable 图标裁切和启动底色。线上 `.webmanifest` 的内容类型和 Pages 的 10 分钟缓存与后台刷新的配合也没核对过。
 - 每周精选第一期（周一）发出后看一眼：邮件显示、进垃圾箱没有、DeepSeek 花了多少。
+- 晨光科技品牌（2026-11-08，关于页 `/about/`）：条款写个人运营、商标归 16513778 Canada Inc.。商标从个人转到公司最好有一份书面转让（个人签给公司），站长自己留档；若以后 Stripe 转到公司名下，再把条款和隐私政策的主体改成公司。每周精选邮件的 CASL 发件人信息届时也可用公司名称和地址。
 - 商业邮件合规：加拿大 CASL 一般要求邮件里有发件人的联系方式（如邮寄地址），每周精选现在只有网址和退订链接；要确认是否适用、放什么。
 - 售后邮箱：在 Porkbun 设 `support@molastria.com` 转发，再填进 `public/pay/config.js` 的 `contactEmail`（现在售后只能去公开的 GitHub Issues）。
 - 发信记录：在 Cloudflare DNS 加 `_dmarc` TXT 记录 `v=DMARC1; p=none`。

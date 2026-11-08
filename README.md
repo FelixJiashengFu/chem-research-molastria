@@ -11,6 +11,14 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 纯静态网站：`public/` 就是发布目录，不需要后端。 · A static site: `public/` is the published folder; no backend is needed.
 
+## 晨光科技 · Morning Glory
+
+MolAstria 是晨光科技（Morning Glory）旗下的 AI 与科学计算项目。Morning Glory 是 16513778 Canada Inc.（加拿大联邦注册公司，多伦多）发展的科技品牌，关注 AI 应用、智能自动化、数据科学与科学计算，长期希望参与 AI 与基础科学的交叉研究。目前对外的产品只有 MolAstria，其他方向都在规划中。介绍见 [关于页](https://molastria.com/about/)。
+
+MolAstria is the AI & Scientific Computing project of Morning Glory, a Toronto-based emerging technology brand being developed under 16513778 Canada Inc. (a Canadian federal corporation), with a focus on AI applications, intelligent automation, data analytics and scientific computing. MolAstria is its only public product today; the other directions are planned. See the [About page](https://molastria.com/about/).
+
+> **Intelligence Beyond Boundaries.** 智能无界，探索未知。<br>From Artificial Intelligence to Scientific Discovery. 从人工智能到科学发现。
+
 ## 视频导览 · Video tour
 
 ### 发布短片 · Launch film（2 分钟 · 2 min）
