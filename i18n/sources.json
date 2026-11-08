@@ -4550,10 +4550,16 @@
  "服务条款 · MolAstria": [
   "pro/terms.html"
  ],
- "生效日期：2026-10-28 · 最后更新：2026-10-31 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
+ "生效日期：2026-10-28 · 最后更新：2026-11-08 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
   "pro/terms.html"
  ],
  "1. 服务内容": [
+  "pro/terms.html"
+ ],
+ "MolAstria 由 Jiasheng Fu 以个人身份运营，本条款中的“我们”指运营者本人，付款也由运营者本人收取。MolAstria 是 Morning Glory（晨光科技）品牌旗下的项目，名称与徽标归 16513778 Canada Inc. 所有。": [
+  "pro/terms.html"
+ ],
+ "详见关于页": [
   "pro/terms.html"
  ],
  "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。免费功能对所有访客开放。Pro 与课题组版在免费功能之外提供付费功能，具体内容以价格页说明为准。": [
@@ -4685,7 +4691,7 @@
  "隐私政策 · MolAstria": [
   "pro/privacy.html"
  ],
- "生效日期：2026-10-28 · 更新：2026-10-31（新增每周精选）": [
+ "生效日期：2026-10-28 · 更新：2026-11-08（写明运营者）": [
   "pro/privacy.html"
  ],
  "我们不收集什么": [
@@ -4736,6 +4742,9 @@
  "联系": [
   "pro/privacy.html",
   "about/index.html"
+ ],
+ "MolAstria 由 Jiasheng Fu 以个人身份运营（Morning Glory 品牌旗下项目），本政策中的“我们”指运营者本人。": [
+  "pro/privacy.html"
  ],
  "请通过": [
   "pro/privacy.html"
@@ -4935,6 +4944,12 @@
   "about/index.html"
  ],
  "所在地": [
+  "about/index.html"
+ ],
+ "MolAstria 运营者": [
+  "about/index.html"
+ ],
+ "Jiasheng Fu（个人运营；名称与徽标归公司所有）": [
   "about/index.html"
  ],
  "品牌架构": [
@@ -5434,7 +5449,7 @@
  "晨光科技（Morning Glory）旗下项目": [
   "shared-nav.js"
  ],
- "MolAstria 名称、徽标与吉祥物归 Jiasheng Fu 所有，保留所有权利；网站代码以 MIT 许可开源": [
+ "由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源": [
   "shared-nav.js"
  ],
  "品牌说明": [
