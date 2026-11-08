@@ -221,7 +221,13 @@ function wbi(params) {
   return `${q}&w_rid=${crypto.createHash('md5').update(q + bili.mixin).digest('hex')}`;
 }
 
-const stripTags = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
+// Bilibili search titles carry <em class="keyword"> highlights. Plain text for a JSON file: strip tags until none are
+// left, then decode the entities the API uses (&amp; last, so nothing is decoded twice). Nothing here is ever HTML.
+const stripTags = (s) => {
+  let t = String(s || ''), prev;
+  do { prev = t; t = t.replace(/<[^<>]*>/g, ''); } while (t !== prev);
+  return t.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+};
 
 async function biliSearchApi(keyword) {
   const params = { search_type: 'video', keyword, page: 1, order: 'totalrank' };
