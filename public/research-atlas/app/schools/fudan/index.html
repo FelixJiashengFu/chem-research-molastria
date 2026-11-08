@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>复旦大学 数理化研究网络</title>
+<style>
+:root{
+  --bg:#f8fafc; --panel:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --accent:#1e3a8a;
+  --chip:#f1f5f9; --hl:#f59e0b; --canvas:#ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#0b1120; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --line:#1f2937; --accent:#93c5fd; --chip:#1f2937; --canvas:#0f172a; }
+}
+:root[data-theme="dark"]{ --bg:#0b1120; --panel:#111827; --ink:#e5e7eb; --muted:#94a3b8; --line:#1f2937; --accent:#93c5fd; --chip:#1f2937; --canvas:#0f172a; }
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+header h1{font-size:17px;margin:0;color:var(--accent)}
+header .sub{color:var(--muted);font-size:12px}
+#nets{display:flex;flex-wrap:wrap;gap:6px}
+#nets button{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:12.5px}
+#nets button.on{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+main{display:grid;grid-template-columns:260px 1fr 340px;height:calc(100% - 96px)}
+aside{background:var(--panel);overflow:auto;padding:12px 14px;border-right:1px solid var(--line)}
+aside.right{border-right:0;border-left:1px solid var(--line)}
+#graph{position:relative;background:var(--canvas)}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 6px}
+label{display:flex;align-items:center;gap:6px;margin:3px 0;cursor:pointer}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+input[type=search]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+#sugg{list-style:none;margin:4px 0 0;padding:0;max-height:220px;overflow:auto}
+#sugg li{padding:4px 6px;border-radius:6px;cursor:pointer}
+#sugg li:hover{background:var(--chip)}
+select{width:100%;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+#desc{color:var(--muted);font-size:12.5px}
+#stats{font-size:12px;color:var(--muted)}
+.card h2{font-size:18px;margin:4px 0}
+.meta{color:var(--muted);font-size:12.5px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px;margin:8px 0}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:1px 6px;margin:2px 3px 2px 0;font-size:12px}
+ol,ul{padding-left:18px;margin:4px 0}
+li{margin:2px 0}
+a{color:var(--accent)}
+.link{cursor:pointer;color:var(--accent);text-decoration:underline dotted}
+footer{height:34px;padding:8px 16px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);background:var(--panel);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#hint{position:absolute;left:10px;bottom:10px;font-size:12px;color:var(--muted);background:var(--panel);padding:4px 8px;border-radius:6px;border:1px solid var(--line)}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+#themeBtn{margin-left:auto;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:8px;padding:4px 8px;cursor:pointer}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:auto 60vh auto;height:auto}
+  aside{border-right:0;border-bottom:1px solid var(--line)}
+  #graph{height:60vh}
+}
+</style>
+</head>
+<body data-nav="inline">
+<header>
+  <div>
+    <h1>复旦大学 · 数学 / 物理 / 化学 研究网络</h1>
+    <div class="sub">Fudan University · 数学 67 · 物理 82 · 化学 69 位（官网名单 82 位 + 按论文推断 136 位）　数据：OpenAlex</div>
+  </div>
+  <div id="nets"></div>
+  <button id="themeBtn" title="切换明暗">◐</button>
+</header>
+<main>
+  <aside>
+    <div id="desc"></div>
+    <div id="stats"></div>
+    <h3>搜索教授 / 主题</h3>
+    <input id="q" type="search" placeholder="例如 Bertozzi、Quantum、Topology…">
+    <ul id="sugg"></ul>
+    <h3>着色</h3>
+    <select id="colorBy">
+      <option value="dept">按院系</option>
+      <option value="community">按研究社群（Louvain）</option>
+    </select>
+    <h3>院系</h3>
+    <div id="deptF"></div>
+    <h3>节点类型</h3>
+    <div id="kindF"></div>
+    <h3>关系类型</h3>
+    <div id="edgeF"></div>
+  </aside>
+  <div id="graph"><div id="loading">加载中…</div><div id="hint">滚轮缩放 · 拖动平移 · 点击节点看详情 · 悬停高亮邻居</div></div>
+  <aside class="right"><div id="detail" class="card"><p class="meta">点击任意节点查看详情。<br><br>
+    <b>节点</b>：圆点颜色代表院系（教授）或学科领域（研究主题）；灰色小点是合作论文。<br>
+    <b>边</b>：深灰＝合写论文；浅灰＝大型合作（&gt;100 作者）；橙色＝研究主题相似；细灰＝教授↔主题 / 教授↔论文；浅橙＝与企业合写；红色＝教授创办的公司。</p></div></aside>
+</main>
+<footer id="foot">数据来源：OpenAlex（CC0）、各院系公开教师名单。官网名单缺失的院系按 2019–2025 年本校署名论文推断教师（论文数、末位作者比例、h 指数、最近机构），会混入资深研究员、漏掉论文少的教授；作者匹配为自动完成，可能存在误差，方法见仓库 schools/README.md。</footer>
+
+<script src="vendor/graphology.umd.min.js"></script>
+<script src="vendor/sigma.min.js"></script>
+<script>
+const DEPT = {Mathematics:["数学","#3b82f6"], Physics:["物理","#ef4444"], Chemistry:["化学","#10b981"]};
+const KIND = {prof:"教授", topic:"研究主题", subfield:"子领域", field:"学科领域", paper:"论文", company:"合作企业", startup:"教授创办的公司"};
+const EKIND = {coauthor:["合写论文","#475569"], collab:["大型合作","#cbd5e1"], similar:["研究相似","#f59e0b"], topic:["教授↔主题","#e5e7eb"], authored:["教授↔论文","#d4d4d8"], paper_topic:["论文↔主题","#f1f5f9"], hierarchy:["学科层级","#f1f5f9"], cooccur:["主题共现","#cbd5e1"], industry:["产业合写","#fdba74"], founded:["创办","#e11d48"]};
+const PAL = ["#e6194b","#3cb44b","#4363d8","#f58231","#911eb4","#46f0f0","#f032e6","#bcf60c","#008080","#9a6324","#800000","#aaffc3","#808000","#000075","#fabebe","#e6beff"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let profs = {}, renderer = null, graph = null, state = {hover:null, sel:null, colorBy:"dept", dept:new Set(Object.keys(DEPT)), kind:new Set(Object.keys(KIND)), ekind:new Set(Object.keys(EKIND))};
+
+// theme toggle (remembered per browser)
+try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch(e){}
+$("#themeBtn").onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const nxt = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = nxt;
+  try { localStorage.setItem("theme", nxt); } catch(e){}
+  if (renderer) renderer.setSetting("labelColor", {color: getComputedStyle(document.documentElement).getPropertyValue("--ink").trim()});
+};
+
+function checks(el, dict, set, colorIdx){
+  el.innerHTML = Object.entries(dict).map(([k,v]) => {
+    const name = Array.isArray(v) ? v[0] : v, col = Array.isArray(v) ? v[1] : null;
+    return `<label><input type="checkbox" data-k="${esc(k)}" checked>${col?`<span class="dot" style="background:${col}"></span>`:""}${esc(name)}</label>`;
+  }).join("");
+  el.querySelectorAll("input").forEach(i => i.onchange = () => { i.checked ? set.add(i.dataset.k) : set.delete(i.dataset.k); refresh(); });
+}
+checks($("#deptF"), DEPT, state.dept);
+checks($("#kindF"), KIND, state.kind); checks($("#edgeF"), EKIND, state.ekind);
+$("#colorBy").onchange = e => { state.colorBy = e.target.value; refresh(); };
+
+function nodeColor(a){
+  if (a.kind !== "prof") return a.color;
+  if (state.colorBy === "community") return a.community >= 0 ? PAL[a.community % PAL.length] : "#999";
+  return a.color;
+}
+function visible(n, a){
+  if (!state.kind.has(a.kind)) return false;
+  if (a.kind === "prof" && (!state.dept.has(a.dept))) return false;
+  return true;
+}
+function refresh(){ if (renderer) renderer.refresh(); }
+
+async function loadNet(id){
+  { const L = $("#loading"); if (L) L.style.display = "flex"; }
+  const data = await fetch(`data/${id}.json`).then(r => r.json());
+  document.querySelectorAll("#nets button").forEach(b => b.classList.toggle("on", b.dataset.id === id));
+  $("#desc").innerHTML = `<b>${esc(data.title)}</b><br>${esc(data.description)}`;
+  const s = data.stats; $("#stats").textContent = `${s.nodes} 个节点 · ${s.edges} 条边 · 教授 ${s.prof||0} · 主题 ${s.topic||0}${s.subfield?` · 子领域 ${s.subfield}`:""} · 论文 ${s.paper||0}${s.company?` · 企业 ${s.company}`:""}${s.startup?` · 创办公司 ${s.startup}`:""}`;
+  if (renderer) { renderer.kill(); renderer = null; }
+  graph = new graphology.Graph({multi:false, type:"undirected"});
+  graph.import({nodes:data.nodes, edges:data.edges.map(e => ({source:e.source, target:e.target, attributes:e.attributes}))});
+  state.hover = null; state.sel = null;
+  renderer = new Sigma(graph, $("#graph"), {
+    labelRenderedSizeThreshold: 7, labelDensity: 0.6, labelFont: "system-ui, PingFang SC, Microsoft YaHei, sans-serif",
+    labelColor: {color: getComputedStyle(document.documentElement).getPropertyValue("--ink").trim()},
+    defaultEdgeColor: "#e5e7eb", zIndex: true, minCameraRatio: 0.03, maxCameraRatio: 4,
+    nodeReducer: (n, a) => {
+      const r = {...a, color: nodeColor(a)};
+      if (!visible(n, a)) { r.hidden = true; return r; }
+      const focus = state.hover || state.sel;
+      if (focus && n !== focus && !graph.areNeighbors(n, focus)) { r.color = "#cbd5e166"; r.label = ""; r.zIndex = 0; }
+      else if (focus) { r.zIndex = 2; r.forceLabel = a.kind !== "paper" || n === focus; }
+      if (n === state.sel) { r.highlighted = true; }
+      return r;
+    },
+    edgeReducer: (e, a) => {
+      const r = {...a};
+      const [s, t] = graph.extremities(e);
+      if (!state.ekind.has(a.kind) || !visible(s, graph.getNodeAttributes(s)) || !visible(t, graph.getNodeAttributes(t))) { r.hidden = true; return r; }
+      const focus = state.hover || state.sel;
+      if (focus && s !== focus && t !== focus) r.hidden = true;
+      else if (focus) r.size = (a.size||0.5) * 1.6;
+      return r;
+    }
+  });
+  renderer.on("enterNode", ({node}) => { state.hover = node; refresh(); });
+  renderer.on("leaveNode", () => { state.hover = null; refresh(); });
+  renderer.on("clickNode", ({node}) => select(node));
+  renderer.on("clickStage", () => { state.sel = null; refresh(); });
+  { const L = $("#loading"); if (L) L.style.display = "none"; }
+  try { history.replaceState(null, "", "#" + id); } catch(e){}
+}
+
+function focusNode(n){
+  const d = renderer.getNodeDisplayData(n); if (!d) return;
+  renderer.getCamera().animate({x:d.x, y:d.y, ratio:0.45}, {duration:500});
+}
+function select(n, zoom){
+  if (!graph.hasNode(n)) { showProf(n); return; }
+  state.sel = n; refresh(); if (zoom) focusNode(n);
+  const a = graph.getNodeAttributes(n);
+  if (a.kind === "prof") showProf(n);
+  else if (a.kind === "topic" || a.kind === "subfield" || a.kind === "field") showTopic(n, a);
+  else if (a.kind === "company" || a.kind === "startup") showOrg(n, a);
+  else showPaper(n, a);
+}
+function showOrg(n, a){
+  const ps = graph.neighbors(n).filter(m => graph.getNodeAttribute(m, "kind") === "prof");
+  const head = a.kind === "startup" ? `教授创办/联合创办的公司${a.year ? " · " + esc(a.year) : ""}` : `合作企业${a.country ? " · " + esc(a.country) : ""}`;
+  const items = ps.map(p => { const e = graph.getEdgeAttributes(graph.edge(p, n)); return `<li>${profLink(p)}${e.n ? " · 合写 " + e.n + " 篇" : ""}</li>`; }).join("");
+  $("#detail").innerHTML = `<div class="meta">${head}</div><h2>${esc(a.label)}</h2>
+    ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">来源</a>` : ""}
+    <h3>${a.kind === "startup" ? "创办人（网内教授）" : "与之合写论文的教授"}</h3><ul>${items}</ul>`;
+  bindLinks();
+}
+function profLink(id){ const p = profs[id]; if (!p) return esc(id); return `<span class="link" data-p="${id}">${esc(p.name)}</span> <span class="dot" style="background:${DEPT[p.dept][1]}"></span>`; }
+function bindLinks(){ $("#detail").querySelectorAll("[data-p]").forEach(el => el.onclick = () => select(el.dataset.p, true)); }
+
+function showProf(id){
+  const p = profs[id]; if (!p) return;
+  $("#detail").innerHTML = `
+    <div class="meta">${esc(DEPT[p.dept][0])}系${p.depts && p.depts.includes("/") ? " · 跨聘：" + esc(p.depts.split("/").map(d => (DEPT[d]||[d])[0]).join(" / ")) : ""}</div>
+    <h2>${esc(p.name)}</h2>
+    <div class="meta">${esc(p.title)}</div>
+    <div class="kv"><span>论文数</span><b>${p.n_works}</b><span>总被引</span><b>${p.cites.toLocaleString()}</b><span>h 指数</span><b>${esc(p.h)}</b>
+      <span>活跃年份</span><b>${p.years ? p.years.join("–") : "—"}</b></div>
+    <div>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">主页</a> · ` : ""}<a href="${p.openalex}" target="_blank" rel="noopener">OpenAlex</a>${p.orcid ? ` · <a href="${esc(p.orcid)}" target="_blank" rel="noopener">ORCID</a>` : ""}</div>
+    <h3>研究主题</h3>${p.topics.map(([t,n]) => `<span class="tag">${esc(t)} · ${n}</span>`).join("")}
+    <h3>学科领域分布</h3>${p.fields.map(([f,n]) => `<span class="tag">${esc(f)} · ${n}</span>`).join("")}
+    <h3>斯坦福网内合作者（合写篇数）</h3>${p.coauthors.length ? "<ul>" + p.coauthors.map(([q,n]) => `<li>${profLink(q)} · ${n}</li>`).join("") + "</ul>" : '<div class="meta">网内暂无（≤100 作者的）合写论文</div>'}
+    ${p.collab.length ? "<h3>大型合作中的同事</h3><ul>" + p.collab.slice(0,10).map(([q,n]) => `<li>${profLink(q)} · ${n}</li>`).join("") + "</ul>" : ""}
+    <h3>研究最相近的同行</h3><ul>${p.similar.map(([q,s]) => `<li>${profLink(q)} · ${s}</li>`).join("")}</ul>
+    ${p.startups && p.startups.length ? "<h3>创办/联合创办的公司</h3><ul>" + p.startups.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.company)}</a>${s.year ? " · " + esc(s.year) : ""} <span class="meta">${esc(s.role)}</span></li>`).join("") + "</ul>" : ""}
+    ${p.industry && p.industry.length ? "<h3>合写论文的企业（篇数）</h3>" + p.industry.map(([c,n]) => `<span class="tag">${esc(c)} · ${n}</span>`).join("") : ""}
+    <h3>被引最多的论文</h3><ol>${p.papers.map(w => `<li><a href="${esc(w.d)}" target="_blank" rel="noopener">${esc(w.t)}</a> <span class="meta">(${w.y ?? ""}${w.v ? ", " + esc(w.v) : ""}; 被引 ${w.c})</span></li>`).join("")}</ol>`;
+  bindLinks();
+}
+function showTopic(n, a){
+  const ps = graph.neighbors(n).filter(m => graph.getNodeAttribute(m, "kind") === "prof");
+  const ts = graph.neighbors(n).filter(m => ["topic","subfield","field"].includes(graph.getNodeAttribute(m, "kind")));
+  $("#detail").innerHTML = `<div class="meta">${a.kind==="topic"?"研究主题":a.kind==="subfield"?"子领域":"学科领域"} · ${esc(a.field)}${a.subfield?" › "+esc(a.subfield):""}</div><h2>${esc(a.label)}</h2>
+    ${ps.length ? `<h3>研究该主题的教授（${ps.length}）</h3><ul>${ps.map(p => `<li>${profLink(p)}</li>`).join("")}</ul>` : ""}
+    ${ts.length ? `<h3>相关主题（${ts.length}）</h3>${ts.map(t => `<span class="tag link" data-t="${esc(t)}">${esc(graph.getNodeAttribute(t,"label"))}</span>`).join("")}` : ""}`;
+  bindLinks(); $("#detail").querySelectorAll("[data-t]").forEach(el => el.onclick = () => select(el.dataset.t, true));
+}
+function showPaper(n, a){
+  const ps = graph.neighbors(n).filter(m => graph.getNodeAttribute(m, "kind") === "prof");
+  $("#detail").innerHTML = `<div class="meta">合作论文 · ${a.year ?? ""} · 被引 ${a.cites ?? 0}</div><h2 style="font-size:16px">${esc(a.label)}</h2>
+    <a href="${esc(a.url)}" target="_blank" rel="noopener">打开论文</a><h3>网内作者</h3><ul>${ps.map(p => `<li>${profLink(p)}</li>`).join("")}</ul>`;
+  bindLinks();
+}
+
+// search
+$("#q").oninput = e => {
+  const q = e.target.value.trim().toLowerCase(); const out = [];
+  if (q.length >= 2 && graph) graph.forEachNode((n, a) => { if (a.kind !== "paper" && (a.label||"").toLowerCase().includes(q) && out.length < 30) out.push([n, a]); });
+  $("#sugg").innerHTML = out.map(([n,a]) => `<li data-n="${esc(n)}"><span class="dot" style="background:${nodeColor(a)}"></span> ${esc(a.label)} <span class="meta">${a.kind==="prof"?DEPT[a.dept][0]:KIND[a.kind]}</span></li>`).join("");
+  $("#sugg").querySelectorAll("li").forEach(li => li.onclick = () => select(li.dataset.n, true));
+};
+
+(async () => {
+  const [idx, pr] = await Promise.all([fetch("data/index.json").then(r => r.json()), fetch("data/profs.json").then(r => r.json())]);
+  profs = pr;
+  $("#nets").innerHTML = idx.map(n => `<button data-id="${n.id}" title="${esc(n.description)}">${esc(n.title.startsWith("方向子网：") ? n.title.slice(5) : n.title.split("：")[0])}</button>`).join("");
+  $("#nets").querySelectorAll("button").forEach(b => b.onclick = () => loadNet(b.dataset.id));
+  const want = location.hash.slice(1); loadNet(idx.some(n => n.id === want) ? want : "main");
+})();
+</script>
+<script src="../../assets/nav.js" data-root="../.." defer></script>
+</body>
+</html>

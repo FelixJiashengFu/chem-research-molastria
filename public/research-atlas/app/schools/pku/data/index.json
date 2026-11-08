@@ -1,0 +1,114 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 8243,
+  "edges": 27019
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 214,
+  "edges": 570
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 254,
+  "edges": 843
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 774,
+  "edges": 3512
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "主要论文属于数学的教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 336,
+  "edges": 992
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "主要论文属于物理的教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 516,
+  "edges": 2611
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "主要论文属于化学的教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 340,
+  "edges": 1526
+ },
+ {
+  "id": "area-theory-hep",
+  "title": "方向子网：高能 · 核物理 · 引力",
+  "description": "论文主要落在 OpenAlex 子领域「Nuclear and High Energy Physics」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 76,
+  "edges": 325
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理与宇宙学",
+  "description": "论文主要落在 OpenAlex 子领域「Astronomy and Astrophysics / Space and Planetary Science」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 26,
+  "edges": 78
+ },
+ {
+  "id": "area-cmp-amo",
+  "title": "方向子网：凝聚态 · 原子分子光学",
+  "description": "论文主要落在 OpenAlex 子领域「Condensed Matter Physics / Atomic and Molecular Physics, and Optics / Statistical and Nonlinear Physics / Electronic, Optical and Magnetic Materials」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 306,
+  "edges": 1662
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：有机 · 化学生物学",
+  "description": "论文主要落在 OpenAlex 子领域「Organic Chemistry / Biochemistry / Molecular Biology / Drug Discovery / Molecular Medicine」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 248,
+  "edges": 1002
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 无机 · 材料与催化",
+  "description": "论文主要落在 OpenAlex 子领域「Physical and Theoretical Chemistry / Inorganic Chemistry / Materials Chemistry / Catalysis / Electrochemistry / Spectroscopy / Analytical Chemistry / Polymers and Plastics」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 266,
+  "edges": 1176
+ },
+ {
+  "id": "area-math-geom",
+  "title": "方向子网：数学：几何 · 拓扑 · 分析",
+  "description": "论文主要落在 OpenAlex 子领域「Geometry and Topology / Analysis / Mathematical Physics」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 43,
+  "edges": 115
+ },
+ {
+  "id": "area-math-prob",
+  "title": "方向子网：数学：概率 · 应用与计算数学",
+  "description": "论文主要落在 OpenAlex 子领域「Statistics and Probability / Applied Mathematics / Computational Mathematics / Numerical Analysis / Modeling and Simulation / Control and Optimization」的教授（该子领域占其论文 ≥15%），他们的共同主题与合作/相似关系。",
+  "nodes": 91,
+  "edges": 252
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 544,
+  "edges": 4617
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 如有人工整理的教授创办公司（data/manual/startups.csv），一并列出；③ 教授之间的合写关系。",
+  "nodes": 405,
+  "edges": 845
+ }
+]

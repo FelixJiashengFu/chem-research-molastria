@@ -43,7 +43,7 @@ body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in 
   <section class="hero" style="padding-bottom:0">
     <div class="eyebrow">01 · Universities</div>
     <h1>二十所大学的数理化研究网络</h1>
-    <p class="lede">多伦多大学、斯坦福大学，加上美国和中国各九所名校。每所学校都按同一套方法画出数学、物理、化学教授的合作网络、主题子网、跨学科关系和产业网络。已上线的学校可以直接打开，其余学校正在分批建设。</p>
+    <p class="lede">多伦多大学、斯坦福大学，加上美国和中国各九所名校。每所学校都按同一套方法画出数学、物理、化学教授的合作网络、主题子网、跨学科关系和产业网络。二十所学校都已上线，点开卡片即可浏览。</p>
   </section>
   <div class="tools">
     <div class="seg" role="group" aria-label="按国家筛选"><button aria-pressed="true" data-f="all">全部</button><button aria-pressed="false" data-f="US">美国</button><button aria-pressed="false" data-f="CN">中国</button><button aria-pressed="false" data-f="CA">加拿大</button></div>
@@ -51,7 +51,7 @@ body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in 
   </div>
   <div class="sgrid" id="grid"></div>
 </main>
-<footer class="site"><div class="wrap">名单来源：院系官网教师名单；论文与合作数据来自 OpenAlex（CC0）。“建设中”的学校会在完成后自动变为可打开。</div></footer>
+<footer class="site"><div class="wrap">名单来源：院系官网教师名单，官网名单取不到的院系按 OpenAlex 论文署名推断；论文与合作数据来自 OpenAlex（CC0）。“建设中”的学校会在完成后自动变为可打开。</div></footer>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const N = window.RA_NAV, grid = document.getElementById("grid");
