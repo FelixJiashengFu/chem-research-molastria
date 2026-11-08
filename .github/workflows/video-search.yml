@@ -1,5 +1,6 @@
 # Temporary: finds teaching-video candidates for public/videos/ on YouTube and Bilibili and commits them to the
 # branch (tmp-videos/), because the machines that edit the site cannot reach either site. Removed before merging.
+# tmp-videos/run.txt holds the mode: "search" (optionally followed by topic ids) or "verify".
 name: Teaching videos search (temporary)
 
 on:
@@ -16,20 +17,24 @@ concurrency:
 
 jobs:
   run:
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [yt, bili]
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run tools/video-search.mjs with the arguments in tmp-videos/run.txt
-        run: node tools/video-search.mjs $(cat tmp-videos/run.txt)
+      - name: Run tools/video-search.mjs for ${{ matrix.part }} (stops itself after 28 minutes)
+        run: node tools/video-search.mjs ${{ matrix.part }} $(cat tmp-videos/run.txt)
       - name: Commit the results to the branch
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f tmp-videos
-          git commit -m "Teaching videos: results of '$(cat tmp-videos/run.txt)' from CI" || exit 0
-          for i in 1 2 3; do git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && break; sleep 5; done
+          git commit -m "Teaching videos: ${{ matrix.part }} $(cat tmp-videos/run.txt) results from CI" || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && break; sleep $((i * 4)); done

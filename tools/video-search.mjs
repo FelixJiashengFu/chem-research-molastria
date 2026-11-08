@@ -1,8 +1,12 @@
 // Teaching videos (public/videos/): find candidate videos on YouTube and Bilibili, and re-check the chosen ones.
 // YouTube and Bilibili are not reachable from every machine that edits the site, so this runs on GitHub Actions
 // (.github/workflows/video-search.yml) and the workflow commits what it found to tmp-videos/ on the branch.
-//   node tools/video-search.mjs search [topic,topic]   search every query in tools/video-queries.json → tmp-videos/candidates.json
-//   node tools/video-search.mjs verify                 re-read every video in public/videos/videos-data.js → tmp-videos/verify.json
+//   node tools/video-search.mjs yt search [topic,…]     YouTube: every query in tools/video-queries.json → tmp-videos/yt.json
+//   node tools/video-search.mjs bili search [topic,…]   Bilibili: the same → tmp-videos/bili.json
+//   node tools/video-search.mjs yt verify               re-read the YouTube videos in public/videos/videos-data.js → tmp-videos/verify-yt.json
+//   node tools/video-search.mjs bili verify             the same for Bilibili → tmp-videos/verify-bili.json
+// Each run stops starting new requests after VIDEO_SEARCH_MINUTES (default 28) and writes what it has, and it writes
+// the search results before fetching details, so a slow or rate-limited platform still leaves something to work with.
 // Nothing here is needed to build or publish the site; covers are tools/video-thumbs.mjs.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -14,7 +18,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(root, 'tmp-videos');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const log = (...a) => console.log(...a);
+const T0 = Date.now();
+const DEADLINE = T0 + (+process.env.VIDEO_SEARCH_MINUTES || 28) * 60000;
+const late = () => Date.now() > DEADLINE;
+const log = (...a) => console.log(`[${Math.round((Date.now() - T0) / 1000)}s]`, ...a);
 const debug = [];
 const keepDebug = (name, body) => { if (debug.length < 40) debug.push({ name, body: String(body).slice(0, 200000) }); };
 
@@ -36,24 +43,27 @@ async function request(url, { method = 'GET', headers = {}, body, json = true, t
   return { status: 0, text: '', data: null, error: String(last?.message || last) };
 }
 
-// Run fn over items with n workers and a pause between calls.
-async function pool(items, n, fn, gap = 0) {
+// Run fn over items with n workers and a pause between calls; stops starting new items after the deadline or when
+// stop() says so (a platform that keeps rate-limiting). Logs progress every `every` items.
+async function pool(name, items, n, fn, { gap = 0, every = 50, stop = () => false } = {}) {
   const out = new Array(items.length);
-  let next = 0;
+  let next = 0, done = 0;
   await Promise.all(Array.from({ length: n }, async () => {
-    while (next < items.length) {
+    while (next < items.length && !late() && !stop()) {
       const i = next++;
       out[i] = await fn(items[i], i);
+      if (++done % every === 0) log(`${name}: ${done}/${items.length}`);
       if (gap) await sleep(gap);
     }
   }));
+  log(`${name}: done ${done}/${items.length}${done < items.length ? (late() ? ' (deadline)' : ' (stopped)') : ''}`);
   return out;
 }
 
 // ---------- YouTube (InnerTube, the JSON API the web page itself uses) ----------
 const YT_CLIENT = { clientName: 'WEB', clientVersion: '2.20251105.01.00', hl: 'en', gl: 'US' };
 const ytHeaders = { 'content-type': 'application/json', origin: 'https://www.youtube.com', referer: 'https://www.youtube.com/', cookie: 'CONSENT=YES+1; SOCS=CAI' };
-const runs = (t) => (t ? (t.simpleText ?? (t.runs || []).map((r) => r.text).join('') ?? t.content ?? '') : '');
+const runs = (t) => (t ? (t.simpleText ?? (t.runs ? t.runs.map((r) => r.text).join('') : t.content ?? '')) : '');
 const parseNum = (s) => { const m = String(s || '').replace(/,/g, '').match(/([\d.]+)\s*([KMB])?/i); if (!m) return 0; return Math.round(+m[1] * ({ k: 1e3, m: 1e6, b: 1e9 }[(m[2] || '').toLowerCase()] || 1)); };
 const secs = (s) => String(s || '').split(':').map(Number).reduce((a, b) => a * 60 + b, 0);
 
@@ -179,11 +189,13 @@ async function ytWatch(id) {
 
 // ---------- Bilibili ----------
 const MIXIN = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52];
-const bili = { cookie: '', mixin: '' };
+// limited: consecutive rate-limit answers (-412 / HTTP 412); after 4 in a row that endpoint is given up for this run.
+const bili = { cookie: '', mixin: '', searchLimited: 0, viewLimited: 0 };
 const biliHeaders = () => ({ referer: 'https://search.bilibili.com/', origin: 'https://search.bilibili.com', cookie: bili.cookie, accept: 'application/json, text/plain, */*' });
+const limited = (r) => r.status === 412 || r.data?.code === -412 || r.data?.code === -352;
 
 async function biliInit() {
-  const home = await request('https://www.bilibili.com/', { json: false });
+  const home = await request('https://www.bilibili.com/', { json: false, tries: 1 });
   const set = (home.headers?.getSetCookie?.() || []).map((c) => c.split(';')[0]);
   const spi = await request('https://api.bilibili.com/x/frontend/finger/spi', { headers: { referer: 'https://www.bilibili.com/' } });
   const b3 = spi.data?.data?.b_3, b4 = spi.data?.data?.b_4;
@@ -210,159 +222,188 @@ function wbi(params) {
 
 const stripTags = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
 
-async function biliSearch(keyword) {
+async function biliSearchApi(keyword) {
   const params = { search_type: 'video', keyword, page: 1, order: 'totalrank' };
-  const tries = [
+  const urls = [
     bili.mixin ? `https://api.bilibili.com/x/web-interface/wbi/search/type?${wbi(params)}` : '',
     `https://api.bilibili.com/x/web-interface/search/type?${new URLSearchParams(params)}`,
   ].filter(Boolean);
   let last = null;
-  for (const url of tries) {
-    for (let i = 0; i < 3; i++) {
-      const r = await request(url, { headers: biliHeaders() });
-      last = r;
-      const res = r.data?.data?.result;
-      if (r.data?.code === 0 && Array.isArray(res)) {
-        return { status: r.status, code: 0, items: res.filter((x) => x.bvid).map((x) => ({
-          p: 'bili', k: 'video', id: x.bvid, title: stripTags(x.title), channel: x.author || '', mid: x.mid || 0,
-          duration: x.duration || '', seconds: secs(x.duration), views: +x.play || 0, favorites: +x.favorites || 0,
-          date: x.pubdate ? new Date(x.pubdate * 1000).toISOString().slice(0, 10) : '', snippet: stripTags(x.description).slice(0, 300),
-          tags: String(x.tag || '').split(',').slice(0, 10), category: x.typename || '', pic: x.pic || '',
-        })) };
-      }
-      if (r.data?.code === -412 || r.status === 412) { await sleep(20000 * (i + 1)); continue; }
-      break;
+  for (const url of urls) {
+    const r = await request(url, { headers: biliHeaders() });
+    last = r;
+    const res = r.data?.data?.result;
+    if (r.data?.code === 0 && Array.isArray(res)) {
+      bili.searchLimited = 0;
+      return { how: 'api', status: r.status, code: 0, items: res.filter((x) => x.bvid).map((x) => ({
+        p: 'bili', k: 'video', id: x.bvid, title: stripTags(x.title), channel: x.author || '', mid: x.mid || 0,
+        duration: x.duration || '', seconds: secs(x.duration), views: +x.play || 0, favorites: +x.favorites || 0,
+        date: x.pubdate ? new Date(x.pubdate * 1000).toISOString().slice(0, 10) : '', snippet: stripTags(x.description).slice(0, 300),
+        tags: String(x.tag || '').split(',').slice(0, 10), category: x.typename || '', pic: x.pic || '',
+      })) };
     }
+    if (limited(r)) bili.searchLimited++;
   }
   keepDebug(`bili-search-${keyword}`, `${last?.status} ${last?.error || ''}\n${(last?.text || '').slice(0, 20000)}`);
-  return { status: last?.status || 0, code: last?.data?.code, items: [] };
+  return { how: 'api', status: last?.status || 0, code: last?.data?.code, items: [] };
+}
+
+// When Bilibili's own search refuses this machine: find BV ids through web search engines (titles come from the view API).
+async function biliSearchWeb(keyword) {
+  const found = new Map();
+  const engines = [
+    ['ddg', `https://html.duckduckgo.com/html/?q=${encodeURIComponent(`site:bilibili.com/video ${keyword}`)}`],
+    ['bing', `https://www.bing.com/search?q=${encodeURIComponent(`site:bilibili.com/video ${keyword}`)}&setlang=zh-CN&count=30`],
+  ];
+  for (const [name, url] of engines) {
+    const r = await request(url, { json: false, tries: 2 });
+    for (const m of r.text.matchAll(/bilibili\.com(?:%2F|\/)video(?:%2F|\/)(BV[0-9A-Za-z]{10})/g)) if (!found.has(m[1])) found.set(m[1], name);
+    if (!r.text) keepDebug(`web-${name}-${keyword}`, `${r.status} ${r.error || ''}`);
+  }
+  return { how: 'web', status: 200, items: [...found.keys()].slice(0, 20).map((id) => ({ p: 'bili', k: 'video', id, title: '', channel: '' })) };
 }
 
 async function biliView(bvid) {
-  for (let i = 0; i < 3; i++) {
-    const r = await request(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, { headers: { referer: 'https://www.bilibili.com/', cookie: bili.cookie } });
-    if (r.data?.code === -412 || r.status === 412) { await sleep(20000 * (i + 1)); continue; }
-    const d = r.data?.data;
-    if (r.data?.code !== 0 || !d) return { status: r.status, code: r.data?.code ?? null, message: r.data?.message || r.error || '' };
-    const season = d.ugc_season;
-    return {
-      status: r.status, code: 0, title: d.title, channel: d.owner?.name || '', mid: d.owner?.mid || 0, parts: d.videos || 1,
-      pages: (d.pages || []).slice(0, 15).map((p) => `${p.part} (${Math.round(p.duration / 60)} min)`), seconds: d.duration || 0,
-      copyright: d.copyright, views: d.stat?.view || 0, likes: d.stat?.like || 0, favorites: d.stat?.favorite || 0,
-      date: d.pubdate ? new Date(d.pubdate * 1000).toISOString().slice(0, 10) : '', description: String(d.desc || '').slice(0, 1200),
-      category: d.tname || '', pic: d.pic || '', season: season ? { title: season.title, episodes: (season.sections || []).reduce((n, s) => n + (s.episodes || []).length, 0) } : null,
-      noReprint: d.rights?.no_reprint === 1, isUpowerExclusive: !!d.is_upower_exclusive, isChargeable: !!d.rights?.pay || !!d.rights?.ugc_pay,
-    };
-  }
-  return { status: 412, code: -412, message: 'rate limited' };
+  const r = await request(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, { headers: { referer: 'https://www.bilibili.com/', cookie: bili.cookie } });
+  if (limited(r)) { bili.viewLimited++; return { status: r.status, code: -412, message: 'rate limited' }; }
+  bili.viewLimited = 0;
+  const d = r.data?.data;
+  if (r.data?.code !== 0 || !d) return { status: r.status, code: r.data?.code ?? null, message: r.data?.message || r.error || '' };
+  const season = d.ugc_season;
+  return {
+    status: r.status, code: 0, title: d.title, channel: d.owner?.name || '', mid: d.owner?.mid || 0, parts: d.videos || 1,
+    pages: (d.pages || []).slice(0, 15).map((p) => `${p.part} (${Math.round(p.duration / 60)} min)`), seconds: d.duration || 0,
+    copyright: d.copyright, views: d.stat?.view || 0, likes: d.stat?.like || 0, favorites: d.stat?.favorite || 0,
+    date: d.pubdate ? new Date(d.pubdate * 1000).toISOString().slice(0, 10) : '', description: String(d.desc || '').slice(0, 1200),
+    category: d.tname || '', pic: d.pic || '', season: season ? { title: season.title, episodes: (season.sections || []).reduce((n, s) => n + (s.episodes || []).length, 0) } : null,
+    paywalled: !!d.is_upower_exclusive || !!d.rights?.pay || !!d.rights?.ugc_pay,
+  };
 }
 
 // ---------- search ----------
-async function search(only) {
-  const Q = JSON.parse(await fs.readFile(path.join(root, 'tools/video-queries.json'), 'utf8'));
-  const topics = Object.keys(Q).filter((t) => !only.length || only.includes(t));
-  const result = { generated: new Date().toISOString(), topics: {} };
-  const report = [];
-
-  // YouTube: videos and playlists for every query.
-  const ytJobs = topics.flatMap((t) => Q[t].yt.flatMap((q) => [{ t, q, kind: 'video', params: 'EgIQAQ==' }, { t, q, kind: 'playlist', params: 'EgIQAw==' }]));
-  const ytHits = await pool(ytJobs, 3, async (j) => {
-    const r = await ytSearch(j.q, j.params);
-    report.push(`yt ${j.t} [${j.kind}] ${j.q}: ${r.status} → ${r.items.length}`);
-    return r.items.filter((x) => (j.kind === 'video' ? x.k === 'video' : x.k === 'playlist')).slice(0, j.kind === 'video' ? 14 : 8)
-      .map((x, rank) => ({ ...x, topic: j.t, query: j.q, rank }));
-  }, 400);
-  log(`youtube searches: ${ytJobs.length}, with results: ${ytHits.filter((h) => h.length).length}`);
-
-  await biliInit();
-  const biliJobs = topics.flatMap((t) => Q[t].bili.map((q) => ({ t, q })));
-  const biliHits = await pool(biliJobs, 1, async (j) => {
-    const r = await biliSearch(j.q);
-    report.push(`bili ${j.t} ${j.q}: ${r.status}/${r.code} → ${r.items.length}`);
-    return r.items.slice(0, 20).map((x, rank) => ({ ...x, topic: j.t, query: j.q, rank }));
-  }, 1500);
-  log(`bilibili searches: ${biliJobs.length}, with results: ${biliHits.filter((h) => h.length).length}`);
-
-  // Merge per topic: one entry per id, remembering every query that found it.
+const unique = (arr) => [...new Map(arr.map((c) => [c.id, c])).values()];
+function merge(hits) {
   const merged = new Map();
-  for (const hit of [...ytHits.flat(), ...biliHits.flat()]) {
+  for (const hit of hits.flat().filter(Boolean)) {
     const key = `${hit.topic}:${hit.id}`;
     const cur = merged.get(key);
-    if (cur) { cur.queries.push(hit.query); cur.rank = Math.min(cur.rank, hit.rank); continue; }
+    if (cur) { if (!cur.queries.includes(hit.query)) cur.queries.push(hit.query); cur.rank = Math.min(cur.rank, hit.rank); continue; }
     const { query, ...rest } = hit;
     merged.set(key, { ...rest, queries: [query] });
   }
-  let cands = [...merged.values()].filter((c) => !(c.k === 'video' && (c.live || (c.seconds && c.seconds < 180))));
-  log(`candidates after merge: ${cands.length}`);
-
-  // Details. YouTube: oEmbed for every candidate (exact title and channel, and 401 = embedding off); playlist contents;
-  // the watch page for single videos (description, captions, date). Bilibili: the view API (parts, original or repost).
-  const unique = (arr) => [...new Map(arr.map((c) => [c.id, c])).values()];
-  const yt = unique(cands.filter((c) => c.p === 'yt'));
-  const oembed = new Map(await pool(yt, 6, async (c) => [c.id, await ytOembed(c)], 50).then((x) => x));
-  log(`oEmbed: ${[...oembed.values()].filter((o) => o.status === 200).length} ok, ${[...oembed.values()].filter((o) => o.status === 401 || o.status === 403).length} embedding off`);
-  const lists = new Map(await pool(yt.filter((c) => c.k === 'playlist'), 3, async (c) => [c.id, await ytPlaylist(c.id)], 300));
-  const watch = new Map(await pool(yt.filter((c) => c.k === 'video'), 4, async (c) => [c.id, await ytWatch(c.id)], 250));
-  const bv = unique(cands.filter((c) => c.p === 'bili'));
-  const views = new Map(await pool(bv, 2, async (c) => [c.id, await biliView(c.id)], 700));
-  log(`bilibili view: ${[...views.values()].filter((v) => v.code === 0).length}/${bv.length} ok`);
-
-  for (const c of cands) {
-    if (c.p === 'yt') {
-      const o = oembed.get(c.id);
-      c.oembed = o?.status || 0;
-      if (o?.status === 200) { c.title = o.title || c.title; c.channel = o.channel || c.channel; c.channelUrl = o.channelUrl; c.thumb = o.thumb; }
-      if (c.k === 'playlist') {
-        const l = lists.get(c.id);
-        if (l) { c.items = l.titles; c.videos = l.total || c.videos; c.first = c.first || l.first; c.description = l.description; }
-      } else {
-        const w = watch.get(c.id);
-        if (w?.title) Object.assign(c, { description: w.description, date: w.date, captions: w.captions, keywords: w.keywords, category: w.category, views: w.views || c.views, embeddable: w.embeddable });
-      }
-    } else {
-      const v = views.get(c.id);
-      if (v?.code === 0) {
-        Object.assign(c, { title: v.title, channel: v.channel, parts: v.parts, pages: v.pages, copyright: v.copyright, views: v.views, likes: v.likes,
-          favorites: v.favorites, date: v.date, description: v.description, category: v.category, pic: v.pic, season: v.season, seconds: v.seconds,
-          noReprint: v.noReprint, paywalled: v.isUpowerExclusive || v.isChargeable });
-      } else c.view = v;
-    }
-  }
-  cands = cands.filter((c) => !(c.p === 'yt' && (c.oembed === 404 || c.oembed === 400)) && !(c.p === 'bili' && c.view && [-404, 62002, 62004, 62012].includes(c.view.code)));
+  return [...merged.values()];
+}
+async function save(file, topics, cands, extra = {}) {
+  const result = { generated: new Date().toISOString(), ...extra, topics: {} };
   for (const t of topics) result.topics[t] = cands.filter((c) => c.topic === t).sort((a, b) => b.queries.length - a.queries.length || a.rank - b.rank);
   await fs.mkdir(OUT, { recursive: true });
-  await fs.writeFile(path.join(OUT, only.length ? `candidates-${only.join('-')}.json` : 'candidates.json'), JSON.stringify(result, null, 1));
-  await fs.writeFile(path.join(OUT, 'search-report.txt'), report.sort().join('\n') + '\n');
-  log(Object.entries(result.topics).map(([t, l]) => `${t}: yt ${l.filter((c) => c.p === 'yt').length}, bili ${l.filter((c) => c.p === 'bili').length}`).join('\n'));
+  await fs.writeFile(path.join(OUT, file), JSON.stringify(result, null, 1));
+  log(`saved ${file}: ${cands.length} candidates`);
+}
+async function queries(only) {
+  const Q = JSON.parse(await fs.readFile(path.join(root, 'tools/video-queries.json'), 'utf8'));
+  return { Q, topics: Object.keys(Q).filter((t) => !only.length || only.includes(t)) };
+}
+
+async function searchYt(only) {
+  const { Q, topics } = await queries(only);
+  const report = [];
+  const jobs = topics.flatMap((t) => Q[t].yt.flatMap((q) => [{ t, q, kind: 'video', params: 'EgIQAQ==' }, { t, q, kind: 'playlist', params: 'EgIQAw==' }]));
+  const hits = await pool('youtube search', jobs, 3, async (j) => {
+    const r = await ytSearch(j.q, j.params);
+    report.push(`${j.t} [${j.kind}] ${j.q}: ${r.status} → ${r.items.length}`);
+    return r.items.filter((x) => x.k === j.kind).slice(0, j.kind === 'video' ? 14 : 8).map((x, rank) => ({ ...x, topic: j.t, query: j.q, rank }));
+  }, { gap: 300, every: 40 });
+  await fs.mkdir(OUT, { recursive: true });
+  await fs.writeFile(path.join(OUT, 'yt-report.txt'), report.sort().join('\n') + '\n');
+  let cands = merge(hits).filter((c) => !(c.k === 'video' && (c.live || (c.seconds && c.seconds < 180))));
+  await save('yt.json', topics, cands, { stage: 'search' });
+
+  // oEmbed for every candidate: exact title and channel, 401/403 = embedding off, 400/404 = gone.
+  const all = unique(cands);
+  const oembed = new Map((await pool('oembed', all, 8, async (c) => [c.id, await ytOembed(c)], { every: 200 })).filter(Boolean));
+  for (const c of cands) {
+    const o = oembed.get(c.id);
+    if (!o) continue;
+    c.oembed = o.status;
+    if (o.status === 200) { c.title = o.title || c.title; c.channel = o.channel || c.channel; c.channelUrl = o.channelUrl; c.thumb = o.thumb; }
+  }
+  cands = cands.filter((c) => c.oembed !== 404 && c.oembed !== 400);
+  await save('yt.json', topics, cands, { stage: 'oembed' });
+
+  const lists = new Map((await pool('playlists', unique(cands.filter((c) => c.k === 'playlist')), 3, async (c) => [c.id, await ytPlaylist(c.id)], { gap: 200, every: 50 })).filter(Boolean));
+  // The watch page (description, captions, upload date) only for the better-ranked single videos.
+  const top = unique(cands.filter((c) => c.k === 'video' && (c.rank < 8 || c.queries.length > 1)));
+  const watch = new Map((await pool('watch pages', top, 4, async (c) => [c.id, await ytWatch(c.id)], { gap: 150, every: 100 })).filter(Boolean));
+  for (const c of cands) {
+    if (c.k === 'playlist') {
+      const l = lists.get(c.id);
+      if (l) { c.items = l.titles; c.videos = l.total || c.videos; c.first = c.first || l.first; c.description = l.description; }
+    } else {
+      const w = watch.get(c.id);
+      if (w?.title) Object.assign(c, { description: w.description, date: w.date, captions: w.captions, keywords: w.keywords, category: w.category, views: w.views || c.views, embeddable: w.embeddable });
+    }
+  }
+  await save('yt.json', topics, cands, { stage: 'done' });
+}
+
+async function searchBili(only) {
+  const { Q, topics } = await queries(only);
+  await biliInit();
+  const report = [];
+  const jobs = topics.flatMap((t) => Q[t].bili.map((q) => ({ t, q })));
+  const hits = await pool('bilibili search', jobs, 1, async (j) => {
+    let r = bili.searchLimited < 4 ? await biliSearchApi(j.q) : { items: [] };
+    if (!r.items.length) r = await biliSearchWeb(j.q);
+    report.push(`${j.t} ${j.q}: ${r.how} ${r.status}/${r.code ?? ''} → ${r.items.length}`);
+    return r.items.slice(0, 20).map((x, rank) => ({ ...x, topic: j.t, query: j.q, rank }));
+  }, { gap: 1200, every: 10 });
+  await fs.mkdir(OUT, { recursive: true });
+  await fs.writeFile(path.join(OUT, 'bili-report.txt'), report.sort().join('\n') + '\n');
+  let cands = merge(hits).filter((c) => !(c.seconds && c.seconds < 180));
+  await save('bili.json', topics, cands, { stage: 'search' });
+
+  const views = new Map((await pool('bilibili view', unique(cands), 2, async (c) => [c.id, await biliView(c.id)], { gap: 600, every: 50, stop: () => bili.viewLimited >= 4 })).filter(Boolean));
+  for (const c of cands) {
+    const v = views.get(c.id);
+    if (v?.code === 0) {
+      Object.assign(c, { title: v.title, channel: v.channel, mid: v.mid, parts: v.parts, pages: v.pages, copyright: v.copyright, views: v.views, likes: v.likes,
+        favorites: v.favorites, date: v.date, description: v.description, category: v.category, pic: v.pic, season: v.season, seconds: v.seconds, paywalled: v.paywalled });
+    } else if (v) c.view = { code: v.code, message: v.message };
+  }
+  cands = cands.filter((c) => !(c.view && [-404, 62002, 62004, 62012].includes(c.view.code)) && !(c.seconds && c.seconds < 180) && (c.title || !c.view));
+  await save('bili.json', topics, cands, { stage: 'done', searchLimited: bili.searchLimited, viewLimited: bili.viewLimited });
 }
 
 // ---------- verify ----------
-async function verify() {
+async function verify(part) {
   const D = await loadVideos();
-  await biliInit();
-  const rows = await pool(D.items, 3, async (v) => {
+  const list = D.items.filter((v) => v.p === part);
+  if (part === 'bili') await biliInit();
+  const rows = (await pool(`verify ${part}`, list, part === 'yt' ? 4 : 2, async (v) => {
     if (v.p === 'yt') {
       const o = await ytOembed(v);
       const extra = v.k === 'playlist' ? await ytPlaylist(v.id) : await ytWatch(v.id);
       return { id: v.id, p: v.p, k: v.k, status: o.status, title: o.title, channel: o.channel, thumb: o.thumb, extra };
     }
     const r = await biliView(v.id);
-    return { id: v.id, p: v.p, k: v.k, status: r.code, title: r.title, channel: r.channel, parts: r.parts, seconds: r.seconds, copyright: r.copyright, pic: r.pic, date: r.date, season: r.season, message: r.message };
-  }, 500);
+    return { id: v.id, p: v.p, k: v.k, status: r.code, title: r.title, channel: r.channel, parts: r.parts, seconds: r.seconds, copyright: r.copyright, pic: r.pic, date: r.date, season: r.season, paywalled: r.paywalled, message: r.message };
+  }, { gap: part === 'yt' ? 100 : 600, every: 25 })).filter(Boolean);
   const bad = rows.filter((r) => (r.p === 'yt' ? r.status !== 200 : r.status !== 0) || !r.title);
   await fs.mkdir(OUT, { recursive: true });
-  await fs.writeFile(path.join(OUT, 'verify.json'), JSON.stringify({ checked: new Date().toISOString(), rows }, null, 1));
-  log(`verify: ${rows.length} videos, ${bad.length} with problems`);
+  await fs.writeFile(path.join(OUT, `verify-${part}.json`), JSON.stringify({ checked: new Date().toISOString(), total: list.length, rows }, null, 1));
+  log(`verify ${part}: ${rows.length}/${list.length} checked, ${bad.length} with problems`);
   for (const b of bad) log(`::warning::${b.id}: ${b.status} ${b.message || ''}`);
 }
 
-const [mode = 'search', topicArg = ''] = process.argv.slice(2);
+const [part = 'yt', mode = 'search', topicArg = ''] = process.argv.slice(2);
 try {
-  if (mode === 'verify') await verify();
-  else await search(topicArg.split(',').filter(Boolean));
+  if (mode === 'verify') await verify(part);
+  else if (part === 'bili') await searchBili(topicArg.split(',').filter(Boolean));
+  else await searchYt(topicArg.split(',').filter(Boolean));
 } finally {
   if (debug.length) {
     await fs.mkdir(path.join(OUT, 'debug'), { recursive: true });
-    for (const [i, d] of debug.entries()) await fs.writeFile(path.join(OUT, 'debug', `${String(i).padStart(2, '0')}-${d.name.replace(/[^\w.-]+/g, '_').slice(0, 60)}.txt`), d.body);
+    for (const [i, d] of debug.entries()) await fs.writeFile(path.join(OUT, 'debug', `${part}-${String(i).padStart(2, '0')}-${d.name.replace(/[^\w.-]+/g, '_').slice(0, 60)}.txt`), d.body);
   }
 }

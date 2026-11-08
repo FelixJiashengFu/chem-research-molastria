@@ -42,6 +42,7 @@
  "数据库": [
   "index.html",
   "scimodels/index.html",
+  "videos/index.html",
   "shared-nav.js",
   "app.js",
   "hub/app.js",
@@ -168,7 +169,8 @@
   "index.html",
   "atlas/index.html",
   "journals/index.html",
-  "scimodels/index.html"
+  "scimodels/index.html",
+  "videos/index.html"
  ],
  "想要一段带出处的回答？": [
   "index.html"
@@ -315,11 +317,17 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
+ "教学视频": [
+  "index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
  "Meta × 化学": [
   "index.html"
  ],
  "游乐场": [
   "index.html",
+  "videos/index.html",
   "qchem/index.html",
   "shared-nav.js"
  ],
@@ -751,7 +759,8 @@
   "manual/index.html"
  ],
  "中文": [
-  "manual/index.html"
+  "manual/index.html",
+  "videos/videos.js"
  ],
  "打印当前章节": [
   "manual/index.html"
@@ -795,6 +804,7 @@
  "搜索": [
   "journals/index.html",
   "scimodels/index.html",
+  "videos/index.html",
   "hub/index.html",
   "radar/app/app.js"
  ],
@@ -963,6 +973,93 @@
  "模型名、机构、能力或关键词": [
   "scimodels/index.html"
  ],
+ "计算化学教学视频 · MolAstria": [
+  "videos/index.html"
+ ],
+ "跳到视频目录": [
+  "videos/index.html"
+ ],
+ "计算化学教学视频": [
+  "videos/index.html",
+  "tools/build-seo.ts"
+ ],
+ "从 YouTube 和哔哩哔哩收集的公开课程、暑期学校录像和软件官方教程，从量子力学基础、电子结构方法，到 Gaussian、ORCA、VASP、GROMACS 这些程序怎么上手，再到机器学习势、化学信息学和科学大模型。每一条都打开核对过：视频还在，标题和频道与平台上一致，内容确实是在教东西。": [
+  "videos/index.html"
+ ],
+ "点封面就在本页播放；视频网站的播放器点了才加载，不点不会载入。平台不允许嵌入的视频，点封面会打开原视频，封面下面始终有原视频链接。课程类的条目是整个播放列表或分 P 合集，播放器里可以切换各讲。": [
+  "videos/index.html"
+ ],
+ "桌面版里点封面会在系统浏览器里打开原视频。": [
+  "videos/index.html"
+ ],
+ "视频目录": [
+  "videos/index.html"
+ ],
+ "按主题分组，可以组合筛选和搜索。搜索会查标题、频道、软件名和说明；语言选“中文”时也包括带中文字幕的视频。": [
+  "videos/index.html"
+ ],
+ "主题": [
+  "videos/index.html",
+  "hub/index.html",
+  "hub/network.js"
+ ],
+ "全部主题": [
+  "videos/index.html",
+  "hub/index.html",
+  "hub/app.js",
+  "radar/app/app.js"
+ ],
+ "平台": [
+  "videos/index.html"
+ ],
+ "全部平台": [
+  "videos/index.html"
+ ],
+ "语言": [
+  "videos/index.html"
+ ],
+ "全部语言": [
+  "videos/index.html"
+ ],
+ "程度": [
+  "videos/index.html"
+ ],
+ "全部程度": [
+  "videos/index.html"
+ ],
+ "没有符合条件的视频。换个关键词，或者放宽筛选条件。": [
+  "videos/index.html"
+ ],
+ "视频的版权归各自的作者和机构所有，MolAstria 只链接和嵌入平台公开提供的播放器，不下载、不转存视频；封面图来自各平台，仅用于指向原视频。“转载”指非原作者上传的视频，只收录开放许可的课程或加了中文字幕的版本，并尽量给出原视频。视频会被删除或改为私密，看到失效的条目请到": [
+  "videos/index.html"
+ ],
+ "告诉我们。": [
+  "videos/index.html"
+ ],
+ "MolAstria · 教学视频": [
+  "videos/index.html"
+ ],
+ "标题和频道名保留平台上的原文；说明是 MolAstria 写的。": [
+  "videos/index.html"
+ ],
+ "讲解手册": [
+  "videos/index.html",
+  "fundamental-science/index.html",
+  "shared-nav.js",
+  "hub/network.js"
+ ],
+ "回到视频目录": [
+  "videos/index.html"
+ ],
+ "按主题跳转": [
+  "videos/index.html"
+ ],
+ "筛选视频": [
+  "videos/index.html"
+ ],
+ "软件名、方法、课程或频道": [
+  "videos/index.html"
+ ],
  "进一步基础科学发现 · Advancing Fundamental Science · MolAstria": [
   "fundamental-science/index.html"
  ],
@@ -1125,11 +1222,6 @@
  ],
  "量子化学计算（浏览器里运行 HF、FCI、CCSD）": [
   "fundamental-science/index.html"
- ],
- "讲解手册": [
-  "fundamental-science/index.html",
-  "shared-nav.js",
-  "hub/network.js"
  ],
  "研究状态的四种标注": [
   "fundamental-science/index.html"
@@ -1299,15 +1391,6 @@
  ],
  "探索真实内容库": [
   "hub/index.html"
- ],
- "主题": [
-  "hub/index.html",
-  "hub/network.js"
- ],
- "全部主题": [
-  "hub/index.html",
-  "hub/app.js",
-  "radar/app/app.js"
  ],
  "最新 / 编号倒序": [
   "hub/index.html"
@@ -4714,7 +4797,7 @@
  "托管与第三方资源": [
   "pro/privacy.html"
  ],
- "网站托管在 GitHub Pages，访问时 GitHub 可能按其政策记录访问日志。部分页面会从 cdn.jsdelivr.net 加载 RDKit.js，从 PubChem 查询分子信息；这些请求由你的浏览器直接发出。": [
+ "网站托管在 GitHub Pages，访问时 GitHub 可能按其政策记录访问日志。部分页面会从 cdn.jsdelivr.net 加载 RDKit.js，从 PubChem 查询分子信息；这些请求由你的浏览器直接发出。“教学视频”页的封面图随网站一起发布；在页面里点了播放，才会从 YouTube（youtube-nocookie.com）或哔哩哔哩加载它们的播放器，之后适用这两个平台的隐私政策。": [
   "pro/privacy.html"
  ],
  "你的权利": [
@@ -5234,7 +5317,7 @@
  "导航入口": [
   "shared-nav.js"
  ],
- "以后长按顶栏的任一入口，也能回到这里": [
+ "在顶栏上也能直接拖动入口换位置；按住一个入口不动再松开，会回到这里": [
   "shared-nav.js"
  ],
  "恢复默认": [
@@ -6036,6 +6119,66 @@
  ],
  "没有公开权重，也没有在线服务。": [
   "scimodels/scimodels.js"
+ ],
+ "哔哩哔哩": [
+  "videos/videos.js"
+ ],
+ "入门": [
+  "videos/videos.js"
+ ],
+ "进阶": [
+  "videos/videos.js"
+ ],
+ "深入": [
+  "videos/videos.js"
+ ],
+ "英文": [
+  "videos/videos.js"
+ ],
+ "其他语言": [
+  "videos/videos.js"
+ ],
+ "合集": [
+  "videos/videos.js"
+ ],
+ "分 P 合集": [
+  "videos/videos.js"
+ ],
+ "，{0}字幕": [
+  "videos/videos.js"
+ ],
+ "· 共 {0} 集": [
+  "videos/videos.js"
+ ],
+ "官方": [
+  "videos/videos.js"
+ ],
+ "转载 · 原视频": [
+  "videos/videos.js"
+ ],
+ "转载": [
+  "videos/videos.js"
+ ],
+ "在 YouTube 打开": [
+  "videos/videos.js"
+ ],
+ "在哔哩哔哩打开": [
+  "videos/videos.js"
+ ],
+ "在本页播放：": [
+  "videos/videos.js"
+ ],
+ "打开原视频：": [
+  "videos/videos.js"
+ ],
+ "共 {0} 条视频与课程": [
+  "videos/videos.js"
+ ],
+ "显示 {0} 条，共 {1} 条": [
+  "videos/videos.js"
+ ],
+ "收录 {0} 条 · {1} 个主题 · YouTube {2} 条 · 哔哩哔哩 {3} 条 · 中文讲解 {4} 条 · 链接核对于 {5}": [
+  "videos/videos.js"
  ],
  "阅读详解": [
   "fundamental-science/fundamental.js"
