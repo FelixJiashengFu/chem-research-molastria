@@ -166,6 +166,9 @@
   .ra-fab.inline{position:relative;left:auto;top:auto;transform:none;z-index:60}.ra-fab.inline .menu{left:0;transform:none}
   @media (max-width:760px){.ra-fab:not(.inline){left:10px;transform:none}.ra-fab .menu{left:0;transform:none}.ra-bar{padding:6px 6px 0}.ra-bar .in{gap:8px;padding-left:12px}.ra-brand{font-size:14px}}
   html[data-embed] #themeBtn{display:none}
+  html[data-i18n=pending] body{visibility:hidden}
+  html[data-ra-font]{--body:var(--ra-font)!important;--display:var(--ra-font)!important}
+  html[data-ra-font] body,html[data-ra-font] body :is(p,li,td,th,h1,h2,h3,h4,span,a,button,input,select,label,div,figcaption,small,b,strong,em):not(.mono,.mono *,code,pre,.n){font-family:var(--ra-font)}
   @media (prefers-reduced-motion:reduce){.ra-pill,.ra-sch li{transition:none!important}}`;
   const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
 
@@ -229,14 +232,52 @@
     b.onclick = () => { const t = cur() === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = t; try { localStorage.setItem("ra-theme", t); } catch (e) {} paint(); };
     paint(); return b;
   }
-  // Embedded in another site's frame (MolAstria's /research-atlas/): the outer page owns light/dark and sets data-theme
-  // on this document after every load, so take its current value now and hide our own switch.
-  let embedded = false;
-  try { embedded = window.parent !== window && !!window.parent.document.body.dataset.section; } catch (e) {}
+  // Embedded in a host site's frame (MolAstria's /research-atlas/). The host owns light/dark, the language and the
+  // typeface. It passes them in the first address (?embed=1&lang=…&theme=…&font=…, kept for the tab in sessionStorage
+  // so links inside the frame keep them) and later as postMessage {type:"ra-host", …}; reading the parent directly
+  // would fail in the desktop app, where the host page and this copy have different origins.
+  const H = document.documentElement;
+  const host = (() => {
+    if (window.parent === window) return null;
+    let s = null;
+    try {
+      const q = new URLSearchParams(location.search);
+      if (q.get("embed") === "1") { s = { lang: q.get("lang") || "", theme: q.get("theme") || "", font: q.get("font") || "" }; sessionStorage.setItem("ra-host", JSON.stringify(s)); }
+      else s = JSON.parse(sessionStorage.getItem("ra-host") || "null");
+    } catch (e) {}
+    if (!s) try { const d = window.parent.document; if (d.body.dataset.section) s = { lang: d.documentElement.lang === "en" ? "en" : "", theme: d.documentElement.dataset.theme || "", font: d.documentElement.dataset.font || "" }; } catch (e) {}
+    return s;
+  })();
+  const embedded = !!host;
+  const FONTS = { system: 'system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif', serif: '"Songti SC","Noto Serif SC","Source Han Serif SC",STSong,SimSun,Georgia,serif', kai: '"Kaiti SC",STKaiti,KaiTi,"Kaiti TC",serif' };
+  function applyHost(s) {
+    if (s.theme === "dark" || s.theme === "light") H.dataset.theme = s.theme; else delete H.dataset.theme;
+    const f = FONTS[s.font];
+    if (f) { H.dataset.raFont = s.font; H.style.setProperty("--ra-font", f); } else { delete H.dataset.raFont; H.style.removeProperty("--ra-font"); }
+  }
+  // English: the host's i18n.js translates this page with the atlas dictionary (assets/i18n-en.js), the same
+  // runtime every MolAstria page uses. Both sit next to this copy on the host, so the paths are relative to nav.js.
+  function english() {
+    H.lang = "en"; H.dataset.i18n = "pending";
+    setTimeout(() => { delete H.dataset.i18n; }, 3000);
+    document.addEventListener("chemhub:i18n", () => { delete H.dataset.i18n; }, { once: true });
+    const base = me ? me.src : location.href;
+    const add = (src, next) => { const s = document.createElement("script"); s.src = new URL(src, base).href; s.onload = next; s.onerror = () => { delete H.dataset.i18n; }; document.head.appendChild(s); };
+    add("i18n-en.js", () => add("../../../i18n.js"));
+  }
   if (embedded) {
-    document.documentElement.dataset.embed = "1";
-    try { const t = window.parent.document.documentElement.dataset.theme; if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-  } else try { const t = localStorage.getItem("ra-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    H.dataset.embed = "1";
+    applyHost(host);
+    if (host.lang === "en") english();
+    addEventListener("message", e => {
+      const d = e.data;
+      if (e.source !== window.parent || !d || d.type !== "ra-host") return;
+      const next = { lang: d.lang || "", theme: d.theme || "", font: d.font || "" };
+      try { sessionStorage.setItem("ra-host", JSON.stringify(next)); } catch (err) {}
+      applyHost(next);
+      if ((next.lang === "en") !== (H.lang === "en")) location.reload();
+    });
+  } else try { const t = localStorage.getItem("ra-theme"); if (t) H.dataset.theme = t; } catch (e) {}
   function mount() {
     const pop = schoolPanel();
     if (document.body.dataset.nav === "bar") {

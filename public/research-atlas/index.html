@@ -42,7 +42,16 @@
     // The desktop app leaves the atlas out of its bundle (about 100 MB of network data) and shows the website's copy.
     var desktop = window.__MOLASTRIA_DESKTOP__;
     var app = desktop ? 'https://molastria.com/research-atlas/app/' : 'app/';
-    frame.src = app + start;
+    // The atlas follows this page's language, light/dark and typeface: the first address carries them (the atlas keeps
+    // them for links inside the frame) and changes are posted to it, which also works across origins in the desktop app.
+    function host() { return { type: 'ra-host', lang: root.lang === 'en' ? 'en' : '', theme: root.dataset.theme || '', font: root.dataset.font || '' }; }
+    function src(path) {
+      var h = host(), i = path.indexOf('#'), q = 'embed=1&lang=' + h.lang + '&theme=' + h.theme + '&font=' + h.font;
+      return app + (i < 0 ? path + '?' + q : path.slice(0, i) + '?' + q + path.slice(i));
+    }
+    function post() { try { frame.contentWindow.postMessage(host(), '*'); } catch (e) {} }
+    new MutationObserver(post).observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-font', 'lang'] });
+    frame.src = src(start);
     var appPath = new URL(app, location.href).pathname;
     function mirror() {
       try {
@@ -54,20 +63,13 @@
         var t = w.document.title; if (t) document.title = t + ' · 研究图谱 · MolAstria';
       } catch (e) {}
     }
-    function sync() {
-      try {
-        var r = frame.contentDocument && frame.contentDocument.documentElement;
-        if (!r) return;
-        if (root.dataset.theme) r.dataset.theme = root.dataset.theme; else delete r.dataset.theme;
-      } catch (e) {}
-    }
     frame.addEventListener('load', function () {
-      sync(); mirror();
+      post(); mirror();
       try { frame.contentWindow.addEventListener('hashchange', mirror); } catch (e) {}
     });
-    document.addEventListener('chemhub:theme', sync);
+    document.addEventListener('chemhub:theme', post);
     // A changed address (a link to another atlas page, typing a new #/…) loads that page in the frame.
-    addEventListener('hashchange', function () { frame.src = app + target(); });
+    addEventListener('hashchange', function () { frame.src = src(target()); });
     // Links to other sites (OpenAlex, DOIs, ORCID, the GitHub repository) open outside the frame: a new tab on the
     // website, the system browser in the desktop app.
     frame.addEventListener('load', function () {
