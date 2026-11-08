@@ -8,6 +8,11 @@
 **原则：** 规划不写成现状。品牌架构里只有 MolAstria 标“已上线”，其他三个分支和三个阶段都标“规划中”；每个业务方向分开写“MolAstria 里已有”（链到真实栏目）和“规划中”，不写不存在的部门、团队、客户或服务。站长提供的配图是 images.openai.com 的链接，不引用（会失效，来源和授权不明），页面用自己画的 SVG 和 CSS。
 **法律主体暂不改：** 服务条款、隐私政策、`TRADEMARKS.md` 和页脚里的商标所有人仍是 Jiasheng Fu，因为 Stripe 账户是以个人身份开的（`PAYMENTS.md`），结账商户和条款主体要一致。等站长决定把收款和商标转到公司名下时，再一起改条款、隐私、商标说明和页脚。
 
+## 2026-11-08 桌面版去掉 panic = "abort"
+
+Mac 版 0.1.19 在后台运行约 25 分钟后闪退（SIGABRT，tokio-rt-worker 线程）。按崩溃报告里的偏移反汇编发布包，调用链是：异步回应应用内置协议请求时调用 WKURLSchemeTask 的 `didFinish`，WebKit 已经停掉了这个请求（页面换了、iframe 或视频取消了请求），于是抛出 Objective-C 异常。wry 用 `objc2::exception::catch` 包住了这个调用，本来只会丢掉这次回应；但 `Cargo.toml` 的发布配置写了 `panic = "abort"`，objc2 的文档写明这种设置下接不住异常，Rust 只能报“panic in a function that cannot unwind”并结束整个进程。
+**原因：** 应用体积只多一点（unwind 表），换来 wry 的防护真正生效；顺带，命令或后台任务里偶然的 Rust panic 也只结束那一个任务，不再带走整个应用。Windows 不会遇到这个 Objective-C 异常，但两边共用这份配置。以后不要再加回 `panic = "abort"`。
+
 ## 2026-11-07 每周精选公开前五篇和点评；导航可排序；AI 助手换成吉祥物；托管额度只留 Flash
 
 站长的几个决定和要求，一起记在这里：
