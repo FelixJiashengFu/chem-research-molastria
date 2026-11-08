@@ -85,13 +85,22 @@ check('every main page loads without script errors', async () => {
   }
 });
 
-check('pricing page shows the hosted quota as available', async () => {
+check('pricing page: content free, three allowances, everything marked available exists', async () => {
   const p = await open();
   await go(p, '/pro/index.html');
   assert.match(await text(p, '[data-live="hosted"]'), /开通即享/);
   // Everything marked as available has to exist; update this list when a feature really ships.
   const live = await p.$$eval('.plan .st.ok', (els) => els.map((e) => e.parentElement.textContent.replace(e.textContent, '').trim()));
-  assert.deepEqual(live, ['AI 托管额度：免配 key，每月 300 次带出处问答', '每周精选：ChemRxiv、arXiv 和计算化学期刊的新论文，附解读和邮件推送', '每个席位每月 300 次 AI 托管额度', '在账号页添加、移除成员', 'Stripe 收据可用于报销']);
+  assert.deepEqual(live, ['每周精选完整一期，免费订阅邮件', '在线模型每天 100 次（不登录 40 次），含 ANI-2x', '每天 5 次免配 key 的 AI 问答', 'AI 托管额度：免配 key，每月 300 次带出处问答', '在线模型每天 200 次', '每个席位每月 300 次 AI 托管额度、在线模型每天 200 次', '在账号页添加、移除成员', 'Stripe 收据可用于报销']);
+  // The allowance table has to agree with deploy/wrangler.toml.
+  const toml = readFileSync(join(ROOT, 'deploy/wrangler.toml'), 'utf8');
+  const v = (k) => new RegExp(`^${k} = "(\\d+)"`, 'm').exec(toml)[1];
+  const rows = await p.$$eval('#tiers tbody tr', (trs) => trs.map((tr) => [...tr.children].map((td) => td.textContent.trim())));
+  const row = (label) => rows.find((r) => r[0].startsWith(label)).slice(1).join('|');
+  assert.equal(row('AI 托管额度'), `—|每天 ${v('FREE_DAILY_ASKS')} 次|每月 ${v('MONTHLY_ASKS')} 次`);
+  assert.equal(row('在线模型：UMA'), `每天 ${v('UMA_DAILY')} 次|每天 ${v('UMA_DAILY_ACCOUNT')} 次|每天 ${v('UMA_DAILY_PRO')} 次`);
+  assert.equal(row('在线模型：MACE'), Array(3).fill(`每天 ${v('ASL_DAILY')} 次`).join('|'));
+  assert.equal(await p.getAttribute('.plan[data-plan=free] a.btn', 'href'), 'account.html');
   await finish(p);
 });
 
@@ -272,13 +281,19 @@ check('email code sign-in and group members', async () => {
   await finish(p);
 });
 
-check('an address with no subscription gets the same answer but no code', async () => {
+check('an address with no subscription signs in as a free account: digest, a daily AI allowance and the hosted provider', async () => {
   const p = await open();
   await go(p, '/pro/account.html');
-  await p.fill('#login-email', 'nobody@example.com');
-  await p.click('#login-btn');
-  await p.waitForSelector('#code-field:not([hidden])');
-  assert.equal(await p.inputValue('#login-code'), '');
+  await signIn(p, 'nobody@example.com');
+  assert.equal(await text(p, '#plan-badge'), '免费');
+  assert.equal(await p.isVisible('#lapsed-card'), true);
+  assert.equal(await p.isVisible('#digest-card'), true, 'weekly picks for every account');
+  assert.equal(await p.isVisible('#quota-card'), true);
+  assert.equal(await text(p, '#quota-limit'), '5');
+  assert.match(await text(p, '#quota-reset'), /24 小时/);
+  await p.click('#open-ai');
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  assert.equal(await p.evaluate(() => window.ChemAI.settings().provider), 'hosted');
   await finish(p);
 });
 
@@ -776,7 +791,7 @@ check('models page: every job runs once and its result is shown', async () => {
   await finish(p);
 });
 
-check('models page: MACE academic box, ANI-2x for Pro, ions kept to window 1, XYZ input, parameter limits', async () => {
+check('models page: MACE academic box, ANI-2x free, ions kept to window 1, XYZ input, parameter limits', async () => {
   const p = await openModels('organic');
   await p.selectOption('#m-model', 'mace-off23-small');
   assert.equal(await p.isVisible('#m-asl'), true);
@@ -786,8 +801,8 @@ check('models page: MACE academic box, ANI-2x for Pro, ions kept to window 1, XY
   await p.check('#m-academic');
   assert.equal(await runOff(p), false, await text(p, '#m-why'));
   await p.selectOption('#m-model', 'ani-2x');
-  assert.match(await text(p, '#m-why'), /Pro/);
-  assert.equal(await runOff(p), true);
+  assert.doesNotMatch(await text(p, '#m-why'), /Pro/);
+  assert.equal(await runOff(p), false, 'ANI-2x is free for everyone');
   // A cation is fine in window 1 and refused in window 2.
   await p.click('#m-tabs [data-win=charged]');
   await p.fill('#m-smiles', '[NH4+]');

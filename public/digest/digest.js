@@ -1,4 +1,4 @@
-/* 每周精选页：读账号服务的公开预览（本周概览 + 前五篇和点评），写出下一期的时间，Pro 用户的按钮改成去订阅。
+/* 每周精选页：读账号服务的公开接口（本周概览、全部论文和点评；旧版服务只给前五篇），写出下一期的时间，登录后的按钮改成去订阅。
    论文标题、作者、解读是外部内容：全部转义，标 translate="no"，解读按站点语言取中文或英文那一份。 */
 (() => {
   'use strict';
@@ -35,7 +35,7 @@
         + `<p class="dg-why" translate="no">${h(why)}</p></div></li>`;
     }).join('');
     const rest = Math.max(0, (d.total || items.length) - items.length);
-    $('dg-more').textContent = rest ? T(`完整的一期还有 ${rest} 篇，每周一随邮件送到 Pro 会员的邮箱`) : '';
+    $('dg-more').textContent = rest ? T(`这一期还有 ${rest} 篇，登录免费账号后在账号页能看到，也可以订阅邮件`) : '';
     $('dg-letter').hidden = false;
     $('dg-waiting').hidden = true;
   }
@@ -45,7 +45,7 @@
     $('dg-letter').hidden = true;
   }
 
-  if (account?.pro) {
+  if (account?.email) {
     $('dg-actions').innerHTML = `<a class="dg-btn primary" href="../pro/account.html#digest-card">${T('在账号页订阅邮件')} <i class="ico-ext ico-right" aria-hidden="true"></i></a>`;
   }
   if (!api) { waiting(); return; }

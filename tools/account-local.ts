@@ -120,6 +120,6 @@ const env = {
   UMA_ORIGIN: Deno.env.get("UMA_ORIGIN") ?? (Deno.env.get("FAKE_AI") ? "https://uma.test" : ""),
   UMA_SERVER_SECRET: Deno.env.get("UMA_SERVER_SECRET") ?? (Deno.env.get("FAKE_AI") ? "e2e-secret-0123456789abcdef0123456789" : ""),
   // e2e runs every job many times from one address; the daily limits themselves are tested in tools/account-test.ts.
-  ...(Deno.env.get("FAKE_AI") ? { UMA_DAILY: "100000", ASL_DAILY: "100000" } : {}),
+  ...(Deno.env.get("FAKE_AI") ? { UMA_DAILY: "100000", UMA_DAILY_ACCOUNT: "100000", UMA_DAILY_PRO: "100000", ASL_DAILY: "100000" } : {}),
 };
 Deno.serve({ port, hostname: "127.0.0.1" }, (req) => worker.fetch(req, env));

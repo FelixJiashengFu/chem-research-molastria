@@ -127,7 +127,8 @@ await test("checkout: a paid session signs in and shows Pro", async () => {
   eq(r.status, 200, "status");
   proToken = r.data.token;
   eq([r.data.account.email, r.data.account.pro, r.data.account.role, r.data.account.cycle], ["pro@example.com", true, "pro", "month"]);
-  eq(r.data.account.usage, { month: new Date().toISOString().slice(0, 7), asks: 0, limit: 3 });
+  eq(r.data.account.usage.period, "month", "Pro counts by the month");
+  eq(r.data.account.usage, { period: "month", month: new Date().toISOString().slice(0, 7), asks: 0, limit: 3 });
 });
 
 await test("checkout: unpaid, old, malformed and missing sessions are refused", async () => {
@@ -148,11 +149,14 @@ await test("/me needs a valid token", async () => {
   eq((await call("GET", "/me", undefined, proToken)).data.plan, "pro");
 });
 
-await test("email code: no mail for addresses without a subscription, same answer", async () => {
+await test("email code: any address gets a code and becomes a free account; same answer whether or not it paid", async () => {
   const before = mails.length;
   const r = await call("POST", "/auth/start", { email: "stranger@example.com" });
   const r2 = await call("POST", "/auth/start", { email: "lapsed@example.com" });
-  eq([r.status, r.data, r2.data, mails.length], [200, { ok: true }, { ok: true }, before]);
+  eq([r.status, r.data, r2.data, mails.length], [200, { ok: true }, { ok: true }, before + 2]);
+  const v = await call("POST", "/auth/verify", { email: "stranger@example.com", code: codeFor("stranger@example.com") });
+  eq([v.status, v.data.account.pro, v.data.account.role, v.data.account.usage.period, v.data.account.usage.limit], [200, false, "free", "day", 5]);
+  sqlite.prepare("DELETE FROM sessions WHERE email = 'stranger@example.com'").run();
 });
 
 await test("email code: case-insensitive match finds the team buyer; wrong codes count", async () => {
@@ -216,11 +220,28 @@ await test("hosted AI: upstream failures are not counted", async () => {
   eq((await call("GET", "/me", undefined, memberToken)).data.usage.asks, 0);
 });
 
-await test("team: removing a member ends their access at once", async () => {
+await test("team: removing a member ends their Pro at once; they keep a free account with a small daily AI allowance", async () => {
   await call("DELETE", "/team/members", { email: "a@lab.edu" }, piToken);
   const me = await call("GET", "/me", undefined, memberToken);
-  eq([me.data.pro, me.data.role], [false, "free"]);
-  eq((await call("POST", "/ai/chat", { provider: "deepseek", model: "deepseek-flash", messages: [{ role: "user", content: "hi" }] }, memberToken)).status, 403);
+  eq([me.data.pro, me.data.role, me.data.usage.period], [false, "free", "day"]);
+  const ask = (max = 2000) => call("POST", "/ai/chat", { provider: "deepseek", model: "deepseek-flash", messages: [{ role: "user", content: "hi" }], max_tokens: max }, memberToken);
+  env.FREE_DAILY_ASKS = "2";
+  let r = await ask();
+  eq([r.status, r.headers.get("X-MolAstria-Usage")], [200, "1/2"]);
+  r = await ask(300);
+  eq([r.status, r.headers.get("X-MolAstria-Usage")], [200, "1/2"], "short call kept apart");
+  upstreamStatus = 503;
+  eq((await ask()).status, 503);
+  upstreamStatus = 200;
+  eq((await ask()).status, 200, "the failed call was given back");
+  r = await ask();
+  eq([r.status, /明天再来/.test(r.data.error?.message)], [429, true], "over the daily allowance");
+  eq((await call("GET", "/me", undefined, memberToken)).data.usage.asks, 2, "refused call not counted");
+  env.FREE_DAILY_ASKS = "0";
+  r = await ask();
+  eq([r.status, r.data.error?.message?.includes("自己的 key")], [403, true], "0 turns the free allowance off");
+  delete env.FREE_DAILY_ASKS;
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'aifree%'").run();
 });
 
 await test("Stripe is asked again only after the cache goes stale", async () => {
@@ -440,22 +461,23 @@ await test("weekly picks: a failed model still gives a plain list; no sources gi
   await tick("build");
 });
 
-await test("weekly picks: visitors see the first five picks with comments, the full issue needs Pro", async () => {
+await test("weekly picks: everyone sees the whole issue with comments; the account endpoints need a sign-in, not Pro", async () => {
   const preview = await call("GET", "/digest/preview");
   eq(preview.status, 200);
-  // everyone sees the first five picks with their comments; the full issue stays behind Pro
+  // the content is free: the public answer is the whole issue with its comments
   if (!preview.data.items[0].why_zh) throw new Error("the public preview should carry the comments");
-  if (preview.data.items.length > 5) throw new Error("the preview shows at most five picks");
+  eq(preview.data.items.length, preview.data.total, "the whole issue is public");
   if (!preview.headers.get("Cache-Control")?.includes("public")) throw new Error("preview should be cacheable");
   eq((await call("GET", "/digest/latest")).status, 401);
   sqlite.prepare("DELETE FROM sessions WHERE email = 'stranger@x.org'").run();
-  eq((await call("GET", "/digest/latest", undefined, memberToken)).status, 403, "no longer Pro");
+  eq((await call("GET", "/digest/latest", undefined, memberToken)).status, 200, "a free account reads it too");
   const full = await call("GET", "/digest/latest", undefined, adminToken);
   eq([full.data.subscribed, !!full.data.digest.items[0].why_en], [false, true]);
 });
 
 await test("weekly picks: subscribers get one mail per issue, in their language, with a working unsubscribe", async () => {
-  eq((await call("POST", "/digest/subscribe", { lang: "zh" }, memberToken)).status, 403, "needs Pro");
+  eq((await call("POST", "/digest/subscribe", { lang: "zh" }, memberToken)).data.subscribed, true, "a free account may subscribe");
+  await call("DELETE", "/digest/subscribe", {}, memberToken);
   eq((await call("POST", "/digest/subscribe", { lang: "en" }, adminToken)).data.subscribed, true);
   await call("POST", "/digest/subscribe", { lang: "zh" }, friendToken);
   mails.length = 0;
@@ -481,7 +503,7 @@ await test("weekly picks: subscribers get one mail per issue, in their language,
   eq((await worker.fetch(new Request(`https://api.test${path}`), env)).status, 404, "used link");
 });
 
-await test("weekly picks: failed sends retry; lapsed subscribers and old issues are skipped; the daily cap holds", async () => {
+await test("weekly picks: failed sends retry; free and lapsed subscribers get it too; old issues are skipped; the daily cap holds", async () => {
   await call("POST", "/digest/subscribe", { lang: "zh" }, adminToken);
   mails.length = 0;
   mailDown = true;
@@ -494,8 +516,9 @@ await test("weekly picks: failed sends retry; lapsed subscribers and old issues 
   sqlite.prepare("INSERT INTO digest_subs (email, token, lang, created) VALUES ('gone@x.org', 'gone-token', 'zh', 1)").run();
   mails.length = 0;
   await tick("send");
-  eq(mailsTo("gone@x.org").length, 0, "not Pro any more");
-  eq((sqlite.prepare("SELECT sent FROM digest_sends WHERE email = 'gone@x.org'").get() as any).sent, 0, "and not looked up again");
+  eq(mailsTo("gone@x.org").length, 1, "no Pro needed");
+  await tick("send");
+  eq(mailsTo("gone@x.org").length, 1, "once per issue");
 
   sqlite.prepare("INSERT INTO digest_subs (email, token, lang, created) VALUES ('late@x.org', 'late-token', 'zh', 1)").run();
   sqlite.prepare("INSERT INTO grants (email, source, expires, created) VALUES ('late@x.org', 'admin', NULL, 1)").run();
@@ -557,10 +580,10 @@ await test("UMA: off until configured, then health, jobs and polling through the
   eq((await call("POST", "/uma/jobs", { smiles: "CCC", job: "opt" })).status, 429, "daily limit per visitor");
 });
 
-await test("online models: ANI-2x only for Pro, MACE free and the same for everyone with academic use confirmed, one job per visitor", async () => {
-  Object.assign(env, { ASL_DAILY: "2", ANI_DAILY_PRO: "5" });
-  const anon = await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" });
-  eq([anon.status, anon.data.error?.message?.includes("Pro")], [403, true], "ANI-2x needs Pro");
+await test("online models: ANI-2x free like UMA, MACE free and the same for everyone with academic use confirmed, one job per visitor", async () => {
+  Object.assign(env, { ASL_DAILY: "2", UMA_DAILY: "40" });
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'uma:%'").run();
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" })).status, 202, "anonymous visitors run ANI-2x");
   const pro = adminToken; // permanent Pro (an admin grant); the Stripe Pro account was cancelled by an earlier test
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" }, pro)).status, 202, "Pro runs ANI-2x");
   eq((umaCalls.at(-1)?.body as any).model, "ani-2x");
@@ -693,7 +716,7 @@ await test("API v3: uses are counted by cost, a job that does not fit is refused
   eq(used("uma:local"), 5, "the refused jobs were not counted");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" })).status, 202, "opt (1) fits");
   const out = await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" });
-  eq([out.status, out.data.error?.message], [429, "今天的 UMA / OMol25 模型计算次数已用完（每天 6 次，Pro 会员每天更多），明天再来"]);
+  eq([out.status, out.data.error?.message], [429, "今天的在线模型计算次数已用完（每天 6 次，登录免费账号每天更多），明天再来"]);
   eq(used("uma:local"), 6);
   // An offline computer and a busy visitor give back everything the job would have cost.
   resetUses();
@@ -736,11 +759,11 @@ await test("API v3: the old Meta page's requests behave as before", async () => 
   eq((await call("GET", "/uma/jobs/0123456789abcdef")).data.result.ip_uma_s, 10.9, "polling unchanged");
 });
 
-await test("online models: the code's daily allowances match wrangler.toml (40 / 200 / 40 / 200)", async () => {
+await test("online models: the code's daily allowances match wrangler.toml (40 / 100 / 200 / 40; free AI 5)", async () => {
   const toml = await Deno.readTextFile(new URL("../deploy/wrangler.toml", import.meta.url));
-  const names = ["UMA_DAILY", "UMA_DAILY_PRO", "ASL_DAILY", "ANI_DAILY_PRO"];
+  const names = ["UMA_DAILY", "UMA_DAILY_ACCOUNT", "UMA_DAILY_PRO", "ASL_DAILY", "FREE_DAILY_ASKS"];
   const want = (name: string) => new RegExp(`^${name} = "(\\d+)"`, "m").exec(toml)?.[1];
-  eq(names.map(want), ["40", "200", "40", "200"]);
+  eq(names.map(want), ["40", "100", "200", "40", "5"]);
   for (const k of names) delete env[k]; // from here on the worker uses its own fallbacks
   // A counter that is already full makes the refusal quote the daily limit.
   const limit = async (counter: string, body: any, token?: string) => {
@@ -751,7 +774,9 @@ await test("online models: the code's daily allowances match wrangler.toml (40 /
   eq(await limit("uma:local", { smiles: "CCO", job: "opt" }), [429, want("UMA_DAILY")], "anonymous, UMA and OMol25 models");
   eq(await limit("uma:boss@molastria.com", { smiles: "CCO", job: "opt" }, adminToken), [429, want("UMA_DAILY_PRO")], "Pro, UMA and OMol25 models");
   eq(await limit("asl:local", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true }), [429, want("ASL_DAILY")], "MACE");
-  eq(await limit("ani:boss@molastria.com", { smiles: "CCO", job: "opt", model: "ani-2x" }, adminToken), [429, want("ANI_DAILY_PRO")], "ANI-2x");
+  eq(await limit("uma:a@lab.edu", { smiles: "CCO", job: "opt", model: "ani-2x" }, memberToken), [429, want("UMA_DAILY_ACCOUNT")], "free account, ANI-2x shares the allowance");
+  const me = await call("GET", "/me", undefined, memberToken);
+  eq([me.data.role, me.data.usage.limit], ["free", Number(want("FREE_DAILY_ASKS"))], "free hosted AI default");
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");

@@ -180,3 +180,8 @@ tbody tr:last-child td{border-bottom:0}
 .digest-preview li{padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:14px;line-height:1.55}
 .digest-preview small{display:block;color:var(--muted);font-size:12px}
 .digest-preview li p{margin:6px 0 0;color:var(--ink-2);font-size:13.5px;line-height:1.75}
+/* 价格页：三档额度与“钱花在哪” */
+.funds .feat{max-width:46em}
+.pro-hero .lead a{color:inherit;text-decoration:underline;text-decoration-color:var(--line)}
+html[lang=en] .funds .feat b{margin-right:.3em}
+#tiers td:first-child{min-width:9em}

@@ -20,25 +20,25 @@
 <main class="doc acct">
   <p class="eyebrow">MOLASTRIA PRO</p>
   <h1>我的账号</h1>
-  <p class="meta">Pro 权益绑定在付款邮箱上。换设备或换浏览器时，用这个邮箱收验证码登录即可。</p>
+  <p class="meta">任何邮箱都能登录，账号本身免费。Pro 支持者的权益绑定在付款邮箱上，换设备或换浏览器时用这个邮箱收验证码登录即可。</p>
 
   <section class="acct-card" id="acct-off" hidden>
     <h2>账号服务正在开通</h2>
-    <p>已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效，我们也会发邮件通知你。</p>
+    <p>已经付款的用户不用担心：开通后用付款时填写的邮箱登录，权益会自动生效。</p>
     <p class="acct-fine"><a href="index.html">返回 Pro 页面</a></p>
   </section>
 
   <section class="acct-card" id="acct-login" hidden aria-labelledby="login-h">
-    <h2 id="login-h">用付款邮箱登录</h2>
-    <p class="acct-sub" id="login-sub">我们会给这个邮箱发一个 6 位验证码，不需要密码。</p>
+    <h2 id="login-h">用邮箱登录</h2>
+    <p class="acct-sub" id="login-sub">我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。</p>
     <form id="login-form" class="acct-form" novalidate>
-      <label class="co-field">邮箱<input type="email" id="login-email" autocomplete="email" placeholder="付款时填写的邮箱" required></label>
+      <label class="co-field">邮箱<input type="email" id="login-email" autocomplete="email" placeholder="you@university.edu" required></label>
       <label class="co-field" id="card-field" hidden>VIP 卡号<input id="login-card" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VIP-XXXX-XXXX-XXXX"></label>
       <label class="co-field" id="code-field" hidden>验证码<input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 位数字"></label>
       <p class="co-msg" id="login-msg" role="status" aria-live="polite"></p>
       <div class="acct-actions"><button type="button" class="btn" id="login-back" hidden>换个邮箱</button><button type="submit" class="btn primary" id="login-btn">发送验证码</button></div>
     </form>
-    <p class="acct-fine">还没有 Pro？<a href="index.html">查看套餐</a> · <button type="button" class="acct-link" id="card-toggle">我有 VIP 卡</button></p>
+    <p class="acct-fine">想支持 MolAstria？<a href="index.html">看看 Pro 支持者</a> · <button type="button" class="acct-link" id="card-toggle">我有 VIP 卡</button></p>
   </section>
 
   <section id="acct-main" hidden>
@@ -50,9 +50,9 @@
 
     <div class="acct-card" id="quota-card">
       <h2>AI 托管额度</h2>
-      <div class="acct-meter" id="quota-meter" role="meter" aria-label="本月已用 AI 托管额度" aria-valuemin="0"><span id="quota-bar"></span></div>
-      <p class="acct-line"><b id="quota-used">0</b> / <span id="quota-limit">300</span> 次 · 每月 1 日重置</p>
-      <p class="acct-sub">在 AI 助手的设置里选择“MolAstria Pro”，不用自备 key。每次问答计 1 次；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。关键词提取、连接测试这类短调用不计入。</p>
+      <div class="acct-meter" id="quota-meter" role="meter" aria-label="已用 AI 托管额度" aria-valuemin="0"><span id="quota-bar"></span></div>
+      <p class="acct-line"><b id="quota-used">0</b> / <span id="quota-limit">300</span> 次 · <span id="quota-reset">每月 1 日重置</span></p>
+      <p class="acct-sub">在 AI 助手的设置里选择“MolAstria 托管”，不用自备 key。每次问答计 1 次；deepseek-v4-pro 按 3 倍计，AI 实验室一轮计 3 次，特别长的内容按长度多计。关键词提取、连接测试这类短调用不计入。</p>
       <button type="button" class="btn primary" id="open-ai">打开 AI 助手</button>
     </div>
 
@@ -98,9 +98,10 @@
     </div>
 
     <div class="acct-card" id="lapsed-card" hidden>
-      <h2>这个邮箱没有有效的 Pro 订阅</h2>
-      <p>订阅可能已经到期或取消。重新订阅后，用同一个邮箱登录即可恢复。</p>
-      <p><a class="btn primary" href="index.html">查看套餐</a></p>
+      <h2>免费账号</h2>
+      <p>内容对所有人免费，账号给的是更多的量：在线模型每天 <span id="free-uma">100</span> 次（不登录是 40 次），每周精选可以订阅邮件。以前订过 Pro 的，订阅可能已经到期或取消，用同一个邮箱重新订阅即可恢复。</p>
+      <p>觉得 MolAstria 有用，可以成为 Pro 支持者：AI 每月 300 次，在线模型每天 200 次，你的钱用来付服务器、GPU 电费和 AI 费用。</p>
+      <p><a class="btn primary" href="index.html">成为 Pro 支持者</a></p>
     </div>
 
     <p class="acct-foot"><button type="button" class="btn" id="signout">退出登录</button><span id="synced"></span></p>
