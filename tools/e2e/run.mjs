@@ -427,7 +427,23 @@ check('research atlas: the copied site loads in its frame, follows the theme, mi
   await f.evaluate(() => { const a = document.createElement('a'); a.href = 'https://openalex.org/'; a.textContent = 'x'; document.body.append(a); a.click(); });
   assert.deepEqual(await p.evaluate(() => window.__opened), ['https://openalex.org/'], 'other sites open outside the frame');
   assert.match(f.url(), /research-atlas\/app\//, 'the frame stayed on the atlas');
+  // The typeface from the display panel reaches the atlas, also after a link inside the frame.
+  await p.evaluate(() => { document.documentElement.dataset.font = 'serif'; });
+  await p.waitForFunction(() => document.getElementById('atlas-frame').contentDocument.documentElement.dataset.raFont === 'serif');
+  await Promise.all([p.waitForEvent('framenavigated', { predicate: (fr) => /schools\/mit\/$/.test(fr.url()) }), f.evaluate(() => { location.href = '../schools/mit/'; })]);
+  const mit = p.frame({ url: /research-atlas\/app\/schools\/mit\// });
+  await mit.waitForSelector('h1');
+  assert.equal(await mit.evaluate(() => document.documentElement.dataset.raFont), 'serif', 'the typeface survives a link inside the frame');
   await finish(p);
+  // In English the atlas is translated by the site's own i18n.js with the atlas dictionary.
+  const e = await open();
+  await go(e, '/research-atlas/index.html?lang=en#/');
+  const ef = e.frame({ url: /research-atlas\/app\// });
+  await ef.waitForFunction(() => document.documentElement.lang === 'en' && !document.documentElement.dataset.i18n);
+  assert.match(await ef.textContent('.hero h1, h1'), /Research Atlas/);
+  const left = await ef.evaluate(() => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), out = []; for (let n = w.nextNode(); n; n = w.nextNode()) if (/[\u3400-\u9fff]/.test(n.nodeValue) && !n.parentElement.closest('script,style')) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(left, [], 'no Chinese left on the English home page');
+  await finish(e);
 });
 
 check('PreprintRadar in the desktop app: notifications reach the system through the app, not the WebView', async () => {
