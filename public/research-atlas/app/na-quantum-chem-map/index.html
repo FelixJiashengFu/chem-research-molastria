@@ -1,0 +1,330 @@
+<meta charset="utf-8">
+<title>北美量子化学合作地图</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+/* Layout: a full-bleed survey map is the page; a field-notebook panel floats at left, a specimen card slides in at right. */
+:root {
+  --ocean: #e3e9ec; --land: #f7f6f1; --land-alt: #efeee8; --border: #bfc6cb; --lake: #d6e1e6;
+  --ink: #1d262c; --muted: #5f6b73; --panel: rgba(250,250,247,.94); --line: #d5dadd;
+  --accent: #1f5f8b; --edge: 31,95,139; --halo: rgba(255,255,255,.85);
+  --a-es: #2a6fdb; --a-ex: #d0452f; --a-rd: #8c5bd6; --a-md: #1f9a76; --a-mat: #c98a12; --a-ml: #d23f8f;
+  --display: "Noto Serif SC", "Songti SC", Georgia, serif;
+  --body: "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ocean: #0c1317; --land: #18222a; --land-alt: #1c2730; --border: #34434e; --lake: #0f191f;
+  --ink: #e4eaee; --muted: #93a2ac; --panel: rgba(18,26,32,.94); --line: #2b3842;
+  --accent: #7cb8e6; --edge: 124,184,230; --halo: rgba(12,19,23,.85);
+  --a-es: #6ea4ff; --a-ex: #ff7b63; --a-rd: #b892ff; --a-md: #4fd1a5; --a-mat: #f0b443; --a-ml: #ff77c0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ocean: #0c1317; --land: #18222a; --land-alt: #1c2730; --border: #34434e; --lake: #0f191f;
+  --ink: #e4eaee; --muted: #93a2ac; --panel: rgba(18,26,32,.94); --line: #2b3842;
+  --accent: #7cb8e6; --edge: 124,184,230; --halo: rgba(12,19,23,.85);
+  --a-es: #6ea4ff; --a-ex: #ff7b63; --a-rd: #b892ff; --a-md: #4fd1a5; --a-mat: #f0b443; --a-ml: #ff77c0; color-scheme: dark }
+html, body { height: 100%; }
+body { background: var(--ocean); color: var(--ink); font-family: var(--body); overflow: hidden; }
+#map { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#map.drag { cursor: grabbing; }
+.panel { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); width: 340px; max-height: calc(100% - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; backdrop-filter: blur(6px); display: flex; flex-direction: column; overflow: hidden; z-index: 3; }
+.panel header { padding: 16px 18px 10px; border-bottom: 1px solid var(--line); }
+h1 { font-family: var(--display); font-weight: 900; font-size: 22px; line-height: 1.2; margin: 0; text-wrap: balance; letter-spacing: .02em; }
+.sub { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.5; }
+.stats { display: flex; gap: 14px; margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.stats b { color: var(--ink); font-weight: 500; font-size: 15px; display: block; font-variant-numeric: tabular-nums; }
+.scroll { overflow-y: auto; padding: 12px 18px 16px; display: flex; flex-direction: column; gap: 14px; }
+.label { font-size: 11px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+input[type=search] { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--land); color: var(--ink); font: inherit; font-size: 13px; }
+input:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.areas { display: flex; flex-direction: column; gap: 3px; }
+.area { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 2px 0; user-select: none; }
+.area input { margin: 0; accent-color: var(--accent); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.area .ct { margin-left: auto; font-family: var(--mono); color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--accent); color: var(--land); }
+input[type=range] { flex: 1; accent-color: var(--accent); min-width: 100px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.insts { display: flex; flex-direction: column; }
+.inst { display: flex; gap: 8px; align-items: baseline; font-size: 13px; padding: 4px 0; border-bottom: 1px dashed var(--line); cursor: pointer; background: none; border-left: 0; border-right: 0; border-top: 0; color: var(--ink); text-align: left; font-family: inherit; }
+.inst:hover { color: var(--accent); }
+.inst .nm { flex: 1; min-width: 0; }
+.inst .rg { color: var(--muted); font-size: 11px; }
+.note { font-size: 11px; color: var(--muted); line-height: 1.55; }
+.note a { color: var(--accent); }
+.card { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: 400px; max-height: calc(100% - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; backdrop-filter: blur(6px); z-index: 4; display: flex; flex-direction: column; overflow: hidden; }
+.card .hd { padding: 16px 18px 12px; border-bottom: 1px solid var(--line); position: relative; }
+.card h2 { font-family: var(--display); font-weight: 600; font-size: 21px; margin: 0 28px 4px 0; text-wrap: balance; }
+.card .where { font-size: 13px; color: var(--muted); }
+.close { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; background: var(--land); color: var(--ink); cursor: pointer; font-size: 15px; line-height: 1; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); margin-top: 8px; }
+.kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.kv div { font-size: 11px; color: var(--muted); }
+.kv b { display: block; font-family: var(--mono); font-weight: 500; font-size: 16px; color: var(--ink); }
+.links { display: flex; gap: 12px; margin-top: 10px; font-size: 12px; flex-wrap: wrap; }
+.links a, .paper a { color: var(--accent); text-decoration: none; }
+.links a:hover, .paper a:hover { text-decoration: underline; }
+.card .body { overflow-y: auto; padding: 12px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.paper { font-size: 13px; line-height: 1.45; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.paper .m { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
+.paper .co { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.collab { display: flex; flex-wrap: wrap; gap: 6px; }
+.collab button { font: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 99px; padding: 3px 9px; background: var(--land); color: var(--ink); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.collab button:hover { border-color: var(--accent); }
+.collab .n { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+.tip { position: fixed; pointer-events: none; z-index: 5; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 12px; max-width: 260px; line-height: 1.4; }
+.tip .m { color: var(--muted); font-size: 11px; }
+.loading { position: fixed; inset: 0; display: grid; place-items: center; font-family: var(--mono); color: var(--muted); font-size: 13px; z-index: 2; pointer-events: none; }
+.zoom { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 4px; z-index: 3; }
+.zoom button { width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 17px; cursor: pointer; }
+.toggle { display: none; }
+@media (max-width: 760px) {
+  .panel { top: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); width: auto; max-height: 52%; }
+  .panel.min .scroll { display: none; }
+  .panel header { padding: 12px 14px 8px; }
+  h1 { font-size: 18px; }
+  .toggle { display: inline-block; position: absolute; right: 10px; top: 10px; border: 1px solid var(--line); background: var(--land); color: var(--ink); border-radius: 6px; font: inherit; font-size: 12px; padding: 3px 8px; }
+  .panel header { position: relative; }
+  .card { left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); width: auto; top: calc(8px + env(safe-area-inset-top, 0px)); max-height: 60%; }
+  .zoom { bottom: auto; top: calc(8px + env(safe-area-inset-top, 0px)); }
+}
+@media (prefers-reduced-motion: no-preference) { .card { animation: slide .18s ease-out; } @keyframes slide { from { transform: translateX(12px); opacity: .6; } } }
+</style>
+
+<canvas id="map" aria-label="美国与加拿大地图上的教授合作网络"></canvas>
+<div class="loading" id="loading">正在载入地图与网络…</div>
+
+<aside class="panel" id="panel">
+  <header>
+    <h1>北美量子化学与计算化学合作地图</h1>
+    <button class="toggle" id="toggle" aria-expanded="true">收起</button>
+    <div class="sub">美国与加拿大高校中做量子化学、计算化学理论与方法的课题组负责人。点是教授，落在学校的真实经纬度；线是合作发表的论文。</div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <div class="scroll">
+    <div>
+      <label class="label" for="q">搜索教授或学校</label>
+      <input id="q" type="search" list="names" placeholder="例如 Head-Gordon、Toronto" autocomplete="off">
+      <datalist id="names"></datalist>
+    </div>
+    <div>
+      <div class="label">研究方向（按论文主题自动归类）</div>
+      <div class="areas" id="areas"></div>
+    </div>
+    <div>
+      <div class="label">国家</div>
+      <div class="seg" id="country">
+        <button data-c="all" aria-pressed="true">全部</button><button data-c="US" aria-pressed="false">美国</button><button data-c="CA" aria-pressed="false">加拿大</button>
+      </div>
+    </div>
+    <div>
+      <label class="label" for="minw">合作线：至少共同发表 <span class="mono" id="minwv">1</span> 篇</label>
+      <div class="row"><input id="minw" type="range" min="1" max="10" value="1"></div>
+      <div class="row" style="margin-top:6px"><label class="area"><input type="checkbox" id="showedges" checked> 显示全部合作线</label></div>
+    </div>
+    <div>
+      <div class="label">教授最多的学校</div>
+      <div class="insts" id="insts"></div>
+    </div>
+    <div class="note" id="method"></div>
+  </div>
+</aside>
+
+<section class="card" id="card" hidden aria-live="polite"></section>
+<div class="tip" id="tip" hidden></div>
+<div class="zoom"><button id="zin" aria-label="放大">+</button><button id="zout" aria-label="缩小">−</button><button id="zreset" aria-label="复位" style="font-size:13px">⌂</button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(async function () {
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const [base, net] = await Promise.all([fetch("data/basemap.json").then(r => r.json()), fetch("data/network.json").then(r => r.json())]);
+document.getElementById("loading").remove();
+const AREAS = net.meta.areas, AREA_NAME = Object.fromEntries(AREAS);
+const inst = Object.fromEntries(net.inst.map(i => [i.id, i]));
+const nodes = net.nodes, byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+const adj = {}; for (const [a, b, k] of net.edges) { (adj[a] ||= []).push([b, k]); (adj[b] ||= []).push([a, k]); }
+
+const canvas = document.getElementById("map"), ctx = canvas.getContext("2d");
+let W, H, dpr;
+const proj = d3.geoConicConformal().parallels([33, 58]).rotate([97, 0]);
+function fit() { const L = W > 760 ? 370 : 12, B = W > 760 ? 20 : H * 0.3; proj.fitExtent([[L, 20], [W - 20, H - B]], { type: "MultiPoint", coordinates: [[-127, 49], [-66, 45], [-80, 25], [-117, 32], [-95, 60], [-125, 55], [-60, 50]] }); }
+function resize() { dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; fit(); project(); draw(); }
+
+let paths = [];
+function project() {
+  const gp = d3.geoPath(proj);
+  paths = base.features.map(f => ({ k: f.properties.k, p: new Path2D(gp(f) || ""), f }));
+  for (const i of net.inst) [i.x, i.y] = proj([i.lng, i.lat]);
+  const groups = d3.group(nodes, n => n.i);
+  for (const [iid, arr] of groups) { arr.sort((a, b) => b.np - a.np); arr.forEach((n, j) => { const r = Math.sqrt(j), t = j * 2.39996; n.ox = r * Math.cos(t); n.oy = r * Math.sin(t); n.bx = inst[iid].x; n.by = inst[iid].y; }); }
+  labels = base.features.filter(f => f.properties.k === "admin1").map(f => ({ a: f.properties.a, c: gp.centroid(f), area: gp.area(f) }));
+}
+let labels = [];
+
+let T = d3.zoomIdentity, sel = null, hover = null, area = new Set(AREAS.map(a => a[0])), country = "all", minw = 1, showEdges = true;
+const visible = n => area.has(n.a) && (country === "all" || inst[n.i].cc === country);
+function pos(n) { const k = T.k, s = 0.9 * Math.pow(Math.min(Math.max(k, 1), 60), 0.85); return [T.applyX(n.bx) + n.ox * s, T.applyY(n.by) + n.oy * s]; }
+function rad(n) { return (1.6 + Math.sqrt(n.np) / 4) * (0.75 + 0.22 * Math.log2(Math.max(1, T.k))); }
+
+function draw() {
+  if (!W) return;
+  const col = Object.fromEntries(AREAS.map(([a]) => [a, css("--a-" + a)]));
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = css("--ocean"); ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.setTransform(dpr * T.k, 0, 0, dpr * T.k, dpr * T.x, dpr * T.y);
+  const land = css("--land"), landAlt = css("--land-alt"), border = css("--border"), lake = css("--lake");
+  ctx.lineWidth = 0.6 / T.k; ctx.strokeStyle = border;
+  for (const p of paths) {
+    ctx.fillStyle = p.k === "lake" ? lake : p.k === "other" ? landAlt : land;
+    ctx.fill(p.p); if (p.k !== "lake") ctx.stroke(p.p);
+  }
+  ctx.restore();
+  // state / province abbreviations
+  ctx.font = `500 ${Math.min(13, 8 + T.k)}px ${css("--mono")}`; ctx.fillStyle = css("--border"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const l of labels) if (l.area * T.k * T.k > 900 && l.a) ctx.fillText(l.a, T.applyX(l.c[0]), T.applyY(l.c[1]));
+
+  const P = {}; for (const n of nodes) if (visible(n)) P[n.id] = pos(n);
+  const focus = sel || hover;
+  const nb = focus ? new Set((adj[focus.id] || []).map(x => x[0]).concat(focus.id)) : null;
+  // edges
+  const ec = css("--edge");
+  ctx.lineCap = "round";
+  if (showEdges || focus) for (const [a, b, k] of net.edges) {
+    if (k < minw) continue;
+    const pa = P[a], pb = P[b]; if (!pa || !pb) continue;
+    const hit = focus && (a === focus.id || b === focus.id);
+    if (!showEdges && !hit) continue;
+    const al = focus ? (hit ? 0.85 : 0.03) : Math.min(0.55, 0.05 + 0.045 * k);
+    ctx.strokeStyle = `rgba(${ec},${al})`; ctx.lineWidth = hit ? 1 + Math.min(4, Math.sqrt(k)) : 0.3 + Math.min(2, Math.sqrt(k) * 0.3);
+    const dx = pb[0] - pa[0], dy = pb[1] - pa[1];
+    ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.quadraticCurveTo((pa[0] + pb[0]) / 2 - dy * 0.15, (pa[1] + pb[1]) / 2 + dx * 0.15, pb[0], pb[1]); ctx.stroke();
+  }
+  // nodes
+  const halo = css("--halo");
+  for (const n of nodes) {
+    const p = P[n.id]; if (!p) continue;
+    if (p[0] < -20 || p[1] < -20 || p[0] > W + 20 || p[1] > H + 20) continue;
+    const dim = nb && !nb.has(n.id);
+    ctx.globalAlpha = dim ? 0.18 : 1;
+    const r = rad(n);
+    ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 6.2832); ctx.fillStyle = col[n.a]; ctx.fill();
+    ctx.lineWidth = n === focus ? 2.5 : 0.7; ctx.strokeStyle = n === focus ? css("--ink") : halo; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // labels
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  const text = (s, x, y, f) => { ctx.font = f; ctx.lineWidth = 3; ctx.strokeStyle = halo; ctx.strokeText(s, x, y); ctx.fillStyle = css("--ink"); ctx.fillText(s, x, y); };
+  if (T.k >= 2.2 && T.k < 14) {
+    const big = net.inst.filter(i => i.k >= (T.k > 6 ? 2 : T.k > 3.5 ? 5 : 9) && (country === "all" || i.cc === country));
+    for (const i of big) { const x = T.applyX(i.x), y = T.applyY(i.y); if (x > 0 && x < W && y > 0 && y < H) text(i.n, x + 6 + Math.sqrt(i.k) * 0.9 * Math.pow(T.k, .85), y, `500 11px ${css("--body")}`); }
+  }
+  if (T.k >= 14) for (const n of nodes) { const p = P[n.id]; if (p && p[0] > 0 && p[0] < W && p[1] > 0 && p[1] < H && (!nb || nb.has(n.id))) text(n.n, p[0] + rad(n) + 3, p[1], `400 11px ${css("--body")}`); }
+  if (focus && T.k < 14) for (const id of nb) { const n = byId[id], p = P[id]; if (p) text(n.n, p[0] + rad(n) + 3, p[1], `${n === focus ? 700 : 400} 11px ${css("--body")}`); }
+}
+
+function pick(x, y) {
+  let best = null, bd = 1e9;
+  for (const n of nodes) { if (!visible(n)) continue; const p = pos(n), d = (p[0] - x) ** 2 + (p[1] - y) ** 2, r = rad(n) + 4; if (d < r * r && d < bd) { bd = d; best = n; } }
+  return best;
+}
+
+const zoom = d3.zoom().scaleExtent([0.6, 400]).on("zoom", e => { T = e.transform; tip.hidden = true; draw(); })
+  .on("start", () => canvas.classList.add("drag")).on("end", () => canvas.classList.remove("drag"));
+const cs = d3.select(canvas).call(zoom).on("dblclick.zoom", null);
+const tip = document.getElementById("tip");
+canvas.addEventListener("mousemove", e => {
+  const n = pick(e.clientX, e.clientY);
+  if (n !== hover) { hover = n; if (!sel) draw(); }
+  if (n) { tip.hidden = false; tip.innerHTML = `<b>${esc(n.n)}</b><div class="m">${esc(inst[n.i].n)} · ${AREA_NAME[n.a]}<br>${n.np} 篇相关论文 · ${(adj[n.id] || []).length} 位网内合作者</div>`;
+    tip.style.left = Math.min(e.clientX + 14, W - 270) + "px"; tip.style.top = (e.clientY + 14) + "px"; } else tip.hidden = true;
+});
+canvas.addEventListener("mouseleave", () => { hover = null; tip.hidden = true; if (!sel) draw(); });
+canvas.addEventListener("click", e => { const n = pick(e.clientX, e.clientY); select(n); });
+
+function norm(s) { return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\u2010-\u2015]/g, "-").replace(/\u0131/g, "i").toLowerCase().trim(); }
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function paperHTML(p) {
+  const href = p.doi ? "https://doi.org/" + p.doi : "https://openalex.org/" + p.w;
+  return `<div class="paper"><a href="${esc(href)}" target="_blank" rel="noopener">${esc(p.t || "(无标题)")}</a>
+    <div class="m">${p.y} · ${esc(p.v || "—")} · 被引 ${p.c}</div>${p.co.length ? `<div class="co">网内合作者：${p.co.map(esc).join("、")}</div>` : ""}</div>`;
+}
+const card = document.getElementById("card");
+function select(n, fly) {
+  sel = n || null;
+  if (!n) { card.hidden = true; draw(); return; }
+  const I = inst[n.i], co = (adj[n.id] || []).slice().sort((a, b) => b[1] - a[1]);
+  card.hidden = false;
+  card.innerHTML = `<div class="hd"><button class="close" id="cls" aria-label="关闭">×</button>
+    <h2>${esc(n.n)}</h2><div class="where">${esc(I.n)} · ${esc([I.city, I.reg].filter(Boolean).join(", "))}${I.cc === "CA" ? " · 加拿大" : " · 美国"}</div>
+    <span class="chip"><span class="dot" style="background:var(--a-${n.a})"></span>${AREA_NAME[n.a]}</span>
+    <div class="kv"><div><b>${n.np}</b>相关论文 ${n.y0}–${n.y1}</div><div><b>${n.h ?? "—"}</b>h 指数</div><div><b>${co.length}</b>网内合作者</div></div>
+    <div class="links"><a href="https://openalex.org/${n.id}" target="_blank" rel="noopener">OpenAlex 档案</a>${n.orcid ? `<a href="https://orcid.org/${esc(n.orcid)}" target="_blank" rel="noopener">ORCID</a>` : ""}${I.url ? `<a href="${esc(I.url)}" target="_blank" rel="noopener">学校主页</a>` : ""}
+    <a href="https://scholar.google.com/scholar?q=${encodeURIComponent('author:"' + n.n + '"')}" target="_blank" rel="noopener">Google Scholar</a></div></div>
+    <div class="body">
+      ${n.kw.length ? `<div><div class="label">主要研究主题</div><div class="note" style="font-size:12px;color:var(--ink)">${n.kw.map(esc).join(" · ")}</div></div>` : ""}
+      <div><div class="label">主要论文（按被引排序）</div>${n.top.map(paperHTML).join("")}</div>
+      ${n.rec.length ? `<div><div class="label">近期论文</div>${n.rec.map(paperHTML).join("")}</div>` : ""}
+      ${co.length ? `<div><div class="label">网内合作者（共同论文数）</div><div class="collab">${co.slice(0, 40).map(([id, k]) => `<button data-id="${id}"><span class="dot" style="background:var(--a-${byId[id].a})"></span>${esc(byId[id].n)}<span class="n">${k}</span></button>`).join("")}</div></div>` : ""}
+    </div>`;
+  card.querySelector("#cls").onclick = () => select(null);
+  card.querySelectorAll(".collab button").forEach(b => b.onclick = () => select(byId[b.dataset.id], true));
+  if (fly) flyTo(n.bx, n.by, Math.max(T.k, 6)); else draw();
+}
+function flyTo(x, y, k) {
+  const shift = W > 760 ? 0 : -H * 0.15;
+  cs.transition().duration(600).call(zoom.transform, d3.zoomIdentity.translate(W / 2, H / 2 + shift).scale(k).translate(-x, -y));
+}
+
+// panel
+const visCount = () => nodes.filter(visible).length;
+function stats() {
+  const vis = nodes.filter(visible), vs = new Set(vis.map(n => n.id)), vi = new Set(vis.map(n => n.i));
+  const ve = net.edges.filter(e => e[2] >= minw && vs.has(e[0]) && vs.has(e[1])).length;
+  document.getElementById("stats").innerHTML = `<div><b>${vis.length.toLocaleString()}</b>位教授</div><div><b>${vi.size}</b>所学校</div><div><b>${ve.toLocaleString()}</b>条合作线</div><div><b>${net.meta.works.toLocaleString()}</b>篇论文</div>`;
+}
+const areasEl = document.getElementById("areas");
+const cnt = d3.rollup(nodes, v => v.length, n => n.a);
+areasEl.innerHTML = AREAS.map(([a, nm]) => `<label class="area"><input type="checkbox" data-a="${a}" checked><span class="dot" style="background:var(--a-${a})"></span>${nm}<span class="ct">${cnt.get(a) || 0}</span></label>`).join("");
+areasEl.addEventListener("change", e => { const a = e.target.dataset.a; e.target.checked ? area.add(a) : area.delete(a); stats(); draw(); });
+document.getElementById("country").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return; country = b.dataset.c;
+  document.querySelectorAll("#country button").forEach(x => x.setAttribute("aria-pressed", x === b)); stats(); insts(); draw();
+});
+document.getElementById("minw").addEventListener("input", e => { minw = +e.target.value; document.getElementById("minwv").textContent = minw; stats(); draw(); });
+document.getElementById("showedges").addEventListener("change", e => { showEdges = e.target.checked; draw(); });
+function insts() {
+  const list = net.inst.filter(i => country === "all" || i.cc === country).sort((a, b) => b.k - a.k).slice(0, 40);
+  document.getElementById("insts").innerHTML = list.map(i => `<button class="inst" data-i="${i.id}"><span class="nm">${esc(i.n)} <span class="rg">${esc(i.reg || i.city || "")}</span></span><span class="mono">${i.k}</span></button>`).join("");
+}
+document.getElementById("insts").addEventListener("click", e => { const b = e.target.closest(".inst"); if (!b) return; const i = inst[b.dataset.i]; select(null); flyTo(i.x, i.y, 22); });
+document.getElementById("names").innerHTML = nodes.map(n => `<option value="${esc(n.n)}">${esc(inst[n.i].n)}</option>`).join("") + net.inst.map(i => `<option value="${esc(i.n)}">学校 · ${i.k} 位教授</option>`).join("");
+document.getElementById("q").addEventListener("change", e => {
+  const v = norm(e.target.value); if (!v) return;
+  const n = nodes.find(n => norm(n.n) === v) || nodes.find(n => norm(n.n).includes(v));
+  const i = net.inst.find(i => norm(i.n) === v) || net.inst.find(i => norm(i.n).includes(v));
+  if (n && (!i || norm(n.n).includes(v))) { if (!area.has(n.a)) { area.add(n.a); areasEl.querySelector(`[data-a="${n.a}"]`).checked = true; stats(); } select(n, true); }
+  else if (i) { select(null); flyTo(i.x, i.y, 22); }
+});
+document.getElementById("toggle").addEventListener("click", e => { const p = document.getElementById("panel"); p.classList.toggle("min"); e.target.textContent = p.classList.contains("min") ? "展开" : "收起"; e.target.setAttribute("aria-expanded", !p.classList.contains("min")); });
+document.getElementById("zin").onclick = () => cs.transition().duration(250).call(zoom.scaleBy, 1.8);
+document.getElementById("zout").onclick = () => cs.transition().duration(250).call(zoom.scaleBy, 1 / 1.8);
+document.getElementById("zreset").onclick = () => { select(null); cs.transition().duration(400).call(zoom.transform, d3.zoomIdentity); };
+const m = net.meta;
+document.getElementById("method").innerHTML = `数据：<a href="https://openalex.org" target="_blank" rel="noopener">OpenAlex</a>（${m.built} 抓取）。2000 年以来、至少一位作者在美加机构的量子化学 / 计算化学论文共 ${m.works.toLocaleString()} 篇。教授的判定：至少 ${m.params.min_papers} 篇相关论文、${m.params.active_since} 年后仍在发表、通讯（末位）作者比例 ≥ ${Math.round(m.params.min_last_author * 100)}%、当前单位是美加高校、相关论文占其全部论文 ≥ ${Math.round(m.params.min_share * 100)}%。这是按发表记录推断的名单，可能混入资深研究员，也会漏掉论文很少或在 OpenAlex 中被拆成多个档案的人。同一学校的教授围绕学校坐标排开，放大后可分辨。底图：Natural Earth。`;
+addEventListener("resize", resize);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+if (innerWidth <= 760) { document.getElementById("panel").classList.add("min"); const t = document.getElementById("toggle"); t.textContent = "展开"; t.setAttribute("aria-expanded", "false"); }
+insts(); stats(); resize();
+const hp = location.hash.match(/^#p=(A\d+)/); if (hp && byId[hp[1]]) { const n = byId[hp[1]]; T = d3.zoomIdentity; select(n, true); }
+})();
+</script>
+
+<script src="../assets/nav.js" data-root=".." defer></script>

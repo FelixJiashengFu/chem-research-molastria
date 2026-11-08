@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大学研究网络</title>
+<meta name="description" content="20 所中美名校（含多伦多大学）的数学、物理、化学教授研究网络：选择学校，拖动卡片排序。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/nav.js" data-root=".." defer></script>
+<style>
+body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in srgb, var(--us) 18%, transparent), transparent 70%), radial-gradient(800px 600px at -10% 50%, color-mix(in srgb, var(--cn) 15%, transparent), transparent 70%), radial-gradient(700px 500px at 50% 110%, color-mix(in srgb, var(--ca) 12%, transparent), transparent 70%), var(--paper); background-attachment: fixed; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 26px 0 18px; }
+.seg { display: inline-flex; padding: 3px; border-radius: 99px; background: var(--glass); border: 1px solid var(--glass-edge); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); }
+.seg button { border: 0; background: none; font: 500 13px var(--body); color: var(--ink-2); padding: 6px 14px; border-radius: 99px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--glass-2); color: var(--accent); box-shadow: inset 0 1px 0 var(--glass-hi), 0 2px 8px var(--glass-shade); }
+.tools .hint { font-size: 12.5px; color: var(--muted); margin-left: auto; }
+.tools .hint button { background: none; border: 0; color: var(--accent); font: inherit; cursor: pointer; }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; padding-bottom: 60px; }
+.sc { position: relative; border-radius: 22px; padding: 18px 18px 16px; min-height: 170px; display: flex; flex-direction: column; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overflow: hidden;
+  background: var(--glass); -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%); border: 1px solid var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi), 0 10px 30px var(--glass-shade); }
+.sc::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: linear-gradient(140deg, var(--glass-hi), transparent 40%, transparent 72%, rgba(255,255,255,.07)); opacity: .7; }
+.sc .top { display: flex; justify-content: space-between; align-items: center; }
+.sc .fl { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 13px; }
+.sc .fl.US { background: var(--us); } .sc .fl.CA { background: var(--ca); } .sc .fl.CN { background: var(--cn); }
+.sc .st { font-size: 11px; padding: 2px 9px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+.sc .st.on { color: var(--accent); border-color: var(--accent); }
+.sc h3 { margin: 14px 0 2px; font-size: 20px; }
+.sc h3 a { color: var(--ink); } .sc h3 a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.sc .en { font-size: 12.5px; color: var(--muted); }
+.sc .nums { margin-top: auto; display: flex; gap: 16px; font-size: 11.5px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 9px; }
+.sc .nums b { display: block; font: 500 16px var(--mono); color: var(--ink); }
+.sc.off { opacity: .82; } .sc.off h3 a { color: var(--ink-2); }
+.sc:target, .sc.hl { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sc.ra-lift { box-shadow: inset 0 1px 0 var(--glass-hi), 0 26px 60px var(--glass-shade); }
+.sc[hidden] { display: none; }
+</style>
+</head>
+<body data-nav="bar" class="glassy">
+<main class="wrap">
+  <section class="hero" style="padding-bottom:0">
+    <div class="eyebrow">01 · Universities</div>
+    <h1>二十所大学的数理化研究网络</h1>
+    <p class="lede">多伦多大学、斯坦福大学，加上美国和中国各九所名校。每所学校都按同一套方法画出数学、物理、化学教授的合作网络、主题子网、跨学科关系和产业网络。已上线的学校可以直接打开，其余学校正在分批建设。</p>
+  </section>
+  <div class="tools">
+    <div class="seg" role="group" aria-label="按国家筛选"><button aria-pressed="true" data-f="all">全部</button><button aria-pressed="false" data-f="US">美国</button><button aria-pressed="false" data-f="CN">中国</button><button aria-pressed="false" data-f="CA">加拿大</button></div>
+    <span class="hint">按住卡片拖动可排序，顶部“大学”列表同步 · <button type="button" id="reset">恢复默认顺序</button></span>
+  </div>
+  <div class="sgrid" id="grid"></div>
+</main>
+<footer class="site"><div class="wrap">名单来源：院系官网教师名单；论文与合作数据来自 OpenAlex（CC0）。“建设中”的学校会在完成后自动变为可打开。</div></footer>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const N = window.RA_NAV, grid = document.getElementById("grid");
+  const STATS = { uoft: [298, 52000, 12], stanford: [136, 40000, 18] };
+  const wan = n => n >= 10000 ? (n / 10000).toFixed(1) + " 万" : n.toLocaleString();
+  let filt = "all";
+  fetch("stats.json").then(r => r.ok ? r.json() : {}).then(j => { for (const k in j) STATS[k] = [j[k][0], j[k][1], j[k][2]]; paint(); }).catch(() => {});
+  function paint() {
+    grid.innerHTML = N.ordered(N.SCHOOLS, "schools").map(([k, zh, en, cc, p]) => {
+      const s = STATS[k];
+      return `<div class="sc${p ? "" : " off"}" data-key="${k}" id="${k}"${filt !== "all" && cc !== filt ? " hidden" : ""}><div class="top"><span class="fl ${cc}">${N.FLAG[cc]}</span><span class="st${p ? " on" : ""}">${p ? "已上线" : "建设中"}</span></div>
+        <h3><a href="${p ? "../" + p : "#" + k}">${zh}</a></h3><div class="en">${en}</div>
+        <div class="nums">${s ? `<span><b>${s[0]}</b>位教授</span><span><b>${wan(s[1])}</b>篇论文</span><span><b>${s[2]}</b>张网络</span>` : `<span><b>—</b>数学 · 物理 · 化学</span>`}</div></div>`;
+    }).join("");
+    const h = location.hash.slice(1), t = h && document.getElementById(h); if (t) t.classList.add("hl");
+  }
+  paint();
+  N.sortable(grid, ".sc", keys => {
+    // keep hidden (filtered-out) schools in their old relative places
+    const all = N.ordered(N.SCHOOLS, "schools").map(s => s[0]), vis = new Set(keys); let i = 0;
+    N.save("schools", all.map(k => vis.has(k) ? keys[i++] : k));
+  });
+  addEventListener("ra-order", e => { if (e.detail.list === "schools" && !grid.classList.contains("ra-sorting")) paint(); });
+  document.getElementById("reset").onclick = () => N.reset("schools");
+  document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { filt = b.dataset.f; document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b)); paint(); });
+});
+</script>
+</body>
+</html>

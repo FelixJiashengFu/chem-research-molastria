@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 研究图谱（`/research-atlas/`，2026-11-08）：整站从 university-science-research-network 复制，那边二十所学校里还有 18 所在分批建（OpenAlex 每天额度有限），每建好一批要重新运行 `tools/vendor-atlas.mjs`。只在无头 Chrome 里测过缩放（125%，地图的放大缩小按钮和滚轮、sigma 网络、手机 390 px）；iPad 主屏幕应用里开缩放看一眼框内的网络图和地图能否拖动、点选。
 - 教学视频（`/videos/`，2026-11-08，桌面版 0.2.0）：189 条，14 个主题。上线后看一次 Pages 发布日志里 `video-thumbs` 的警告（失效或不让嵌入的视频），线上点几个 YouTube 和哔哩哔哩的封面试播（本地测试里播放器是假的）；在 iPhone Safari 上试一次哔哩哔哩的嵌入播放器。说明是按平台上的标题、简介和分集写的，没有逐个看完视频，站长看到不准的可以直接改 `videos-data.js`。以后每季度跑一次 `yt verify` / `bili verify`。
 
 - Mac 桌面版后台闪退（0.1.19，SIGABRT）：已去掉 `panic = "abort"`，要打下一个桌面版本（`/ship-desktop`）才到用户手里；装好后在 Mac 上让应用开着切到后台半小时以上，看是否还会闪退。根因是推断出来的（按崩溃偏移反汇编发布包），没有在真机上复现过。

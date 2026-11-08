@@ -277,6 +277,7 @@ const mains = [
   await injectHead("pro/privacy.html", "pro/privacy.html"),
   await injectHead("train/index.html", "train/", { type: "article", jsonld: [{ "@context": "https://schema.org", "@type": "TechArticle", headline: "用开源小模型训练你自己的化学研究 Agent", inLanguage: "zh-CN", url: SITE + "train/", datePublished: "2026-10-28", dateModified: TODAY, image: SITE + "og.png", publisher: { "@type": "Organization", name: NAME, url: SITE }, about: ["small language models", "chemistry agents", "LoRA", "GRPO", "RDKit"] }, crumbs([["首页", ""], ["训练 Agent", "train/"]])] }),
   await injectHead("radar/index.html", "radar/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "预印本雷达 PreprintRadar", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "radar/", isAccessibleForFree: true, codeRepository: "https://github.com/FelixJiashengFu/PreprintRadar", description: "同时检索 arXiv、ChemRxiv、bioRxiv 等 28 个预印本平台与开放仓库的最新论文，按兴趣主题定时推荐，一键导出 PDF 合集。" }] }),
+  await injectHead("research-atlas/index.html", "research-atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "Dataset", name: "中美·研究图谱", inLanguage: "zh-CN", url: SITE + "research-atlas/", isAccessibleForFree: true, license: "https://creativecommons.org/publicdomain/zero/1.0/", creator: { "@type": "Person", name: "Jiasheng Fu" }, description: "中美二十所大学的数学、物理、化学教授合作网络，北美与中国量子化学 / 计算化学课题组地图，Top 20 学者档案，中美细分方向对比与北美计算化学产业报告。数据来自 OpenAlex。" }] }),
   await injectHead("qchem/index.html", "qchem/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "MolAstria 游乐场", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "qchem/", isAccessibleForFree: true, description: "用真实的物理公式玩量子化学的六个小游戏（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。" }] }),
   await injectHead("meta/index.html", "meta/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "Meta × 化学：Muse 识图、UMA 脚本与开放数据集", inLanguage: "zh-CN", url: SITE + "meta/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "fairchem", "Meta Muse"] }] }),
   await injectHead("models/index.html", "models/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "量子化学模型接口：15 个机器学习势在线计算", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "models/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "MACE-OFF23", "ANI-2x", "machine learning interatomic potentials"] }] }),
@@ -305,7 +306,7 @@ await write("404.html", `<!doctype html>
 </html>
 `);
 const urls = [
-  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["about/", "0.5", "yearly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
+  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["research-atlas/", "0.8", "monthly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["about/", "0.5", "yearly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
   ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["videos/", "0.8", "monthly"], ["fundamental-science/", "0.8", "monthly"], ["digest/", "0.8", "weekly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];
@@ -320,7 +321,7 @@ await write(".nojekyll", "");
 // ── installable web app (PWA): head tags on every page, a fresh sw.js version per deploy ─────────────────
 // Manifest, home-screen icon, standalone mode and status bar for iPad / iPhone / Android, and viewport-fit=cover so
 // shared-nav.css can keep the top bar clear of the status bar. The media theme-colors come before a page's own one.
-// Skipped: radar/app and qchem/app (copied apps shown in frames) and offline.html (sw.js shows it under other pages'
+// Skipped: radar/app, qchem/app and research-atlas/app (copied apps shown in frames) and offline.html (sw.js shows it under other pages'
 // addresses, so it has its own head). tools/bundle-single.ts strips the block again.
 const pwaHead = (rel: string) => `<!-- pwa:start -->
   <link rel="manifest" href="${rel}manifest.webmanifest">
@@ -335,7 +336,7 @@ const htmlFiles = async (dir: string): Promise<string[]> => {
   const out: string[] = [];
   for await (const e of Deno.readDir(new URL(dir, pub))) {
     const path = dir + e.name;
-    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app") out.push(...await htmlFiles(path + "/"));
+    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app" && path !== "research-atlas/app") out.push(...await htmlFiles(path + "/"));
     else if (e.isFile && path.endsWith(".html") && path !== "offline.html") out.push(path);
   }
   return out;
