@@ -127,6 +127,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。
+- **桌面版不能用 `panic = "abort"`：** wry 在 Mac 上靠 `objc2::exception::catch` 接住 WKURLSchemeTask 的 Objective-C 异常（请求已被 WebKit 停掉时会抛），abort 模式下接不住，整个应用 SIGABRT 闪退（0.1.19 的崩溃，`docs/DECISIONS.md` 2026-11-08）。
 - **桌面版测试：** 不要在用户的 MolAstria 开着时再启动一个实例。调试版和已安装的应用共用应用数据和 localStorage。
 - **UMA 在 Windows：** fairchem 的默认设置用 `torch.compile`，需要 Triton，Windows 没有，会报 `TritonMissing`；所有加载 UMA 的地方（`uma-server/server.py`、桌面版 `runner.py`、`batch_uma.py`、Meta 页生成的脚本）用 `uma_settings()`，没有 Triton 时改用 `batch` 预设（全精度、不编译）。中文 Windows 上 Python 还要用 UTF-8 模式（`-X utf8` 或 `PYTHONUTF8=1`），否则 fairchem 按 GBK 读自己的数据文件失败；桌面版已设 `PYTHONUTF8=1`，`start.ps1` 用 `-X utf8`。RTX 20 系（计算能力 7.5）用不了 UMA Nitro。
 - **MACE 和 fairchem 不能装在一起：** mace-torch 固定 e3nn 0.4.4，fairchem 要 0.5 以上。在线服务把 MACE 放在 `mace-env`，经 `mace_worker.py`（标准输入输出 JSON）调用。

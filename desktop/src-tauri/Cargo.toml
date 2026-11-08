@@ -23,5 +23,7 @@ percent-encoding = "2"
 codegen-units = 1
 lto = true
 opt-level = "s"
-panic = "abort"
+# No panic = "abort": wry wraps its WKURLSchemeTask calls (didFinish etc.) in objc2::exception::catch,
+# which cannot catch an Objective-C exception under panic=abort. When WebKit stops a request before the
+# app answers it, the exception then aborted the whole app on macOS (crash report from 0.1.19, docs/DECISIONS.md).
 strip = true
