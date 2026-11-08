@@ -1735,6 +1735,56 @@ check('fundamental science: nav entry, pillars and tabs, MathML formulas, three 
   await finish(e);
 });
 
+check('math foundations: sub-module page, relations map, subject reader, self-check progress, library filters, English', async () => {
+  const p = await open();
+  await go(p, '/fundamental-science/index.html');
+  await p.click('.fs-module');
+  await p.waitForURL(/fundamental-science\/math\/index\.html/);
+  assert.equal(await p.getAttribute('.cr-header a[data-id=fundamental]', 'aria-current'), 'page', 'nav marks the parent section');
+  assert.equal(await p.locator('.fm-tier').count(), 3);
+  assert.equal(await p.locator('#fm-graph .fm-node').count(), 12, '10 subjects + 2 goals');
+  assert.equal(await p.locator('#fm-graph .fm-edge').count(), 25);
+  // Clicking a node lists its links and highlights only its edges: functional analysis has la, mt in and oa, var, na, qm out.
+  await p.click('#fm-graph .fm-node[data-id=fa]');
+  assert.match(await text(p, '#fm-map-panel'), /泛函分析与谱理论[\s\S]*建立在这些之上[\s\S]*通向/);
+  assert.equal(await p.locator('#fm-graph .fm-edge.on').count(), 6);
+  // Reader: one panel at a time, MathML formulas, books with DOIs, the hash opens a subject.
+  assert.equal(await p.locator('.fm-panel:not([hidden])').count(), 1);
+  await p.click('.fm-side-b[data-sub=dg]');
+  assert.ok(await p.isVisible('#m-dg'));
+  assert.ok(await p.locator('#m-dg math').count() >= 3, 'MathML formulas render');
+  assert.equal(await p.locator('#m-dg .fm-book a[href="https://doi.org/10.1098/rspa.1984.0023"]').count(), 1, 'Berry 1984 with its DOI');
+  await go(p, '/fundamental-science/math/index.html#m-tn');
+  assert.ok(await p.isVisible('#m-tn'));
+  // Self-check ticks drive the suggestion and survive a reload.
+  assert.match(await text(p, '#fm-start-box'), /线性代数/);
+  await p.click('.fm-side-b[data-sub=la]');
+  for (const box of await p.$$('#m-la input[data-check]')) await box.check();
+  assert.match(await text(p, '#fm-start-box'), /数值分析/, 'next on the chemistry track after linear algebra');
+  await p.reload();
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-fm-progress'))).length, 4);
+  await p.click('#fm-reset');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-fm-progress')), '[]');
+  // Library filters.
+  await p.selectOption('#fm-f-sub', 'tn');
+  assert.match(await text(p, '#fm-lib-count'), /共 9 本书与论文、3 门视频课/);
+  await p.selectOption('#fm-f-sub', ''); await p.check('#fm-f-free');
+  assert.ok(await p.locator('#fm-lib .fm-book').count() >= 8, 'free books listed');
+  assert.equal(await p.locator('#fm-lib .fm-book:not(:has(.fm-free))').count(), 0, 'only free books');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(p);
+  // English: everything except original Chinese book and video titles is English.
+  const e = await open();
+  await go(e, '/fundamental-science/math/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#fm-h1'), /Mathematical Foundations & Exploration/);
+  assert.equal(await e.title(), 'Mathematical Foundations & Exploration · MolAstria');
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,.fm-cite[lang="zh-CN"],.fm-cite [lang="zh-CN"],.fm-au') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('display settings: scale, reading size and typeface apply, carry to other pages, are capped in narrow windows and reset', async () => {
   const p = await open({ viewport: { width: 1280, height: 900 } });
   await go(p, '/index.html');
@@ -1962,7 +2012,7 @@ check('about: Morning Glory page, every non-MolAstria direction labelled planned
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

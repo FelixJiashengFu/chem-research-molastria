@@ -1,7 +1,4 @@
 {
- "MolAstria · 计算化学研究导航": [
-  "index.html"
- ],
  "跳到统一搜索": [
   "index.html"
  ],
@@ -880,7 +877,8 @@
  "本页内容": [
   "journals/index.html",
   "scimodels/index.html",
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "fundamental-science/math/index.html"
  ],
  "筛选期刊": [
   "journals/index.html"
@@ -1085,7 +1083,20 @@
  "科研文献": [
   "fundamental-science/index.html"
  ],
+ "数学基础与探索": [
+  "fundamental-science/index.html",
+  "fundamental-science/math/index.html"
+ ],
  "核心研究理念": [
+  "fundamental-science/index.html"
+ ],
+ "子模块": [
+  "fundamental-science/index.html"
+ ],
+ "做这些研究要先会哪些数学：线性代数、泛函分析与谱理论、群论与表示论、微分几何、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论。每门都有讲解、分周大纲、动手练习和核对过的教材与视频，还有学科关系图和两条学习路线。": [
+  "fundamental-science/index.html"
+ ],
+ "打开数学基础与探索": [
   "fundamental-science/index.html"
  ],
  "每个支柱下面都有完整的理论说明：核心公式、关键概念（逐条标注研究状态）、重点问题的解答和参考文献。": [
@@ -1253,6 +1264,19 @@
  ],
  "筛选文献": [
   "fundamental-science/index.html"
+ ],
+ "数学基础与探索 · Mathematical Foundations & Exploration · MolAstria": [
+  "fundamental-science/math/index.html"
+ ],
+ "跳到学科详解": [
+  "fundamental-science/math/index.html"
+ ],
+ "这个页面需要 JavaScript 才能显示内容。": [
+  "fundamental-science/math/index.html"
+ ],
+ "位置": [
+  "fundamental-science/math/index.html",
+  "tools/build-seo.ts"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -11117,7 +11141,7 @@
  "账号服务出错了，请稍后再试": [
   "deploy/account-worker.js"
  ],
- "计算化学研究资源统一入口：数据库、论文、中文教程与开源工具。": [
+ "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。": [
   "tools/build-seo.ts"
  ],
  "说明讲解手册 · {0} 章": [
@@ -11136,9 +11160,6 @@
   "tools/build-seo.ts"
  ],
  "MolAstria · 计算化学数据库与资源导航说明讲解手册，材料版本 {0}。全文、更新日期与使用许可以各资源原站为准。": [
-  "tools/build-seo.ts"
- ],
- "位置": [
   "tools/build-seo.ts"
  ],
  "翻页": [

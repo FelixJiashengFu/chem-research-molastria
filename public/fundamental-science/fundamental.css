@@ -54,6 +54,16 @@ math{font-family:"Cambria Math","STIX Two Math","Latin Modern Math","Noto Sans M
 .fs-prose p{margin:0 0 12px;font-size:14.5px;line-height:1.95;color:var(--ink-2)}
 .fs-note{margin:0 0 14px;padding:10px 14px;border-left:3px solid var(--violet);background:color-mix(in srgb,var(--violet) 8%,transparent);font-size:13.5px;color:var(--ink-2)}
 
+/* 子模块入口：数学基础与探索 */
+.fs-module{position:relative;display:block;padding:22px 24px;border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:10px;background:linear-gradient(120deg,var(--gold-soft),var(--surface) 70%);color:var(--ink);text-decoration:none;overflow:hidden;transition:border-color .15s,transform .15s}
+.fs-module:hover{border-color:var(--gold);transform:translateY(-1px)}
+.fs-module-k{font-size:11px;letter-spacing:1.6px;font-weight:700;color:var(--fs-gold-text)}
+.fs-module-glyphs{position:absolute;right:22px;top:16px;font:600 20px/1 var(--font-num);letter-spacing:6px;color:color-mix(in srgb,var(--gold) 55%,transparent)}
+.fs-module h2{margin:6px 0 6px;font-size:24px;font-weight:600}
+.fs-module p{margin:0 0 10px;max-width:92ch;font-size:14px;line-height:1.85;color:var(--ink-2)}
+.fs-module-go{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;color:var(--accent-text)}
+@media (max-width:760px){.fs-module-glyphs{display:none}}
+
 /* 支柱 */
 .fs-pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .fs-pillar{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--line);border-radius:6px;background:var(--surface);text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}

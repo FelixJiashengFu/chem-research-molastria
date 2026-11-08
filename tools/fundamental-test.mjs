@@ -100,3 +100,71 @@ test('content: every status, formula, reference and pillar link resolves', () =>
   for (const d of D.directions) assert.match(d.fields.status.zh, /计划方向/);
   assert.deepEqual(Object.keys(MATH).sort(), Object.keys(D.math).sort(), 'fs-math.js is up to date: run node tools/fundamental-math.mjs');
 });
+
+// ── 数学基础与探索（math/）：内容完整、引用都能对上 ─────────────────────────
+const FM = load('math/fm-data.js').MOLASTRIA_FM;
+const FM_MATH = load('math/fm-math.js').MOLASTRIA_FM_MATH;
+const both = (t, where) => { assert.ok(t && t.zh && t.en, `${where}: needs zh and en`); assert.ok(!/[㐀-鿿]/.test(t.en), `${where}: Chinese left in the English text`); };
+
+test('math module: ten subjects in three tiers, each complete in both languages', () => {
+  assert.equal(FM.subjects.length, 10);
+  assert.deepEqual([...new Set(FM.subjects.map((s) => s.tier))].sort(), [1, 2, 3]);
+  assert.equal(new Set(FM.subjects.map((s) => s.id)).size, 10, 'unique ids');
+  for (const s of FM.subjects) {
+    for (const k of ['name', 'tagline']) both(s[k], `${s.id}.${k}`);
+    assert.ok(s.explain.length >= 3, `${s.id}: at least three explanation paragraphs`);
+    s.explain.forEach((p, i) => both(p, `${s.id}.explain[${i}]`));
+    assert.ok(s.outline.length >= 5, `${s.id}: outline`);
+    for (const [t, w] of s.outline) { both(t, `${s.id}.outline`); assert.match(w, /^\d+(–\d+)?$/); }
+    for (const k of ['inQC', 'checks', 'pitfalls']) { assert.ok(s[k].length >= 2, `${s.id}.${k}`); s[k].forEach((t) => both(t, `${s.id}.${k}`)); }
+    both(s.practice.title, `${s.id}.practice.title`); both(s.practice.body, `${s.id}.practice.body`);
+    assert.ok(s.practice.code.length > 40, `${s.id}: practice code`);
+    assert.ok(s.books.length >= 4, `${s.id}: at least four books`);
+  }
+});
+
+test('math module: every formula, book, video and relation resolves', () => {
+  const books = new Map(FM.books.map((b) => [b.id, b])), videos = new Map(FM.videos.map((v) => [v.id, v]));
+  assert.equal(books.size, FM.books.length, 'unique book ids');
+  assert.equal(videos.size, FM.videos.length, 'unique video ids');
+  const ids = new Set(FM.subjects.map((s) => s.id)), targets = new Set(FM.targets.map((t) => t.id));
+  for (const s of FM.subjects) {
+    for (const f of s.formulas) { assert.ok(FM.math[f], `${s.id}: formula ${f}`); assert.match(FM_MATH[f] || '', /^<math[\s\S]*<\/math>$/, `MathML for ${f} (run node tools/fundamental-math.mjs)`); }
+    for (const b of s.books) assert.ok(books.has(b), `${s.id}: book ${b}`);
+    for (const v of s.videos) assert.ok(videos.has(v), `${s.id}: video ${v}`);
+  }
+  assert.deepEqual(Object.keys(FM.math).sort(), Object.keys(FM_MATH).sort(), 'fm-math.js matches fm-data.js');
+  for (const b of FM.books) assert.ok(FM.subjects.find((s) => s.id === b.subj).books.includes(b.id), `${b.id} is listed under its subject`);
+  for (const b of FM.books) {
+    assert.ok(ids.has(b.subj), `${b.id}: subject`);
+    assert.ok(FM.roles[b.role] && FM.levels[b.level], `${b.id}: role and level`);
+    both(b.note, `${b.id}.note`);
+    if (b.doi) assert.match(b.doi, /^10\.\d{4,9}\/\S+$/, `${b.id}: DOI`);
+    if (b.free) assert.match(b.url || '', /^https:\/\//, `${b.id}: a free book links to where it is free`);
+    if (b.role !== 'zh') assert.ok(b.doi || b.year, `${b.id}: DOI or year`);
+  }
+  const host = { yt: /^https:\/\/www\.youtube\.com\//, bili: /^https:\/\/www\.bilibili\.com\/video\/BV\w+\/$/, ocw: /^https:\/\/ocw\.mit\.edu\/courses\/[\w-]+\/$/, web: /^https:\/\// };
+  for (const v of FM.videos) { assert.match(v.url, host[v.p], `${v.id}: url matches platform`); both(v.note, `${v.id}.note`); assert.ok(FM.levels[v.level], `${v.id}: level`); }
+  for (const [a, b, t] of FM.relations) { assert.ok(ids.has(a), `relation from ${a}`); assert.ok(ids.has(b) || targets.has(b), `relation to ${b}`); both(t, `relation ${a}→${b}`); }
+  for (const id of ids) assert.ok(FM.relations.some(([a, b]) => a === id || b === id), `${id} appears on the map`);
+  for (const t of FM.tracks) { both(t.name, t.id); for (const p of t.phases) { both(p.goal, `${t.id} phase`); for (const s of p.subjects) assert.ok(ids.has(s), `${t.id}: ${s}`); } }
+  for (const t of FM.tracks.filter((x) => x.id === 'math')) assert.deepEqual([...new Set(t.phases.flatMap((p) => p.subjects))].sort(), [...ids].sort(), 'the mathematical-physics track covers every subject');
+  for (const h of FM.hall) { both(h.title, `Hall ${h.ch}`); for (const s of h.subj) assert.ok(ids.has(s), `Hall ${h.ch}: ${s}`); }
+});
+
+test('math module: the worked numbers in the exercises are right', () => {
+  // Helium, ψ ∝ e^{-ζ(r1+r2)}: E(ζ) = ζ² − 27ζ/8 is smallest at ζ = 27/16 with E = −(27/16)² = −2.84765625 Eh.
+  const E = (z) => z * z - 27 * z / 8;
+  close(E(27 / 16), -2.84765625, 1e-12, 'E(27/16)');
+  assert.ok(E(27 / 16) < E(27 / 16 + 1e-3) && E(27 / 16) < E(27 / 16 - 1e-3), 'minimum');
+  assert.match(FM.math.varHe[0], /2\.8477/);
+  // Benzene Hückel (α = 0, β = −1): the circulant eigenvalues −2cos(2πk/6) are −2, −1, −1, 1, 1, 2.
+  const ev = [0, 1, 2, 3, 4, 5].map((k) => Math.round(-2 * Math.cos(2 * Math.PI * k / 6) * 1e9) / 1e9).sort((a, b) => a - b);
+  assert.deepEqual(ev, [-2, -1, -1, 1, 1, 2]);
+  // Water, C2v, molecule in the yz plane: Γ3N = (9, −1, 1, 3) reduces to 3A1 + A2 + 2B1 + 3B2; minus translations
+  // (A1 + B1 + B2) and rotations (A2 + B1 + B2) leaves 2A1 + B2.
+  const chi = [[1, 1, 1, 1], [1, 1, -1, -1], [1, -1, 1, -1], [1, -1, -1, 1]], g = [9, -1, 1, 3];
+  const n = chi.map((r) => r.reduce((s, c, i) => s + c * g[i], 0) / 4);
+  assert.deepEqual(n, [3, 1, 2, 3]);
+  assert.deepEqual(n.map((x, i) => x - [1, 0, 1, 1][i] - [0, 1, 1, 1][i]), [2, 0, 0, 1]);
+});

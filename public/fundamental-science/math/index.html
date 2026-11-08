@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="数学基础与探索：为量子力学基础与量子化学准备的数学地图。线性代数、泛函分析与谱理论、群论与表示论、微分几何与拓扑、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论，每门有讲解、大纲、公式、练习、逐条核对过的教材与公开课视频，以及学科之间的关系图和学习路线。">
+  <meta name="theme-color" content="#173f34">
+  <title>数学基础与探索 · Mathematical Foundations & Exploration · MolAstria</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../../i18n.js" defer></script>
+  <script src="../../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental.css">
+  <link rel="stylesheet" href="fm.css">
+  <script src="../../shared-nav.js" defer></script>
+  <script src="fm-data.js" defer></script>
+  <script src="fm-math.js" defer></script>
+  <script src="fm.js" defer></script>
+</head>
+<body data-section="fundamental">
+<a class="skip" href="#fm-subjects">跳到学科详解</a>
+<main id="fm-main">
+  <section class="fs-hero fm-hero" aria-labelledby="fm-h1">
+    <nav class="fm-crumbs" id="fm-crumbs" aria-label="位置"></nav>
+    <p class="eyebrow">MOLASTRIA · FUNDAMENTAL SCIENCE · MATHEMATICS</p>
+    <h1 id="fm-h1">数学基础与探索<span class="fs-h1-en" lang="en" translate="no">Mathematical Foundations &amp; Exploration</span></h1>
+    <blockquote class="fs-question" id="fm-quote"></blockquote>
+    <p class="lead" id="fm-lead"></p>
+    <p class="fs-honest" id="fm-honest"></p>
+    <dl class="fm-stats" id="fm-stats"></dl>
+    <nav class="fs-jump" id="fm-jump" aria-label="本页内容"></nav>
+  </section>
+
+  <section class="fs-block" id="fm-tiers" aria-labelledby="fm-tiers-h" tabindex="-1">
+    <h2 id="fm-tiers-h"></h2>
+    <p class="muted" id="fm-tiers-note"></p>
+    <div class="fm-tier-grid" id="fm-tier-grid"></div>
+  </section>
+
+  <section class="fs-block" id="fm-map" aria-labelledby="fm-map-h" tabindex="-1">
+    <h2 id="fm-map-h"></h2>
+    <p class="muted" id="fm-map-note"></p>
+    <div class="fm-map">
+      <div class="fm-graph-wrap"><svg class="fm-graph" id="fm-graph" viewBox="0 0 1000 600" role="group"></svg></div>
+      <aside class="fm-map-panel" id="fm-map-panel" aria-live="polite"></aside>
+    </div>
+    <details class="fm-rel-all"><summary id="fm-rel-sum"></summary><ul class="fm-rel-list" id="fm-rel-list"></ul></details>
+  </section>
+
+  <section class="fs-block" id="fm-path" aria-labelledby="fm-path-h" tabindex="-1">
+    <h2 id="fm-path-h"></h2>
+    <p class="muted" id="fm-path-note"></p>
+    <div class="fm-track-tabs" role="tablist" id="fm-track-tabs"></div>
+    <div id="fm-track"></div>
+  </section>
+
+  <section class="fs-block fm-reader" id="fm-subjects" aria-labelledby="fm-subjects-h" tabindex="-1">
+    <h2 id="fm-subjects-h"></h2>
+    <div class="fm-reader-grid">
+      <nav class="fm-side" id="fm-side" aria-labelledby="fm-subjects-h"></nav>
+      <div id="fm-panels"></div>
+    </div>
+  </section>
+
+  <section class="fs-block" id="fm-hall" aria-labelledby="fm-hall-h" tabindex="-1">
+    <h2 id="fm-hall-h"></h2>
+    <p class="muted" id="fm-hall-note"></p>
+    <ol class="fm-hall" id="fm-hall-list"></ol>
+  </section>
+
+  <section class="fs-block" id="fm-start" aria-labelledby="fm-start-h" tabindex="-1">
+    <h2 id="fm-start-h"></h2>
+    <p class="muted" id="fm-start-note"></p>
+    <div class="fm-start" id="fm-start-box"></div>
+  </section>
+
+  <section class="fs-block" id="fm-library" aria-labelledby="fm-library-h" tabindex="-1">
+    <h2 id="fm-library-h"></h2>
+    <p class="muted" id="fm-lib-note"></p>
+    <div class="fs-lib-filters" role="search" id="fm-lib-filters"></div>
+    <p class="fs-count" id="fm-lib-count" role="status" aria-live="polite"></p>
+    <div class="fm-lib" id="fm-lib"></div>
+  </section>
+
+  <footer class="fs-foot" id="fm-foot"></footer>
+  <noscript><p class="fs-note">这个页面需要 JavaScript 才能显示内容。</p></noscript>
+</main>
+</body>
+</html>
