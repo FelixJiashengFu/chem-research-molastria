@@ -1,0 +1,112 @@
+analysis IGMH 弱相互作用 分析: api 200/0 → 20
+analysis Multiwfn 使用: api 200/0 → 20
+analysis Multiwfn 教程: api 200/0 → 20
+analysis NBO 分析 教程: api 200/0 → 20
+analysis PyMOL 教程: api 200/0 → 20
+analysis VMD 作图: api 200/0 → 20
+analysis VMD 教程: api 200/0 → 20
+analysis 波函数分析 讲座: api 200/0 → 20
+bio AlphaFold 教程: api 200/0 → 20
+bio AlphaFold3 使用: api 200/0 → 20
+bio ColabFold 使用: api 200/0 → 20
+bio PDB 数据库 使用: api 200/0 → 19
+bio Rosetta 教程: api 200/0 → 20
+bio 冷冻电镜 数据处理 教程: api 200/0 → 20
+bio 同源建模 教程: api 200/0 → 19
+bio 蛋白质结构预测 讲解: api 200/0 → 19
+cheminf AutoDock Vina 教程: api 200/0 → 20
+cheminf PubChem 使用 教程: api 200/0 → 20
+cheminf QSAR 建模 教程: api 200/0 → 20
+cheminf RDKit 教程: api 200/0 → 20
+cheminf 分子对接 教程: api 200/0 → 19
+cheminf 化学信息学 课程: api 200/0 → 19
+cheminf 虚拟筛选 教程: api 200/0 → 20
+cheminf 计算机辅助药物设计 课程: api 200/0 → 17
+courses Hartree-Fock 讲解: api 200/0 → 20
+courses MIT 量子力学 中文字幕: api 200/0 → 18
+courses 分子轨道理论 讲解: api 200/0 → 19
+courses 物理化学 量子力学 课程: api 200/0 → 17
+courses 结构化学 课程: api 200/0 → 17
+courses 计算化学 入门 课程: api 200/0 → 18
+courses 量子力学 课程 大学: api 200/0 → 17
+courses 量子化学 课程: api 200/0 → 18
+excited TDDFT 计算: api 200/0 → 18
+excited 吸收光谱 计算 教程: api 200/0 → 19
+excited 圆锥交叉 讲解: api 200/0 → 19
+excited 核磁 计算 教程: api 200/0 → 20
+excited 激发态 计算 教程: api 200/0 → 20
+excited 红外 光谱 计算 高斯: api 200/0 → 20
+excited 荧光 发射光谱 计算: api 200/0 → 20
+excited 非绝热 动力学 讲座: api 200/0 → 18
+llm AI for Science 讲座: api 200/0 → 17
+llm AI 科学家: api 200/0 → 18
+llm 书生 Intern-S1: api 200/0 → 20
+llm 化学 大模型: api 200/0 → 17
+llm 化学 智能体: api 200/0 → 20
+llm 大模型 材料 科学: api 200/0 → 19
+llm 大语言模型 化学: api 200/0 → 18
+llm 科学大模型: api 200/0 → 17
+md AMBER 教程: api 200/0 → 20
+md GROMACS 入门 教程: api 200/0 → 18
+md GROMACS 教程: api 200/0 → 18
+md LAMMPS 入门: api 200/0 → 20
+md LAMMPS 教程: api 200/0 → 20
+md 分子动力学 模拟 课程: api 200/0 → 18
+md 增强采样 讲解: api 200/0 → 20
+md 自由能 计算 教程: api 200/0 → 20
+ml AI for Science 化学 讲座: api 200/0 → 20
+ml DeePMD-kit 入门: api 200/0 → 19
+ml DeepMD 教程: api 200/0 → 17
+ml MACE 势函数: api 200/0 → 20
+ml 图神经网络 分子 讲解: api 200/0 → 17
+ml 机器学习 力场 讲座: api 200/0 → 19
+ml 机器学习势 教程: api 200/0 → 17
+ml 深度学习 分子 性质 预测: api 200/0 → 18
+molsw GaussView 使用: api 200/0 → 19
+molsw Gaussian 入门 教程: api 200/0 → 18
+molsw Gaussian 计算 教程: api 200/0 → 19
+molsw ORCA 入门: api 200/0 → 19
+molsw ORCA 教程: api 200/0 → 20
+molsw PySCF 教程: api 200/0 → 20
+molsw xtb 使用 教程: api 200/0 → 20
+molsw 量子化学软件 入门: api 200/0 → 19
+periodic CP2K 教程: api 200/0 → 20
+periodic Materials Studio CASTEP 教程: api 200/0 → 17
+periodic QE 计算 教程: api 200/0 → 20
+periodic Quantum ESPRESSO 教程: api 200/0 → 20
+periodic VASP 入门 教程: api 200/0 → 19
+periodic VASP 计算 教程: api 200/0 → 17
+periodic 第一性原理 计算 入门: api 200/0 → 17
+periodic 能带 计算 教程: api 200/0 → 19
+quantum PennyLane 教程: api 200/0 → 20
+quantum Qiskit 教程: api 200/0 → 20
+quantum VQE 教程: api 200/0 → 17
+quantum VQE 讲解: api 200/0 → 19
+quantum 量子模拟 化学 讲座: api 200/0 → 18
+quantum 量子算法 分子 模拟: api 200/0 → 19
+quantum 量子计算 化学: api 200/0 → 17
+quantum 量子计算 量子化学: api 200/0 → 17
+reaction IRC 计算: api 200/0 → 20
+reaction NEB 计算 教程: api 200/0 → 19
+reaction 反应机理 计算 教程: api 200/0 → 20
+reaction 构象 搜索 教程: api 200/0 → 20
+reaction 溶剂 模型 计算: api 200/0 → 20
+reaction 热力学 校正 计算: api 200/0 → 17
+reaction 过渡态 搜索 教程: api 200/0 → 20
+reaction 过渡态 计算 高斯: api 200/0 → 20
+theory DFT 原理 讲解: api 200/0 → 17
+theory 北京科音 量子化学 讲座: api 200/0 → 19
+theory 基组 讲解 量子化学: api 200/0 → 19
+theory 多参考态 CASSCF 讲解: api 200/0 → 20
+theory 密度泛函理论 讲座: api 200/0 → 17
+theory 泛函 选择 Sobereva: api 200/0 → 19
+theory 电子相关 方法 讲座: api 200/0 → 19
+theory 耦合簇 理论 讲解: api 200/0 → 20
+workflow ASE 教程: api 200/0 → 20
+workflow Materials Project 使用: api 200/0 → 17
+workflow Python 化学 编程 教程: api 200/0 → 17
+workflow Python 计算化学: api 200/0 → 18
+workflow pymatgen 教程: api 200/0 → 19
+workflow 材料 数据库 使用 教程: api 200/0 → 17
+workflow 计算材料学 课程: api 200/0 → 17
+workflow 高通量 计算 教程: api 200/0 → 19
