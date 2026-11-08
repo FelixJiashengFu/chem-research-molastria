@@ -63,6 +63,13 @@ async function sha256(text) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
+/** A uniform 6-digit code: draws at or above the largest multiple of 10^6 below 2^32 are thrown away, so no code is likelier. */
+function sixDigits() {
+  const limit = 2 ** 32 - (2 ** 32 % 1e6);
+  let n;
+  do n = crypto.getRandomValues(new Uint32Array(1))[0]; while (n >= limit);
+  return String(n % 1e6).padStart(6, '0');
+}
 function randomToken() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -528,7 +535,7 @@ async function route(request, env, cors) {
     // Anyone may have a free account, so every valid email gets a code (and nobody learns who has paid).
     // Stripe is asked again on sign-in (/auth/verify), so someone who just paid does not wait for the 6-hour cache.
     const out = { ok: true };
-    const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1e6).padStart(6, '0');
+    const code = sixDigits();
     await env.DB.prepare('INSERT INTO codes (email, hash, expires, tries, card) VALUES (?1, ?2, ?3, 0, ?4) ON CONFLICT(email) DO UPDATE SET hash = ?2, expires = ?3, tries = 0, card = ?4')
       .bind(email, await sha256(`${email}:${code}`), now() + CODE_MINUTES * 60, card).run();
     const [subject, text] = codeMail(code, body.lang === 'en');
