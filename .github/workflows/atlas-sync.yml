@@ -1,0 +1,56 @@
+name: Monthly research atlas sync
+
+# Copies the newest build of 中美·研究图谱 into public/research-atlas/app/ once a month. The atlas repository
+# (university-science-research-network) refreshes its OpenAlex data on the 1st-4th (its monthly-refresh.yml);
+# this runs on the 5th at 12:00 UTC, checks the copied pages in a browser, and redeploys the site.
+# The desktop app frames the online copy, so desktop users see the new data without a new release.
+# A push made with GITHUB_TOKEN does not start other workflows, so the site deploy is dispatched explicitly.
+on:
+  schedule:
+    - cron: '0 12 5 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: atlas-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: FelixJiashengFu/university-science-research-network
+          path: atlas-src
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Build and copy the atlas
+        run: |
+          (cd atlas-src && ./build_site.sh)
+          node tools/vendor-atlas.mjs atlas-src
+      - name: Check the atlas pages (theme, English, font)
+        run: |
+          npm ci --prefix tools/e2e
+          node tools/e2e/run.mjs "research atlas"
+      - name: Commit and redeploy the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/research-atlas/app
+          if git diff --cached --quiet; then echo "Atlas unchanged"; exit 0; fi
+          git commit -m "Monthly research atlas sync ($(head -1 public/research-atlas/app/VERSION.txt | awk '{print $NF}'), $(date -u +%F))"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run pages.yml --ref main
