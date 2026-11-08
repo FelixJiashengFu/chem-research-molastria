@@ -3,15 +3,23 @@
 <h1 align="center">MolAstria</h1>
 
 <p align="center"><b>计算化学研究导航 · A computational chemistry atlas</b><br>
-<a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a></p>
+<a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest">桌面版下载 / Desktop downloads</a></p>
 
-数据库、软件、教程、论文与开源工具一处检索（2,600 多条，每周四自动更新），配 20 章中英双语讲解手册、计算化学期刊投稿指南、27 个科学大模型的官方链接与价格对比、用站长 GPU 上 15 个机器学习原子间势在线计算的模型接口（13 种计算）、以查询为中心的资源关系网、浏览器里的量子化学计算、预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色和 10 种艺术背景，另有 Windows / macOS 桌面版；平板和手机上可以把网站添加到主屏幕，全屏使用，看过的页面断网也能读。
+数据库、软件、教程、论文与开源工具一处检索（2,600 多条，来自 24 个中英文来源，每周四自动更新），配 20 章中英双语讲解手册、计算化学期刊投稿指南、27 个科学大模型的官方链接与价格对比、用站长 GPU 上 15 个机器学习原子间势在线计算的模型接口（13 种计算）、每周精选论文、以查询为中心的资源关系网、量子化学游乐场（六个小游戏和浏览器里的量子化学计算器）、28 个平台的预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），以及用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室。全站支持中文 / English、浅色 / 深色、10 种艺术背景、可调的缩放字号字体和可自己排序的导航，另有 Windows / macOS 桌面版；平板和手机上可以把网站添加到主屏幕，全屏使用，看过的页面断网也能读。
 
-One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (2,600+ entries, refreshed every Thursday), with a 20-chapter handbook in Chinese and English, a guide to computational chemistry journals, official links and a price comparison for 27 scientific language and multimodal models, a Model API that runs 13 kinds of calculation on 15 machine-learning interatomic potentials hosted on the site owner's GPU, a query-centred resource network, quantum chemistry in the browser, PreprintRadar, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds; there is also a Windows / macOS desktop app, and on tablets and phones the site can be added to the Home Screen to run full screen, with pages you have opened readable offline.
+One place to search computational-chemistry databases, software, tutorials, papers and open-source tools (2,600+ entries from 24 Chinese and international sources, refreshed every Thursday), with a 20-chapter handbook in Chinese and English, a guide to computational chemistry journals, official links and a price comparison for 27 scientific language and multimodal models, a Model API that runs 13 kinds of calculation on 15 machine-learning interatomic potentials hosted on the site owner's GPU, Weekly Picks, a query-centred resource network, a quantum chemistry playground (six games and an in-browser calculator), PreprintRadar across 28 servers, a Meta × Chemistry page (Muse image-to-structure and UMA scripts), and a closed-loop AI lab for electrolyte molecule discovery powered by DeepSeek or Meta Muse. The whole site switches between Chinese and English, light and dark, and 10 artistic backgrounds, with display settings and a header you can rearrange; there is also a Windows / macOS desktop app, and on tablets and phones the site can be added to the Home Screen to run full screen, with pages you have opened readable offline.
 
 纯静态网站：`public/` 就是发布目录，不需要后端。 · A static site: `public/` is the published folder; no backend is needed.
 
 ## 视频导览 · Video tour
+
+### 发布短片 · Launch film（2 分钟 · 2 min）
+
+两分钟带你走一遍 MolAstria（英文配音，有声音）。点封面播放。 · A two-minute walk through MolAstria, with English voice-over. Click the cover to play.
+
+<a href="docs/media/MolAstria-launch.mp4"><img src="docs/media/MolAstria-launch-cover.jpg" alt="MolAstria 发布短片封面 · MolAstria launch film cover" width="100%"></a>
+
+[播放视频 · Play the video（mp4，9 MB）](docs/media/MolAstria-launch.mp4) · [在 X 上观看 · Watch on X](https://x.com/fu_jiasheng/status/2119209635509055915)
 
 ### 完整视频导览 · Full video tour
 
@@ -19,7 +27,7 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 
 
-三段短片，都有声音：先看 80 秒的介绍，再看网状查询导览和深色模式下的全站导览。 · Three short films with sound: an 80-second introduction, then a tour of the network and a tour of the whole site in dark mode.
+三段较早的短片，都有声音：先看 80 秒的介绍，再看网状查询导览和深色模式下的全站导览。 · Three earlier short films with sound: an 80-second introduction, then a tour of the network and a tour of the whole site in dark mode.
 
 ### 介绍短片 · Introduction
 https://github.com/user-attachments/assets/0bb5cc3d-f832-4ef3-95ef-c0ed371b0911
@@ -53,7 +61,7 @@ https://github.com/user-attachments/assets/31c3bf7b-e4e8-4121-bd8b-750b62277c0a
 | AI 实验室 AI Lab | `public/lab/index.html` | 闭环电解液分子发现工作台（见下）。<br>Closed-loop electrolyte discovery workbench (below). |
 | Meta × 化学 Meta × Chemistry | `public/meta/index.html` | Muse Spark 识图：从结构图得到 SMILES，RDKit 逐个校验；UMA 脚本生成器：按分子生成 fairchem + ASE 脚本（几何优化、构象搜索、分子动力学、绝热 IP/EA），IP/EA 结果可导入 AI 实验室；桌面版可以用本机 Python 一键运行；FAIR Chemistry 开放的模型与数据集目录（UMA、OMol25、OMat24、OC25、OPoly26 等）。<br>Muse Spark reads structure images into SMILES, checked by RDKit; a UMA script generator writes fairchem + ASE scripts (optimisation, conformers, MD, adiabatic IP/EA) whose IP/EA output imports into the AI Lab, and the desktop app runs it with your own Python; a catalogue of FAIR Chemistry's open models and datasets. |
 | 模型接口 Model API | `public/models/index.html` | 站长 GPU 上的 15 个机器学习原子间势（Meta 的 UMA、AllScAIP、eSEN，MACE-OMOL-0、MACE-OFF23、MACE-MDP 和 ANI-2x），按类别分成 4 个窗口：带电荷与自旋的分子模型、中性分子通用模型、有机分子力场、分子性质模型。输入 SMILES 或 XYZ 就能在线做 13 种计算：单点能与受力、几何优化、振动频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、电离能与电子亲和能、自旋态能隙、键解离能、质子亲和能、偶极矩与极化率、红外与拉曼光谱，可以让几个模型跑同一个计算对比。请求经账号服务的 `api.molastria.com/uma/*` 转到站长电脑上的服务（`tools/uma-server/`），按计算花费扣每日次数：Meta 的模型（UMA、AllScAIP、eSEN）每位访客每天共 40 次、Pro 200 次，MACE 系列每人 40 次，ANI-2x 只给 Pro（200 次）。结果是机器学习势的预测，不是 DFT。<br>15 machine-learning interatomic potentials on the site owner's GPU (Meta's UMA, AllScAIP and eSEN, plus MACE-OMOL-0, MACE-OFF23, MACE-MDP and ANI-2x) in 4 windows by kind: charged and open-shell molecules, neutral molecules, organic force fields and molecular properties. Enter SMILES or XYZ and run 13 job types online: single point, optimisation, frequencies and thermochemistry, conformer search, dihedral scan, molecular dynamics, reaction energy, ionisation energy and electron affinity, spin-state gap, bond dissociation energy, proton affinity, dipole and polarisability, and IR and Raman spectra; several models can run the same job for comparison. Requests go through the account service at `api.molastria.com/uma/*` to the server on the owner's machine (`tools/uma-server/`), and each job costs part of a daily allowance: 40 a day per visitor shared across Meta's models (UMA, AllScAIP, eSEN; 200 with Pro), 40 for the MACE models for everyone, and ANI-2x for Pro only (200). Results are machine-learning predictions, not DFT. |
-| AI 研究助手 AI research assistant | 每页右上角 · top right（`public/ai/`） | 从右侧滑出的面板：“问目录”先检索本站再带出处作答，“自由提问”直接对话。标题旁可以切换服务商和模型（DeepSeek、Meta Muse、任意 OpenAI 兼容接口；登录 Pro 后多一个不用 key 的“MolAstria Pro”托管额度），左边缘可拖宽，双击恢复默认。打开面板时播一段片头，点击或按任意键跳过，可在背景面板里关掉。<br>A panel that slides in from the right: "Ask the catalogue" retrieves site entries and answers with citations; "Open question" talks to the model directly. The chip next to the title switches provider and model (DeepSeek, Meta Muse, any OpenAI-compatible API, and with Pro a hosted "MolAstria Pro" quota that needs no key); drag the left edge to widen it, double-click to reset. Opening the panel plays a short intro film; click or press any key to skip it, or turn it off in the background panel. |
+| AI 研究助手 AI research assistant | 每页右上角 · top right（`public/ai/`） | 从右侧滑出的面板：“问目录”先检索本站再带出处作答，“自由提问”直接对话。标题旁可以切换服务商和模型（DeepSeek、Meta Muse、任意 OpenAI 兼容接口；登录 Pro 后多一个不用 key 的“MolAstria Pro”托管额度），左边缘可拖宽，双击恢复默认。六个吉祥物（星环、苯苯、小电子、烧瓶、水分子、猫头鹰博士）点顶部头像就能换；面板从关到开时吉祥物有 5 秒进场动画（纯 CSS，点击或按任意键跳过），可在选吉祥物的面板里关掉。<br>A panel that slides in from the right: "Ask the catalogue" retrieves site entries and answers with citations; "Open question" talks to the model directly. The chip next to the title switches provider and model (DeepSeek, Meta Muse, any OpenAI-compatible API, and with Pro a hosted "MolAstria Pro" quota that needs no key); drag the left edge to widen it, double-click to reset. Click the avatar at the top to pick one of six mascots; opening the panel plays a 5-second mascot entrance (CSS only; click or press any key to skip), which can be turned off in the mascot picker. |
 | 静态页 Static pages | `public/guide/`, `public/resources/` | 给搜索引擎的讲解章节与资源目录（`tools/build-seo.ts` 生成）。<br>Guide chapters and resource directory for search engines, generated by `tools/build-seo.ts`. |
 
 ## AI 实验室 · AI Lab
@@ -72,7 +80,8 @@ https://github.com/user-attachments/assets/31c3bf7b-e4e8-4121-bd8b-750b62277c0a
 ## 语言与背景 · Language & backgrounds
 
 - **中文 / English**：右上角 `EN` / `中` 切换，或在网址后加 `?lang=en`。界面文字由 `i18n/en.json` 提供（`tools/i18n-extract.ts` 抽取，`tools/i18n-translate.ts` 用 DeepSeek 补译空缺项，手改的译文不会被覆盖）；论坛帖子标题、讲解正文等原始内容保留原文。<br>Switch with `EN` / `中` in the header or add `?lang=en`. Interface text comes from `i18n/en.json` (extracted by `tools/i18n-extract.ts`; empty entries filled by DeepSeek in `tools/i18n-translate.ts`; hand edits are never overwritten). Source content such as forum titles and guide chapters stays as published.
-- **背景 Backgrounds**：调色板按钮里有 10 种——素纸、格物方格、苯环蜂巢、立方晶格、势能面、电子云、分子星图、极光、宣纸、光谱；可调浓淡、开关动态效果，随深浅色自动变色（`public/backdrop.js`）；“徽标动画”开关统一关掉 AI 面板片头、下载页片头和首页徽标动画。<br>The palette button offers 10: plain paper, lab notebook, benzene honeycomb, crystal blocks, energy landscape, electron clouds, molecular constellations, aurora, rice paper and spectral lines, with a strength slider and a motion switch; colours follow light / dark mode (`public/backdrop.js`). A "Logo animation" switch turns off the AI panel's intro film, the download page's intro film and the home page's logo animation together.
+- **顶栏 Header**：切换中 / EN 时留在原处，滚动位置、选中的标签页、筛选和搜索框都会复原；入口可以直接在顶栏上拖动换位（鼠标一拖就起，触屏先按住约 0.4 秒），按住不动再松开（或 显示 → 调整导航顺序）打开排序面板；“Tт”按钮调界面缩放、正文字号和字体。<br>Switching language keeps your place: scroll position, selected tabs, filters and search boxes come back. Drag any header module to move it (a mouse lifts it straight away, touch after a short hold), or hold and release (or Display → Arrange the navigation) to open the arrange panel; the "Tт" button sets interface scale, text size and typeface.
+- **背景 Backgrounds**：调色板按钮里有 10 种——素纸、格物方格、苯环蜂巢、立方晶格、势能面、电子云、分子星图、极光、宣纸、光谱；可调浓淡、开关动态效果，随深浅色自动变色（`public/backdrop.js`）；“徽标动画”开关统一关掉 AI 面板的吉祥物进场、下载页片头和首页徽标动画。<br>The palette button offers 10: plain paper, lab notebook, benzene honeycomb, crystal blocks, energy landscape, electron clouds, molecular constellations, aurora, rice paper and spectral lines, with a strength slider and a motion switch; colours follow light / dark mode (`public/backdrop.js`). A "Logo animation" switch turns off the AI panel's mascot entrance, the download page's intro film and the home page's logo animation together.
 
 ## 接入 DeepSeek 与 Muse · Connecting DeepSeek and Muse
 
@@ -106,7 +115,7 @@ node tools/e2e/live.mjs                                            # 线上只�
 node tools/cloud/run.mjs candidates.csv                            # 在自己的云 GPU 上批量算 UMA IP/EA 和 MACE-OFF23 复核 · batch UMA + MACE-OFF23 on your own cloud GPU
 ```
 
-**桌面版新版本 · Desktop releases.** 推送标签 `desktop-v0.1.2` 这样的版本号，`.github/workflows/desktop.yml` 会以标签里的版本号构建 Win 安装包和 Mac 磁盘镜像，用仓库密钥 `TAURI_SIGNING_PRIVATE_KEY` 给更新文件签名，并发布 `latest.json`。已安装的桌面版每次启动都会读取它，发现新版本就在右下角提示“立即更新”，下载、校验签名、安装并重启。签名私钥只存在站长电脑（`~/.tauri/molastria-updater.key`）和这个仓库密钥里，请另外备份；丢了它，旧版本就再也收不到更新。<br>Push a tag such as `desktop-v0.1.2`: the workflow builds both installers with that version, signs the update files with the `TAURI_SIGNING_PRIVATE_KEY` secret and publishes `latest.json`. Installed apps read it on every launch and offer "Update now", which downloads, verifies, installs and restarts. Back up the private key; without it, installed apps can never be updated again.
+**桌面版新版本 · Desktop releases.** 当前版本是 [0.1.19](https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest)。推送标签 `desktop-v0.1.2` 这样的版本号，`.github/workflows/desktop.yml` 会以标签里的版本号构建 Win 安装包和 Mac 磁盘镜像，用仓库密钥 `TAURI_SIGNING_PRIVATE_KEY` 给更新文件签名，并发布 `latest.json`。已安装的桌面版每次启动都会读取它，发现新版本就在右下角提示“立即更新”，下载、校验签名、安装并重启。签名私钥只存在站长电脑（`~/.tauri/molastria-updater.key`）和这个仓库密钥里，请另外备份；丢了它，旧版本就再也收不到更新。<br>The current version is 0.1.19. Push a tag such as `desktop-v0.1.2`: the workflow builds both installers with that version, signs the update files with the `TAURI_SIGNING_PRIVATE_KEY` secret and publishes `latest.json`. Installed apps read it on every launch and offer "Update now", which downloads, verifies, installs and restarts. Back up the private key; without it, installed apps can never be updated again.
 
 ```powershell
 git tag desktop-v0.1.2; git push origin desktop-v0.1.2
@@ -121,12 +130,14 @@ public/                     发布目录 · published site
   i18n.js, i18n/en.js        中英切换与英文词典 · language switch and English dictionary
   backdrop.js                10 种艺术背景 · artistic backgrounds
   sw.js, offline.html, manifest.webmanifest, assets/pwa/   添加到主屏幕与离线阅读 · installable web app and offline reading
-  assets/brand/              首页徽标动画与片头视频（转码的小文件）· logo animation and intro film
-  ai/                        AI 接入层与 AI 研究助手面板 · AI layer and the AI research assistant panel
+  assets/brand/              首页徽标动画与下载页片头（转码的小文件）· logo animation and intro film
+  ai/                        AI 接入层与 AI 研究助手面板（含六个吉祥物）· AI layer, assistant panel and mascots
   lab/                       AI 实验室 · AI Lab
   meta/                      Meta × 化学：Muse 识图、UMA 脚本、开放资源 · Meta × Chemistry
   models/                    模型接口：15 个机器学习势、13 种在线计算 · Model API: 15 ML potentials, 13 job types
   train/                     训练 Agent · train an agent
+  digest/                    每周精选 · Weekly Picks
+  watch/                     完整视频导览（分段的 mp4）· full video tour
   pro/, pay/                 价格、结账、账号页与条款，收款配置 · pricing, checkout, account, terms, payment config
   download/                  桌面版下载与添加到主屏幕 · desktop downloads and Home Screen steps
   manual/                    讲解手册阅读器 · Explainer Handbook reader
@@ -146,7 +157,7 @@ deploy/ai-proxy-worker.js    可选 AI 代理 · optional AI proxy
 deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENTS.md 第 4 节）· Pro accounts
 tools/                       构建、翻译、测试脚本 · build, translation and test scripts
 tools/uma-server/            模型接口的在线服务（站长电脑上的 server.py，经 api.molastria.com/uma/* 接入）· Model API server on the owner's machine
-docs/                        维护文档：结构、操作手册、决定记录、路线图 · maintainer docs
+docs/                        维护文档：结构、操作手册、决定记录、路线图；media/ 是 README 用的发布短片和封面 · maintainer docs; media/ holds the launch film and cover used here
 CLAUDE.md                    给 Claude Code 的项目说明 · project notes for Claude Code
 maintenance/                 目录爬虫与合并（Python，每周四由 .github/workflows/refresh-data.yml 运行）· catalogue crawler
 .devcontainer/               GitHub Codespaces 开发环境 · Codespaces dev container
