@@ -271,6 +271,7 @@ const mains = [
   await injectHead("hub/network.html", "hub/network.html"),
   await injectHead("pro/index.html", "pro/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "MolAstria Pro", inLanguage: "zh-CN", url: SITE + "pro/" }] }),
   await injectHead("download/index.html", "download/", { jsonld: [{ "@context": "https://schema.org", "@type": "SoftwareApplication", name: "MolAstria Desktop", applicationCategory: "EducationalApplication", operatingSystem: "Windows 10, Windows 11, macOS 11+", url: SITE + "download/", downloadUrl: "https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } }] }),
+  await injectHead("about/index.html", "about/", { jsonld: [{ "@context": "https://schema.org", "@type": "AboutPage", name: "关于 · Morning Glory 晨光科技与 MolAstria", inLanguage: "zh-CN", url: SITE + "about/", mainEntity: { "@type": "Organization", name: "Morning Glory", alternateName: ["晨光科技", "晨光实验室"], legalName: "16513778 Canada Inc.", slogan: "Intelligence Beyond Boundaries.", url: SITE + "about/", address: { "@type": "PostalAddress", addressLocality: "Toronto", addressRegion: "ON", addressCountry: "CA" }, knowsAbout: ["artificial intelligence", "intelligent automation", "data science", "computational chemistry", "quantum chemistry", "scientific machine learning"] } }, crumbs([["首页", ""], ["关于", "about/"]])] }),
   await injectHead("pro/terms.html", "pro/terms.html"),
   await injectHead("pro/refund.html", "pro/refund.html"),
   await injectHead("pro/privacy.html", "pro/privacy.html"),
@@ -304,7 +305,7 @@ await write("404.html", `<!doctype html>
 </html>
 `);
 const urls = [
-  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
+  ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["about/", "0.5", "yearly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
   ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["videos/", "0.8", "monthly"], ["fundamental-science/", "0.8", "monthly"], ["digest/", "0.8", "weekly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
 ];

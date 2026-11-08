@@ -1,0 +1,52 @@
+/* 关于页（Morning Glory 晨光科技与 MolAstria）：只用 shared-nav.css 的变量。 */
+.about{max-width:860px}
+.mg-hero{text-align:center;padding:12px 0 18px}
+.mg-mark{width:64px;height:64px;color:var(--gold);margin-bottom:10px}
+.mg-hero h1{font-family:var(--font-num);font-weight:400;font-size:clamp(28px,4.4vw,46px);letter-spacing:-.5px;margin:0 0 4px}
+.mg-slogan-zh{font-family:var(--font-serif);font-size:19px;color:var(--accent-2);margin:0 0 14px}
+.mg-sub{font-family:var(--font-num);font-style:italic;font-size:16px;color:var(--ink-2);margin:0}
+.mg-sub-zh{font-size:13px;color:var(--muted);margin:2px 0 0}
+.lead-left{font-size:16px!important;color:var(--ink)!important;border-left:3px solid var(--gold);padding-left:12px;margin:18px 0}
+.mg-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px;margin:8px 0 0}
+.mg-facts div{border-bottom:1px solid var(--line);padding:6px 0}
+.mg-facts dt{font-size:12px;color:var(--muted)}
+.mg-facts dd{margin:0;font-size:14.5px;color:var(--ink)}
+.mg-tree{display:flex;flex-direction:column;align-items:center;margin:14px 0 6px}
+.mg-node{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.mg-node b{font-size:14.5px;color:var(--ink);letter-spacing:.3px}
+.mg-node span{font-size:12.5px;color:var(--muted)}
+.mg-entity{border-style:dashed}
+.mg-brand{border:2px solid var(--gold);background:var(--gold-soft);padding:12px 26px}
+.mg-brand b{letter-spacing:2px}
+.mg-live{border:2px solid var(--accent-2)}
+.mg-stem{width:2px;height:18px;background:var(--line-strong)}
+.mg-branches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;position:relative;padding-top:16px}
+.mg-branches::before{content:"";position:absolute;top:0;left:12.5%;right:12.5%;border-top:2px solid var(--line-strong)}
+.mg-branches .mg-node{position:relative}
+.mg-branches .mg-node::before{content:"";position:absolute;top:-17px;left:50%;width:2px;height:16px;background:var(--line-strong)}
+.mg-tag{align-self:center;font-style:normal;font-size:11px;font-weight:700;border-radius:99px;padding:1px 8px;margin-top:4px}
+.mg-tag.live{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.mg-tag.plan{background:var(--surface-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.mg-note{font-size:13px!important;color:var(--muted)!important}
+.mg-dirs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
+.mg-dir{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.mg-dir h3{margin:0;font-size:16px;display:flex;gap:8px;align-items:baseline}
+.mg-dir h3 span{font:400 15px var(--font-num);color:var(--gold)}
+.mg-dir p{margin:6px 0 0;font-size:13.5px!important;line-height:1.75!important}
+.mg-dir .mg-en{margin:0;font-size:12px!important;color:var(--muted)!important;letter-spacing:.3px}
+.mg-now{border-top:1px solid var(--line);padding-top:6px}
+.mg-list{margin:4px 0 0;padding-left:18px}
+.mg-list li{font-size:13.5px!important;line-height:1.7!important}
+.mg-plan{color:var(--muted)!important}
+.about .mg-stages{list-style:none;padding:0;counter-reset:st;display:grid;gap:8px}
+.mg-stages li{counter-increment:st;display:grid;grid-template-columns:34px 1fr;column-gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.mg-stages li::before{content:counter(st);grid-row:span 3;font:400 24px/1 var(--font-num);color:var(--gold);align-self:center;text-align:center}
+.mg-stages b{font-size:14.5px;color:var(--ink)}
+.mg-stages span{font-size:13.5px;color:var(--ink-2)}
+.mg-stages span+span{color:var(--muted);font-size:12.5px}
+@media (max-width:640px){
+  .mg-branches{grid-template-columns:1fr 1fr}
+  .mg-branches::before,.mg-branches .mg-node::before{display:none}
+  .mg-dirs{grid-template-columns:1fr}
+}
+html[lang=en] .mg-dir .mg-en{display:none}

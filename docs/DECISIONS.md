@@ -11,6 +11,12 @@
 - **只收原作者或机构上传的视频，以及开放许可课程的转载**（MIT OCW、Yale、NPTEL 是 CC 许可）。中文字幕的 MIT 课程转载标“转载”，并链接原视频。
 - **候选在 GitHub Actions 上找：** 编辑网站的云端会话连不上 YouTube 和哔哩哔哩，网页工具也有调用次数限制。所以写了 `tools/video-search.mjs`，用临时工作流在 Actions 上搜（YouTube 约 3500 条、哔哩哔哩约 1800 条候选，带平台上的原始信息），再按主题挑选、复核、写说明。说明是根据平台上的标题、简介和分集目录写的，没有逐个看完视频。
 
+## 2026-11-08 MolAstria 归入晨光科技（Morning Glory）品牌；个人运营，品牌归公司
+
+站长的公司 16513778 Canada Inc.（加拿大联邦注册，多伦多）以 Morning Glory / 晨光科技为品牌，MolAstria 是它的“AI 与科学计算”项目。做法：新增关于页 `/about/`（法律实体、品牌架构、四个业务方向、三阶段愿景、口号），每页页脚加“晨光科技（Morning Glory）旗下项目”，链到关于页；README 加一段公司介绍。
+**原则：** 规划不写成现状。品牌架构里只有 MolAstria 标“已上线”，其他三个分支和三个阶段都标“规划中”；每个业务方向分开写“MolAstria 里已有”（链到真实栏目）和“规划中”，不写不存在的部门、团队、客户或服务。站长提供的配图是 images.openai.com 的链接，不引用（会失效，来源和授权不明），页面用自己画的 SVG 和 CSS。
+**运营者与品牌所有人分开（站长 2026-11-08 选定）：** 服务条款和隐私政策写 MolAstria 由 Jiasheng Fu 以个人身份运营（与 Stripe 个人账户一致，付款由本人收取）；`TRADEMARKS.md` 和页脚写 MolAstria、Morning Glory 的名称、徽标与吉祥物归 16513778 Canada Inc. 所有。网站代码的版权（`LICENSE`）没有改。以后若把 Stripe 转到公司名下，再把条款和隐私政策的主体改成公司。
+
 ## 2026-11-08 桌面版去掉 panic = "abort"
 
 Mac 版 0.1.19 在后台运行约 25 分钟后闪退（SIGABRT，tokio-rt-worker 线程）。按崩溃报告里的偏移反汇编发布包，调用链是：异步回应应用内置协议请求时调用 WKURLSchemeTask 的 `didFinish`，WebKit 已经停掉了这个请求（页面换了、iframe 或视频取消了请求），于是抛出 Objective-C 异常。wry 用 `objc2::exception::catch` 包住了这个调用，本来只会丢掉这次回应；但 `Cargo.toml` 的发布配置写了 `panic = "abort"`，objc2 的文档写明这种设置下接不住异常，Rust 只能报“panic in a function that cannot unwind”并结束整个进程。
