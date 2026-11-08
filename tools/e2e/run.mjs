@@ -84,6 +84,26 @@ check('every main page loads without script errors', async () => {
     await p.context().close();
   }
 });
+check('home page: English title, bilingual description, and square icons Google can use (48 px multiples)', async () => {
+  const p = await open();
+  await go(p, '/index.html');
+  const head = await p.evaluate(() => ({
+    title: document.querySelector('title').textContent,
+    desc: document.querySelector('meta[name=description]').content,
+    icons: [...document.querySelectorAll('link[rel=icon]')].map((l) => ({ href: l.href, sizes: l.getAttribute('sizes') })),
+  }));
+  assert.match(head.title, /^MolAstria · [A-Za-z ]+$/);
+  assert.match(head.desc, /[A-Za-z]{4}/); assert.match(head.desc, HAN);
+  for (const href of [...head.icons.map((i) => i.href), `${SITE}/favicon.ico`]) {
+    const res = await p.request.get(href);
+    assert.equal(res.status(), 200, href);
+    if (!href.endsWith('.png')) continue;
+    const size = await p.evaluate(async (u) => { const img = new Image(); img.src = u; await img.decode(); return [img.naturalWidth, img.naturalHeight]; }, href);
+    assert.equal(size[0] % 48, 0, `${href} is a multiple of 48 px`);
+    assert.equal(`${size[0]}x${size[1]}`, head.icons.find((i) => i.href === href).sizes, `${href} sizes attribute`);
+  }
+  await p.context().close();
+});
 
 check('pricing page: content free, three allowances, everything marked available exists', async () => {
   const p = await open();
