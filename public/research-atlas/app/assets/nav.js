@@ -13,7 +13,7 @@
     ["cn-map", "04", "中国量化地图", "cn-quantum-chem-map/"],
     ["cn-top20", "05", "中国 Top 20", "cn-top20/"],
     ["compare", "06", "中美对比", "compare/"],
-    ["companies", "07", "北美企业", "na-companies/"],
+    ["companies", "07", "中美企业", "na-companies/"],
   ];
   // [key, Chinese name, English name, country, path or null while being built]
   const SCHOOLS = [
