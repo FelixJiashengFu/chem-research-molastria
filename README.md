@@ -15,9 +15,11 @@ One place to search computational-chemistry databases, software, tutorials, pape
 
 ### 发布短片 · Launch film（2 分钟 · 2 min）
 
-两分钟带你走一遍 MolAstria。 · A two-minute walk through MolAstria.
+两分钟带你走一遍 MolAstria（英文配音，有声音）。点封面播放。 · A two-minute walk through MolAstria, with English voice-over. Click the cover to play.
 
-[在 X 上观看发布短片 · Watch the launch film on X](https://x.com/fu_jiasheng/status/2119209635509055915)
+<a href="docs/media/MolAstria-launch.mp4"><img src="docs/media/MolAstria-launch-cover.jpg" alt="MolAstria 发布短片封面 · MolAstria launch film cover" width="100%"></a>
+
+[播放视频 · Play the video（mp4，9 MB）](docs/media/MolAstria-launch.mp4) · [在 X 上观看 · Watch on X](https://x.com/fu_jiasheng/status/2119209635509055915)
 
 ### 完整视频导览 · Full video tour
 
@@ -155,7 +157,7 @@ deploy/ai-proxy-worker.js    可选 AI 代理 · optional AI proxy
 deploy/account-worker.js     Pro 账号服务（Cloudflare Worker + D1，PAYMENTS.md 第 4 节）· Pro accounts
 tools/                       构建、翻译、测试脚本 · build, translation and test scripts
 tools/uma-server/            模型接口的在线服务（站长电脑上的 server.py，经 api.molastria.com/uma/* 接入）· Model API server on the owner's machine
-docs/                        维护文档：结构、操作手册、决定记录、路线图 · maintainer docs
+docs/                        维护文档：结构、操作手册、决定记录、路线图；media/ 是 README 用的发布短片和封面 · maintainer docs; media/ holds the launch film and cover used here
 CLAUDE.md                    给 Claude Code 的项目说明 · project notes for Claude Code
 maintenance/                 目录爬虫与合并（Python，每周四由 .github/workflows/refresh-data.yml 运行）· catalogue crawler
 .devcontainer/               GitHub Codespaces 开发环境 · Codespaces dev container
