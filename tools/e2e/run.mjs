@@ -1858,7 +1858,7 @@ check('brand notice: every page carries one copyright line linking to TRADEMARKS
   for (const path of ['/index.html', '/manual/index.html', '/digest/index.html', '/pro/account.html', '/qchem/index.html']) {
     await go(p, path);
     assert.equal(await p.locator('.cr-legal').count(), 1, path);
-    // The line now starts with the About link (晨光科技), so look for the TRADEMARKS.md link itself.
+    // The line now starts with the About link (阿斯特赖亚科技), so look for the TRADEMARKS.md link itself.
     assert.equal(await p.locator('.cr-legal a[href$="TRADEMARKS.md"]').count(), 1, path);
   }
   await go(p, '/radar/index.html');
@@ -2008,6 +2008,29 @@ check('about: Morning Glory page, every non-MolAstria direction labelled planned
   await p.waitForFunction(() => !document.documentElement.dataset.i18n);
   assert.match(await text(p, '.lead-left'), /AI & Scientific Computing project of Morning Glory/);
   assert.match(await text(p, '.cr-legal'), /A Morning Glory project/);
+  await finish(p);
+});
+
+check('about: MolAstria brand story, five chapters, hand-written English, new Chinese company name', async () => {
+  const p = await open({ viewport: { width: 390, height: 844 } });
+  await go(p, '/about/index.html#story');
+  assert.match(await text(p, '#story h2'), /从分子出发，探索现实的深层本质/);
+  assert.equal(await p.locator('#story .story-ch').count(), 5);
+  assert.equal(await p.locator('#story .story-ladder li').count(), 5);
+  assert.match(await text(p, '.cr-legal'), /阿斯特赖亚科技（Morning Glory）旗下项目/);
+  assert.ok(!/晨光/.test(await text(p, 'body')), 'the old Chinese name is gone');
+  assert.equal(await p.locator('#story .story-questions li').count(), 3);
+  assert.match(await text(p, '#story .story-quote'), /shoulders of giants[\s\S]*巨人的肩膀/);
+  assert.equal(await p.locator('#story .cr-legal').count(), 0, 'the site footer line is not pulled into the story');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  await go(p, '/index.html');
+  assert.equal(await p.locator('footer a[href="about/index.html#story"]').count(), 1);
+  await go(p, '/about/index.html?lang=en#story');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.match(await text(p, '#story h2'), /From Molecules to the Deeper Nature of Reality/);
+  assert.match(await text(p, '#story .story-ch h3'), /The Origin of Our Name/);
+  assert.equal(await p.locator('#story .story-zh:visible, #story .story-en:visible').count(), 0, 'no doubled lines in English');
+  assert.ok(!/[\u4e00-\u9fff]/.test(await text(p, '#story')), 'story fully in English');
   await finish(p);
 });
 
