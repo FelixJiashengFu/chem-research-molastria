@@ -120,3 +120,132 @@ test('wavelength colours: red at 650 nm, blue at 450 nm, nothing outside the vis
   assert.ok(b2 > 200 && r2 === 0);
   assert.deepEqual(plain(P.wavelengthRGB(900)), [0, 0, 0]);
 });
+
+// ── 07–14：量子嘉年华分会场与物理疆界（play-quantum-models.js）────────────────
+const qbox = { window: {} };
+vm.runInNewContext(readFileSync(new URL('../public/qchem/play-quantum-models.js', import.meta.url), 'utf8'), qbox);
+const Q = qbox.window.MOLASTRIA_PLAYQ;
+
+test('Stern–Gerlach: cos²(Δθ/2) per analyser, the 1/4 paradox, many small steps reach 1, every level winnable on its slider', () => {
+  close(Q.sgStep(0, 90), 0.5, 1e-12, '+z then +x');
+  close(Q.sgStep(0, 180), 0, 1e-12, '+z then −z');
+  close(Q.sgChain([0, 90, 180]), 0.25, 1e-12, 'a +x analyser between +z and −z passes 1/4');
+  close(Q.sgChain([0, 45, 90, 135, 180]), Math.cos(Math.PI / 8) ** 8, 1e-12, 'four equal steps');
+  for (let m = 1; m < 40; m++) assert.ok(Q.sgEven(m + 1) > Q.sgEven(m), 'more analysers, more atoms through');
+  assert.ok(Q.sgEven(200) > 0.98, 'the Zeno limit approaches 1');
+  const grid = Array.from({ length: 73 }, (_, i) => i * 5); // the slider: 0–360° in 5° steps
+  for (const L of Q.sgLevels) {
+    const won = (mid) => { const p = Q.sgChain([0, ...mid, ...(L.last == null ? [] : [L.last])]); return p >= L.lo - 1e-12 && p <= L.hi + 1e-12; };
+    assert.equal(won(Array(L.middle).fill(0)), false, `${L.id}: not won at the start`);
+    let ok = false;
+    const walk = (mid) => { if (ok) return; if (mid.length === L.middle) { ok = won(mid); return; } for (const a of grid) walk([...mid, a]); };
+    walk([]);
+    assert.ok(ok, `${L.id}: winnable`);
+  }
+});
+
+test('CHSH: classical strategies top out at 3/4, the quantum optimum is cos²(π/8) and nothing on the slider grid beats it', () => {
+  let best = 0;
+  for (let m = 0; m < 16; m++) best = Math.max(best, Q.chshClassical([m & 1, (m >> 1) & 1], [(m >> 2) & 1, (m >> 3) & 1]));
+  assert.equal(best, 0.75);
+  assert.equal(Q.chshClassical([0, 1], [0, 1]), 0.25, 'the game starts at 25%');
+  close(Q.chshQuantum([0, 45], [22.5, -22.5]), Q.tsirelson, 1e-12, 'optimal angles');
+  close(Q.tsirelson, (2 + Math.SQRT2) / 4, 1e-15, 'Tsirelson');
+  close(Q.chshS([0, 45], [22.5, -22.5]), 2 * Math.SQRT2, 1e-12, 'S = 2√2');
+  let top = 0;
+  for (let i = 0; i < 400; i++) { const r = () => Math.round((Math.random() * 180 - 90) * 2) / 2, A = [r(), r()], B = [r(), r()], w = Q.chshQuantum(A, B); top = Math.max(top, w); close(w, 0.5 + Q.chshS(A, B) / 8, 1e-12, 'P(win) = 1/2 + S/8'); }
+  assert.ok(top <= Q.tsirelson + 1e-12);
+  assert.equal(Q.chshQuantum([0, 0], [0, 0]), 0.75, 'all angles equal: quantum play reduces to a classical strategy');
+});
+
+test('circuits: gates are unitary, textbook identities hold, every puzzle is normalised and its par is the true minimum', () => {
+  const norm = (v) => v.reduce((t, [a, b]) => t + a * a + b * b, 0);
+  const st = Q.run(3, [{ g: 'H', q: 0 }, { g: 'T', q: 1 }, { g: 'H', q: 1 }, { g: 'CNOT', c: 0, t: 2 }, { g: 'S', q: 2 }]);
+  close(norm(st), 1, 1e-12, 'norm preserved');
+  const same = (a, b, n = 1) => { for (let basis = 0; basis < 1 << n; basis++) close(Q.fidelity(Q.run(n, a, basis), Q.run(n, b, basis)), 1, 1e-12, 'same action'); };
+  same([{ g: 'H', q: 0 }, { g: 'Z', q: 0 }, { g: 'H', q: 0 }], [{ g: 'X', q: 0 }]);
+  same([{ g: 'T', q: 0 }, { g: 'T', q: 0 }], [{ g: 'S', q: 0 }]);
+  same([{ g: 'S', q: 0 }, { g: 'S', q: 0 }], [{ g: 'Z', q: 0 }]);
+  close(Q.fidelity(Q.run(2, [{ g: 'CNOT', c: 0, t: 1 }, { g: 'CNOT', c: 1, t: 0 }, { g: 'CNOT', c: 0, t: 1 }], 1), Q.zero(2, 2)), 1, 1e-12, 'swap |01⟩ → |10⟩');
+  assert.equal(new Set(Q.puzzles.map((p) => p.id)).size, Q.puzzles.length);
+  for (const pz of Q.puzzles) {
+    close(norm(pz.target), 1, 1e-12, `${pz.id} target normalised`);
+    assert.equal(Q.solved(pz, []), false, `${pz.id}: not solved by the empty circuit`);
+    const mv = Q.moves(pz.n, pz.allow);
+    let found = -1;
+    for (let d = 1; d <= pz.par && found < 0; d++) {
+      const dfs = (seq) => { if (found >= 0) return; if (seq.length === d) { if (Q.solved(pz, seq)) found = d; return; } for (const m of mv) dfs([...seq, m]); };
+      dfs([]);
+    }
+    assert.equal(found, pz.par, `${pz.id}: par ${pz.par} is the minimum`);
+  }
+});
+
+test('repetition code: the decoder fixes every single flip, and p_L = 3p² − 2p³ matches all 8 error patterns', () => {
+  for (let q = 0; q < 3; q++) { const e = [0, 0, 0]; e[q] = 1; assert.equal(Q.decode(Q.syndrome(e)), q); assert.equal(Q.logicalFail(e, q), false); }
+  assert.equal(Q.decode([0, 0]), -1);
+  for (const p of [0.01, 0.05, 0.15, 0.3, 0.5, 0.7]) {
+    let pl = 0;
+    for (let m = 0; m < 8; m++) { const e = [m & 1, (m >> 1) & 1, (m >> 2) & 1], k = e[0] + e[1] + e[2]; if (Q.logicalFail(e, Q.decode(Q.syndrome(e)))) pl += p ** k * (1 - p) ** (3 - k); }
+    close(Q.pLogical(p), pl, 1e-12, `p = ${p}`);
+  }
+  close(Q.pLogical(0.5), 0.5, 1e-15, 'break-even at p = 1/2');
+  assert.ok(Q.pLogical(0.15) < 0.15 && Q.pLogical(0.6) > 0.6);
+});
+
+test('Grover: the closed form matches step-by-step oracle + diffusion, and the best iteration count is right', () => {
+  for (const N of [4, 16, 64]) {
+    let v = Array(N).fill(1 / Math.sqrt(N));
+    for (let k = 0; k <= 12; k++) {
+      const [am, ao] = Q.groverAmps(N, k);
+      close(v[3], am, 1e-12, `N ${N} k ${k} marked`); close(v[0], ao, 1e-12, `N ${N} k ${k} other`);
+      v = Q.groverStep(v, 3);
+    }
+  }
+  close(Q.groverP(4, 1), 1, 1e-12, 'N = 4: one iteration is certain');
+  assert.equal(Q.groverBest(1024), 25);
+  close(Q.groverP(1024, 25), 0.99946, 1e-5, 'N = 1024 success at k = 25');
+  for (const N of Q.groverSizes) { const kb = Q.groverBest(N); assert.ok(Q.groverP(N, kb) >= Q.groverP(N, kb + 1) && Q.groverP(N, kb) >= Q.groverP(N, Math.max(0, kb - 1)), `N ${N}`); assert.ok(Q.groverP(N, kb) > 0.9); }
+});
+
+test('noise-assisted transport: agrees with the biology pavilion’s solver, conserves probability, and each network teaches its lesson', () => {
+  const bbox = { window: {} };
+  vm.runInNewContext(readFileSync(new URL('../public/quantum/biology/qb-models.js', import.meta.url), 'utf8'), bbox);
+  const M = bbox.window.MOLASTRIA_QB_MODELS, H = M.fmoH();
+  for (const gamma of [0, 0.5, 20]) {
+    const opt = { gamma, kappa: 1, loss: 0.002, trap: 2, start: 0 };
+    close(Q.transfer(H, opt).efficiency, M.transfer(H, opt).efficiency, 1e-9, `FMO γ = ${gamma}`);
+  }
+  for (const net of Q.networks) {
+    const c = Q.enaqtCurve(net), mx = Math.max(...c), at = c.indexOf(mx);
+    for (const s of [0, 30, 90]) { const r = Q.transfer(net.H, { ...Q.enaqtRates, gamma: Q.gammaAt(s), trap: net.trap }); close(r.efficiency + r.lost, 1, 1e-9, `${net.id}: η + loss = 1`); }
+    assert.ok(c[120] < 0.05, `${net.id}: strong dephasing freezes transfer (Zeno)`);
+    assert.ok(c[net.s0] < 0.97 * mx, `${net.id}: not passed where the slider starts`);
+    if (net.id === 'chain') assert.equal(at, 0, 'the clean chain does best with no noise');
+    else { assert.ok(at > 1 && at < 120, `${net.id}: an interior optimum`); assert.ok(c[0] < 0.5 * mx, `${net.id}: coherent transport is poor`); }
+  }
+  assert.ok(Q.enaqtCurve(Q.networks[2])[0] < 1e-6, 'the dark state blocks coherent transfer completely');
+  assert.equal(Q.gammaAt(0), 0); close(Q.gammaAt(1), 0.01, 1e-15, 'slider low end'); close(Q.gammaAt(120), 1000, 1e-9, 'slider high end');
+});
+
+test('Planck units: dimensions solve uniquely and give the CODATA Planck values', () => {
+  for (const tg of Q.planckTargets) { const e = Q.solveDims(tg.dim); assert.deepEqual(plain(Q.dims(...e)).map((x) => x + 0), plain(tg.dim), tg.id); for (const x of e) assert.ok(Number.isInteger(2 * x) && Math.abs(x) <= 6, `${tg.id}: half-integer exponents within the steppers`); }
+  const v = (id) => Q.value(...Q.solveDims(Q.planckTargets.find((x) => x.id === id).dim));
+  close(v('length') / 1.616255e-35, 1, 1e-5, 'Planck length');
+  close(v('time') / 5.391247e-44, 1, 1e-5, 'Planck time');
+  close(v('mass') / 2.176434e-8, 1, 1e-5, 'Planck mass');
+  close(v('energy') / 1.602176634e-10 / 1.22089e19, 1, 1e-4, 'Planck energy in GeV');
+  assert.deepEqual(plain(Q.solveDims([1, 1, -2])).map((x) => x + 0), [0, 4, -1], 'force c⁴/G has no ħ');
+  assert.deepEqual(plain(Q.solveDims([1, 2, -3])).map((x) => x + 0), [0, 5, -1], 'power c⁵/G has no ħ');
+});
+
+test('ħ-c-G cube: the cases cover all eight corners and use the same corners as the Realms of Physics map', () => {
+  const rbox = { window: {} };
+  vm.runInNewContext(readFileSync(new URL('../public/physics-realms/pr-data.js', import.meta.url), 'utf8'), rbox);
+  const realms = rbox.window.MOLASTRIA_REALMS.cube.map((x) => x.k.join(''));
+  assert.deepEqual([...realms].sort(), Object.keys(Q.cubeName).sort());
+  const used = new Set(Q.cubeCases.map((x) => x.k.join('')));
+  assert.equal(used.size, 8, 'every corner has at least one phenomenon');
+  const src = readFileSync(new URL('../public/qchem/play-quantum.js', import.meta.url), 'utf8');
+  for (const x of Q.cubeCases) assert.match(src, new RegExp(`\\n\\s+${x.id}: \\[`), `${x.id} has a bilingual text`);
+});
