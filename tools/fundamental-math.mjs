@@ -31,3 +31,4 @@ build('fs-data.js', 'MOLASTRIA_FS', 'fs-math.js');
 build('math/fm-data.js', 'MOLASTRIA_FM', 'math/fm-math.js');
 // 量子生物学栏目（quantum/biology/qb-data.js → qb-math.js）
 build('qb-data.js', 'MOLASTRIA_QB', 'qb-math.js', 'quantum/biology');
+build('../quantum/physics/qp-data.js', 'MOLASTRIA_QP', '../quantum/physics/qp-math.js');
