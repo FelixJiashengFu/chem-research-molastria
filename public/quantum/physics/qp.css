@@ -1,0 +1,52 @@
+/* 量子嘉年华 · 量子物理：在 fundamental.css 和 fm.css 之上只补本页特有的部分（时间线、Stern–Gerlach 串联、两张图并排、别的展馆链接） */
+
+/* 时间线：横向滚动的卡片带 */
+.qp-time{list-style:none;margin:12px 0 0;padding:4px 2px 12px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,250px);gap:12px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.qp-time li{scroll-snap-align:start;position:relative;padding:14px 14px 12px;border:1px solid var(--line);border-top:3px solid var(--fm-c,var(--gold));border-radius:8px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.qp-time li>p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink)}
+.qp-year{font:600 22px/1 var(--font-num,inherit);color:var(--fm-c,var(--gold))}
+.qp-time .qp-time-ref{font-size:12px;color:var(--muted);margin-top:auto}
+.qp-time .qp-time-ref a{color:var(--accent-text);word-break:break-word}
+.qp-time .fm-chip{align-self:flex-start}
+
+/* 演示 2 的两张图 */
+.qp-figs{display:grid;gap:12px;min-width:0}
+.qp-figs .fs-figure{margin:0}
+
+/* 演示 3：三台 Stern–Gerlach 装置 */
+.qp-sg{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.qp-sg-src,.qp-sg-dev{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:96px;padding:10px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);text-align:center;font-size:12.5px;color:var(--ink-2)}
+.qp-sg-src{min-width:72px;justify-content:center;align-self:stretch;font-weight:600}
+.qp-sg-n{font-weight:600;color:var(--ink)}
+.qp-sg-dev b{font:600 15px/1 var(--font-num,inherit);color:var(--ink)}
+.qp-sg-dev small{color:var(--muted);font-size:11.5px}
+.qp-sg-ang{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.qp-sg-ang i{position:absolute;left:50%;top:50%;width:3px;height:17px;margin-left:-1.5px;background:var(--gold);border-radius:2px;transform-origin:50% 0;transform:rotate(calc(180deg + var(--ang)))}
+.qp-sg-ang i::after{content:"";position:absolute;bottom:-5px;left:-3.5px;border:5px solid transparent;border-top-color:var(--gold);border-bottom:0}
+.qp-sg-count{position:absolute;top:-9px;right:-6px;padding:1px 7px;border-radius:999px;background:var(--info);color:var(--paper);font:600 11.5px/1.5 var(--font-num,inherit)}
+.qp-sg-arrow{flex:0 0 18px;height:2px;background:var(--line);position:relative}
+.qp-sg-arrow::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--muted);border-right:0}
+
+/* 章节里的“试一试”与别的展馆 */
+.qp-try{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:4px 0 16px}
+.qp-link{font-size:13px;color:var(--muted)}
+.qp-hall{font-weight:600;color:var(--accent-text)}
+.qp-hall[data-soon]{color:var(--muted);font-weight:500}
+.qp-hall[data-hall=physics]{color:color-mix(in srgb,var(--gold) 70%,var(--ink))}
+.qp-hall[data-hall=computing]{color:color-mix(in srgb,var(--info) 80%,var(--ink))}
+.qp-hall[data-hall=algorithms]{color:color-mix(in srgb,var(--violet,var(--info)) 80%,var(--ink))}
+.qp-hall[data-hall=biology]{color:color-mix(in srgb,var(--ok) 80%,var(--ink))}
+
+/* 章节侧栏里的原始论文 */
+.qp-papers{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:12.5px}
+.qp-papers a{color:var(--accent-text);font-weight:600}
+.qp-papers span{display:block;color:var(--muted);line-height:1.45}
+
+@media (max-width:620px){
+  .qp-sg{flex-direction:column;align-items:stretch}
+  .qp-sg-src,.qp-sg-dev{flex-direction:row;justify-content:space-between;flex-wrap:wrap;min-width:0}
+  .qp-sg-arrow{flex:0 0 14px;width:2px;height:14px;align-self:center}
+  .qp-sg-arrow::after{right:-4px;top:auto;bottom:-1px;border:5px solid transparent;border-top-color:var(--muted);border-bottom:0}
+  .qp-time{grid-auto-columns:minmax(200px,78vw)}
+}
+@media (prefers-reduced-motion:reduce){.qp-time{scroll-behavior:auto}}

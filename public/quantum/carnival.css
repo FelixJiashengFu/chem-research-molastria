@@ -1,0 +1,69 @@
+/* 量子嘉年华（母栏目）：在 fundamental.css 的版式上加展馆卡片、通道、路线和站内入口。只用 shared-nav.css 的颜色变量，深浅主题都生效。
+   四个展馆各有一个颜色：物理 金、计算机 蓝、算法 紫、生物 绿。宽元素都能在约 520 px 的排版宽度里放下。 */
+[data-hall=physics]{--qc-c:var(--gold)}
+[data-hall=computing]{--qc-c:var(--info)}
+[data-hall=algorithms]{--qc-c:var(--violet)}
+[data-hall=biology]{--qc-c:var(--ok)}
+.qc-hero{position:relative;max-width:100ch}
+.qc-hero>*:not(.qc-orbit){position:relative}
+
+/* 首屏右上角的“原子”：三条椭圆轨道和一个核，慢慢转；关掉动画时静止 */
+.qc-orbit{position:absolute;right:-12px;top:34px;width:170px;height:170px;pointer-events:none;opacity:.55}
+.qc-orbit span{position:absolute;inset:0;border:1.5px solid color-mix(in srgb,var(--gold) 70%,transparent);border-radius:50%;transform:rotate(var(--r)) scaleY(.36);animation:qc-spin 18s linear infinite}
+.qc-orbit span:nth-child(1){--r:0deg}
+.qc-orbit span:nth-child(2){--r:60deg;border-color:color-mix(in srgb,var(--info) 70%,transparent);animation-duration:23s}
+.qc-orbit span:nth-child(3){--r:120deg;border-color:color-mix(in srgb,var(--violet) 70%,transparent);animation-duration:29s}
+.qc-orbit i{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--gold-soft),var(--gold))}
+@keyframes qc-spin{from{transform:rotate(var(--r)) scaleY(.36) rotate(0)}to{transform:rotate(var(--r)) scaleY(.36) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.qc-orbit span{animation:none}}
+@media (max-width:900px){.qc-orbit{display:none}}
+
+/* 四个展馆 */
+.qc-hall-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}
+.qc-hall{position:relative;display:flex;flex-direction:column;gap:8px;padding:20px 20px 18px;border:1px solid color-mix(in srgb,var(--qc-c) 40%,var(--line));border-top:4px solid var(--qc-c);border-radius:10px;background:linear-gradient(160deg,color-mix(in srgb,var(--qc-c) 9%,var(--surface)),var(--surface) 60%);color:var(--ink);text-decoration:none;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s}
+a.qc-hall:hover{transform:translateY(-2px);border-color:var(--qc-c);box-shadow:var(--shadow)}
+.qc-hall[data-soon]{background:var(--surface)}
+.qc-hall-n{font:600 13px/1 var(--font-num);color:color-mix(in srgb,var(--qc-c) 70%,var(--ink));letter-spacing:1px}
+.qc-hall-glyph{position:absolute;right:18px;top:16px;max-width:55%;text-align:right;font:600 15px/1.3 var(--font-num);letter-spacing:3px;color:color-mix(in srgb,var(--qc-c) 55%,transparent);white-space:nowrap;overflow:hidden}
+.qc-hall-state{align-self:flex-start;font-size:11.5px;font-weight:600;line-height:1;padding:4px 9px;border-radius:99px;border:1px solid color-mix(in srgb,var(--qc-c) 50%,transparent);color:color-mix(in srgb,var(--qc-c) 72%,var(--ink));background:color-mix(in srgb,var(--qc-c) 10%,transparent)}
+.qc-hall[data-soon] .qc-hall-state{border-style:dashed;color:var(--muted);border-color:var(--line-strong);background:transparent}
+.qc-hall h3{margin:2px 0 0;font-size:22px;font-weight:600;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.qc-hall h3 small{font:italic 500 14px/1.3 var(--font-num);color:var(--muted)}
+.qc-hall p{margin:0;font-size:13.5px;line-height:1.85;color:var(--ink-2)}
+.qc-tags{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.qc-tags li{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--ink-2)}
+.qc-go{margin-top:auto;padding-top:6px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;color:var(--accent-text)}
+
+/* 展馆名的小标签 */
+.qc-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;border:1px solid color-mix(in srgb,var(--qc-c) 55%,transparent);background:color-mix(in srgb,var(--qc-c) 11%,transparent);color:color-mix(in srgb,var(--qc-c) 72%,var(--ink));font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap}
+.qc-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--qc-c)}
+a.qc-chip:hover{background:color-mix(in srgb,var(--qc-c) 20%,transparent)}
+.qc-chip[data-soon]{border-style:dashed}
+
+/* 通道 */
+.qc-links{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:10px}
+.qc-links li{padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.qc-pair{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
+.qc-arrow{color:var(--muted)}
+.qc-links p{margin:0;font-size:13px;line-height:1.8;color:var(--ink-2)}
+
+/* 游览路线 */
+.qc-route-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.qc-route{padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.qc-route-k{margin:0 0 10px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.qc-route-g{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--gold-soft);color:var(--fs-gold-text);font:600 15px/1 var(--font-num)}
+.qc-route ol{margin:0 0 10px;padding:0 0 0 20px;display:grid;gap:8px}
+.qc-route li{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.qc-route li::marker{color:var(--muted);font:600 12px var(--font-num)}
+.qc-route small{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.qc-route>p{margin:0;font-size:12.5px;line-height:1.7}
+
+/* 站内相关栏目 */
+.qc-around{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
+.qc-place{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);text-decoration:none;transition:border-color .15s}
+.qc-place:hover{border-color:var(--gold)}
+.qc-place>span:nth-child(2){display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.qc-place b{font-size:14px}
+.qc-place small{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.qc-place-g{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:var(--accent-soft);color:var(--accent-text);font:600 18px/1 var(--font-num)}
+@media (max-width:760px){.qc-hall-glyph{display:none}}

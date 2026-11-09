@@ -22,6 +22,7 @@
     ['models', 'models/index.html', '模型接口', true],
     ['qchem', 'qchem/index.html', '游乐场', true],
     ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', true],
+    ['quantum', 'quantum/index.html', '量子嘉年华', true],
     ['train', 'train/index.html', '训练 Agent', true],
     ['agent', 'atlas/index.html#agent', 'Agent 工程']
   ];
