@@ -31,6 +31,7 @@ public/               发布目录，推到 main 就上线
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
   fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
+  quantum/biology/    量子嘉年华下的量子生物学：qb-data.js 是全部内容（中英两版，七个方向、证据账本，每条带证据状态：已确立 / 活跃研究 / 存在争议 / 推测性假说，文献在 Crossref 核对过），qb-models.js 是三个演示的数学（纯函数），qb-math.js 是生成的 MathML；版式用 ../../fundamental-science/fundamental.css
   quantum/            母栏目“量子嘉年华”：sections.js 是四个展馆（量子物理、量子计算机、量子算法、量子生物学）的卡片数据，每个展馆一块、互不交叉，live 为 false 时显示“即将上线”；carnival.js 画入口页（展馆、通道、路线）
   quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-math.js 是生成的 MathML；地址 #c-<章> 打开一章
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
@@ -61,6 +62,7 @@ deno run --allow-read tools/account-test.ts             # 账号服务接口测�
 node --test tools/lab-test.mjs                          # 实验室逻辑测试
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
+node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
 node --test tools/play-test.mjs                         # 游乐场：游戏的物理对照已知结果，隧穿关卡都能过关
 node --test tools/quantum-physics-test.mjs                # 量子嘉年华 · 量子物理：四个演示对照解析解，章节的公式、论文、书目、视频都能对上
 node tools/fundamental-math.mjs                         # 基础科学栏目：把 fs-data.js 里的 LaTeX 用 KaTeX 转成 fs-math.js（MathML）
@@ -94,7 +96,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js` 和 `public/quantum/physics/qp-math.js`（都用 `tools/fundamental-math.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js` 和 `public/quantum/biology/qb-math.js`（都用 `tools/fundamental-math.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="量子生物学：光合作用中的激发能传递与量子相干之争、鸟类磁感应的自由基对机制、酶中的电子与氢隧穿、DNA 的质子转移与突变、嗅觉的振动理论、关于意识的推测性提议，以及模拟这些体系的计算方法。每条结论标明证据强度，附可交互的模型演示和在 Crossref 核对过的文献。">
+  <meta name="theme-color" content="#173f34">
+  <title>量子生物学 · Quantum Biology · MolAstria</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../../i18n.js" defer></script>
+  <script src="../../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../../shared-nav.css">
+  <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="qb.css">
+  <script src="../../shared-nav.js" defer></script>
+  <script src="qb-data.js" defer></script>
+  <script src="qb-math.js" defer></script>
+  <script src="qb-models.js" defer></script>
+  <script src="qb.js" defer></script>
+</head>
+<body data-section="quantum">
+<a class="skip" href="#qb-pillars">跳到研究方向</a>
+<main>
+  <section class="fs-hero" aria-labelledby="qb-h1">
+    <nav class="qb-crumbs" id="qb-crumbs" aria-label="位置"></nav>
+    <p class="eyebrow">MOLASTRIA · QUANTUM BIOLOGY</p>
+    <h1 id="qb-h1">量子生物学<span class="fs-h1-en" lang="en" translate="no">Quantum Biology</span></h1>
+    <blockquote class="fs-question" id="qb-question"></blockquote>
+    <p class="lead" id="qb-lead"></p>
+    <p class="fs-honest" id="qb-honest"></p>
+    <ul class="fs-legend" id="qb-legend" aria-label="证据强度的四种标注"></ul>
+    <nav class="fs-jump" aria-label="本页内容">
+      <a class="button primary" href="#qb-pillars">七个研究方向 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a>
+      <a class="button" href="#qb-ledger">证据账本</a>
+      <a class="button" href="#qb-lab">交互式实验室</a>
+      <a class="button" href="#qb-path">学习路线</a>
+      <a class="button" href="#qb-library">科研文献</a>
+    </nav>
+  </section>
+
+  <section class="fs-block" id="qb-intro" aria-labelledby="qb-intro-h">
+    <h2 id="qb-intro-h">什么算量子生物学</h2>
+    <div class="fs-prose" id="qb-intro-text"></div>
+    <h3 class="qb-levels-h">量子效应在生物中的三个层次</h3>
+    <div class="qb-levels" id="qb-levels"></div>
+  </section>
+
+  <section class="fs-block" id="qb-pillars" aria-labelledby="qb-pillars-h" tabindex="-1">
+    <h2 id="qb-pillars-h">七个研究方向</h2>
+    <p class="muted">前六个方向大致按证据从强到弱排列，第七部分是计算方法。每个方向下面有核心公式、关键结论（逐条标注证据强度）、常见问题的解答和参考文献。</p>
+    <div class="fs-pillar-grid" id="qb-pillar-grid"></div>
+  </section>
+
+  <section class="fs-block fs-reader" id="qb-sections" aria-labelledby="qb-sections-h">
+    <h2 id="qb-sections-h">研究方向详解</h2>
+    <div class="fs-tabs" role="tablist" aria-label="研究方向详解" id="qb-tabs"></div>
+    <div id="qb-panels"></div>
+  </section>
+
+  <section class="fs-block" id="qb-ledger" aria-labelledby="qb-ledger-h" tabindex="-1">
+    <h2 id="qb-ledger-h">证据账本</h2>
+    <p class="muted" id="qb-ledger-note"></p>
+    <div class="fs-kind-filter" role="group" aria-label="按证据强度筛选" id="qb-ledger-filter"></div>
+    <div class="fs-theory-grid" id="qb-ledger-grid"></div>
+  </section>
+
+  <section class="fs-block fs-lab" id="qb-lab" aria-labelledby="qb-lab-h" tabindex="-1">
+    <h2 id="qb-lab-h">交互式实验室</h2>
+    <p class="muted">三个演示都在浏览器里直接求解对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。</p>
+
+    <article class="fs-demo" id="demo-enaqt" aria-labelledby="demo-enaqt-h">
+      <header><p class="fs-demo-n">演示 1</p><h3 id="demo-enaqt-h">FMO 复合物中的能量传递：退相干能帮忙吗</h3>
+        <p class="muted" data-demo-intro="enaqt"></p></header>
+      <div class="fs-formula" data-math="hakenStrobl"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>纯退相干率 γ<span><input type="range" id="e-gamma" min="-2" max="4" step="0.05" value="1"><output id="e-gamma-v"></output></span></label>
+          <label>反应中心捕获速率 κ<span><input type="range" id="e-kappa" min="-1" max="1.5" step="0.05" value="0"><output id="e-kappa-v"></output></span></label>
+          <label>激子损失速率 Γ<span><input type="range" id="e-loss" min="-4" max="-1" step="0.05" value="-3"><output id="e-loss-v"></output></span></label>
+          <label>初始激发的位点<span><select id="e-start"><option value="0">位点 1</option><option value="5">位点 6</option></select></span></label>
+          <div class="fs-btns"><button type="button" class="button" id="e-coherent">完全相干（γ = 0）</button><button type="button" class="button" id="e-best">移到效率最高处</button></div>
+          <dl class="fs-readout" id="e-read" aria-live="polite"></dl>
+        </div>
+        <div class="qb-figs">
+          <figure class="fs-figure"><canvas id="e-curve" width="720" height="300" role="img" aria-label="传递效率随退相干率变化"></canvas>
+            <figcaption id="e-cap"></figcaption></figure>
+          <figure class="fs-figure"><canvas id="e-pop" width="720" height="300" role="img" aria-label="前 2 皮秒各位点的布居"></canvas>
+            <figcaption>前 2 ps 内七个位点的布居（实线）与已被反应中心取走的比例（虚线）。</figcaption></figure>
+        </div>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="enaqt"></p>
+      </details>
+    </article>
+
+    <article class="fs-demo" id="demo-compass" aria-labelledby="demo-compass-h">
+      <header><p class="fs-demo-n">演示 2</p><h3 id="demo-compass-h">自由基对罗盘：单重态产率随磁场方向变化</h3>
+        <p class="muted" data-demo-intro="compass"></p></header>
+      <div class="fs-formula" data-math="yield"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>磁场强度 B<span><input type="range" id="r-b" min="0" max="200" step="1" value="50"><output id="r-b-v"></output></span></label>
+          <label>磁场与分子轴的夹角 θ<span><input type="range" id="r-theta" min="0" max="180" step="1" value="30"><output id="r-theta-v"></output></span></label>
+          <label>超精细耦合 A∥（沿轴）<span><input type="range" id="r-az" min="0" max="2" step="0.02" value="1"><output id="r-az-v"></output></span></label>
+          <label>超精细耦合 A⊥（垂直于轴）<span><input type="range" id="r-ax" min="0" max="2" step="0.02" value="0"><output id="r-ax-v"></output></span></label>
+          <label>自由基对寿命 1/k<span><input type="range" id="r-life" min="-2" max="1.3" step="0.05" value="0"><output id="r-life-v"></output></span></label>
+          <div class="fs-btns"><button type="button" class="button" id="r-earth">恢复地磁场参数</button><button type="button" class="button" id="r-iso">各向同性耦合</button></div>
+          <dl class="fs-readout" id="r-read" aria-live="polite"></dl>
+        </div>
+        <div class="qb-figs">
+          <figure class="fs-figure"><canvas id="r-curve" width="720" height="300" role="img" aria-label="单重态产率随磁场方向变化"></canvas>
+            <figcaption id="r-cap"></figcaption></figure>
+          <figure class="fs-figure qb-polar"><canvas id="r-polar" width="360" height="360" role="img" aria-label="产率的极坐标图"></canvas>
+            <figcaption>极坐标图：半径是该方向的单重态产率相对平均值的变化，指针是当前磁场方向。</figcaption></figure>
+        </div>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="compass"></p>
+      </details>
+    </article>
+
+    <article class="fs-demo" id="demo-kie" aria-labelledby="demo-kie-h">
+      <header><p class="fs-demo-n">演示 3</p><h3 id="demo-kie-h">酶里的氢隧穿：同位素效应与 Arrhenius 图</h3>
+        <p class="muted" data-demo-intro="kie"></p></header>
+      <div class="fs-formula" data-math="bellP"></div>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label>势垒高度 V₀（含零点能）<span><input type="range" id="k-v0" min="30" max="90" step="1" value="60"><output id="k-v0-v"></output></span></label>
+          <label>势垒虚频 ν‡（H）<span><input type="range" id="k-nu" min="200" max="2000" step="10" value="1000"><output id="k-nu-v"></output></span></label>
+          <label>C–H 伸缩频率<span><input type="range" id="k-ch" min="2700" max="3100" step="10" value="2900"><output id="k-ch-v"></output></span></label>
+          <label>温度 T<span><input type="range" id="k-t" min="250" max="350" step="1" value="298"><output id="k-t-v"></output></span></label>
+          <div class="fs-btns"><button type="button" class="button" id="k-classical">接近经典（宽势垒）</button><button type="button" class="button" id="k-deep">窄势垒</button></div>
+          <dl class="fs-readout" id="k-read" aria-live="polite"></dl>
+        </div>
+        <div class="qb-figs">
+          <figure class="fs-figure"><canvas id="k-arr" width="720" height="300" role="img" aria-label="Arrhenius 图"></canvas>
+            <figcaption id="k-cap"></figcaption></figure>
+          <figure class="fs-figure"><canvas id="k-kie" width="720" height="240" role="img" aria-label="同位素效应随温度变化"></canvas>
+            <figcaption>氢与氘的速率比（同位素效应）随温度变化：实线含隧穿，虚线只有零点能差（半经典）。</figcaption></figure>
+        </div>
+      </div>
+      <details class="fs-notes"><summary>模型说明与局限</summary>
+        <p data-demo-notes="kie"></p>
+      </details>
+    </article>
+  </section>
+
+  <section class="fs-block" id="qb-questions" aria-labelledby="qb-questions-h" tabindex="-1">
+    <h2 id="qb-questions-h">尚未解决的问题</h2>
+    <p class="muted">这些问题都没有公认的答案；标注表示它属于活跃研究、存在争议，还是依赖推测性的假说。</p>
+    <ol class="fs-open" id="qb-open"></ol>
+  </section>
+
+  <section class="fs-block" id="qb-path" aria-labelledby="qb-path-h" tabindex="-1">
+    <h2 id="qb-path-h">学习路线</h2>
+    <p class="muted">从量子化学出发进入量子生物学的五个阶段，每一步都链接到本站已有的栏目。全部内容免费。</p>
+    <ol class="fs-road" id="qb-road"></ol>
+  </section>
+
+  <section class="fs-block" id="qb-library" aria-labelledby="qb-library-h" tabindex="-1">
+    <h2 id="qb-library-h">科研文献</h2>
+    <p class="muted" id="qb-lib-intro"></p>
+    <div class="fs-lib-filters" role="search" aria-label="筛选文献">
+      <label>研究领域<select id="qb-lib-area"><option value="">全部领域</option></select></label>
+      <label>证据强度<select id="qb-lib-status"><option value="">全部状态</option></select></label>
+      <label>排序<select id="qb-lib-sort"><option value="year-asc">按年份（早到晚）</option><option value="year-desc">按年份（晚到早）</option></select></label>
+    </div>
+    <p class="fs-count" id="qb-lib-count" role="status" aria-live="polite"></p>
+    <ol class="fs-refs" id="qb-refs"></ol>
+  </section>
+
+  <footer class="fs-foot">
+    <strong>MolAstria · 量子生物学</strong>
+    <p>本页区分已确立的结论、活跃研究、存在争议的主张与推测性假说；演示是教学用的简化模型，不代表对真实体系的定量预测。</p>
+    <p><a href="../index.html">量子嘉年华</a> · <a href="../../fundamental-science/index.html">进一步基础科学发现</a> · <a href="../../qchem/index.html">游乐场与量子化学计算器</a> · <a href="../../manual/index.html">讲解手册</a> · <a href="#qb-h1">回到顶部 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
+  </footer>
+</main>
+</body>
+</html>
