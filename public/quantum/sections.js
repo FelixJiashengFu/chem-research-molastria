@@ -16,7 +16,7 @@ window.MOLASTRIA_QUANTUM_SECTIONS = [
   },
 
   {
-    id: 'computing', path: 'computing/index.html', live: false,
+    id: 'computing', path: 'computing/index.html', live: true,
     glyph: '|0⟩ |1⟩ T₁ T₂ d=7',
     title: { zh: '量子计算机', en: 'Quantum Computers' },
     blurb: {

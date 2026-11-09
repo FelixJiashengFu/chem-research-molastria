@@ -1,0 +1,63 @@
+/* 量子计算机：版式沿用基础科学栏目（../../fundamental-science/fundamental.css），这里只加本栏目独有的部分。颜色只用 shared-nav.css 的变量。 */
+
+/* 第四种状态：存在争议（与量子生物学栏目同样的画法） */
+.fs-st[data-s=contested]{color:color-mix(in srgb,var(--violet) 76%,var(--ink));border-color:color-mix(in srgb,var(--violet) 50%,transparent);background:color-mix(in srgb,var(--violet) 9%,transparent)}
+.fs-st[data-s=contested]::before{background:linear-gradient(90deg,currentColor 50%,transparent 50%);border:1px solid currentColor;width:6px;height:6px}
+
+/* 面包屑：回到量子嘉年华 */
+.qc-crumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.qc-crumbs a{color:var(--accent-text)}
+
+/* 三个台阶 */
+.qc-levels-h{margin:18px 0 10px;font-size:16px;font-weight:600}
+.qc-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.qc-level{position:relative;padding:16px 16px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.qc-level .qc-level-n{font:600 12px/1 var(--font-num);letter-spacing:1px;color:var(--fs-gold-text);text-transform:uppercase}
+.qc-level h4{margin:0;font-size:15px;line-height:1.45;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
+.qc-level p{margin:0;font-size:13px;color:var(--ink-2)}
+.qc-level::after{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px;background:var(--line-strong)}
+.qc-level[data-k=trivial]::after{background:var(--ok)}
+.qc-level[data-k=functional]::after{background:var(--info)}
+.qc-level[data-k=speculative]::after{background:var(--warn)}
+
+/* 硬件路线卡片 */
+.qc-plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.qc-plat{padding:14px 16px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.qc-plat header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
+.qc-plat h3{margin:0;font-size:16px}
+.qc-plat dl{margin:0;display:grid;gap:6px;font-size:13px}
+.qc-plat dl>div{display:grid;grid-template-columns:minmax(84px,30%) minmax(0,1fr);gap:8px}
+.qc-plat dt{color:var(--muted)}
+.qc-plat dd{margin:0;color:var(--ink)}
+.qc-plat .qc-plat-plus dd{color:color-mix(in srgb,var(--ok) 70%,var(--ink))}
+.qc-plat .qc-plat-minus dd{color:color-mix(in srgb,var(--warn) 70%,var(--ink))}
+.qc-plat-more{margin:0;font-size:12.5px}
+.qc-plat-more a,.qc-ledger-sec a{text-decoration:none;border-bottom:1px dotted currentColor}
+.qc-plat .fs-cite{margin:0}
+.qc-ledger-sec{font-size:12px}
+
+/* 里程碑时间线 */
+.qc-timeline{list-style:none;margin:0;padding:0 0 0 4px;display:grid;gap:0;border-left:2px solid var(--line)}
+.qc-timeline li{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;padding:8px 0 8px 14px}
+.qc-timeline li::before{content:"";position:absolute;left:-7px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--paper);border:2px solid var(--gold)}
+.qc-year{font:600 14px/1.5 var(--font-num);color:var(--fs-gold-text)}
+.qc-timeline p{margin:0;font-size:14px}
+.qc-tl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:3px;font-size:12px}
+.qc-tl-meta a{color:var(--accent-text)}
+
+/* 实验室：右侧的图上下排列 */
+.qc-figs{display:grid;gap:12px;min-width:0}
+.qc-sphere{max-width:380px}
+.qc-ctl-h{margin:4px 0 -4px;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--fs-gold-text)}
+
+/* 学习路线里的站内链接与工具 */
+.qc-links{display:flex;flex-wrap:wrap;gap:6px 12px;margin:6px 0 0;padding:0;list-style:none;font-size:12.5px}
+.qc-links a{display:inline-flex;align-items:center;gap:6px;font-weight:600;text-decoration:none}
+.qc-links a:hover{text-decoration:underline}
+.qc-tools{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.qc-tools li{padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-2)}
+.qc-tools li>a{font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.qc-tools li>a:hover{text-decoration:underline}
+
+@media (max-width:720px){.qc-sphere{max-width:none}.qc-plat dl>div{grid-template-columns:1fr;gap:0}}
+#qc-lab .fs-readout{grid-template-columns:minmax(0,1fr) auto}

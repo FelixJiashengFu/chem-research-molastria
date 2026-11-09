@@ -150,6 +150,7 @@
   "index.html",
   "fundamental-science/index.html",
   "quantum/biology/index.html",
+  "quantum/computing/index.html",
   "hub/index.html",
   "models/models.js",
   "radar/app/app.js"
@@ -336,6 +337,7 @@
   "index.html",
   "fundamental-science/index.html",
   "quantum/biology/index.html",
+  "quantum/computing/index.html",
   "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -345,6 +347,7 @@
   "fundamental-science/index.html",
   "quantum/index.html",
   "quantum/biology/index.html",
+  "quantum/computing/index.html",
   "shared-nav.js",
   "quantum/biology/qb.js",
   "tools/build-seo.ts"
@@ -738,7 +741,8 @@
   "atlas/index.html",
   "manual/index.html",
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -898,6 +902,7 @@
   "quantum/physics/index.html",
   "quantum/biology/index.html",
   "quantum/algorithms/index.html",
+  "quantum/computing/index.html",
   "physics-realms/index.html"
  ],
  "筛选期刊": [
@@ -1103,7 +1108,8 @@
  ],
  "科研文献": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "数学基础与探索": [
   "fundamental-science/index.html",
@@ -1151,7 +1157,8 @@
  ],
  "演示 1": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "量子叠加与坍缩": [
   "fundamental-science/index.html"
@@ -1173,11 +1180,13 @@
  ],
  "模型说明与局限": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "演示 2": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "分子量子相干：标准振荡与附加退相干": [
   "fundamental-science/index.html"
@@ -1206,7 +1215,8 @@
  ],
  "演示 3": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "圆锥交叉与 Berry 相位": [
   "fundamental-science/index.html"
@@ -1252,26 +1262,31 @@
  ],
  "研究领域": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "全部领域": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "研究状态": [
   "fundamental-science/index.html"
  ],
  "全部状态": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "按年份（早到晚）": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "按年份（晚到早）": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "MolAstria · 进一步基础科学发现": [
   "fundamental-science/index.html"
@@ -1305,7 +1320,8 @@
  ],
  "筛选文献": [
   "fundamental-science/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "数学基础与探索 · Mathematical Foundations & Exploration · MolAstria": [
   "fundamental-science/math/index.html"
@@ -1325,6 +1341,7 @@
   "quantum/physics/index.html",
   "quantum/biology/index.html",
   "quantum/algorithms/index.html",
+  "quantum/computing/index.html",
   "tools/build-seo.ts"
  ],
  "量子嘉年华 · Quantum Carnival · MolAstria": [
@@ -1341,6 +1358,7 @@
  ],
  "量子物理": [
   "quantum/physics/index.html",
+  "quantum/computing/index.html",
   "radar/app/app.js",
   "tools/build-seo.ts"
  ],
@@ -1352,6 +1370,7 @@
  ],
  "量子生物学": [
   "quantum/biology/index.html",
+  "quantum/computing/index.html",
   "quantum/biology/qb.js",
   "tools/build-seo.ts"
  ],
@@ -1359,13 +1378,16 @@
   "quantum/biology/index.html"
  ],
  "证据账本": [
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "交互式实验室": [
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "学习路线": [
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "什么算量子生物学": [
   "quantum/biology/index.html"
@@ -1466,7 +1488,8 @@
   "quantum/biology/index.html"
  ],
  "尚未解决的问题": [
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "quantum/computing/index.html"
  ],
  "这些问题都没有公认的答案；标注表示它属于活跃研究、存在争议，还是依赖推测性的假说。": [
   "quantum/biology/index.html"
@@ -1518,7 +1541,174 @@
  ],
  "量子算法": [
   "quantum/algorithms/index.html",
+  "quantum/computing/index.html",
   "tools/build-seo.ts"
+ ],
+ "量子计算机 · Quantum Computers · MolAstria": [
+  "quantum/computing/index.html"
+ ],
+ "跳到七个部分": [
+  "quantum/computing/index.html"
+ ],
+ "量子嘉年华 / Quantum Carnival": [
+  "quantum/computing/index.html"
+ ],
+ "量子计算机": [
+  "quantum/computing/index.html",
+  "tools/build-seo.ts"
+ ],
+ "七个部分": [
+  "quantum/computing/index.html"
+ ],
+ "硬件路线对比": [
+  "quantum/computing/index.html"
+ ],
+ "里程碑": [
+  "quantum/computing/index.html"
+ ],
+ "量子计算机是什么": [
+  "quantum/computing/index.html"
+ ],
+ "从物理比特到有用计算的三个台阶": [
+  "quantum/computing/index.html"
+ ],
+ "从单个量子比特讲起，经过噪声和三类硬件，到量子纠错和量子优势之争。每一部分都有核心公式、关键结论（逐条标注状态）、常见问题的解答和参考文献。": [
+  "quantum/computing/index.html"
+ ],
+ "分部详解": [
+  "quantum/computing/index.html"
+ ],
+ "六条硬件路线对比": [
+  "quantum/computing/index.html"
+ ],
+ "每一项都链接到原始论文；状态标注的是这件事今天的评价，而不是当年的宣传。": [
+  "quantum/computing/index.html"
+ ],
+ "三个演示都在浏览器里直接计算对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。": [
+  "quantum/computing/index.html"
+ ],
+ "驱动一个量子比特：Rabi 振荡与退相干": [
+  "quantum/computing/index.html"
+ ],
+ "Rabi 频率 Ω/2π": [
+  "quantum/computing/index.html"
+ ],
+ "失谐 Δ/2π": [
+  "quantum/computing/index.html"
+ ],
+ "能量弛豫时间 T₁": [
+  "quantum/computing/index.html"
+ ],
+ "相位相干时间 T₂": [
+  "quantum/computing/index.html"
+ ],
+ "观察时长": [
+  "quantum/computing/index.html"
+ ],
+ "理想比特（无衰减）": [
+  "quantum/computing/index.html"
+ ],
+ "失谐等于 Ω": [
+  "quantum/computing/index.html"
+ ],
+ "短寿命比特": [
+  "quantum/computing/index.html"
+ ],
+ "Bloch 球上的轨迹：北极是 |0⟩，南极是 |1⟩；金色点是观察时长结束时的状态。衰减让轨迹缩向球内。": [
+  "quantum/computing/index.html"
+ ],
+ "电路保真度预算：误差为什么会连乘": [
+  "quantum/computing/index.html"
+ ],
+ "比特数 n": [
+  "quantum/computing/index.html"
+ ],
+ "电路深度（层数）": [
+  "quantum/computing/index.html"
+ ],
+ "单比特门误差 e₁": [
+  "quantum/computing/index.html"
+ ],
+ "两比特门误差 e₂": [
+  "quantum/computing/index.html"
+ ],
+ "读出误差 eₘ": [
+  "quantum/computing/index.html"
+ ],
+ "Sycamore 2019 的误差": [
+  "quantum/computing/index.html"
+ ],
+ "两比特门 99.9%": [
+  "quantum/computing/index.html"
+ ],
+ "纠错后的逻辑门（10⁻⁹）": [
+  "quantum/computing/index.html"
+ ],
+ "量子纠错：码距、阈值与要多少物理比特": [
+  "quantum/computing/index.html"
+ ],
+ "重复码": [
+  "quantum/computing/index.html"
+ ],
+ "每个比特的翻转概率 p": [
+  "quantum/computing/index.html"
+ ],
+ "表面码计算器": [
+  "quantum/computing/index.html"
+ ],
+ "物理错误率 p": [
+  "quantum/computing/index.html"
+ ],
+ "逻辑比特数 Q": [
+  "quantum/computing/index.html"
+ ],
+ "纠错轮数 N": [
+  "quantum/computing/index.html"
+ ],
+ "Λ ≈ 2.14（Willow 量级）": [
+  "quantum/computing/index.html"
+ ],
+ "物理错误率 0.01%": [
+  "quantum/computing/index.html"
+ ],
+ "这些问题都没有公认的答案；标注表示它属于活跃研究、存在争议，还是依赖路线图上的推测。": [
+  "quantum/computing/index.html"
+ ],
+ "从量子力学出发理解量子计算机的五个阶段，每一步都链接到本站已有的栏目。全部内容免费。": [
+  "quantum/computing/index.html"
+ ],
+ "动手用的开放工具": [
+  "quantum/computing/index.html"
+ ],
+ "状态": [
+  "quantum/computing/index.html"
+ ],
+ "MolAstria · 量子计算机": [
+  "quantum/computing/index.html"
+ ],
+ "本页区分已确立的结果、活跃研究、存在争议的主张与路线图上的推测；演示是教学用的简化模型，不代表对真实设备的定量预测。": [
+  "quantum/computing/index.html"
+ ],
+ "四种状态标注": [
+  "quantum/computing/index.html"
+ ],
+ "P(|1⟩) 随时间变化": [
+  "quantum/computing/index.html"
+ ],
+ "Bloch 球上的轨迹": [
+  "quantum/computing/index.html"
+ ],
+ "电路保真度随深度变化": [
+  "quantum/computing/index.html"
+ ],
+ "重复码逻辑错误率随码距变化": [
+  "quantum/computing/index.html"
+ ],
+ "表面码逻辑错误率随码距变化": [
+  "quantum/computing/index.html"
+ ],
+ "按状态筛选": [
+  "quantum/computing/index.html"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -2120,6 +2310,7 @@
   "train/index.html",
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
+  "quantum/computing/qc.js",
   "radar/app/app.js"
  ],
  "通过": [
@@ -4613,7 +4804,8 @@
  ],
  "常见问题": [
   "pro/index.html",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "为什么这么多东西免费？": [
   "pro/index.html"
@@ -6733,21 +6925,24 @@
  ],
  "阅读详解": [
   "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "重点问题": [
   "fundamental-science/fundamental.js"
  ],
  "核心公式": [
   "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "关键概念": [
   "fundamental-science/fundamental.js"
  ],
  "本节参考文献": [
   "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "相关的理论详解": [
   "fundamental-science/fundamental.js"
@@ -6766,11 +6961,13 @@
  ],
  "显示 {0} / {1} 篇": [
   "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "引用于": [
   "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "FCI 维数计算器": [
   "fundamental-science/fundamental.js"
@@ -6962,7 +7159,8 @@
   "fundamental-science/fundamental.js"
  ],
  "关键结论": [
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
  ],
  "没有这一类的主张。": [
   "quantum/biology/qb.js"
@@ -7102,6 +7300,135 @@
  ],
  "Arrhenius 图；{0} K 时同位素效应 {1}": [
   "quantum/biology/qb.js"
+ ],
+ "没有这一类的说法。": [
+  "quantum/computing/qc.js"
+ ],
+ "共 {0} 篇。每一篇的题目、作者、年份、期刊、卷号和页码都在 {1} 于 OpenAlex（数据来自 Crossref）核对过。可以按研究领域和状态筛选；每条都通过 DOI 链接到出版方。": [
+  "quantum/computing/qc.js"
+ ],
+ "时间（μs）": [
+  "quantum/computing/qc.js"
+ ],
+ "无衰减": [
+  "quantum/computing/qc.js"
+ ],
+ "含 T₁、T₂": [
+  "quantum/computing/qc.js"
+ ],
+ "π 脉冲后 P(|1⟩)": [
+  "quantum/computing/qc.js"
+ ],
+ "π 脉冲时长": [
+  "quantum/computing/qc.js"
+ ],
+ "广义 Rabi 频率": [
+  "quantum/computing/qc.js"
+ ],
+ "最大翻转概率 Ω²/(Ω²+Δ²)": [
+  "quantum/computing/qc.js"
+ ],
+ "T₂ 内能做的 π 脉冲数": [
+  "quantum/computing/qc.js"
+ ],
+ "长时间驱动后的稳态 P(|1⟩)": [
+  "quantum/computing/qc.js"
+ ],
+ "有失谐时比特绕倾斜的轴转动，最多只能翻到 {0}%，振荡也更快：所以每个比特的频率都要先校准。金色虚线是长时间驱动后的稳态。": [
+  "quantum/computing/qc.js"
+ ],
+ "T₂ 之内只能做约 {0} 个 π 脉冲：振荡很快被抹平，状态趋向金色虚线所示的稳态（P(|1⟩) ≤ 50%）。这样的比特没法跑有意义的电路。": [
+  "quantum/computing/qc.js"
+ ],
+ "共振驱动：P(|1⟩) = sin²(Ωt/2)，Ωt = π 时完全翻转（π 脉冲）。T₂ 之内能做约 {0} 个 π 脉冲；“相干时间 / 门时间”这个比值才是衡量比特好坏的关键。": [
+  "quantum/computing/qc.js"
+ ],
+ "Rabi 振荡；π 脉冲后 P(|1⟩) = {0}%": [
+  "quantum/computing/qc.js"
+ ],
+ "电路深度（层）": [
+  "quantum/computing/qc.js"
+ ],
+ "电路保真度 F": [
+  "quantum/computing/qc.js"
+ ],
+ "当前误差": [
+  "quantum/computing/qc.js"
+ ],
+ "门误差 ÷ 10": [
+  "quantum/computing/qc.js"
+ ],
+ "整条电路的保真度 F": [
+  "quantum/computing/qc.js"
+ ],
+ "单比特门 / 两比特门 / 读出": [
+  "quantum/computing/qc.js"
+ ],
+ "期望出错次数": [
+  "quantum/computing/qc.js"
+ ],
+ "只看门误差，F ≥ 50% 时最多的层数": [
+  "quantum/computing/qc.js"
+ ],
+ "只看门误差，F ≥ 50% 的最大方形电路（n = 深度）": [
+  "quantum/computing/qc.js"
+ ],
+ "F = {0}：几乎每次运行都至少出一个错。随机电路采样实验就在这个区间工作，靠大量重复从噪声里统计出微弱的信号（交叉熵基准）；但要得到可靠的计算结果，这远远不够。金色虚线是 F = 50%。": [
+  "quantum/computing/qc.js"
+ ],
+ "log F 随深度线性下降，也就是 F 指数衰减；每层的斜率由 n·e₁ + ⌊n/2⌋·e₂ 决定。把门误差降低十倍（蓝色虚线），能跑的深度只增加约十倍：要跑 10⁹ 个门，必须靠纠错。": [
+  "quantum/computing/qc.js"
+ ],
+ "电路保真度随深度变化；深度 {0} 时 F = {1}": [
+  "quantum/computing/qc.js"
+ ],
+ "码距 d": [
+  "quantum/computing/qc.js"
+ ],
+ "逻辑错误率 p_L": [
+  "quantum/computing/qc.js"
+ ],
+ "精确值": [
+  "quantum/computing/qc.js"
+ ],
+ "20000 次随机抽样": [
+  "quantum/computing/qc.js"
+ ],
+ "不编码的比特": [
+  "quantum/computing/qc.js"
+ ],
+ "50%：多数表决反而放大错误，码距越大越糟。这就是“阈值”的含义：只有低于阈值，增加冗余才有用。": [
+  "quantum/computing/qc.js"
+ ],
+ "每轮逻辑错误率": [
+  "quantum/computing/qc.js"
+ ],
+ "需要的码距 d": [
+  "quantum/computing/qc.js"
+ ],
+ "不可能（高于阈值）": [
+  "quantum/computing/qc.js"
+ ],
+ "总物理比特（不含魔术态工厂）": [
+  "quantum/computing/qc.js"
+ ],
+ "每个逻辑比特": [
+  "quantum/computing/qc.js"
+ ],
+ "抑制因子 Λ = p_th/p": [
+  "quantum/computing/qc.js"
+ ],
+ "每轮逻辑错误率的目标": [
+  "quantum/computing/qc.js"
+ ],
+ "物理错误率 {0} 已接近或超过表面码阈值 {1}：码距越大反而越差。": [
+  "quantum/computing/qc.js"
+ ],
+ "要让 {0} 个逻辑比特跑 {1} 轮、总失败概率不超过 1%，每轮逻辑错误率要低于金色虚线 {2}，需要码距 {3}，共约 {4} 个物理比特。物理错误率每降低一点，码距和比特数都会大幅减少。灰色虚线是 Λ = 2.14（Willow 实测）。": [
+  "quantum/computing/qc.js"
+ ],
+ "表面码逻辑错误率随码距变化；需要码距 {0}": [
+  "quantum/computing/qc.js"
  ],
  "已过 {0} / {1} 关": [
   "qchem/play.js"
@@ -11671,6 +11998,12 @@
   "tools/build-seo.ts"
  ],
  "从线路模型、量子傅里叶变换、相位估计、振幅放大和块编码，到 Shor、Grover、哈密顿量模拟、HHL、量子行走，再到费米子映射、化学基态能量的资源估算、VQE、QAOA 和误差缓解；每个算法标明加速的证据等级，配浏览器里的量子线路模拟器和交互演示，文献逐条核对。": [
+  "tools/build-seo.ts"
+ ],
+ "量子计算机 · Quantum Computers": [
+  "tools/build-seo.ts"
+ ],
+ "量子计算机的物理层：量子比特的物理与噪声，超导、离子阱、中性原子、光子、半导体自旋和拓扑六条硬件路线，量子纠错与容错，量子优势实验与争议；附交互演示与核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [

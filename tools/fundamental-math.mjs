@@ -1,4 +1,4 @@
-// Builds public/fundamental-science/fs-math.js, math/fm-math.js, the Quantum Carnival pavilions (quantum/physics/qp-math.js, quantum/biology/qb-math.js, quantum/algorithms/qa-math.js): every formula of the Fundamental Science section (LaTeX in fs-data.js, key `math`)
+// Builds public/fundamental-science/fs-math.js, math/fm-math.js, the Quantum Carnival pavilions (quantum/physics/qp-math.js, quantum/biology/qb-math.js, quantum/algorithms/qa-math.js, quantum/computing/qc-math.js): every formula of the Fundamental Science section (LaTeX in fs-data.js, key `math`)
 // converted to MathML by KaTeX, so the page renders math natively, offline and without a script library.
 //   node tools/fundamental-math.mjs          (needs network once, for npx to fetch katex)
 //   node tools/fundamental-math.mjs quantum  (only the files whose path contains "quantum")
@@ -37,3 +37,5 @@ build('qb-data.js', 'MOLASTRIA_QB', 'qb-math.js', 'quantum/biology/');
 build('../quantum/physics/qp-data.js', 'MOLASTRIA_QP', '../quantum/physics/qp-math.js');
 // 量子嘉年华 · 量子算法
 build('qa-data.js', 'MOLASTRIA_QA', 'qa-math.js', 'quantum/algorithms/');
+// 量子计算机栏目（quantum/computing/qc-data.js → qc-math.js）
+build('qc-data.js', 'MOLASTRIA_QC', 'qc-math.js', 'quantum/computing/');
