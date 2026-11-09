@@ -27,8 +27,8 @@ window.MOLASTRIA_QUANTUM_SECTIONS = [
   },
 
   {
-    id: 'algorithms', path: 'algorithms/index.html', live: false,
-    glyph: 'H CNOT QFT ⟨H⟩',
+    id: 'algorithms', path: 'algorithms/index.html', live: true,
+    glyph: 'H CNOT ⟨H⟩',
     title: { zh: '量子算法', en: 'Quantum Algorithms' },
     blurb: {
       zh: '从电路模型到 Shor、Grover、哈密顿量模拟与 VQE，配可运行的量子电路模拟器。',

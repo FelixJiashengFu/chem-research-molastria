@@ -1,0 +1,104 @@
+/* 量子算法：在 fundamental.css 和 math/fm.css 的版式上，加证据等级、加速账本、线路模拟器和资源表。
+   只用 shared-nav.css 的颜色变量，深浅主题都生效；宽元素都能在约 520 px 的排版宽度里放下（表格和线路横向滚动）。 */
+:root{--fm-t1:var(--gold);--fm-t2:var(--info);--fm-t3:var(--violet)}
+.fm-app rect{fill:var(--accent-soft);stroke:var(--accent-2);stroke-width:1.6}
+.fm-app text{font-size:13.5px;fill:var(--accent-text)}
+
+/* 证据等级 */
+.qa-ev{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;line-height:1;padding:4px 8px;border-radius:99px;border:1px solid;white-space:nowrap;vertical-align:middle;--c:var(--muted)}
+.qa-ev::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.qa-ev{color:color-mix(in srgb,var(--c) 78%,var(--ink));border-color:color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 9%,transparent)}
+.qa-ev[data-e=proven]{--c:var(--ok)}
+.qa-ev[data-e=oracle]{--c:var(--info)}
+.qa-ev[data-e=believed]{--c:var(--accent-2)}
+.qa-ev[data-e=conditional]{--c:var(--warn)}
+.qa-ev[data-e=heuristic]{--c:var(--violet);border-style:dashed}
+.qa-ev[data-e=subroutine]{--c:var(--muted)}
+.qa-ev[data-e=subroutine]::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
+.fs-kind-filter .fs-chip .qa-ev{margin-left:2px;padding:2px 6px}
+
+/* 表格（账本、资源估算） */
+.qa-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface);-webkit-overflow-scrolling:touch}
+.qa-ledger{width:100%;min-width:860px;border-collapse:collapse;font-size:13px;line-height:1.6}
+.qa-ledger th,.qa-ledger td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.qa-ledger thead th{position:sticky;top:0;background:var(--surface-2);font-size:12px;letter-spacing:.4px;color:var(--muted);font-weight:700}
+.qa-ledger tbody tr:last-child td{border-bottom:0}
+.qa-ledger tbody tr:hover{background:color-mix(in srgb,var(--gold) 6%,transparent)}
+.qa-ledger td:first-child a{font-weight:600;color:var(--ink);text-decoration:none}
+.qa-ledger td:first-child a:hover{color:var(--accent-text);text-decoration:underline}
+.qa-ledger td.qa-mono{font:500 12.5px/1.6 var(--font-num);color:var(--ink)}
+.qa-ledger td.qa-speed{color:var(--ink-2);max-width:34ch}
+.qa-ledger .fm-glyph{margin-right:6px}
+.qa-est{min-width:900px}
+.qa-est td:first-child{font-weight:600;color:var(--ink)}
+.qa-est .fs-cite{margin:4px 0 0!important}
+
+/* 演示 1：线路模拟器 */
+.qa-circ-top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin:14px 0 10px}
+.qa-palette{display:flex;flex-wrap:wrap;gap:6px}
+.qa-pal{min-width:40px;min-height:38px;padding:4px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);cursor:pointer;font:600 14px/1 var(--font-num);color:var(--ink)}
+.qa-pal:hover{background:var(--surface-2)}
+.qa-pal[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.qa-pal[data-g=erase]{font:500 12.5px/1 var(--font-sans)}
+.fs-btns select,.fs-controls select{min-height:38px;padding:4px 8px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface);font-size:13px}
+.qa-circ-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper);-webkit-overflow-scrolling:touch}
+.qa-circuit{display:grid;grid-template-columns:76px repeat(var(--cols),44px) 1fr;min-width:max-content;padding:10px 12px}
+.qa-q{display:flex;align-items:center;gap:6px;height:48px;font:500 12.5px var(--font-num);color:var(--muted)}
+.qa-init{min-width:34px;min-height:30px;border:1px solid var(--line-strong);border-radius:5px;background:var(--surface);cursor:pointer;font:600 13px var(--font-num);color:var(--ink)}
+.qa-init:hover{border-color:var(--accent-2)}
+.qa-cell{position:relative;height:48px;border:0;background:none;padding:0;cursor:pointer;color:var(--ink)}
+.qa-cell::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;background:var(--line-strong);z-index:0}
+.qa-tail{position:relative;height:48px}
+.qa-tail::after{content:"";position:absolute;left:0;width:22px;top:50%;height:1.5px;background:var(--line-strong)}
+.qa-cell[data-up]::before,.qa-cell[data-down]::before{content:"";position:absolute;left:calc(50% - 1px);width:2px;background:var(--accent-text);z-index:1}
+.qa-cell[data-up]:not([data-down])::before{top:0;height:50%}
+.qa-cell[data-down]:not([data-up])::before{top:50%;height:50%}
+.qa-cell[data-up][data-down]::before{top:0;height:100%}
+.qa-cell:hover .qa-g:not(.qa-g-empty),.qa-cell:focus-visible .qa-g{box-shadow:0 0 0 2px var(--gold)}
+.qa-cell:hover .qa-g-empty{opacity:1}
+.qa-g{position:absolute;left:5px;top:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--accent-text);border-radius:6px;background:var(--surface);font:600 14px/1 var(--font-num);z-index:2}
+.qa-g-empty{border:1px dashed var(--line);background:transparent;opacity:0}
+.qa-g-ctl{left:15px;top:17px;width:14px;height:14px;border-radius:50%;background:var(--accent-text);border:0}
+.qa-g-swap{border:0;background:transparent;font-size:20px;color:var(--accent-text)}
+.qa-colbad .qa-g:not(.qa-g-empty){border-color:var(--danger);color:var(--danger)}
+.qa-issue{min-height:20px;margin:6px 0 0;font-size:12.5px;color:var(--danger)}
+.qa-circ-out{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;margin-top:4px}
+.qa-bars{display:grid;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);max-height:420px;overflow:auto}
+.qa-bar{display:grid;grid-template-columns:68px minmax(0,1fr) 54px 64px;gap:8px;align-items:center;font:500 12px/1.4 var(--font-num)}
+.qa-bar code{font:600 12.5px var(--font-mono);color:var(--ink)}
+.qa-bar .qa-track{position:relative;height:14px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.qa-bar .qa-track i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
+.qa-bar .qa-track b{position:absolute;left:0;bottom:0;height:4px;background:var(--gold)}
+.qa-bar .qa-p{text-align:right;color:var(--ink)}
+.qa-bar .qa-ph{display:flex;align-items:center;gap:5px;color:var(--muted)}
+.qa-bar .qa-ph svg{flex:none}
+.qa-bar[data-zero]{opacity:.45}
+.qa-legend-mini{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:12px;color:var(--muted)}
+.qa-legend-mini i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* Shor 的经典部分 */
+.qa-shor{margin:6px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.qa-shor-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:10px}
+.qa-shor label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-2)}
+.qa-shor input{width:120px;min-height:38px;padding:6px 9px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface)}
+.qa-shor ol{margin:0;padding-left:20px;display:grid;gap:5px;font-size:13px;color:var(--ink-2)}
+.qa-shor b{font-family:var(--font-num);color:var(--ink)}
+.qa-shor .qa-ok{color:color-mix(in srgb,var(--ok) 80%,var(--ink));font-weight:600}
+.qa-shor .qa-no{color:color-mix(in srgb,var(--warn) 80%,var(--ink));font-weight:600}
+
+/* 详解里的账本小框 */
+.qa-facts{margin:0;display:grid;gap:8px;font-size:13px}
+.qa-facts dt{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+.qa-facts dd{margin:2px 0 0;color:var(--ink-2)}
+.qa-facts dd.qa-mono{font-family:var(--font-num);color:var(--ink)}
+.qa-demo-go{margin:14px 0 0}
+
+@media (max-width:980px){
+  .qa-circ-out{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .qa-bar{grid-template-columns:56px minmax(0,1fr) 48px}
+  .qa-bar .qa-ph{display:none}
+  .qa-circ-top{flex-direction:column;align-items:stretch}
+}
+@media print{.qa-palette,.qa-circ-top .fs-btns{display:none}}

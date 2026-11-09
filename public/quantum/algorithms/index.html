@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="量子算法（Quantum Algorithms）：从线路模型、量子傅里叶变换、相位估计、振幅放大和块编码讲到 Shor、Grover、哈密顿量模拟、HHL、量子行走，再到化学家关心的费米子映射、基态能量的资源估算、VQE、QAOA 和误差缓解。每个算法标明加速的证据等级，配浏览器里可运行的量子电路模拟器和四个交互演示，文献逐条核对，全部免费。">
+  <meta name="theme-color" content="#173f34">
+  <title>量子算法 · Quantum Algorithms · MolAstria</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../../i18n.js" defer></script>
+  <script src="../../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../../shared-nav.css">
+  <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="../../fundamental-science/math/fm.css">
+  <link rel="stylesheet" href="qa.css">
+  <script src="../../shared-nav.js" defer></script>
+  <script src="../../videos/videos-data.js" defer></script>
+  <script src="qa-data.js" defer></script>
+  <script src="qa-math.js" defer></script>
+  <script src="qa-models.js" defer></script>
+  <script src="qa.js" defer></script>
+</head>
+<body data-section="quantum">
+<a class="skip" href="#qa-lab">跳到交互实验室</a>
+<main id="qa-main">
+  <section class="fs-hero fm-hero" aria-labelledby="qa-h1">
+    <nav class="fm-crumbs" id="qa-crumbs" aria-label="位置"></nav>
+    <p class="eyebrow">MOLASTRIA · QUANTUM CARNIVAL · ALGORITHMS</p>
+    <h1 id="qa-h1">量子算法<span class="fs-h1-en" lang="en" translate="no">Quantum Algorithms</span></h1>
+    <blockquote class="fs-question" id="qa-quote"></blockquote>
+    <p class="lead" id="qa-lead"></p>
+    <p class="fs-honest" id="qa-honest"></p>
+    <dl class="fm-stats" id="qa-stats"></dl>
+    <nav class="fs-jump" id="qa-jump" aria-label="本页内容"></nav>
+  </section>
+
+  <section class="fs-block" id="qa-layers" aria-labelledby="qa-layers-h" tabindex="-1">
+    <h2 id="qa-layers-h"></h2>
+    <p class="muted" id="qa-layers-note"></p>
+    <div class="fm-tier-grid" id="qa-tier-grid"></div>
+  </section>
+
+  <section class="fs-block" id="qa-map" aria-labelledby="qa-map-h" tabindex="-1">
+    <h2 id="qa-map-h"></h2>
+    <p class="muted" id="qa-map-note"></p>
+    <div class="fm-map">
+      <div class="fm-graph-wrap"><svg class="fm-graph" id="qa-graph" viewBox="0 0 1000 640" role="group"></svg></div>
+      <aside class="fm-map-panel" id="qa-map-panel" aria-live="polite"></aside>
+    </div>
+    <details class="fm-rel-all"><summary id="qa-rel-sum"></summary><ul class="fm-rel-list" id="qa-rel-list"></ul></details>
+  </section>
+
+  <section class="fs-block" id="qa-ledger" aria-labelledby="qa-ledger-h" tabindex="-1">
+    <h2 id="qa-ledger-h"></h2>
+    <p class="muted" id="qa-ledger-note"></p>
+    <ul class="fs-legend" id="qa-legend"></ul>
+    <div class="fs-kind-filter" id="qa-ledger-filter" role="group"></div>
+    <div class="qa-table-wrap"><table class="qa-ledger" id="qa-ledger-table"></table></div>
+  </section>
+
+  <section class="fs-block" id="qa-lab" aria-labelledby="qa-lab-h" tabindex="-1">
+    <h2 id="qa-lab-h"></h2>
+    <p class="muted" id="qa-lab-note"></p>
+
+    <article class="fs-demo" id="demo-circuit">
+      <header><p class="fs-demo-n" id="c-n"></p><h3 id="c-h"></h3><p class="muted" id="c-intro"></p></header>
+      <div class="qa-circ-top">
+        <div class="qa-palette" id="c-palette" role="toolbar"></div>
+        <div class="fs-btns" id="c-btns"></div>
+      </div>
+      <div class="qa-circ-wrap"><div class="qa-circuit" id="c-grid"></div></div>
+      <p class="qa-issue" id="c-issue" role="status" aria-live="polite"></p>
+      <div class="qa-circ-out">
+        <figure class="fs-figure"><div class="qa-bars" id="c-bars"></div><figcaption id="c-cap"></figcaption></figure>
+        <dl class="fs-readout" id="c-read"></dl>
+      </div>
+      <details class="fs-notes"><summary id="c-more"></summary><p id="c-notes"></p></details>
+    </article>
+
+    <article class="fs-demo" id="demo-grover">
+      <header><p class="fs-demo-n" id="g-n"></p><h3 id="g-h"></h3><p class="muted" id="g-intro"></p></header>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label><span id="g-qubits-l"></span><span><input type="range" id="g-qubits" min="2" max="20" step="1" value="8"><output id="g-qubits-v"></output></span></label>
+          <label><span id="g-m-l"></span><span><input type="range" id="g-m" min="1" max="16" step="1" value="1"><output id="g-m-v"></output></span></label>
+          <label><span id="g-k-l"></span><span><input type="range" id="g-k" min="0" max="40" step="1" value="12"><output id="g-k-v"></output></span></label>
+          <div class="fs-btns"><button type="button" class="button" id="g-best"></button></div>
+          <dl class="fs-readout" id="g-read"></dl>
+        </div>
+        <div class="fs-figure-ci">
+          <figure class="fs-figure fs-wide"><canvas id="g-canvas" width="720" height="300" role="img"></canvas><figcaption id="g-cap"></figcaption></figure>
+          <figure class="fs-figure fs-wide"><canvas id="g-amp" width="720" height="150" role="img"></canvas><figcaption id="g-amp-cap"></figcaption></figure>
+        </div>
+      </div>
+    </article>
+
+    <article class="fs-demo" id="demo-qpe">
+      <header><p class="fs-demo-n" id="p-n"></p><h3 id="p-h"></h3><p class="muted" id="p-intro"></p></header>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label><span id="p-phi-l"></span><span><input type="range" id="p-phi" min="0" max="0.999" step="0.001" value="0.3"><output id="p-phi-v"></output></span></label>
+          <label><span id="p-t-l"></span><span><input type="range" id="p-t" min="1" max="8" step="1" value="4"><output id="p-t-v"></output></span></label>
+          <dl class="fs-readout" id="p-read"></dl>
+        </div>
+        <figure class="fs-figure"><canvas id="p-canvas" width="720" height="320" role="img"></canvas><figcaption id="p-cap"></figcaption></figure>
+      </div>
+    </article>
+
+    <article class="fs-demo" id="demo-trotter">
+      <header><p class="fs-demo-n" id="t-n"></p><h3 id="t-h"></h3><p class="muted" id="t-intro"></p></header>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label><span id="t-spins-l"></span><span><input type="range" id="t-spins" min="2" max="6" step="1" value="4"><output id="t-spins-v"></output></span></label>
+          <label><span id="t-h-l"></span><span><input type="range" id="t-hx" min="0" max="2" step="0.05" value="0.8"><output id="t-hx-v"></output></span></label>
+          <label><span id="t-time-l"></span><span><input type="range" id="t-time" min="0.5" max="5" step="0.1" value="2"><output id="t-time-v"></output></span></label>
+          <label><span id="t-r-l"></span><span><input type="range" id="t-r" min="1" max="200" step="1" value="10"><output id="t-r-v"></output></span></label>
+          <dl class="fs-readout" id="t-read"></dl>
+        </div>
+        <figure class="fs-figure"><canvas id="t-canvas" width="720" height="340" role="img"></canvas><figcaption id="t-cap"></figcaption></figure>
+      </div>
+    </article>
+
+    <article class="fs-demo" id="demo-vqe">
+      <header><p class="fs-demo-n" id="v-n"></p><h3 id="v-h"></h3><p class="muted" id="v-intro"></p></header>
+      <div class="fs-demo-body">
+        <div class="fs-controls">
+          <label><span id="v-h-l"></span><span><input type="range" id="v-hx" min="0.05" max="2" step="0.05" value="0.6"><output id="v-hx-v"></output></span></label>
+          <label><span id="v-lr-l"></span><span><input type="range" id="v-lr" min="0.05" max="0.8" step="0.05" value="0.3"><output id="v-lr-v"></output></span></label>
+          <label><span id="v-shots-l"></span><span><select id="v-shots"><option value="0"></option><option value="100">100</option><option value="1000">1000</option><option value="10000">10000</option></select></span></label>
+          <div class="fs-btns"><button type="button" class="button primary" id="v-run"></button><button type="button" class="button" id="v-seed"></button></div>
+          <dl class="fs-readout" id="v-read"></dl>
+        </div>
+        <figure class="fs-figure"><canvas id="v-canvas" width="720" height="320" role="img"></canvas><figcaption id="v-cap"></figcaption></figure>
+      </div>
+    </article>
+  </section>
+
+  <section class="fs-block fm-reader" id="qa-algos" aria-labelledby="qa-algos-h" tabindex="-1">
+    <h2 id="qa-algos-h"></h2>
+    <div class="fm-reader-grid">
+      <nav class="fm-side" id="qa-side" aria-labelledby="qa-algos-h"></nav>
+      <div id="qa-panels"></div>
+    </div>
+  </section>
+
+  <section class="fs-block" id="qa-resources" aria-labelledby="qa-resources-h" tabindex="-1">
+    <h2 id="qa-resources-h"></h2>
+    <p class="muted" id="qa-resources-note"></p>
+    <div class="qa-table-wrap"><table class="qa-ledger qa-est" id="qa-est-table"></table></div>
+  </section>
+
+  <section class="fs-block" id="qa-path" aria-labelledby="qa-path-h" tabindex="-1">
+    <h2 id="qa-path-h"></h2>
+    <p class="muted" id="qa-path-note"></p>
+    <div class="fm-track-tabs" role="tablist" id="qa-track-tabs"></div>
+    <div id="qa-track"></div>
+  </section>
+
+  <section class="fs-block" id="qa-start" aria-labelledby="qa-start-h" tabindex="-1">
+    <h2 id="qa-start-h"></h2>
+    <p class="muted" id="qa-start-note"></p>
+    <div class="fm-start" id="qa-start-box"></div>
+  </section>
+
+  <section class="fs-block" id="qa-library" aria-labelledby="qa-library-h" tabindex="-1">
+    <h2 id="qa-library-h"></h2>
+    <p class="muted" id="qa-lib-note"></p>
+    <div class="fs-lib-filters" role="search" id="qa-lib-filters"></div>
+    <p class="fs-count" id="qa-lib-count" role="status" aria-live="polite"></p>
+    <div class="fm-lib" id="qa-lib"></div>
+  </section>
+
+  <footer class="fs-foot" id="qa-foot"></footer>
+  <noscript><p class="fs-note">这个页面需要 JavaScript 才能显示内容。</p></noscript>
+</main>
+</body>
+</html>
