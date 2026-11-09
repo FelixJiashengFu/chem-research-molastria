@@ -71,9 +71,10 @@
   <h2 id="agents">给 AI 和程序</h2>
   <dl class="api-files">
     <div><dt><a href="../llms.txt"><code translate="no">llms.txt</code></a></dt><dd>给大模型看的站点说明，告诉它数据在哪、怎么署名。</dd></div>
-    <div><dt><a href="v1/openapi.json"><code translate="no">openapi.json</code></a></dt><dd>OpenAPI 3.1 描述，字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。</dd></div>
+    <div><dt><a href="v1/openapi.json"><code translate="no">openapi.json</code></a></dt><dd>OpenAPI 3.1 描述，数据接口和计算接口都在里面。数据的字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。</dd></div>
     <div><dt><a href="v1/molastria.mjs"><code translate="no">molastria.mjs</code></a></dt><dd>零依赖的 JS 库，浏览器、Deno、Node 18 以上都能用，带中英互通的搜索。</dd></div>
-    <div><dt><a href="../atlas/index.html#agent"><code translate="no">chemdb-agent</code></a></dt><dd>MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据。它随包带着同一份资源目录，离线也能查。</dd></div>
+    <div><dt><a href="v1/molastria.py" download><code translate="no">molastria.py</code></a></dt><dd>Python 客户端，一个文件，不用安装别的包。读数据集，也能一行提交计算并等结果，用法见下面的计算接口。</dd></div>
+    <div><dt><a href="../atlas/index.html#agent"><code translate="no">chemdb-agent</code></a></dt><dd>MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据，配上 API key 还能直接提交计算。它随包带着同一份资源目录，离线也能查。</dd></div>
   </dl>
 
   <h2>约定</h2>
@@ -97,6 +98,10 @@
   <div class="box api-gpu">
     <p><b>先把算力说清楚：</b> 算力是站长电脑上的 RTX 2080，尽力而为，可能离线。没有可用性承诺：人多要排队，电脑关机就算不了。不要把有时限的事情压在它上面。</p>
     <p class="api-live" id="gpu-live" role="status" data-state="wait"><span class="api-dot" aria-hidden="true"></span><span id="gpu-text">正在看这台电脑在不在线……</span></p>
+    <div class="api-uptime" id="gpu-uptime" hidden>
+      <div class="api-updays" id="gpu-days" role="img"></div>
+      <p id="gpu-ratio"></p>
+    </div>
   </div>
   <ol class="api-steps">
     <li><b>拿一个 key</b> 用任何邮箱登录 <a href="../pro/account.html">账号页</a>，在“API key”一栏生成。原文只显示一次，我们的数据库里只存它的哈希。</li>
@@ -118,7 +123,8 @@
   <p class="fine">下面的代码跟着上面的选择变，key 从环境变量里读，不会写进代码。</p>
   <div class="api-codehead">
     <div class="api-tabs" id="run-tabs" role="tablist" aria-label="计算示例的语言">
-      <button type="button" role="tab" aria-selected="true" data-tab="py">Python</button>
+      <button type="button" role="tab" aria-selected="true" data-tab="client">molastria.py</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="py">Python</button>
       <button type="button" role="tab" aria-selected="false" data-tab="js">JavaScript</button>
       <button type="button" role="tab" aria-selected="false" data-tab="curl">curl</button>
     </div>
@@ -131,6 +137,7 @@
     <thead><tr><th>请求</th><th>作用</th></tr></thead>
     <tbody>
       <tr><td><code translate="no">GET /v1</code></td><td>这套接口的说明和文档地址，不用 key</td></tr>
+      <tr><td><code translate="no">GET /v1/status</code></td><td>电脑最近一次探测在不在线，最近 7 天每天的在线率。不用 key</td></tr>
       <tr><td><code translate="no">GET /v1/me</code></td><td>这个 key 的档位，今天用了几次、还剩几次</td></tr>
       <tr><td><code translate="no">GET /v1/models</code></td><td>能用的模型、每个模型做哪些计算、每种计算花几次，以及电脑现在在不在线</td></tr>
       <tr><td><code translate="no">POST /v1/jobs</code></td><td>提交一个计算，返回任务编号、花了几次和今天的余量</td></tr>

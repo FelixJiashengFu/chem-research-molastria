@@ -1,4 +1,4 @@
-"""冒烟测试：骨架可导入、九个工具已注册且参数都有说明、离线工具可调用。
+"""冒烟测试：骨架可导入、十二个工具已注册且参数都有说明、离线工具可调用。
 
 工具调用走 fastmcp 的 MCP 层（mcp.call_tool），与客户端实际调用路径一致。
 """
@@ -21,12 +21,15 @@ EXPECTED_TOOLS = sorted(
         "fetch_dataset_shard",
         "export_training_set",
         "search_resources",
+        "run_calculation",
+        "get_calculation",
+        "compute_status",
     ]
 )
 
 
 def test_version():
-    assert __version__ == "0.2.1"
+    assert __version__ == "0.3.0"
 
 
 def test_units_constants():
@@ -35,7 +38,7 @@ def test_units_constants():
     assert units.HARTREE_PER_BOHR_TO_EV_PER_ANGSTROM == 51.42207
 
 
-def test_nine_tools_registered_with_described_parameters():
+def test_all_tools_registered_with_described_parameters():
     tools = asyncio.run(server.mcp.list_tools())
     assert sorted(t.name for t in tools) == EXPECTED_TOOLS
     for t in tools:
@@ -49,7 +52,7 @@ def test_catalog_status_ok(data_dir, monkeypatch):
     monkeypatch.delenv("MP_API_KEY", raising=False)
     res = asyncio.run(server.mcp.call_tool("catalog_status", {}))
     sc = res.structured_content
-    assert sc["status"] == "ok" and sc["version"] == "0.2.1"
+    assert sc["status"] == "ok" and sc["version"] == "0.3.0"
     assert sc["data_dir"] == str(data_dir)
     ids = {s["id"] for s in sc["sources"]}
     assert {"mp", "nomad", "optimade-alexandria-pbe", "chebi", "qcarchive-ml", "bse"} <= ids

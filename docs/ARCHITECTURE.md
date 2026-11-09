@@ -42,12 +42,14 @@ v1/molastria.mjs（JS 库：取数据、搜索）  →  api/embed.js（别人网
 
 没有 key、没有计数、没有服务器端的搜索；要按次数分档或开放计算时再接账号服务（`docs/DECISIONS.md` 2026-11-09）。
 
-计算不在这里：给程序用的计算接口在账号服务里（`api.molastria.com/v1`，要 API key），说明写在同一个 `/api/` 页的“计算接口”一段（`compute.js`）。
+计算不在这里：给程序用的计算接口在账号服务里（`api.molastria.com/v1`，要 API key），说明写在同一个 `/api/` 页的“计算接口”一段（`compute.js`）。三种现成的用法都只是这个接口的客户端：一个文件的 Python 客户端 `public/api/v1/molastria.py`、chemdb-agent 的 `run_calculation` 等三个 MCP 工具、说明页上的“带上 key 试一次”。
 
 ```text
 程序（带 Authorization: Bearer mola_…）  →  账号服务 /v1/*：查 key（api_keys，只存哈希）、挡住 MACE、按账号计次
         →  和网站的 /uma/* 同一段代码  →  Cloudflare Tunnel  →  站长电脑上的 tools/uma-server（RTX 2080，可能离线）
 ```
+
+账号服务另外记两样东西：每次用 key 提交记一行 `api_jobs`（模型、计算种类、花费、时间，不存分子，留 30 天），账号页的用量面板读它；每 15 分钟的定时任务探测一次站长电脑，累加进 `status` 表的 `uptime` 一行，`GET /v1/status`（不要 key）和说明页的 7 天在线率读它。
 
 ## 付款和登录
 

@@ -158,8 +158,12 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **接口的总量：** `wrangler.toml` 的 `API_DAILY_TOTAL`（所有 key 合起来每天的次数，默认 2000）。嫌多嫌少改这个数再部署。
 - **电脑被接口占满时：** 把 `wrangler.toml` 的 `API_COMPUTE` 改成 `"0"` 再 `npx wrangler deploy`，`/v1` 全部返回 503，网站自己的在线模型照常。恢复时改回 `"1"`。
 - **加一个在线模型或一种计算：** 账号服务的 `UMA_MODELS` 里 tier 是 `fair` 的模型自动出现在 `/v1/models`，`asl` 的永远不会。说明页 `compute.js` 的 `JOBS` 和模型列表要跟着改，`tools/account-test.ts` 会对照两边（对不上就失败）。
-- **改接口：** 和开放数据接口一样，v1 只加字段。已经公开的：四个路径、`usage` 和 `cost` 字段、`X-RateLimit-*` 响应头、错误的 `code` 值。
-- **上线后检查：** `curl -s https://api.molastria.com/v1` 应返回说明；`node tools/e2e/live.mjs` 里有一条检查任何来源都能预检、没有 key 是 401。带真实 key 的提交要站长自己试（`/api/#compute` 的“带上 key 试一次”）。
+- **改接口：** 和开放数据接口一样，v1 只加字段。已经公开的：五个路径（`/status`、`/me`、`/models`、`/jobs`、`/jobs/{id}`）、`usage` 和 `cost` 字段、`X-RateLimit-*` 响应头、错误的 `code` 值、`/v1/status` 的 `online` / `checked` / `uptime`。
+- **用量记录：** D1 的 `api_jobs` 表，每次用 key 提交一行（key 的编号、模型、计算种类、花费、时间），不存分子，留 30 天（每天第一次探测时清理）。账号页“今天的用量”读的就是它。看最近一周哪些模型被用得多：`npx wrangler d1 execute molastria --remote --command "SELECT model, job, COUNT(*) AS n, SUM(cost) AS uses FROM api_jobs WHERE created > unixepoch() - 604800 GROUP BY model, job ORDER BY uses DESC"`（这条不带邮箱，可以贴出来）。
+- **在线率：** 每 15 分钟的定时任务顺带探测一次站长电脑，累加进 `status` 表的 `uptime` 一行（每天“在线几次 / 探测几次”，留 35 天）。`curl -s https://api.molastria.com/v1/status` 看结果：`online` 是最近一次探测，超过 45 分钟没有探测时是 `null`。清零重来：`npx wrangler d1 execute molastria --remote --command "DELETE FROM status WHERE name = 'uptime'"`。没有配置 `UMA_ORIGIN` 时不探测、不记录。
+- **Python 客户端：** `public/api/v1/molastria.py` 是手写的，不是生成的；改了跑 `python3 tools/molastria-py-test.py`（起一个假的服务对着测，不联网）。公开的名字只加不改；改了行为就升 `__version__`，User-Agent 跟着变（`molastria-python/x.y.z`），上线后 `tools/e2e/live.mjs` 会确认 Cloudflare 没有拦它。
+- **chemdb-agent 的计算工具：** `agent/chemdb-agent/src/chemdb_agent/adapters/molastria_compute.py` 和 `server.py` 里的 `run_calculation`、`get_calculation`、`compute_status`。改了跑 agent 的 pytest，再 `python tools/pack-chemdb-agent.py` 重新打包；模型和计算种类的名单由 `tools/account-test.ts` 和账号服务对照。
+- **上线后检查：** `curl -s https://api.molastria.com/v1` 应返回说明；`node tools/e2e/live.mjs` 里有一条检查任何来源都能预检、没有 key 是 401，另一条检查 `/v1/status`、`molastria.py` 能下载、它的 User-Agent 没有被拦。带真实 key 的提交要站长自己试（`/api/#compute` 的“带上 key 试一次”）。
 
 ## 教学视频（/videos/）
 
@@ -229,6 +233,14 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 6. **推荐：** Cloudflare Zero Trust → Access → 为 `uma-origin.molastria.com` 建一个 Self-hosted 应用，策略选 Service Auth，绑定一个 Service Token；把令牌的 ID 和 Secret 用 `wrangler secret put UMA_ACCESS_ID` / `UMA_ACCESS_SECRET` 交给账号服务。这样不是账号服务发来的请求在 Cloudflare 就被拦下，到不了电脑。
 
 **每次上线：** 普通（非管理员）PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe -MacePython D:\ChemDraw\mace-env\Scripts\python.exe`（不给 `-MacePython` 时 MACE 模型不上线）。启动约 1 分钟；关掉这个窗口就同时下线服务和隧道。服务运行时设 `HF_HUB_OFFLINE=1`，不连 Hugging Face。
+
+**登录后自动启动（装一次）：** 普通 PowerShell 里运行 `powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe -MacePython D:\ChemDraw\mace-env\Scripts\python.exe`。它只在你自己的“启动”文件夹里放一个快捷方式（不要管理员权限，不建计划任务或服务），以后每次登录 Windows 都会最小化启动 `start.ps1 -KeepAlive`：服务自己停了（崩溃、驱动重置）会在 5 秒到 2 分钟后重新启动，隧道没了也会重新拉起；两分钟内连续停五次就放弃（说明有要修的问题）。每次重启记在 `tools\uma-server\keepalive.log`（不进 git）。
+
+- 看状态：`autostart.ps1 -Status`（装了没有、现在在不在跑、最近几次重启）。取消：`autostart.ps1 -Remove`（不会停掉正在跑的，关窗口才停）。
+- 已经在跑时再运行 `start.ps1` 会直接退出（8765 端口有应答），不会起第二份。
+- 是“登录后”启动，不是“开机后”：电脑重启后停在登录界面时模型是离线的。电脑睡眠时也离线，想一直在线就在电源设置里关掉睡眠。
+- 仓库换了位置要重新 `-Install`（快捷方式里是绝对路径）。
+- 在线了多久看 `https://api.molastria.com/v1/status` 或 `/api/#compute` 页上的 7 天记录。
 
 **额度**（`wrangler.toml` 的 `[vars]`）：Meta 的 UMA、OMol25 模型和 ANI-2x 共用一份，匿名访客每天 `UMA_DAILY`（40）次、登录的免费账号 `UMA_DAILY_ACCOUNT`（100）次、Pro 支持者 `UMA_DAILY_PRO`（200）次；MACE 系列每位访客每天 `ASL_DAILY`（40）次，账号和 Pro 都不加（学术许可的模型不能变成付费功能）。被电脑拒绝的任务（已有任务在算、队列满、元素不支持）不计次数。改次数时要一起改 `account-worker.js` 里的默认值（`tools/account-test.ts` 会核对两边一致）、`models/index.html` 的“每日额度”表和价格页 `pro/index.html` 的“三档额度”表（`tools/e2e/run.mjs` 会核对价格页），再跑 `i18n-extract`、补 `i18n/en.json` 的英文、跑 `i18n-translate`，最后 `npx.cmd wrangler deploy`。
 

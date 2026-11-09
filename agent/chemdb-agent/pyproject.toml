@@ -1,6 +1,6 @@
 [project]
 name = "chemdb-agent"
-version = "0.2.1"
+version = "0.3.0"
 description = "计算化学数据库 Agent：跨库检索结构与计算数据，统一单位与理论级别后导出 ASE 训练集（MCP 服务器）"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"

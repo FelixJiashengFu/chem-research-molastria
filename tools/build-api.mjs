@@ -237,6 +237,67 @@ function schemaOf(samples, depth = 0) {
   return { type: kind };
 }
 
+// The compute API (account service, deploy/account-worker.js). Written by hand: it is not static data.
+// tools/account-test.ts checks these lists against what the service itself offers.
+const COMPUTE_MODELS = ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'uma-s-1p1', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
+  'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'ani-2x'];
+const COMPUTE_JOBS = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'];
+const COMPUTE_NOTE = "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.";
+function computePaths() {
+  const server = [{ url: COMPUTE.replace(/\/v1$/, ''), description: 'Account service (the compute API)' }];
+  const json = (ref, description = 'OK') => ({ description, content: { 'application/json': { schema: { $ref: `#/components/schemas/${ref}` } } } });
+  const refused = { 401: json('ComputeError', 'No key, or a key that is not valid'), 429: json('ComputeError', 'Out of uses for today (quota_exceeded), a job already queued or running (job_in_progress), or the API as a whole is at its total for today (api_busy)'), 503: json('ComputeError', 'The GPU is offline (offline) or the API is switched off (unavailable)') };
+  const secured = [{ apiKey: [] }];
+  const paths = {
+    '/v1/status': { servers: server, get: { operationId: 'computeStatus', tags: ['compute'], summary: 'Whether the GPU answered the last probe and how often it was online over the last 7 days. No key.', security: [], responses: { 200: json('ComputeStatus') } } },
+    '/v1/me': { servers: server, get: { operationId: 'computeMe', tags: ['compute'], summary: "The key's tier and today's uses", security: secured, responses: { 200: json('ComputeMe'), 401: refused[401] } } },
+    '/v1/models': { servers: server, get: { operationId: 'computeModels', tags: ['compute'], summary: 'Models, the calculations each one does, what each calculation costs, and whether the GPU is online', security: secured, responses: { 200: json('ComputeModels'), 401: refused[401] } } },
+    '/v1/jobs': { servers: server, post: {
+      operationId: 'computeSubmit', tags: ['compute'], summary: 'Queue a calculation; answers at once with the job id. Poll GET /v1/jobs/{id}.', security: secured,
+      requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ComputeJobRequest' }, example: { smiles: 'CCO', job: 'opt', model: 'uma-s-1p2p1' } } } },
+      responses: { 200: json('ComputeJob', 'A result the service had already computed (cached: true)'), 202: json('ComputeJob', 'Queued'), 400: json('ComputeError', 'A field is missing or outside its range'), 403: json('ComputeError', 'A model whose licence does not allow the API (licence)'), ...refused },
+    } },
+    '/v1/jobs/{id}': { servers: server, get: {
+      operationId: 'computeJob', tags: ['compute'], summary: 'The state of a job: queued, running, done (with result) or error. Finished jobs are kept for an hour.', security: secured,
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', pattern: '^[0-9a-f]{16}$' } }],
+      responses: { 200: json('ComputeJob'), 401: refused[401], 404: json('ComputeError', 'No such job'), 503: refused[503] },
+    } },
+  };
+  const usage = { type: 'object', description: "Today's uses of the account (shared with what it runs on the site).", properties: { used: { type: 'integer' }, limit: { type: 'integer' }, remaining: { type: 'integer' }, reset: { type: 'integer', description: 'Unix time at which the count starts again' } }, required: ['used', 'limit', 'remaining', 'reset'] };
+  const note = { type: 'object', description: COMPUTE_NOTE, properties: { zh: { type: 'string' }, en: { type: 'string' } } };
+  const schemas = {
+    ComputeUsage: usage,
+    ComputeError: { type: 'object', properties: { error: { type: 'object', properties: {
+      code: { type: 'string', description: 'For programs.', examples: ['unauthorized', 'invalid_request', 'quota_exceeded', 'job_in_progress', 'offline', 'api_busy', 'licence', 'not_found', 'too_many_requests', 'region', 'unavailable'] },
+      message: { type: 'string', description: 'English' }, message_zh: { type: 'string', description: 'Chinese' } }, required: ['code', 'message', 'message_zh'] } }, required: ['error'] },
+    ComputeJobRequest: { type: 'object', description: 'Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead). At most 30 heavy atoms and 120 atoms.', properties: {
+      job: { type: 'string', enum: COMPUTE_JOBS, default: 'ipea', description: 'sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity. GET /v1/models says which model does which.' },
+      model: { type: 'string', enum: COMPUTE_MODELS, default: 'uma-s-1p2p1' },
+      smiles: { type: 'string', maxLength: 200 }, xyz: { type: 'string', maxLength: 12000, description: 'Standard XYZ text: atom count, a comment line, then "symbol x y z" lines.' },
+      charge: { type: 'integer', minimum: -2, maximum: 2, default: 0 }, spin: { type: 'integer', minimum: 1, maximum: 4, default: 1, description: 'Spin multiplicity. Models that are not "charged" take 0 and 1 only.' },
+      params: { type: 'object', description: 'Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}.' },
+    }, required: ['job'] },
+    ComputeJob: { type: 'object', properties: {
+      id: { type: 'string', description: 'Absent when a cached result comes straight back.' }, status: { type: 'string', enum: ['queued', 'running', 'done', 'error'] },
+      position: { type: 'integer', description: 'Place in the queue while queued' }, cached: { type: 'boolean' }, result: { type: 'object', description: 'Depends on the job; energies in eV, lengths in Å.' }, error: { type: 'string' },
+      cost: { type: 'integer', description: 'Uses this job took (on submit)' }, usage: { $ref: '#/components/schemas/ComputeUsage' },
+    }, required: ['status'] },
+    ComputeMe: { type: 'object', properties: { tier: { type: 'string', enum: ['free', 'pro'] }, usage: { $ref: '#/components/schemas/ComputeUsage' }, key: { type: 'object', properties: { prefix: { type: 'string' }, name: { type: 'string' }, created: { type: 'integer' } } } } },
+    ComputeModels: { type: 'object', properties: {
+      online: { type: 'boolean' }, gpu: { type: 'string' },
+      models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string', enum: COMPUTE_MODELS }, ready: { type: 'boolean' }, queue: { type: 'integer' }, charged: { type: 'boolean', description: 'Handles charge and spin' }, jobs: { type: 'array', items: { type: 'string', enum: COMPUTE_JOBS } } } } },
+      costs: { type: 'object', additionalProperties: { type: 'integer' }, description: 'Uses per job' }, cost_with_thermo: { type: 'integer' }, note,
+    } },
+    ComputeStatus: { type: 'object', properties: {
+      online: { type: ['boolean', 'null'], description: 'The last probe; null when there is no recent probe' }, checked: { type: ['integer', 'null'], description: 'Unix time of that probe' }, gpu: { type: 'string' },
+      uptime: { type: 'object', properties: { window_days: { type: 'integer' }, every_minutes: { type: 'integer' }, samples: { type: 'integer' }, ratio: { type: ['number', 'null'] },
+        days: { type: 'array', items: { type: 'object', properties: { date: { type: 'string', format: 'date', description: 'UTC' }, samples: { type: 'integer' }, ratio: { type: ['number', 'null'] } } } } } },
+      note,
+    } },
+  };
+  return { paths, schemas };
+}
+
 function openapi(index, data) {
   const ok = (ref) => ({ description: 'OK', content: { 'application/json': { schema: { $ref: `#/components/schemas/${ref}` } } } });
   const paths = { '/index.json': { get: { operationId: 'listDatasets', summary: 'List every dataset with its entry count and check date', responses: { 200: ok('index') } } } };
@@ -245,18 +306,24 @@ function openapi(index, data) {
     paths[`/${e.id}.json`] = { get: { operationId: `get_${e.id}`, summary: `${e.title.en} (${e.count} entries, whole file)`, responses: { 200: ok(e.id) } } };
     schemas[e.id] = schemaOf([data[e.id]]);
   }
+  const compute = computePaths();
+  Object.assign(schemas, compute.schemas);
+  for (const p of Object.values(paths)) for (const op of Object.values(p)) Object.assign(op, { tags: ['open data'], security: [] });
+  // Compute paths are spelled from the host root (/v1/…) with their own server; the data paths hang off BASE.
+  Object.assign(paths, compute.paths);
   return {
     openapi: '3.1.0',
     info: {
-      title: 'MolAstria open data API',
+      title: 'MolAstria API: open data and compute',
       version: SCHEMA,
-      description: 'Static, read-only JSON: no key, no sign-up, no rate limit, CORS open. Each dataset is one whole file; filter on your side. Text fields are bilingual objects { zh, en }. Schemas are inferred from the published data.',
+      description: `Two parts. Open data (tag "open data"): static, read-only JSON, no key, no sign-up, no rate limit, CORS open; each dataset is one whole file, filter on your side; text fields are bilingual objects { zh, en }; schemas are inferred from the published data. Compute (tag "compute", server ${COMPUTE.replace(/\/v1$/, '')}): calculations with machine-learned potentials for a free API key made on ${SITE}/pro/account.html; submit, then poll. ${COMPUTE_NOTE}`,
       license: { name: LICENSE.name, identifier: LICENSE.id },
       contact: { url: `${SITE}/api/` },
     },
-    servers: [{ url: BASE }],
+    servers: [{ url: BASE, description: 'Open data (static files)' }],
+    tags: [{ name: 'open data' }, { name: 'compute', description: COMPUTE_NOTE }],
     paths,
-    components: { schemas },
+    components: { schemas, securitySchemes: { apiKey: { type: 'http', scheme: 'bearer', description: 'An API key (mola_…) made on the account page.' } } },
   };
 }
 
@@ -274,11 +341,13 @@ function llms(index) {
     ...index.endpoints.map((e) => `- [${e.title.en}](${e.url}): ${e.count} entries, checked ${e.updated}`),
     `- [OpenAPI description](${BASE}/openapi.json): paths and JSON Schemas`,
     `- [JavaScript client](${BASE}/molastria.mjs): zero-dependency ES module with a bilingual search across the datasets`,
+    `- [Python client](${BASE}/molastria.py): one file, no dependencies; loads the datasets and runs calculations on the compute API below`,
     `- [Documentation](${SITE}/api/): conventions, licence, live explorer, embeddable widget`,
     '',
     '## Compute API (needs a free API key)',
     '',
-    `- Base: ${COMPUTE}. Submit machine-learned-potential calculations (UMA, eSEN, AllScAIP, ANI-2x: single points, optimisations, frequencies, conformers, scans, molecular dynamics, reaction and ionisation energies) with \`POST /jobs\`, then poll \`GET /jobs/{id}\` until \`status\` is \`done\` or \`error\`. \`GET /models\` lists models, jobs and what each costs; \`GET /me\` shows what is left today.`,
+    `- Base: ${COMPUTE}. Submit machine-learned-potential calculations (UMA, eSEN, AllScAIP, ANI-2x: single points, optimisations, frequencies, conformers, scans, molecular dynamics, reaction and ionisation energies) with \`POST /jobs\`, then poll \`GET /jobs/{id}\` until \`status\` is \`done\` or \`error\`. \`GET /models\` lists models, jobs and what each costs; \`GET /me\` shows what is left today; \`GET /status\` (no key) says whether the GPU is online and how often it was over the last 7 days.`,
+    `- From Python: \`curl -O ${BASE}/molastria.py\`, then \`molastria.Compute().run(smiles="CCO", job="opt")\` (the key is read from MOLASTRIA_KEY). The paths and schemas are in the OpenAPI description above.`,
     `- Auth: \`Authorization: Bearer mola_…\`. A person makes the key on ${SITE}/pro/account.html after signing in with an email; a program cannot sign up by itself. A free account has 100 uses a day, Pro supporters 200.`,
     "- The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not rely on it for anything with a deadline. The MACE models (Academic Software License) are not offered through the API.",
     `- [Documentation](${SITE}/api/#compute): fields, costs, rules, error codes, examples in Python, JavaScript and curl`,

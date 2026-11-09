@@ -191,6 +191,7 @@
   "api/compute.js",
   "hub/network.js",
   "models/models.js",
+  "pro/account-page.js",
   "tags",
   "categories"
  ],
@@ -585,7 +586,7 @@
  "MCP 查询编排": [
   "atlas/index.html"
  ],
- "9 个工具 · 缓存、超时与重试": [
+ "12 个工具 · 缓存、超时与重试": [
   "atlas/index.html"
  ],
  "训练集导出": [
@@ -597,7 +598,7 @@
  "当前能做什么": [
   "atlas/index.html"
  ],
- "按 0.2.0 源码与测试核对 · 2026-11-06": [
+ "按 0.3.0 源码与测试核对 · 2026-11-09": [
   "atlas/index.html"
  ],
  "能力层": [
@@ -649,6 +650,12 @@
   "atlas/index.html"
  ],
  "export_training_set 写 extxyz 或 ASE 数据库，附逐条来源清单（来源、理论级别、许可、获取时间）；理论级别不一致时拒绝并说明差别，纯结构记录不能导出。": [
+  "atlas/index.html"
+ ],
+ "用机器学习势计算": [
+  "atlas/index.html"
+ ],
+ "run_calculation 把分子（SMILES 或 XYZ）交给 MolAstria 计算接口，用 UMA、eSEN、AllScAIP、ANI-2x 做单点、优化、频率等 11 种计算；get_calculation 取结果，compute_status 看 GPU 在不在线。需要免费的 MOLASTRIA_API_KEY；算力是站长电脑上的 RTX 2080，尽力而为，可能离线。": [
   "atlas/index.html"
  ],
  "错误与缺 key": [
@@ -703,7 +710,16 @@
   "api/index.html",
   "api/api.js"
  ],
- "Materials Project 官方接口需在项目目录的 .env 里设置 MP_API_KEY，不设也能用其余数据源。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
+ "Materials Project 官方接口需在项目目录的 .env 里设置 MP_API_KEY，不设也能用其余数据源；要用计算工具再加一行 MOLASTRIA_API_KEY（在": [
+  "atlas/index.html"
+ ],
+ "账号页": [
+  "atlas/index.html",
+  "pro/index.html",
+  "pro/success.html",
+  "api/index.html"
+ ],
+ "生成，免费）。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
   "atlas/index.html"
  ],
  "下一步工程路线": [
@@ -2673,7 +2689,8 @@
  "几何优化": [
   "lab/index.html",
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "单点能": [
   "lab/index.html"
@@ -2881,6 +2898,7 @@
   "meta/index.html",
   "models/index.html",
   "train/index.html",
+  "pro/account.html",
   "api/index.html",
   "scimodels/scimodels.js",
   "meta/meta.js",
@@ -2914,6 +2932,7 @@
  "计算": [
   "meta/index.html",
   "models/index.html",
+  "pro/account.html",
   "api/index.html"
  ],
  "绝热电离能与电子亲和能（可导入 AI 实验室）": [
@@ -4899,11 +4918,6 @@
  "付款完成回到本站时，这台设备会自动登录。换电脑、换浏览器或在桌面版里，打开": [
   "pro/index.html"
  ],
- "账号页": [
-  "pro/index.html",
-  "pro/success.html",
-  "api/index.html"
- ],
  "，用付款邮箱收 6 位验证码登录即可。登录后 AI 助手的设置里会出现“MolAstria 托管”，不用自备 key。": [
   "pro/index.html"
  ],
@@ -5103,6 +5117,27 @@
  "请现在复制并保存好。我们只保存它的哈希，之后谁也看不到原文；丢了就撤销再生成一个。": [
   "pro/account.html"
  ],
+ "今天的用量": [
+  "pro/account.html"
+ ],
+ "最近用 key 提交的计算": [
+  "pro/account.html"
+ ],
+ "时间": [
+  "pro/account.html",
+  "qchem/play-quantum.js",
+  "radar/app/app.js"
+ ],
+ "用的 key": [
+  "pro/account.html"
+ ],
+ "花费（次）": [
+  "pro/account.html",
+  "api/index.html"
+ ],
+ "只记录模型、计算种类、花费和时间，不记录你算的分子。记录保留 30 天，这里显示最近 10 条。": [
+  "pro/account.html"
+ ],
  "发 VIP 卡": [
   "pro/account.html"
  ],
@@ -5171,6 +5206,9 @@
   "pro/account.html"
  ],
  "API key 的备注": [
+  "pro/account.html"
+ ],
+ "今天已用的在线模型次数": [
   "pro/account.html"
  ],
  "例如：送给课题组的同学": [
@@ -5822,13 +5860,16 @@
  "给大模型看的站点说明，告诉它数据在哪、怎么署名。": [
   "api/index.html"
  ],
- "OpenAPI 3.1 描述，字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。": [
+ "OpenAPI 3.1 描述，数据接口和计算接口都在里面。数据的字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。": [
   "api/index.html"
  ],
  "零依赖的 JS 库，浏览器、Deno、Node 18 以上都能用，带中英互通的搜索。": [
   "api/index.html"
  ],
- "MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据。它随包带着同一份资源目录，离线也能查。": [
+ "Python 客户端，一个文件，不用安装别的包。读数据集，也能一行提交计算并等结果，用法见下面的计算接口。": [
+  "api/index.html"
+ ],
+ "MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据，配上 API key 还能直接提交计算。它随包带着同一份资源目录，离线也能查。": [
   "api/index.html"
  ],
  "约定": [
@@ -5966,6 +6007,9 @@
  "这套接口的说明和文档地址，不用 key": [
   "api/index.html"
  ],
+ "电脑最近一次探测在不在线，最近 7 天每天的在线率。不用 key": [
+  "api/index.html"
+ ],
  "这个 key 的档位，今天用了几次、还剩几次": [
   "api/index.html"
  ],
@@ -6003,9 +6047,6 @@
   "api/index.html"
  ],
  "算什么": [
-  "api/index.html"
- ],
- "花费（次）": [
   "api/index.html"
  ],
  "参数（params）": [
@@ -7136,39 +7177,48 @@
  ],
  "单点能与受力": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "振动频率与热化学": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "构象搜索": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "二面角扫描": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "反应能": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "电离能与电子亲和能": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "自旋态能隙": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "键解离能": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "质子亲和能与去质子化能": [
   "api/compute.js",
-  "models/models.js"
+  "models/models.js",
+  "pro/account-page.js"
  ],
  "必填": [
   "api/compute.js"
@@ -7183,6 +7233,15 @@
   "api/compute.js"
  ],
  "这台电脑现在在线，没有任务在排队。": [
+  "api/compute.js"
+ ],
+ "{0}：在线 {1}%": [
+  "api/compute.js"
+ ],
+ "{0}：没有记录": [
+  "api/compute.js"
+ ],
+ "最近 {0} 天在线 {1}%，每 {2} 分钟探测一次，日期按 UTC。": [
   "api/compute.js"
  ],
  "连不上计算接口，请检查网络后重试。": [
@@ -8977,10 +9036,6 @@
  ],
  "长度": [
   "qchem/play-quantum.js"
- ],
- "时间": [
-  "qchem/play-quantum.js",
-  "radar/app/app.js"
  ],
  "质量": [
   "qchem/play-quantum.js"
@@ -11738,6 +11793,9 @@
  "还没用过": [
   "pro/account-page.js"
  ],
+ "过去 24 小时用了 {0} 次": [
+  "pro/account-page.js"
+ ],
  "撤销": [
   "pro/account-page.js"
  ],
@@ -11745,6 +11803,18 @@
   "pro/account-page.js"
  ],
  "还没有 API key。": [
+  "pro/account-page.js"
+ ],
+ "已用 {0} / {1} 次，网站上算的和用 key 算的加在一起；{2} 重新计数。": [
+  "pro/account-page.js"
+ ],
+ "今天还没用过，每天 {0} 次，网站上算的和用 key 算的加在一起。": [
+  "pro/account-page.js"
+ ],
+ "已撤销的 key": [
+  "pro/account-page.js"
+ ],
+ "读缓存": [
   "pro/account-page.js"
  ],
  "已复制到剪贴板。": [

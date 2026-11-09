@@ -1165,11 +1165,11 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   await finish(home);
 });
 
-check('agent: the Agent section shows chemdb-agent 0.2.1 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
+check('agent: the Agent section shows chemdb-agent 0.3.0 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
   const p = await open();
   await go(p, '/atlas/index.html#agent');
   await p.waitForFunction(() => !document.getElementById('view-agent').hidden);
-  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.1/);
+  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.3\.0/);
   // The query tools, QCArchive and export are wired now; only the "not yet covered" row stays pending.
   assert.doesNotMatch(await p.innerText('#view-agent'), /占位|待接线/);
   assert.equal(await p.locator('#view-agent .state.pending').count(), 1);
@@ -2507,12 +2507,28 @@ check('API keys on the account page: made once and shown once, listed by prefix,
   assert.ok(!(await p.content()).includes(key), 'the key is nowhere on the page after a reload');
   assert.ok(!(await p.evaluate(() => JSON.stringify({ ...localStorage }))).includes(key), 'and not in the browser storage');
   assert.match(await text(p, '#key-list li'), /最近使用/);
+  // Usage: nothing computed yet, then one job with the key (a frequency job costs 3 uses). The molecule is not shown, because it is not kept.
+  assert.match(await text(p, '#key-usage-line'), /^今天还没用过，每天 \d+ 次，网站上算的和用 key 算的加在一起。$/);
+  assert.ok(await p.isHidden('#key-jobs-box'));
+  const sent = await p.request.post(`${API}/v1/jobs`, { data: { smiles: 'CC(=O)Oc1ccccc1C(=O)O', job: 'freq', model: 'ani-2x' }, headers: { Authorization: `Bearer ${key}` } });
+  assert.deepEqual([sent.status(), (await sent.json()).cost], [202, 3]);
+  await p.reload({ waitUntil: 'networkidle' });
+  await p.waitForSelector('#key-jobs tr');
+  assert.match(await text(p, '#key-usage-line'), /^已用 3 \/ \d+ 次，网站上算的和用 key 算的加在一起；.+重新计数。$/);
+  assert.match(await text(p, '#key-jobs tr'), new RegExp(`${key.slice(0, 10)}…lab workstationani-2x振动频率与热化学3$`));
+  assert.match(await text(p, '#key-list li'), /过去 24 小时用了 3 次/);
+  assert.match(await text(p, '#key-usage'), /不记录你算的分子/);
+  assert.ok(!(await p.content()).includes('CC(=O)O'), 'the molecule is nowhere on the page');
   // English
   await go(p, '/pro/account.html?lang=en');
   await p.waitForFunction(() => !document.documentElement.dataset.i18n);
   await p.waitForSelector('#key-list li code');
+  await p.waitForSelector('#key-jobs tr');
   assert.ok(!HAN.test(await p.innerText('#keys-card')), 'the API key card is fully in English');
-  assert.match(await p.innerText('#keys-card'), /best effort.*may be offline[\s\S]*Revoke[\s\S]*Last used/);
+  assert.match(await p.innerText('#keys-card'), /best effort.*may be offline[\s\S]*Revoke[\s\S]*Last used[\s\S]*3 of \d+ uses[\s\S]*Vibrational frequencies/);
+  await p.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the usage table does not push the page sideways at phone width');
+  await p.setViewportSize({ width: 1280, height: 900 });
   await go(p, '/pro/account.html?lang=zh');
   await p.waitForSelector('#key-list li code');
   // Three at most; revoking stops the key at once.
@@ -2527,10 +2543,11 @@ check('API keys on the account page: made once and shown once, listed by prefix,
   await p.click('#signout');
   await p.waitForSelector('#acct-login:not([hidden])');
   assert.equal(await p.locator('#key-list li').count(), 0);
+  assert.ok(await p.isHidden('#key-usage'), 'and the usage with it');
   await finish(p);
 });
 
-check('compute API on the docs page: is the computer on, a job with a key, code that follows the choice, MACE refused, English', async () => {
+check('compute API on the docs page: is the computer on and how often it was, a job with a key, code that follows the choice (Python client first), MACE refused, English', async () => {
   const p = await open();
   // A key, made the way the account page makes one.
   const post = async (path, data, token) => (await p.request.post(API + path, { data, headers: { Origin: SITE, ...(token ? { Authorization: `Bearer ${token}` } : {}) } })).json();
@@ -2541,6 +2558,14 @@ check('compute API on the docs page: is the computer on, a job with a key, code 
   await p.waitForSelector('#gpu-live[data-state=on]');
   assert.match(await text(p, '#gpu-text'), /现在在线/);
   assert.match(await text(p, '.api-gpu'), /算力是站长电脑上的 RTX 2080，尽力而为，可能离线/);
+  // The record of the last 7 days: the local service probed once when it started, so today has a sample and the days before have none.
+  await p.waitForSelector('#gpu-uptime:not([hidden])');
+  assert.equal(await p.locator('#gpu-days .api-upday').count(), 7);
+  assert.match(await text(p, '#gpu-ratio'), /^最近 7 天在线 100%，每 15 分钟探测一次，日期按 UTC。$/);
+  assert.match(await p.getAttribute('#gpu-days .api-upday:last-child', 'title'), /^\d+月\d+日：在线 100%$/);
+  assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
+  const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
+  assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
   assert.equal(await p.locator('#run-jobs tr').count(), 11);
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
@@ -2552,13 +2577,18 @@ check('compute API on the docs page: is the computer on, a job with a key, code 
   await p.selectOption('#run-model', 'ani-2x');
   assert.deepEqual(await p.locator('#run-job option').evaluateAll((os) => os.map((o) => o.value)), ['opt', 'sp', 'freq', 'conf', 'md'], 'ANI-2x: neutral molecules only, so no ionisation energy');
   await p.selectOption('#run-job', 'freq');
+  // The first tab is the one-file Python client, which the site serves.
+  assert.match(await text(p, '#run-code'), /curl -O https:\/\/molastria\.com\/api\/v1\/molastria\.py[\s\S]*molastria\.Compute\(\)[\s\S]*\.run\(smiles="c1ccccc1O", model="ani-2x", job="freq"\)/);
+  const client = await p.request.get(`${SITE}/api/v1/molastria.py`);
+  assert.ok(client.ok() && /^__version__ = "\d+\.\d+\.\d+"$/m.test(await client.text()), 'molastria.py is served');
+  await p.click('#run-tabs [data-tab=py]');
   assert.match(await text(p, '#run-code'), /call\("\/jobs", \{"smiles": "c1ccccc1O", "model": "ani-2x", "job": "freq"\}\)/);
   await p.click('#run-tabs [data-tab=js]');
   assert.match(await text(p, '#run-code'), /call\('\/jobs', \{ smiles: 'c1ccccc1O', model: 'ani-2x', job: 'freq' \}\)/);
   await p.click('#run-tabs [data-tab=curl]');
   assert.match(await text(p, '#run-code'), /-d '\{"smiles":"c1ccccc1O","model":"ani-2x","job":"freq"\}'/);
   assert.match(await text(p, '#api-code'), /import \{ search \}/, 'the search example above keeps its own tab');
-  for (const tab of ['py', 'js', 'curl']) { await p.click(`#run-tabs [data-tab=${tab}]`); assert.ok(!(await text(p, '#run-code')).includes(key), `${tab}: no key in the code`); }
+  for (const tab of ['client', 'py', 'js', 'curl']) { await p.click(`#run-tabs [data-tab=${tab}]`); assert.ok(!(await text(p, '#run-code')).includes(key), `${tab}: no key in the code`); }
   // Run it: queued, running, done, with what is left today.
   await p.click('#run-go');
   await p.waitForSelector('#run-result:not([hidden])', { timeout: 15000 });

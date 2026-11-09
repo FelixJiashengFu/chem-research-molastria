@@ -1,4 +1,4 @@
-/* 开放数据接口说明页的“计算接口”一段：电脑在不在线、带 key 试一次、跟着选择变的代码、计算一览表。
+/* 开放数据接口说明页的“计算接口”一段：电脑在不在线、最近 7 天的在线率、带 key 试一次、跟着选择变的代码、计算一览表。
    用的就是文档里写的 /v1 接口（账号服务 deploy/account-worker.js），和别人在自己的脚本里做的一样。
    key 只放在这个页面的内存里：不进 localStorage，不进地址，也不进生成的代码。 */
 (() => {
@@ -39,7 +39,7 @@
   }
 
   // ── the form: model and job ──
-  const state = { tab: 'py' };
+  const state = { tab: 'client' };
   const pick = () => ({ smiles: $('run-smiles').value.trim() || 'CCO', model: $('run-model').value || models[0].id, job: $('run-job').value || 'opt' });
   function drawModels() {
     const keep = $('run-model').value;
@@ -59,6 +59,20 @@
   function code(tab) {
     const body = pick(), json = JSON.stringify(body), fields = Object.entries(body);
     const single = (v) => `'${String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+    if (tab === 'client') { // the one-file client (public/api/v1/molastria.py): same requests, with the waiting done for you
+      return `# curl -O https://molastria.com/api/v1/molastria.py     (one file, no dependencies, Python 3.8+)
+import molastria
+
+mol = molastria.Compute()  # reads the key from MOLASTRIA_KEY; make one at https://molastria.com/pro/account.html
+try:
+    result = mol.run(${fields.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(', ')})  # submit, wait, return the result
+    print(result)
+    print(mol.usage["remaining"], "uses left today")
+except molastria.MolAstriaError as e:  # e.code: offline, quota_exceeded, job_in_progress, ...
+    print(e.code, e)                   # best effort: one home GPU, it may be busy or offline
+
+# From a shell:  python molastria.py run '${String(body.smiles).replace(/'/g, `'\\''`)}' --job ${body.job} --model ${body.model}`;
+    }
     if (tab === 'py') {
       return `import json, os, time, urllib.request, urllib.error
 
@@ -149,6 +163,30 @@ curl -s ${PUBLIC}/v1/me -H "Authorization: Bearer $MOLASTRIA_KEY"`;
     drawHealth();
   }
 
+  // ── how often has it been on? (GET /v1/status: the service asks the computer every 15 minutes; no key) ──
+  let uptime = null;
+  function drawUptime() {
+    const u = uptime?.uptime;
+    $('gpu-uptime').hidden = !u?.samples;
+    if (!u?.samples) return;
+    const pct = (r) => Math.round(r * 100);
+    const day = (d) => new Date(`${d}T00:00:00Z`).toLocaleDateString(document.documentElement.lang === 'en' ? 'en-CA' : 'zh-CN', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    $('gpu-days').innerHTML = u.days.map((d) => {
+      const label = d.samples ? T(`${day(d.date)}：在线 ${pct(d.ratio)}%`) : T(`${day(d.date)}：没有记录`);
+      return `<span class="api-upday"${d.samples ? '' : ' data-empty'} title="${esc(label)}"><i style="height:${d.samples ? Math.max(6, pct(d.ratio)) : 0}%"></i></span>`;
+    }).join('');
+    const text = T(`最近 ${u.window_days} 天在线 ${pct(u.ratio)}%，每 ${u.every_minutes} 分钟探测一次，日期按 UTC。`);
+    $('gpu-days').setAttribute('aria-label', text);
+    $('gpu-ratio').textContent = text;
+  }
+  async function watchUptime() {
+    try {
+      const res = await fetch(`${base()}/v1/status`);
+      uptime = res.ok ? await res.json() : null;
+    } catch { uptime = null; }
+    drawUptime();
+  }
+
   // ── run one job with the reader's key ──
   let running = false;
   const status = (text, tone = '') => { $('run-status').textContent = text; $('run-status').dataset.tone = tone; };
@@ -203,8 +241,8 @@ curl -s ${PUBLIC}/v1/me -H "Authorization: Bearer $MOLASTRIA_KEY"`;
     const t = e.target.closest('[role=tab]');
     if (t) { state.tab = t.dataset.tab; drawCode(); }
   });
-  document.addEventListener('chemhub:i18n', () => { drawJobs(); drawModels(); drawHealth(); });
-  drawJobs(); drawModels(); watch();
+  document.addEventListener('chemhub:i18n', () => { drawJobs(); drawModels(); drawHealth(); drawUptime(); });
+  drawJobs(); drawModels(); watch(); watchUptime();
   // A link to #compute lands here before the search results above have taken their place: go there again once they have.
   if (/^#compute/.test(location.hash)) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 600);
 })();

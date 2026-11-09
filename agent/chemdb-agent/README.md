@@ -3,7 +3,7 @@
 计算化学数据库 Agent：一个 MCP 服务器。用自然语言跨库检索晶体、分子和量子化学数据，
 统一单位、理论级别与来源记录，再导出 extxyz 或 ASE 数据库训练集，直接交给 MACE、SchNetPack 等使用。
 
-版本 0.2.1。改了什么见 `CHANGELOG.md`。
+版本 0.3.0。改了什么见 `CHANGELOG.md`。
 
 ## 能做什么
 
@@ -18,8 +18,25 @@
 | `get_basis` | 取基组与 ECP 文本（Basis Set Exchange，离线） |
 | `search_resources` | 查资源目录（与 MolAstria 网站同一份，214 条、17 类；随包安装，离线可用） |
 | `catalog_status` | 数据源清单、本地分片、缓存与资源目录概况（不联网） |
+| `run_calculation` | 把一个分子（SMILES 或 XYZ）交给 MolAstria 计算接口，用机器学习势算：单点、优化、频率、构象、扫描、分子动力学等 11 种；默认等到算完 |
+| `get_calculation` | 按任务编号取状态和结果（任务算完后保留一小时） |
+| `compute_status` | 计算接口背后那块 GPU 最近一次探测在不在线、最近 7 天的在线率（不用 key） |
 
 每个工具的参数都带说明，MCP 客户端列工具时能看到。
+
+## 计算（MolAstria 计算接口）
+
+后三个工具不查数据库，而是真的去算：把分子交给 [MolAstria 计算接口](https://molastria.com/api/#compute)，
+用 UMA、eSEN、AllScAIP、ANI-2x 这些机器学习势算，和网站上的在线模型是同一个队列。
+
+- **key：** 在 <https://molastria.com/pro/account.html> 用邮箱登录后生成（免费），放进 `MOLASTRIA_API_KEY`。
+  没有 key 时这三个工具里只有 `compute_status` 能用，其余工具不受影响。
+- **算力：** 站长电脑上的一块 RTX 2080，尽力而为，可能离线。不要用在有时限的任务上；先用 `compute_status` 看一眼。
+- **限制：** 一个账号同时只能有一个任务；每天的次数和网站上算的加在一起（免费 100 次，Pro 200 次），
+  频率、构象、扫描这类计算一次花不止一次。结果里的 `usage` 是今天还剩多少。
+- **等待：** `run_calculation` 默认最多等 120 秒；到时间还没算完会返回任务编号，任务继续算，
+  用 `get_calculation` 接着取。
+- **许可：** MACE 系列是学术许可（ASL），不通过接口提供。
 
 ## 数据源
 
@@ -131,6 +148,8 @@ export.export_training_set(recs, "data/exports/gan.extxyz", level_of_theory=recs
 | 变量 | 默认 | 作用 |
 | --- | --- | --- |
 | `MP_API_KEY` | 无 | Materials Project 官方接口 |
+| `MOLASTRIA_API_KEY` | 无 | MolAstria 计算接口的 key（`run_calculation`、`get_calculation`） |
+| `MOLASTRIA_API` | `https://api.molastria.com/v1` | 计算接口的地址，一般不用改 |
 | `CHEMDB_DATA_DIR` | 项目目录下 `data/` | 缓存、分片、导出都放这里；导出路径必须在它之内 |
 | `CHEMDB_HTTP_TIMEOUT` | 30 | 单次 HTTP 请求超时（秒）；网络错误、5xx、429 自动重试共 3 次 |
 | `CHEMDB_SOURCE_TIMEOUT` | 90 | 单个数据源一次查询的总时限（秒）；超时只跳过这个源 |
@@ -160,13 +179,13 @@ data/
 chemdb-agent/
 ├── pyproject.toml · uv.lock · .env.example · mcp-config.example.json · CHANGELOG.md
 ├── src/chemdb_agent/
-│   ├── server.py         MCP 入口，九个工具
+│   ├── server.py         MCP 入口，十二个工具
 │   ├── schema.py         统一记录 UnifiedRecord
 │   ├── units.py          单位换算、理论级别规范化
 │   ├── net.py            共用 HTTP：超时、重试、报错
 │   ├── cache.py          记录缓存
 │   ├── export.py         extxyz / ASE db + 来源清单
-│   ├── adapters/         optimade、materials_project、nomad、pubchem、chembl、chebi、qcarchive、basis、local_catalog
+│   ├── adapters/         optimade、materials_project、nomad、pubchem、chembl、chebi、qcarchive、basis、local_catalog、molastria_compute
 │   └── catalog/          资源目录（resources.json 由网站数据生成，及接入状态）
 ├── data/                 本地数据（git 忽略）
 └── tests/                单元测试与录制的接口返回（cassettes/）

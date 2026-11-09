@@ -122,4 +122,6 @@ const env = {
   // e2e runs every job many times from one address; the daily limits themselves are tested in tools/account-test.ts.
   ...(Deno.env.get("FAKE_AI") ? { UMA_DAILY: "100000", UMA_DAILY_ACCOUNT: "100000", UMA_DAILY_PRO: "100000", ASL_DAILY: "100000" } : {}),
 };
+// What Cloudflare's quarter-hourly cron does: one probe of the (pretend) owner computer, so /v1/status has a sample.
+if (env.UMA_ORIGIN) await worker.scheduled({ cron: "*/15 * * * *" }, env);
 Deno.serve({ port, hostname: "127.0.0.1" }, (req) => worker.fetch(req, env));

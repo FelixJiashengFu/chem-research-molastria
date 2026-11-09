@@ -8,7 +8,7 @@
   const PAY = window.MOLASTRIA_PAY || {};
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const date = (s) => new Date(s * 1000).toLocaleDateString(en() ? 'en-CA' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null;
+  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null, keyUse = null;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
   // Pro that comes from a VIP card or the admin grant rather than a Stripe subscription
@@ -151,6 +151,9 @@
     digestAsked = false;
     keysAsked = false;
     keyRows = null;
+    keyUse = null;
+    $('key-usage').hidden = true;
+    $('key-jobs').innerHTML = '';
     $('key-new').hidden = true;
     $('key-value').textContent = '';
     $('key-list').innerHTML = '';
@@ -216,15 +219,38 @@
 
   // ── API keys ──────────────────────────────────────────────────────────
   const kmsg = $('key-msg');
-  function renderKeys(list) {
+  // The names of the calculations, as on the online models page and in the API documentation.
+  const JOB_NAME = { sp: '单点能与受力', opt: '几何优化', freq: '振动频率与热化学', conf: '构象搜索', scan: '二面角扫描', md: '分子动力学', rxn: '反应能', ipea: '电离能与电子亲和能', spin: '自旋态能隙', bde: '键解离能', pa: '质子亲和能与去质子化能' };
+  const clock = (s) => new Date(s * 1000).toLocaleString(en() ? 'en-CA' : 'zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+  /** `r` is what /keys answers: the keys, and (from a service that has it) today's usage and the latest jobs sent with a key. */
+  function renderKeys(r) {
+    const list = r.keys;
     keyRows = list;
+    keyUse = r.usage ? { usage: r.usage, jobs: r.jobs || [] } : null;
     $('key-list').innerHTML = list.length ? list.map((k) => {
       const used = k.last_used ? T(`最近使用 ${date(k.last_used)}`) : T('还没用过');
+      const day = k.used_24h ? ` · ${esc(T(`过去 24 小时用了 ${k.used_24h} 次`))}` : '';
       return `<li><code>${esc(k.prefix)}…</code><span class="acct-cardbtns"><button type="button" class="acct-remove" data-key="${esc(k.id)}">${T('撤销')}</button></span>` +
-        `<small>${k.name ? `${esc(k.name)} · ` : ''}${esc(T(`${date(k.created)} 生成`))} · ${esc(used)}</small></li>`;
+        `<small>${k.name ? `${esc(k.name)} · ` : ''}${esc(T(`${date(k.created)} 生成`))} · ${esc(used)}${day}</small></li>`;
     }).join('') : `<li class="acct-empty">${T('还没有 API key。')}</li>`;
+    $('key-usage').hidden = !keyUse;
+    if (!keyUse) return;
+    const u = keyUse.usage, meter = $('key-usage-meter');
+    $('key-usage-line').textContent = u.used
+      ? T(`已用 ${u.used} / ${u.limit} 次，网站上算的和用 key 算的加在一起；${clock(u.reset)} 重新计数。`)
+      : T(`今天还没用过，每天 ${u.limit} 次，网站上算的和用 key 算的加在一起。`);
+    $('key-usage-bar').style.width = `${Math.min(100, (u.used / u.limit) * 100)}%`;
+    meter.setAttribute('aria-valuemax', u.limit);
+    meter.setAttribute('aria-valuenow', u.used);
+    meter.dataset.level = u.remaining <= 0 ? 'out' : u.remaining <= u.limit * 0.1 ? 'low' : '';
+    $('key-jobs-box').hidden = !keyUse.jobs.length;
+    $('key-jobs').innerHTML = keyUse.jobs.map((j) => {
+      const key = j.key_prefix ? `<code translate="no">${esc(j.key_prefix)}…</code>${j.key_name ? `<small translate="no">${esc(j.key_name)}</small>` : ''}` : esc(T('已撤销的 key'));
+      return `<tr><td>${esc(clock(j.created))}</td><td class="acct-jobkey">${key}</td><td><code translate="no">${esc(j.model)}</code></td>` +
+        `<td>${esc(T(JOB_NAME[j.job] || j.job))}${j.cached ? ` <small>${esc(T('读缓存'))}</small>` : ''}</td><td>${Number(j.cost) || 0}</td></tr>`;
+    }).join('');
   }
-  function loadKeys() { A.keys().then((r) => renderKeys(r.keys)).catch((err) => say(kmsg, err.message, 'err')); }
+  function loadKeys() { A.keys().then(renderKeys).catch((err) => say(kmsg, err.message, 'err')); }
   $('key-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
@@ -232,7 +258,7 @@
       $('key-name').value = '';
       $('key-value').textContent = r.key;
       $('key-new').hidden = false;
-      renderKeys(r.keys);
+      renderKeys(r);
       say(kmsg, '');
     } catch (err) { say(kmsg, err.message, 'err'); }
   });
@@ -247,7 +273,7 @@
     const k = keyRows.find((x) => x.id === id);
     if (!confirm(T(`撤销 ${k.prefix}…？用这个 key 的程序会立刻失效。`))) return;
     try {
-      renderKeys((await A.revokeKey(id)).keys);
+      renderKeys(await A.revokeKey(id));
       if ($('key-value').textContent.startsWith(k.prefix)) { $('key-new').hidden = true; $('key-value').textContent = ''; }
       say(kmsg, T(`已撤销 ${k.prefix}…`), 'ok');
     } catch (err) { say(kmsg, err.message, 'err'); }
@@ -331,5 +357,5 @@
   }
   init();
   // Re-render dates and labels when the language switches without a reload.
-  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (keyRows) renderKeys(keyRows); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
+  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (keyRows) renderKeys({ keys: keyRows, ...(keyUse || {}) }); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
 })();

@@ -45,6 +45,8 @@ jobs:
         run: node --test tools/play-test.mjs
       - name: Open data API content
         run: node --test tools/api-test.mjs
+      - name: Python client (public/api/v1/molastria.py) against a stand-in service
+        run: python3 tools/molastria-py-test.py
       - name: Rebuild the open data API (public/api/v1) from the data files
         run: node tools/build-api.mjs
       - name: Account service tests

@@ -115,3 +115,25 @@ CREATE TABLE IF NOT EXISTS api_keys (
   last_used INTEGER
 );
 CREATE INDEX IF NOT EXISTS api_keys_email ON api_keys (email);
+
+-- 通过 API key 提交的计算（账号页“用量”一栏）：哪个 key、哪个模型、哪种计算、花了几次、什么时候。不记分子。
+-- id 是电脑给的任务号，直接从缓存返回的结果没有任务号（空字符串，cached = 1）。定时任务每天删掉 30 天前的记录。
+CREATE TABLE IF NOT EXISTS api_jobs (
+  id TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL,
+  key_id TEXT NOT NULL,                 -- api_keys.hash 的前 16 位；key 撤销后这里对不上，账号页显示“已撤销的 key”
+  model TEXT NOT NULL,
+  job TEXT NOT NULL,
+  cost INTEGER NOT NULL,
+  cached INTEGER NOT NULL DEFAULT 0,
+  created INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS api_jobs_email ON api_jobs (email, created);
+
+-- 服务状态，每样一行 JSON。uptime：定时任务每 15 分钟探测一次站长的 GPU，body 是
+-- { last: { slot, online, gpu }, days: { "2026-11-09": [在线次数, 探测次数], … } }，保留 35 天；/v1/status 读它。
+CREATE TABLE IF NOT EXISTS status (
+  name TEXT PRIMARY KEY,
+  body TEXT NOT NULL,
+  updated INTEGER NOT NULL
+);
