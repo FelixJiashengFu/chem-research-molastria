@@ -864,7 +864,8 @@
   "journals/index.html"
  ],
  "一章。": [
-  "journals/index.html"
+  "journals/index.html",
+  "qchem/index.html"
  ],
  "从研究到发表": [
   "journals/index.html"
@@ -1359,6 +1360,7 @@
  "量子物理": [
   "quantum/physics/index.html",
   "quantum/computing/index.html",
+  "qchem/index.html",
   "radar/app/app.js",
   "tools/build-seo.ts"
  ],
@@ -1371,6 +1373,7 @@
  "量子生物学": [
   "quantum/biology/index.html",
   "quantum/computing/index.html",
+  "qchem/index.html",
   "quantum/biology/qb.js",
   "tools/build-seo.ts"
  ],
@@ -1542,6 +1545,7 @@
  "量子算法": [
   "quantum/algorithms/index.html",
   "quantum/computing/index.html",
+  "qchem/index.html",
   "tools/build-seo.ts"
  ],
  "量子计算机 · Quantum Computers · MolAstria": [
@@ -1555,6 +1559,7 @@
  ],
  "量子计算机": [
   "quantum/computing/index.html",
+  "qchem/index.html",
   "tools/build-seo.ts"
  ],
  "七个部分": [
@@ -5708,7 +5713,7 @@
  "苟日新，日日新": [
   "radar/app/index.html"
  ],
- "游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria": [
+ "游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria": [
   "qchem/index.html"
  ],
  "跳到游乐场内容": [
@@ -5732,7 +5737,52 @@
  "氢原子光谱": [
   "qchem/index.html"
  ],
- "用真实的物理公式玩量子化学。六个小游戏各练一个概念，每个游戏背后的公式都写在“原理与局限”里，并用已知结果测试过；另有一个在浏览器里运行的量子化学计算器。": [
+ "自旋过滤": [
+  "qchem/index.html"
+ ],
+ "贝尔游戏": [
+  "qchem/index.html"
+ ],
+ "电路拼图": [
+  "qchem/index.html"
+ ],
+ "纠错救援": [
+  "qchem/index.html"
+ ],
+ "Grover 寻宝": [
+  "qchem/index.html"
+ ],
+ "噪声助推": [
+  "qchem/index.html"
+ ],
+ "普朗克工坊": [
+  "qchem/index.html"
+ ],
+ "立方体分拣": [
+  "qchem/index.html"
+ ],
+ "用真实的物理公式玩量子世界。三个展区十四个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。": [
+  "qchem/index.html"
+ ],
+ "化学馆": [
+  "qchem/index.html"
+ ],
+ "01–06 · 量子化学": [
+  "qchem/index.html"
+ ],
+ "量子嘉年华分会场": [
+  "qchem/index.html"
+ ],
+ "07–12 · 物理、计算机、算法、生物": [
+  "qchem/index.html"
+ ],
+ "物理疆界": [
+  "qchem/index.html"
+ ],
+ "展区一": [
+  "qchem/index.html"
+ ],
+ "从盒中粒子到氢原子光谱，六个量子化学的基本功。": [
   "qchem/index.html"
  ],
  "从零写成的量子化学程序：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。全部在你的浏览器里计算，每个模块都与 PySCF 逐项对拍。": [
@@ -5760,6 +5810,78 @@
   "qchem/index.html"
  ],
  "给你一条谱线的波长，找出是哪两个能级之间的跃迁发出的。": [
+  "qchem/index.html"
+ ],
+ "展区二": [
+  "qchem/index.html"
+ ],
+ "四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，再看噪声怎样帮光合作用传递能量。玩完想深入，卡片下方有直通展馆的链接。": [
+  "qchem/index.html"
+ ],
+ "Stern–Gerlach 自旋过滤": [
+  "qchem/index.html"
+ ],
+ "一串磁场分析器，每个只放行一种自旋。挡住所有原子的那一对，中间多插一个反而能放过去四分之一。": [
+  "qchem/index.html"
+ ],
+ "CHSH 贝尔游戏": [
+  "qchem/index.html"
+ ],
+ "两个不能通信的玩家合作答题。任何经典策略最多赢 75%，共享一对纠缠光子、调好测量角度能赢到 85%。": [
+  "qchem/index.html"
+ ],
+ "量子电路拼图": [
+  "qchem/index.html"
+ ],
+ "只给几种门，拼出指定的量子态：没有 X 门怎么翻转比特，两个门做出 Bell 态，三个比特的 GHZ 态。十道题，看谁用的门最少。": [
+  "qchem/index.html"
+ ],
+ "三个物理比特守一个逻辑比特。只看两盏奇偶校验灯，判断该翻哪个比特，看编码能把错误率压低多少。": [
+  "qchem/index.html"
+ ],
+ "上千个盒子里藏着一个宝物。每迭代一次，宝物的振幅涨一点；挑准时机测量，转过头概率又会掉下来。": [
+  "qchem/index.html"
+ ],
+ "噪声助推能量传递": [
+  "qchem/index.html"
+ ],
+ "激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。": [
+  "qchem/index.html"
+ ],
+ "展馆：": [
+  "qchem/index.html"
+ ],
+ "量子嘉年华总入口": [
+  "qchem/index.html"
+ ],
+ "展区三": [
+  "qchem/index.html"
+ ],
+ "ħ、c、G 三个常数划出了物理学的版图。先用它们拼出普朗克尺度，再把真实的现象分到立方体的八个角上。": [
+  "qchem/index.html"
+ ],
+ "物理疆界图": [
+  "qchem/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts",
+  "physics-realms/index.html"
+ ],
+ "普朗克单位工坊": [
+  "qchem/index.html"
+ ],
+ "只用 ħ、c、G 三个常数，拼出长度、时间、质量、能量……有的量根本用不着 ħ。": [
+  "qchem/index.html"
+ ],
+ "ħ-c-G 立方体分拣": [
+  "qchem/index.html"
+ ],
+ "潮汐、GPS 校时、金的颜色、白矮星的质量上限：解释它们，必须打开哪几个常数？": [
+  "qchem/index.html"
+ ],
+ "地图：": [
+  "qchem/index.html"
+ ],
+ "（理论、问题与 ħ-c-G 立方体）": [
   "qchem/index.html"
  ],
  "这些是教学模型，各有简化，每个游戏的“原理与局限”写明了它省略了什么。成绩只保存在当前浏览器里。": [
@@ -5948,10 +6070,308 @@
  "n₁ = 1 是莱曼系（紫外），n₁ = 2 是巴耳末系（其中 4 条在可见光区），n₁ = 3 是帕邢系（红外）。R_H 已经按氢原子的约化质量修正，给出的是真空中的波长；空气中的波长短约 0.03%，所以手册里的 Hα 常写 656.28 nm，这里是 656.47 nm。精细结构、兰姆位移等更小的分裂没有考虑。": [
   "qchem/index.html"
  ],
+ "游戏 07 · 量子物理 · 自旋 ½ 的测量": [
+  "qchem/index.html"
+ ],
+ "不均匀磁场把银原子束按自旋分成两束。每个分析器只放行“+”那一束。原子以 +z 自旋从左边进入，转动中间的分析器，完成三个关卡。": [
+  "qchem/index.html"
+ ],
+ "发射 200 个原子": [
+  "qchem/index.html"
+ ],
+ "每个方框是一个分析器，圆里的箭头是它测量的方向（0° 是 +z，180° 是 −z）。束的粗细是剩下的原子比例，被挡掉的“−”束从下方离开。": [
+  "qchem/index.html"
+ ],
+ "自旋 ½ 的原子处在 |+θ⟩（沿 xz 平面里 θ 方向朝上）时，沿 θ′ 方向测量得到“+”的概率是": [
+  "qchem/index.html"
+ ],
+ "通过分析器以后，原子就处在 |+θ′⟩，忘记了原来的方向。所以 +z 和 −z 之间相差 180°，透过率 cos²(90°) = 0；中间插一个 90°（+x）的分析器，透过率变成 cos²(45°) × cos²(45°) = 1/4。把 180° 均匀分成 m + 1 步，透过率是 cos²⁽ᵐ⁺¹⁾(π/(2(m + 1)))，m 越大越接近 1，这和量子芝诺效应是同一个数学。": [
+  "qchem/index.html"
+ ],
+ "Stern 和 Gerlach 1922 年用银原子做了第一个实验，串联分析器的思想实验来自 Feynman 讲义和 Sakurai 的教科书。这里忽略了原子束的速度分布和磁场的不均匀程度，把每个分析器看成理想的投影测量；角度只取 xz 平面。": [
+  "qchem/index.html"
+ ],
+ "想深入：": [
+  "qchem/index.html"
+ ],
+ "量子嘉年华 · 量子物理": [
+  "qchem/index.html"
+ ],
+ "里有“算符与测量”和“角动量与自旋”两章。": [
+  "qchem/index.html"
+ ],
+ "游戏 08 · 量子物理 · 纠缠与非定域性": [
+  "qchem/index.html"
+ ],
+ "裁判随机给 Alice 一个比特 x、给 Bob 一个比特 y，两人不能通信，各回答一个比特 a、b。只有 x 和 y 都是 1 时要求答案不同，其余情况要求答案相同。先用经典策略试试，再换成纠缠光子。": [
+  "qchem/index.html"
+ ],
+ "经典策略": [
+  "qchem/index.html"
+ ],
+ "纠缠光子": [
+  "qchem/index.html"
+ ],
+ "事先约好：收到 0 和收到 1 时各回答什么。点按钮切换 0 / 1。": [
+  "qchem/index.html"
+ ],
+ "Alice 收到 0 答": [
+  "qchem/index.html"
+ ],
+ "收到 1 答": [
+  "qchem/index.html"
+ ],
+ "Bob 收到 0 答": [
+  "qchem/index.html"
+ ],
+ "两人共享一对偏振纠缠的光子 |Φ⁺⟩。收到的比特决定用哪个角度去测自己的光子，测到的结果就是答案。": [
+  "qchem/index.html"
+ ],
+ "Alice 收到 0 时的角度 α₀": [
+  "qchem/index.html"
+ ],
+ "Alice 收到 1 时的角度 α₁": [
+  "qchem/index.html"
+ ],
+ "Bob 收到 0 时的角度 β₀": [
+  "qchem/index.html"
+ ],
+ "Bob 收到 1 时的角度 β₁": [
+  "qchem/index.html"
+ ],
+ "玩 1000 轮": [
+  "qchem/index.html"
+ ],
+ "左边是四种题目（x, y）各自的获胜概率，右边是四个测量角度。虚线是经典上限 75%，金线是量子上限 85.4%。": [
+  "qchem/index.html"
+ ],
+ "经典策略：每人的回答只能取决于自己收到的比特（随机策略只是确定策略的混合，不会更好）。一共 2⁴ = 16 种确定策略，逐个试会发现四道题最多答对三道，所以获胜概率不超过 75%。这就是 CHSH 不等式 |S| ≤ 2 的游戏说法，获胜概率 = 1/2 + S/8。": [
+  "qchem/index.html"
+ ],
+ "量子策略：共享 |Φ⁺⟩ = (|HH⟩ + |VV⟩)/√2，两人分别沿 α、β 测偏振，结果相同的概率是": [
+  "qchem/index.html"
+ ],
+ "P(a = b) = cos²(α − β)，P(赢) = ¼ [cos²(α₀ − β₀) + cos²(α₀ − β₁) + cos²(α₁ − β₀) + sin²(α₁ − β₁)]": [
+  "qchem/index.html"
+ ],
+ "取 α₀ = 0°、α₁ = 45°、β₀ = 22.5°、β₁ = −22.5° 时，四项都是 cos²(22.5°)，获胜概率 cos²(π/8) ≈ 85.36%，S = 2√2。Tsirelson 在 1980 年证明这是量子力学允许的最大值。纠缠不能传递信息：每个人单独看自己的结果，0 和 1 永远各占一半。": [
+  "qchem/index.html"
+ ],
+ "2015 年以来的无漏洞 Bell 实验（Hensen 等、Giustina 等、Shalm 等）同时堵住了探测效率和定域性两个漏洞。这里的“1000 轮”是按理论概率随机抽样，不是真实的光子；真实实验的可见度不到 100%，获胜率会低一些。": [
+  "qchem/index.html"
+ ],
+ "的“纠缠、Bell 不等式与退相干”一章。": [
+  "qchem/index.html"
+ ],
+ "游戏 09 · 量子算法 · 电路模型": [
+  "qchem/index.html"
+ ],
+ "每道题给你几种量子门，把它们排成电路，从初态做出目标量子态（整体相位不算）。下面的柱子是每个基矢的振幅，虚线框是目标。": [
+  "qchem/index.html"
+ ],
+ "撤销一个门": [
+  "qchem/index.html"
+ ],
+ "清空电路": [
+  "qchem/index.html"
+ ],
+ "上面是电路，从左往右执行；q0 写在基矢的最左边。下面柱子的高度是振幅的模 |c|，颜色是相位：金色为正、蓝色为负、绿色和紫色是 ±i，其余角度画成指针。": [
+  "qchem/index.html"
+ ],
+ "门的矩阵（作用在一个比特上）：": [
+  "qchem/index.html"
+ ],
+ "CNOT 在控制比特为 1 时翻转目标比特。几个常用的恒等式：HZH = X，HXH = Z，T² = S，S² = Z；H 加 CNOT 就能把两个比特纠缠起来。保真度按 |⟨目标|ψ⟩|² 计算，所以整体相位不影响对错。": [
+  "qchem/index.html"
+ ],
+ "每道题的“最少门数”是用穷举搜索在允许的门里算出来的（测试里会重新搜一遍）。这是理想的、没有噪声的态矢量模拟；真实量子计算机的门有误差，而且两比特门要比单比特门慢、错误率高，所以实际编译时数的往往是 CNOT 的个数和电路深度。": [
+  "qchem/index.html"
+ ],
+ "想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover，": [
+  "qchem/index.html"
+ ],
+ "交互实验室": [
+  "qchem/index.html"
+ ],
+ "里还有一台态矢量模拟器。": [
+  "qchem/index.html"
+ ],
+ "游戏 10 · 量子计算机 · 量子纠错": [
+  "qchem/index.html"
+ ],
+ "一个逻辑比特 |0⟩ 被编码成三个物理比特 |000⟩。每一轮，每个物理比特都可能被噪声翻转。你看不到比特本身（直接读会破坏量子信息），只能看两盏奇偶校验灯，然后决定翻转哪个比特把它救回来。": [
+  "qchem/index.html"
+ ],
+ "不纠正": [
+  "qchem/index.html",
+  "qchem/play-quantum.js"
+ ],
+ "翻转 q0": [
+  "qchem/index.html"
+ ],
+ "翻转 q1": [
+  "qchem/index.html"
+ ],
+ "翻转 q2": [
+  "qchem/index.html"
+ ],
+ "下一轮": [
+  "qchem/index.html"
+ ],
+ "让解码器自动跑 1000 轮": [
+  "qchem/index.html"
+ ],
+ "灰色虚线是不编码时的错误率 p，金色曲线是三比特码纠错后的逻辑错误率 p_L = 3p² − 2p³。点是你这几轮的实际结果。": [
+  "qchem/index.html"
+ ],
+ "两盏灯测的是相邻比特的奇偶 q0 ⊕ q1 和 q1 ⊕ q2（量子线路里用一个辅助比特和两个 CNOT 测 Z₀Z₁、Z₁Z₂），它们只告诉你“哪两个比特不一样”，不告诉你逻辑比特是 0 还是 1，所以测量不会破坏叠加态。只有一个比特翻转时，四种灯的组合各对应唯一的修法：": [
+  "qchem/index.html"
+ ],
+ "(灭, 灭) 不动；(亮, 灭) 翻 q0；(亮, 亮) 翻 q1；(灭, 亮) 翻 q2": [
+  "qchem/index.html"
+ ],
+ "两个比特同时翻转时，灯的样子和“另一个比特单独翻转”完全一样，按最可能的情况修就会修错，变成逻辑错误。每个比特独立以概率 p 翻转时，逻辑错误率是 3p²(1 − p) + p³ = 3p² − 2p³，p < 1/2 时它比 p 小：这就是纠错有用的门槛。": [
+  "qchem/index.html"
+ ],
+ "局限：这个码只防比特翻转，不防相位翻转（Z 错误）；能同时防两种错误的最小码要 5 个比特，实际硬件多用表面码。真实设备上测量本身也会出错，要重复测量多轮再解码。Google 2024 年在超导芯片上演示了表面码的逻辑错误率随码距增大而指数下降（Acharya 等，Nature 638, 920，2025 年刊出）。": [
+  "qchem/index.html"
+ ],
+ "想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构，见": [
+  "qchem/index.html"
+ ],
+ "量子纠错与容错": [
+  "qchem/index.html"
+ ],
+ "游戏 11 · 量子算法 · 振幅放大": [
+  "qchem/index.html"
+ ],
+ "N 个盒子里只有一个宝物。经典地一个个打开，平均要开一半；Grover 算法从均匀叠加出发，每次迭代把宝物的振幅转大一点，大约 (π/4)√N 次后测量几乎必中。但转过头概率会下降，你只有一次测量机会。": [
+  "qchem/index.html"
+ ],
+ "迭代一次": [
+  "qchem/index.html"
+ ],
+ "测量": [
+  "qchem/index.html"
+ ],
+ "重新藏宝": [
+  "qchem/index.html"
+ ],
+ "上面是每个盒子的振幅（真实的量子计算机看不到振幅，这是模拟器的视角），虚线是平均值：扩散算子把每个振幅绕平均值翻转。下面是测到宝物的概率 sin²((2k + 1)θ) 随迭代次数 k 的变化。": [
+  "qchem/index.html"
+ ],
+ "一次 Grover 迭代 = oracle（把宝物的振幅变号）+ 扩散（把每个振幅绕平均值翻转）。在“宝物”和“其余均匀叠加”两个方向张成的平面里，这是一次 2θ 的转动，sin θ = 1/√N：": [
+  "qchem/index.html"
+ ],
+ "k 次迭代后 P(宝物) = sin²((2k + 1)θ)，最佳 k ≈ π/(4θ) − 1/2 ≈ (π/4)√N": [
+  "qchem/index.html"
+ ],
+ "N = 4 时 θ = 30°，一次迭代就转到 90°，必中。N = 1024 时最佳是 25 次，成功率约 99.95%；经典搜索平均要查 (N + 1)/2 ≈ 512 次。Bennett、Bernstein、Brassard 和 Vazirani 1997 年证明，任何量子算法都至少要查约 √N 次，所以 Grover 的平方加速是最优的。": [
+  "qchem/index.html"
+ ],
+ "这里的 oracle 是现成的；实际问题里 oracle 要用可逆电路实现，开销常常抵消掉平方加速，在有纠错开销的硬件上尤其如此。模拟没有噪声。": [
+  "qchem/index.html"
+ ],
+ "想深入：量子嘉年华的“量子算法”展馆有": [
+  "qchem/index.html"
+ ],
+ "Grover 搜索的详解": [
+  "qchem/index.html"
+ ],
+ "，讲清楚平方加速从哪来、又为什么不是指数加速。": [
+  "qchem/index.html"
+ ],
+ "游戏 12 · 量子生物学 · 环境辅助的量子传输": [
+  "qchem/index.html"
+ ],
+ "光合作用里，激发能要在一张色素分子组成的网络里走到反应中心。完全相干的量子波动可能被能量差或相消干涉卡住；环境的噪声（退相干）太多又会把它冻住。为三张网络各找到最合适的噪声强度。": [
+  "qchem/index.html"
+ ],
+ "退相干率 γ": [
+  "qchem/index.html"
+ ],
+ "记下这个点": [
+  "qchem/index.html"
+ ],
+ "就选这个噪声": [
+  "qchem/index.html"
+ ],
+ "上面是网络：圆圈是色素位点，越高能量越高，线是耦合（虚线是负耦合），箭头是反应中心。下面是传递效率 η 和退相干率 γ 的关系（对数坐标），点是你记下的测量，过关后显示整条曲线。": [
+  "qchem/index.html"
+ ],
+ "激发在 n 个位点上的密度矩阵按 Haken–Strobl 主方程演化（ħ = 1，能量和速率以耦合 J 为单位）：": [
+  "qchem/index.html"
+ ],
+ "κ = 1 是反应中心取走激发的速率，Γ = 0.02 是激发在每个位点上衰减掉的速率，γ 只破坏位点之间的相位。效率 η = κ∫ρ_trap dt，用 ∫e^{𝓛t}dt = −𝓛⁻¹ 直接解线性方程得到，没有时间步长误差。三张网络：整齐的链在 γ = 0 时最好，噪声只会拖慢；能量台阶（0、3、6 J）要靠噪声展宽能级才能跨过去，最佳 γ 和台阶高度同一量级；菱形网络的两条路耦合符号相反，相干时从起点出发的波在终点相消，激发被锁在“暗态”里，噪声把干涉打破。": [
+  "qchem/index.html"
+ ],
+ "这就是 Mohseni 等（2008）、Plenio 与 Huelga（2008）、Rebentrost 等（2009）提出的“环境辅助的量子传输”。它是模型上的结论；真实 FMO 复合物里的长寿命振荡后来被认为主要来自振动，生理条件下电子相干对效率有多大贡献仍有争议。这里的网络是玩具模型，不是 FMO 的真实参数；用真实参数的演示在": [
+  "qchem/index.html"
+ ],
+ "量子嘉年华 · 量子生物学": [
+  "qchem/index.html"
+ ],
+ "游戏 13 · 物理疆界 · 量纲分析": [
+  "qchem/index.html"
+ ],
+ "1899 年普朗克发现，只用自然界的几个常数就能定出一套与人无关的单位。调 ħ、c、G 三个指数，让 ħᵃ cᵇ Gᶜ 的量纲和目标一样。": [
+  "qchem/index.html"
+ ],
+ "三根标尺是质量 M、长度 L、时间 T 的指数，空心圈是目标，实心点是你现在拼出来的量。三点都对齐就过关。": [
+  "qchem/index.html"
+ ],
+ "三个常数的量纲：ħ = [M L² T⁻¹]，c = [L T⁻¹]，G = [M⁻¹ L³ T⁻²]。ħᵃ cᵇ Gᶜ 的量纲是": [
+  "qchem/index.html"
+ ],
+ "这个 3 × 3 方程组的行列式是 2，不为零，所以每个目标量纲都有唯一一组指数，而且一定是整数或半整数。例如普朗克长度 ℓ_P = √(ħG/c³) ≈ 1.616 × 10⁻³⁵ m，普朗克质量 √(ħc/G) ≈ 2.176 × 10⁻⁸ kg。力 c⁴/G 和功率 c⁵/G 里根本没有 ħ，是纯经典的组合。": [
+  "qchem/index.html"
+ ],
+ "量纲分析只能定出“量级”，定不出前面的纯数因子，所以“普朗克长度上时空会变得量子化”只是一个量级估计，不是已知的物理定律。数值用 CODATA 2018 的常数，温度单位还需要玻尔兹曼常数，这里没有包括。": [
+  "qchem/index.html"
+ ],
+ "的 ħ-c-G 立方体和量子引力前沿。": [
+  "qchem/index.html"
+ ],
+ "游戏 14 · 物理疆界 · Bronstein 立方体": [
+  "qchem/index.html"
+ ],
+ "把 1/c、G、ħ 看成三个开关：关掉 1/c 表示光速当作无穷大，关掉 G 表示忽略引力，关掉 ħ 表示忽略量子。每个现象至少要打开哪几个开关才解释得了？选好后看它落在立方体的哪个角。": [
+  "qchem/index.html"
+ ],
+ "相对论": [
+  "qchem/index.html"
+ ],
+ "引力": [
+  "qchem/index.html"
+ ],
+ "量子": [
+  "qchem/index.html"
+ ],
+ "就是这个角": [
+  "qchem/index.html"
+ ],
+ "下一个现象": [
+  "qchem/index.html"
+ ],
+ "立方体的三条棱分别是 1/c、G、ħ。金色是你现在选的角，答完后绿色标出正确的角。": [
+  "qchem/index.html"
+ ],
+ "这个立方体最早来自 Bronstein 1930 年代的讨论，后来由 Zelmanov、Okun 等人整理成“cGh 立方体”。原点是牛顿力学，三条棱的另一端是狭义相对论（1/c）、牛顿引力（G）和量子力学（ħ）；三个面对角是广义相对论（1/c、G）、量子场论（1/c、ħ）和牛顿量子引力（G、ħ）；最远的角三者全开，是还没有建立的量子引力。": [
+  "qchem/index.html"
+ ],
+ "“打开”看的是要解释的那个结果里是否非出现这个常数不可。所以有的题会出乎意料：白矮星的钱德拉塞卡极限 M_Ch ∝ (ħc/G)^{3/2} / m_H² 三个常数都用到了，但它不需要量子引力，只需要相对论性的简并电子加上引力；霍金辐射也是在弯曲时空上做量子场论的半经典结果。开关的划分是粗粒度的教学工具，不是严格的分类：同一个现象往往还用到 e、k_B 等其他常数。": [
+  "qchem/index.html"
+ ],
+ "，每个角都连着图上的理论节点。": [
+  "qchem/index.html"
+ ],
  "游乐场需要启用 JavaScript。": [
   "qchem/index.html"
  ],
  "量子化学计算器 QChem Web": [
+  "qchem/index.html"
+ ],
+ "展区": [
   "qchem/index.html"
  ],
  "能级图：电子填充和 HOMO 到 LUMO 的跃迁": [
@@ -5984,17 +6404,65 @@
  "氢原子能级图和光谱": [
   "qchem/index.html"
  ],
+ "原子束穿过一串 Stern–Gerlach 分析器": [
+  "qchem/index.html"
+ ],
+ "策略": [
+  "qchem/index.html"
+ ],
+ "四种题目各自的获胜概率和测量角度": [
+  "qchem/index.html"
+ ],
+ "题目": [
+  "qchem/index.html"
+ ],
+ "可用的门": [
+  "qchem/index.html"
+ ],
+ "量子电路和各基矢的振幅": [
+  "qchem/index.html"
+ ],
+ "每个比特的翻转概率": [
+  "qchem/index.html"
+ ],
+ "三个物理比特": [
+  "qchem/index.html"
+ ],
+ "逻辑错误率和物理错误率的关系": [
+  "qchem/index.html"
+ ],
+ "盒子数 N": [
+  "qchem/index.html",
+  "qchem/play-quantum.js"
+ ],
+ "各盒子的振幅和成功概率随迭代次数的变化": [
+  "qchem/index.html"
+ ],
+ "网络": [
+  "qchem/index.html"
+ ],
+ "色素网络和传递效率随退相干率的变化": [
+  "qchem/index.html"
+ ],
+ "目标": [
+  "qchem/index.html",
+  "qchem/play.js"
+ ],
+ "质量、长度、时间三个量纲的指数": [
+  "qchem/index.html"
+ ],
+ "三个开关": [
+  "qchem/index.html"
+ ],
+ "ħ-c-G 立方体的八个角": [
+  "qchem/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "研究图谱": [
   "shared-nav.js"
- ],
- "物理疆界图": [
-  "shared-nav.js",
-  "tools/build-seo.ts",
-  "physics-realms/index.html"
  ],
  "计算化学研究导航": [
   "shared-nav.js"
@@ -7169,13 +7637,15 @@
   "quantum/biology/qb.js"
  ],
  "0（完全相干）": [
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "qchem/play-quantum.js"
  ],
  "纯退相干率 γ（ps⁻¹）": [
   "quantum/biology/qb.js"
  ],
  "传递效率 η": [
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "qchem/play-quantum.js"
  ],
  "传递效率 η(γ)": [
   "quantum/biology/qb.js"
@@ -7431,7 +7901,8 @@
   "quantum/computing/qc.js"
  ],
  "已过 {0} / {1} 关": [
-  "qchem/play.js"
+  "qchem/play.js",
+  "qchem/play-quantum.js"
  ],
  "已调出 {0} 种颜色": [
   "qchem/play.js"
@@ -7551,7 +8022,8 @@
   "qchem/play.js"
  ],
  "自由玩": [
-  "qchem/play.js"
+  "qchem/play.js",
+  "qchem/play-quantum.js"
  ],
  "{0} 元环，电荷 {1}。假设环是平面的，它是芳香的还是反芳香的？": [
   "qchem/play.js"
@@ -7638,8 +8110,511 @@
   "qchem/play.js",
   "models/models.js"
  ],
- "目标": [
-  "qchem/play.js"
+ "只有一个分析器。转动它，让 25% 的原子通过（23% 到 27% 之间）。": [
+  "qchem/play-quantum.js"
+ ],
+ "最后一个分析器朝 −z（180°），单独放在 +z 原子后面会挡住全部原子。在中间插一个分析器，让至少 24% 的原子通过。": [
+  "qchem/play-quantum.js"
+ ],
+ "还是要到达 −z，这次中间有三个分析器可以调。让至少 50% 的原子通过。": [
+  "qchem/play-quantum.js"
+ ],
+ "自由玩：五个分析器随便转，看看透过率怎么变。": [
+  "qchem/play-quantum.js"
+ ],
+ "分析器 {0} 的角度": [
+  "qchem/play-quantum.js"
+ ],
+ "透过率": [
+  "qchem/play-quantum.js"
+ ],
+ "每一步": [
+  "qchem/play-quantum.js"
+ ],
+ "过关！透过率 {0}。挡住一切的两个分析器之间多插一个，反而放过了原子：测量会改变状态。": [
+  "qchem/play-quantum.js"
+ ],
+ "过关！透过率 {0}。分得越细，越接近 100%：每一步都只转一点点。": [
+  "qchem/play-quantum.js"
+ ],
+ "过关！透过率 {0}。": [
+  "qchem/play-quantum.js"
+ ],
+ "透过率 {0}。": [
+  "qchem/play-quantum.js"
+ ],
+ "透过率 {0}，最多五个分析器均匀分开是 {1}。": [
+  "qchem/play-quantum.js"
+ ],
+ "固定": [
+  "qchem/play-quantum.js"
+ ],
+ "到达探测器 {0} / {1}": [
+  "qchem/play-quantum.js"
+ ],
+ "{0} 个原子里有 {1} 个到达探测器（理论 {2}）。": [
+  "qchem/play-quantum.js"
+ ],
+ "第 1 关": [
+  "qchem/play-quantum.js"
+ ],
+ "第 2 关": [
+  "qchem/play-quantum.js"
+ ],
+ "第 3 关": [
+  "qchem/play-quantum.js"
+ ],
+ "经典策略赢到 75%": [
+  "qchem/play-quantum.js"
+ ],
+ "用纠缠光子赢过 80%：任何经典策略都做不到": [
+  "qchem/play-quantum.js"
+ ],
+ "逼近量子上限：赢到 85.3% 以上": [
+  "qchem/play-quantum.js"
+ ],
+ "理论获胜率": [
+  "qchem/play-quantum.js"
+ ],
+ "CHSH 值 S": [
+  "qchem/play-quantum.js"
+ ],
+ "{0}（经典 |S| ≤ 2）": [
+  "qchem/play-quantum.js"
+ ],
+ "刚才 1000 轮": [
+  "qchem/play-quantum.js"
+ ],
+ "赢 {0} 轮（{1}）": [
+  "qchem/play-quantum.js"
+ ],
+ "达成目标：{0}。": [
+  "qchem/play-quantum.js"
+ ],
+ "这已经是经典策略的上限了。换成纠缠光子试试。": [
+  "qchem/play-quantum.js"
+ ],
+ "再调调：四道题里最多能保证答对三道。": [
+  "qchem/play-quantum.js"
+ ],
+ "赢了 {0}，已经超过经典上限。": [
+  "qchem/play-quantum.js"
+ ],
+ "提示：让两人的角度两两相差 22.5°，只有 x = y = 1 那一对相差 67.5°。": [
+  "qchem/play-quantum.js"
+ ],
+ "要不同": [
+  "qchem/play-quantum.js"
+ ],
+ "要相同": [
+  "qchem/play-quantum.js"
+ ],
+ "偏振方向（0° 竖直）": [
+  "qchem/play-quantum.js"
+ ],
+ "经典策略：每题要么必赢，要么必输": [
+  "qchem/play-quantum.js"
+ ],
+ "经典 75%": [
+  "qchem/play-quantum.js"
+ ],
+ "量子 85.4%": [
+  "qchem/play-quantum.js"
+ ],
+ "已达成 {0} / {1} 个目标": [
+  "qchem/play-quantum.js"
+ ],
+ "第 {0} 题：{1} 个比特，从": [
+  "qchem/play-quantum.js"
+ ],
+ "出发，做出": [
+  "qchem/play-quantum.js"
+ ],
+ "。可用的门：{0}。最少 {1} 个门。": [
+  "qchem/play-quantum.js"
+ ],
+ "完成！用了 {0} 个门，正好是最少门数。": [
+  "qchem/play-quantum.js"
+ ],
+ "完成！用了 {0} 个门；最少只要 {1} 个，再试试？": [
+  "qchem/play-quantum.js"
+ ],
+ "电路满了（最多 {0} 个门）。撤销几个再试。": [
+  "qchem/play-quantum.js"
+ ],
+ "保真度 {0}": [
+  "qchem/play-quantum.js"
+ ],
+ "第 {0} 题": [
+  "qchem/play-quantum.js"
+ ],
+ "已解 {0} / {1} 题": [
+  "qchem/play-quantum.js"
+ ],
+ "看灯，选一个修法。": [
+  "qchem/play-quantum.js"
+ ],
+ "翻转 q{0}": [
+  "qchem/play-quantum.js"
+ ],
+ "修对了，逻辑比特保住了。": [
+  "qchem/play-quantum.js"
+ ],
+ "没有错误，不动就对了。": [
+  "qchem/play-quantum.js"
+ ],
+ "按灯的提示这是最可能的修法，但这一轮有 {0} 个比特翻转了，纠错失败。这就是逻辑错误率里 3p² 那一项。": [
+  "qchem/play-quantum.js"
+ ],
+ "这一轮逻辑比特坏了。": [
+  "qchem/play-quantum.js"
+ ],
+ "这次运气好，逻辑比特没坏。": [
+  "qchem/play-quantum.js"
+ ],
+ "最可能的修法是{0}。{1}": [
+  "qchem/play-quantum.js"
+ ],
+ "解码器跑了 1000 轮：编码后逻辑错误 {0} 次，不编码的单个比特错 {1} 次（理论 {2} 和 {3}）。": [
+  "qchem/play-quantum.js"
+ ],
+ "你玩的轮数": [
+  "qchem/play-quantum.js"
+ ],
+ "编码后逻辑错误": [
+  "qchem/play-quantum.js"
+ ],
+ "不编码会错": [
+  "qchem/play-quantum.js"
+ ],
+ "理论逻辑错误率": [
+  "qchem/play-quantum.js"
+ ],
+ "{0}（不编码 {1}）": [
+  "qchem/play-quantum.js"
+ ],
+ "物理比特的翻转概率 p": [
+  "qchem/play-quantum.js"
+ ],
+ "逻辑错误率": [
+  "qchem/play-quantum.js"
+ ],
+ "门槛 p = 1/2": [
+  "qchem/play-quantum.js"
+ ],
+ "解码器 1000 轮": [
+  "qchem/play-quantum.js"
+ ],
+ "你": [
+  "qchem/play-quantum.js"
+ ],
+ "最佳连续修对 {0} 轮": [
+  "qchem/play-quantum.js"
+ ],
+ "宝物藏好了。现在是均匀叠加，每个盒子的概率都是 1/{0}。": [
+  "qchem/play-quantum.js"
+ ],
+ "已迭代": [
+  "qchem/play-quantum.js"
+ ],
+ "测到宝物的概率": [
+  "qchem/play-quantum.js"
+ ],
+ "经典平均要开": [
+  "qchem/play-quantum.js"
+ ],
+ "{0} 个盒子": [
+  "qchem/play-quantum.js"
+ ],
+ "最佳迭代次数": [
+  "qchem/play-quantum.js"
+ ],
+ "概率从 {0} 掉到了 {1}：转过头了。": [
+  "qchem/play-quantum.js"
+ ],
+ "第 {0} 次迭代：概率 {1}。": [
+  "qchem/play-quantum.js"
+ ],
+ "正好是最佳次数。": [
+  "qchem/play-quantum.js"
+ ],
+ "最佳是 {0} 次。": [
+  "qchem/play-quantum.js"
+ ],
+ "找到了！迭代 {0} 次、测量一次就打开了宝物所在的第 {1} 号盒子。{2}": [
+  "qchem/play-quantum.js"
+ ],
+ "打开的是第 {0} 号盒子，空的。宝物在第 {1} 号。迭代 {2} 次时成功率 {3}，最佳是 {4} 次。": [
+  "qchem/play-quantum.js"
+ ],
+ "宝物振幅 {0} · 其余每个 {1}": [
+  "qchem/play-quantum.js"
+ ],
+ "只画了 {0} 个盒子中的 64 个": [
+  "qchem/play-quantum.js"
+ ],
+ "迭代次数 k": [
+  "qchem/play-quantum.js"
+ ],
+ "最佳连续找到 {0} 次": [
+  "qchem/play-quantum.js"
+ ],
+ "三个能量相同的位点排成一条链。激发从最左边出发，在最右边被反应中心取走。找到让传递效率最高的退相干率（达到最高效率的 97% 就算过关）。": [
+  "qchem/play-quantum.js"
+ ],
+ "这次三个位点的能量是 0、3、6（单位是耦合 J），像一级级台阶。完全相干时，能量差让激发很难走过去。": [
+  "qchem/play-quantum.js"
+ ],
+ "两条路从起点通到终点，但其中一条路上的耦合是负的。完全相干时，两条路的波在终点相消。": [
+  "qchem/play-quantum.js"
+ ],
+ "途中损失": [
+  "qchem/play-quantum.js"
+ ],
+ "已记下": [
+  "qchem/play-quantum.js"
+ ],
+ "{0} 个点": [
+  "qchem/play-quantum.js"
+ ],
+ "这张网络里噪声只会拖慢传递，完全相干最好。": [
+  "qchem/play-quantum.js"
+ ],
+ "噪声把每个位点的能级展宽，激发才能跨过能量台阶；最佳噪声和台阶高度同一量级。": [
+  "qchem/play-quantum.js"
+ ],
+ "噪声打乱了两条路之间的相位，相消干涉被打破，被锁住的激发放出来了。": [
+  "qchem/play-quantum.js"
+ ],
+ "过关！效率 {0}。最高 {1}，在 γ ≈ {2}；没有噪声时是 {3}，噪声极大时降到 {4}（量子芝诺效应把激发冻住了）。{5}": [
+  "qchem/play-quantum.js"
+ ],
+ "提示：试试更大的噪声。": [
+  "qchem/play-quantum.js"
+ ],
+ "提示：试试更小的噪声。": [
+  "qchem/play-quantum.js"
+ ],
+ "多记几个点，看看曲线的走势。": [
+  "qchem/play-quantum.js"
+ ],
+ "效率 {0}，还不是最好。{1}": [
+  "qchem/play-quantum.js"
+ ],
+ "反应中心": [
+  "qchem/play-quantum.js"
+ ],
+ "起点": [
+  "qchem/play-quantum.js"
+ ],
+ "退相干率 γ（单位 J）": [
+  "qchem/play-quantum.js"
+ ],
+ "整齐的链": [
+  "qchem/play-quantum.js"
+ ],
+ "能量台阶": [
+  "qchem/play-quantum.js"
+ ],
+ "菱形暗态": [
+  "qchem/play-quantum.js"
+ ],
+ "已调好 {0} / {1} 张网络": [
+  "qchem/play-quantum.js"
+ ],
+ "长度": [
+  "qchem/play-quantum.js"
+ ],
+ "时间": [
+  "qchem/play-quantum.js",
+  "radar/app/app.js"
+ ],
+ "质量": [
+  "qchem/play-quantum.js"
+ ],
+ "能量": [
+  "qchem/play-quantum.js",
+  "models/models.js"
+ ],
+ "力": [
+  "qchem/play-quantum.js"
+ ],
+ "功率": [
+  "qchem/play-quantum.js"
+ ],
+ "密度": [
+  "qchem/play-quantum.js"
+ ],
+ "动量": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克长度 ℓ_P = √(ħG/c³) ≈ 1.616 × 10⁻³⁵ m，比质子半径小约 5 × 10¹⁹ 倍。": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克时间 t_P = √(ħG/c⁵) ≈ 5.39 × 10⁻⁴⁴ s，就是光走过一个普朗克长度的时间。": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克质量 m_P = √(ħc/G) ≈ 2.18 × 10⁻⁸ kg，约 22 微克，是质子质量的 1.3 × 10¹⁹ 倍。": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克能量 E_P = √(ħc⁵/G) ≈ 1.96 × 10⁹ J ≈ 1.22 × 10¹⁹ GeV，和一箱 50 升汽油燃烧放出的热差不多，只是要集中在一个粒子身上。": [
+  "qchem/play-quantum.js"
+ ],
+ "c⁴/G ≈ 1.21 × 10⁴⁴ N：里面没有 ħ，是纯经典的组合，爱因斯坦场方程右边的系数就是 8πG/c⁴。": [
+  "qchem/play-quantum.js"
+ ],
+ "c⁵/G ≈ 3.63 × 10⁵² W：也没有 ħ。第一次探测到的双黑洞并合 GW150914，引力波的峰值功率约 3.6 × 10⁴⁹ W，是它的千分之一左右。": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克密度 c⁵/(ħG²) ≈ 5.16 × 10⁹⁶ kg/m³，相当于把一个普朗克质量塞进边长一个普朗克长度的立方体。": [
+  "qchem/play-quantum.js"
+ ],
+ "普朗克动量 √(ħc³/G) = m_P c ≈ 6.5 kg·m/s，和一个以 45 m/s 投出的棒球（0.145 kg）差不多。": [
+  "qchem/play-quantum.js"
+ ],
+ "拼出一个{0}（单位 {1}）：目标量纲 {2}。": [
+  "qchem/play-quantum.js"
+ ],
+ "{0} 的指数减 ½": [
+  "qchem/play-quantum.js"
+ ],
+ "{0} 的指数加 ½": [
+  "qchem/play-quantum.js"
+ ],
+ "的指数": [
+  "qchem/play-quantum.js"
+ ],
+ "你的组合": [
+  "qchem/play-quantum.js"
+ ],
+ "量纲": [
+  "qchem/play-quantum.js"
+ ],
+ "数值（SI）": [
+  "qchem/play-quantum.js"
+ ],
+ "拼出来了！{0}": [
+  "qchem/play-quantum.js"
+ ],
+ "已拼出 {0} / {1} 个单位": [
+  "qchem/play-quantum.js"
+ ],
+ "牛顿力学": [
+  "qchem/play-quantum.js"
+ ],
+ "狭义相对论": [
+  "qchem/play-quantum.js"
+ ],
+ "牛顿引力": [
+  "qchem/play-quantum.js"
+ ],
+ "量子力学": [
+  "qchem/play-quantum.js"
+ ],
+ "广义相对论": [
+  "qchem/play-quantum.js"
+ ],
+ "量子场论": [
+  "qchem/play-quantum.js"
+ ],
+ "牛顿量子引力": [
+  "qchem/play-quantum.js"
+ ],
+ "量子引力（未建立）": [
+  "qchem/play-quantum.js"
+ ],
+ "两个台球相撞后各自的速度": [
+  "qchem/play-quantum.js"
+ ],
+ "动量守恒和能量守恒就够了：速度远小于光速，台球之间的引力可以忽略，作用量比 ħ 大几十个数量级。": [
+  "qchem/play-quantum.js"
+ ],
+ "一天两次的海洋潮汐": [
+  "qchem/play-quantum.js"
+ ],
+ "月球和太阳的引力在地球两侧的差把海水拉出两个隆起。牛顿引力就能解释，不需要相对论和量子。": [
+  "qchem/play-quantum.js"
+ ],
+ "宇宙射线里的 μ 子能飞到地面": [
+  "qchem/play-quantum.js"
+ ],
+ "μ 子的平均寿命只有 2.2 μs，不考虑相对论只能飞约 660 m；它们在约 15 km 高空产生，却大量到达地面，因为高速运动的钟变慢了。衰变本身属于弱相互作用，但“飞得到”只需要狭义相对论。": [
+  "qchem/play-quantum.js"
+ ],
+ "水星近日点每世纪多进动 43 角秒": [
+  "qchem/play-quantum.js"
+ ],
+ "扣掉其他行星的摄动后，牛顿引力还差每世纪约 43″，广义相对论正好补上（爱因斯坦，1915）。": [
+  "qchem/play-quantum.js"
+ ],
+ "GPS 卫星上的原子钟每天要校正约 38 微秒": [
+  "qchem/play-quantum.js"
+ ],
+ "卫星跑得快，狭义相对论让钟每天慢约 7 μs；卫星离地球远、引力势高，广义相对论让钟每天快约 45 μs；合起来每天快约 38 μs。两个效应都要：1/c 和 G。": [
+  "qchem/play-quantum.js"
+ ],
+ "LIGO 探测到双黑洞并合的引力波（2015）": [
+  "qchem/play-quantum.js"
+ ],
+ "引力波是时空本身的涟漪、以光速传播，是广义相对论的预言；牛顿引力是瞬时作用的，没有引力波。": [
+  "qchem/play-quantum.js"
+ ],
+ "氢原子只发出几种特定颜色的光": [
+  "qchem/play-quantum.js"
+ ],
+ "能级 Eₙ = −13.6 eV / n² 来自非相对论的薛定谔方程。更细的精细结构才需要相对论（1/c），那是下一层的修正。": [
+  "qchem/play-quantum.js"
+ ],
+ "扫描隧道显微镜“看”到单个原子": [
+  "qchem/play-quantum.js"
+ ],
+ "针尖和样品之间隔着真空势垒，电子靠隧穿通过，电流随距离指数衰减，所以对原子级的起伏极其敏感。非相对论量子力学就够了。": [
+  "qchem/play-quantum.js"
+ ],
+ "正电子和电子湮灭成两个 511 keV 光子（PET 成像）": [
+  "qchem/play-quantum.js"
+ ],
+ "粒子的产生和湮灭要用量子场论：511 keV 就是电子的 mc²，要 1/c；光子是量子化的，要 ħ。": [
+  "qchem/play-quantum.js"
+ ],
+ "金是黄色的，银却是银白色": [
+  "qchem/play-quantum.js"
+ ],
+ "金的原子序数大，1s 电子的速度约为光速的 58%。相对论效应让 6s 轨道收缩、5d 轨道升高，5d → 6s 的吸收移到蓝光附近，反射回来的光就偏黄。要用相对论性的量子化学（1/c 与 ħ）。": [
+  "qchem/play-quantum.js"
+ ],
+ "中子干涉仪倾斜一个角度，干涉条纹就移动（COW 实验，1975）": [
+  "qchem/play-quantum.js"
+ ],
+ "Colella、Overhauser 和 Werner 让中子的两条路径处在不同高度，引力势能差给两路波函数带来相位差。同时用到引力（G，这里是地球的引力）和 ħ；中子很慢，不需要相对论。": [
+  "qchem/play-quantum.js"
+ ],
+ "中子在镜面上方“弹跳”的高度是量子化的（Nesvizhevsky 等，2002）": [
+  "qchem/play-quantum.js"
+ ],
+ "超冷中子落在水平镜面上，在地球引力场里形成分立的量子态，最低态的经典转折点高约 14 μm。引力加量子，不需要相对论。": [
+  "qchem/play-quantum.js"
+ ],
+ "白矮星的质量有上限，约 1.4 个太阳质量": [
+  "qchem/play-quantum.js"
+ ],
+ "电子简并压（ħ）撑住引力（G）；质量越大电子越接近光速（1/c），压强变软、撑不住了。钱德拉塞卡极限 M_Ch ∝ (ħc/G)^{3/2} / m_H² 三个常数都要，但它不需要量子化的引力。": [
+  "qchem/play-quantum.js"
+ ],
+ "黑洞会因为霍金辐射慢慢蒸发（尚未观测到）": [
+  "qchem/play-quantum.js"
+ ],
+ "在弯曲时空（G 与 1/c）上做量子场论（ħ），温度 T = ħc³ / (8πGMk_B)。这是半经典计算，不是完整的量子引力。太阳质量黑洞的温度只有约 60 nK，远低于宇宙微波背景，所以至今没有观测到。": [
+  "qchem/play-quantum.js"
+ ],
+ "现象": [
+  "qchem/play-quantum.js"
+ ],
+ "对了：{0}。{1}": [
+  "qchem/play-quantum.js"
+ ],
+ "应该是：{0}。{1}": [
+  "qchem/play-quantum.js"
  ],
  "本期": [
   "digest/digest.js"
@@ -9297,9 +10272,6 @@
  "原子": [
   "models/models.js",
   "ai/ai.js"
- ],
- "能量": [
-  "models/models.js"
  ],
  "，最大受力 {0} eV/Å。": [
   "models/models.js"
@@ -11168,9 +12140,6 @@
  "{0}搜索": [
   "radar/app/app.js"
  ],
- "时间": [
-  "radar/app/app.js"
- ],
  "范围": [
   "radar/app/app.js"
  ],
@@ -12033,7 +13002,7 @@
  "MolAstria 游乐场": [
   "tools/build-seo.ts"
  ],
- "用真实的物理公式玩量子化学的六个小游戏（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。": [
+ "用真实的物理公式玩量子世界的十四个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [

@@ -516,7 +516,7 @@ check('playground: overview, then each game plays by its rules (configuration, s
   const p = await open();
   await go(p, '/qchem/index.html');
   assert.equal((await text(p, '.cr-links a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
-  assert.equal(await p.locator('.play-card').count(), 7);
+  assert.equal(await p.locator('.play-card').count(), 15, 'calculator + 14 games in three zones');
   assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
   // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
   await p.click('#play-tabs a[data-view=config]');
@@ -571,9 +571,77 @@ check('playground: overview, then each game plays by its rules (configuration, s
   await finish(p);
 });
 
+check('playground zones 2 and 3: spin filters, Bell game, circuits, error correction, Grover, noise-assisted transfer, Planck units, cube', async () => {
+  const p = await open();
+  const best = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-play') || '{}'));
+  const slide = (sel, v) => p.$eval(sel, (r, val) => { r.value = String(val); r.dispatchEvent(new Event('input')); }, v);
+  // 07 Stern–Gerlach: level 2, a +x analyser between +z and −z passes 1/4
+  await go(p, '/qchem/index.html#play-sg');
+  await p.click('#sg-levels button >> nth=1');
+  assert.match(await text(p, '#sg-read'), /0%/);
+  await slide('#sg-sliders input', 90);
+  assert.match(await text(p, '#sg-msg'), /过关！透过率 25/);
+  assert.deepEqual((await best()).sg, ['paradox']);
+  await p.click('#sg-fire');
+  await p.waitForFunction(() => /个到达探测器/.test(document.getElementById('sg-msg').textContent), null, { timeout: 10000 });
+  // 08 CHSH: the classical start is 25%; the optimal angles reach the Tsirelson bound and all quantum goals
+  await p.click('#play-tabs a[data-view=bell]');
+  await p.waitForSelector('#bell-read dd');
+  assert.match(await text(p, '#bell-read'), /25%/);
+  await p.click('#bell-mode button[data-m=q]');
+  for (const [k, v] of [['a0', 0], ['a1', 45], ['b0', 22.5], ['b1', -22.5]]) await slide(`#bell-${k}`, v);
+  await p.click('#bell-play');
+  assert.match(await text(p, '#bell-read'), /85\.4%|85\.36%/);
+  assert.deepEqual([...(await best()).bell].sort(), ['q80', 'q85']);
+  // 09 circuits: puzzle 4 (Bell state) in two gates is optimal; the overview counts it
+  await p.click('#play-tabs a[data-view=circuit]');
+  await p.click('#cir-levels button >> nth=3');
+  await p.click('#cir-pal button:has-text("H") >> nth=0');
+  await p.click('#cir-pal button[data-g=CNOT] >> nth=0');
+  assert.match(await text(p, '#cir-msg'), /正好是最少门数/);
+  assert.equal((await best()).circuit.bell, 2);
+  // 10 error correction: the decoder's choice is marked; the automatic run reports 1000 rounds
+  await p.click('#play-tabs a[data-view=qec]');
+  await p.click('#qec-choices .play-choice >> nth=0');
+  assert.equal(await p.locator('#qec-choices [data-mark=right]').count(), 1);
+  await p.click('#qec-auto');
+  assert.match(await text(p, '#qec-msg'), /解码器跑了 1000 轮/);
+  // 11 Grover: N = 4, one iteration makes the find certain
+  await p.click('#play-tabs a[data-view=grover]');
+  await p.click('#gr-sizes button >> nth=0');
+  await p.click('#gr-step');
+  assert.match(await text(p, '#gr-read'), /100\.00%/);
+  await p.click('#gr-measure');
+  assert.equal(await p.$eval('#gr-msg', (e) => e.dataset.tone), 'ok');
+  // 12 noise-assisted transfer: the dark diamond fails without noise, passes at its optimum
+  await p.click('#play-tabs a[data-view=enaqt]');
+  await p.click('#en-nets button >> nth=2');
+  assert.match(await text(p, '#en-read'), /传递效率 η0%/);
+  const s = await p.evaluate(() => { const Q = window.MOLASTRIA_PLAYQ, c = Q.enaqtCurve(Q.networks[2]); return c.indexOf(Math.max(...c)); });
+  await slide('#en-g', s);
+  await p.click('#en-lock');
+  assert.match(await text(p, '#en-msg'), /过关/);
+  // 13 Planck units: the answer for length is ħ^(1/2) c^(−3/2) G^(1/2)
+  await p.click('#play-tabs a[data-view=planck]');
+  await p.click('#pl-targets button >> nth=0');
+  for (const [i, n] of [[0, 1], [2, 1]]) for (let k = 0; k < n; k++) await p.click(`#pl-steps .pl-step >> nth=${i} >> button >> nth=1`);
+  for (let k = 0; k < 3; k++) await p.click('#pl-steps .pl-step >> nth=1 >> button >> nth=0');
+  assert.match(await text(p, '#pl-msg'), /普朗克长度/);
+  // 14 cube: answering marks the right corner and moves the streak
+  await p.click('#play-tabs a[data-view=cube]');
+  await p.click('#cube-go');
+  assert.match(await text(p, '[data-score=cube]'), /连续答对 [01]/);
+  assert.equal(await p.isDisabled('#cube-go'), true);
+  // overview shows progress for the new zones
+  await p.click('#play-tabs a[data-view=home]');
+  assert.match(await text(p, '[data-best=circuit]'), /已解 1 \/ 10 题/);
+  assert.match(await text(p, '[data-best=bell]'), /已达成 2 \/ 3 个目标/);
+  await finish(p);
+});
+
 check('playground in English: games and canvas labels are translated, no Chinese left', async () => {
   const p = await open();
-  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital']) {
+  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube']) {
     await go(p, '/qchem/index.html?lang=en' + v);
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     const left = await p.evaluate(() => [...document.querySelectorAll('main .play-view:not([hidden]), #play-tabs')].map((e) => e.innerText).join('\n').match(/[^\n]*[㐀-鿿][^\n]*/g));

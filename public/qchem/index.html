@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="MolAstria 游乐场：用真实的物理公式玩量子化学。盒中粒子调颜色、猜氢原子轨道、电子排布、量子隧穿闯关、Hückel 芳香性、氢原子光谱寻线六个小游戏，以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。">
+  <meta name="description" content="MolAstria 游乐场：用真实的物理公式玩量子世界。十四个小游戏分三个展区：量子化学（盒中粒子、氢原子轨道、电子排布、隧穿、芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助能量传递），物理疆界（普朗克单位、ħ-c-G 立方体）；以及在浏览器里运行的量子化学计算器 QChem Web。">
   <meta name="theme-color" content="#173f34">
-  <title>游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria</title>
+  <title>游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/qchem/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MolAstria · 计算化学研究导航">
-  <meta property="og:title" content="游乐场 · 量子化学小游戏与浏览器里的量子化学计算器 · MolAstria">
-  <meta property="og:description" content="MolAstria 游乐场：用真实的物理公式玩量子化学。盒中粒子调颜色、猜氢原子轨道、电子排布、量子隧穿闯关、Hückel 芳香性、氢原子光谱寻线六个小游戏，以及在浏览器里运行的量子化学计算器 QChem Web（HF/DFT、CCSD(T)、VQE 与量子点，与 PySCF 逐项对拍）。">
+  <meta property="og:title" content="游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria">
+  <meta property="og:description" content="MolAstria 游乐场：用真实的物理公式玩量子世界。十四个小游戏分三个展区：量子化学（盒中粒子、氢原子轨道、电子排布、隧穿、芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助能量传递），物理疆界（普朗克单位、ħ-c-G 立方体）；以及在浏览器里运行的量子化学计算器 QChem Web。">
   <meta property="og:url" content="https://molastria.com/qchem/">
   <meta property="og:image" content="https://molastria.com/og.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -26,10 +26,13 @@
   <link rel="stylesheet" href="play.css">
   <script src="../shared-nav.js" defer></script>
   <script src="play-models.js" defer></script>
+  <script src="play-quantum-models.js" defer></script>
+  <script src="play-quantum.js" defer></script>
   <script src="play.js" defer></script>
 </head>
 <body data-section="qchem" class="qchem-page" data-view="home">
-<!-- 游乐场：六个小游戏（play.js，物理在 play-models.js，tools/play-test.mjs 测）和量子化学计算器 QChem Web。
+<!-- 游乐场：十四个小游戏，分三个展区。01–06 在 play.js（物理在 play-models.js），07–14（量子嘉年华与物理疆界）在 play-quantum.js（数学在 play-quantum-models.js），
+     都由 tools/play-test.mjs 测；以及量子化学计算器 QChem Web。
      计算器来自 https://github.com/FelixJiashengFu/qchem-web，由 tools/vendor-qchem.ts 复制到 app/，在访问者的浏览器里计算，
      自带中英文词典，界面只有深色一种。地址 #play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器（如 #qd）。 -->
 <a class="skip" href="#play-main">跳到游乐场内容</a>
@@ -42,6 +45,14 @@
   <a href="#play-tunnel" data-view="tunnel">量子隧穿闯关</a>
   <a href="#play-ring" data-view="ring">芳香性判断</a>
   <a href="#play-lines" data-view="lines">氢原子光谱</a>
+  <a href="#play-sg" data-view="sg" class="play-tab-zone">自旋过滤</a>
+  <a href="#play-bell" data-view="bell">贝尔游戏</a>
+  <a href="#play-circuit" data-view="circuit">电路拼图</a>
+  <a href="#play-qec" data-view="qec">纠错救援</a>
+  <a href="#play-grover" data-view="grover">Grover 寻宝</a>
+  <a href="#play-enaqt" data-view="enaqt">噪声助推</a>
+  <a href="#play-planck" data-view="planck" class="play-tab-zone">普朗克工坊</a>
+  <a href="#play-cube" data-view="cube">立方体分拣</a>
 </nav>
 <div class="qchem-box" id="play-lab" hidden><iframe class="qchem-frame" id="qchem-frame" title="量子化学计算器 QChem Web" data-display-frame></iframe></div>
 
@@ -51,8 +62,15 @@
     <header class="play-hero">
       <p class="eyebrow">MOLASTRIA · PLAYGROUND</p>
       <h1 id="play-h1">游乐场<span lang="en" translate="no">Playground</span></h1>
-      <p class="play-lead">用真实的物理公式玩量子化学。六个小游戏各练一个概念，每个游戏背后的公式都写在“原理与局限”里，并用已知结果测试过；另有一个在浏览器里运行的量子化学计算器。</p>
+      <p class="play-lead">用真实的物理公式玩量子世界。三个展区十四个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。</p>
+      <nav class="play-zones" aria-label="展区">
+        <a href="#zone-chem"><b>化学馆</b><span>01–06 · 量子化学</span></a>
+        <a href="#zone-quantum"><b>量子嘉年华分会场</b><span>07–12 · 物理、计算机、算法、生物</span></a>
+        <a href="#zone-realms"><b>物理疆界</b><span>13–14 · ħ、c、G</span></a>
+      </nav>
     </header>
+    <h2 class="play-zone-h" id="zone-chem"><span>展区一</span>化学馆</h2>
+    <p class="play-zone-lead">从盒中粒子到氢原子光谱，六个量子化学的基本功。</p>
     <div class="play-cards">
       <a class="play-card play-card-lab" href="#lab"><span class="play-card-n">QCHEM WEB</span><h2>量子化学计算器</h2>
         <p>从零写成的量子化学程序：HF/DFT、MP2、CCSD(T)、FCI、激发态、几何优化与振动频率，Jordan–Wigner 映射、VQE 和量子相位估计，以及胶体量子点、石墨烯量子点和硅纳米团簇。全部在你的浏览器里计算，每个模块都与 PySCF 逐项对拍。</p>
@@ -76,6 +94,42 @@
         <p>给你一条谱线的波长，找出是哪两个能级之间的跃迁发出的。</p>
         <span class="play-best" data-best="lines"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
     </div>
+
+    <h2 class="play-zone-h" id="zone-quantum"><span>展区二</span>量子嘉年华分会场</h2>
+    <p class="play-zone-lead">四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，再看噪声怎样帮光合作用传递能量。玩完想深入，卡片下方有直通展馆的链接。</p>
+    <div class="play-cards">
+      <a class="play-card play-card-q" href="#play-sg"><span class="play-card-n">07</span><span class="play-card-tag">量子物理</span><h2>Stern–Gerlach 自旋过滤</h2>
+        <p>一串磁场分析器，每个只放行一种自旋。挡住所有原子的那一对，中间多插一个反而能放过去四分之一。</p>
+        <span class="play-best" data-best="sg"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-bell"><span class="play-card-n">08</span><span class="play-card-tag">量子物理</span><h2>CHSH 贝尔游戏</h2>
+        <p>两个不能通信的玩家合作答题。任何经典策略最多赢 75%，共享一对纠缠光子、调好测量角度能赢到 85%。</p>
+        <span class="play-best" data-best="bell"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-circuit"><span class="play-card-n">09</span><span class="play-card-tag">量子算法</span><h2>量子电路拼图</h2>
+        <p>只给几种门，拼出指定的量子态：没有 X 门怎么翻转比特，两个门做出 Bell 态，三个比特的 GHZ 态。十道题，看谁用的门最少。</p>
+        <span class="play-best" data-best="circuit"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-qec"><span class="play-card-n">10</span><span class="play-card-tag">量子计算机</span><h2>纠错救援</h2>
+        <p>三个物理比特守一个逻辑比特。只看两盏奇偶校验灯，判断该翻哪个比特，看编码能把错误率压低多少。</p>
+        <span class="play-best" data-best="qec"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-grover"><span class="play-card-n">11</span><span class="play-card-tag">量子算法</span><h2>Grover 寻宝</h2>
+        <p>上千个盒子里藏着一个宝物。每迭代一次，宝物的振幅涨一点；挑准时机测量，转过头概率又会掉下来。</p>
+        <span class="play-best" data-best="grover"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-enaqt"><span class="play-card-n">12</span><span class="play-card-tag">量子生物学</span><h2>噪声助推能量传递</h2>
+        <p>激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。</p>
+        <span class="play-best" data-best="enaqt"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+    </div>
+    <p class="play-zone-links">展馆：<a href="../quantum/physics/index.html">量子物理</a> · <a href="../quantum/computing/index.html">量子计算机</a> · <a href="../quantum/algorithms/index.html">量子算法</a> · <a href="../quantum/biology/index.html">量子生物学</a> · <a href="../quantum/index.html">量子嘉年华总入口</a></p>
+
+    <h2 class="play-zone-h" id="zone-realms"><span>展区三</span>物理疆界</h2>
+    <p class="play-zone-lead">ħ、c、G 三个常数划出了物理学的版图。先用它们拼出普朗克尺度，再把真实的现象分到立方体的八个角上。</p>
+    <div class="play-cards">
+      <a class="play-card play-card-r" href="#play-planck"><span class="play-card-n">13</span><span class="play-card-tag">物理疆界图</span><h2>普朗克单位工坊</h2>
+        <p>只用 ħ、c、G 三个常数，拼出长度、时间、质量、能量……有的量根本用不着 ħ。</p>
+        <span class="play-best" data-best="planck"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-r" href="#play-cube"><span class="play-card-n">14</span><span class="play-card-tag">物理疆界图</span><h2>ħ-c-G 立方体分拣</h2>
+        <p>潮汐、GPS 校时、金的颜色、白矮星的质量上限：解释它们，必须打开哪几个常数？</p>
+        <span class="play-best" data-best="cube"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+    </div>
+    <p class="play-zone-links">地图：<a href="../physics-realms/index.html">物理疆界图</a>（理论、问题与 ħ-c-G 立方体）</p>
     <p class="play-honest">这些是教学模型，各有简化，每个游戏的“原理与局限”写明了它省略了什么。成绩只保存在当前浏览器里。</p>
   </section>
 
@@ -224,6 +278,223 @@
     <details class="play-how"><summary>原理与局限</summary><div>
       <p>氢原子发出的光子波长满足里德伯公式：</p><span class="play-formula">1/λ = R_H (1/n₁² − 1/n₂²)，R_H = 1.0967758 × 10⁷ m⁻¹</span>
       <p>n₁ = 1 是莱曼系（紫外），n₁ = 2 是巴耳末系（其中 4 条在可见光区），n₁ = 3 是帕邢系（红外）。R_H 已经按氢原子的约化质量修正，给出的是真空中的波长；空气中的波长短约 0.03%，所以手册里的 Hα 常写 656.28 nm，这里是 656.47 nm。精细结构、兰姆位移等更小的分裂没有考虑。</p>
+    </div></details>
+  </section>
+
+  <!-- 7 Stern–Gerlach -->
+  <section class="play-view" data-view="sg" hidden aria-labelledby="sg-h">
+    <header class="play-head"><p class="eyebrow">游戏 07 · 量子物理 · 自旋 ½ 的测量</p><h2 id="sg-h">Stern–Gerlach 自旋过滤</h2>
+      <p class="play-lead">不均匀磁场把银原子束按自旋分成两束。每个分析器只放行“+”那一束。原子以 +z 自旋从左边进入，转动中间的分析器，完成三个关卡。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="sg-levels" role="group" aria-label="关卡"></div>
+        <p class="play-task" id="sg-task"></p>
+        <div id="sg-sliders" class="play-sliders"></div>
+        <dl class="play-read" id="sg-read"></dl>
+        <p class="play-msg" id="sg-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="sg-fire">发射 200 个原子</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="sg-cv" width="720" height="380" role="img" aria-label="原子束穿过一串 Stern–Gerlach 分析器"></canvas>
+        <figcaption>每个方框是一个分析器，圆里的箭头是它测量的方向（0° 是 +z，180° 是 −z）。束的粗细是剩下的原子比例，被挡掉的“−”束从下方离开。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>自旋 ½ 的原子处在 |+θ⟩（沿 xz 平面里 θ 方向朝上）时，沿 θ′ 方向测量得到“+”的概率是</p>
+      <span class="play-formula">P(+θ′ | +θ) = |⟨+θ′|+θ⟩|² = cos²((θ′ − θ)/2)</span>
+      <p>通过分析器以后，原子就处在 |+θ′⟩，忘记了原来的方向。所以 +z 和 −z 之间相差 180°，透过率 cos²(90°) = 0；中间插一个 90°（+x）的分析器，透过率变成 cos²(45°) × cos²(45°) = 1/4。把 180° 均匀分成 m + 1 步，透过率是 cos²⁽ᵐ⁺¹⁾(π/(2(m + 1)))，m 越大越接近 1，这和量子芝诺效应是同一个数学。</p>
+      <p>Stern 和 Gerlach 1922 年用银原子做了第一个实验，串联分析器的思想实验来自 Feynman 讲义和 Sakurai 的教科书。这里忽略了原子束的速度分布和磁场的不均匀程度，把每个分析器看成理想的投影测量；角度只取 xz 平面。</p>
+      <p>想深入：<a href="../quantum/physics/index.html">量子嘉年华 · 量子物理</a>里有“算符与测量”和“角动量与自旋”两章。</p>
+    </div></details>
+  </section>
+
+  <!-- 8 CHSH -->
+  <section class="play-view" data-view="bell" hidden aria-labelledby="bell-h">
+    <header class="play-head"><p class="eyebrow">游戏 08 · 量子物理 · 纠缠与非定域性</p><h2 id="bell-h">CHSH 贝尔游戏</h2>
+      <p class="play-lead">裁判随机给 Alice 一个比特 x、给 Bob 一个比特 y，两人不能通信，各回答一个比特 a、b。只有 x 和 y 都是 1 时要求答案不同，其余情况要求答案相同。先用经典策略试试，再换成纠缠光子。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-particle" id="bell-mode" role="group" aria-label="策略"><button type="button" data-m="c">经典策略</button><button type="button" data-m="q">纠缠光子</button></div>
+        <div id="bell-classical" class="bell-table">
+          <p class="play-task">事先约好：收到 0 和收到 1 时各回答什么。点按钮切换 0 / 1。</p>
+          <div class="bell-row"><span>Alice 收到 0 答</span><button type="button" data-k="a0">0</button><span>收到 1 答</span><button type="button" data-k="a1">0</button></div>
+          <div class="bell-row"><span>Bob 收到 0 答</span><button type="button" data-k="b0">0</button><span>收到 1 答</span><button type="button" data-k="b1">0</button></div>
+        </div>
+        <div id="bell-quantum" class="play-sliders" hidden>
+          <p class="play-task">两人共享一对偏振纠缠的光子 |Φ⁺⟩。收到的比特决定用哪个角度去测自己的光子，测到的结果就是答案。</p>
+          <label>Alice 收到 0 时的角度 α₀<span><input type="range" id="bell-a0" min="-90" max="90" step="0.5" value="0"><output id="bell-a0-v"></output></span></label>
+          <label>Alice 收到 1 时的角度 α₁<span><input type="range" id="bell-a1" min="-90" max="90" step="0.5" value="0"><output id="bell-a1-v"></output></span></label>
+          <label>Bob 收到 0 时的角度 β₀<span><input type="range" id="bell-b0" min="-90" max="90" step="0.5" value="0"><output id="bell-b0-v"></output></span></label>
+          <label>Bob 收到 1 时的角度 β₁<span><input type="range" id="bell-b1" min="-90" max="90" step="0.5" value="0"><output id="bell-b1-v"></output></span></label>
+        </div>
+        <dl class="play-read" id="bell-read"></dl>
+        <ul class="play-goals" id="bell-goals"></ul>
+        <p class="play-msg" id="bell-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="bell-play">玩 1000 轮</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="bell-cv" width="720" height="420" role="img" aria-label="四种题目各自的获胜概率和测量角度"></canvas>
+        <figcaption>左边是四种题目（x, y）各自的获胜概率，右边是四个测量角度。虚线是经典上限 75%，金线是量子上限 85.4%。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>经典策略：每人的回答只能取决于自己收到的比特（随机策略只是确定策略的混合，不会更好）。一共 2⁴ = 16 种确定策略，逐个试会发现四道题最多答对三道，所以获胜概率不超过 75%。这就是 CHSH 不等式 |S| ≤ 2 的游戏说法，获胜概率 = 1/2 + S/8。</p>
+      <p>量子策略：共享 |Φ⁺⟩ = (|HH⟩ + |VV⟩)/√2，两人分别沿 α、β 测偏振，结果相同的概率是</p>
+      <span class="play-formula">P(a = b) = cos²(α − β)，P(赢) = ¼ [cos²(α₀ − β₀) + cos²(α₀ − β₁) + cos²(α₁ − β₀) + sin²(α₁ − β₁)]</span>
+      <p>取 α₀ = 0°、α₁ = 45°、β₀ = 22.5°、β₁ = −22.5° 时，四项都是 cos²(22.5°)，获胜概率 cos²(π/8) ≈ 85.36%，S = 2√2。Tsirelson 在 1980 年证明这是量子力学允许的最大值。纠缠不能传递信息：每个人单独看自己的结果，0 和 1 永远各占一半。</p>
+      <p>2015 年以来的无漏洞 Bell 实验（Hensen 等、Giustina 等、Shalm 等）同时堵住了探测效率和定域性两个漏洞。这里的“1000 轮”是按理论概率随机抽样，不是真实的光子；真实实验的可见度不到 100%，获胜率会低一些。</p>
+      <p>想深入：<a href="../quantum/physics/index.html">量子嘉年华 · 量子物理</a>的“纠缠、Bell 不等式与退相干”一章。</p>
+    </div></details>
+  </section>
+
+  <!-- 9 量子电路拼图 -->
+  <section class="play-view" data-view="circuit" hidden aria-labelledby="cir-h">
+    <header class="play-head"><p class="eyebrow">游戏 09 · 量子算法 · 电路模型</p><h2 id="cir-h">量子电路拼图</h2>
+      <p class="play-lead">每道题给你几种量子门，把它们排成电路，从初态做出目标量子态（整体相位不算）。下面的柱子是每个基矢的振幅，虚线框是目标。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="cir-levels" role="group" aria-label="题目"></div>
+        <p class="play-task" id="cir-task"></p>
+        <div class="cir-pal" id="cir-pal" role="group" aria-label="可用的门"></div>
+        <p class="play-msg" id="cir-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button" id="cir-undo">撤销一个门</button><button type="button" class="button" id="cir-clear">清空电路</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="cir-cv" width="720" height="460" role="img" aria-label="量子电路和各基矢的振幅"></canvas>
+        <figcaption>上面是电路，从左往右执行；q0 写在基矢的最左边。下面柱子的高度是振幅的模 |c|，颜色是相位：金色为正、蓝色为负、绿色和紫色是 ±i，其余角度画成指针。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>门的矩阵（作用在一个比特上）：</p>
+      <span class="play-formula">H = (1/√2)[[1, 1], [1, −1]]，X = [[0, 1], [1, 0]]，Z = [[1, 0], [0, −1]]，S = diag(1, i)，T = diag(1, e^{iπ/4})</span>
+      <p>CNOT 在控制比特为 1 时翻转目标比特。几个常用的恒等式：HZH = X，HXH = Z，T² = S，S² = Z；H 加 CNOT 就能把两个比特纠缠起来。保真度按 |⟨目标|ψ⟩|² 计算，所以整体相位不影响对错。</p>
+      <p>每道题的“最少门数”是用穷举搜索在允许的门里算出来的（测试里会重新搜一遍）。这是理想的、没有噪声的态矢量模拟；真实量子计算机的门有误差，而且两比特门要比单比特门慢、错误率高，所以实际编译时数的往往是 CNOT 的个数和电路深度。</p>
+      <p>想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover，<a href="../quantum/algorithms/index.html#qa-lab">交互实验室</a>里还有一台态矢量模拟器。</p>
+    </div></details>
+  </section>
+
+  <!-- 10 纠错救援 -->
+  <section class="play-view" data-view="qec" hidden aria-labelledby="qec-h">
+    <header class="play-head"><p class="eyebrow">游戏 10 · 量子计算机 · 量子纠错</p><h2 id="qec-h">纠错救援</h2>
+      <p class="play-lead">一个逻辑比特 |0⟩ 被编码成三个物理比特 |000⟩。每一轮，每个物理比特都可能被噪声翻转。你看不到比特本身（直接读会破坏量子信息），只能看两盏奇偶校验灯，然后决定翻转哪个比特把它救回来。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-particle" id="qec-p" role="group" aria-label="每个比特的翻转概率"><button type="button" data-p="0.05">p = 5%</button><button type="button" data-p="0.15">p = 15%</button><button type="button" data-p="0.3">p = 30%</button></div>
+        <div class="qec-board">
+          <div class="qec-qubits" id="qec-qubits" aria-label="三个物理比特"></div>
+          <div class="qec-lamps"><span class="qec-lamp" id="qec-s1"><i></i>q0 ⊕ q1</span><span class="qec-lamp" id="qec-s2"><i></i>q1 ⊕ q2</span></div>
+        </div>
+        <div class="play-choices" id="qec-choices">
+          <button type="button" class="play-choice" data-fix="-1">不纠正</button><button type="button" class="play-choice" data-fix="0">翻转 q0</button>
+          <button type="button" class="play-choice" data-fix="1">翻转 q1</button><button type="button" class="play-choice" data-fix="2">翻转 q2</button>
+        </div>
+        <p class="play-msg" id="qec-msg" aria-live="polite"></p>
+        <dl class="play-read" id="qec-read"></dl>
+        <div class="play-btns"><button type="button" class="button primary" id="qec-next">下一轮</button><button type="button" class="button" id="qec-auto">让解码器自动跑 1000 轮</button></div>
+        <p class="play-score" data-score="qec"></p>
+      </div>
+      <figure class="play-fig"><canvas id="qec-cv" width="720" height="420" role="img" aria-label="逻辑错误率和物理错误率的关系"></canvas>
+        <figcaption>灰色虚线是不编码时的错误率 p，金色曲线是三比特码纠错后的逻辑错误率 p_L = 3p² − 2p³。点是你这几轮的实际结果。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>两盏灯测的是相邻比特的奇偶 q0 ⊕ q1 和 q1 ⊕ q2（量子线路里用一个辅助比特和两个 CNOT 测 Z₀Z₁、Z₁Z₂），它们只告诉你“哪两个比特不一样”，不告诉你逻辑比特是 0 还是 1，所以测量不会破坏叠加态。只有一个比特翻转时，四种灯的组合各对应唯一的修法：</p>
+      <span class="play-formula">(灭, 灭) 不动；(亮, 灭) 翻 q0；(亮, 亮) 翻 q1；(灭, 亮) 翻 q2</span>
+      <p>两个比特同时翻转时，灯的样子和“另一个比特单独翻转”完全一样，按最可能的情况修就会修错，变成逻辑错误。每个比特独立以概率 p 翻转时，逻辑错误率是 3p²(1 − p) + p³ = 3p² − 2p³，p &lt; 1/2 时它比 p 小：这就是纠错有用的门槛。</p>
+      <p>局限：这个码只防比特翻转，不防相位翻转（Z 错误）；能同时防两种错误的最小码要 5 个比特，实际硬件多用表面码。真实设备上测量本身也会出错，要重复测量多轮再解码。Google 2024 年在超导芯片上演示了表面码的逻辑错误率随码距增大而指数下降（Acharya 等，Nature 638, 920，2025 年刊出）。</p>
+      <p>想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构，见<a href="../quantum/computing/index.html#s-qec">量子纠错与容错</a>一章。</p>
+    </div></details>
+  </section>
+
+  <!-- 11 Grover -->
+  <section class="play-view" data-view="grover" hidden aria-labelledby="gr-h">
+    <header class="play-head"><p class="eyebrow">游戏 11 · 量子算法 · 振幅放大</p><h2 id="gr-h">Grover 寻宝</h2>
+      <p class="play-lead">N 个盒子里只有一个宝物。经典地一个个打开，平均要开一半；Grover 算法从均匀叠加出发，每次迭代把宝物的振幅转大一点，大约 (π/4)√N 次后测量几乎必中。但转过头概率会下降，你只有一次测量机会。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="gr-sizes" role="group" aria-label="盒子数 N"></div>
+        <dl class="play-read" id="gr-read"></dl>
+        <p class="play-msg" id="gr-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button" id="gr-step">迭代一次</button><button type="button" class="button primary" id="gr-measure">测量</button><button type="button" class="button" id="gr-reset">重新藏宝</button></div>
+        <p class="play-score" data-score="grover"></p>
+      </div>
+      <figure class="play-fig"><canvas id="gr-cv" width="720" height="460" role="img" aria-label="各盒子的振幅和成功概率随迭代次数的变化"></canvas>
+        <figcaption>上面是每个盒子的振幅（真实的量子计算机看不到振幅，这是模拟器的视角），虚线是平均值：扩散算子把每个振幅绕平均值翻转。下面是测到宝物的概率 sin²((2k + 1)θ) 随迭代次数 k 的变化。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>一次 Grover 迭代 = oracle（把宝物的振幅变号）+ 扩散（把每个振幅绕平均值翻转）。在“宝物”和“其余均匀叠加”两个方向张成的平面里，这是一次 2θ 的转动，sin θ = 1/√N：</p>
+      <span class="play-formula">k 次迭代后 P(宝物) = sin²((2k + 1)θ)，最佳 k ≈ π/(4θ) − 1/2 ≈ (π/4)√N</span>
+      <p>N = 4 时 θ = 30°，一次迭代就转到 90°，必中。N = 1024 时最佳是 25 次，成功率约 99.95%；经典搜索平均要查 (N + 1)/2 ≈ 512 次。Bennett、Bernstein、Brassard 和 Vazirani 1997 年证明，任何量子算法都至少要查约 √N 次，所以 Grover 的平方加速是最优的。</p>
+      <p>这里的 oracle 是现成的；实际问题里 oracle 要用可逆电路实现，开销常常抵消掉平方加速，在有纠错开销的硬件上尤其如此。模拟没有噪声。</p>
+      <p>想深入：量子嘉年华的“量子算法”展馆有 <a href="../quantum/algorithms/index.html#a-grover">Grover 搜索的详解</a>，讲清楚平方加速从哪来、又为什么不是指数加速。</p>
+    </div></details>
+  </section>
+
+  <!-- 12 噪声助推 -->
+  <section class="play-view" data-view="enaqt" hidden aria-labelledby="en-h">
+    <header class="play-head"><p class="eyebrow">游戏 12 · 量子生物学 · 环境辅助的量子传输</p><h2 id="en-h">噪声助推能量传递</h2>
+      <p class="play-lead">光合作用里，激发能要在一张色素分子组成的网络里走到反应中心。完全相干的量子波动可能被能量差或相消干涉卡住；环境的噪声（退相干）太多又会把它冻住。为三张网络各找到最合适的噪声强度。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="en-nets" role="group" aria-label="网络"></div>
+        <p class="play-task" id="en-task"></p>
+        <label>退相干率 γ<span><input type="range" id="en-g" min="0" max="120" step="1" value="0"><output id="en-g-v"></output></span></label>
+        <dl class="play-read" id="en-read"></dl>
+        <p class="play-msg" id="en-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button" id="en-probe">记下这个点</button><button type="button" class="button primary" id="en-lock">就选这个噪声</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="en-cv" width="720" height="460" role="img" aria-label="色素网络和传递效率随退相干率的变化"></canvas>
+        <figcaption>上面是网络：圆圈是色素位点，越高能量越高，线是耦合（虚线是负耦合），箭头是反应中心。下面是传递效率 η 和退相干率 γ 的关系（对数坐标），点是你记下的测量，过关后显示整条曲线。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>激发在 n 个位点上的密度矩阵按 Haken–Strobl 主方程演化（ħ = 1，能量和速率以耦合 J 为单位）：</p>
+      <span class="play-formula">dρ/dt = −i[H, ρ] − {Λ, ρ} − γ(ρ − diag ρ)，Λ = (κ/2)|trap⟩⟨trap| + (Γ/2)·1</span>
+      <p>κ = 1 是反应中心取走激发的速率，Γ = 0.02 是激发在每个位点上衰减掉的速率，γ 只破坏位点之间的相位。效率 η = κ∫ρ_trap dt，用 ∫e^{𝓛t}dt = −𝓛⁻¹ 直接解线性方程得到，没有时间步长误差。三张网络：整齐的链在 γ = 0 时最好，噪声只会拖慢；能量台阶（0、3、6 J）要靠噪声展宽能级才能跨过去，最佳 γ 和台阶高度同一量级；菱形网络的两条路耦合符号相反，相干时从起点出发的波在终点相消，激发被锁在“暗态”里，噪声把干涉打破。</p>
+      <p>这就是 Mohseni 等（2008）、Plenio 与 Huelga（2008）、Rebentrost 等（2009）提出的“环境辅助的量子传输”。它是模型上的结论；真实 FMO 复合物里的长寿命振荡后来被认为主要来自振动，生理条件下电子相干对效率有多大贡献仍有争议。这里的网络是玩具模型，不是 FMO 的真实参数；用真实参数的演示在<a href="../quantum/biology/index.html">量子嘉年华 · 量子生物学</a>。</p>
+    </div></details>
+  </section>
+
+  <!-- 13 普朗克工坊 -->
+  <section class="play-view" data-view="planck" hidden aria-labelledby="pl-h">
+    <header class="play-head"><p class="eyebrow">游戏 13 · 物理疆界 · 量纲分析</p><h2 id="pl-h">普朗克单位工坊</h2>
+      <p class="play-lead">1899 年普朗克发现，只用自然界的几个常数就能定出一套与人无关的单位。调 ħ、c、G 三个指数，让 ħᵃ cᵇ Gᶜ 的量纲和目标一样。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="pl-targets" role="group" aria-label="目标"></div>
+        <p class="play-task" id="pl-task"></p>
+        <div class="pl-steps" id="pl-steps"></div>
+        <dl class="play-read" id="pl-read"></dl>
+        <p class="play-msg" id="pl-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button" id="pl-show">看答案</button></div>
+      </div>
+      <figure class="play-fig"><canvas id="pl-cv" width="720" height="400" role="img" aria-label="质量、长度、时间三个量纲的指数"></canvas>
+        <figcaption>三根标尺是质量 M、长度 L、时间 T 的指数，空心圈是目标，实心点是你现在拼出来的量。三点都对齐就过关。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>三个常数的量纲：ħ = [M L² T⁻¹]，c = [L T⁻¹]，G = [M⁻¹ L³ T⁻²]。ħᵃ cᵇ Gᶜ 的量纲是</p>
+      <span class="play-formula">M^(a − c) · L^(2a + b + 3c) · T^(−a − b − 2c)</span>
+      <p>这个 3 × 3 方程组的行列式是 2，不为零，所以每个目标量纲都有唯一一组指数，而且一定是整数或半整数。例如普朗克长度 ℓ_P = √(ħG/c³) ≈ 1.616 × 10⁻³⁵ m，普朗克质量 √(ħc/G) ≈ 2.176 × 10⁻⁸ kg。力 c⁴/G 和功率 c⁵/G 里根本没有 ħ，是纯经典的组合。</p>
+      <p>量纲分析只能定出“量级”，定不出前面的纯数因子，所以“普朗克长度上时空会变得量子化”只是一个量级估计，不是已知的物理定律。数值用 CODATA 2018 的常数，温度单位还需要玻尔兹曼常数，这里没有包括。</p>
+      <p>想深入：<a href="../physics-realms/index.html">物理疆界图</a>的 ħ-c-G 立方体和量子引力前沿。</p>
+    </div></details>
+  </section>
+
+  <!-- 14 立方体分拣 -->
+  <section class="play-view" data-view="cube" hidden aria-labelledby="cube-h">
+    <header class="play-head"><p class="eyebrow">游戏 14 · 物理疆界 · Bronstein 立方体</p><h2 id="cube-h">ħ-c-G 立方体分拣</h2>
+      <p class="play-lead">把 1/c、G、ħ 看成三个开关：关掉 1/c 表示光速当作无穷大，关掉 G 表示忽略引力，关掉 ħ 表示忽略量子。每个现象至少要打开哪几个开关才解释得了？选好后看它落在立方体的哪个角。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="cube-case" id="cube-case"></div>
+        <div class="cube-switches" id="cube-switches" role="group" aria-label="三个开关">
+          <button type="button" data-i="0" aria-pressed="false"><b>1/c</b><span>相对论</span></button>
+          <button type="button" data-i="1" aria-pressed="false"><b>G</b><span>引力</span></button>
+          <button type="button" data-i="2" aria-pressed="false"><b>ħ</b><span>量子</span></button>
+        </div>
+        <p class="play-msg" id="cube-msg" aria-live="polite"></p>
+        <div class="play-btns"><button type="button" class="button primary" id="cube-go">就是这个角</button><button type="button" class="button" id="cube-next">下一个现象</button></div>
+        <p class="play-score" data-score="cube"></p>
+      </div>
+      <figure class="play-fig"><canvas id="cube-cv" width="720" height="460" role="img" aria-label="ħ-c-G 立方体的八个角"></canvas>
+        <figcaption>立方体的三条棱分别是 1/c、G、ħ。金色是你现在选的角，答完后绿色标出正确的角。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>这个立方体最早来自 Bronstein 1930 年代的讨论，后来由 Zelmanov、Okun 等人整理成“cGh 立方体”。原点是牛顿力学，三条棱的另一端是狭义相对论（1/c）、牛顿引力（G）和量子力学（ħ）；三个面对角是广义相对论（1/c、G）、量子场论（1/c、ħ）和牛顿量子引力（G、ħ）；最远的角三者全开，是还没有建立的量子引力。</p>
+      <p>“打开”看的是要解释的那个结果里是否非出现这个常数不可。所以有的题会出乎意料：白矮星的钱德拉塞卡极限 M_Ch ∝ (ħc/G)^{3/2} / m_H² 三个常数都用到了，但它不需要量子引力，只需要相对论性的简并电子加上引力；霍金辐射也是在弯曲时空上做量子场论的半经典结果。开关的划分是粗粒度的教学工具，不是严格的分类：同一个现象往往还用到 e、k_B 等其他常数。</p>
+      <p>想深入：<a href="../physics-realms/index.html">物理疆界图</a>，每个角都连着图上的理论节点。</p>
     </div></details>
   </section>
 </main>

@@ -1,4 +1,4 @@
-/* 游乐场：标签切换、六个小游戏，以及量子化学计算器 QChem Web（iframe，第一次打开那个标签时才加载）。
+/* 游乐场：标签切换、01–06 六个小游戏（07–14 在 play-quantum.js），以及量子化学计算器 QChem Web（iframe，第一次打开那个标签时才加载）。
    物理在 play-models.js（纯函数，tools/play-test.mjs 测）。界面文字写中文，由 i18n.js 翻译；元素名、环名、谱系名
    按站点语言取用并标 translate="no"；画在 canvas 上的文字用 ChemI18n.t 翻译，词典到了以后重画。成绩存在 molastria-play。 */
 (() => {
@@ -24,7 +24,7 @@
   function renderBest() {
     for (const el of $$('[data-best]')) {
       const id = el.dataset.best, v = best[id];
-      el.textContent = id === 'tunnel' ? (v?.length ? `已过 ${v.length} / ${MISSIONS.length} 关` : '')
+      el.textContent = games[id]?.bestText ? games[id].bestText(v) : id === 'tunnel' ? (v?.length ? `已过 ${v.length} / ${MISSIONS.length} 关` : '')
         : id === 'box' ? (v ? `已调出 ${v} 种颜色` : '')
         : v ? `最佳连续答对 ${v} 题` : '';
     }
@@ -579,6 +579,9 @@
       draw,
     };
   })();
+
+  // 07–14 在 play-quantum.js：把画图、成绩和翻译工具交给它，它返回的游戏和这里的共用标签与地址
+  if (window.MOLASTRIA_PLAY_MORE) Object.assign(games, window.MOLASTRIA_PLAY_MORE({ $, $$, t, en, rnd, pick, shuffle, say, noTr, fit, colors, font, rgb, toRGB, arrow, pct, sci, sup, board, best, save, renderBest }));
 
   // ── 标签与地址 ──────────────────────────────────────────────────────
   const views = $$('.play-view'), tabs = $$('#play-tabs a'), frame = $('#qchem-frame'), lab = $('#play-lab'), started = new Set();
