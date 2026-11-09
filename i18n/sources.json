@@ -348,7 +348,6 @@
   "quantum/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
-  "qchem/index.html",
   "shared-nav.js",
   "quantum/biology/qb.js",
   "tools/build-seo.ts"
@@ -865,7 +864,8 @@
   "journals/index.html"
  ],
  "一章。": [
-  "journals/index.html"
+  "journals/index.html",
+  "qchem/index.html"
  ],
  "从研究到发表": [
   "journals/index.html"
@@ -5851,9 +5851,6 @@
  "展馆：": [
   "qchem/index.html"
  ],
- "量子计算机与量子算法": [
-  "qchem/index.html"
- ],
  "量子嘉年华总入口": [
   "qchem/index.html"
  ],
@@ -6190,10 +6187,13 @@
  "每道题的“最少门数”是用穷举搜索在允许的门里算出来的（测试里会重新搜一遍）。这是理想的、没有噪声的态矢量模拟；真实量子计算机的门有误差，而且两比特门要比单比特门慢、错误率高，所以实际编译时数的往往是 CNOT 的个数和电路深度。": [
   "qchem/index.html"
  ],
- "想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover（即将上线，先去": [
+ "想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover，": [
   "qchem/index.html"
  ],
- "看看）。": [
+ "交互实验室": [
+  "qchem/index.html"
+ ],
+ "里还有一台态矢量模拟器。": [
   "qchem/index.html"
  ],
  "游戏 10 · 量子计算机 · 量子纠错": [
@@ -6236,7 +6236,10 @@
  "局限：这个码只防比特翻转，不防相位翻转（Z 错误）；能同时防两种错误的最小码要 5 个比特，实际硬件多用表面码。真实设备上测量本身也会出错，要重复测量多轮再解码。Google 2024 年在超导芯片上演示了表面码的逻辑错误率随码距增大而指数下降（Acharya 等，Nature 638, 920，2025 年刊出）。": [
   "qchem/index.html"
  ],
- "想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构（即将上线，先去": [
+ "想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构，见": [
+  "qchem/index.html"
+ ],
+ "量子纠错与容错": [
   "qchem/index.html"
  ],
  "游戏 11 · 量子算法 · 振幅放大": [
@@ -6269,7 +6272,13 @@
  "这里的 oracle 是现成的；实际问题里 oracle 要用可逆电路实现，开销常常抵消掉平方加速，在有纠错开销的硬件上尤其如此。模拟没有噪声。": [
   "qchem/index.html"
  ],
- "想深入：量子嘉年华的“量子算法”展馆（即将上线，先去": [
+ "想深入：量子嘉年华的“量子算法”展馆有": [
+  "qchem/index.html"
+ ],
+ "Grover 搜索的详解": [
+  "qchem/index.html"
+ ],
+ "，讲清楚平方加速从哪来、又为什么不是指数加速。": [
   "qchem/index.html"
  ],
  "游戏 12 · 量子生物学 · 环境辅助的量子传输": [

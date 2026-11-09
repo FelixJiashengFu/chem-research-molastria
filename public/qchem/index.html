@@ -117,7 +117,7 @@
         <p>激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。</p>
         <span class="play-best" data-best="enaqt"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
     </div>
-    <p class="play-zone-links">展馆：<a href="../quantum/physics/index.html">量子物理</a> · <a href="../quantum/index.html">量子计算机与量子算法</a> · <a href="../quantum/biology/index.html">量子生物学</a> · <a href="../quantum/index.html">量子嘉年华总入口</a></p>
+    <p class="play-zone-links">展馆：<a href="../quantum/physics/index.html">量子物理</a> · <a href="../quantum/computing/index.html">量子计算机</a> · <a href="../quantum/algorithms/index.html">量子算法</a> · <a href="../quantum/biology/index.html">量子生物学</a> · <a href="../quantum/index.html">量子嘉年华总入口</a></p>
 
     <h2 class="play-zone-h" id="zone-realms"><span>展区三</span>物理疆界</h2>
     <p class="play-zone-lead">ħ、c、G 三个常数划出了物理学的版图。先用它们拼出普朗克尺度，再把真实的现象分到立方体的八个角上。</p>
@@ -363,7 +363,7 @@
       <span class="play-formula">H = (1/√2)[[1, 1], [1, −1]]，X = [[0, 1], [1, 0]]，Z = [[1, 0], [0, −1]]，S = diag(1, i)，T = diag(1, e^{iπ/4})</span>
       <p>CNOT 在控制比特为 1 时翻转目标比特。几个常用的恒等式：HZH = X，HXH = Z，T² = S，S² = Z；H 加 CNOT 就能把两个比特纠缠起来。保真度按 |⟨目标|ψ⟩|² 计算，所以整体相位不影响对错。</p>
       <p>每道题的“最少门数”是用穷举搜索在允许的门里算出来的（测试里会重新搜一遍）。这是理想的、没有噪声的态矢量模拟；真实量子计算机的门有误差，而且两比特门要比单比特门慢、错误率高，所以实际编译时数的往往是 CNOT 的个数和电路深度。</p>
-      <p>想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover（即将上线，先去<a href="../quantum/index.html">量子嘉年华</a>看看）。</p>
+      <p>想深入：量子嘉年华的“量子算法”展馆讲电路模型、Shor 和 Grover，<a href="../quantum/algorithms/index.html#qa-lab">交互实验室</a>里还有一台态矢量模拟器。</p>
     </div></details>
   </section>
 
@@ -395,7 +395,7 @@
       <span class="play-formula">(灭, 灭) 不动；(亮, 灭) 翻 q0；(亮, 亮) 翻 q1；(灭, 亮) 翻 q2</span>
       <p>两个比特同时翻转时，灯的样子和“另一个比特单独翻转”完全一样，按最可能的情况修就会修错，变成逻辑错误。每个比特独立以概率 p 翻转时，逻辑错误率是 3p²(1 − p) + p³ = 3p² − 2p³，p &lt; 1/2 时它比 p 小：这就是纠错有用的门槛。</p>
       <p>局限：这个码只防比特翻转，不防相位翻转（Z 错误）；能同时防两种错误的最小码要 5 个比特，实际硬件多用表面码。真实设备上测量本身也会出错，要重复测量多轮再解码。Google 2024 年在超导芯片上演示了表面码的逻辑错误率随码距增大而指数下降（Acharya 等，Nature 638, 920，2025 年刊出）。</p>
-      <p>想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构（即将上线，先去<a href="../quantum/index.html">量子嘉年华</a>看看）。</p>
+      <p>想深入：量子嘉年华的“量子计算机”展馆讲噪声、纠错与容错架构，见<a href="../quantum/computing/index.html#s-qec">量子纠错与容错</a>一章。</p>
     </div></details>
   </section>
 
@@ -419,7 +419,7 @@
       <span class="play-formula">k 次迭代后 P(宝物) = sin²((2k + 1)θ)，最佳 k ≈ π/(4θ) − 1/2 ≈ (π/4)√N</span>
       <p>N = 4 时 θ = 30°，一次迭代就转到 90°，必中。N = 1024 时最佳是 25 次，成功率约 99.95%；经典搜索平均要查 (N + 1)/2 ≈ 512 次。Bennett、Bernstein、Brassard 和 Vazirani 1997 年证明，任何量子算法都至少要查约 √N 次，所以 Grover 的平方加速是最优的。</p>
       <p>这里的 oracle 是现成的；实际问题里 oracle 要用可逆电路实现，开销常常抵消掉平方加速，在有纠错开销的硬件上尤其如此。模拟没有噪声。</p>
-      <p>想深入：量子嘉年华的“量子算法”展馆（即将上线，先去<a href="../quantum/index.html">量子嘉年华</a>看看）。</p>
+      <p>想深入：量子嘉年华的“量子算法”展馆有 <a href="../quantum/algorithms/index.html#a-grover">Grover 搜索的详解</a>，讲清楚平方加速从哪来、又为什么不是指数加速。</p>
     </div></details>
   </section>
 
