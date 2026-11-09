@@ -188,6 +188,7 @@
  ],
  "分子动力学": [
   "index.html",
+  "api/compute.js",
   "hub/network.js",
   "models/models.js",
   "tags",
@@ -316,12 +317,16 @@
  "科学大模型": [
   "index.html",
   "about/index.html",
+  "api/index.html",
   "shared-nav.js",
+  "api/api.js",
   "tools/build-seo.ts"
  ],
  "教学视频": [
   "index.html",
+  "api/index.html",
   "shared-nav.js",
+  "api/api.js",
   "tools/build-seo.ts"
  ],
  "Meta × 化学": [
@@ -559,11 +564,13 @@
   "hub/index.html",
   "hub/network.html",
   "train/index.html",
+  "api/index.html",
+  "api/api.js",
   "app.js",
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "103 条 · 已实现": [
+ "214 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -611,7 +618,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 103 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 214 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -692,7 +699,9 @@
   "atlas/index.html"
  ],
  "复制代码": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "api/index.html",
+  "api/api.js"
  ],
  "Materials Project 官方接口需在项目目录的 .env 里设置 MP_API_KEY，不设也能用其余数据源。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
   "atlas/index.html"
@@ -780,6 +789,7 @@
  ],
  "中文": [
   "manual/index.html",
+  "api/index.html",
   "videos/videos.js"
  ],
  "打印当前章节": [
@@ -1046,7 +1056,8 @@
   "videos/index.html"
  ],
  "语言": [
-  "videos/index.html"
+  "videos/index.html",
+  "api/index.html"
  ],
  "全部语言": [
   "videos/index.html"
@@ -2013,7 +2024,8 @@
   "hub/network.html"
  ],
  "试试：": [
-  "hub/network.html"
+  "hub/network.html",
+  "api/index.html"
  ],
  "全网概览": [
   "hub/network.html",
@@ -2313,6 +2325,7 @@
   "lab/index.html",
   "meta/index.html",
   "train/index.html",
+  "api/index.html",
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
   "quantum/computing/qc.js",
@@ -2659,6 +2672,7 @@
  ],
  "几何优化": [
   "lab/index.html",
+  "api/compute.js",
   "models/models.js"
  ],
  "单点能": [
@@ -2867,6 +2881,7 @@
   "meta/index.html",
   "models/index.html",
   "train/index.html",
+  "api/index.html",
   "scimodels/scimodels.js",
   "meta/meta.js",
   "models/models.js",
@@ -2898,7 +2913,8 @@
  ],
  "计算": [
   "meta/index.html",
-  "models/index.html"
+  "models/index.html",
+  "api/index.html"
  ],
  "绝热电离能与电子亲和能（可导入 AI 实验室）": [
   "meta/index.html"
@@ -2970,6 +2986,7 @@
  "复制": [
   "meta/index.html",
   "train/index.html",
+  "pro/account.html",
   "meta/meta.js",
   "train/train.js"
  ],
@@ -3073,7 +3090,8 @@
   "meta/index.html"
  ],
  "数据集": [
-  "meta/index.html"
+  "meta/index.html",
+  "api/index.html"
  ],
  "工具与应用": [
   "meta/index.html"
@@ -3421,6 +3439,13 @@
  ],
  "，也可以用": [
   "models/index.html"
+ ],
+ "想在自己的程序里调用这些模型（MACE 系列除外），用免费账号的 API key：": [
+  "models/index.html"
+ ],
+ "计算接口": [
+  "models/index.html",
+  "api/index.html"
  ],
  "MolAstria · 量子化学模型接口": [
   "models/index.html"
@@ -4250,7 +4275,8 @@
   "train/index.html"
  ],
  "怎么用": [
-  "train/index.html"
+  "train/index.html",
+  "pro/account.html"
  ],
  "；开放权重": [
   "train/index.html"
@@ -4382,7 +4408,8 @@
   "train/index.html"
  ],
  "代码": [
-  "train/index.html"
+  "train/index.html",
+  "api/index.html"
  ],
  "数据": [
   "train/index.html",
@@ -4874,7 +4901,8 @@
  ],
  "账号页": [
   "pro/index.html",
-  "pro/success.html"
+  "pro/success.html",
+  "api/index.html"
  ],
  "，用付款邮箱收 6 位验证码登录即可。登录后 AI 助手的设置里会出现“MolAstria 托管”，不用自备 key。": [
   "pro/index.html"
@@ -5063,6 +5091,18 @@
  "第一期还没有生成，每周一更新。": [
   "pro/account.html"
  ],
+ "给程序用：带上 key，就能在自己的脚本里提交在线模型的计算，不限来源网站。次数和这个账号在网站上用的是同一份（免费账号每天 100 次，Pro 支持者 200 次）。算力是站长电脑上的 RTX 2080，尽力而为，可能离线。": [
+  "pro/account.html"
+ ],
+ "生成 key": [
+  "pro/account.html"
+ ],
+ "新的 key 只显示这一次。": [
+  "pro/account.html"
+ ],
+ "请现在复制并保存好。我们只保存它的哈希，之后谁也看不到原文；丢了就撤销再生成一个。": [
+  "pro/account.html"
+ ],
  "发 VIP 卡": [
   "pro/account.html"
  ],
@@ -5125,6 +5165,12 @@
   "pro/account.html"
  ],
  "成员邮箱": [
+  "pro/account.html"
+ ],
+ "备注，例如：实验室工作站": [
+  "pro/account.html"
+ ],
+ "API key 的备注": [
   "pro/account.html"
  ],
  "例如：送给课题组的同学": [
@@ -5697,6 +5743,384 @@
  ],
  "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 阿斯特赖亚科技，再下面是 MolAstria 与三个规划中的方向": [
   "about/index.html"
+ ],
+ "开放数据接口 · MolAstria": [
+  "api/index.html"
+ ],
+ "开放数据接口": [
+  "api/index.html",
+  "shared-nav.js"
+ ],
+ "免费 · 不用注册 · 不用 key · 中英双语 ·": [
+  "api/index.html"
+ ],
+ "MolAstria 整理的数据可以直接被程序读取：每个数据集是一个静态 JSON 文件，用任何语言发一个 GET 请求就能拿到。网页可以跨域读取，AI 智能体也可以直接用。想让程序提交计算，看最后的": [
+  "api/index.html"
+ ],
+ "搜一下": [
+  "api/index.html"
+ ],
+ "嵌入卡片": [
+  "api/index.html"
+ ],
+ "给 AI 和程序": [
+  "api/index.html"
+ ],
+ "许可": [
+  "api/index.html"
+ ],
+ "下面这个搜索台只用了开放接口和一个不到 200 行的 JS 库，没有服务器。中英文同义词互通：搜“密度泛函”也会找到只写了 DFT 的条目。": [
+  "api/index.html"
+ ],
+ "这次搜索的代码": [
+  "api/index.html"
+ ],
+ "跟着上面的搜索变，复制就能跑。": [
+  "api/index.html"
+ ],
+ "正在读取数据集列表…": [
+  "api/index.html"
+ ],
+ "总入口列出全部数据集、条数和核对日期：": [
+  "api/index.html"
+ ],
+ "嵌到你的网页里": [
+  "api/index.html"
+ ],
+ "一行代码，把一组资源放到课程主页、课题组 wiki 或博客上。卡片自带样式，不受所在页面影响；数据更新后卡片跟着更新。": [
+  "api/index.html"
+ ],
+ "关键词": [
+  "api/index.html",
+  "hub/network.js"
+ ],
+ "期刊": [
+  "api/index.html",
+  "api/api.js"
+ ],
+ "条数": [
+  "api/index.html"
+ ],
+ "跟随页面": [
+  "api/index.html"
+ ],
+ "配色主题": [
+  "api/index.html"
+ ],
+ "跟随系统": [
+  "api/index.html"
+ ],
+ "浅色": [
+  "api/index.html"
+ ],
+ "深色": [
+  "api/index.html"
+ ],
+ "贴到网页里：": [
+  "api/index.html"
+ ],
+ "给大模型看的站点说明，告诉它数据在哪、怎么署名。": [
+  "api/index.html"
+ ],
+ "OpenAPI 3.1 描述，字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。": [
+  "api/index.html"
+ ],
+ "零依赖的 JS 库，浏览器、Deno、Node 18 以上都能用，带中英互通的搜索。": [
+  "api/index.html"
+ ],
+ "MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据。它随包带着同一份资源目录，离线也能查。": [
+  "api/index.html"
+ ],
+ "约定": [
+  "api/index.html"
+ ],
+ "格式：": [
+  "api/index.html"
+ ],
+ "每个文件开头有三个字段：": [
+  "api/index.html"
+ ],
+ "（现在是 1.0）、": [
+  "api/index.html"
+ ],
+ "（这份数据的核对日期）和": [
+  "api/index.html"
+ ],
+ "（条数）。条目放在数组": [
+  "api/index.html"
+ ],
+ "里，双语文字写成": [
+  "api/index.html"
+ ],
+ "版本：": [
+  "api/index.html"
+ ],
+ "v1 只会加字段，不会删字段或改含义；要改就出 v2，v1 继续保留。": [
+  "api/index.html"
+ ],
+ "更新：": [
+  "api/index.html"
+ ],
+ "数据随网站一起发布，核对过才改日期。文件会被浏览器和 CDN 缓存约 10 分钟。": [
+  "api/index.html"
+ ],
+ "用量：": [
+  "api/index.html"
+ ],
+ "没有次数限制。文件不大，建议在自己这边缓存一天，不要每次请求都来取。": [
+  "api/index.html"
+ ],
+ "不保证：": [
+  "api/index.html"
+ ],
+ "这是个人运营的免费服务，尽力保持可用，但没有可用性承诺。链接和价格会过时，每个数据集都带核对日期，重要的事请到原始出处再核一次。": [
+  "api/index.html"
+ ],
+ "许可与署名": [
+  "api/index.html"
+ ],
+ "许可：可以免费使用、转载和改编，包括商业用途，只要注明来源。署名写法：": [
+  "api/index.html"
+ ],
+ "这个许可适用于 MolAstria 自己整理和撰写的内容：条目的选取与分类、中英文说明、核对记录。第三方的名称、标题、链接和价格属于各自的权利人，这里只作事实引用。网站代码另按 MIT 许可开源。": [
+  "api/index.html"
+ ],
+ "上面读的是整理好的数据，这一段让程序提交计算：用机器学习势（UMA、eSEN、AllScAIP、ANI-2x）做单点能、几何优化、振动频率、构象搜索、二面角扫描、分子动力学、反应能、电离能这些计算。任务排的队就是": [
+  "api/index.html"
+ ],
+ "在线模型页的队": [
+  "api/index.html"
+ ],
+ "要一个免费账号的 API key。带 key 的请求不限来源网站：脚本、笔记本、别人的网页都能调。": [
+  "api/index.html"
+ ],
+ "先把算力说清楚：": [
+  "api/index.html"
+ ],
+ "算力是站长电脑上的 RTX 2080，尽力而为，可能离线。没有可用性承诺：人多要排队，电脑关机就算不了。不要把有时限的事情压在它上面。": [
+  "api/index.html"
+ ],
+ "正在看这台电脑在不在线……": [
+  "api/index.html"
+ ],
+ "拿一个 key": [
+  "api/index.html"
+ ],
+ "用任何邮箱登录": [
+  "api/index.html"
+ ],
+ "，在“API key”一栏生成。原文只显示一次，我们的数据库里只存它的哈希。": [
+  "api/index.html"
+ ],
+ "提交计算": [
+  "api/index.html"
+ ],
+ "发一个 POST 到": [
+  "api/index.html"
+ ],
+ "，请求头带": [
+  "api/index.html"
+ ],
+ "，马上拿到任务编号。": [
+  "api/index.html"
+ ],
+ "轮询结果": [
+  "api/index.html"
+ ],
+ "每隔两三秒 GET 一次": [
+  "api/index.html"
+ ],
+ "，直到": [
+  "api/index.html"
+ ],
+ "变成": [
+  "api/index.html"
+ ],
+ "（算完）或": [
+  "api/index.html"
+ ],
+ "（出错）": [
+  "api/index.html"
+ ],
+ "带上 key 试一次": [
+  "api/index.html"
+ ],
+ "分子（SMILES）": [
+  "api/index.html"
+ ],
+ "key 只留在这个页面的内存里，只发给 api.molastria.com，刷新页面就没了。这次计算会算进你今天的次数。": [
+  "api/index.html"
+ ],
+ "下面的代码跟着上面的选择变，key 从环境变量里读，不会写进代码。": [
+  "api/index.html"
+ ],
+ "接口": [
+  "api/index.html"
+ ],
+ "请求": [
+  "api/index.html"
+ ],
+ "作用": [
+  "api/index.html"
+ ],
+ "这套接口的说明和文档地址，不用 key": [
+  "api/index.html"
+ ],
+ "这个 key 的档位，今天用了几次、还剩几次": [
+  "api/index.html"
+ ],
+ "能用的模型、每个模型做哪些计算、每种计算花几次，以及电脑现在在不在线": [
+  "api/index.html"
+ ],
+ "提交一个计算，返回任务编号、花了几次和今天的余量": [
+  "api/index.html"
+ ],
+ "进度和结果；算完的任务保留一小时": [
+  "api/index.html"
+ ],
+ "结果和在线模型页拿到的是同一份，能量单位是 eV。提交时的字段：": [
+  "api/index.html"
+ ],
+ "（模型代号）、": [
+  "api/index.html"
+ ],
+ "（计算代号）、": [
+  "api/index.html"
+ ],
+ "（分子，二选一）、": [
+  "api/index.html"
+ ],
+ "（电荷，-2 到 2）、": [
+  "api/index.html"
+ ],
+ "（自旋多重度，1 到 4）、": [
+  "api/index.html"
+ ],
+ "（这种计算自己的参数，都可以不给，标了“必填”的除外）": [
+  "api/index.html"
+ ],
+ "计算代号": [
+  "api/index.html"
+ ],
+ "算什么": [
+  "api/index.html"
+ ],
+ "花费（次）": [
+  "api/index.html"
+ ],
+ "参数（params）": [
+  "api/index.html"
+ ],
+ "反应能、键解离能和质子亲和能加上热校正时花 5 次，参数写": [
+  "api/index.html"
+ ],
+ "电离能、自旋态能隙、键解离能和质子亲和能只有能处理电荷和自旋的模型做。每个模型做哪些计算，看": [
+  "api/index.html"
+ ],
+ "规则": [
+  "api/index.html"
+ ],
+ "次数：": [
+  "api/index.html"
+ ],
+ "和网站上用的是同一份。不带 key 只能在网站上用，每天 40 次；免费账号的 key 每天 100 次；Pro 支持者 200 次。按上表的花费扣，从当天第一次计算起 24 小时后重置；被拒绝的和电脑离线时的计算不扣。所有 key 合起来每天还有一个总量，免得脚本把网站访客挤出队列，到了会返回 api_busy。每次提交的回答里有": [
+  "api/index.html"
+ ],
+ "，响应头里有": [
+  "api/index.html"
+ ],
+ "一次一个：": [
+  "api/index.html"
+ ],
+ "同一个账号同时只能有一个任务在排队或计算，网站上提交的也算在内。等它算完再交下一个。": [
+  "api/index.html"
+ ],
+ "缓存：": [
+  "api/index.html"
+ ],
+ "算过的同一个任务会直接返回结果，同样计次。这时": [
+  "api/index.html"
+ ],
+ "直接是": [
+  "api/index.html"
+ ],
+ "，没有任务编号。": [
+  "api/index.html"
+ ],
+ "模型许可：": [
+  "api/index.html"
+ ],
+ "UMA、eSEN 和 AllScAIP 采用 FAIR Chemistry License，ANI-2x 是 MIT 许可，用它们算出的结果请遵守各自的许可并引用原论文。MACE 系列（MACE-OFF23、MACE-OMOL-0、MACE-MDP）采用学术软件许可（ASL），只限学术、非商业研究，所以不通过 API 提供，要用请到在线模型页。": [
+  "api/index.html"
+ ],
+ "请求头 User-Agent：": [
+  "api/index.html"
+ ],
+ "接口前面的 Cloudflare 会拒绝 Python urllib 默认的 User-Agent，返回 403，而且不是 JSON。像上面的示例那样给请求设一个自己的 User-Agent 就可以。": [
+  "api/index.html"
+ ],
+ "地区：": [
+  "api/index.html"
+ ],
+ "按照模型许可要求遵守的出口管制规定，部分地区不能使用。": [
+  "api/index.html"
+ ],
+ "保管好 key：": [
+  "api/index.html"
+ ],
+ "一个账号最多 3 个。不要把 key 写进公开的网页或公开的代码仓库；泄露了就到账号页撤销，撤销立刻生效。": [
+  "api/index.html"
+ ],
+ "报错：": [
+  "api/index.html"
+ ],
+ "出错时返回": [
+  "api/index.html"
+ ],
+ "，英文和中文各一句。常见的 code 值：": [
+  "api/index.html"
+ ],
+ "（key 不对或已撤销）、": [
+  "api/index.html"
+ ],
+ "（今天的次数不够）、": [
+  "api/index.html"
+ ],
+ "（上一个任务还没算完）、": [
+  "api/index.html"
+ ],
+ "（电脑离线）、": [
+  "api/index.html"
+ ],
+ "（这个模型不通过 API 提供）、": [
+  "api/index.html"
+ ],
+ "（请求里有不合法的值）": [
+  "api/index.html"
+ ],
+ "结果的分量：": [
+  "api/index.html"
+ ],
+ "这些是机器学习势的预测，不是 DFT 计算。用来筛选和找方向很合适，写进论文前请用你信得过的方法复核。": [
+  "api/index.html"
+ ],
+ "还没有开放的": [
+  "api/index.html"
+ ],
+ "网状查询的实体与关系还没有放进接口。想用它，或者接口缺了什么字段、计算接口缺了哪种计算，请告诉我们：": [
+  "api/index.html"
+ ],
+ "搜资源、期刊、模型、视频…": [
+  "api/index.html"
+ ],
+ "搜索开放数据": [
+  "api/index.html"
+ ],
+ "示例语言": [
+  "api/index.html"
+ ],
+ "计算示例的语言": [
+  "api/index.html"
  ],
  "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
@@ -6666,6 +7090,135 @@
  ],
  "到下载页手动安装": [
   "shared-nav.js"
+ ],
+ "密度泛函": [
+  "api/api.js"
+ ],
+ "开放获取 期刊": [
+  "api/api.js"
+ ],
+ "Gaussian 教程": [
+  "api/api.js"
+ ],
+ "激发态": [
+  "api/api.js"
+ ],
+ "数据没有读到，请稍后再试。": [
+  "api/api.js"
+ ],
+ "没有找到，换个词试试。": [
+  "api/api.js"
+ ],
+ "共 {0} 条，显示前 {1} 条": [
+  "api/api.js"
+ ],
+ "共 {0} 条结果": [
+  "api/api.js"
+ ],
+ "最近核对 {0}": [
+  "api/api.js"
+ ],
+ "共 {0} 条 · 核对于 {1}": [
+  "api/api.js"
+ ],
+ "网页版": [
+  "api/api.js",
+  "radar/app/app.js"
+ ],
+ "数据集列表没有读到，请直接打开": [
+  "api/api.js"
+ ],
+ "已复制": [
+  "api/api.js",
+  "meta/meta.js",
+  "models/models.js",
+  "train/train.js"
+ ],
+ "单点能与受力": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "振动频率与热化学": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "构象搜索": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "二面角扫描": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "反应能": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "电离能与电子亲和能": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "自旋态能隙": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "键解离能": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "质子亲和能与去质子化能": [
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "必填": [
+  "api/compute.js"
+ ],
+ "没有加载": [
+  "api/compute.js"
+ ],
+ "这台电脑现在离线，提交会被拒绝，不扣次数。过一会儿再来。": [
+  "api/compute.js"
+ ],
+ "这台电脑现在在线，前面有 {0} 个任务在排队。": [
+  "api/compute.js"
+ ],
+ "这台电脑现在在线，没有任务在排队。": [
+  "api/compute.js"
+ ],
+ "连不上计算接口，请检查网络后重试。": [
+  "api/compute.js"
+ ],
+ "请求失败（{0}）": [
+  "api/compute.js",
+  "pay/account.js",
+  "radar/app/app.js"
+ ],
+ "先填一个 API key（以 mola_ 开头，在账号页生成）。": [
+  "api/compute.js"
+ ],
+ "正在提交……": [
+  "api/compute.js"
+ ],
+ "已提交，排在第 {0} 位。": [
+  "api/compute.js"
+ ],
+ "正在计算，第 {0} / {1} 步。": [
+  "api/compute.js"
+ ],
+ "正在计算……": [
+  "api/compute.js"
+ ],
+ "等了十分钟还没算完。任务还在队列里，稍后用任务编号再查。": [
+  "api/compute.js"
+ ],
+ "算完了。今天还剩 {0} 次计算。": [
+  "api/compute.js"
+ ],
+ "算完了。": [
+  "api/compute.js"
+ ],
+ "这次计算失败了，原因在下面的 error 里。": [
+  "api/compute.js"
  ],
  "深度教程": [
   "app.js",
@@ -8758,9 +9311,6 @@
  "条目": [
   "hub/network.js"
  ],
- "关键词": [
-  "hub/network.js"
- ],
  "全网": [
   "hub/network.js"
  ],
@@ -9587,11 +10137,6 @@
  "CF3 取代的 DOL，改善 DOL 的抗氧化性": [
   "lab/chem.js"
  ],
- "已复制": [
-  "meta/meta.js",
-  "models/models.js",
-  "train/train.js"
- ],
  "图片无法读取": [
   "meta/meta.js"
  ],
@@ -9912,9 +10457,6 @@
  "加上热校正（焓与吉布斯自由能，要先算频率）": [
   "models/models.js"
  ],
- "单点能与受力": [
-  "models/models.js"
- ],
  "在给定的结构上算能量和每个原子受的力，不优化。SMILES 输入时结构由 RDKit 生成。": [
   "models/models.js"
  ],
@@ -9924,16 +10466,10 @@
  "收敛判据 fmax（eV/Å）": [
   "models/models.js"
  ],
- "振动频率与热化学": [
-  "models/models.js"
- ],
  "先优化，再用有限差分求振动频率，按理想气体、刚性转子和谐振子给出零点能、焓、熵和吉布斯自由能。": [
   "models/models.js"
  ],
  "转动对称数 σ（水是 2，苯是 12）": [
-  "models/models.js"
- ],
- "构象搜索": [
   "models/models.js"
  ],
  "RDKit 生成多个构象，全部用模型优化，去掉重复的，按相对能量和 Boltzmann 权重排序。": [
@@ -9943,9 +10479,6 @@
   "models/models.js"
  ],
  "保留的能量窗口（kcal/mol）": [
-  "models/models.js"
- ],
- "二面角扫描": [
   "models/models.js"
  ],
  "固定一个二面角，每个角度优化其余结构，得到扭转能量曲线（柔性扫描）。": [
@@ -9975,16 +10508,10 @@
  "摩擦系数（1/fs）": [
   "models/models.js"
  ],
- "反应能": [
-  "models/models.js"
- ],
  "每个物种分别优化，反应能 ΔE = Σ 产物 − Σ 反应物；加热校正时再给出 ΔG。原子要守恒。": [
   "models/models.js"
  ],
  "反应 SMILES（反应物{0}产物，物种之间用 . 分开，两边一共最多 6 个）": [
-  "models/models.js"
- ],
- "电离能与电子亲和能": [
   "models/models.js"
  ],
  "绝热：中性、阳离子、阴离子各自优化；垂直：在中性分子的结构上直接换电荷态。IP = E(+1) − E(0)，EA = E(0) − E(−1)。": [
@@ -10002,25 +10529,16 @@
  "绝热和垂直都算": [
   "models/models.js"
  ],
- "自旋态能隙": [
-  "models/models.js"
- ],
  "同一个分子的两个自旋多重度各自优化，比较能量；也给出在低能态结构上的垂直能隙。": [
   "models/models.js"
  ],
  "比较的两个自旋多重度": [
   "models/models.js"
  ],
- "键解离能": [
-  "models/models.js"
- ],
  "把一根非环单键均裂成两个自由基，各自优化：BDE = E(碎片 1) + E(碎片 2) − E(分子)。": [
   "models/models.js"
  ],
  "断开的键（只列非环单键）": [
-  "models/models.js"
- ],
- "质子亲和能与去质子化能": [
   "models/models.js"
  ],
  "在指定的重原子上加一个质子或去掉一个质子，比较优化后的能量。质子亲和能 = E(B) − E(BH⁺)；去质子化能 = E(A⁻) − E(AH)（不含质子本身的能量）。": [
@@ -11214,6 +11732,33 @@
  "本期已重新生成。": [
   "pro/account-page.js"
  ],
+ "最近使用 {0}": [
+  "pro/account-page.js"
+ ],
+ "还没用过": [
+  "pro/account-page.js"
+ ],
+ "撤销": [
+  "pro/account-page.js"
+ ],
+ "{0} 生成": [
+  "pro/account-page.js"
+ ],
+ "还没有 API key。": [
+  "pro/account-page.js"
+ ],
+ "已复制到剪贴板。": [
+  "pro/account-page.js"
+ ],
+ "复制下面的 key：": [
+  "pro/account-page.js"
+ ],
+ "撤销 {0}…？用这个 key 的程序会立刻失效。": [
+  "pro/account-page.js"
+ ],
+ "已撤销 {0}…": [
+  "pro/account-page.js"
+ ],
  "年": [
   "pro/account-page.js"
  ],
@@ -11280,10 +11825,6 @@
  ],
  "连不上账号服务，请检查网络后重试。": [
   "pay/account.js"
- ],
- "请求失败（{0}）": [
-  "pay/account.js",
-  "radar/app/app.js"
  ],
  "日一二三四五六": [
   "radar/app/app.js"
@@ -12455,9 +12996,6 @@
  "版本": [
   "radar/app/app.js"
  ],
- "网页版": [
-  "radar/app/app.js"
- ],
  "预印本雷达 v{0} · {1} · {2}": [
   "radar/app/app.js"
  ],
@@ -12669,6 +13207,9 @@
  "这个模型不做这种计算": [
   "deploy/account-worker.js"
  ],
+ "MACE 模型采用学术软件许可（ASL），不通过 API 提供；可以在网站的在线模型页上使用": [
+  "deploy/account-worker.js"
+ ],
  "MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”": [
   "deploy/account-worker.js"
  ],
@@ -12711,6 +13252,9 @@
  "今天还剩 {0} 次，这项计算要用 {1} 次（每天 {2} 次{3}）；换一项花费少的计算，或明天再来": [
   "deploy/account-worker.js"
  ],
+ "今天通过 API 提交的计算已经到了总量上限，明天再来，或者到网站的在线模型页上算": [
+  "deploy/account-worker.js"
+ ],
  "站长的 GPU 现在离线，请稍后再试": [
   "deploy/account-worker.js"
  ],
@@ -12730,6 +13274,18 @@
   "deploy/account-worker.js"
  ],
  "没有这个接口": [
+  "deploy/account-worker.js"
+ ],
+ "算力是站长电脑上的 RTX 2080，尽力而为，可能离线；不要用在有时限的任务上。": [
+  "deploy/account-worker.js"
+ ],
+ "请在请求头里带上 API key：Authorization: Bearer mola_…": [
+  "deploy/account-worker.js"
+ ],
+ "这个 API key 无效或已撤销，在账号页可以重新生成": [
+  "deploy/account-worker.js"
+ ],
+ "计算接口暂时关闭": [
   "deploy/account-worker.js"
  ],
  "订单参考号格式不对": [
@@ -12783,6 +13339,15 @@
  "席位已满：共 {0} 席，你自己占 1 席。可以在订阅管理里增加席位。": [
   "deploy/account-worker.js"
  ],
+ "生成得太频繁，请一小时后再试": [
+  "deploy/account-worker.js"
+ ],
+ "每个账号最多 {0} 个 API key，先撤销一个不用的": [
+  "deploy/account-worker.js"
+ ],
+ "没有这个 API key": [
+  "deploy/account-worker.js"
+ ],
  "尝试太频繁，请一小时后再试": [
   "deploy/account-worker.js"
  ],
@@ -12825,10 +13390,10 @@
  "免费账号每天 {0} 次 AI 托管额度，今天的已用完，明天再来。Pro 支持者每月 {1} 次；在 AI 设置里换成自己的 key 也可以继续用。": [
   "deploy/account-worker.js"
  ],
- "这个网站没有使用账号服务的权限": [
+ "账号服务出错了，请稍后再试": [
   "deploy/account-worker.js"
  ],
- "账号服务出错了，请稍后再试": [
+ "这个网站没有使用账号服务的权限": [
   "deploy/account-worker.js"
  ],
  "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。": [
@@ -12976,6 +13541,18 @@
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 开放数据接口 · MolAstria open data API": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 整理的计算化学开放数据，中英双语的静态 JSON：资源目录（数据库、软件、数据集、课程）、期刊投稿指南、科学大模型与官方价格、教学视频和中英术语表。免费、不用注册、不用 key。Curated, bilingual open data for computational chemistry as static JSON: a resource catalogue, a journal guide, science foundation models with official prices, teaching videos and a Chinese-English term table. Free, no sign-up, no key.": [
+  "tools/build-seo.ts"
+ ],
+ "计算化学": [
+  "tools/build-seo.ts"
+ ],
+ "开放数据": [
   "tools/build-seo.ts"
  ],
  "用开源小模型训练你自己的化学研究 Agent": [

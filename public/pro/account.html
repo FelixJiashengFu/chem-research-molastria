@@ -77,6 +77,18 @@
       </div>
     </div>
 
+    <div class="acct-card" id="keys-card" aria-labelledby="keys-h">
+      <h2 id="keys-h">API key</h2>
+      <p class="acct-sub">给程序用：带上 key，就能在自己的脚本里提交在线模型的计算，不限来源网站。次数和这个账号在网站上用的是同一份（免费账号每天 100 次，Pro 支持者 200 次）。算力是站长电脑上的 RTX 2080，尽力而为，可能离线。 <a href="../api/index.html#compute">怎么用</a></p>
+      <form id="key-form" class="acct-add" novalidate><input id="key-name" maxlength="40" placeholder="备注，例如：实验室工作站" aria-label="API key 的备注" autocomplete="off"><button class="btn" type="submit">生成 key</button></form>
+      <div class="acct-newkey" id="key-new" hidden>
+        <p><b>新的 key 只显示这一次。</b> 请现在复制并保存好。我们只保存它的哈希，之后谁也看不到原文；丢了就撤销再生成一个。</p>
+        <div class="acct-keyrow"><code id="key-value"></code><button type="button" class="acct-copy" id="key-copy">复制</button></div>
+      </div>
+      <p class="co-msg" id="key-msg" role="status" aria-live="polite"></p>
+      <ul class="acct-cardlist" id="key-list"></ul>
+    </div>
+
     <div class="acct-card" id="admin-card" hidden aria-labelledby="admin-h">
       <h2 id="admin-h">发 VIP 卡</h2>
       <p class="acct-sub">生成卡号送给朋友。朋友在本页填邮箱和卡号、收到验证码后即开通 Pro。一张卡只能用一次；收回后，这张卡带来的 Pro 时长立即作废。</p>

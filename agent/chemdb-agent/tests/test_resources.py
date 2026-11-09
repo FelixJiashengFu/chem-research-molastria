@@ -1,23 +1,25 @@
-"""资源目录（导航 2026 的 103 条）测试：纯离线。"""
+"""资源目录（与 MolAstria 网站同一份）测试：纯离线。"""
 
 from chemdb_agent.catalog import resources as res
 
 
 def test_resources_count_and_numbers():
     allr = res.all_resources()
-    assert len(allr) == 103
-    assert [r["number"] for r in allr] == list(range(1, 104))
+    assert len(allr) == 214
+    assert [r["number"] for r in allr] == list(range(1, 215))
+    assert res.UPDATED and res.SOURCE.startswith("https://molastria.com/api/v1/")
     assert all(r["name"] and r["url"].startswith("http") and r["access"] for r in allr)
 
 
 def test_resources_categories():
-    assert len(res.CATEGORIES) == 11
+    assert len(res.CATEGORIES) == 17
     counts = {c: len(res.by_category(c)) for c in res.CATEGORIES}
     assert counts["综合化合物与化学信息"] == 7
     assert counts["材料与晶体结构"] == 15
     assert counts["软件、平台与计算入口"] == 20
     assert counts["社区与中文入口"] == 4
-    assert sum(counts.values()) == 103
+    assert counts["科学领域语言模型与多模态基础模型"] == 27
+    assert sum(counts.values()) == 214
 
 
 def test_resources_integrated_mapping():

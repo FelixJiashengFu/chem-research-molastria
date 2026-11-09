@@ -1,4 +1,4 @@
-/* 账号页：邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
+/* 账号页：邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、API key（给程序用的计算接口）、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -8,7 +8,7 @@
   const PAY = window.MOLASTRIA_PAY || {};
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const date = (s) => new Date(s * 1000).toLocaleDateString(en() ? 'en-CA' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false;
+  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
   // Pro that comes from a VIP card or the admin grant rather than a Stripe subscription
@@ -75,6 +75,7 @@
     $('digest-card').hidden = false; // free for every account
     $('digest-build').hidden = !a.admin;
     if (!digestAsked) { digestAsked = true; loadDigest(); }
+    if (!keysAsked) { keysAsked = true; loadKeys(); }
     if (a.admin && !cardsLoaded) { cardsLoaded = true; loadCards(); }
 
     $('team-card').hidden = a.role !== 'owner';
@@ -148,6 +149,11 @@
     account = null;
     digestState = null;
     digestAsked = false;
+    keysAsked = false;
+    keyRows = null;
+    $('key-new').hidden = true;
+    $('key-value').textContent = '';
+    $('key-list').innerHTML = '';
     show('acct-login');
     say(msg, T('已退出登录。'), 'ok');
   });
@@ -206,6 +212,45 @@
     try { digestState.digest = (await A.digestBuild()).digest; renderDigest(); say(dmsg, T('本期已重新生成。'), 'ok'); }
     catch (err) { say(dmsg, err.message, 'err'); }
     finally { $('digest-build').disabled = false; }
+  });
+
+  // ── API keys ──────────────────────────────────────────────────────────
+  const kmsg = $('key-msg');
+  function renderKeys(list) {
+    keyRows = list;
+    $('key-list').innerHTML = list.length ? list.map((k) => {
+      const used = k.last_used ? T(`最近使用 ${date(k.last_used)}`) : T('还没用过');
+      return `<li><code>${esc(k.prefix)}…</code><span class="acct-cardbtns"><button type="button" class="acct-remove" data-key="${esc(k.id)}">${T('撤销')}</button></span>` +
+        `<small>${k.name ? `${esc(k.name)} · ` : ''}${esc(T(`${date(k.created)} 生成`))} · ${esc(used)}</small></li>`;
+    }).join('') : `<li class="acct-empty">${T('还没有 API key。')}</li>`;
+  }
+  function loadKeys() { A.keys().then((r) => renderKeys(r.keys)).catch((err) => say(kmsg, err.message, 'err')); }
+  $('key-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const r = await A.createKey($('key-name').value.trim());
+      $('key-name').value = '';
+      $('key-value').textContent = r.key;
+      $('key-new').hidden = false;
+      renderKeys(r.keys);
+      say(kmsg, '');
+    } catch (err) { say(kmsg, err.message, 'err'); }
+  });
+  $('key-copy').addEventListener('click', async () => {
+    const key = $('key-value').textContent;
+    try { await navigator.clipboard.writeText(key); say(kmsg, T('已复制到剪贴板。'), 'ok'); }
+    catch { prompt(T('复制下面的 key：'), key); }
+  });
+  $('key-list').addEventListener('click', async (e) => {
+    const id = e.target.closest('[data-key]')?.dataset.key;
+    if (!id) return;
+    const k = keyRows.find((x) => x.id === id);
+    if (!confirm(T(`撤销 ${k.prefix}…？用这个 key 的程序会立刻失效。`))) return;
+    try {
+      renderKeys((await A.revokeKey(id)).keys);
+      if ($('key-value').textContent.startsWith(k.prefix)) { $('key-new').hidden = true; $('key-value').textContent = ''; }
+      say(kmsg, T(`已撤销 ${k.prefix}…`), 'ok');
+    } catch (err) { say(kmsg, err.message, 'err'); }
   });
 
   // ── VIP cards ─────────────────────────────────────────────────────────
@@ -286,5 +331,5 @@
   }
   init();
   // Re-render dates and labels when the language switches without a reload.
-  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
+  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (keyRows) renderKeys(keyRows); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
 })();

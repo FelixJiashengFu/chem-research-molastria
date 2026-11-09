@@ -43,6 +43,10 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
+      - name: Open data API content
+        run: node --test tools/api-test.mjs
+      - name: Rebuild the open data API (public/api/v1) from the data files
+        run: node tools/build-api.mjs
       - name: Account service tests
         run: deno run --allow-read tools/account-test.ts
       - name: Rebuild SEO pages and sitemap

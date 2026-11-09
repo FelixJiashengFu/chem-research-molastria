@@ -103,3 +103,15 @@ CREATE TABLE IF NOT EXISTS digest_sends (
   PRIMARY KEY (week, email)
 );
 CREATE INDEX IF NOT EXISTS digest_sends_sent ON digest_sends (sent);
+
+-- 给程序用的 API key（计算接口 /v1/*）。只存 key 的 SHA-256，原文只在生成时显示一次；prefix 是开头几位，给账号页认 key 用。
+-- 撤销就是删掉这一行。last_used 最多每小时更新一次。
+CREATE TABLE IF NOT EXISTS api_keys (
+  hash TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  prefix TEXT NOT NULL,
+  name TEXT NOT NULL DEFAULT '',
+  created INTEGER NOT NULL,
+  last_used INTEGER
+);
+CREATE INDEX IF NOT EXISTS api_keys_email ON api_keys (email);

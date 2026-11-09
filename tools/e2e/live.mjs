@@ -16,6 +16,27 @@ check('account service answers and guards its routes', async () => {
   assert.equal((await fetch(`${API}/admin/cards`)).status, 401);
 });
 
+check('compute API for programs: open to any origin, described without a key, closed without one (open data API page documents it)', async () => {
+  const elsewhere = { Origin: 'https://someone-elses-lab.example' };
+  const root = await fetch(`${API}/v1`, { headers: elsewhere });
+  const info = await root.json();
+  assert.deepEqual([root.status, root.headers.get('access-control-allow-origin'), info.service, info.docs], [200, '*', 'molastria-compute', `${SITE}/api/#compute`]);
+  assert.match(info.note.en, /RTX 2080.*best effort.*may be offline/);
+  const pre = await fetch(`${API}/v1/jobs`, { method: 'OPTIONS', headers: { ...elsewhere, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'authorization, content-type' } });
+  assert.deepEqual([pre.status, pre.headers.get('access-control-allow-origin')], [204, '*']);
+  for (const [method, path] of [['GET', '/v1/me'], ['GET', '/v1/models'], ['POST', '/v1/jobs'], ['GET', '/v1/jobs/0123456789abcdef']]) {
+    const r = await fetch(API + path, { method, headers: elsewhere });
+    assert.deepEqual([r.status, (await r.json()).error.code], [401, 'unauthorized'], `${method} ${path} without a key`);
+  }
+  assert.equal((await fetch(`${API}/keys`)).status, 401, 'keys are made by a signed-in account');
+  const page = await (await fetch(`${SITE}/api/?v=${Date.now()}`)).text();
+  assert.match(page, /id="compute"/);
+  // Cloudflare refuses urllib's default user agent (403, seen 2026-11-09); the documented example sets its own, which must get through.
+  const py = await fetch(`${API}/v1`, { headers: { 'User-Agent': 'my-script/1.0' } });
+  assert.equal(py.status, 200, 'the user agent of the Python example is not blocked');
+  assert.match(page.includes('compute.js') ? await (await fetch(`${SITE}/api/compute.js?v=${Date.now()}`)).text() : '', /"User-Agent": "my-script\/1\.0"/);
+});
+
 check('account service allows the site and the desktop app, and nobody else', async () => {
   const preflight = (origin) => fetch(`${API}/auth/start`, { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST' } });
   for (const origin of ['https://molastria.com', 'http://tauri.localhost', 'tauri://localhost']) {

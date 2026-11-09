@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 开放数据接口：资源目录、期刊投稿指南、科学大模型与价格、教学视频，中英双语的静态 JSON，免费、不用注册、不用 key，CC BY 4.0。">
+  <meta name="theme-color" content="#173f34">
+  <title>开放数据接口 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../pro/pro.css">
+  <link rel="stylesheet" href="api.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="embed.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="api.js" defer></script>
+  <script src="compute.js" defer></script>
+</head>
+<body data-section="api">
+<main class="doc api">
+  <p class="eyebrow">OPEN DATA API · v1</p>
+  <h1>开放数据接口</h1>
+  <p class="meta">免费 · 不用注册 · 不用 key · 中英双语 · <span id="api-updated"></span></p>
+  <p>MolAstria 整理的数据可以直接被程序读取：每个数据集是一个静态 JSON 文件，用任何语言发一个 GET 请求就能拿到。网页可以跨域读取，AI 智能体也可以直接用。想让程序提交计算，看最后的 <a href="#compute">计算接口</a></p>
+  <p class="api-jump"><a href="#explore">搜一下</a><a href="#code">代码</a><a href="#datasets">数据集</a><a href="#embed">嵌入卡片</a><a href="#agents">给 AI 和程序</a><a href="#license">许可</a><a href="#compute">计算接口</a></p>
+
+  <h2 id="explore">搜一下</h2>
+  <p>下面这个搜索台只用了开放接口和一个不到 200 行的 JS 库，没有服务器。中英文同义词互通：搜“密度泛函”也会找到只写了 DFT 的条目。</p>
+  <div class="api-search">
+    <input type="search" id="api-q" autocomplete="off" spellcheck="false" placeholder="搜资源、期刊、模型、视频…" aria-label="搜索开放数据">
+    <div class="api-chips" id="api-in" role="group" aria-label="数据集"></div>
+    <div class="api-tries" id="api-tries"><span class="muted small">试试：</span></div>
+  </div>
+  <p class="api-status" id="api-status" role="status"></p>
+  <ol class="api-hits" id="api-hits" translate="no"></ol>
+
+  <h2 id="code">这次搜索的代码</h2>
+  <p class="fine">跟着上面的搜索变，复制就能跑。</p>
+  <div class="api-codehead">
+    <div class="api-tabs" id="api-tabs" role="tablist" aria-label="示例语言">
+      <button type="button" role="tab" aria-selected="true" data-tab="js">JavaScript</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="py">Python</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="curl">curl</button>
+    </div>
+    <button type="button" class="btn api-copy" data-copy="api-code">复制代码</button>
+  </div>
+  <pre class="api-code" id="api-code" translate="no" tabindex="0"><code></code></pre>
+
+  <h2 id="datasets">数据集</h2>
+  <div class="api-sets" id="api-sets" aria-live="polite"><p class="muted">正在读取数据集列表…</p></div>
+  <p class="fine">总入口列出全部数据集、条数和核对日期： <a href="v1/index.json"><code translate="no">https://molastria.com/api/v1/index.json</code></a></p>
+
+  <h2 id="embed">嵌到你的网页里</h2>
+  <p>一行代码，把一组资源放到课程主页、课题组 wiki 或博客上。卡片自带样式，不受所在页面影响；数据更新后卡片跟着更新。</p>
+  <div class="api-embed">
+    <form class="api-form" id="api-embed-form">
+      <label>关键词<input name="q" value="机器学习势" autocomplete="off"></label>
+      <label>数据集<select name="dataset"><option value="">全部</option><option value="resources">资源目录</option><option value="journals">期刊</option><option value="scimodels">科学大模型</option><option value="videos">教学视频</option></select></label>
+      <label>条数<input name="limit" type="number" min="1" max="20" value="4"></label>
+      <label>语言<select name="lang"><option value="">跟随页面</option><option value="zh">中文</option><option value="en">English</option></select></label>
+      <label>配色主题<select name="theme"><option value="">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+    </form>
+    <div class="api-preview" id="api-preview"></div>
+  </div>
+  <div class="api-codehead"><span class="muted small">贴到网页里：</span><button type="button" class="btn api-copy" data-copy="api-snippet">复制代码</button></div>
+  <pre class="api-code" id="api-snippet" translate="no" tabindex="0"><code></code></pre>
+
+  <h2 id="agents">给 AI 和程序</h2>
+  <dl class="api-files">
+    <div><dt><a href="../llms.txt"><code translate="no">llms.txt</code></a></dt><dd>给大模型看的站点说明，告诉它数据在哪、怎么署名。</dd></div>
+    <div><dt><a href="v1/openapi.json"><code translate="no">openapi.json</code></a></dt><dd>OpenAPI 3.1 描述，字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。</dd></div>
+    <div><dt><a href="v1/molastria.mjs"><code translate="no">molastria.mjs</code></a></dt><dd>零依赖的 JS 库，浏览器、Deno、Node 18 以上都能用，带中英互通的搜索。</dd></div>
+    <div><dt><a href="../atlas/index.html#agent"><code translate="no">chemdb-agent</code></a></dt><dd>MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据。它随包带着同一份资源目录，离线也能查。</dd></div>
+  </dl>
+
+  <h2>约定</h2>
+  <ul>
+    <li><b>格式：</b> 每个文件开头有三个字段： <code translate="no">schema</code>（现在是 1.0）、 <code translate="no">updated</code>（这份数据的核对日期）和 <code translate="no">count</code>（条数）。条目放在数组 <code translate="no">items</code> 里，双语文字写成 <code translate="no">{ "zh": …, "en": … }</code></li>
+    <li><b>版本：</b> v1 只会加字段，不会删字段或改含义；要改就出 v2，v1 继续保留。</li>
+    <li><b>更新：</b> 数据随网站一起发布，核对过才改日期。文件会被浏览器和 CDN 缓存约 10 分钟。</li>
+    <li><b>用量：</b> 没有次数限制。文件不大，建议在自己这边缓存一天，不要每次请求都来取。</li>
+    <li><b>不保证：</b> 这是个人运营的免费服务，尽力保持可用，但没有可用性承诺。链接和价格会过时，每个数据集都带核对日期，重要的事请到原始出处再核一次。</li>
+  </ul>
+
+  <h2 id="license">许可与署名</h2>
+  <div class="box">
+    <p><b><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></b> 许可：可以免费使用、转载和改编，包括商业用途，只要注明来源。署名写法： <span translate="no">MolAstria (https://molastria.com)</span></p>
+    <p>这个许可适用于 MolAstria 自己整理和撰写的内容：条目的选取与分类、中英文说明、核对记录。第三方的名称、标题、链接和价格属于各自的权利人，这里只作事实引用。网站代码另按 MIT 许可开源。</p>
+  </div>
+
+  <h2 id="compute">计算接口</h2>
+  <p>上面读的是整理好的数据，这一段让程序提交计算：用机器学习势（UMA、eSEN、AllScAIP、ANI-2x）做单点能、几何优化、振动频率、构象搜索、二面角扫描、分子动力学、反应能、电离能这些计算。任务排的队就是 <a href="../models/index.html">在线模型页的队</a></p>
+  <p>要一个免费账号的 API key。带 key 的请求不限来源网站：脚本、笔记本、别人的网页都能调。</p>
+  <div class="box api-gpu">
+    <p><b>先把算力说清楚：</b> 算力是站长电脑上的 RTX 2080，尽力而为，可能离线。没有可用性承诺：人多要排队，电脑关机就算不了。不要把有时限的事情压在它上面。</p>
+    <p class="api-live" id="gpu-live" role="status" data-state="wait"><span class="api-dot" aria-hidden="true"></span><span id="gpu-text">正在看这台电脑在不在线……</span></p>
+  </div>
+  <ol class="api-steps">
+    <li><b>拿一个 key</b> 用任何邮箱登录 <a href="../pro/account.html">账号页</a>，在“API key”一栏生成。原文只显示一次，我们的数据库里只存它的哈希。</li>
+    <li><b>提交计算</b> 发一个 POST 到 <code translate="no">https://api.molastria.com/v1/jobs</code>，请求头带 <code translate="no">Authorization: Bearer mola_…</code>，马上拿到任务编号。</li>
+    <li><b>轮询结果</b> 每隔两三秒 GET 一次 <code translate="no">/v1/jobs/{id}</code>，直到 <code translate="no">status</code> 变成 <code translate="no">done</code> （算完）或 <code translate="no">error</code> （出错）</li>
+  </ol>
+
+  <h3 id="compute-try">带上 key 试一次</h3>
+  <form class="api-run" id="run-form" novalidate>
+    <label>API key<input type="password" id="run-key" name="key" autocomplete="off" spellcheck="false" placeholder="mola_…"></label>
+    <label>分子（SMILES）<input id="run-smiles" name="smiles" value="CCO" autocomplete="off" spellcheck="false" translate="no"></label>
+    <label>模型<select id="run-model" name="model" translate="no"></select></label>
+    <label>计算<select id="run-job" name="job"></select></label>
+    <button class="btn primary" type="submit" id="run-go">提交计算</button>
+  </form>
+  <p class="fine">key 只留在这个页面的内存里，只发给 api.molastria.com，刷新页面就没了。这次计算会算进你今天的次数。</p>
+  <p class="api-status" id="run-status" role="status" aria-live="polite"></p>
+  <pre class="api-code" id="run-result" translate="no" tabindex="0" hidden><code></code></pre>
+  <p class="fine">下面的代码跟着上面的选择变，key 从环境变量里读，不会写进代码。</p>
+  <div class="api-codehead">
+    <div class="api-tabs" id="run-tabs" role="tablist" aria-label="计算示例的语言">
+      <button type="button" role="tab" aria-selected="true" data-tab="py">Python</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="js">JavaScript</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="curl">curl</button>
+    </div>
+    <button type="button" class="btn api-copy" data-copy="run-code">复制代码</button>
+  </div>
+  <pre class="api-code" id="run-code" translate="no" tabindex="0"><code></code></pre>
+
+  <h3>接口</h3>
+  <div class="api-table"><table>
+    <thead><tr><th>请求</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code translate="no">GET /v1</code></td><td>这套接口的说明和文档地址，不用 key</td></tr>
+      <tr><td><code translate="no">GET /v1/me</code></td><td>这个 key 的档位，今天用了几次、还剩几次</td></tr>
+      <tr><td><code translate="no">GET /v1/models</code></td><td>能用的模型、每个模型做哪些计算、每种计算花几次，以及电脑现在在不在线</td></tr>
+      <tr><td><code translate="no">POST /v1/jobs</code></td><td>提交一个计算，返回任务编号、花了几次和今天的余量</td></tr>
+      <tr><td><code translate="no">GET /v1/jobs/{id}</code></td><td>进度和结果；算完的任务保留一小时</td></tr>
+    </tbody>
+  </table></div>
+  <p>结果和在线模型页拿到的是同一份，能量单位是 eV。提交时的字段： <code translate="no">model</code> （模型代号）、 <code translate="no">job</code> （计算代号）、 <code translate="no">smiles</code> / <code translate="no">xyz</code> （分子，二选一）、 <code translate="no">charge</code> （电荷，-2 到 2）、 <code translate="no">spin</code> （自旋多重度，1 到 4）、 <code translate="no">params</code> （这种计算自己的参数，都可以不给，标了“必填”的除外）</p>
+  <div class="api-table"><table>
+    <thead><tr><th>计算代号</th><th>算什么</th><th>花费（次）</th><th>参数（params）</th></tr></thead>
+    <tbody id="run-jobs"></tbody>
+  </table></div>
+  <p class="fine">反应能、键解离能和质子亲和能加上热校正时花 5 次，参数写 <code translate="no">thermo: true</code></p>
+  <p class="fine">电离能、自旋态能隙、键解离能和质子亲和能只有能处理电荷和自旋的模型做。每个模型做哪些计算，看 <code translate="no">GET /v1/models</code></p>
+
+  <h3>规则</h3>
+  <ul>
+    <li><b>次数：</b> 和网站上用的是同一份。不带 key 只能在网站上用，每天 40 次；免费账号的 key 每天 100 次；Pro 支持者 200 次。按上表的花费扣，从当天第一次计算起 24 小时后重置；被拒绝的和电脑离线时的计算不扣。所有 key 合起来每天还有一个总量，免得脚本把网站访客挤出队列，到了会返回 api_busy。每次提交的回答里有 <code translate="no">usage</code>，响应头里有 <code translate="no">X-RateLimit-Remaining</code></li>
+    <li><b>一次一个：</b> 同一个账号同时只能有一个任务在排队或计算，网站上提交的也算在内。等它算完再交下一个。</li>
+    <li><b>缓存：</b> 算过的同一个任务会直接返回结果，同样计次。这时 <code translate="no">status</code> 直接是 <code translate="no">done</code>，没有任务编号。</li>
+    <li><b>模型许可：</b> UMA、eSEN 和 AllScAIP 采用 FAIR Chemistry License，ANI-2x 是 MIT 许可，用它们算出的结果请遵守各自的许可并引用原论文。MACE 系列（MACE-OFF23、MACE-OMOL-0、MACE-MDP）采用学术软件许可（ASL），只限学术、非商业研究，所以不通过 API 提供，要用请到在线模型页。</li>
+    <li><b>请求头 User-Agent：</b> 接口前面的 Cloudflare 会拒绝 Python urllib 默认的 User-Agent，返回 403，而且不是 JSON。像上面的示例那样给请求设一个自己的 User-Agent 就可以。</li>
+    <li><b>地区：</b> 按照模型许可要求遵守的出口管制规定，部分地区不能使用。</li>
+    <li><b>保管好 key：</b> 一个账号最多 3 个。不要把 key 写进公开的网页或公开的代码仓库；泄露了就到账号页撤销，撤销立刻生效。</li>
+    <li><b>报错：</b> 出错时返回 <code translate="no">{ "error": { "code", "message", "message_zh" } }</code>，英文和中文各一句。常见的 code 值： <code translate="no">unauthorized</code> （key 不对或已撤销）、 <code translate="no">quota_exceeded</code> （今天的次数不够）、 <code translate="no">job_in_progress</code> （上一个任务还没算完）、 <code translate="no">offline</code> （电脑离线）、 <code translate="no">licence</code> （这个模型不通过 API 提供）、 <code translate="no">invalid_request</code> （请求里有不合法的值）</li>
+    <li><b>结果的分量：</b> 这些是机器学习势的预测，不是 DFT 计算。用来筛选和找方向很合适，写进论文前请用你信得过的方法复核。</li>
+  </ul>
+
+  <h2>还没有开放的</h2>
+  <p>网状查询的实体与关系还没有放进接口。想用它，或者接口缺了什么字段、计算接口缺了哪种计算，请告诉我们： <a href="https://github.com/FelixJiashengFu/chem-research-molastria/issues" target="_blank" rel="noopener">GitHub Issues</a></p>
+</main>
+</body>
+</html>

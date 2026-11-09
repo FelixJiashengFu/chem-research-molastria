@@ -1,0 +1,803 @@
+{
+ "api": "molastria-open-data",
+ "schema": "1.0",
+ "license": "CC-BY-4.0",
+ "attribution": "MolAstria (https://molastria.com)",
+ "docs": "https://molastria.com/api/",
+ "dataset": "terms",
+ "updated": "2026-11-05",
+ "count": 109,
+ "items": [
+  {
+   "terms": [
+    "密度泛函",
+    "dft",
+    "density functional"
+   ]
+  },
+  {
+   "terms": [
+    "含时密度泛函",
+    "td-dft",
+    "tddft",
+    "time-dependent density functional"
+   ]
+  },
+  {
+   "terms": [
+    "从头算",
+    "ab initio"
+   ]
+  },
+  {
+   "terms": [
+    "第一性原理",
+    "first-principles",
+    "first principles"
+   ]
+  },
+  {
+   "terms": [
+    "量子化学",
+    "quantum chemistry",
+    "quantum chemical",
+    "quantum-chemical"
+   ]
+  },
+  {
+   "terms": [
+    "耦合簇",
+    "coupled cluster",
+    "coupled-cluster",
+    "ccsd"
+   ]
+  },
+  {
+   "terms": [
+    "多参考",
+    "multireference",
+    "multi-reference",
+    "casscf",
+    "caspt2",
+    "nevpt2"
+   ]
+  },
+  {
+   "terms": [
+    "半经验",
+    "semiempirical",
+    "semi-empirical",
+    "xtb"
+   ]
+  },
+  {
+   "terms": [
+    "分子动力学",
+    "molecular dynamics",
+    "md simulation",
+    "aimd"
+   ]
+  },
+  {
+   "terms": [
+    "蒙特卡洛",
+    "蒙特卡罗",
+    "monte carlo"
+   ]
+  },
+  {
+   "terms": [
+    "增强采样",
+    "enhanced sampling",
+    "metadynamics",
+    "元动力学"
+   ]
+  },
+  {
+   "terms": [
+    "自由能",
+    "free energy",
+    "free-energy"
+   ]
+  },
+  {
+   "terms": [
+    "力场",
+    "force field",
+    "force-field"
+   ]
+  },
+  {
+   "terms": [
+    "粗粒化",
+    "coarse-grained",
+    "coarse grained"
+   ]
+  },
+  {
+   "terms": [
+    "qm/mm",
+    "量子力学/分子力学"
+   ]
+  },
+  {
+   "terms": [
+    "机器学习",
+    "machine learning",
+    "machine-learning",
+    "deep learning",
+    "深度学习",
+    "neural network",
+    "神经网络"
+   ]
+  },
+  {
+   "terms": [
+    "机器学习势",
+    "machine learning potential",
+    "machine-learning potential",
+    "interatomic potential",
+    "mlip",
+    "势函数"
+   ]
+  },
+  {
+   "terms": [
+    "大语言模型",
+    "大模型",
+    "large language model",
+    "llm"
+   ]
+  },
+  {
+   "terms": [
+    "基组",
+    "basis set"
+   ]
+  },
+  {
+   "terms": [
+    "泛函",
+    "exchange-correlation functional",
+    "hybrid functional"
+   ]
+  },
+  {
+   "terms": [
+    "色散校正",
+    "dispersion correction",
+    "d3",
+    "d4"
+   ]
+  },
+  {
+   "terms": [
+    "溶剂化",
+    "溶剂效应",
+    "solvation",
+    "implicit solvent",
+    "continuum solvent"
+   ]
+  },
+  {
+   "terms": [
+    "分子对接",
+    "对接",
+    "docking"
+   ]
+  },
+  {
+   "terms": [
+    "虚拟筛选",
+    "virtual screening",
+    "high-throughput screening",
+    "高通量筛选"
+   ]
+  },
+  {
+   "terms": [
+    "过渡态",
+    "transition state",
+    "irc",
+    "反应路径",
+    "reaction path"
+   ]
+  },
+  {
+   "terms": [
+    "反应机理",
+    "反应机制",
+    "reaction mechanism"
+   ]
+  },
+  {
+   "terms": [
+    "势能面",
+    "potential energy surface",
+    "pes"
+   ]
+  },
+  {
+   "terms": [
+    "激发态",
+    "excited state",
+    "excited-state"
+   ]
+  },
+  {
+   "terms": [
+    "电子结构",
+    "electronic structure"
+   ]
+  },
+  {
+   "terms": [
+    "能带",
+    "band structure",
+    "band gap",
+    "带隙"
+   ]
+  },
+  {
+   "terms": [
+    "静电势",
+    "electrostatic potential",
+    "esp"
+   ]
+  },
+  {
+   "terms": [
+    "原子电荷",
+    "电荷布居",
+    "atomic charge",
+    "partial charge",
+    "population analysis"
+   ]
+  },
+  {
+   "terms": [
+    "电荷转移",
+    "charge transfer"
+   ]
+  },
+  {
+   "terms": [
+    "弱相互作用",
+    "非共价相互作用",
+    "non-covalent",
+    "noncovalent",
+    "nci"
+   ]
+  },
+  {
+   "terms": [
+    "氢键",
+    "hydrogen bond"
+   ]
+  },
+  {
+   "terms": [
+    "振动",
+    "频率分析",
+    "vibrational",
+    "frequency analysis"
+   ]
+  },
+  {
+   "terms": [
+    "光谱",
+    "谱图",
+    "spectroscopy",
+    "spectra"
+   ]
+  },
+  {
+   "terms": [
+    "红外",
+    "infrared"
+   ]
+  },
+  {
+   "terms": [
+    "拉曼",
+    "raman"
+   ]
+  },
+  {
+   "terms": [
+    "核磁",
+    "nmr",
+    "chemical shift",
+    "化学位移"
+   ]
+  },
+  {
+   "terms": [
+    "紫外可见",
+    "uv-vis",
+    "uv/vis"
+   ]
+  },
+  {
+   "terms": [
+    "电离能",
+    "ionization potential",
+    "ionization energy"
+   ]
+  },
+  {
+   "terms": [
+    "电子亲和能",
+    "electron affinity"
+   ]
+  },
+  {
+   "terms": [
+    "氧化还原",
+    "redox"
+   ]
+  },
+  {
+   "terms": [
+    "电极电位",
+    "还原电位",
+    "electrode potential",
+    "redox potential",
+    "reduction potential"
+   ]
+  },
+  {
+   "terms": [
+    "热力学",
+    "thermodynamic"
+   ]
+  },
+  {
+   "terms": [
+    "热化学",
+    "thermochemistry",
+    "thermochemical"
+   ]
+  },
+  {
+   "terms": [
+    "配分函数",
+    "partition function"
+   ]
+  },
+  {
+   "terms": [
+    "分子轨道",
+    "前线轨道",
+    "molecular orbital",
+    "frontier orbital",
+    "homo",
+    "lumo"
+   ]
+  },
+  {
+   "terms": [
+    "波函数分析",
+    "wavefunction analysis",
+    "wave function analysis"
+   ]
+  },
+  {
+   "terms": [
+    "电子密度",
+    "electron density"
+   ]
+  },
+  {
+   "terms": [
+    "键级",
+    "bond order"
+   ]
+  },
+  {
+   "terms": [
+    "芳香性",
+    "aromaticity",
+    "aromatic",
+    "nics"
+   ]
+  },
+  {
+   "terms": [
+    "电子定域化",
+    "electron localization",
+    "elf",
+    "lol"
+   ]
+  },
+  {
+   "terms": [
+    "能量分解",
+    "energy decomposition",
+    "eda",
+    "sapt"
+   ]
+  },
+  {
+   "terms": [
+    "自然键轨道",
+    "natural bond orbital",
+    "nbo"
+   ]
+  },
+  {
+   "terms": [
+    "极化率",
+    "超极化率",
+    "polarizability",
+    "hyperpolarizability"
+   ]
+  },
+  {
+   "terms": [
+    "偶极矩",
+    "dipole moment"
+   ]
+  },
+  {
+   "terms": [
+    "吸收光谱",
+    "absorption spectrum",
+    "absorption spectra"
+   ]
+  },
+  {
+   "terms": [
+    "荧光",
+    "磷光",
+    "发光",
+    "fluorescence",
+    "phosphorescence",
+    "luminescence"
+   ]
+  },
+  {
+   "terms": [
+    "圆二色",
+    "circular dichroism",
+    "ecd"
+   ]
+  },
+  {
+   "terms": [
+    "基组重叠误差",
+    "bsse",
+    "counterpoise"
+   ]
+  },
+  {
+   "terms": [
+    "态密度",
+    "density of states",
+    "dos"
+   ]
+  },
+  {
+   "terms": [
+    "声子",
+    "phonon"
+   ]
+  },
+  {
+   "terms": [
+    "赝势",
+    "pseudopotential",
+    "effective core potential",
+    "ecp"
+   ]
+  },
+  {
+   "terms": [
+    "结合能",
+    "相互作用能",
+    "binding energy",
+    "interaction energy"
+   ]
+  },
+  {
+   "terms": [
+    "键能",
+    "bond energy",
+    "bond dissociation energy",
+    "bde"
+   ]
+  },
+  {
+   "terms": [
+    "富勒烯",
+    "fullerene"
+   ]
+  },
+  {
+   "terms": [
+    "石墨烯",
+    "graphene"
+   ]
+  },
+  {
+   "terms": [
+    "分子筛",
+    "zeolite"
+   ]
+  },
+  {
+   "terms": [
+    "动力学常数",
+    "反应速率",
+    "rate constant",
+    "kinetics"
+   ]
+  },
+  {
+   "terms": [
+    "构象",
+    "conformer",
+    "conformation"
+   ]
+  },
+  {
+   "terms": [
+    "吸附",
+    "adsorption"
+   ]
+  },
+  {
+   "terms": [
+    "表面",
+    "surface"
+   ]
+  },
+  {
+   "terms": [
+    "电解液",
+    "电解质",
+    "electrolyte"
+   ]
+  },
+  {
+   "terms": [
+    "锂电池",
+    "锂电",
+    "锂离子",
+    "lithium",
+    "li-ion",
+    "battery",
+    "batteries",
+    "电池"
+   ]
+  },
+  {
+   "terms": [
+    "电化学",
+    "electrochemical",
+    "electrochemistry"
+   ]
+  },
+  {
+   "terms": [
+    "电催化",
+    "electrocatalysis",
+    "electrocatalyst"
+   ]
+  },
+  {
+   "terms": [
+    "催化",
+    "catalysis",
+    "catalyst",
+    "catalytic"
+   ]
+  },
+  {
+   "terms": [
+    "光催化",
+    "photocatalysis",
+    "photocatalyst"
+   ]
+  },
+  {
+   "terms": [
+    "光化学",
+    "photochemistry",
+    "photochemical"
+   ]
+  },
+  {
+   "terms": [
+    "有机合成",
+    "organic synthesis"
+   ]
+  },
+  {
+   "terms": [
+    "溶剂",
+    "solvent"
+   ]
+  },
+  {
+   "terms": [
+    "聚合物",
+    "高分子",
+    "polymer"
+   ]
+  },
+  {
+   "terms": [
+    "金属有机框架",
+    "mof",
+    "metal-organic framework"
+   ]
+  },
+  {
+   "terms": [
+    "纳米",
+    "nano"
+   ]
+  },
+  {
+   "terms": [
+    "二维材料",
+    "2d material",
+    "two-dimensional material"
+   ]
+  },
+  {
+   "terms": [
+    "晶体",
+    "crystal",
+    "crystallographic"
+   ]
+  },
+  {
+   "terms": [
+    "材料",
+    "materials"
+   ]
+  },
+  {
+   "terms": [
+    "蛋白质",
+    "蛋白",
+    "protein"
+   ]
+  },
+  {
+   "terms": [
+    "酶",
+    "enzyme"
+   ]
+  },
+  {
+   "terms": [
+    "药物",
+    "drug"
+   ]
+  },
+  {
+   "terms": [
+    "小分子",
+    "small molecule"
+   ]
+  },
+  {
+   "terms": [
+    "碳环",
+    "cyclo[18]carbon",
+    "cyclocarbon"
+   ]
+  },
+  {
+   "terms": [
+    "金属配合物",
+    "配合物",
+    "metal complex",
+    "coordination complex"
+   ]
+  },
+  {
+   "terms": [
+    "教程",
+    "入门",
+    "tutorial",
+    "guide"
+   ]
+  },
+  {
+   "terms": [
+    "安装",
+    "编译",
+    "install",
+    "installation",
+    "compile"
+   ]
+  },
+  {
+   "terms": [
+    "报错",
+    "错误",
+    "error",
+    "troubleshooting"
+   ]
+  },
+  {
+   "terms": [
+    "开源",
+    "open source",
+    "open-source",
+    "github"
+   ]
+  },
+  {
+   "terms": [
+    "数据库",
+    "database"
+   ]
+  },
+  {
+   "terms": [
+    "数据集",
+    "dataset"
+   ]
+  },
+  {
+   "terms": [
+    "软件",
+    "software"
+   ]
+  },
+  {
+   "terms": [
+    "可视化",
+    "visualization",
+    "visualisation"
+   ]
+  },
+  {
+   "terms": [
+    "综述",
+    "review"
+   ]
+  },
+  {
+   "terms": [
+    "预印本",
+    "preprint"
+   ]
+  },
+  {
+   "terms": [
+    "招聘",
+    "职位",
+    "job",
+    "postdoc",
+    "博士后"
+   ]
+  },
+  {
+   "terms": [
+    "会议",
+    "conference"
+   ]
+  },
+  {
+   "terms": [
+    "超算",
+    "集群",
+    "hpc",
+    "high-performance computing"
+   ]
+  },
+  {
+   "terms": [
+    "智能体",
+    "ai agent",
+    "ai agents"
+   ]
+  }
+ ]
+}

@@ -4,6 +4,9 @@
 
 ## 现在
 
+- 计算接口和 API key（`api.molastria.com/v1`，2026-11-09）：对外服务路线的第 2 步，和第 1 步一起上线。免费账号在账号页生成 key（D1 只存哈希），带 key 的程序可以提交在线模型的计算并轮询结果，不限来源网站；次数就是账号在网站上的那一份（100 / 200），MACE 全系（ASL）不提供。说明在 `/api/#compute`，有实时在线状态、带 key 试一次和三种语言的示例。**上线顺序：`schema.sql` 迁移（新表 `api_keys`）→ 部署账号服务 → 合并网站。** 上线后：`node tools/e2e/live.mjs`（有一条检查 `/v1`）；用真实的 key 在站长电脑上把 `/api/` 页的 Python 示例跑一次（本地测试里站长电脑是假的）；Cloudflare 会拦 Python urllib 默认的 User-Agent（403，2026-11-09 实测），说明页和示例已经写明要自己设一个；想放行的话在 Cloudflare 的安全规则里给 `api.molastria.com/v1` 关掉 Browser Integrity Check；Worker 免费版每次调用 10 ms CPU，`/v1/jobs` 比 `/uma/jobs` 多一次查 key，在 Cloudflare 控制台看一眼 CPU 时间。以后看 `api_keys` 的行数和 `last_used` 就知道有没有人用；有人用了再考虑第 3 步，以及：按 key 的用量页、把计算接口写进 OpenAPI、给 chemdb-agent 加一个调用计算接口的工具。
+
+- 开放数据接口（`/api/`，2026-11-09）：对外服务路线的第 1 步。`public/api/v1/` 五个数据集（资源目录 214 条、期刊 48 种、科学大模型 27 个与价格、教学视频 189 条、中英术语表 109 组），CC BY 4.0；零依赖的 JS 库 `molastria.mjs`（跨数据集搜索，中英同义词互通）；嵌入卡片 `embed.js`（一行 script 放到别人的网页上）；`openapi.json` 和 `llms.txt` 给 AI 和程序发现接口；说明页 `/api/` 有搜索台、跟着搜索变的代码和嵌入卡片生成器，页脚有入口；chemdb-agent 0.2.1 的目录同步到 214 条。嵌入卡片只在无头 Chrome 里测过，上线后在一个真实的外部网页（比如 GitHub Pages 上的课程页）和 Safari 里各贴一次试试；`.mjs` 在 GitHub Pages 上应以 `text/javascript` 返回（没有实测，不对的话 `import` 会失败）。上线后：用 `curl -I https://molastria.com/api/v1/index.json` 确认有 `access-control-allow-origin: *`（GitHub Pages 默认会给，没有实测过自定义域名）；跑 `node tools/e2e/live.mjs`；把 chemdb-agent 登记到 MCP 目录（要站长的账号）。看有没有人用：现在没有访问统计，接入 Cloudflare Web Analytics 之前只能看 GitHub Issues 的反馈。第 3 步（云 GPU、机构档）等有人用了再做，见 `docs/DECISIONS.md` 2026-11-09。以后可以加：网状查询的实体与关系、讲解手册各章、每周精选。
 - 量子嘉年华（`/quantum/`，2026-11-09）：母栏目和第一个展馆“量子物理”（`/quantum/physics/`，十二章、四个演示、36 篇原始论文、27 本教材与讲义、15 门课程）。其余三个展馆（量子计算机、量子算法、量子生物学）各自上线时把 `sections.js` 里自己那块改成 `live: true`。上线后在 Safari 和桌面版里看一眼 MathML 公式和演示 2 的波包动画（只在 Chromium 里测过）；视频链接每半年复查一次；单文件离线版没有收录量子物理页（数学子模块也没有收录），以后可以一起加。
 - 量子嘉年华 · 量子计算机（`/quantum/computing/`，2026-11-09）：硬件与纠错一层（六条硬件路线、20 个里程碑、证据账本、三个演示），57 篇文献在 OpenAlex 核对（容器里连不上 Crossref，站长电脑上可以用 `tools/fundamental-refs.mjs` 的做法再核一遍）。量子算法、量子生物两个展馆合并后，`tools/quantum-computing-test.mjs` 里跳过这两个路径的那一行可以删掉，让学习路线的链接也被检查。只在无头 Chrome 里测过；在 Safari 和桌面版里看一眼 MathML 公式和 Bloch 球。硬件数字（保真度、比特数）变化快，每半年按页面上的核对日期复查一次。
 - 研究图谱（`/research-atlas/`，2026-11-08）：整站从 university-science-research-network 复制，二十所学校已全部建好（复制过来约 150 MB），图谱更新后重新运行 `tools/vendor-atlas.mjs`。只在无头 Chrome 里测过缩放（125%，地图的放大缩小按钮和滚轮、sigma 网络、手机 390 px）；iPad 主屏幕应用里开缩放看一眼框内的网络图和地图能否拖动、点选。
@@ -51,7 +54,6 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 增长：
 - 云端批量计算（2026-11-05 站长暂停）：`tools/cloud/` 代码和 MACE-OFF23 一段已在云端 L4 上验证过；L4 在美国各区普遍缺货，UMA 一段没跑成。要继续时：在虚拟机上登录 Hugging Face，跑 `tools/cloud/run.mjs`，再用真实 UMA 结果校准 MACE-OFF23 的两个阈值（0.3 Å / 0.2 eV）。云上的两台机器都关着，磁盘和快照还在计存储费。
 - 说明讲解手册：给 12–16 类（量子化学程序、凝聚态第一性原理、波函数分析、课程教材、量子计算）补写章节；现有 20 章，其中 19 章按原材料的 103 条写成（封面数字也还是 103），第 17 类一章是 2026-11-06 新写的。
-- 同步 chemdb-agent 工具包的目录：现在是 103 条，网站是 214 条。要连带改 `agent/chemdb-agent` 的 `catalog/resources.py`、`tests/test_resources.py`（断言 103 条、11 类）、`server.py`、README，再 `python tools/pack-chemdb-agent.py`。
 - 网状查询：记录没有命中的查询词，用来补 `public/search-terms.js` 的概念组。条目翻倍后网状查询页变慢（4 倍 CPU 减速下 1.5 → 1.8 s），可以懒加载或预先算好实体；“ESPRESSO”和目录里的“Quantum ESPRESSO”是两个节点，可以合并。
 - 目录数据：定时自动刷新；把 arXiv、Crossref 期刊等快照也改成不依赖 Python；补上缺失的日期和占位摘要。
 - 搜索引擎：生成英文静态页（`?lang=en` 和中文页 HTML 相同，没有 hreflang）；做主题合集页；到 Search Console 确认收录。

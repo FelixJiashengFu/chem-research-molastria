@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1165,11 +1165,11 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   await finish(home);
 });
 
-check('agent: the Agent section shows chemdb-agent 0.2.0 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
+check('agent: the Agent section shows chemdb-agent 0.2.1 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
   const p = await open();
   await go(p, '/atlas/index.html#agent');
   await p.waitForFunction(() => !document.getElementById('view-agent').hidden);
-  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.0/);
+  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.1/);
   // The query tools, QCArchive and export are wired now; only the "not yet covered" row stays pending.
   assert.doesNotMatch(await p.innerText('#view-agent'), /占位|待接线/);
   assert.equal(await p.locator('#view-agent .state.pending').count(), 1);
@@ -2398,8 +2398,235 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
   await finish(p);
 });
 
+check('open data API: files are valid, docs page lists them from index.json, footer link, English, phone width', async () => {
+  const p = await open({ viewport: { width: 390, height: 844 } });
+  await go(p, '/api/index.html');
+  await p.waitForSelector('.api-set');
+  const index = await (await p.request.get(`${SITE}/api/v1/index.json`)).json();
+  assert.equal(await p.locator('.api-set').count(), index.endpoints.length);
+  for (const e of index.endpoints) {
+    const res = await p.request.get(`${SITE}/api/v1/${e.id}.json`);
+    assert.equal(res.status(), 200, e.id);
+    assert.equal((await res.json()).items.length, e.count, e.id);
+    assert.match(await text(p, `.api-set:has(a.api-url[href="v1/${e.id}.json"])`), new RegExp(`共 ${e.count} 条`));
+  }
+  for (const f of ['api/v1/openapi.json', 'api/v1/molastria.mjs', 'api/embed.js', 'llms.txt']) assert.equal((await p.request.get(`${SITE}/${f}`)).status(), 200, f);
+  for (const href of await p.locator('.api-files a').evaluateAll((as) => as.map((a) => a.href.split('#')[0]))) assert.equal((await p.request.get(href)).status(), 200, href);
+  assert.match(await text(p, '#api-updated'), /最近核对 \d{4}-\d{2}-\d{2}/);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  // Every page's footer line links here.
+  await go(p, '/about/index.html');
+  await p.click('.cr-legal a[href*="api/"]');
+  await p.waitForURL(/\/api\//);
+  await go(p, '/api/index.html?lang=en');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await p.waitForSelector('.api-set'); await p.waitForSelector('.api-hit');
+  assert.match(await text(p, 'h1'), /Open data API/);
+  assert.match(await text(p, '.api-set'), /Resource catalogue[\s\S]*\d+ entries · checked/);
+  assert.equal(await p.inputValue('#api-q'), 'density functional', 'English pages start with an English query');
+  assert.match(await text(p, '#api-status'), /^\d+ results, showing the first 6$/);
+  assert.ok(!/[\u4e00-\u9fff]/.test(await p.evaluate(() => [...document.querySelectorAll('main > :not(#api-hits):not(.api-embed):not(pre), .api-form')].map((n) => n.innerText).join('\n').replace(/密度泛函/g, ''))), 'page text fully in English');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll in English at phone width');
+  await finish(p);
+});
+
+check('open data API: live search (bilingual synonyms, dataset chips, shareable address) and code that follows the search', async () => {
+  const p = await open();
+  await p.addInitScript(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; });
+  await go(p, '/api/index.html');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), '密度泛函');
+  const count = async () => +(await text(p, '#api-status')).match(/共 (\d+) 条/)[1];
+  const zh = await count(), zhTitles = await p.locator('.api-hit-title').allTextContents();
+  assert.ok(zh > 20);
+  assert.ok(zhTitles.some((t) => /DFT/.test(t) && !/密度泛函/.test(t)), 'finds entries that only say DFT');
+  await p.fill('#api-q', 'DFT');
+  await p.waitForFunction(() => /#q=DFT$/.test(location.hash));
+  await p.waitForTimeout(200);
+  assert.equal(await count(), zh, '“DFT” and “密度泛函” match the same entries');
+  assert.deepEqual(await p.locator('.api-hit-title').allTextContents(), zhTitles);
+  // Chips: counts for every dataset; pressing one narrows the list and the code.
+  const videos = +(await text(p, '#api-in [data-set=videos] b'));
+  assert.ok(videos > 0 && videos < zh);
+  await p.click('#api-in [data-set=videos]');
+  await p.waitForFunction(() => /in=videos/.test(location.hash));
+  await p.waitForFunction((n) => new RegExp(`共 ${n} 条`).test(document.querySelector('#api-status').textContent), videos);
+  assert.deepEqual([...new Set(await p.locator('.api-kind').allTextContents())], ['videos']);
+  assert.match(await text(p, '#api-code'), /search\("DFT", \{ datasets: \["videos"\], limit: 6 \}\)/);
+  await p.click('.api-tabs [data-tab=py]');
+  assert.match(await text(p, '#api-code'), /words = "DFT"\.lower\(\)\.split\(\)[\s\S]*for name in \["videos"\]/);
+  await p.click('.api-tabs [data-tab=curl]');
+  assert.match(await text(p, '#api-code'), /^curl -s https:\/\/molastria\.com\/api\/v1\/videos\.json \| jq -r --arg w0 'dft' /);
+  await p.click('.api-copy[data-copy=api-code]');
+  assert.match(await p.evaluate(() => window.__copied), /^curl -s /);
+  assert.match(await text(p, '.api-copy[data-copy=api-code]'), /已复制/);
+  // A result shows its raw entry; its title goes to the resource itself.
+  await p.click('.api-hit summary');
+  assert.match(await text(p, '.api-hit details[open] pre'), /"platform": "(youtube|bilibili)"/);
+  assert.match(await p.getAttribute('.api-hit-title', 'href'), /^https:\/\/(www\.youtube\.com|www\.bilibili\.com)\//);
+  // The address restores the search (embed cards link here this way); nonsense finds nothing, without errors.
+  await go(p, '/api/index.html#q=orca&in=resources');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), 'orca');
+  assert.equal(await text(p, '.api-hit-title'), 'ORCA');
+  assert.equal(await p.getAttribute('#api-in [data-set=resources]', 'aria-pressed'), 'true');
+  await p.fill('#api-q', 'zzzz-nothing');
+  await p.waitForFunction(() => /没有找到/.test(document.querySelector('#api-status').textContent));
+  assert.equal(await p.locator('.api-hit').count(), 0);
+  await p.click('#api-tries [data-try] >> nth=1');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), 'ORCA');
+  await finish(p);
+});
+
+check('API keys on the account page: made once and shown once, listed by prefix, revoked', async () => {
+  const p = await open();
+  await p.addInitScript(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; });
+  await go(p, '/pro/account.html');
+  await signIn(p, 'keys@example.com');
+  await p.waitForSelector('#key-list .acct-empty');
+  assert.ok(await p.isHidden('#key-new'));
+  assert.match(await text(p, '#keys-card .acct-sub'), /RTX 2080，尽力而为，可能离线/);
+  await p.fill('#key-name', 'lab workstation');
+  await p.click('#key-form button');
+  await p.waitForSelector('#key-new:not([hidden])');
+  const key = await text(p, '#key-value');
+  assert.match(key, /^mola_[A-Za-z0-9_-]{43}$/);
+  assert.match(await text(p, '#key-new'), /只显示这一次/);
+  await p.click('#key-copy');
+  assert.equal(await p.evaluate(() => window.__copied), key);
+  assert.match(await text(p, '#key-list li'), new RegExp(`^${key.slice(0, 10)}…撤销lab workstation · .+生成 · 还没用过$`));
+  assert.ok(!(await text(p, '#key-list')).includes(key), 'the list shows the prefix only');
+  // The key works from a program, and that shows as used.
+  const me = await p.request.get(`${API}/v1/me`, { headers: { Authorization: `Bearer ${key}`, Origin: 'https://elsewhere.example' } });
+  assert.deepEqual([me.status(), (await me.json()).tier, me.headers()['access-control-allow-origin']], [200, 'free', '*']);
+  // After a reload the key is gone for good; the list stays.
+  await p.reload({ waitUntil: 'networkidle' });
+  await p.waitForSelector('#key-list li code');
+  assert.ok(await p.isHidden('#key-new'));
+  assert.ok(!(await p.content()).includes(key), 'the key is nowhere on the page after a reload');
+  assert.ok(!(await p.evaluate(() => JSON.stringify({ ...localStorage }))).includes(key), 'and not in the browser storage');
+  assert.match(await text(p, '#key-list li'), /最近使用/);
+  // English
+  await go(p, '/pro/account.html?lang=en');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await p.waitForSelector('#key-list li code');
+  assert.ok(!HAN.test(await p.innerText('#keys-card')), 'the API key card is fully in English');
+  assert.match(await p.innerText('#keys-card'), /best effort.*may be offline[\s\S]*Revoke[\s\S]*Last used/);
+  await go(p, '/pro/account.html?lang=zh');
+  await p.waitForSelector('#key-list li code');
+  // Three at most; revoking stops the key at once.
+  for (let i = 0; i < 2; i++) { await p.click('#key-form button'); await p.waitForFunction((n) => document.querySelectorAll('#key-list li code').length === n, i + 2); }
+  await p.click('#key-form button');
+  await p.waitForFunction(() => /最多 3 个 API key/.test(document.querySelector('#key-msg').textContent));
+  await p.click('#key-list li:first-child [data-key]'); // the confirm dialog is accepted
+  await p.waitForFunction(() => document.querySelectorAll('#key-list li code').length === 2);
+  assert.match(await text(p, '#key-msg'), /已撤销 mola_/);
+  assert.equal((await p.request.get(`${API}/v1/me`, { headers: { Authorization: `Bearer ${key}` } })).status(), 401);
+  // Signing out clears the card.
+  await p.click('#signout');
+  await p.waitForSelector('#acct-login:not([hidden])');
+  assert.equal(await p.locator('#key-list li').count(), 0);
+  await finish(p);
+});
+
+check('compute API on the docs page: is the computer on, a job with a key, code that follows the choice, MACE refused, English', async () => {
+  const p = await open();
+  // A key, made the way the account page makes one.
+  const post = async (path, data, token) => (await p.request.post(API + path, { data, headers: { Origin: SITE, ...(token ? { Authorization: `Bearer ${token}` } : {}) } })).json();
+  const { devCode } = await post('/auth/start', { email: 'compute@example.com' });
+  const { token } = await post('/auth/verify', { email: 'compute@example.com', code: devCode });
+  const { key } = await post('/keys', { name: 'e2e' }, token);
+  await go(p, '/api/index.html#compute');
+  await p.waitForSelector('#gpu-live[data-state=on]');
+  assert.match(await text(p, '#gpu-text'), /现在在线/);
+  assert.match(await text(p, '.api-gpu'), /算力是站长电脑上的 RTX 2080，尽力而为，可能离线/);
+  assert.equal(await p.locator('#run-jobs tr').count(), 11);
+  assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
+  const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
+  assert.equal(models.length, 10);
+  assert.ok(!models.some((m) => m.startsWith('mace')), 'no MACE model is offered');
+  // The code follows the form and never holds the key.
+  await p.fill('#run-key', key);
+  await p.fill('#run-smiles', 'c1ccccc1O');
+  await p.selectOption('#run-model', 'ani-2x');
+  assert.deepEqual(await p.locator('#run-job option').evaluateAll((os) => os.map((o) => o.value)), ['opt', 'sp', 'freq', 'conf', 'md'], 'ANI-2x: neutral molecules only, so no ionisation energy');
+  await p.selectOption('#run-job', 'freq');
+  assert.match(await text(p, '#run-code'), /call\("\/jobs", \{"smiles": "c1ccccc1O", "model": "ani-2x", "job": "freq"\}\)/);
+  await p.click('#run-tabs [data-tab=js]');
+  assert.match(await text(p, '#run-code'), /call\('\/jobs', \{ smiles: 'c1ccccc1O', model: 'ani-2x', job: 'freq' \}\)/);
+  await p.click('#run-tabs [data-tab=curl]');
+  assert.match(await text(p, '#run-code'), /-d '\{"smiles":"c1ccccc1O","model":"ani-2x","job":"freq"\}'/);
+  assert.match(await text(p, '#api-code'), /import \{ search \}/, 'the search example above keeps its own tab');
+  for (const tab of ['py', 'js', 'curl']) { await p.click(`#run-tabs [data-tab=${tab}]`); assert.ok(!(await text(p, '#run-code')).includes(key), `${tab}: no key in the code`); }
+  // Run it: queued, running, done, with what is left today.
+  await p.click('#run-go');
+  await p.waitForSelector('#run-result:not([hidden])', { timeout: 15000 });
+  const job = JSON.parse(await text(p, '#run-result'));
+  assert.deepEqual([job.status, job.result.job, job.result.model, job.result.smiles, job.result.frequencies_cm1.length], ['done', 'freq', 'ani-2x', 'c1ccccc1O', 4]);
+  assert.match(await text(p, '#run-status'), /^算完了。今天还剩 \d+ 次计算。$/);
+  assert.ok(!(await p.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }) + location.href)).includes(key), 'the key stays in memory');
+  // A bad key, and a model the API does not offer.
+  await p.fill('#run-key', 'not-a-key');
+  await p.click('#run-go');
+  assert.match(await text(p, '#run-status'), /先填一个 API key/);
+  await p.fill('#run-key', `mola_${'A'.repeat(43)}`);
+  await p.click('#run-go');
+  await p.waitForFunction(() => /无效或已撤销/.test(document.querySelector('#run-status').textContent));
+  const mace = await p.request.post(`${API}/v1/jobs`, { data: { smiles: 'CCO', job: 'opt', model: 'mace-off23-small', academic: true }, headers: { Authorization: `Bearer ${key}` } });
+  assert.deepEqual([mace.status(), (await mace.json()).error.code], [403, 'licence']);
+  // Offline: said plainly.
+  await p.route('**/uma/health', (r) => r.fulfill({ json: { online: false } }));
+  await go(p, '/api/index.html?lang=en#compute');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await p.waitForSelector('#gpu-live[data-state=off]');
+  assert.match(await text(p, '#gpu-text'), /offline right now/);
+  assert.match(await text(p, '.api-gpu'), /RTX 2080.*best effort.*may be offline/);
+  assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scanDihedral scan5atoms required/);
+  assert.ok(!HAN.test(await p.evaluate(() => { const out = []; for (let n = document.getElementById('compute'); n; n = n.nextElementSibling) out.push(n.innerText); return out.join('\n'); })), 'the compute section is fully in English');
+  await p.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  await finish(p);
+});
+
+check('open data API: embed card (builder preview and snippet, a bare script tag on another page, dark theme, English, no style leaks)', async () => {
+  const p = await open();
+  await go(p, '/api/index.html');
+  const card = (sel, q) => p.evaluate(([s, inner]) => { const r = document.querySelector(s)?.shadowRoot; return inner ? [...(r?.querySelectorAll(inner) || [])].map((n) => n.textContent) : !!r; }, [sel, q]);
+  await p.waitForFunction(() => document.querySelector('#api-preview').shadowRoot?.querySelectorAll('li').length === 4);
+  assert.match(await text(p, '#api-snippet'), /^<script async src="https:\/\/molastria\.com\/api\/embed\.js" data-q="机器学习势" data-limit="4"><\/script>$/);
+  await p.fill('#api-embed-form [name=q]', 'ORCA');
+  await p.selectOption('#api-embed-form [name=dataset]', 'resources');
+  await p.fill('#api-embed-form [name=limit]', '2');
+  await p.selectOption('#api-embed-form [name=lang]', 'en');
+  await p.selectOption('#api-embed-form [name=theme]', 'dark');
+  await p.waitForFunction(() => document.querySelector('#api-preview').shadowRoot?.querySelectorAll('li').length === 2 && document.querySelector('#api-preview').dataset.theme === 'dark');
+  assert.equal((await card('#api-preview', '.t'))[0], 'ORCA');
+  assert.deepEqual([...new Set(await card('#api-preview', '.k'))], ['Resource']);
+  assert.match((await card('#api-preview', 'footer'))[0], /See all \d+ on MolAstria.*Data: MolAstria open data API.*CC BY 4\.0/);
+  assert.match(await text(p, '#api-snippet'), /data-q="ORCA" data-dataset="resources" data-limit="2" data-lang="en" data-theme="dark"/);
+  // On someone else's page: one script tag, the card appears after it and the page's own CSS does not reach inside.
+  await go(p, '/offline.html');
+  await p.evaluate(() => {
+    document.head.insertAdjacentHTML('beforeend', '<style>a{color:rgb(255,0,0)!important} li{padding:99px!important}</style>');
+    const s = Object.assign(document.createElement('script'), { src: '/api/embed.js' });
+    Object.assign(s.dataset, { q: '密度泛函', dataset: 'journals,videos', limit: '3', title: 'DFT 入门' });
+    document.body.append(s);
+  });
+  await p.waitForFunction(() => document.querySelector('.molastria-embed')?.shadowRoot?.querySelectorAll('li').length === 3);
+  assert.equal((await card('.molastria-embed', 'header span'))[0], 'DFT 入门');
+  assert.ok((await card('.molastria-embed', '.k')).every((k) => k === '期刊' || k === '视频'));
+  const style = await p.evaluate(() => { const r = document.querySelector('.molastria-embed').shadowRoot; return [getComputedStyle(r.querySelector('a')).color, getComputedStyle(r.querySelector('li')).paddingTop]; });
+  assert.notEqual(style[0], 'rgb(255, 0, 0)'); assert.equal(style[1], '12px');
+  assert.ok(await p.evaluate(() => [...document.querySelector('.molastria-embed').shadowRoot.querySelectorAll('a')].every((a) => /^https:\/\//.test(a.href) && a.rel === 'noopener')));
+  // Nothing matches: says so instead of an empty box.
+  await p.evaluate(() => window.MolAstriaEmbed.render(document.querySelector('.molastria-embed'), { q: 'zzzz-nothing', lang: 'en' }));
+  await p.waitForFunction(() => /Nothing matches/.test(document.querySelector('.molastria-embed').shadowRoot.querySelector('.state')?.textContent));
+  await finish(p);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

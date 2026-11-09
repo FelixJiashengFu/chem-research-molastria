@@ -3,7 +3,7 @@
 计算化学数据库 Agent：一个 MCP 服务器。用自然语言跨库检索晶体、分子和量子化学数据，
 统一单位、理论级别与来源记录，再导出 extxyz 或 ASE 数据库训练集，直接交给 MACE、SchNetPack 等使用。
 
-版本 0.2.0。改了什么见 `CHANGELOG.md`。
+版本 0.2.1。改了什么见 `CHANGELOG.md`。
 
 ## 能做什么
 
@@ -16,7 +16,7 @@
 | `fetch_dataset_shard` | 把 QCArchive 数据集的一段下载到本地目录并登记索引；估计超过 2 GB 要确认 |
 | `export_training_set` | 导出 extxyz / ASE db 与来源清单；理论级别不一致时拒绝并说明差在哪 |
 | `get_basis` | 取基组与 ECP 文本（Basis Set Exchange，离线） |
-| `search_resources` | 查资源目录（《计算化学数据库与资源导航 2026》103 条） |
+| `search_resources` | 查资源目录（与 MolAstria 网站同一份，214 条、17 类；随包安装，离线可用） |
 | `catalog_status` | 数据源清单、本地分片、缓存与资源目录概况（不联网） |
 
 每个工具的参数都带说明，MCP 客户端列工具时能看到。
@@ -167,7 +167,7 @@ chemdb-agent/
 │   ├── cache.py          记录缓存
 │   ├── export.py         extxyz / ASE db + 来源清单
 │   ├── adapters/         optimade、materials_project、nomad、pubchem、chembl、chebi、qcarchive、basis、local_catalog
-│   └── catalog/          资源目录（103 条及接入状态）
+│   └── catalog/          资源目录（resources.json 由网站数据生成，及接入状态）
 ├── data/                 本地数据（git 忽略）
 └── tests/                单元测试与录制的接口返回（cassettes/）
 ```

@@ -2,7 +2,7 @@
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
    Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
-     redeemCard(), digest(), digestSubscribe(), digestSendMe(), and for the site admin cards(), createCards(), revokeCard(), digestBuild()} */
+     redeemCard(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild()} */
 (() => {
   'use strict';
   if (window.MolAstriaAccount) return;
@@ -57,6 +57,9 @@
     addMember: (email) => call('/team/members', { method: 'POST', body: { email } }).then(updated),
     removeMember: (email) => call('/team/members', { method: 'DELETE', body: { email } }).then(updated),
     redeemCard: (code) => call('/cards/redeem', { method: 'POST', body: { code } }).then(updated),
+    keys: () => call('/keys'),
+    createKey: (name) => call('/keys', { method: 'POST', body: { name } }),
+    revokeKey: (id) => call('/keys', { method: 'DELETE', body: { id } }),
     cards: () => call('/admin/cards'),
     createCards: (count, days, note) => call('/admin/cards', { method: 'POST', body: { count, days, note } }),
     revokeCard: (code) => call('/admin/cards', { method: 'DELETE', body: { code } }),

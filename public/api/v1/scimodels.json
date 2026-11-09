@@ -1,0 +1,2126 @@
+{
+ "api": "molastria-open-data",
+ "schema": "1.0",
+ "license": "CC-BY-4.0",
+ "attribution": "MolAstria (https://molastria.com)",
+ "docs": "https://molastria.com/api/",
+ "dataset": "scimodels",
+ "updated": "2026-11-06",
+ "count": 27,
+ "groups": [
+  {
+   "id": "cross",
+   "zh": "跨学科科学推理与科研辅助",
+   "en": "Cross-disciplinary research assistants"
+  },
+  {
+   "id": "chem",
+   "zh": "化学语言模型与化学推理",
+   "en": "Chemistry language models & chemical reasoning"
+  },
+  {
+   "id": "mat",
+   "zh": "材料与 MOF 领域模型",
+   "en": "Materials & MOF models"
+  },
+  {
+   "id": "mm",
+   "zh": "多模态科学模型",
+   "en": "Multimodal scientific models"
+  },
+  {
+   "id": "hyp",
+   "zh": "科研假设与文献",
+   "en": "Hypotheses & literature"
+  },
+  {
+   "id": "rel",
+   "zh": "相关模型（科学对象生成）",
+   "en": "Related models (generating scientific objects)"
+  }
+ ],
+ "access_kinds": [
+  {
+   "id": "paid",
+   "zh": "付费 API",
+   "en": "Paid API"
+  },
+  {
+   "id": "register",
+   "zh": "免费，需注册",
+   "en": "Free with registration"
+  },
+  {
+   "id": "free",
+   "zh": "免费在线演示",
+   "en": "Free online demo"
+  },
+  {
+   "id": "weights",
+   "zh": "开放权重，可自行部署",
+   "en": "Open weights, self-host"
+  },
+  {
+   "id": "paper",
+   "zh": "仅论文",
+   "en": "Paper only"
+  }
+ ],
+ "items": [
+  {
+   "id": "hydrogen-1-0",
+   "resource_number": 188,
+   "name": "Hydrogen-1.0",
+   "page": "https://molastria.com/scimodels/#hydrogen-1-0",
+   "group": "cross",
+   "organisation": {
+    "zh": "深度原理（Deep Principle）",
+    "en": "Deep Principle"
+   },
+   "year": {
+    "zh": "2026（Hugging Face 2026-10-31）",
+    "en": "2026 (Hugging Face, 2026-10-31)"
+   },
+   "size": {
+    "zh": "约 753B 总参数的混合专家模型（模型卡统计 753,329,940,480），由 GLM-5.3 后训练得到；上下文 1M token",
+    "en": "Mixture-of-experts model with about 753B total parameters (753,329,940,480 on the model card), post-trained from GLM-5.3; 1M-token context"
+   },
+   "licence": {
+    "zh": "权重 MIT；自写代码与文档 Apache-2.0",
+    "en": "Weights MIT; own code and docs Apache-2.0"
+   },
+   "access": [
+    "paid",
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载（登录 Hugging Face 申请，自动通过）。官方 API 在 NeuroSpark，按量付费，发布价为每百万 token 输入 1.40 美元、输出 3.80 美元。也可以在深度原理的 AI 科学家平台 Mira 中使用，Mira 页面没有公开价格。",
+    "en": "Weights are free to download (request access on Hugging Face after logging in; approved automatically). The official API is on NeuroSpark, pay as you go, at a launch price of USD 1.40 input and USD 3.80 output per 1M tokens. It can also be used inside Deep Principle's AI-scientist platform Mira, whose page lists no price."
+   },
+   "what": {
+    "zh": "面向开放性的科学问题：拆解研究目标，讨论实验或计算方案，协助编写科学代码，解释结果并提出下一步问题。技术博客展示了科学计算、反应网络探索、NMR 结构解析、实验设计与规划，以及在五轮反馈中搜索 HOMO–LUMO 能隙更大的过渡金属配合物。",
+    "en": "Built for open-ended scientific problems: breaking down research goals, discussing experimental or computational plans, helping to write scientific code, interpreting results and proposing next questions. The technical blog shows scientific computing, reaction-network exploration, NMR structure elucidation, experiment design and planning, and a five-round search for transition-metal complexes with a larger HOMO–LUMO gap."
+   },
+   "special": {
+    "zh": "后训练（监督微调加强化学习）除了化学、材料和生命科学数据，还用了深度原理自己实验室的完整实验记录（包括失败的实验）和发现轨迹，让模型学习“下一步该试什么”。",
+    "en": "Post-training (supervised fine-tuning plus reinforcement learning) uses chemistry, materials and life-science data together with full laboratory records from Deep Principle's own labs, failed experiments included, and discovery trajectories, so the model learns what to try next."
+   },
+   "input": {
+    "zh": "文本对话（OpenAI 兼容接口）",
+    "en": "Text chat (OpenAI-compatible API)"
+   },
+   "output": {
+    "zh": "文本：推理过程、研究方案、代码与解释",
+    "en": "Text: reasoning, research plans, code and explanations"
+   },
+   "limits": {
+    "zh": "生成的方案和代码都要验证；博客里的案例把模型和外部工具、具体研究环境结合在一起，单独下载的权重不带这些工具。自行部署门槛高：官方示例用 SGLang 在 8 张 GPU 上做张量并行（另有 NVFP4、MXFP4 量化版）。完整训练数据和配方没有公开。",
+    "en": "Plans and code must be checked. The blog examples combine the model with external tools and specific research environments; the downloaded weights do not include them. Self-hosting is demanding: the official example runs SGLang with tensor parallelism on 8 GPUs (NVFP4 and MXFP4 quantised versions also exist). The full training data and recipe are not public."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/deep-principle/Hydrogen-1.0",
+    "announcement": [
+     {
+      "url": "https://blog.deepprinciple.com/introducing-hydrogen-1.0/",
+      "zh": "官方技术博客：Introducing Hydrogen-1.0",
+      "en": "Official technical blog: Introducing Hydrogen-1.0"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://neuro-spark.ai/dashboard/models?model=hydrogen-1.0",
+     "zh": "NeuroSpark：注册后用 API 调用（付费）",
+     "en": "NeuroSpark: API access after sign-up (paid)"
+    },
+    {
+     "url": "https://mira.deepprinciple.com/",
+     "zh": "Mira：深度原理的 AI 科学家平台",
+     "en": "Mira: Deep Principle's AI-scientist platform"
+    }
+   ]
+  },
+  {
+   "id": "intern-s1",
+   "resource_number": 189,
+   "name": "Intern-S1 / Intern-S1-mini",
+   "page": "https://molastria.com/scimodels/#intern-s1",
+   "group": "cross",
+   "organisation": {
+    "zh": "上海人工智能实验室",
+    "en": "Shanghai AI Laboratory"
+   },
+   "year": {
+    "zh": "2025（Hugging Face 2025-07；技术报告 2025-08）",
+    "en": "2025 (Hugging Face 2025-07; technical report 2025-08)"
+   },
+   "size": {
+    "zh": "Intern-S1：总约 241B、激活 28B（235B 混合专家语言模型 Qwen3 加 6B 视觉编码器 InternViT）；Intern-S1-mini：8B 稠密语言模型加 0.3B 视觉编码器",
+    "en": "Intern-S1: about 241B total, 28B active (a 235B MoE language model, Qwen3, plus the 6B InternViT vision encoder); Intern-S1-mini: an 8B dense language model plus a 0.3B vision encoder"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "register",
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。官方提供在线对话；官方 API 要在 internlm.intern-ai.org.cn 注册并创建 token，测试期间每月有免费额度，需要更多额度时到“书生·端砚”申请。没有找到公开的按 token 价格。",
+    "en": "Weights are free. There is an official online chat; the official API needs registration at internlm.intern-ai.org.cn and an API token, with a free monthly quota during the testing period and more quota on application through Intern InkStone. No public per-token price was found."
+   },
+   "what": {
+    "zh": "通用推理加科学任务：理解论文里的图表、化学结构图和示意图，直接读分子式和蛋白序列，回答化学、材料、生命科学等领域的问题。",
+    "en": "General reasoning plus scientific tasks: reading figures, chemical structure drawings and schemes from papers, reading molecular formulas and protein sequences directly, and answering questions in chemistry, materials, life sciences and other fields."
+   },
+   "special": {
+    "zh": "在 5 万亿 token 的多模态数据上继续预训练，其中科学数据超过 2.5 万亿 token；动态分词器能原生处理分子式和蛋白序列。",
+    "en": "Continued pre-training on 5 trillion tokens of multimodal data, more than 2.5 trillion of them scientific; a dynamic tokenizer handles molecular formulas and protein sequences natively."
+   },
+   "input": {
+    "zh": "文本、图像",
+    "en": "Text, images"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "能看图不等于能可靠读出所有坐标、图例或实验条件，最终数据要回到原论文和原始数据核对。",
+    "en": "Reading an image is not the same as reliably reading every coordinate, legend or experimental condition; check final data against the original paper and raw data."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/internlm/Intern-S1",
+    "more_hugging_face": [
+     {
+      "url": "https://huggingface.co/internlm/Intern-S1-mini",
+      "zh": "Intern-S1-mini",
+      "en": "Intern-S1-mini"
+     }
+    ],
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2508.15763",
+      "zh": "技术报告 arXiv 2508.15763",
+      "en": "Technical report, arXiv 2508.15763"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://chat.intern-ai.org.cn/",
+     "zh": "书生官方在线对话",
+     "en": "Official Intern online chat"
+    },
+    {
+     "url": "https://internlm.intern-ai.org.cn/api/document?lang=en",
+     "zh": "官方 API 文档（注册后获取 token）",
+     "en": "Official API documentation (token after registration)"
+    }
+   ]
+  },
+  {
+   "id": "intern-s1-pro",
+   "resource_number": 190,
+   "name": "Intern-S1-Pro",
+   "page": "https://molastria.com/scimodels/#intern-s1-pro",
+   "group": "cross",
+   "organisation": {
+    "zh": "上海人工智能实验室",
+    "en": "Shanghai AI Laboratory"
+   },
+   "year": {
+    "zh": "2026（Hugging Face 2026-02；技术报告 2026-03）",
+    "en": "2026 (Hugging Face 2026-02; technical report 2026-03)"
+   },
+   "size": {
+    "zh": "约 1T 总参数（Hugging Face 统计 917B），512 个专家，每个 token 激活 8 个（约 22B 激活参数）",
+    "en": "About 1T total parameters (917B counted by Hugging Face), 512 experts with 8 active per token (about 22B active parameters)"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "register",
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；模型卡链接到官方在线对话。官方 API 的注册与免费额度同 Intern-S1。",
+    "en": "Weights are free; the model card links to the official online chat. Registration and free quota for the official API are the same as for Intern-S1."
+   },
+   "what": {
+    "zh": "Intern-S1 的万亿参数版本，加强了通用与科学领域的推理、图文理解和智能体能力；技术报告称其为首个万亿参数的科学多模态基础模型。",
+    "en": "The trillion-parameter version of Intern-S1, with stronger general and scientific reasoning, image–text understanding and agent abilities; the technical report calls it the first trillion-parameter scientific multimodal foundation model."
+   },
+   "special": {
+    "zh": "规模：在同系列里专家数和总参数最多，激活参数仍控制在约 22B。",
+    "en": "Scale: the most experts and total parameters in the series, with active parameters kept at about 22B."
+   },
+   "input": {
+    "zh": "文本、图像",
+    "en": "Text, images"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "万亿参数规模，自行部署的硬件成本很高；看图结果同样要回到原始数据核对。",
+    "en": "At a trillion parameters, self-hosting is very expensive in hardware; image readings still need checking against the original data."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/internlm/Intern-S1-Pro",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2603.25040",
+      "zh": "技术报告 arXiv 2603.25040",
+      "en": "Technical report, arXiv 2603.25040"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://chat.intern-ai.org.cn/",
+     "zh": "书生官方在线对话",
+     "en": "Official Intern online chat"
+    },
+    {
+     "url": "https://internlm.intern-ai.org.cn/api/document?lang=en",
+     "zh": "官方 API 文档（注册后获取 token）",
+     "en": "Official API documentation (token after registration)"
+    }
+   ]
+  },
+  {
+   "id": "intern-s2",
+   "resource_number": 191,
+   "name": "Intern-S2 系列",
+   "name_en": "Intern-S2 series",
+   "page": "https://molastria.com/scimodels/#intern-s2",
+   "group": "cross",
+   "organisation": {
+    "zh": "上海人工智能实验室",
+    "en": "Shanghai AI Laboratory"
+   },
+   "year": {
+    "zh": "2026（35B 预览版 2026-05，397B 预览版 2026-07，397B 正式版 2026-09）",
+    "en": "2026 (35B preview 2026-05, 397B preview 2026-07, 397B release 2026-09)"
+   },
+   "size": {
+    "zh": "35B（在 Qwen3.5 上继续预训练）、397B",
+    "en": "35B (continued pre-training on Qwen3.5) and 397B"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "register",
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。模型卡说明可以不自建服务、直接用官方 API：在 internlm.intern-ai.org.cn 注册并创建 token，模型名 intern-s2-397b；额度规则同 Intern-S1。",
+    "en": "Weights are free. The model card says the official API can be used instead of self-hosting: register at internlm.intern-ai.org.cn, create a token and use the model name intern-s2-397b; quota rules are the same as for Intern-S1."
+   },
+   "what": {
+    "zh": "科学推理、多模态理解和长流程智能体任务。模型卡给出了接入智能体框架的两种方式（自建部署或官方 API），包括 Claude Code 的配置，并有工具调用和时间序列的示例。",
+    "en": "Scientific reasoning, multimodal understanding and long-horizon agent tasks. The model card shows two ways to plug it into agent frameworks (self-hosted or the official API), including a Claude Code setup, with tool-calling and time-series examples."
+   },
+   "special": {
+    "zh": "直接从科学文献的原始页面做视觉预训练，把符号语义和版面里的视觉关系放在一起学习；在 20 多个领域做强化学习。",
+    "en": "Visual pre-training directly on raw pages of scientific literature, learning symbolic meaning and visual layout together; reinforcement learning across more than 20 domains."
+   },
+   "input": {
+    "zh": "文本、图像、时间序列（模型卡示例）",
+    "en": "Text, images, time series (model-card example)"
+   },
+   "output": {
+    "zh": "文本、工具调用",
+    "en": "Text, tool calls"
+   },
+   "limits": {
+    "zh": "智能体能实际做什么，取决于接入的工具和权限；397B 版自行部署需要多卡服务器。",
+    "en": "What it can actually do as an agent depends on the tools and permissions it is connected to; the 397B version needs a multi-GPU server to self-host."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/collections/internlm/intern-s2",
+    "announcement": [
+     {
+      "url": "https://github.com/InternLM/Intern-S1",
+      "zh": "官方仓库说明（同时介绍 S1 和 S2；没有单独论文）",
+      "en": "Official repository README (covers S1 and S2; no separate paper)"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://chat.intern-ai.org.cn/",
+     "zh": "书生官方在线对话",
+     "en": "Official Intern online chat"
+    },
+    {
+     "url": "https://internlm.intern-ai.org.cn/api/document?lang=en",
+     "zh": "官方 API 文档（注册后获取 token）",
+     "en": "Official API documentation (token after registration)"
+    }
+   ]
+  },
+  {
+   "id": "s1-base",
+   "resource_number": 192,
+   "name": "S1-Base（ScienceOne 磐石）",
+   "name_en": "S1-Base (ScienceOne)",
+   "page": "https://molastria.com/scimodels/#s1-base",
+   "group": "cross",
+   "organisation": {
+    "zh": "中国科学院磐石团队（ScienceOne）",
+    "en": "ScienceOne team, Chinese Academy of Sciences"
+   },
+   "year": {
+    "zh": "2025（Hugging Face 2025-07）",
+    "en": "2025 (Hugging Face 2025-07)"
+   },
+   "size": {
+    "zh": "8B、32B（基于 Qwen3-8B、Qwen3-32B）和 671B（基于 DeepSeek-R1）；另有 S1-Base-1.5-32B-128K",
+    "en": "8B and 32B (based on Qwen3-8B and Qwen3-32B) and 671B (based on DeepSeek-R1); also S1-Base-1.5-32B-128K"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。模型卡、官方仓库和 Hugging Face 组织页都没有给出在线体验或 API 入口。",
+    "en": "Weights are free. The model card, official repositories and Hugging Face organisation page give no online trial or API."
+   },
+   "what": {
+    "zh": "学习数学、物理、化学、地球科学、天文和生物六门基础学科的理论、定律和专业知识，用于这些学科的问答和推理。",
+    "en": "Trained on the theories, laws and specialist knowledge of six basic sciences (mathematics, physics, chemistry, earth science, astronomy and biology) for questions and reasoning in those fields."
+   },
+   "special": {
+    "zh": "同一系列有 8B 到 671B 三档，可以按硬件选；ScienceOne（磐石）是一组科学模型和工具，不是单个模型。",
+    "en": "Three sizes from 8B to 671B to fit the hardware; ScienceOne is a family of scientific models and tools, not a single model."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "没有官方在线服务，要自己部署（模型卡推荐用 vLLM 提供 OpenAI 兼容服务）；671B 版的硬件要求很高。",
+    "en": "No official online service; you deploy it yourself (the model card recommends vLLM for an OpenAI-compatible server); the 671B version needs a lot of hardware."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ScienceOne-AI/S1-Base-32B",
+    "announcement": [
+     {
+      "url": "https://huggingface.co/ScienceOne-AI/S1-Base-32B",
+      "zh": "官方模型卡（首次发布页，没有论文）",
+      "en": "Official model card (first release page; no paper)"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "s1-deepresearch",
+   "resource_number": 193,
+   "name": "S1-DeepResearch",
+   "page": "https://molastria.com/scimodels/#s1-deepresearch",
+   "group": "cross",
+   "organisation": {
+    "zh": "中国科学院磐石团队（ScienceOne）",
+    "en": "ScienceOne team, Chinese Academy of Sciences"
+   },
+   "year": {
+    "zh": "2025（8B 预览版 2025-12；32B 2026-04；论文 2026-06）",
+    "en": "2025 (8B preview 2025-12; 32B 2026-04; paper 2026-06)"
+   },
+   "size": {
+    "zh": "8B 预览版、32B（基座 Qwen3-32B），上下文 128K",
+    "en": "8B preview and 32B (base Qwen3-32B), 128K context"
+   },
+   "licence": {
+    "zh": "代码仓库 Apache-2.0；8B 模型卡 Apache-2.0；32B 模型卡未标许可证",
+    "en": "Code repository Apache-2.0; 8B model card Apache-2.0; 32B model card states no licence"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重和推理框架代码免费；没有找到官方在线体验或 API。",
+    "en": "Weights and the inference framework are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "面向较长的研究任务：遵循深度研究指令、写调研报告、理解和生成文件、调用技能。官方案例里，它先调用 pymatgen 技能补充专业知识，再用 pymatgen 完成材料建模并输出 CIF 文件。",
+    "en": "Long research tasks: following deep-research instructions, writing research reports, understanding and producing files, and calling skills. In an official example it first calls a pymatgen skill for background, then builds a material model with pymatgen and writes a CIF file."
+   },
+   "special": {
+    "zh": "不只是检索加总结：训练目标是真实场景的长程研究智能体，论文标题即“Beyond Search”。",
+    "en": "More than search and summarise: it is trained as a long-horizon research agent for real tasks, as the paper title \"Beyond Search\" says."
+   },
+   "input": {
+    "zh": "文本、文件",
+    "en": "Text, files"
+   },
+   "output": {
+    "zh": "报告、文件、工具与技能调用",
+    "en": "Reports, files, tool and skill calls"
+   },
+   "limits": {
+    "zh": "要自己部署模型和配套的工具服务，智能体能做什么取决于接入的工具。",
+    "en": "You deploy both the model and its tool server yourself; what the agent can do depends on the tools connected."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ScienceOne-AI/S1-DeepResearch-32B",
+    "code": "https://github.com/ScienceOne-AI/S1-DeepResearch",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2606.15367",
+      "zh": "论文 arXiv 2606.15367",
+      "en": "Paper, arXiv 2606.15367"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "scireasoner",
+   "resource_number": 194,
+   "name": "SciReasoner",
+   "page": "https://molastria.com/scimodels/#scireasoner",
+   "group": "cross",
+   "organisation": {
+    "zh": "上海人工智能实验室等",
+    "en": "Shanghai AI Laboratory and collaborators"
+   },
+   "year": {
+    "zh": "2025（Hugging Face 2025-09；论文 2025-09）",
+    "en": "2025 (Hugging Face and paper 2025-09)"
+   },
+   "size": {
+    "zh": "8B（8.19B）",
+    "en": "8B (8.19B)"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "跨学科科学推理：把自然语言与分子表示、蛋白质序列等科学表示对齐，做性质预测、分类和序列相关任务，让模型处理科学问题里实际使用的数据表示。",
+    "en": "Cross-disciplinary scientific reasoning that aligns natural language with molecular representations, protein sequences and other scientific representations for property prediction, classification and sequence tasks, so the model works with the data formats science actually uses."
+   },
+   "special": {
+    "zh": "训练分四步：2060 亿 token 预训练（科学文本、纯序列、序列—文本对），4000 万条指令监督微调，长思维链冷启动，再用带任务奖励的强化学习对齐。",
+    "en": "Four training stages: pre-training on 206B tokens (scientific text, pure sequences, sequence–text pairs), supervised fine-tuning on 40 million instructions, a long chain-of-thought cold start, and reinforcement learning with task rewards."
+   },
+   "input": {
+    "zh": "文本加科学序列（如分子表示、蛋白序列）",
+    "en": "Text plus scientific sequences (such as molecular representations and protein sequences)"
+   },
+   "output": {
+    "zh": "文本、序列",
+    "en": "Text, sequences"
+   },
+   "limits": {
+    "zh": "名字容易混：它和 ChemReasoner、MOFReasoner、MolReasoner 都不是同一个模型。",
+    "en": "Easy to confuse by name: it is not ChemReasoner, MOFReasoner or MolReasoner."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/SciReason/SciReasoner-8B",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2509.21320",
+      "zh": "论文 arXiv 2509.21320",
+      "en": "Paper, arXiv 2509.21320"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "scidfm",
+   "resource_number": 195,
+   "name": "SciDFM",
+   "page": "https://molastria.com/scimodels/#scidfm",
+   "group": "cross",
+   "organisation": {
+    "zh": "上海交通大学 X-LANCE 实验室、苏州实验室",
+    "en": "X-LANCE Lab, Shanghai Jiao Tong University; Suzhou Laboratory"
+   },
+   "year": {
+    "zh": "2024（Hugging Face 2024-06；论文 2024-09）",
+    "en": "2024 (Hugging Face 2024-06; paper 2024-09)"
+   },
+   "size": {
+    "zh": "混合专家，总 18.52B，每个 token 激活约 5.6B",
+    "en": "Mixture of experts: 18.52B total, about 5.6B active per token"
+   },
+   "licence": {
+    "zh": "AGPL-3.0",
+    "en": "AGPL-3.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "多学科的科学对话模型，回答科学领域的问题。",
+    "en": "A multidisciplinary scientific dialogue model for questions across the sciences."
+   },
+   "special": {
+    "zh": "从头训练的混合专家模型，不是在现成通用模型上微调；名称里的 A5.6B 指激活参数，全部权重约 18.5B。",
+    "en": "A mixture-of-experts model trained from scratch rather than fine-tuned from an existing general model; the A5.6B in its name is the active parameter count, while all weights total about 18.5B."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "AGPL-3.0 是强传染性许可：修改后对外提供服务时要按许可公开源代码，商业使用前要看清条款。",
+    "en": "AGPL-3.0 is a strong copyleft licence: offering a modified version as a service obliges you to publish the source, so read the terms before commercial use."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/OpenDFM/SciDFM-MoE-A5.6B-v1.0",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2409.18412",
+      "zh": "论文 arXiv 2409.18412",
+      "en": "Paper, arXiv 2409.18412"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "sciglm",
+   "resource_number": 196,
+   "name": "SciGLM",
+   "page": "https://molastria.com/scimodels/#sciglm",
+   "group": "cross",
+   "organisation": {
+    "zh": "清华大学、加州理工学院等",
+    "en": "Tsinghua University, Caltech and collaborators"
+   },
+   "year": {
+    "zh": "2024（论文 2024-01）",
+    "en": "2024 (paper 2024-01)"
+   },
+   "size": {
+    "zh": "6B（SciGLM-6B）",
+    "en": "6B (SciGLM-6B)"
+   },
+   "licence": {
+    "zh": "Hugging Face 标注 Apache-2.0",
+    "en": "Labelled Apache-2.0 on Hugging Face"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；官方只提供本地运行的命令行示例。",
+    "en": "Weights are free; the official materials only offer a local command-line demo."
+   },
+   "what": {
+    "zh": "大学水平的科学推理：数学、物理、化学和形式证明（Lean）题目。",
+    "en": "College-level scientific reasoning: mathematics, physics, chemistry and formal proofs (Lean)."
+   },
+   "special": {
+    "zh": "用“自我反思”的标注框架生成科学指令数据 SciInstruct，再用它训练推理。",
+    "en": "Uses a self-reflective annotation framework to build the scientific instruction set SciInstruct and trains reasoning on it."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本（解题过程与答案）",
+    "en": "Text (worked solutions and answers)"
+   },
+   "limits": {
+    "zh": "6B 的早期模型，适合了解方法，不宜当作当前最强的科学推理工具。",
+    "en": "An early 6B model; useful for understanding the method, not as today's strongest scientific reasoner."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/zd21/SciGLM-6B",
+    "code": "https://github.com/THUDM/SciGLM",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2401.07950",
+      "zh": "论文 arXiv 2401.07950（SciInstruct）",
+      "en": "Paper, arXiv 2401.07950 (SciInstruct)"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "galactica",
+   "resource_number": 197,
+   "name": "Galactica",
+   "page": "https://molastria.com/scimodels/#galactica",
+   "group": "cross",
+   "organisation": {
+    "zh": "Meta",
+    "en": "Meta"
+   },
+   "year": {
+    "zh": "2022（论文 2022-11）",
+    "en": "2022 (paper 2022-11)"
+   },
+   "size": {
+    "zh": "多个规模，最大 120B（基于 OPT 架构）",
+    "en": "Several sizes up to 120B (OPT architecture)"
+   },
+   "licence": {
+    "zh": "CC BY-NC 4.0（非商业）",
+    "en": "CC BY-NC 4.0 (non-commercial)"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。模型卡里的演示网站 galactica.org 已无法访问（核对时返回 Cloudflare 530）。",
+    "en": "Weights are free. The demo site galactica.org named on the model card no longer works (Cloudflare 530 when checked)."
+   },
+   "what": {
+    "zh": "早期的科学语言模型，模型卡列出的用途包括引用预测、科学问答、数学推理、摘要、文档生成、分子性质预测和实体抽取。",
+    "en": "An early scientific language model; the model card lists citation prediction, scientific QA, mathematical reasoning, summarisation, document generation, molecular property prediction and entity extraction."
+   },
+   "special": {
+    "zh": "在 1060 亿 token 的开放获取科学文本和数据上训练（论文、教材、科学网站、百科、知识库等），并对不同模态单独分词。",
+    "en": "Trained on 106 billion tokens of open-access scientific text and data (papers, textbooks, scientific websites, encyclopaedias, knowledge bases and more), with separate tokenisation for different modalities."
+   },
+   "input": {
+    "zh": "文本（含公式、引用等标记）",
+    "en": "Text (including markup for formulas, citations and more)"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "年代较早；模型卡提醒语言模型可能出现幻觉，不建议不加防护地用于生产；许可禁止商业使用。",
+    "en": "It is old; the model card warns that language models can hallucinate and advises against production use without safeguards; the licence forbids commercial use."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/facebook/galactica-120b",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2211.09085",
+      "zh": "论文 arXiv 2211.09085",
+      "en": "Paper, arXiv 2211.09085"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署；原来的官方演示已下线。",
+    "en": "Weights only; self-host it. The original official demo is offline."
+   }
+  },
+  {
+   "id": "chemdfm",
+   "resource_number": 198,
+   "name": "ChemDFM / ChemDFM-R",
+   "page": "https://molastria.com/scimodels/#chemdfm",
+   "group": "chem",
+   "organisation": {
+    "zh": "上海交通大学、苏州实验室",
+    "en": "Shanghai Jiao Tong University; Suzhou Laboratory"
+   },
+   "year": {
+    "zh": "ChemDFM 2024（2025 年发表于 Cell Reports Physical Science）；ChemDFM-R 2025",
+    "en": "ChemDFM 2024 (published 2025 in Cell Reports Physical Science); ChemDFM-R 2025"
+   },
+   "size": {
+    "zh": "v1.0 13B、v1.5 8B、v2.0 14B；ChemDFM-R 14B（14.77B）",
+    "en": "v1.0 13B, v1.5 8B, v2.0 14B; ChemDFM-R 14B (14.77B)"
+   },
+   "licence": {
+    "zh": "AGPL-3.0（各版本）",
+    "en": "AGPL-3.0 (all versions)"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；官方仓库只有本地运行的对话示例，没有在线体验。",
+    "en": "Weights are free; the official repository only has a local dialogue demo, no online trial."
+   },
+   "what": {
+    "zh": "化学对话与化学推理：专业化学概念、反应与分子结构分析、逐步解化学题，以及初步讨论计算方案。",
+    "en": "Chemistry dialogue and reasoning: specialist concepts, reaction and molecular-structure analysis, step-by-step chemistry problems and a first discussion of computational plans."
+   },
+   "special": {
+    "zh": "ChemDFM-R 把官能团等“原子化化学知识”作为连接结构与性质、反应性的中间环节来训练推理。在 MolecularIQ 分子结构推理评测中，ChemDFM-R-14B 总体准确率 8.7% ± 0.4%（同表 ether0 为 6.5%，ChemLLM-7B 为 2.2%）。",
+    "en": "ChemDFM-R trains reasoning with \"atomised chemical knowledge\", such as functional groups, as the step linking structure to properties and reactivity. On the MolecularIQ molecular-structure reasoning benchmark, ChemDFM-R-14B scores 8.7% ± 0.4% overall (ether0 6.5% and ChemLLM-7B 2.2% in the same table)."
+   },
+   "input": {
+    "zh": "文本（可含 SMILES）",
+    "en": "Text (may include SMILES)"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "会化学问答推不出能正确处理周期性体系（如 MOF）的电子结构计算；AGPL-3.0 对改动后的服务有开源义务。",
+    "en": "Answering chemistry questions well does not mean handling electronic-structure calculations of periodic systems such as MOFs correctly; AGPL-3.0 imposes source-sharing duties on modified services."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/collections/OpenDFM/chemdfm",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2401.14818",
+      "zh": "ChemDFM 论文 arXiv 2401.14818",
+      "en": "ChemDFM paper, arXiv 2401.14818"
+     },
+     {
+      "url": "https://arxiv.org/abs/2507.21990",
+      "zh": "ChemDFM-R 论文 arXiv 2507.21990",
+      "en": "ChemDFM-R paper, arXiv 2507.21990"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "chem-r",
+   "resource_number": 199,
+   "name": "Chem-R",
+   "page": "https://molastria.com/scimodels/#chem-r",
+   "group": "chem",
+   "organisation": {
+    "zh": "上海人工智能实验室、复旦大学、香港大学等",
+    "en": "Shanghai AI Laboratory, Fudan University, the University of Hong Kong and collaborators"
+   },
+   "year": {
+    "zh": "2025（论文 2025-10；KDD 2026）",
+    "en": "2025 (paper 2025-10; KDD 2026)"
+   },
+   "size": {
+    "zh": "8B（8.03B，基座 Llama-3.1-8B-Instruct）",
+    "en": "8B (8.03B, base Llama-3.1-8B-Instruct)"
+   },
+   "licence": {
+    "zh": "权重 Hugging Face 标注 Apache-2.0；代码 Apache-2.0",
+    "en": "Weights labelled Apache-2.0 on Hugging Face; code Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载（登录 Hugging Face 申请，自动通过）；没有找到官方在线体验或 API。",
+    "en": "Weights are free (request access on Hugging Face after logging in; approved automatically); no official online trial or API was found."
+   },
+   "what": {
+    "zh": "分子和反应层面的化学推理任务。",
+    "en": "Chemical reasoning on molecule-level and reaction-level tasks."
+   },
+   "special": {
+    "zh": "三阶段训练：化学基础训练、化学推理协议蒸馏、多任务 GRPO 强化学习，目标是“像化学家一样推理”。",
+    "en": "Three training phases: chemical foundations, distillation of a chemical reasoning protocol, and multi-task GRPO reinforcement learning, aiming to \"reason as a chemist\"."
+   },
+   "input": {
+    "zh": "文本（可含 SMILES）",
+    "en": "Text (may include SMILES)"
+   },
+   "output": {
+    "zh": "文本、SMILES",
+    "en": "Text, SMILES"
+   },
+   "limits": {
+    "zh": "一项化学推理研究（arXiv 2607.20935）发现，推理过程里的幻觉很普遍，扰动 Chem-R 推理中的 SMILES 草稿会让生成结果变差：推理写得完整不等于科学上正确。",
+    "en": "A study of chemical reasoning models (arXiv 2607.20935) found hallucinations in the reasoning are common, and perturbing the SMILES scratchpad in Chem-R's reasoning makes generation worse: complete-looking reasoning is not the same as correct science."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/weidawang/Chem-R-8B",
+    "code": "https://github.com/davidweidawang/Chem-R",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2510.16880",
+      "zh": "论文 arXiv 2510.16880",
+      "en": "Paper, arXiv 2510.16880"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "ether0",
+   "resource_number": 200,
+   "name": "ether0",
+   "page": "https://molastria.com/scimodels/#ether0",
+   "group": "chem",
+   "organisation": {
+    "zh": "FutureHouse",
+    "en": "FutureHouse"
+   },
+   "year": {
+    "zh": "2025（Hugging Face 2025-06；论文 2025-06）",
+    "en": "2025 (Hugging Face and paper 2025-06)"
+   },
+   "size": {
+    "zh": "24B（23.57B，基座 Mistral-Small-24B-Instruct-2501）",
+    "en": "24B (23.57B, base Mistral-Small-24B-Instruct-2501)"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "free",
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；官方发布文章链接了一个小型 Streamlit 在线演示。",
+    "en": "Weights are free; the official announcement links a small Streamlit demo."
+   },
+   "what": {
+    "zh": "用英文推理并输出一个分子（SMILES）。模型卡列出的任务包括：IUPAC 名转 SMILES、按分子式（可加官能团约束）给结构、按溶解度或 pKa 等性质设计或修改分子、反应产物预测、匹配血脑屏障通透性等。可以问“提出一个 pKa 为 9.2 的分子”，不能问“这个分子的 pKa 是多少”。",
+    "en": "Reasons in English and outputs a molecule (SMILES). Tasks on the model card include IUPAC name to SMILES, structures from a molecular formula (optionally with functional-group constraints), designing or modifying molecules for properties such as solubility or pKa, reaction-product prediction and matching blood–brain barrier permeability. You can ask \"propose a molecule with a pKa of 9.2\" but not \"what is the pKa of this molecule\"."
+   },
+   "special": {
+    "zh": "在 640,730 道有实验依据的化学题、375 类任务上做强化学习（从可合成性、血脑屏障通透性到人体受体活性和气味）。",
+    "en": "Reinforcement learning on 640,730 experimentally grounded chemistry problems in 375 tasks (from synthesisability and blood–brain barrier permeability to human receptor activity and scent)."
+   },
+   "input": {
+    "zh": "英文问题，分子用 SMILES 表示效果最好",
+    "en": "An English question; molecules work best as SMILES"
+   },
+   "output": {
+    "zh": "推理过程加一个 SMILES 分子",
+    "en": "Reasoning plus one molecule in SMILES"
+   },
+   "limits": {
+    "zh": "模型卡写明它不是通用聊天模型，超出训练任务很可能失败；不认识常见同义名，教科书知识较弱，对 IUPAC 名支持有限。",
+    "en": "The model card says it is not a general-purpose chat model and is likely to fail outside its trained tasks; it does not know common synonyms, has weak textbook knowledge and limited IUPAC support."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/futurehouse/ether0",
+    "announcement": [
+     {
+      "url": "https://www.futurehouse.org/news/ether0-a-scientific-reasoning-model-for-chemistry",
+      "zh": "FutureHouse 官方发布文章",
+      "en": "FutureHouse announcement"
+     },
+     {
+      "url": "https://arxiv.org/abs/2506.17238",
+      "zh": "论文 arXiv 2506.17238",
+      "en": "Paper, arXiv 2506.17238"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://ether0.platform.futurehouse.org/",
+     "zh": "FutureHouse 官方 Streamlit 演示",
+     "en": "Official FutureHouse Streamlit demo"
+    }
+   ]
+  },
+  {
+   "id": "chemllm",
+   "resource_number": 201,
+   "name": "ChemLLM",
+   "page": "https://molastria.com/scimodels/#chemllm",
+   "group": "chem",
+   "organisation": {
+    "zh": "上海人工智能实验室",
+    "en": "Shanghai AI Laboratory"
+   },
+   "year": {
+    "zh": "2024（Hugging Face 2024-01；论文 2024-02）",
+    "en": "2024 (Hugging Face 2024-01; paper 2024-02)"
+   },
+   "size": {
+    "zh": "7B（7.74B，基于 InternLM2）；另有 1.5 版的 SFT 与 DPO 权重",
+    "en": "7B (7.74B, based on InternLM2); 1.5 SFT and DPO weights also exist"
+   },
+   "licence": {
+    "zh": "Hugging Face 标注 Apache-2.0",
+    "en": "Labelled Apache-2.0 on Hugging Face"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。模型卡里的演示站 chemllm.org 和 API 文档 api.chemllm.org 已无法解析域名；官方 Hugging Face Space（ChemLLM-Demo）核对时处于休眠状态，打开后会尝试启动，能否正常运行未验证。",
+    "en": "Weights are free. The demo site chemllm.org and API docs api.chemllm.org named on the model card no longer resolve; the official Hugging Face Space (ChemLLM-Demo) was sleeping when checked and tries to start when opened; whether it runs was not verified."
+   },
+   "what": {
+    "zh": "较早的开源化学对话模型，面向化学与分子科学问答。",
+    "en": "An early open chemistry dialogue model for chemistry and molecular-science questions."
+   },
+   "special": {
+    "zh": "最早一批专门为化学训练并公开权重的对话模型之一。",
+    "en": "One of the first chemistry-specific dialogue models with public weights."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "在 MolecularIQ 分子结构推理评测中总体准确率 2.2% ± 0.2%，明显低于后来的推理模型；“化学专用”标签不代表适合周期性体系问题。",
+    "en": "Scores 2.2% ± 0.2% overall on the MolecularIQ molecular-structure reasoning benchmark, well below later reasoning models; a \"chemistry\" label does not make it suitable for periodic systems."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/AI4Chem/ChemLLM-7B-Chat",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2402.06852",
+      "zh": "论文 arXiv 2402.06852",
+      "en": "Paper, arXiv 2402.06852"
+     }
+    ]
+   },
+   "try_online": [
+    {
+     "url": "https://huggingface.co/spaces/AI4Chem/ChemLLM-Demo",
+     "zh": "官方 Hugging Face Space（核对时休眠）",
+     "en": "Official Hugging Face Space (sleeping when checked)"
+    }
+   ]
+  },
+  {
+   "id": "ecnu-chemgpt",
+   "resource_number": 202,
+   "name": "ECNU-ChemGPT",
+   "page": "https://molastria.com/scimodels/#ecnu-chemgpt",
+   "group": "chem",
+   "organisation": {
+    "zh": "华东师范大学",
+    "en": "East China Normal University"
+   },
+   "year": {
+    "zh": "权重 2024（ChemGPT2-QA-72B，Hugging Face 2024-11）；论文 2025",
+    "en": "Weights 2024 (ChemGPT2-QA-72B, Hugging Face 2024-11); paper 2025"
+   },
+   "size": {
+    "zh": "问答模型 72B（72.7B，在 Qwen2-72B-Instruct 上微调）；逆合成模型 ChemGPT2-RETRO-770M",
+    "en": "QA model 72B (72.7B, fine-tuned from Qwen2-72B-Instruct); retrosynthesis model ChemGPT2-RETRO-770M"
+   },
+   "licence": {
+    "zh": "README 与 Hugging Face 标注 MIT",
+    "en": "Labelled MIT in the README and on Hugging Face"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重和网页平台的代码免费；网页平台需要自己部署，没有找到官方在线体验。",
+    "en": "Weights and the web-platform code are free; the web platform has to be self-hosted and no official online trial was found."
+   },
+   "what": {
+    "zh": "一套化学模型：化学知识问答（ChemGPT-QA）、整合多种化学工具的网页平台（ChemGPT-web，基于 Braingpt1-Chem）和逆合成预测（ChemGPT-Retro）。",
+    "en": "A suite of chemistry models: chemistry QA (ChemGPT-QA), a web platform that integrates chemistry tools (ChemGPT-web, based on Braingpt1-Chem) and retrosynthesis prediction (ChemGPT-Retro)."
+   },
+   "special": {
+    "zh": "把问答、工具平台和逆合成放在一个开源项目里。",
+    "en": "Puts QA, a tool platform and retrosynthesis in one open project."
+   },
+   "input": {
+    "zh": "文本；逆合成模型输入目标分子",
+    "en": "Text; the retrosynthesis model takes a target molecule"
+   },
+   "output": {
+    "zh": "文本；逆合成路线",
+    "en": "Text; retrosynthesis routes"
+   },
+   "limits": {
+    "zh": "72B 问答模型自行部署需要较大的显存；化学专用标签本身不说明它适合哪类体系。",
+    "en": "The 72B QA model needs a lot of GPU memory to self-host; the chemistry label alone does not show which systems it suits."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ALmonster/ChemGPT2-QA-72B",
+    "code": "https://github.com/ilog-ecnu/ECNU-ChemGPT",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2507.01444",
+      "zh": "论文 arXiv 2507.01444",
+      "en": "Paper, arXiv 2507.01444"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "llasmol",
+   "resource_number": 203,
+   "name": "LlaSMol",
+   "page": "https://molastria.com/scimodels/#llasmol",
+   "group": "chem",
+   "organisation": {
+    "zh": "俄亥俄州立大学",
+    "en": "The Ohio State University"
+   },
+   "year": {
+    "zh": "2024（论文 2024-02；COLM 2024）",
+    "en": "2024 (paper 2024-02; COLM 2024)"
+   },
+   "size": {
+    "zh": "7B 级，四种基座（Mistral、Llama 2、CodeLlama、Galactica）",
+    "en": "7B class, four base models (Mistral, Llama 2, CodeLlama, Galactica)"
+   },
+   "licence": {
+    "zh": "Mistral 版 Hugging Face 标注 CC BY 4.0",
+    "en": "Mistral version labelled CC BY 4.0 on Hugging Face"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重和指令数据集免费；有官方项目主页，没有在线体验。",
+    "en": "Weights and the instruction dataset are free; there is an official project page but no online trial."
+   },
+   "what": {
+    "zh": "四类化学任务：名称转换（IUPAC 名、分子式与 SMILES 互转）、性质预测、分子描述和化学反应。",
+    "en": "Four groups of chemistry tasks: name conversion (between IUPAC names, molecular formulas and SMILES), property prediction, molecule description and chemical reactions."
+   },
+   "special": {
+    "zh": "用 300 多万条样本、14 项任务的指令数据集 SMolInstruct 微调；论文发现 Mistral 是其中最合适的基座。",
+    "en": "Fine-tuned on SMolInstruct, an instruction dataset of more than three million samples in 14 tasks; the paper finds Mistral the best base model among those tried."
+   },
+   "input": {
+    "zh": "文本、SMILES、IUPAC 名",
+    "en": "Text, SMILES, IUPAC names"
+   },
+   "output": {
+    "zh": "文本、SMILES",
+    "en": "Text, SMILES"
+   },
+   "limits": {
+    "zh": "偏分子级任务，不能根据分子任务的表现推断科研规划能力。",
+    "en": "Molecule-level tasks only; its results there say nothing about research-planning ability."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/osunlp/LlaSMol-Mistral-7B",
+    "code": "https://github.com/OSU-NLP-Group/LLM4Chem",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2402.09391",
+      "zh": "论文 arXiv 2402.09391",
+      "en": "Paper, arXiv 2402.09391"
+     },
+     {
+      "url": "https://osu-nlp-group.github.io/LLM4Chem/",
+      "zh": "官方项目主页",
+      "en": "Official project page"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "molreasoner",
+   "resource_number": 204,
+   "name": "MolReasoner",
+   "page": "https://molastria.com/scimodels/#molreasoner",
+   "group": "chem",
+   "organisation": {
+    "zh": "北京科学智能研究院、上海交通大学、复旦大学等",
+    "en": "Beijing AI for Science Institute, Shanghai Jiao Tong University, Fudan University and collaborators"
+   },
+   "year": {
+    "zh": "2025（论文 2025-08）",
+    "en": "2025 (paper 2025-08)"
+   },
+   "licence": {
+    "zh": "MIT",
+    "en": "MIT"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "分子描述（由结构写文字说明）和分子生成（由文字说明写结构）中的推理。",
+    "en": "Reasoning for molecule captioning (structure to text) and molecule generation (text to structure)."
+   },
+   "special": {
+    "zh": "两步训练：先用知识增强的思维链数据监督微调（Mol-SFT），再用任务自适应奖励的强化学习（Mol-RL）减少结构和文字幻觉。",
+    "en": "Two training steps: supervised fine-tuning on knowledge-enhanced chain-of-thought data (Mol-SFT), then reinforcement learning with task-adaptive rewards (Mol-RL) to reduce structural and textual hallucinations."
+   },
+   "input": {
+    "zh": "分子结构或文字描述",
+    "en": "A molecular structure or a text description"
+   },
+   "output": {
+    "zh": "文字描述或分子结构",
+    "en": "A text description or a molecular structure"
+   },
+   "limits": {
+    "zh": "偏分子级任务；名字容易和 SciReasoner、ChemReasoner、MOFReasoner 混淆。",
+    "en": "Molecule-level tasks; easily confused by name with SciReasoner, ChemReasoner and MOFReasoner."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/guojianz/MolReasoner",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2508.02066",
+      "zh": "论文 arXiv 2508.02066",
+      "en": "Paper, arXiv 2508.02066"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "mofreasoner",
+   "resource_number": 205,
+   "name": "MOFReasoner",
+   "page": "https://molastria.com/scimodels/#mofreasoner",
+   "group": "mat",
+   "organisation": {
+    "zh": "北京工业大学等",
+    "en": "Beijing University of Technology and collaborators"
+   },
+   "year": {
+    "zh": "权重 2025（Hugging Face 2025-03）；论文 2026（Digital Discovery）",
+    "en": "Weights 2025 (Hugging Face 2025-03); paper 2026 (Digital Discovery)"
+   },
+   "size": {
+    "zh": "7B（7.62B）",
+    "en": "7B (7.62B)"
+   },
+   "licence": {
+    "zh": "模型卡未标许可证；论文 CC BY 4.0",
+    "en": "No licence on the model card; the paper is CC BY 4.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "讨论 MOF 吸附：孔道与吸附质的关系，孔径、表面化学环境和吸附位点，金属节点、官能团与吸附行为，以及怎样设计值得验证的研究假设。",
+    "en": "Discussing adsorption in MOFs: how pores relate to the adsorbate; pore size, surface chemistry and adsorption sites; metal nodes, functional groups and adsorption behaviour; and how to design hypotheses worth testing."
+   },
+   "special": {
+    "zh": "用 8200 余篇研究论文和 500 篇综述构建领域思维链数据，把 DeepSeek-V3、Qwen-Turbo、DeepSeek-R1 等大模型的能力蒸馏到 7B 模型里。",
+    "en": "Builds domain chain-of-thought data from more than 8,200 research articles and 500 reviews and distils large models such as DeepSeek-V3, Qwen-Turbo and DeepSeek-R1 into a 7B model."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本（推理与建议）",
+    "en": "Text (reasoning and suggestions)"
+   },
+   "limits": {
+    "zh": "适合提出和整理假设；精确的吸附能、选择性或吸附量仍要用相应的模型或计算程序算。权重仓库目前叫 ChemReasoner-7B（模型卡写明将改名），与 arXiv 2402.10980 的 ChemReasoner 不是同一个项目。模型卡的部署示例用 2 张 GPU。",
+    "en": "Good for proposing and organising hypotheses; precise adsorption energies, selectivities or uptakes still need proper models or calculation programs. The weight repository is currently named ChemReasoner-7B (the model card says it will be renamed) and is not the ChemReasoner of arXiv 2402.10980. The deployment example on the model card uses 2 GPUs."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/baixuefeng/ChemReasoner-7B",
+    "announcement": [
+     {
+      "url": "https://doi.org/10.1039/D5DD00429B",
+      "zh": "论文 Digital Discovery 5(2)（开放获取）",
+      "en": "Paper, Digital Discovery 5(2) (open access)"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "llamat",
+   "resource_number": 206,
+   "name": "LLaMat",
+   "page": "https://molastria.com/scimodels/#llamat",
+   "group": "mat",
+   "organisation": {
+    "zh": "印度理工学院德里分校、Cerebras 等",
+    "en": "IIT Delhi (Yardi School of AI), Cerebras and collaborators"
+   },
+   "year": {
+    "zh": "2024（Hugging Face 2024-12；论文 2024-12）",
+    "en": "2024 (Hugging Face and paper 2024-12)"
+   },
+   "size": {
+    "zh": "7B 级（Llama 2 版 6.74B，Llama 3 版 8.03B）",
+    "en": "7B class (Llama 2 version 6.74B, Llama 3 version 8.03B)"
+   },
+   "licence": {
+    "zh": "权重沿用 Llama 2 / Llama 3 许可；代码 MIT",
+    "en": "Weights under the Llama 2 / Llama 3 licences; code MIT"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载（遵守 Llama 许可）；没有找到官方在线体验或 API。",
+    "en": "Weights are free (under the Llama licences); no official online trial or API was found."
+   },
+   "what": {
+    "zh": "材料领域的文本处理，从文本和表格中抽取结构化信息；CIF 版（LLaMat-CIF）生成晶体结构。",
+    "en": "Materials text tasks and extracting structured information from text and tables; the CIF version (LLaMat-CIF) generates crystal structures."
+   },
+   "special": {
+    "zh": "在材料文献和晶体学数据上继续预训练 LLaMA；论文发现 LLaMat-2 在多项材料任务上反而比 LLaMat-3 更好。",
+    "en": "Continued pre-training of LLaMA on materials literature and crystallographic data; the paper finds LLaMat-2 better than LLaMat-3 on several materials tasks."
+   },
+   "input": {
+    "zh": "文本、表格",
+    "en": "Text, tables"
+   },
+   "output": {
+    "zh": "文本、结构化信息、CIF 晶体结构",
+    "en": "Text, structured data, CIF crystal structures"
+   },
+   "limits": {
+    "zh": "生成的晶体结构要用 DFT 或机器学习势检验稳定性；Llama 许可有使用条件。",
+    "en": "Generated crystal structures need stability checks with DFT or machine-learning potentials; the Llama licences have use conditions."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/collections/m3rg-iitd/llamat",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2412.09560",
+      "zh": "论文 arXiv 2412.09560",
+      "en": "Paper, arXiv 2412.09560"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "mechgpt",
+   "resource_number": 207,
+   "name": "MechGPT",
+   "page": "https://molastria.com/scimodels/#mechgpt",
+   "group": "mat",
+   "organisation": {
+    "zh": "MIT LAMM（Markus J. Buehler）",
+    "en": "MIT LAMM (Markus J. Buehler)"
+   },
+   "year": {
+    "zh": "2023 预印本；2024 发表于 Applied Mechanics Reviews",
+    "en": "Preprint 2023; published 2024 in Applied Mechanics Reviews"
+   },
+   "access": [
+    "paper"
+   ],
+   "cost": {
+    "zh": "只有论文；在 Hugging Face 上没有找到作者组织发布的 MechGPT 权重。",
+    "en": "Paper only; no MechGPT weights from the authors' organisation were found on Hugging Face."
+   },
+   "what": {
+    "zh": "用微调的大语言模型连接力学、材料失效和多尺度建模的知识。",
+    "en": "Uses a fine-tuned large language model to connect knowledge of mechanics, material failure and multiscale modelling."
+   },
+   "special": {
+    "zh": "关注材料的力学与失效，而不是化学性质；适合涉及结构稳定性、受力变形和力学性质的问题。",
+    "en": "Focused on mechanics and failure rather than chemistry; relevant to structural stability, deformation under load and mechanical properties."
+   },
+   "input": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "output": {
+    "zh": "文本",
+    "en": "Text"
+   },
+   "limits": {
+    "zh": "没有公开权重，无法自己运行；对吸附能这类化学问题不是直接的选择。",
+    "en": "No public weights, so it cannot be run; not a direct choice for chemical questions such as adsorption energies."
+   },
+   "links": {
+    "hugging_face": null,
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2310.10445",
+      "zh": "论文 arXiv 2310.10445",
+      "en": "Paper, arXiv 2310.10445"
+     },
+     {
+      "url": "https://doi.org/10.1115/1.4063843",
+      "zh": "期刊版 Applied Mechanics Reviews",
+      "en": "Journal version, Applied Mechanics Reviews"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只有论文，没有公开权重，也没有在线体验。",
+    "en": "Paper only: no public weights and no online trial."
+   }
+  },
+  {
+   "id": "s1-vl",
+   "resource_number": 208,
+   "name": "S1-VL-32B",
+   "page": "https://molastria.com/scimodels/#s1-vl",
+   "group": "mm",
+   "organisation": {
+    "zh": "中国科学院磐石团队（ScienceOne）",
+    "en": "ScienceOne team, Chinese Academy of Sciences"
+   },
+   "year": {
+    "zh": "2026（Hugging Face 2026-03；论文 2026-04）",
+    "en": "2026 (Hugging Face 2026-03; paper 2026-04)"
+   },
+   "size": {
+    "zh": "32B（基座 Qwen3-VL-32B）；SFT 版与 RL 版",
+    "en": "32B (base Qwen3-VL-32B); SFT and RL versions"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "科学图文推理。例如交给它一张论文里的吸附等温线图，让它识别曲线、图例和坐标轴，再概括作者比较了哪些材料。",
+    "en": "Scientific image–text reasoning. For example, give it an adsorption isotherm from a paper and ask it to identify the curves, legend and axes, then summarise which materials the authors compared."
+   },
+   "special": {
+    "zh": "两种推理方式：结构化思维链；以及“以图思考”：接入代码执行环境后，在推理中生成并运行代码，对图像做裁剪、放大、增强、标框或标点，再继续分析。",
+    "en": "Two reasoning modes: structured chain-of-thought, and \"thinking with images\", where, connected to a code-execution sandbox, it writes and runs code during reasoning to crop, zoom, enhance or annotate the image before continuing."
+   },
+   "input": {
+    "zh": "图像加文本",
+    "en": "Images plus text"
+   },
+   "output": {
+    "zh": "文本；“以图思考”时还会生成代码",
+    "en": "Text; code as well in thinking-with-images mode"
+   },
+   "limits": {
+    "zh": "“以图思考”需要自己搭建代码沙箱；图像识别可能读错单位、曲线颜色或坐标轴，实际数据要查论文表格或原始数据。",
+    "en": "Thinking with images needs a code sandbox you set up yourself; image reading can get units, curve colours or axes wrong, so take real data from tables or raw data."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ScienceOne-AI/S1-VL-32B",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2604.21409",
+      "zh": "论文 arXiv 2604.21409",
+      "en": "Paper, arXiv 2604.21409"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "s1-omni",
+   "resource_number": 209,
+   "name": "S1-Omni",
+   "page": "https://molastria.com/scimodels/#s1-omni",
+   "group": "mm",
+   "organisation": {
+    "zh": "中国科学院磐石团队（ScienceOne）",
+    "en": "ScienceOne team, Chinese Academy of Sciences"
+   },
+   "year": {
+    "zh": "2026（Hugging Face 2026-07；论文 2026-07）",
+    "en": "2026 (Hugging Face and paper 2026-07)"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；官方提供在本地启动的 Gradio 界面脚本，没有在线体验。",
+    "en": "Weights are free; the official code includes a Gradio interface to run locally, but there is no online trial."
+   },
+   "what": {
+    "zh": "统一的科学多模态理解、预测和生成：同一个模型处理多种科学对象，再按任务输出可验证的结果。",
+    "en": "Unified scientific multimodal understanding, prediction and generation: one model handles many kinds of scientific objects and produces verifiable outputs for each task."
+   },
+   "special": {
+    "zh": "共享主干负责跨学科、跨模态的理解与推理，再按任务接到各领域的专用解码器。",
+    "en": "A shared backbone does cross-disciplinary, cross-modal understanding and reasoning, then hands off to domain-specific decoders for each task."
+   },
+   "input": {
+    "zh": "自然语言指令加材料 CIF、SMILES、蛋白序列、光谱、科学图像",
+    "en": "Natural-language instructions plus material CIF files, SMILES, protein sequences, spectra and scientific images"
+   },
+   "output": {
+    "zh": "文本和各领域的结构化结果",
+    "en": "Text and structured domain outputs"
+   },
+   "limits": {
+    "zh": "使用前要逐项检查具体版本和推理代码是否真的支持手头的文件和任务；模型卡没有写总参数量。",
+    "en": "Check item by item that the version and inference code really support your files and task; the model card does not state the total parameter count."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ScienceOne-AI/S1-Omni",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2607.15686",
+      "zh": "论文 arXiv 2607.15686",
+      "en": "Paper, arXiv 2607.15686"
+     },
+     {
+      "url": "https://scienceone-ai.github.io/S1-Omni/",
+      "zh": "官方项目主页",
+      "en": "Official project page"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "chemmllm",
+   "resource_number": 210,
+   "name": "ChemMLLM",
+   "page": "https://molastria.com/scimodels/#chemmllm",
+   "group": "mm",
+   "organisation": {
+    "zh": "上海人工智能实验室、中国科学技术大学等",
+    "en": "Shanghai AI Laboratory, University of Science and Technology of China and collaborators"
+   },
+   "year": {
+    "zh": "2025（论文 2025-05）",
+    "en": "2025 (paper 2025-05)"
+   },
+   "access": [
+    "paper"
+   ],
+   "cost": {
+    "zh": "只有论文；官方代码仓库目前没有公开权重和许可证，Hugging Face 上也没有找到。",
+    "en": "Paper only; the official code repository has no public weights or licence, and none were found on Hugging Face."
+   },
+   "what": {
+    "zh": "在文本、SMILES 和分子图像之间做理解与生成，论文设计了五类任务，能力延伸到生成分子图像。",
+    "en": "Understanding and generation across text, SMILES and molecular images; the paper defines five kinds of tasks, extending to generating molecular images."
+   },
+   "special": {
+    "zh": "同时处理化学的三种表示（文字、SMILES、结构图）并能输出图像。",
+    "en": "Handles three chemical representations (text, SMILES, structure images) and can output images."
+   },
+   "input": {
+    "zh": "文本、SMILES、分子图像",
+    "en": "Text, SMILES, molecular images"
+   },
+   "output": {
+    "zh": "文本、SMILES、分子图像",
+    "en": "Text, SMILES, molecular images"
+   },
+   "limits": {
+    "zh": "没有公开权重，暂时无法自己运行。",
+    "en": "No public weights, so it cannot be run for now."
+   },
+   "links": {
+    "hugging_face": null,
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2505.16326",
+      "zh": "论文 arXiv 2505.16326",
+      "en": "Paper, arXiv 2505.16326"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只有论文，没有公开权重，也没有在线体验。",
+    "en": "Paper only: no public weights and no online trial."
+   }
+  },
+  {
+   "id": "moose-star",
+   "resource_number": 211,
+   "name": "MOOSE-Star",
+   "page": "https://molastria.com/scimodels/#moose-star",
+   "group": "hyp",
+   "organisation": {
+    "zh": "Zonglin Yang、Lidong Bing 等",
+    "en": "Zonglin Yang, Lidong Bing and colleagues"
+   },
+   "year": {
+    "zh": "2026（仓库 2026-03；ICML 2026）",
+    "en": "2026 (repository 2026-03; ICML 2026)"
+   },
+   "size": {
+    "zh": "三个 7B 模型：灵感检索（IR）、假设组合（HC）和二者合一的多任务模型，都基于 DeepSeek-R1-Distill-Qwen-7B",
+    "en": "Three 7B models: inspiration retrieval (IR), hypothesis composition (HC) and a multi-task model that does both, all based on DeepSeek-R1-Distill-Qwen-7B"
+   },
+   "licence": {
+    "zh": "Apache-2.0",
+    "en": "Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重和训练、评测数据免费；没有找到官方在线体验或 API。",
+    "en": "Weights and training and evaluation data are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "从已有的研究背景中检索启发，再把启发组合成新的科学假设。",
+    "en": "Retrieves inspirations from an existing research background and composes them into new scientific hypotheses."
+   },
+   "special": {
+    "zh": "一套让“科学发现”训练变得可行的框架，把假设生成拆成检索和组合两步分别训练。",
+    "en": "A framework that makes training for scientific discovery tractable by splitting hypothesis generation into retrieval and composition and training each."
+   },
+   "input": {
+    "zh": "研究背景（文本）和候选文献",
+    "en": "A research background (text) and candidate papers"
+   },
+   "output": {
+    "zh": "启发文献的选择与组合出的假设（文本）",
+    "en": "Selected inspirations and composed hypotheses (text)"
+   },
+   "limits": {
+    "zh": "公开的训练与评测数据 TOMATO-Star 来自拆解后的生物医学论文，没有在化学或材料问题上验证过。",
+    "en": "Its public training and evaluation data, TOMATO-Star, comes from decomposed biomedical papers; it has not been validated on chemistry or materials questions."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ZonglinY/MOOSE-Star-IR-R1D-7B",
+    "code": "https://github.com/ZonglinY/MOOSE-Star",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2603.03756",
+      "zh": "论文 arXiv 2603.03756",
+      "en": "Paper, arXiv 2603.03756"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "openscholar",
+   "resource_number": 212,
+   "name": "OpenScholar",
+   "page": "https://molastria.com/scimodels/#openscholar",
+   "group": "hyp",
+   "organisation": {
+    "zh": "华盛顿大学、艾伦人工智能研究所（Ai2）等",
+    "en": "University of Washington, Allen Institute for AI (Ai2) and collaborators"
+   },
+   "year": {
+    "zh": "2024 预印本（2024-11）；2026 发表于 Nature",
+    "en": "Preprint 2024 (2024-11); published 2026 in Nature"
+   },
+   "size": {
+    "zh": "8B（OpenScholar-8B，基于 Llama 3.1）",
+    "en": "8B (OpenScholar-8B, based on Llama 3.1)"
+   },
+   "licence": {
+    "zh": "权重 Llama 3.1 许可；代码 Apache-2.0",
+    "en": "Weights under the Llama 3.1 licence; code Apache-2.0"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重、代码和检索数据免费。原来的演示地址 openscholar.allen.ai 现在跳转到 Ai2 的另一个产品 Asta，没有单独的 OpenScholar 在线体验。",
+    "en": "Weights, code and retrieval data are free. The old demo address openscholar.allen.ai now redirects to Asta, a different Ai2 product; there is no standalone OpenScholar online trial."
+   },
+   "what": {
+    "zh": "文献综合：先从 4500 万篇开放获取论文中找出相关段落，再生成带引用的综合回答。适合“开放金属位点如何影响 MOF 对 CO₂ 的吸附？请列出证据来源”这类问题。",
+    "en": "Literature synthesis: it finds relevant passages among 45 million open-access papers and writes a synthesised answer with citations, suited to questions such as \"How do open metal sites affect CO₂ adsorption in MOFs? List the sources.\""
+   },
+   "special": {
+    "zh": "作者称其为第一个完全开放的科学文献检索增强语言模型（模型、代码、数据都公开）。",
+    "en": "Its authors describe it as the first fully open retrieval-augmented language model for scientific literature (model, code and data all public)."
+   },
+   "input": {
+    "zh": "文本问题",
+    "en": "A text question"
+   },
+   "output": {
+    "zh": "带引用的综合回答",
+    "en": "A synthesised answer with citations"
+   },
+   "limits": {
+    "zh": "给出引用也要点开原文检查：论文是否真的支持结论，研究对象是否相同，结果有没有适用条件。自建要同时部署模型和检索库。",
+    "en": "Even with citations, open the papers and check that they support the claim, study the same system and have no hidden conditions. Self-hosting means running both the model and the retrieval index."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/OpenSciLM/Llama-3.1_OpenScholar-8B",
+    "code": "https://github.com/AkariAsai/OpenScholar",
+    "announcement": [
+     {
+      "url": "https://allenai.org/blog/openscilm",
+      "zh": "Ai2 官方博客",
+      "en": "Official Ai2 blog post"
+     },
+     {
+      "url": "https://arxiv.org/abs/2411.14199",
+      "zh": "论文 arXiv 2411.14199",
+      "en": "Paper, arXiv 2411.14199"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署；原演示地址已跳转到其他产品。",
+    "en": "Weights only; self-host it. The old demo address now goes to another product."
+   }
+  },
+  {
+   "id": "naturelm",
+   "resource_number": 213,
+   "name": "NatureLM",
+   "page": "https://molastria.com/scimodels/#naturelm",
+   "group": "rel",
+   "organisation": {
+    "zh": "Microsoft Research AI for Science",
+    "en": "Microsoft Research AI for Science"
+   },
+   "year": {
+    "zh": "2025（论文 2025-02；Hugging Face 2025-06）",
+    "en": "2025 (paper 2025-02; Hugging Face 2025-06)"
+   },
+   "size": {
+    "zh": "8x7B 混合专家（46.75B）；论文另有 1B、8B 版",
+    "en": "8x7B mixture of experts (46.75B); the paper also describes 1B and 8B versions"
+   },
+   "licence": {
+    "zh": "MIT",
+    "en": "MIT"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载；没有找到官方在线体验或 API。",
+    "en": "Weights are free; no official online trial or API was found."
+   },
+   "what": {
+    "zh": "按自然语言指令生成和优化小分子、蛋白质、RNA 和材料，也能做跨领域设计，例如由蛋白生成分子、由蛋白生成 RNA。",
+    "en": "Generates and optimises small molecules, proteins, RNA and materials from natural-language instructions, including cross-domain design such as protein-to-molecule and protein-to-RNA."
+   },
+   "special": {
+    "zh": "把不同科学对象都当作序列（“自然的语言”）放进同一个模型预训练：文本、SMILES 小分子、FASTA 蛋白质/DNA/RNA，以及用化学组成和空间群表示的材料。",
+    "en": "Treats every scientific object as a sequence, the \"language of nature\", in one pre-trained model: text, SMILES molecules, FASTA proteins/DNA/RNA, and materials written as composition plus space group."
+   },
+   "input": {
+    "zh": "文本指令加序列（SMILES、FASTA、材料组成与空间群）",
+    "en": "Text instructions plus sequences (SMILES, FASTA, material composition and space group)"
+   },
+   "output": {
+    "zh": "序列：分子、蛋白、核酸或材料",
+    "en": "Sequences: molecules, proteins, nucleic acids or materials"
+   },
+   "limits": {
+    "zh": "模型卡写明它不是通用语言模型，没有针对摘要或问答优化；训练语料里无机数据只有约 0.02B token（总计 143B），无机任务表现受限。",
+    "en": "The model card says it is not a general-purpose language model and is not optimised for summarisation or QA; inorganic data is only about 0.02B of 143B training tokens, so inorganic tasks are limited."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/microsoft/NatureLM-8x7B-Inst",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2502.07527",
+      "zh": "论文 arXiv 2502.07527",
+      "en": "Paper, arXiv 2502.07527"
+     },
+     {
+      "url": "https://naturelm.github.io/",
+      "zh": "官方项目主页",
+      "en": "Official project page"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署。",
+    "en": "Weights only; self-host it."
+   }
+  },
+  {
+   "id": "chemfm",
+   "resource_number": 214,
+   "name": "ChemFM",
+   "page": "https://molastria.com/scimodels/#chemfm",
+   "group": "rel",
+   "organisation": {
+    "zh": "Feiyang Cai 等",
+    "en": "Feiyang Cai and colleagues"
+   },
+   "year": {
+    "zh": "2024 预印本；2025 发表于 Communications Chemistry",
+    "en": "Preprint 2024; published 2025 in Communications Chemistry"
+   },
+   "size": {
+    "zh": "3B（另有 1B）",
+    "en": "3B (also 1B)"
+   },
+   "licence": {
+    "zh": "MIT",
+    "en": "MIT"
+   },
+   "access": [
+    "weights"
+   ],
+   "cost": {
+    "zh": "权重免费下载。官方 Hugging Face 上有三个演示 Space（性质预测、条件生成、反应预测），核对时都处于暂停状态，无法使用。",
+    "en": "Weights are free. The official Hugging Face account has three demo Spaces (property prediction, conditional generation, reaction prediction), all paused and unusable when checked."
+   },
+   "what": {
+    "zh": "化学基础模型，微调后用于分子性质预测、条件分子生成和反应预测。",
+    "en": "A chemistry foundation model that is fine-tuned for molecular property prediction, conditional molecule generation and reaction prediction."
+   },
+   "special": {
+    "zh": "在 UniChem 的 1.78 亿个分子上做自监督预训练，按缩放规律选定规模。",
+    "en": "Self-supervised pre-training on 178 million molecules from UniChem, with its size chosen from scaling laws."
+   },
+   "input": {
+    "zh": "分子（SMILES）",
+    "en": "Molecules (SMILES)"
+   },
+   "output": {
+    "zh": "性质预测值、分子或反应产物",
+    "en": "Predicted properties, molecules or reaction products"
+   },
+   "limits": {
+    "zh": "不是对话模型，要针对具体任务微调后使用。",
+    "en": "Not a chat model; it has to be fine-tuned for each task."
+   },
+   "links": {
+    "hugging_face": "https://huggingface.co/ChemFM/ChemFM-3B",
+    "announcement": [
+     {
+      "url": "https://arxiv.org/abs/2410.21422",
+      "zh": "论文 arXiv 2410.21422",
+      "en": "Paper, arXiv 2410.21422"
+     }
+    ]
+   },
+   "try_online_none": {
+    "zh": "只提供权重，需自行部署；官方演示 Space 已暂停。",
+    "en": "Weights only; self-host it. The official demo Spaces are paused."
+   }
+  }
+ ],
+ "prices": {
+  "updated": "2026-11-06",
+  "unit": {
+   "zh": "每百万 token 的官方标准价",
+   "en": "Official list price per million tokens"
+  },
+  "exchange_rate": {
+   "cny_per_usd": 6.7168,
+   "date": "2026-11-06",
+   "source": "https://www.chinamoney.com.cn/chinese/bkccpr/",
+   "label": {
+    "zh": "中国外汇交易中心公布的人民币兑美元汇率中间价",
+    "en": "RMB/USD central parity published by the China Foreign Exchange Trade System"
+   }
+  },
+  "items": [
+   {
+    "id": "hydrogen",
+    "model": "Hydrogen-1.0",
+    "science_model": "hydrogen-1-0",
+    "provider": {
+     "zh": "NeuroSpark（深度原理官方博客列出的 API 渠道）",
+     "en": "NeuroSpark (the API route named on Deep Principle's blog)"
+    },
+    "currency": "USD",
+    "input": 1.4,
+    "output": 3.8,
+    "note": {
+     "zh": "发布价（Launch Price）",
+     "en": "Launch price"
+    },
+    "source": "https://neuro-spark.ai/news/hydrogen-1-0-launch/"
+   },
+   {
+    "id": "gpt-6-astra",
+    "model": "GPT-6 Astra",
+    "provider": {
+     "zh": "OpenAI",
+     "en": "OpenAI"
+    },
+    "tier": "flagship",
+    "currency": "USD",
+    "input": 10,
+    "output": 50,
+    "note": {
+     "zh": "标准价",
+     "en": "Standard"
+    },
+    "source": "https://developers.openai.com/api/docs/pricing"
+   },
+   {
+    "id": "gpt-6-luna",
+    "model": "GPT-6 Luna",
+    "provider": {
+     "zh": "OpenAI",
+     "en": "OpenAI"
+    },
+    "tier": "small",
+    "currency": "USD",
+    "input": 0.1,
+    "output": 0.5,
+    "note": {
+     "zh": "标准价",
+     "en": "Standard"
+    },
+    "source": "https://developers.openai.com/api/docs/pricing"
+   },
+   {
+    "id": "claude-fable-5-1",
+    "model": "Claude Fable 5.1",
+    "provider": {
+     "zh": "Anthropic",
+     "en": "Anthropic"
+    },
+    "tier": "flagship",
+    "currency": "USD",
+    "input": 10,
+    "output": 50,
+    "note": {
+     "zh": "基础价",
+     "en": "Base"
+    },
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+   },
+   {
+    "id": "claude-haiku-5-5",
+    "model": "Claude Haiku 5.5",
+    "provider": {
+     "zh": "Anthropic",
+     "en": "Anthropic"
+    },
+    "tier": "small",
+    "currency": "USD",
+    "input": 0.1,
+    "output": 0.5,
+    "note": {
+     "zh": "提示不超过 10 万 token；更长的提示为 0.50 / 2.50 美元",
+     "en": "Prompts up to 100,000 tokens; longer prompts USD 0.50 / 2.50"
+    },
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+   },
+   {
+    "id": "gemini-4-argon",
+    "model": "Gemini 4 Argon",
+    "provider": {
+     "zh": "Google",
+     "en": "Google"
+    },
+    "tier": "flagship",
+    "currency": "USD",
+    "input": 2,
+    "output": 10,
+    "note": {
+     "zh": "付费层，此价格到 2026-11-30；2026-12-01 起为 4 / 20 美元",
+     "en": "Paid tier, until 2026-11-30; USD 4 / 20 from 2026-12-01"
+    },
+    "source": "https://aistudio.google.com/docs/pricing"
+   },
+   {
+    "id": "gemini-3-5-flash-lite",
+    "model": "Gemini 3.5 Flash-Lite",
+    "provider": {
+     "zh": "Google",
+     "en": "Google"
+    },
+    "tier": "small",
+    "currency": "USD",
+    "input": 0.3,
+    "output": 2.5,
+    "note": {
+     "zh": "付费层；免费层不收费",
+     "en": "Paid tier; the free tier costs nothing"
+    },
+    "source": "https://aistudio.google.com/docs/pricing"
+   },
+   {
+    "id": "deepseek-v4-pro",
+    "model": "DeepSeek-V4-Pro",
+    "provider": {
+     "zh": "DeepSeek",
+     "en": "DeepSeek"
+    },
+    "tier": "flagship",
+    "currency": "USD",
+    "input": 1.32,
+    "output": 3.96,
+    "note": {
+     "zh": "高峰时段、缓存未命中；非高峰半价",
+     "en": "Peak hours, cache miss; off-peak is half price"
+    },
+    "source": "https://api-docs.deepseek.com/quick_start/pricing"
+   },
+   {
+    "id": "deepseek-flash",
+    "model": "DeepSeek Flash（V4.1-Flash）",
+    "model_en": "DeepSeek Flash (V4.1-Flash)",
+    "provider": {
+     "zh": "DeepSeek",
+     "en": "DeepSeek"
+    },
+    "tier": "small",
+    "currency": "USD",
+    "input": 0.3,
+    "output": 1.2,
+    "note": {
+     "zh": "高峰时段、缓存未命中；非高峰半价",
+     "en": "Peak hours, cache miss; off-peak is half price"
+    },
+    "source": "https://api-docs.deepseek.com/quick_start/pricing"
+   },
+   {
+    "id": "qwen3-8-max",
+    "model": "Qwen3.8-Max",
+    "provider": {
+     "zh": "阿里云百炼（通义千问）",
+     "en": "Alibaba Cloud Model Studio (Qwen)"
+    },
+    "tier": "flagship",
+    "currency": "CNY",
+    "input": 12,
+    "output": 36,
+    "note": {
+     "zh": "华北 2（北京）地域",
+     "en": "China North 2 (Beijing) region"
+    },
+    "source": "https://help.aliyun.com/zh/model-studio/model-pricing"
+   },
+   {
+    "id": "qwen3-8-flash",
+    "model": "Qwen3.8-Flash",
+    "provider": {
+     "zh": "阿里云百炼（通义千问）",
+     "en": "Alibaba Cloud Model Studio (Qwen)"
+    },
+    "tier": "small",
+    "currency": "CNY",
+    "input": 0.8,
+    "output": 2.7,
+    "note": {
+     "zh": "华北 2（北京）地域",
+     "en": "China North 2 (Beijing) region"
+    },
+    "source": "https://help.aliyun.com/zh/model-studio/model-pricing"
+   },
+   {
+    "id": "glm-5-3",
+    "model": "GLM-5.3",
+    "provider": {
+     "zh": "智谱 BigModel",
+     "en": "Zhipu BigModel"
+    },
+    "tier": "flagship",
+    "currency": "CNY",
+    "input": 8,
+    "output": 28,
+    "note": {
+     "zh": "标准价",
+     "en": "Standard"
+    },
+    "source": "https://docs.bigmodel.cn/cn/guide/start/pricing"
+   },
+   {
+    "id": "glm-5-3-flash",
+    "model": "GLM-5.3-Flash",
+    "provider": {
+     "zh": "智谱 BigModel",
+     "en": "Zhipu BigModel"
+    },
+    "tier": "small",
+    "currency": "CNY",
+    "input": 0.8,
+    "output": 2.8,
+    "note": {
+     "zh": "标准价",
+     "en": "Standard"
+    },
+    "source": "https://docs.bigmodel.cn/cn/guide/start/pricing"
+   },
+   {
+    "id": "kimi-k3-1-pro",
+    "model": "Kimi K3.1 Pro",
+    "provider": {
+     "zh": "月之暗面 Kimi",
+     "en": "Moonshot AI (Kimi)"
+    },
+    "tier": "flagship",
+    "currency": "CNY",
+    "input": 13,
+    "output": 68,
+    "note": {
+     "zh": "Kimi 当前在售模型里没有小型版本（K2 系列 2026-10-31 起不再向新用户开放）",
+     "en": "Kimi's current line-up has no small model (the K2 series closed to new users on 2026-10-31)"
+    },
+    "source": "https://platform.kimi.com/docs/pricing/chat"
+   }
+  ]
+ }
+}

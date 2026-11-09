@@ -374,10 +374,10 @@ def get_basis(
 @_tool_errors
 def search_resources(
     query: Annotated[str, Field(description="关键词，匹配名称、描述和链接；空字符串表示不按关键词筛")] = "",
-    category: Annotated[str | None, Field(description="类别名，如 材料与晶体结构、药物、生物活性与化学空间（共 11 类，见 catalog_status）")] = None,
+    category: Annotated[str | None, Field(description="类别名，如 材料与晶体结构、药物、生物活性与化学空间（类别列表见 catalog_status）")] = None,
     integration: Annotated[Literal["adapter", "optimade", "stub", "catalog"] | None, Field(description="接入状态：adapter（独立适配器）、optimade（经 OPTIMADE 接入）、stub（占位）、catalog（仅收录导航信息）")] = None,
 ) -> dict[str, Any]:
-    """检索资源目录（《计算化学数据库与资源导航 2026》103 条）。catalog 表示仅收录导航信息、尚未接入，不会冒充可检索数据源。"""
+    """检索资源目录（与 MolAstria 网站的数据库目录同一份：数据库、软件、数据集、课程和科学大模型）。catalog 表示仅收录导航信息、尚未接入，不会冒充可检索数据源。"""
     from chemdb_agent.catalog.resources import search_resources as _search
 
     results = _search(query, category=category, integration=integration)
@@ -416,7 +416,7 @@ def _sources_status() -> list[dict[str, Any]]:
 def catalog_status() -> dict[str, Any]:
     """数据源清单（是否带能量、是否要 key、许可）、本地已下载的分片、缓存与资源目录概况（只读，不联网）。"""
     from chemdb_agent.adapters import local_catalog
-    from chemdb_agent.catalog.resources import CATEGORIES, RESOURCES, integrated
+    from chemdb_agent.catalog.resources import CATEGORIES, RESOURCES, SOURCE, UPDATED, integrated
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     entries = [
@@ -436,7 +436,7 @@ def catalog_status() -> dict[str, Any]:
             "total": len(RESOURCES),
             "categories": CATEGORIES,
             "integrated": [r["name"] for r in integrated()],
-            "source": "《计算化学数据库与资源导航 2026》（103 条，2026-10-27 核验；接入状态 2026-11-06 更新）",
+            "source": f"MolAstria 开放数据接口 {SOURCE}（{len(RESOURCES)} 条，{UPDATED} 核对；随包安装，离线可用）",
         },
     }
 

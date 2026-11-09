@@ -1,0 +1,3540 @@
+{
+ "api": "molastria-open-data",
+ "schema": "1.0",
+ "license": "CC-BY-4.0",
+ "attribution": "MolAstria (https://molastria.com)",
+ "docs": "https://molastria.com/api/",
+ "dataset": "resources",
+ "updated": "2026-11-05",
+ "count": 214,
+ "categories": [
+  {
+   "code": "01",
+   "zh": "综合化合物与化学信息",
+   "en": "General compound & chemistry portals",
+   "count": 7
+  },
+  {
+   "code": "02",
+   "zh": "量子化学基准与基础参数",
+   "en": "Quantum chemistry benchmarks and fundamental parameters",
+   "count": 18
+  },
+  {
+   "code": "03",
+   "zh": "材料与晶体结构",
+   "en": "Materials & crystal structures",
+   "count": 15
+  },
+  {
+   "code": "04",
+   "zh": "生物大分子与结构",
+   "en": "Biomacromolecules & structure",
+   "count": 8
+  },
+  {
+   "code": "05",
+   "zh": "药物、生物活性与化学空间",
+   "en": "Drugs, bioactivity & chemical space",
+   "count": 10
+  },
+  {
+   "code": "06",
+   "zh": "代谢物、天然产物与质谱",
+   "en": "Metabolites, natural products, and mass spectrometry",
+   "count": 4
+  },
+  {
+   "code": "07",
+   "zh": "反应、合成与生化通路",
+   "en": "Reactions, synthesis and biochemical pathways",
+   "count": 6
+  },
+  {
+   "code": "08",
+   "zh": "光谱与波谱",
+   "en": "Spectroscopy & spectra",
+   "count": 6
+  },
+  {
+   "code": "09",
+   "zh": "机器学习数据集与势函数",
+   "en": "Machine learning datasets & potentials",
+   "count": 11
+  },
+  {
+   "code": "10",
+   "zh": "软件、平台与计算入口",
+   "en": "Software, platforms & compute entry points",
+   "count": 20
+  },
+  {
+   "code": "11",
+   "zh": "社区与中文入口",
+   "en": "Community & Chinese entry",
+   "count": 4
+  },
+  {
+   "code": "12",
+   "zh": "量子化学程序与方法库",
+   "en": "Quantum chemistry programs and method libraries",
+   "count": 25
+  },
+  {
+   "code": "13",
+   "zh": "周期体系与凝聚态第一性原理",
+   "en": "Periodic and condensed-matter first-principles codes",
+   "count": 14
+  },
+  {
+   "code": "14",
+   "zh": "波函数分析、可视化与动力学",
+   "en": "Wavefunction analysis, visualization, and dynamics",
+   "count": 15
+  },
+  {
+   "code": "15",
+   "zh": "量子力学与量子化学课程教材",
+   "en": "Courses and textbooks: quantum mechanics and quantum chemistry",
+   "count": 18
+  },
+  {
+   "code": "16",
+   "zh": "量子计算与量子化学算法",
+   "en": "Quantum computing for chemistry",
+   "count": 6
+  },
+  {
+   "code": "17",
+   "zh": "科学领域语言模型与多模态基础模型",
+   "en": "Scientific language models and multimodal foundation models",
+   "count": 27
+  }
+ ],
+ "items": [
+  {
+   "number": 1,
+   "name": "PubChem",
+   "url": "https://pubchem.ncbi.nlm.nih.gov",
+   "page": "https://molastria.com/atlas/#resources/1",
+   "category_code": "01",
+   "description": {
+    "zh": "全球最大的公开化学信息库，可按名称、结构或 CAS 号检索化合物性质、生物活性与文献。",
+    "en": "The world's largest public chemistry database; search compound properties, biological activities, and literature by name, structure, or CAS number."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 2,
+   "name": "ChemSpider",
+   "url": "https://www.chemspider.com",
+   "page": "https://molastria.com/atlas/#resources/2",
+   "category_code": "01",
+   "description": {
+    "zh": "英国皇家化学会（RSC）维护的结构数据库，聚合数百万化合物的性质与外部来源链接。",
+    "en": "Structure database maintained by the Royal Society of Chemistry (RSC), aggregating properties and external source links for millions of compounds."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 3,
+   "name": "CAS Common Chemistry",
+   "url": "https://commonchemistry.cas.org",
+   "page": "https://molastria.com/atlas/#resources/3",
+   "category_code": "01",
+   "description": {
+    "zh": "CAS 官方免费子库，适合用 CAS 号快速核对常用化学品的基础性质。",
+    "en": "CAS official free sub-database, suitable for quickly checking basic properties of common chemicals by CAS number."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 4,
+   "name": "NIST Chemistry WebBook",
+   "url": "https://webbook.nist.gov/chemistry",
+   "page": "https://molastria.com/atlas/#resources/4",
+   "category_code": "01",
+   "description": {
+    "zh": "NIST 热化学、热物理与光谱数据总入口，气相离子热化学数据尤其实用。",
+    "en": "NIST main entry for thermochemical, thermophysical and spectral data; gas-phase ion thermochemistry data is especially useful."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 5,
+   "name": "ChEBI",
+   "url": "https://www.ebi.ac.uk/chebi",
+   "page": "https://molastria.com/atlas/#resources/5",
+   "category_code": "01",
+   "description": {
+    "zh": "EBI 的化学本体数据库，提供化合物本体注释及其与生物医学实体的关联。",
+    "en": "EBI's chemical ontology database, providing compound ontology annotations and their relationships with biomedical entities."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 6,
+   "name": "Reaxys",
+   "url": "https://www.reaxys.com",
+   "page": "https://molastria.com/atlas/#resources/6",
+   "category_code": "01",
+   "description": {
+    "zh": "Elsevier 的反应与物质性质检索平台，支持逆合成分析与文献实验数据回溯。",
+    "en": "Elsevier's reaction and substance property search platform, supporting retrosynthetic analysis and retrospective literature experimental data."
+   },
+   "access": {
+    "zh": "机构订阅",
+    "en": "Institutional subscription"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 7,
+   "name": "SciFinder-n",
+   "url": "https://scifinder-n.cas.org",
+   "page": "https://molastria.com/atlas/#resources/7",
+   "category_code": "01",
+   "description": {
+    "zh": "CAS 旗舰检索平台，覆盖文献、物质、反应与专利，适合系统查新与专利检索。",
+    "en": "CAS flagship search platform, covering literature, substances, reactions and patents, suitable for systematic novelty and patent searches."
+   },
+   "access": {
+    "zh": "机构订阅",
+    "en": "Institutional subscription"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 8,
+   "name": "NIST CCCBDB",
+   "url": "https://cccbdb.nist.gov",
+   "page": "https://molastria.com/atlas/#resources/8",
+   "category_code": "02",
+   "description": {
+    "zh": "计算化学基准数据库，汇集实验与计算的几何、能量、振动频率等，可直接对比方法误差。",
+    "en": "Computational chemistry benchmark database compiling experimental and calculated geometries, energies, vibrational frequencies, etc., for direct method error comparison."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 9,
+   "name": "GMTKN55",
+   "url": "https://www.chemie.uni-bonn.de/grimme/de/software/gmtkn/gmtkn55",
+   "page": "https://molastria.com/atlas/#resources/9",
+   "category_code": "02",
+   "description": {
+    "zh": "Grimme 组的主族热化学与反应能基准集，DFT 方法评测的事实标准之一。",
+    "en": "Grimme group's main-group thermochemistry and reaction energy benchmark set, one of the de facto standards for DFT method evaluation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 10,
+   "name": "Minnesota Databases",
+   "url": "https://comp.chem.umn.edu/db/",
+   "page": "https://molastria.com/atlas/#resources/10",
+   "category_code": "02",
+   "description": {
+    "zh": "Truhlar 组维护的多样基准库集合（M06、S22、MGCDB84 等），含几何与能量数据。",
+    "en": "A collection of diverse benchmark sets maintained by the Truhlar group (M06, S22, MGCDB84, etc.), including geometries and energies."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 11,
+   "name": "ATcT",
+   "url": "https://atct.anl.gov",
+   "page": "https://molastria.com/atlas/#resources/11",
+   "category_code": "02",
+   "description": {
+    "zh": "Active Thermochemical Tables，通过网络化评估给出高精度生成焓与键能。",
+    "en": "Active Thermochemical Tables, providing high-precision enthalpies of formation and bond energies through networked evaluation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 12,
+   "name": "NIST-JANAF",
+   "url": "https://janaf.nist.gov",
+   "page": "https://molastria.com/atlas/#resources/12",
+   "category_code": "02",
+   "description": {
+    "zh": "经典热力学函数表，提供物质在宽温区内的 Cp、S、H 以及平衡常数。",
+    "en": "Classic thermodynamic function tables providing Cp, S, H and equilibrium constants over a wide temperature range."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 13,
+   "name": "Burcat 热化学库",
+   "url": "http://garfield.chem.elte.hu/Burcat/burcat.html",
+   "page": "https://molastria.com/atlas/#resources/13",
+   "category_code": "02",
+   "description": {
+    "zh": "NASA 多项式热化学数据库，燃烧与反应机理建模的常用参数来源。",
+    "en": "NASA polynomial thermochemistry database, a common parameter source for combustion and reaction mechanism modeling."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 14,
+   "name": "ReSpecTh",
+   "url": "http://respecth.hu",
+   "page": "https://molastria.com/atlas/#resources/14",
+   "category_code": "02",
+   "description": {
+    "zh": "燃烧反应机理与实验数据平台，含点火延迟、火焰速度等模型验证数据。",
+    "en": "Combustion reaction mechanism and experimental data platform, including ignition delay, flame speed, and other model validation data."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 15,
+   "name": "NIST Kinetics",
+   "url": "https://kinetics.nist.gov",
+   "page": "https://molastria.com/atlas/#resources/15",
+   "category_code": "02",
+   "description": {
+    "zh": "气相化学动力学实验数据检索库，可按反应物或产物查速率常数。",
+    "en": "Gas-phase chemical kinetics experimental data retrieval database; search rate constants by reactant or product."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 16,
+   "name": "IUPAC 气相动力学",
+   "url": "https://iupac.aeris-data.fr/en/home-english/",
+   "page": "https://molastria.com/atlas/#resources/16",
+   "category_code": "02",
+   "description": {
+    "zh": "IUPAC 气相动力学数据评估项目（现由 AERIS 托管），提供经评审的速率常数与光解数据。",
+    "en": "IUPAC gas-phase kinetics data evaluation project (now hosted by AERIS), providing reviewed rate constants and photolysis data."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 17,
+   "name": "Basis Set Exchange",
+   "url": "https://www.basissetexchange.org",
+   "page": "https://molastria.com/atlas/#resources/17",
+   "category_code": "02",
+   "description": {
+    "zh": "基组与赝势的一站式检索、下载平台，支持主流量化程序格式转换。",
+    "en": "One-stop retrieval and download platform for basis sets and pseudopotentials, supporting format conversion for mainstream quantum chemistry programs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 18,
+   "name": "SSSP",
+   "url": "https://www.materialscloud.org/discover/sssp",
+   "page": "https://molastria.com/atlas/#resources/18",
+   "category_code": "02",
+   "description": {
+    "zh": "Materials Cloud 的标准固体赝势库，为可复现的固体 DFT 计算提供推荐设置。",
+    "en": "Materials Cloud's standard solid-state pseudopotential library, providing recommended settings for reproducible solid-state DFT calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 19,
+   "name": "libxc",
+   "url": "https://libxc.gitlab.io",
+   "page": "https://molastria.com/atlas/#resources/19",
+   "category_code": "02",
+   "description": {
+    "zh": "开源交换-相关泛函库，被主流量化与固体电子结构程序广泛调用。",
+    "en": "Open-source exchange-correlation functional library used by major quantum chemistry and solid-state electronic structure programs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 20,
+   "name": "Materials Project",
+   "url": "https://materialsproject.org",
+   "page": "https://molastria.com/atlas/#resources/20",
+   "category_code": "03",
+   "description": {
+    "zh": "美国能源部支持的 DFT 材料数据库，可检索结构、能带、相图与电池、催化性质。",
+    "en": "US DOE-supported DFT materials database with searchable structures, band structures, phase diagrams, and battery/catalytic properties."
+   },
+   "access": {
+    "zh": "注册",
+    "en": "Register"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 21,
+   "name": "OQMD",
+   "url": "https://www.oqmd.org",
+   "page": "https://molastria.com/atlas/#resources/21",
+   "category_code": "03",
+   "description": {
+    "zh": "开放量子材料数据库，提供百万级无机化合物的形成能与结构稳定性数据。",
+    "en": "Open quantum materials database, providing formation energies and structural stability data for millions of inorganic compounds."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 22,
+   "name": "AFLOW",
+   "url": "https://aflow.org",
+   "page": "https://molastria.com/atlas/#resources/22",
+   "category_code": "03",
+   "description": {
+    "zh": "高通量材料计算平台，提供结构原型、热力学与电子性质等大规模数据。",
+    "en": "High-throughput materials computation platform providing large-scale data on structural prototypes, thermodynamics, and electronic properties."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 23,
+   "name": "NOMAD",
+   "url": "https://nomad-lab.eu",
+   "page": "https://molastria.com/atlas/#resources/23",
+   "category_code": "03",
+   "description": {
+    "zh": "欧洲的原始计算数据仓库，可上传、检索海量 DFT 计算数据及其元数据。",
+    "en": "Europe's raw computational data repository; upload and search massive DFT calculation data and metadata."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 24,
+   "name": "JARVIS",
+   "url": "https://jarvis.nist.gov",
+   "page": "https://molastria.com/atlas/#resources/24",
+   "category_code": "03",
+   "description": {
+    "zh": "NIST 的材料与分子数据平台，含 DFT 性质、力场与机器学习工具。",
+    "en": "NIST's materials and molecular data platform, with DFT properties, force fields and machine learning tools."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 25,
+   "name": "Materials Cloud",
+   "url": "https://www.materialscloud.org",
+   "page": "https://molastria.com/atlas/#resources/25",
+   "category_code": "03",
+   "description": {
+    "zh": "EPFL 托管的开放材料数据与工具门户，含二维材料、SSSP 与 AiiDA 工作流。",
+    "en": "Open materials data and tools portal hosted by EPFL, including 2D materials, SSSP and AiiDA workflows."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 26,
+   "name": "C2DB",
+   "url": "https://cmr.fysik.dtu.dk/c2db/c2db.html",
+   "page": "https://molastria.com/atlas/#resources/26",
+   "category_code": "03",
+   "description": {
+    "zh": "二维材料计算数据库，提供数百种单层材料的结构稳定性与电子、磁性质。",
+    "en": "2D materials computational database, offering structural stability and electronic and magnetic properties for hundreds of monolayer materials."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 27,
+   "name": "ICSD",
+   "url": "https://icsd.fiz-karlsruhe.de",
+   "page": "https://molastria.com/atlas/#resources/27",
+   "category_code": "03",
+   "description": {
+    "zh": "无机晶体结构数据库，收录实验测定的晶体结构，通常需机构订阅。",
+    "en": "Inorganic Crystal Structure Database, contains experimentally determined crystal structures, usually requires institutional subscription."
+   },
+   "access": {
+    "zh": "机构订阅",
+    "en": "Institutional subscription"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 28,
+   "name": "Cambridge Structural Database",
+   "url": "https://www.ccdc.cam.ac.uk",
+   "page": "https://molastria.com/atlas/#resources/28",
+   "category_code": "03",
+   "description": {
+    "zh": "剑桥结构数据库（CSD），有机与金属有机晶体结构的权威来源。",
+    "en": "Cambridge Structural Database (CSD), authoritative source for organic and metal-organic crystal structures."
+   },
+   "access": {
+    "zh": "机构订阅",
+    "en": "Institutional subscription"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 29,
+   "name": "Crystallography Open Database",
+   "url": "https://www.crystallography.net/cod",
+   "page": "https://molastria.com/atlas/#resources/29",
+   "category_code": "03",
+   "description": {
+    "zh": "开放晶体学数据库，免费提供数十万条晶体结构 CIF 文件。",
+    "en": "Open crystallography database providing free CIF files for hundreds of thousands of structures."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 30,
+   "name": "AMCSD",
+   "url": "https://www.rruff.net/amcsd/",
+   "page": "https://molastria.com/atlas/#resources/30",
+   "category_code": "03",
+   "description": {
+    "zh": "矿物与相关固体的晶体结构库，适合矿物学与地球化学研究。",
+    "en": "A crystal structure database of minerals and related solids, suitable for mineralogy and geochemistry research."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 31,
+   "name": "Bilbao Crystallographic Server",
+   "url": "https://www.cryst.ehu.es",
+   "page": "https://molastria.com/atlas/#resources/31",
+   "category_code": "03",
+   "description": {
+    "zh": "晶体学对称性服务器，可查空间群、不可约表示与相变对称性。",
+    "en": "Crystallographic symmetry server, search space groups, irreducible representations and phase transition symmetries."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 32,
+   "name": "Catalysis-Hub",
+   "url": "https://www.catalysis-hub.org",
+   "page": "https://molastria.com/atlas/#resources/32",
+   "category_code": "03",
+   "description": {
+    "zh": "催化表面吸附能与反应能数据库，汇总多个研究组的 DFT 计算结果。",
+    "en": "Database of catalytic surface adsorption energies and reaction energies, aggregating DFT results from multiple research groups."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 33,
+   "name": "Matbench",
+   "url": "https://matbench.materialsproject.org",
+   "page": "https://molastria.com/atlas/#resources/33",
+   "category_code": "03",
+   "description": {
+    "zh": "材料机器学习基准套件，含 13 个性质预测任务与固定数据划分。",
+    "en": "Materials machine learning benchmark suite including 13 property prediction tasks and fixed data splits."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 34,
+   "name": "Matbench Discovery",
+   "url": "https://matbench-discovery.materialsproject.org",
+   "page": "https://molastria.com/atlas/#resources/34",
+   "category_code": "03",
+   "description": {
+    "zh": "材料发现专用基准，评估机器学习势函数在稳定材料筛选中的实际表现。",
+    "en": "Benchmark dedicated to materials discovery, evaluating the actual performance of machine learning potentials in stable material screening."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 35,
+   "name": "Protein Data Bank",
+   "url": "https://www.rcsb.org",
+   "page": "https://molastria.com/atlas/#resources/35",
+   "category_code": "04",
+   "description": {
+    "zh": "实验测定的蛋白质与核酸三维结构总库，结构生物学与分子对接的起点。",
+    "en": "Repository of experimentally determined 3D structures of proteins and nucleic acids, the starting point for structural biology and molecular docking."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 36,
+   "name": "AlphaFold DB",
+   "url": "https://alphafold.ebi.ac.uk",
+   "page": "https://molastria.com/atlas/#resources/36",
+   "category_code": "04",
+   "description": {
+    "zh": "AlphaFold 预测的蛋白结构库，覆盖数百万物种的蛋白质组。",
+    "en": "AlphaFold-predicted protein structure database, covering proteomes of millions of species."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 37,
+   "name": "EMDB",
+   "url": "https://www.ebi.ac.uk/emdb",
+   "page": "https://molastria.com/atlas/#resources/37",
+   "category_code": "04",
+   "description": {
+    "zh": "冷冻电镜密度图数据库，与 PDB 中的原子模型互相补充。",
+    "en": "Cryo-EM density map database, complementing atomic models in the PDB."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 38,
+   "name": "UniProt",
+   "url": "https://www.uniprot.org",
+   "page": "https://molastria.com/atlas/#resources/38",
+   "category_code": "04",
+   "description": {
+    "zh": "蛋白序列与功能注释的权威数据库，可直接下载 FASTA 用于建模。",
+    "en": "Authoritative database of protein sequences and functional annotations; FASTA can be downloaded directly for modeling."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 39,
+   "name": "BMRB",
+   "url": "https://bmrb.io",
+   "page": "https://molastria.com/atlas/#resources/39",
+   "category_code": "04",
+   "description": {
+    "zh": "生物大分子核磁共振数据银行，收录化学位移、结构约束与弛豫数据。",
+    "en": "Biological macromolecule NMR data bank, collecting chemical shifts, structural constraints, and relaxation data."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 40,
+   "name": "PDBbind+",
+   "url": "https://www.pdbbind-plus.org.cn",
+   "page": "https://molastria.com/atlas/#resources/40",
+   "category_code": "04",
+   "description": {
+    "zh": "蛋白-配体复合物结合亲和力数据集，广泛用于打分函数开发与机器学习训练。",
+    "en": "Protein-ligand complex binding affinity dataset widely used for scoring function development and machine learning training."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 41,
+   "name": "BindingDB",
+   "url": "https://www.bindingdb.org",
+   "page": "https://molastria.com/atlas/#resources/41",
+   "category_code": "04",
+   "description": {
+    "zh": "公开的结合亲和力数据库，可按靶点或化合物检索 Ki、Kd 与 IC50。",
+    "en": "Public binding affinity database; search Ki, Kd, and IC50 by target or compound."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 42,
+   "name": "PLINDER",
+   "url": "https://www.plinder.sh",
+   "page": "https://molastria.com/atlas/#resources/42",
+   "category_code": "04",
+   "description": {
+    "zh": "大规模蛋白-配体相互作用数据集，提供高质量结构、界面标注与划分。",
+    "en": "Large-scale protein-ligand interaction dataset providing high-quality structures, interface annotations and splits."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 43,
+   "name": "ChEMBL",
+   "url": "https://www.ebi.ac.uk/chembl",
+   "page": "https://molastria.com/atlas/#resources/43",
+   "category_code": "05",
+   "description": {
+    "zh": "EBI 的生物活性数据库，整合药物、靶点与测定数据，是药物机器学习首选。",
+    "en": "EBI's bioactivity database integrating drug, target and assay data; the first choice for drug machine learning."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 44,
+   "name": "DrugBank",
+   "url": "https://go.drugbank.com",
+   "page": "https://molastria.com/atlas/#resources/44",
+   "category_code": "05",
+   "description": {
+    "zh": "药物与靶点知识库，含已上市及在研药物信息，学术访问免费。",
+    "en": "Drug and target knowledgebase with marketed and investigational drug information; free academic access."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 45,
+   "name": "ZINC",
+   "url": "https://zinc.docking.org",
+   "page": "https://molastria.com/atlas/#resources/45",
+   "category_code": "05",
+   "description": {
+    "zh": "可购买化合物的虚拟筛选库，提供多种预处理格式与三维构象。",
+    "en": "Virtual screening library of purchasable compounds, offering multiple preprocessed formats and 3D conformations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 46,
+   "name": "Enamine REAL",
+   "url": "https://enamine.net/compound-collections/real-compounds",
+   "page": "https://molastria.com/atlas/#resources/46",
+   "category_code": "05",
+   "description": {
+    "zh": "超大规模可合成化合物库，适合按需订购与十亿级虚拟筛选。",
+    "en": "Ultra-large make-on-demand compound libraries, suitable for billion-scale virtual screening."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 47,
+   "name": "Guide to Pharmacology",
+   "url": "https://www.guidetopharmacology.org",
+   "page": "https://molastria.com/atlas/#resources/47",
+   "category_code": "05",
+   "description": {
+    "zh": "IUPHAR 的受体、离子通道与配体数据库，人工注释质量高。",
+    "en": "IUPHAR's receptor, ion channel and ligand database with high-quality manual annotation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 48,
+   "name": "DUDE-Z",
+   "url": "https://dudez.docking.org",
+   "page": "https://molastria.com/atlas/#resources/48",
+   "category_code": "05",
+   "description": {
+    "zh": "分子对接评测的诱饵分子集，用于检验虚拟筛选方法的富集能力。",
+    "en": "Decoy molecule set for molecular docking evaluation, used to test enrichment ability of virtual screening methods."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 49,
+   "name": "Tox21",
+   "url": "https://tox21.gov",
+   "page": "https://molastria.com/atlas/#resources/49",
+   "category_code": "05",
+   "description": {
+    "zh": "美国联邦毒理研究计划数据门户，提供 21 世纪毒理学测试数据。",
+    "en": "US federal toxicology program data portal, offering 21st-century toxicology testing data."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 50,
+   "name": "EPA CompTox",
+   "url": "https://comptox.epa.gov/dashboard",
+   "page": "https://molastria.com/atlas/#resources/50",
+   "category_code": "05",
+   "description": {
+    "zh": "美国 EPA 化学品仪表盘，整合毒性、暴露与化学性质数据。",
+    "en": "US EPA Chemicals Dashboard, integrating toxicity, exposure and chemical property data."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 51,
+   "name": "ADMETlab 3.0",
+   "url": "https://admetlab3.scbdd.com",
+   "page": "https://molastria.com/atlas/#resources/51",
+   "category_code": "05",
+   "description": {
+    "zh": "在线 ADMET 性质预测平台，输入 SMILES 即可获得成药性与安全性评估。",
+    "en": "Online ADMET property prediction platform: enter a SMILES to get drug-likeness and safety assessment."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 52,
+   "name": "Therapeutics Data Commons",
+   "url": "https://tdcommons.ai",
+   "page": "https://molastria.com/atlas/#resources/52",
+   "category_code": "05",
+   "description": {
+    "zh": "治疗数据共享平台，汇集药物发现相关的机器学习数据集与基准。",
+    "en": "Therapeutic data sharing platform, aggregating machine learning datasets and benchmarks for drug discovery."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 53,
+   "name": "HMDB",
+   "url": "https://hmdb.ca",
+   "page": "https://molastria.com/atlas/#resources/53",
+   "category_code": "06",
+   "description": {
+    "zh": "人类代谢组数据库，收录代谢物结构、浓度与疾病关联信息。",
+    "en": "Human Metabolome Database, containing metabolite structures, concentrations, and disease associations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 54,
+   "name": "METLIN",
+   "url": "https://metlin.scripps.edu",
+   "page": "https://molastria.com/atlas/#resources/54",
+   "category_code": "06",
+   "description": {
+    "zh": "Scripps 的代谢物质谱数据库，支持 MS/MS 谱图匹配与代谢物鉴定。",
+    "en": "Scripps metabolomics mass spectrometry database, supporting MS/MS spectral matching and metabolite identification."
+   },
+   "access": {
+    "zh": "注册",
+    "en": "Register"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 55,
+   "name": "MassBank",
+   "url": "https://massbank.eu",
+   "page": "https://molastria.com/atlas/#resources/55",
+   "category_code": "06",
+   "description": {
+    "zh": "开放质谱数据库，汇总多台仪器的正、负离子实测谱图。",
+    "en": "Open mass spectrometry database aggregating positive- and negative-ion spectra from multiple instruments."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 56,
+   "name": "COCONUT",
+   "url": "https://coconut.naturalproducts.net",
+   "page": "https://molastria.com/atlas/#resources/56",
+   "category_code": "06",
+   "description": {
+    "zh": "天然产物化学结构数据库，适合天然产物虚拟筛选与化学空间分析。",
+    "en": "Database of natural product chemical structures, suitable for virtual screening of natural products and chemical space analysis."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 57,
+   "name": "Open Reaction Database",
+   "url": "https://open-reaction-database.org",
+   "page": "https://molastria.com/atlas/#resources/57",
+   "category_code": "07",
+   "description": {
+    "zh": "开放反应数据库，标准化存储反应条件与实验结果，并提供 API。",
+    "en": "Open reaction database, with standardised storage of reaction conditions and experimental results, and an API."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 58,
+   "name": "USPTO 反应数据集",
+   "url": "https://figshare.com/articles/dataset/Chemical_reactions_from_US_patents_1976-Sep2016_/5104873",
+   "page": "https://molastria.com/atlas/#resources/58",
+   "category_code": "07",
+   "description": {
+    "zh": "Lowe 整理的美国专利反应数据（1976–2016），反应预测机器学习模型的经典训练集。",
+    "en": "US patent reaction data compiled by Lowe (1976–2016), a classic training set for reaction prediction machine learning models."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 59,
+   "name": "Chemotion Repository",
+   "url": "https://chemotion-repository.net",
+   "page": "https://molastria.com/atlas/#resources/59",
+   "category_code": "07",
+   "description": {
+    "zh": "开源电子实验记录与反应数据仓库，可发布可引用的实验数据集。",
+    "en": "Open-source electronic lab notebook and reaction data repository, can publish citable experimental datasets."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 60,
+   "name": "Rhea",
+   "url": "https://www.rhea-db.org",
+   "page": "https://molastria.com/atlas/#resources/60",
+   "category_code": "07",
+   "description": {
+    "zh": "生化反应数据库，提供酶催化的反应方程式与层级分类。",
+    "en": "Biochemical reaction database, providing enzyme-catalyzed reaction equations and hierarchical classification."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 61,
+   "name": "BRENDA",
+   "url": "https://www.brenda-enzymes.org",
+   "page": "https://molastria.com/atlas/#resources/61",
+   "category_code": "07",
+   "description": {
+    "zh": "酶功能与动力学数据库，含 Km、kcat、抑制剂与生物来源信息。",
+    "en": "Enzyme function and kinetics database with Km, kcat, inhibitors and biological source information."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 62,
+   "name": "KEGG",
+   "url": "https://www.kegg.jp",
+   "page": "https://molastria.com/atlas/#resources/62",
+   "category_code": "07",
+   "description": {
+    "zh": "京都基因与基因组百科，提供代谢通路、酶与化合物之间的关联。",
+    "en": "Kyoto Encyclopedia of Genes and Genomes, providing links between metabolic pathways, enzymes, and compounds."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 63,
+   "name": "HITRAN",
+   "url": "https://hitran.org",
+   "page": "https://molastria.com/atlas/#resources/63",
+   "category_code": "08",
+   "description": {
+    "zh": "高分辨率分子光谱数据库，大气探测与燃烧诊断的标准谱线来源。",
+    "en": "High-resolution molecular spectroscopy database, standard line source for atmospheric sounding and combustion diagnostics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 64,
+   "name": "ExoMol",
+   "url": "https://www.exomol.com",
+   "page": "https://molastria.com/atlas/#resources/64",
+   "category_code": "08",
+   "description": {
+    "zh": "系外行星与高温分子谱线库，覆盖大量小分子的完整 rovibronic 谱线。",
+    "en": "Exoplanet and high-temperature molecular line database, covering complete rovibronic lines for many small molecules."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 65,
+   "name": "JPL Molecular Spectroscopy",
+   "url": "https://spec.jpl.nasa.gov",
+   "page": "https://molastria.com/atlas/#resources/65",
+   "category_code": "08",
+   "description": {
+    "zh": "JPL 微波、毫米波分子谱线目录，射电天文与气相光谱研究常用。",
+    "en": "JPL microwave and millimeter-wave molecular spectral line catalog, commonly used in radio astronomy and gas-phase spectroscopy research."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 66,
+   "name": "CDMS",
+   "url": "https://cdms.astro.uni-koeln.de",
+   "page": "https://molastria.com/atlas/#resources/66",
+   "category_code": "08",
+   "description": {
+    "zh": "科隆分子光谱数据库，提供气相分子的转动与振动谱线数据。",
+    "en": "Cologne Molecular Spectroscopy Database, providing rotational and vibrational line data for gas-phase molecules."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 67,
+   "name": "SDBS",
+   "url": "https://sdbs.db.aist.go.jp",
+   "page": "https://molastria.com/atlas/#resources/67",
+   "category_code": "08",
+   "description": {
+    "zh": "日本 AIST 谱图数据库，可检索 IR、Raman、NMR 与 MS 实测谱。",
+    "en": "Japanese AIST spectral database, search IR, Raman, NMR, and MS measured spectra."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 68,
+   "name": "NIST Atomic Spectra Database",
+   "url": "https://www.nist.gov/pml/atomic-spectra-database",
+   "page": "https://molastria.com/atlas/#resources/68",
+   "category_code": "08",
+   "description": {
+    "zh": "NIST 原子光谱数据库，提供原子能级、谱线与跃迁概率。",
+    "en": "NIST atomic spectra database, providing atomic energy levels, spectral lines and transition probabilities."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 69,
+   "name": "QM9",
+   "url": "https://figshare.com/articles/dataset/Quantum_mechanics_properties_of_organic_molecules/978904",
+   "page": "https://molastria.com/atlas/#resources/69",
+   "category_code": "09",
+   "description": {
+    "zh": "13.4 万个小有机分子的量子化学性质（几何、能量、振动等），分子机器学习入门标配。",
+    "en": "Quantum chemical properties of 134,000 small organic molecules (geometry, energy, vibrations, etc.), a standard entry point for molecular machine learning."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 70,
+   "name": "QM7 / QM7b / MD17",
+   "url": "http://quantum-machine.org/datasets",
+   "page": "https://molastria.com/atlas/#resources/70",
+   "category_code": "09",
+   "description": {
+    "zh": "经典分子机器学习数据集族，含库仑矩阵表示与分子动力学轨迹的能量、受力数据。",
+    "en": "Classic family of molecular machine learning datasets, including Coulomb matrix representations and energy/force data from molecular dynamics trajectories."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 71,
+   "name": "ANI-1",
+   "url": "https://github.com/isayev/ANI1_dataset",
+   "page": "https://molastria.com/atlas/#resources/71",
+   "category_code": "09",
+   "description": {
+    "zh": "约两千万个小分子构象的 DFT 能量数据集，ANI 系列机器学习势函数的训练基础。",
+    "en": "DFT energy dataset for ~20 million small molecule conformers, the training basis for the ANI series of machine learning potentials."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 72,
+   "name": "OC20 / OC22",
+   "url": "https://opencatalystproject.org",
+   "page": "https://molastria.com/atlas/#resources/72",
+   "category_code": "09",
+   "description": {
+    "zh": "Open Catalyst 项目的大规模催化表面吸附数据集，用于训练通用机器学习势函数。",
+    "en": "Large-scale catalytic surface adsorption dataset from the Open Catalyst project, for training universal machine learning potentials."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 73,
+   "name": "PubChemQC",
+   "url": "https://nakatamaho.riken.jp/pubchemqc.riken.jp/",
+   "page": "https://molastria.com/atlas/#resources/73",
+   "category_code": "09",
+   "description": {
+    "zh": "基于 PubChem 的大规模电子结构数据库，含 2.2 亿分子的 PM6 与 8600 万分子的 B3LYP 数据。",
+    "en": "Large-scale electronic structure database based on PubChem, containing PM6 data for 220 million molecules and B3LYP data for 86 million molecules."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 74,
+   "name": "Alexandria",
+   "url": "https://alexandria.icams.rub.de",
+   "page": "https://molastria.com/atlas/#resources/74",
+   "category_code": "09",
+   "description": {
+    "zh": "百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。",
+    "en": "A DFT property dataset of millions of molecules, suitable for training general molecular representations and property prediction models."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "optimade"
+  },
+  {
+   "number": 75,
+   "name": "tmQM",
+   "url": "https://github.com/uiocompcat/tmQM",
+   "page": "https://molastria.com/atlas/#resources/75",
+   "category_code": "09",
+   "description": {
+    "zh": "过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。",
+    "en": "Quantum chemistry dataset of transition metal complexes, filling the gap in metal chemistry left by organic molecule datasets."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 76,
+   "name": "QCArchive",
+   "url": "https://qcarchive.molssi.org",
+   "page": "https://molastria.com/atlas/#resources/76",
+   "category_code": "09",
+   "description": {
+    "zh": "MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。",
+    "en": "MolSSI's quantum chemistry calculation data platform, allowing search, sharing and reuse of calculation results."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "adapter"
+  },
+  {
+   "number": 77,
+   "name": "Open Graph Benchmark",
+   "url": "https://ogb.stanford.edu",
+   "page": "https://molastria.com/atlas/#resources/77",
+   "category_code": "09",
+   "description": {
+    "zh": "图神经网络基准套件，包含分子图性质预测等任务与标准划分。",
+    "en": "Graph neural network benchmark suite with tasks like molecular graph property prediction and standard splits."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 78,
+   "name": "DeepChem / MoleculeNet",
+   "url": "https://deepchem.io",
+   "page": "https://molastria.com/atlas/#resources/78",
+   "category_code": "09",
+   "description": {
+    "zh": "DeepChem 生态的分子机器学习数据集与 MoleculeNet 基准合集。",
+    "en": "Molecular machine learning datasets from the DeepChem ecosystem and the MoleculeNet benchmark collection."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 79,
+   "name": "NIST Interatomic Potentials",
+   "url": "https://www.ctcms.nist.gov/potentials/",
+   "page": "https://molastria.com/atlas/#resources/79",
+   "category_code": "09",
+   "description": {
+    "zh": "NIST 原子间势函数库，收录 EAM、MEAM 等经典势参数与评估工具。",
+    "en": "NIST interatomic potential repository, containing classical potential parameters such as EAM, MEAM and evaluation tools."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 80,
+   "name": "ORCA",
+   "url": "https://www.faccts.de/orca",
+   "page": "https://molastria.com/atlas/#resources/80",
+   "category_code": "10",
+   "description": {
+    "zh": "学术免费的高效量子化学程序，DFT、MP2、CCSD(T) 与多参考方法齐全。",
+    "en": "Efficient quantum chemistry program free for academics, with complete DFT, MP2, CCSD(T) and multireference methods."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 81,
+   "name": "Gaussian",
+   "url": "https://gaussian.com",
+   "page": "https://molastria.com/atlas/#resources/81",
+   "category_code": "10",
+   "description": {
+    "zh": "商业量子化学软件的标杆，方法覆盖广、生态成熟、教程与文献极多。",
+    "en": "The benchmark commercial quantum chemistry software: broad method coverage, mature ecosystem, abundant tutorials and literature."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 82,
+   "name": "Q-Chem",
+   "url": "https://www.q-chem.com",
+   "page": "https://molastria.com/atlas/#resources/82",
+   "category_code": "10",
+   "description": {
+    "zh": "商业量子化学程序，擅长激发态、溶剂化与高端电子结构方法。",
+    "en": "Commercial quantum chemistry program, strong in excited states, solvation, and high-level electronic structure methods."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 83,
+   "name": "Psi4",
+   "url": "https://psicode.org",
+   "page": "https://molastria.com/atlas/#resources/83",
+   "category_code": "10",
+   "description": {
+    "zh": "开源量子化学程序，适合脚本化工作流、方法开发与教学。",
+    "en": "Open-source quantum chemistry program, suitable for scripted workflows, method development, and teaching."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 84,
+   "name": "NWChem",
+   "url": "https://nwchemgit.github.io",
+   "page": "https://molastria.com/atlas/#resources/84",
+   "category_code": "10",
+   "description": {
+    "zh": "开源大规模并行量子化学程序，适合集群上的大体系计算。",
+    "en": "Open-source massively parallel quantum chemistry program, suitable for large systems on clusters."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 85,
+   "name": "GAMESS",
+   "url": "https://www.msg.chem.iastate.edu/gamess",
+   "page": "https://molastria.com/atlas/#resources/85",
+   "category_code": "10",
+   "description": {
+    "zh": "经典开源量子化学程序，方法齐全、教程与社区资源丰富。",
+    "en": "Classic open-source quantum chemistry program with comprehensive methods, tutorials and community resources."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 86,
+   "name": "CP2K",
+   "url": "https://www.cp2k.org",
+   "page": "https://molastria.com/atlas/#resources/86",
+   "category_code": "10",
+   "description": {
+    "zh": "开源固体与液体 DFT、分子动力学程序，擅长大规模周期体系。",
+    "en": "Open-source DFT and molecular dynamics program for solids and liquids, excels at large-scale periodic systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 87,
+   "name": "Quantum ESPRESSO",
+   "url": "https://www.quantum-espresso.org",
+   "page": "https://molastria.com/atlas/#resources/87",
+   "category_code": "10",
+   "description": {
+    "zh": "开源平面波 DFT 程序，固体与赝势计算的标准工具之一。",
+    "en": "Open-source plane-wave DFT program, one of the standard tools for solid-state and pseudopotential calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 88,
+   "name": "VASP",
+   "url": "https://www.vasp.at",
+   "page": "https://molastria.com/atlas/#resources/88",
+   "category_code": "10",
+   "description": {
+    "zh": "商业平面波 DFT 程序，材料科学与表面催化领域使用极广。",
+    "en": "Commercial plane-wave DFT program, widely used in materials science and surface catalysis."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 89,
+   "name": "LAMMPS",
+   "url": "https://www.lammps.org",
+   "page": "https://molastria.com/atlas/#resources/89",
+   "category_code": "10",
+   "description": {
+    "zh": "开源分子动力学引擎，擅长大规模体系、粗粒化模型与自定义势函数。",
+    "en": "Open-source molecular dynamics engine, strong in large systems, coarse-grained models, and custom potentials."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 90,
+   "name": "GROMACS",
+   "url": "https://www.gromacs.org",
+   "page": "https://molastria.com/atlas/#resources/90",
+   "category_code": "10",
+   "description": {
+    "zh": "开源生物分子分子动力学程序，性能与生态俱佳。",
+    "en": "Open-source biomolecular molecular dynamics program, excellent performance and ecosystem."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 91,
+   "name": "OpenMM",
+   "url": "https://openmm.org",
+   "page": "https://molastria.com/atlas/#resources/91",
+   "category_code": "10",
+   "description": {
+    "zh": "GPU 加速的分子动力学工具包，适合自定义力场与 Python 工作流。",
+    "en": "GPU-accelerated molecular dynamics toolkit, suitable for custom force fields and Python workflows."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 92,
+   "name": "AutoDock Vina",
+   "url": "https://vina.scripps.edu",
+   "page": "https://molastria.com/atlas/#resources/92",
+   "category_code": "10",
+   "description": {
+    "zh": "开源分子对接程序，速度与精度平衡，常用于虚拟筛选与结合模式预测。",
+    "en": "Open-source molecular docking program, balancing speed and accuracy, commonly used for virtual screening and binding mode prediction."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 93,
+   "name": "RDKit",
+   "url": "https://www.rdkit.org",
+   "page": "https://molastria.com/atlas/#resources/93",
+   "category_code": "10",
+   "description": {
+    "zh": "开源化学信息学工具包，分子读写、描述符计算与构象生成必备。",
+    "en": "Open-source cheminformatics toolkit, essential for molecular I/O, descriptor calculation, and conformer generation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 94,
+   "name": "ASE",
+   "url": "https://ase-lib.org",
+   "page": "https://molastria.com/atlas/#resources/94",
+   "category_code": "10",
+   "description": {
+    "zh": "原子模拟环境，统一封装多种 DFT 与分子动力学程序，适合高通量筛选。",
+    "en": "Atomic simulation environment, unified wrapper for multiple DFT and molecular dynamics programs, suitable for high-throughput screening."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 95,
+   "name": "AiiDA",
+   "url": "https://aiida.net",
+   "page": "https://molastria.com/atlas/#resources/95",
+   "category_code": "10",
+   "description": {
+    "zh": "材料计算工作流与数据管理平台，强调可复现性与数据溯源。",
+    "en": "Materials computation workflow and data management platform, emphasizing reproducibility and data provenance."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 96,
+   "name": "Avogadro",
+   "url": "https://avogadro.cc",
+   "page": "https://molastria.com/atlas/#resources/96",
+   "category_code": "10",
+   "description": {
+    "zh": "跨平台分子建模与可视化工具，适合搭建与检查初始结构。",
+    "en": "Cross-platform molecular modelling and visualization tool, suitable for building and inspecting initial structures."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 97,
+   "name": "MolSSI",
+   "url": "https://molssi.org",
+   "page": "https://molastria.com/atlas/#resources/97",
+   "category_code": "10",
+   "description": {
+    "zh": "分子科学软件研究所，提供软件、数据集、标准与培训资源。",
+    "en": "Molecular Sciences Software Institute, providing software, datasets, standards, and training resources."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 98,
+   "name": "Multiwfn",
+   "url": "http://sobereva.com/multiwfn",
+   "page": "https://molastria.com/atlas/#resources/98",
+   "category_code": "10",
+   "description": {
+    "zh": "波函数分析与可视化程序，支持电子密度、EDA、NCI、激发态等分析，中文教程完善。",
+    "en": "Wavefunction analysis and visualization program, supporting electron density, EDA, NCI, excited states, etc., with comprehensive Chinese tutorials."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 99,
+   "name": "Rowan",
+   "url": "https://rowansci.com",
+   "page": "https://molastria.com/atlas/#resources/99",
+   "category_code": "10",
+   "description": {
+    "zh": "云端量子化学平台，可通过网页或 API 提交任务，适合快速获得可靠性质。",
+    "en": "Cloud quantum chemistry platform, submit tasks via web or API, suitable for quickly obtaining reliable properties."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 100,
+   "name": "计算化学公社",
+   "url": "http://bbs.keinsci.com",
+   "page": "https://molastria.com/atlas/#resources/100",
+   "category_code": "11",
+   "description": {
+    "zh": "中文计算化学社区，教程、答疑与软件资源丰富，适合入门与查错。",
+    "en": "Chinese computational chemistry community with rich tutorials, Q&A, and software resources, ideal for getting started and troubleshooting."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 101,
+   "name": "Sobereva 思想家公社",
+   "url": "http://sobereva.com",
+   "page": "https://molastria.com/atlas/#resources/101",
+   "category_code": "11",
+   "description": {
+    "zh": "Sobereva 的博客，含大量量子化学入门、Multiwfn 与实用技巧长文。",
+    "en": "Sobereva's blog, containing many long articles on quantum chemistry introductions, Multiwfn, and practical tips."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 102,
+   "name": "X-MOL",
+   "url": "https://www.x-mol.com",
+   "page": "https://molastria.com/atlas/#resources/102",
+   "category_code": "11",
+   "description": {
+    "zh": "中文化学与材料文献平台，可跟踪期刊、主题与最新研究进展。",
+    "en": "Chinese chemistry and materials literature platform for tracking journals, topics, and the latest research progress."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 103,
+   "name": "CCL",
+   "url": "http://www.ccl.net/chemistry",
+   "page": "https://molastria.com/atlas/#resources/103",
+   "category_code": "11",
+   "description": {
+    "zh": "Computational Chemistry List，国际计算化学邮件列表与资源索引。",
+    "en": "Computational Chemistry List, international computational chemistry mailing list and resource index."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 104,
+   "name": "Molpro",
+   "url": "https://www.molpro.net/",
+   "page": "https://molastria.com/atlas/#resources/104",
+   "category_code": "12",
+   "description": {
+    "zh": "以高精度多参考与耦合簇方法见长的量子化学程序，CASSCF/MRCI/CCSD(T)-F12 等波函数方法的常用参考。",
+    "en": "Quantum chemistry program known for high-accuracy multireference and coupled cluster methods; a common reference for wavefunction methods like CASSCF/MRCI/CCSD(T)-F12."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 105,
+   "name": "OpenMolcas",
+   "url": "https://gitlab.com/Molcas/OpenMolcas",
+   "page": "https://molastria.com/atlas/#resources/105",
+   "category_code": "12",
+   "description": {
+    "zh": "开源的多参考量子化学程序（Molcas 开源版），擅长 CASSCF/RASSCF、CASPT2 与过渡金属、激发态体系。",
+    "en": "Open-source multireference quantum chemistry program (open-source Molcas), excelling in CASSCF/RASSCF, CASPT2, and transition metal and excited-state systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 106,
+   "name": "CFOUR",
+   "url": "https://cfour.uni-mainz.de/cfour/",
+   "page": "https://molastria.com/atlas/#resources/106",
+   "category_code": "12",
+   "description": {
+    "zh": "专注耦合簇方法的量子化学程序，CCSD(T)、EOM-CC 与解析梯度、振动光谱性质计算是其强项。",
+    "en": "Quantum chemistry program focused on coupled cluster methods; strengths include CCSD(T), EOM-CC, analytic gradients, and vibrational spectroscopic properties."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 107,
+   "name": "MRCC",
+   "url": "https://www.mrcc.hu/",
+   "page": "https://molastria.com/atlas/#resources/107",
+   "category_code": "12",
+   "description": {
+    "zh": "高阶耦合簇与局域相关方法程序，可做任意阶 CC 计算和大体系的局域 CCSD(T)。",
+    "en": "Program for high-order coupled cluster and local correlation methods, capable of arbitrary-order CC calculations and local CCSD(T) for large systems."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 108,
+   "name": "Dalton",
+   "url": "https://daltonprogram.org/",
+   "page": "https://molastria.com/atlas/#resources/108",
+   "category_code": "12",
+   "description": {
+    "zh": "开源量子化学程序，以响应理论计算分子性质（极化率、NMR、光谱）见长。",
+    "en": "Open-source quantum chemistry program renowned for calculating molecular properties (polarizabilities, NMR, spectra) using response theory."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 109,
+   "name": "DIRAC",
+   "url": "https://diracprogram.org/",
+   "page": "https://molastria.com/atlas/#resources/109",
+   "category_code": "12",
+   "description": {
+    "zh": "相对论量子化学程序，基于四分量 Dirac–Coulomb 哈密顿量，适合重元素体系。",
+    "en": "Relativistic quantum chemistry program based on the four-component Dirac–Coulomb Hamiltonian, suitable for heavy-element systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 110,
+   "name": "ReSpect",
+   "url": "https://www.respectprogram.org/",
+   "page": "https://molastria.com/atlas/#resources/110",
+   "category_code": "12",
+   "description": {
+    "zh": "相对论量子化学程序，侧重重元素体系的 EPR/NMR 参数和光谱性质计算。",
+    "en": "Relativistic quantum chemistry program focused on calculating EPR/NMR parameters and spectroscopic properties for heavy-element systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 111,
+   "name": "TURBOMOLE",
+   "url": "https://www.turbomole.org/",
+   "page": "https://molastria.com/atlas/#resources/111",
+   "category_code": "12",
+   "description": {
+    "zh": "高效的商业量子化学程序，RI 近似下的 DFT、MP2、CC2 与激发态计算速度快。",
+    "en": "Efficient commercial quantum chemistry program, fast DFT, MP2, CC2, and excited-state calculations under RI approximation."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 112,
+   "name": "BAGEL",
+   "url": "https://nubakery.org/",
+   "page": "https://molastria.com/atlas/#resources/112",
+   "category_code": "12",
+   "description": {
+    "zh": "开源的多参考电子结构程序，支持 CASSCF、CASPT2、MRCI 及相对论计算。",
+    "en": "Open-source multireference electronic structure program supporting CASSCF, CASPT2, MRCI, and relativistic calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 113,
+   "name": "Quantum Package",
+   "url": "https://github.com/QuantumPackage/qp2",
+   "page": "https://molastria.com/atlas/#resources/113",
+   "category_code": "12",
+   "description": {
+    "zh": "以选择组态相互作用（CIPSI）为核心的开源程序，可逼近全组态相互作用（FCI）精度。",
+    "en": "Open-source program centered on selected configuration interaction (CIPSI), approaching full configuration interaction (FCI) accuracy."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 114,
+   "name": "block2",
+   "url": "https://github.com/block-hczhai/block2-preview",
+   "page": "https://molastria.com/atlas/#resources/114",
+   "category_code": "12",
+   "description": {
+    "zh": "高效的密度矩阵重整化群（DMRG）量子化学程序，可与 PySCF 联用处理强关联体系。",
+    "en": "Efficient density matrix renormalization group (DMRG) quantum chemistry program, can be used with PySCF to handle strongly correlated systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 115,
+   "name": "CheMPS2",
+   "url": "https://github.com/SebWouters/CheMPS2",
+   "page": "https://molastria.com/atlas/#resources/115",
+   "category_code": "12",
+   "description": {
+    "zh": "面向量子化学的自旋自适应 DMRG 库，可作为 CASSCF 的活性空间求解器。",
+    "en": "Spin-adapted DMRG library for quantum chemistry, usable as an active space solver for CASSCF."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 116,
+   "name": "NECI",
+   "url": "https://github.com/fkfest/NECI_STABLE",
+   "page": "https://molastria.com/atlas/#resources/116",
+   "category_code": "12",
+   "description": {
+    "zh": "全组态相互作用量子蒙特卡罗（FCIQMC）程序，用随机方法求解大活性空间问题。",
+    "en": "Full configuration interaction quantum Monte Carlo (FCIQMC) program, using stochastic methods to solve large active space problems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 117,
+   "name": "QMCPACK",
+   "url": "https://qmcpack.org/",
+   "page": "https://molastria.com/atlas/#resources/117",
+   "category_code": "12",
+   "description": {
+    "zh": "开源量子蒙特卡罗程序，可做变分与扩散蒙特卡罗（VMC/DMC），适用于分子与固体。",
+    "en": "Open-source quantum Monte Carlo program for variational and diffusion Monte Carlo (VMC/DMC), applicable to molecules and solids."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 118,
+   "name": "CASINO",
+   "url": "https://vallico.net/casinoqmc/",
+   "page": "https://molastria.com/atlas/#resources/118",
+   "category_code": "12",
+   "description": {
+    "zh": "经典的量子蒙特卡罗程序，用于分子、固体和二维材料的高精度 DMC 计算。",
+    "en": "Classic quantum Monte Carlo program for high-precision DMC calculations on molecules, solids, and two-dimensional materials."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 119,
+   "name": "MOPAC",
+   "url": "https://openmopac.net/",
+   "page": "https://molastria.com/atlas/#resources/119",
+   "category_code": "12",
+   "description": {
+    "zh": "经典半经验量子化学程序（PM6、PM7 等），2022 年起开源，适合大分子的快速计算。",
+    "en": "Classic semiempirical quantum chemistry program (PM6, PM7, etc.), open-sourced since 2022, suitable for fast calculations on large molecules."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 120,
+   "name": "Sparrow",
+   "url": "https://github.com/qcscine/sparrow",
+   "page": "https://molastria.com/atlas/#resources/120",
+   "category_code": "12",
+   "description": {
+    "zh": "SCINE 项目的半经验方法库，提供 MNDO、AM1、PM6、DFTB 等快速电子结构计算。",
+    "en": "Semiempirical method library from the SCINE project, providing MNDO, AM1, PM6, DFTB and other fast electronic structure calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 121,
+   "name": "CREST",
+   "url": "https://crest-lab.github.io/crest-docs/",
+   "page": "https://molastria.com/atlas/#resources/121",
+   "category_code": "12",
+   "description": {
+    "zh": "基于 xtb 的构象与质子化态搜索工具，常用于计算前的构象系综生成。",
+    "en": "xtb-based conformational and protonation state search tool, often used for generating conformational ensembles before calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 122,
+   "name": "DFT-D4",
+   "url": "https://github.com/dftd4/dftd4",
+   "page": "https://molastria.com/atlas/#resources/122",
+   "category_code": "12",
+   "description": {
+    "zh": "Grimme 课题组的 D4 色散校正库，可与多数 DFT 程序和泛函配合使用。",
+    "en": "The Grimme group's D4 dispersion correction library, compatible with most DFT programs and functionals."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 123,
+   "name": "simple-dftd3",
+   "url": "https://github.com/dftd3/simple-dftd3",
+   "page": "https://molastria.com/atlas/#resources/123",
+   "category_code": "12",
+   "description": {
+    "zh": "DFT-D3 色散校正的重新实现，带 Python 接口，便于在各类程序中调用。",
+    "en": "Reimplementation of DFT-D3 dispersion correction with a Python interface for use in various programs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 124,
+   "name": "tblite",
+   "url": "https://github.com/tblite/tblite",
+   "page": "https://molastria.com/atlas/#resources/124",
+   "category_code": "12",
+   "description": {
+    "zh": "轻量的紧束缚（GFN-xTB）计算库，提供 Python 接口，可嵌入其他工作流。",
+    "en": "Lightweight tight-binding (GFN-xTB) computational library with Python interface, embeddable in other workflows."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 125,
+   "name": "Libint",
+   "url": "https://github.com/evaleev/libint",
+   "page": "https://molastria.com/atlas/#resources/125",
+   "category_code": "12",
+   "description": {
+    "zh": "高斯基组分子积分库，被 Psi4、ORCA、CP2K 等众多程序使用。",
+    "en": "Gaussian basis set molecular integral library, used by many programs such as Psi4, ORCA, CP2K."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 126,
+   "name": "libcint",
+   "url": "https://github.com/sunqm/libcint",
+   "page": "https://molastria.com/atlas/#resources/126",
+   "category_code": "12",
+   "description": {
+    "zh": "PySCF 使用的高斯积分库，支持多种积分与导数，速度快、接口简单。",
+    "en": "Gaussian integral library used by PySCF, supporting many integrals and derivatives; fast and with a simple interface."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 127,
+   "name": "QCEngine",
+   "url": "https://github.com/MolSSI/QCEngine",
+   "page": "https://molastria.com/atlas/#resources/127",
+   "category_code": "12",
+   "description": {
+    "zh": "MolSSI 的统一计算执行层，用同一套 QCSchema 输入调用 Psi4、ORCA、xtb 等多种程序。",
+    "en": "MolSSI's unified computational execution layer, calling Psi4, ORCA, xtb and others via the same QCSchema input."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 128,
+   "name": "ChemShell",
+   "url": "https://www.chemshell.org/",
+   "page": "https://molastria.com/atlas/#resources/128",
+   "category_code": "12",
+   "description": {
+    "zh": "QM/MM 多尺度计算平台，可把量子化学程序与分子力学程序组合起来模拟酶与材料表面。",
+    "en": "QM/MM multiscale computing platform for combining quantum chemistry and molecular mechanics programs to simulate enzymes and material surfaces."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 129,
+   "name": "FHI-aims",
+   "url": "https://fhi-aims.org/",
+   "page": "https://molastria.com/atlas/#resources/129",
+   "category_code": "13",
+   "description": {
+    "zh": "基于数值原子轨道的全电子第一性原理程序，可处理分子与周期体系，杂化泛函和 GW 计算效率高。",
+    "en": "All-electron first-principles program based on numerical atomic orbitals, capable of handling molecular and periodic systems with efficient hybrid functional and GW calculations."
+   },
+   "access": {
+    "zh": "注册",
+    "en": "Register"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 130,
+   "name": "SIESTA",
+   "url": "https://siesta-project.org/siesta/",
+   "page": "https://molastria.com/atlas/#resources/130",
+   "category_code": "13",
+   "description": {
+    "zh": "基于数值原子轨道的线性标度 DFT 程序，适合含数千原子的大体系。",
+    "en": "Linear-scaling DFT program based on numerical atomic orbitals, suitable for large systems with thousands of atoms."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 131,
+   "name": "GPAW",
+   "url": "https://gpaw.readthedocs.io/",
+   "page": "https://molastria.com/atlas/#resources/131",
+   "category_code": "13",
+   "description": {
+    "zh": "基于 PAW 方法的 Python DFT 程序，可用实空间网格、平面波或原子轨道基组，与 ASE 深度集成。",
+    "en": "Python DFT program based on the PAW method, using real-space grids, plane waves, or atomic orbital basis sets, deeply integrated with ASE."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 132,
+   "name": "Octopus",
+   "url": "https://octopus-code.org/",
+   "page": "https://molastria.com/atlas/#resources/132",
+   "category_code": "13",
+   "description": {
+    "zh": "实空间、实时含时密度泛函（TDDFT）程序，用于激发态、光吸收与强场动力学。",
+    "en": "Real-space, real-time time-dependent density functional theory (TDDFT) program for excited states, optical absorption, and strong-field dynamics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 133,
+   "name": "WIEN2k",
+   "url": "http://www.wien2k.at/",
+   "page": "https://molastria.com/atlas/#resources/133",
+   "category_code": "13",
+   "description": {
+    "zh": "全电子 LAPW 方法的经典固体电子结构程序，常作为能带与电子结构计算的高精度参考。",
+    "en": "Classic solid-state electronic structure program using the all-electron LAPW method, often a high-accuracy reference for band structure and electronic structure calculations."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 134,
+   "name": "CASTEP",
+   "url": "https://www.castep.org/",
+   "page": "https://molastria.com/atlas/#resources/134",
+   "category_code": "13",
+   "description": {
+    "zh": "平面波赝势 DFT 程序，学术用户可免费获取，商业版集成在 BIOVIA Materials Studio。",
+    "en": "Plane-wave pseudopotential DFT program, freely available for academic users, with a commercial version integrated into BIOVIA Materials Studio."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 135,
+   "name": "exciting",
+   "url": "https://www.exciting-code.org/",
+   "page": "https://molastria.com/atlas/#resources/135",
+   "category_code": "13",
+   "description": {
+    "zh": "全电子 LAPW 程序，侧重激发态：GW、BSE 与 TDDFT 光谱计算。",
+    "en": "All-electron LAPW program focused on excited states: GW, BSE, and TDDFT spectroscopy calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 136,
+   "name": "Elk",
+   "url": "https://elk.sourceforge.io/",
+   "page": "https://molastria.com/atlas/#resources/136",
+   "category_code": "13",
+   "description": {
+    "zh": "开源全电子 FP-LAPW 程序，适合磁性与非共线自旋体系的精确计算。",
+    "en": "Open-source all-electron FP-LAPW program suitable for accurate calculations of magnetic and non-collinear spin systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 137,
+   "name": "Yambo",
+   "url": "https://www.yambo-code.eu/",
+   "page": "https://molastria.com/atlas/#resources/137",
+   "category_code": "13",
+   "description": {
+    "zh": "多体微扰理论程序，基于平面波 DFT 结果计算 GW 准粒子能级与 BSE 激子光谱。",
+    "en": "Many-body perturbation theory program that calculates GW quasiparticle energies and BSE exciton spectra from plane-wave DFT results."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 138,
+   "name": "BerkeleyGW",
+   "url": "https://berkeleygw.org/",
+   "page": "https://molastria.com/atlas/#resources/138",
+   "category_code": "13",
+   "description": {
+    "zh": "大规模并行的 GW/BSE 程序，用于计算准粒子能带与激子效应。",
+    "en": "Massively parallel GW/BSE program for computing quasiparticle band structures and exciton effects."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 139,
+   "name": "Wannier90",
+   "url": "https://wannier.org/",
+   "page": "https://molastria.com/atlas/#resources/139",
+   "category_code": "13",
+   "description": {
+    "zh": "构造最局域化 Wannier 函数的工具，用于能带插值、拓扑性质与输运计算。",
+    "en": "Tool for constructing maximally localized Wannier functions, used for band interpolation, topological properties, and transport calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 140,
+   "name": "phonopy",
+   "url": "https://phonopy.github.io/phonopy/",
+   "page": "https://molastria.com/atlas/#resources/140",
+   "category_code": "13",
+   "description": {
+    "zh": "声子计算工具，配合 VASP、QE 等程序得到声子谱、热力学性质和热膨胀。",
+    "en": "Phonon calculation tool that works with VASP, QE, etc. to obtain phonon spectra, thermodynamic properties, and thermal expansion."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 141,
+   "name": "DFTK.jl",
+   "url": "https://docs.dftk.org/stable/",
+   "page": "https://molastria.com/atlas/#resources/141",
+   "category_code": "13",
+   "description": {
+    "zh": "用 Julia 编写的平面波 DFT 工具包，代码简洁，适合方法开发与教学。",
+    "en": "Plane-wave DFT toolkit written in Julia, with concise code suitable for method development and teaching."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 142,
+   "name": "JDFTx",
+   "url": "https://jdftx.org/",
+   "page": "https://molastria.com/atlas/#resources/142",
+   "category_code": "13",
+   "description": {
+    "zh": "平面波 DFT 程序，内置联合密度泛函（JDFT）溶剂模型，适合电化学界面。",
+    "en": "Plane-wave DFT program with a built-in joint density functional theory (JDFT) solvation model, suitable for electrochemical interfaces."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 143,
+   "name": "Critic2",
+   "url": "https://aoterodelaroza.github.io/critic2/",
+   "page": "https://molastria.com/atlas/#resources/143",
+   "category_code": "14",
+   "description": {
+    "zh": "分析周期与分子体系电子密度的程序，可做 QTAIM 拓扑分析、NCI 图和晶体结构比较。",
+    "en": "Program for analyzing electron densities in periodic and molecular systems, capable of QTAIM topological analysis, NCI plots, and crystal structure comparison."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 144,
+   "name": "Bader Charge Analysis",
+   "url": "https://theory.cm.utexas.edu/henkelman/code/bader/",
+   "page": "https://molastria.com/atlas/#resources/144",
+   "category_code": "14",
+   "description": {
+    "zh": "Henkelman 课题组的 Bader 电荷划分程序，常与 VASP 输出的电荷密度配合使用。",
+    "en": "Bader charge partitioning program from the Henkelman group, often used with charge densities from VASP."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 145,
+   "name": "LOBSTER",
+   "url": "http://www.cohp.de/",
+   "page": "https://molastria.com/atlas/#resources/145",
+   "category_code": "14",
+   "description": {
+    "zh": "把平面波结果投影到局域基组上做化学键分析（COHP、COOP），用于解释固体中的成键。",
+    "en": "Project plane-wave results onto local basis sets for chemical bonding analysis (COHP, COOP), used to interpret bonding in solids."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 146,
+   "name": "IboView",
+   "url": "http://www.iboview.org/",
+   "page": "https://molastria.com/atlas/#resources/146",
+   "category_code": "14",
+   "description": {
+    "zh": "计算并可视化内禀成键轨道（IBO）的工具，直观展示化学键与反应中的电子流动。",
+    "en": "Tool for computing and visualizing Intrinsic Bond Orbitals (IBOs), intuitively showing electron flow in chemical bonds and reactions."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 147,
+   "name": "NBO 7",
+   "url": "https://nbo7.chem.wisc.edu/",
+   "page": "https://molastria.com/atlas/#resources/147",
+   "category_code": "14",
+   "description": {
+    "zh": "自然键轨道（NBO）分析程序，给出 Lewis 结构、电荷和超共轭等化学解释。",
+    "en": "Natural Bond Orbital (NBO) analysis program, providing chemical interpretations such as Lewis structures, charges, and hyperconjugation."
+   },
+   "access": {
+    "zh": "商业",
+    "en": "Commercial"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 148,
+   "name": "ChemTools",
+   "url": "https://chemtools.org/",
+   "page": "https://molastria.com/atlas/#resources/148",
+   "category_code": "14",
+   "description": {
+    "zh": "基于 Python 的概念 DFT 与波函数分析工具，计算 Fukui 函数、ELF、NCI 等描述符。",
+    "en": "Python-based conceptual DFT and wavefunction analysis tool for computing Fukui functions, ELF, NCI, and other descriptors."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 149,
+   "name": "Jmol",
+   "url": "https://jmol.sourceforge.net/",
+   "page": "https://molastria.com/atlas/#resources/149",
+   "category_code": "14",
+   "description": {
+    "zh": "开源的分子与晶体三维可视化工具，可显示轨道、振动和表面。",
+    "en": "Open-source 3D visualization tool for molecules and crystals, capable of displaying orbitals, vibrations, and surfaces."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 150,
+   "name": "VMD",
+   "url": "https://www.ks.uiuc.edu/Research/vmd/",
+   "page": "https://molastria.com/atlas/#resources/150",
+   "category_code": "14",
+   "description": {
+    "zh": "分子可视化与轨迹分析程序，常用于分子动力学结果和体数据（如电子密度）的展示。",
+    "en": "Molecular visualization and trajectory analysis program, often used to display molecular dynamics results and volumetric data such as electron densities."
+   },
+   "access": {
+    "zh": "注册",
+    "en": "Register"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 151,
+   "name": "IQmol",
+   "url": "https://www.iqmol.org/",
+   "page": "https://molastria.com/atlas/#resources/151",
+   "category_code": "14",
+   "description": {
+    "zh": "开源的分子编辑与可视化程序，可搭建结构、显示轨道和振动，并作为 Q-Chem 前端。",
+    "en": "Open-source molecular editor and visualization program for building structures, displaying orbitals and vibrations, and serving as a front end to Q-Chem."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 152,
+   "name": "ChimeraX",
+   "url": "https://www.cgl.ucsf.edu/chimerax/",
+   "page": "https://molastria.com/atlas/#resources/152",
+   "category_code": "14",
+   "description": {
+    "zh": "UCSF 的分子可视化程序，非商业用途免费，擅长大分子结构与体数据显示。",
+    "en": "UCSF's molecular visualization program, free for non-commercial use, specialized in macromolecular structures and volumetric data display."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 153,
+   "name": "Molden",
+   "url": "https://www.theochem.ru.nl/molden/",
+   "page": "https://molastria.com/atlas/#resources/153",
+   "category_code": "14",
+   "description": {
+    "zh": "经典的量子化学结果可视化程序，可显示分子轨道、电子密度和振动模式。",
+    "en": "Classic visualization program for quantum chemistry results, capable of displaying molecular orbitals, electron densities, and vibrational modes."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 154,
+   "name": "Newton-X",
+   "url": "https://newtonx.org/",
+   "page": "https://molastria.com/atlas/#resources/154",
+   "category_code": "14",
+   "description": {
+    "zh": "非绝热分子动力学平台，用面跳跃方法模拟光激发后的动力学过程。",
+    "en": "Non-adiabatic molecular dynamics platform, using surface hopping methods to simulate dynamics after photoexcitation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 155,
+   "name": "SHARC",
+   "url": "https://sharc-md.org/",
+   "page": "https://molastria.com/atlas/#resources/155",
+   "category_code": "14",
+   "description": {
+    "zh": "面跳跃非绝热动力学程序，可处理系间窜越等任意耦合，并对接多种量子化学程序。",
+    "en": "Surface hopping non-adiabatic dynamics program, capable of handling arbitrary couplings such as intersystem crossing and interfacing with multiple quantum chemistry programs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 156,
+   "name": "MCTDH",
+   "url": "https://www.pci.uni-heidelberg.de/tc/usr/mctdh/",
+   "page": "https://molastria.com/atlas/#resources/156",
+   "category_code": "14",
+   "description": {
+    "zh": "多组态含时 Hartree（MCTDH）量子动力学程序包，用于多维核量子动力学模拟。",
+    "en": "Multiconfigurational time-dependent Hartree (MCTDH) quantum dynamics package for multidimensional nuclear quantum dynamics simulations."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 157,
+   "name": "Quantics",
+   "url": "https://www.chem.ucl.ac.uk/quantics/",
+   "page": "https://molastria.com/atlas/#resources/157",
+   "category_code": "14",
+   "description": {
+    "zh": "量子动力学程序包，包含 MCTDH、G-MCTDH 与直接动力学方法。",
+    "en": "Quantum dynamics package including MCTDH, G-MCTDH, and direct dynamics methods."
+   },
+   "access": {
+    "zh": "学术免费",
+    "en": "Free for academics"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 158,
+   "name": "Qiskit Nature",
+   "url": "https://qiskit-community.github.io/qiskit-nature/",
+   "page": "https://molastria.com/atlas/#resources/158",
+   "category_code": "16",
+   "description": {
+    "zh": "Qiskit 的化学与物理模块，把分子哈密顿量映射到量子比特，配合 VQE 等算法求解。",
+    "en": "Qiskit's chemistry and physics module, mapping molecular Hamiltonians to qubits and solving them with VQE and other algorithms."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 159,
+   "name": "OpenFermion",
+   "url": "https://quantumai.google/openfermion",
+   "page": "https://molastria.com/atlas/#resources/159",
+   "category_code": "16",
+   "description": {
+    "zh": "Google 的量子化学量子计算库，负责费米子哈密顿量构造与量子比特映射。",
+    "en": "Google's quantum chemistry quantum computing library for fermionic Hamiltonian construction and qubit mapping."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 160,
+   "name": "PennyLane Quantum Chemistry",
+   "url": "https://docs.pennylane.ai/en/stable/introduction/chemistry.html",
+   "page": "https://molastria.com/atlas/#resources/160",
+   "category_code": "16",
+   "description": {
+    "zh": "PennyLane 的量子化学模块，可构造分子哈密顿量并用可微分量子线路做 VQE。",
+    "en": "PennyLane's quantum chemistry module for constructing molecular Hamiltonians and running VQE with differentiable quantum circuits."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 161,
+   "name": "Tequila",
+   "url": "https://github.com/tequilahub/tequila",
+   "page": "https://molastria.com/atlas/#resources/161",
+   "category_code": "16",
+   "description": {
+    "zh": "面向量子化学算法开发的抽象层，可在多种量子模拟后端上运行 VQE 等算法。",
+    "en": "Abstraction layer for quantum chemistry algorithm development, capable of running algorithms such as VQE on multiple quantum simulation backends."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 162,
+   "name": "TenCirChem",
+   "url": "https://github.com/tencent-quantum-lab/TenCirChem",
+   "page": "https://molastria.com/atlas/#resources/162",
+   "category_code": "16",
+   "description": {
+    "zh": "腾讯量子实验室的量子计算化学软件包，提供高效的 UCC/VQE 模拟与动力学。",
+    "en": "Quantum computational chemistry software package from Tencent Quantum Lab, providing efficient UCC/VQE simulation and dynamics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 163,
+   "name": "CUDA-Q",
+   "url": "https://nvidia.github.io/cuda-quantum/latest/",
+   "page": "https://molastria.com/atlas/#resources/163",
+   "category_code": "16",
+   "description": {
+    "zh": "NVIDIA 的量子–经典混合编程平台，可在 GPU 上快速模拟量子化学线路。",
+    "en": "NVIDIA's quantum-classical hybrid programming platform for fast simulation of quantum chemistry circuits on GPUs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 164,
+   "name": "MIT 8.04 Quantum Physics I",
+   "url": "https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/",
+   "page": "https://molastria.com/atlas/#resources/164",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 开放课程：波函数、薛定谔方程、一维势与谐振子，量子力学入门全套讲义和视频。",
+    "en": "MIT OCW: wave functions, Schrödinger equation, one-dimensional potentials and harmonic oscillator; complete lecture notes and videos for introductory quantum mechanics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 165,
+   "name": "MIT 8.05 Quantum Physics II",
+   "url": "https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/",
+   "page": "https://molastria.com/atlas/#resources/165",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 开放课程：狄拉克符号、角动量、自旋与角动量耦合，量子力学的形式体系。",
+    "en": "MIT OCW: Dirac notation, angular momentum, spin, and angular momentum coupling; the formal framework of quantum mechanics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 166,
+   "name": "MIT 8.06 Quantum Physics III",
+   "url": "https://ocw.mit.edu/courses/8-06-quantum-physics-iii-spring-2018/",
+   "page": "https://molastria.com/atlas/#resources/166",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 开放课程：微扰论、WKB 近似、散射与全同粒子，连接到原子分子物理的应用。",
+    "en": "MIT OCW: perturbation theory, WKB approximation, scattering and identical particles, with connections to atomic and molecular physics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 167,
+   "name": "MIT 5.61 Physical Chemistry",
+   "url": "https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/",
+   "page": "https://molastria.com/atlas/#resources/167",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 开放课程：从量子力学基础到原子、分子轨道和化学键，化学系的量子化学入门课。",
+    "en": "MIT OCW: from quantum mechanics fundamentals to atoms, molecular orbitals and chemical bonding; an introduction to quantum chemistry for chemistry."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 168,
+   "name": "MIT 5.73 Introductory Quantum Mechanics I",
+   "url": "https://ocw.mit.edu/courses/5-73-introductory-quantum-mechanics-i-fall-2005/",
+   "page": "https://molastria.com/atlas/#resources/168",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 化学系研究生量子力学课程，侧重光谱与分子体系中的应用。",
+    "en": "MIT Chemistry graduate quantum mechanics course, focusing on spectroscopy and molecular systems."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 169,
+   "name": "MIT 5.74 Introductory Quantum Mechanics II",
+   "url": "https://ocw.mit.edu/courses/5-74-introductory-quantum-mechanics-ii-spring-2009/",
+   "page": "https://molastria.com/atlas/#resources/169",
+   "category_code": "15",
+   "description": {
+    "zh": "MIT 化学系研究生课程：含时量子力学、密度矩阵与光谱学的量子描述。",
+    "en": "MIT Chemistry graduate course: time-dependent quantum mechanics, density matrices, and quantum description of spectroscopy."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 170,
+   "name": "Feynman Lectures on Physics, Vol. III",
+   "url": "https://www.feynmanlectures.caltech.edu/III_toc.html",
+   "page": "https://molastria.com/atlas/#resources/170",
+   "category_code": "15",
+   "description": {
+    "zh": "加州理工官方在线版《费曼物理学讲义》量子力学卷，从概率幅讲起的经典入门。",
+    "en": "Caltech official online Feynman Lectures on Physics, quantum mechanics volume; a classic introduction starting from probability amplitudes."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 171,
+   "name": "OpenStax University Physics, Vol. 3",
+   "url": "https://openstax.org/details/books/university-physics-volume-3",
+   "page": "https://molastria.com/atlas/#resources/171",
+   "category_code": "15",
+   "description": {
+    "zh": "免费开放教材，后半部分涵盖光子、物质波、薛定谔方程、原子结构与固体物理。",
+    "en": "Free open textbook; the second half covers photons, matter waves, the Schrödinger equation, atomic structure, and solid-state physics."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 172,
+   "name": "LibreTexts Physical & Theoretical Chemistry",
+   "url": "https://chem.libretexts.org/Bookshelves/Physical_and_Theoretical_Chemistry_Textbook_Maps",
+   "page": "https://molastria.com/atlas/#resources/172",
+   "category_code": "15",
+   "description": {
+    "zh": "LibreTexts 汇编的物理与理论化学开放教材，包括多本量子化学与光谱学教材。",
+    "en": "Open physical and theoretical chemistry textbooks compiled by LibreTexts, including several quantum chemistry and spectroscopy textbooks."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 173,
+   "name": "Crawford Group Programming Projects",
+   "url": "https://github.com/CrawfordGroup/ProgrammingProjects",
+   "page": "https://molastria.com/atlas/#resources/173",
+   "category_code": "15",
+   "description": {
+    "zh": "从读几何到自己写 Hartree–Fock、MP2、CCSD 的分步编程练习，学习量子化学算法的经典材料。",
+    "en": "Step-by-step programming exercises from reading geometries to writing Hartree–Fock, MP2, and CCSD; classic material for learning quantum chemistry algorithms."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 174,
+   "name": "MolSSI Education",
+   "url": "https://education.molssi.org/",
+   "page": "https://molastria.com/atlas/#resources/174",
+   "category_code": "15",
+   "description": {
+    "zh": "MolSSI 的计算化学与科学编程教程，包括 Python、量子化学计算和软件工程入门。",
+    "en": "MolSSI's computational chemistry and scientific programming tutorials, including introductions to Python, quantum chemistry calculations, and software engineering."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 175,
+   "name": "Sherrill Group Notes",
+   "url": "https://vergil.chemistry.gatech.edu/notes/",
+   "page": "https://molastria.com/atlas/#resources/175",
+   "category_code": "15",
+   "description": {
+    "zh": "佐治亚理工 Sherrill 课题组的量子化学讲义，涵盖 Hartree–Fock、组态相互作用与微扰理论推导。",
+    "en": "Quantum chemistry lecture notes from the Sherrill group at Georgia Tech, covering derivations of Hartree–Fock, configuration interaction, and perturbation theory."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 176,
+   "name": "IBM Quantum Learning",
+   "url": "https://quantum.cloud.ibm.com/learning/en",
+   "page": "https://molastria.com/atlas/#resources/176",
+   "category_code": "15",
+   "description": {
+    "zh": "IBM 的量子计算课程平台，包含量子信息基础、变分算法与量子化学应用。",
+    "en": "IBM's quantum computing course platform covering quantum information basics, variational algorithms, and quantum chemistry applications."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 177,
+   "name": "Quantum Country",
+   "url": "https://quantum.country/",
+   "page": "https://molastria.com/atlas/#resources/177",
+   "category_code": "15",
+   "description": {
+    "zh": "用间隔重复方式写成的量子计算与量子力学入门读物。",
+    "en": "An introductory reader on quantum computing and quantum mechanics written using spaced repetition."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 178,
+   "name": "Stanford Encyclopedia of Philosophy: Quantum Mechanics",
+   "url": "https://plato.stanford.edu/entries/qm/",
+   "page": "https://molastria.com/atlas/#resources/178",
+   "category_code": "15",
+   "description": {
+    "zh": "斯坦福哲学百科的量子力学条目，讲解希尔伯特空间形式体系与测量问题等概念基础。",
+    "en": "Quantum mechanics entry in the Stanford Encyclopedia of Philosophy, explaining conceptual foundations such as Hilbert space formalism and the measurement problem."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 179,
+   "name": "Q-Chem Manual",
+   "url": "https://manual.q-chem.com/latest/",
+   "page": "https://molastria.com/atlas/#resources/179",
+   "category_code": "15",
+   "description": {
+    "zh": "Q-Chem 在线手册，按方法分章介绍 DFT、耦合簇、激发态与性质计算的原理和用法。",
+    "en": "Q-Chem online manual, with chapters by method covering DFT, coupled cluster, excited states, and property calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 180,
+   "name": "Gaussian Online Manual",
+   "url": "https://gaussian.com/man/",
+   "page": "https://molastria.com/atlas/#resources/180",
+   "category_code": "15",
+   "description": {
+    "zh": "Gaussian 关键词与方法说明，附原始文献，是查方法定义与默认设置的常用参考。",
+    "en": "Gaussian keywords and method descriptions with original references; a common reference for method definitions and default settings."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 181,
+   "name": "ORCA Input Library",
+   "url": "https://sites.google.com/site/orcainputlibrary/",
+   "page": "https://molastria.com/atlas/#resources/181",
+   "category_code": "15",
+   "description": {
+    "zh": "ORCA 输入示例与方法说明合集，涵盖 DFT、DLPNO-CC、多参考与光谱计算。",
+    "en": "Collection of ORCA input examples and method descriptions, covering DFT, DLPNO-CC, multireference, and spectroscopy calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 182,
+   "name": "NIST CODATA Fundamental Constants",
+   "url": "https://physics.nist.gov/cuu/Constants/",
+   "page": "https://molastria.com/atlas/#resources/182",
+   "category_code": "02",
+   "description": {
+    "zh": "CODATA 推荐的基本物理常数（普朗克常数、精细结构常数、单位换算等）。",
+    "en": "CODATA recommended fundamental physical constants (Planck constant, fine-structure constant, unit conversions, etc.)."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 183,
+   "name": "NIST Digital Library of Mathematical Functions",
+   "url": "https://dlmf.nist.gov/",
+   "page": "https://molastria.com/atlas/#resources/183",
+   "category_code": "02",
+   "description": {
+    "zh": "NIST 数字数学函数库，收录量子力学中常用的特殊函数（球谐、厄米、拉盖尔多项式等）。",
+    "en": "NIST Digital Library of Mathematical Functions, containing special functions common in quantum mechanics (spherical harmonics, Hermite, Laguerre polynomials, etc.)."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 184,
+   "name": "PseudoDojo",
+   "url": "https://www.pseudo-dojo.org/",
+   "page": "https://molastria.com/atlas/#resources/184",
+   "category_code": "02",
+   "description": {
+    "zh": "经过系统测试的模守恒赝势库，可用于 ABINIT、Quantum ESPRESSO 等平面波程序。",
+    "en": "Systematically tested norm-conserving pseudopotential library for use with plane-wave programs such as ABINIT and Quantum ESPRESSO."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 185,
+   "name": "SG15 ONCV Pseudopotentials",
+   "url": "http://www.quantum-simulation.org/potentials/sg15_oncv/",
+   "page": "https://molastria.com/atlas/#resources/185",
+   "category_code": "02",
+   "description": {
+    "zh": "Schlipf–Gygi 优化的模守恒（ONCV）赝势集，覆盖大部分元素。",
+    "en": "Schlipf–Gygi optimized norm-conserving (ONCV) pseudopotential set, covering most elements."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 186,
+   "name": "Stuttgart/Cologne Pseudopotentials",
+   "url": "https://www.tc.uni-koeln.de/PP/clickpse.en.html",
+   "page": "https://molastria.com/atlas/#resources/186",
+   "category_code": "02",
+   "description": {
+    "zh": "斯图加特/科隆能量一致赝势（ECP）与配套基组，常用于重元素分子计算。",
+    "en": "Stuttgart/Cologne energy-consistent pseudopotentials (ECP) with matching basis sets, commonly used for heavy-element molecular calculations."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 187,
+   "name": "BEGDB",
+   "url": "http://www.begdb.org/",
+   "page": "https://molastria.com/atlas/#resources/187",
+   "category_code": "02",
+   "description": {
+    "zh": "非共价相互作用基准数据库，收录 S22、S66 等高精度参考数据。",
+    "en": "Non-covalent interaction benchmark database, containing high-precision reference data such as S22, S66."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 188,
+   "name": "Hydrogen-1.0",
+   "url": "https://huggingface.co/deep-principle/Hydrogen-1.0",
+   "page": "https://molastria.com/atlas/#resources/188",
+   "category_code": "17",
+   "description": {
+    "zh": "深度原理（Deep Principle）在 GLM-5.3 上用化学、材料与生命科学数据后训练的科研辅助模型，约 753B 参数，官方部署示例用 8 张 GPU。",
+    "en": "A research assistant model from Deep Principle, post-trained on GLM-5.3 with chemistry, materials and life-science data; about 753B parameters, and the official deployment example uses 8 GPUs."
+   },
+   "access": {
+    "zh": "注册",
+    "en": "Register"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 189,
+   "name": "Intern-S1 / Intern-S1-mini",
+   "url": "https://huggingface.co/internlm/Intern-S1",
+   "page": "https://molastria.com/atlas/#resources/189",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室的科学多模态基础模型，235B MoE 语言模型加 6B 视觉编码器，能直接读分子式和蛋白序列；mini 版语言部分为 8B。",
+    "en": "A scientific multimodal foundation model by Shanghai AI Laboratory, 235B MoE language model plus 6B vision encoder, can directly read molecular formulas and protein sequences; the mini version has an 8B language part."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 190,
+   "name": "Intern-S1-Pro",
+   "url": "https://huggingface.co/internlm/Intern-S1-Pro",
+   "page": "https://molastria.com/atlas/#resources/190",
+   "category_code": "17",
+   "description": {
+    "zh": "Intern-S1 的万亿参数版本，技术报告称其为首个万亿参数的科学多模态基础模型，加强了推理、图文理解和智能体能力。",
+    "en": "The trillion-parameter version of Intern-S1; the technical report calls it the first trillion-parameter scientific multimodal foundation model, with enhanced reasoning, image-text understanding, and agent capabilities."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 191,
+   "name": "Intern-S2 系列",
+   "url": "https://huggingface.co/collections/internlm/intern-s2",
+   "page": "https://molastria.com/atlas/#resources/191",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室 2026 年的科学多模态模型系列（35B 预览版、397B 等），直接从科学文献原始页面做视觉预训练，并加强长流程智能体任务。",
+    "en": "Shanghai AI Laboratory's 2026 scientific multimodal model series (35B preview, 397B, etc.), performs vision pretraining directly from raw pages of scientific literature and strengthens long-horizon agent tasks."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 192,
+   "name": "S1-Base（ScienceOne 磐石）",
+   "url": "https://huggingface.co/ScienceOne-AI/S1-Base-32B",
+   "page": "https://molastria.com/atlas/#resources/192",
+   "category_code": "17",
+   "description": {
+    "zh": "中国科学院磐石团队的科学基础模型，覆盖数学、物理、化学、地球科学、天文和生物，有 8B、32B（基于 Qwen3）和 671B（基于 DeepSeek-R1）三档。",
+    "en": "A scientific foundation model by CAS Panshi team covering math, physics, chemistry, Earth science, astronomy and biology, with 8B, 32B (based on Qwen3) and 671B (based on DeepSeek-R1) variants."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 193,
+   "name": "S1-DeepResearch",
+   "url": "https://github.com/ScienceOne-AI/S1-DeepResearch",
+   "page": "https://molastria.com/atlas/#resources/193",
+   "category_code": "17",
+   "description": {
+    "zh": "磐石团队面向长程深度研究的模型（8B 预览版与 32B），侧重研究指令遵循、调研报告写作、文件理解与技能调用。",
+    "en": "A model from the Panshi team for long-horizon deep research (8B preview and 32B), focusing on research instruction following, survey report writing, document understanding, and skill invocation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 194,
+   "name": "SciReasoner",
+   "url": "https://huggingface.co/SciReason/SciReasoner-8B",
+   "page": "https://molastria.com/atlas/#resources/194",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室等的跨学科科学推理模型，把自然语言与分子、蛋白质等科学序列表示对齐，公开 8B 权重。",
+    "en": "An interdisciplinary scientific reasoning model by Shanghai AI Laboratory et al., aligns natural language with scientific sequence representations such as molecules and proteins; 8B weights released."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 195,
+   "name": "SciDFM",
+   "url": "https://huggingface.co/OpenDFM/SciDFM-MoE-A5.6B-v1.0",
+   "page": "https://molastria.com/atlas/#resources/195",
+   "category_code": "17",
+   "description": {
+    "zh": "上海交通大学 X-LANCE 实验室与苏州实验室从头训练的混合专家科学对话模型，约 18.5B 总参数、5.6B 激活参数。",
+    "en": "A mixture-of-experts scientific dialogue model trained from scratch by SJTU X-LANCE Lab and Suzhou Lab, ~18.5B total parameters, 5.6B active parameters."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 196,
+   "name": "SciGLM",
+   "url": "https://github.com/THUDM/SciGLM",
+   "page": "https://molastria.com/atlas/#resources/196",
+   "category_code": "17",
+   "description": {
+    "zh": "清华大学等用自我反思标注的科学指令数据（SciInstruct）训练的大学水平科学推理模型，覆盖数学、物理、化学和形式证明。",
+    "en": "A college-level scientific reasoning model trained by Tsinghua University and others on self-reflection annotated scientific instruction data (SciInstruct), covering mathematics, physics, chemistry, and formal proofs."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 197,
+   "name": "Galactica",
+   "url": "https://huggingface.co/facebook/galactica-120b",
+   "page": "https://molastria.com/atlas/#resources/197",
+   "category_code": "17",
+   "description": {
+    "zh": "Meta 2022 年发布的早期科学语言模型，在 1060 亿 token 的科学语料上训练；模型卡提醒输出可能出现幻觉。",
+    "en": "Meta's early scientific language model released in 2022, trained on 106 billion tokens of scientific text; the model card cautions that outputs may hallucinate."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 198,
+   "name": "ChemDFM / ChemDFM-R",
+   "url": "https://huggingface.co/collections/OpenDFM/chemdfm",
+   "page": "https://molastria.com/atlas/#resources/198",
+   "category_code": "17",
+   "description": {
+    "zh": "上海交通大学与苏州实验室的化学对话模型系列；ChemDFM-R（14B）加入官能团等原子化化学知识，专门训练化学推理。",
+    "en": "A chemistry dialogue model series from SJTU and Suzhou Lab; ChemDFM-R (14B) adds atomistic chemical knowledge such as functional groups, specifically trained for chemical reasoning."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 199,
+   "name": "Chem-R",
+   "url": "https://github.com/davidweidawang/Chem-R",
+   "page": "https://molastria.com/atlas/#resources/199",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室、复旦大学等的化学推理模型，分化学基础、推理协议蒸馏、多任务 GRPO 三阶段训练，覆盖分子与反应任务。",
+    "en": "A chemical reasoning model by Shanghai AI Laboratory, Fudan University, etc., with three-stage training: chemistry fundamentals, reasoning protocol distillation, multi-task GRPO, covering molecular and reaction tasks."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 200,
+   "name": "ether0",
+   "url": "https://huggingface.co/futurehouse/ether0",
+   "page": "https://molastria.com/atlas/#resources/200",
+   "category_code": "17",
+   "description": {
+    "zh": "FutureHouse 基于 Mistral-Small-24B 的 24B 化学推理模型，在 375 类有实验依据的化学任务上做强化学习，用自然语言推理并输出 SMILES。",
+    "en": "FutureHouse's 24B chemical reasoning model based on Mistral-Small-24B, trained with reinforcement learning on 375 experimentally grounded chemistry tasks, reasoning in natural language and outputting SMILES."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 201,
+   "name": "ChemLLM",
+   "url": "https://huggingface.co/AI4Chem/ChemLLM-7B-Chat",
+   "page": "https://molastria.com/atlas/#resources/201",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室基于 InternLM2 的早期开源化学对话模型（7B），面向化学与分子科学问答。",
+    "en": "An early open-source chemistry dialogue model (7B) by Shanghai AI Laboratory based on InternLM2, for chemistry and molecular science Q&A."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 202,
+   "name": "ECNU-ChemGPT",
+   "url": "https://github.com/ilog-ecnu/ECNU-ChemGPT",
+   "page": "https://molastria.com/atlas/#resources/202",
+   "category_code": "17",
+   "description": {
+    "zh": "华东师范大学的化学模型套件，含化学问答模型 ChemGPT2-QA-72B（基于 Qwen2-72B-Instruct 微调）和逆合成预测，论文 2025 年公开。",
+    "en": "A chemistry model suite from East China Normal University, including ChemGPT2-QA-72B (fine-tuned from Qwen2-72B-Instruct) for chemical Q&A and retrosynthesis prediction; paper released in 2025."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 203,
+   "name": "LlaSMol",
+   "url": "https://github.com/OSU-NLP-Group/LLM4Chem",
+   "page": "https://molastria.com/atlas/#resources/203",
+   "category_code": "17",
+   "description": {
+    "zh": "俄亥俄州立大学用三百多万条化学指令数据（SMolInstruct，14 类任务）微调的模型系列，处理分子名称、SMILES 与反应预测等任务。",
+    "en": "A model series fine-tuned by Ohio State University with over three million chemical instruction data (SMolInstruct, 14 task types), handling molecule names, SMILES and reaction prediction tasks."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 204,
+   "name": "MolReasoner",
+   "url": "https://arxiv.org/abs/2508.02066",
+   "page": "https://molastria.com/atlas/#resources/204",
+   "category_code": "17",
+   "description": {
+    "zh": "北京科学智能研究院、上海交通大学等的分子推理框架，先用知识增强的思维链做微调、再用强化学习减少幻觉，用于分子描述和分子生成。",
+    "en": "A molecular reasoning framework by Beijing Academy of Artificial Intelligence, SJTU et al., first fine-tunes with knowledge-enhanced chain-of-thought, then uses reinforcement learning to reduce hallucination, for molecular description and generation."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 205,
+   "name": "MOFReasoner",
+   "url": "https://doi.org/10.1039/D5DD00429B",
+   "page": "https://molastria.com/atlas/#resources/205",
+   "category_code": "17",
+   "description": {
+    "zh": "北京工业大学等以 MOF 吸附为重点的化学推理模型，用 8200 余篇研究论文和 500 篇综述构建思维链数据并做知识蒸馏，2026 年发表于 Digital Discovery。",
+    "en": "A chemical reasoning model focusing on MOF adsorption by Beijing University of Technology et al., built chain-of-thought data from over 8,200 research papers and 500 reviews with knowledge distillation, published in Digital Discovery in 2026."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 206,
+   "name": "LLaMat",
+   "url": "https://huggingface.co/collections/m3rg-iitd/llamat",
+   "page": "https://molastria.com/atlas/#resources/206",
+   "category_code": "17",
+   "description": {
+    "zh": "印度理工学院德里分校等在材料文献和晶体学数据上继续预训练 LLaMA 得到的材料模型系列，含对话版和生成晶体结构的 CIF 版。",
+    "en": "A series of material models from IIT Delhi and others that further pre-train LLaMA on material literature and crystallographic data, including a dialogue version and a CIF version that generates crystal structures."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 207,
+   "name": "MechGPT",
+   "url": "https://arxiv.org/abs/2310.10445",
+   "page": "https://molastria.com/atlas/#resources/207",
+   "category_code": "17",
+   "description": {
+    "zh": "MIT 的 Markus Buehler 微调的力学与材料建模语言模型，用于连接材料失效与多尺度力学知识，2024 年发表于 Applied Mechanics Reviews。",
+    "en": "A mechanics and materials modeling language model fine-tuned by Markus Buehler at MIT, connecting material failure and multiscale mechanics knowledge, published in Applied Mechanics Reviews in 2024."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 208,
+   "name": "S1-VL-32B",
+   "url": "https://huggingface.co/ScienceOne-AI/S1-VL-32B",
+   "page": "https://molastria.com/atlas/#resources/208",
+   "category_code": "17",
+   "description": {
+    "zh": "中国科学院磐石团队基于 Qwen3-VL-32B 的科学图文推理模型，推理时可调用代码裁剪、放大、增强图像后再分析。",
+    "en": "A scientific vision-language reasoning model by CAS Panshi team based on Qwen3-VL-32B; during inference it can call code to crop, zoom, enhance images before analysis."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 209,
+   "name": "S1-Omni",
+   "url": "https://huggingface.co/ScienceOne-AI/S1-Omni",
+   "page": "https://molastria.com/atlas/#resources/209",
+   "category_code": "17",
+   "description": {
+    "zh": "磐石团队的统一科学多模态推理模型，把文本、材料 CIF、SMILES、蛋白序列、光谱和科学图像放进同一表示，再接各领域的专用解码器。",
+    "en": "A unified scientific multimodal reasoning model from the Panshi team; puts text, material CIF, SMILES, protein sequences, spectra, and scientific images into the same representation, with domain-specific decoders."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 210,
+   "name": "ChemMLLM",
+   "url": "https://arxiv.org/abs/2505.16326",
+   "page": "https://molastria.com/atlas/#resources/210",
+   "category_code": "17",
+   "description": {
+    "zh": "上海人工智能实验室、中国科学技术大学等的化学多模态大模型，在文本、SMILES 和分子图像之间做理解与生成。",
+    "en": "A chemical multimodal large model by Shanghai AI Laboratory, USTC, etc., for understanding and generation across text, SMILES and molecular images."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 211,
+   "name": "MOOSE-Star",
+   "url": "https://github.com/ZonglinY/MOOSE-Star",
+   "page": "https://molastria.com/atlas/#resources/211",
+   "category_code": "17",
+   "description": {
+    "zh": "研究如何从研究背景检索启发并组合成科学假设的训练框架，发布灵感检索、假设组合和多任务三个 7B 模型，ICML 2026。",
+    "en": "A training framework for research on retrieving inspiration from research backgrounds and composing scientific hypotheses; released three 7B models for inspiration retrieval, hypothesis composition, and multi-task, ICML 2026."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 212,
+   "name": "OpenScholar",
+   "url": "https://github.com/AkariAsai/OpenScholar",
+   "page": "https://molastria.com/atlas/#resources/212",
+   "category_code": "17",
+   "description": {
+    "zh": "华盛顿大学与艾伦人工智能研究所等的检索增强模型，从 4500 万篇开放获取论文中找证据并生成带引用的回答，2026 年发表于 Nature。",
+    "en": "A retrieval-augmented model by University of Washington and Allen Institute for AI et al., finds evidence from 45 million open-access papers and generates answers with citations, published in Nature in 2026."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 213,
+   "name": "NatureLM",
+   "url": "https://huggingface.co/microsoft/NatureLM-8x7B-Inst",
+   "page": "https://molastria.com/atlas/#resources/213",
+   "category_code": "17",
+   "description": {
+    "zh": "Microsoft Research AI for Science 的序列式科学基础模型（8x7B），按自然语言指令生成和优化小分子、蛋白质、RNA 与材料；模型卡说明它不是通用问答模型。",
+    "en": "Microsoft Research AI for Science's sequential scientific foundation model (8x7B) that generates and optimizes small molecules, proteins, RNA and materials from natural language instructions; the model card states it is not a general Q&A model."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 214,
+   "name": "ChemFM",
+   "url": "https://huggingface.co/ChemFM/ChemFM-3B",
+   "page": "https://molastria.com/atlas/#resources/214",
+   "category_code": "17",
+   "description": {
+    "zh": "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。",
+    "en": "A 3B chemistry foundation model pre-trained on 178 million molecules from UniChem, for molecular property prediction, conditional molecule generation, and reaction prediction, published in Communications Chemistry in 2025."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  }
+ ]
+}

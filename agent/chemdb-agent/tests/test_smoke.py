@@ -26,7 +26,7 @@ EXPECTED_TOOLS = sorted(
 
 
 def test_version():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.2.1"
 
 
 def test_units_constants():
@@ -49,7 +49,7 @@ def test_catalog_status_ok(data_dir, monkeypatch):
     monkeypatch.delenv("MP_API_KEY", raising=False)
     res = asyncio.run(server.mcp.call_tool("catalog_status", {}))
     sc = res.structured_content
-    assert sc["status"] == "ok" and sc["version"] == "0.2.0"
+    assert sc["status"] == "ok" and sc["version"] == "0.2.1"
     assert sc["data_dir"] == str(data_dir)
     ids = {s["id"] for s in sc["sources"]}
     assert {"mp", "nomad", "optimade-alexandria-pbe", "chebi", "qcarchive-ml", "bse"} <= ids
