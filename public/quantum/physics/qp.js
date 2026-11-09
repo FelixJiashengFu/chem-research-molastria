@@ -380,7 +380,7 @@
 
   $('#qp-foot').innerHTML = `<strong>${L('MolAstria · 量子嘉年华 · 量子物理', 'MolAstria · Quantum Carnival · Quantum Physics')}</strong>
     <p>${L('讲解、大纲、练习和演示由 MolAstria 编写；论文、书目与课程只收录核对过、真实存在的条目，不代表作者或平台认可本站。', 'Explanations, outlines, exercises and demos are written by MolAstria; papers, books and courses are limited to entries we checked and that exist, and imply no endorsement by authors or platforms.')}</p>
-    <p><a href="../index.html">${L('回到量子嘉年华', 'Back to the Quantum Carnival')}</a> · <a href="../../fundamental-science/index.html">${L('进一步基础科学发现', 'Advancing Fundamental Science')}</a> · <a href="../../fundamental-science/math/index.html">${L('数学基础与探索', 'Mathematical Foundations & Exploration')}</a> · <a href="../../qchem/index.html#lab">${L('浏览器里的量子化学计算器', 'Quantum chemistry calculator in the browser')}</a> · <a href="#qp-h1">${L('回到顶部', 'Back to top')} <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>`;
+    <p><a href="../index.html">${L('回到量子嘉年华', 'Back to the Quantum Carnival')}</a> · <a href="../../fundamental-science/index.html">${L('进一步基础科学发现', 'Advancing Fundamental Science')}</a> · <a href="../../physics-realms/index.html#n-qm">${L('物理疆界图', 'Realms of Physics')}</a> · <a href="../../fundamental-science/math/index.html">${L('数学基础与探索', 'Mathematical Foundations & Exploration')}</a> · <a href="../../qchem/index.html#lab">${L('浏览器里的量子化学计算器', 'Quantum chemistry calculator in the browser')}</a> · <a href="#qp-h1">${L('回到顶部', 'Back to top')} <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>`;
 
   // ── 地址与重绘 ────────────────────────────────────────────────────────
   const drawAll = () => { draw1(); draw2(); draw3(); draw4(); };
