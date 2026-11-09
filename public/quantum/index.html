@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="量子嘉年华（Quantum Carnival）：MolAstria 的量子母栏目，四个展馆一张门票：量子物理、量子计算机、量子算法、量子生物学。每个展馆都有中英双语讲解、可交互的演示和核对过的文献与课程，全部免费。">
+  <meta name="theme-color" content="#173f34">
+  <title>量子嘉年华 · Quantum Carnival · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="carnival.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="sections.js" defer></script>
+  <script src="carnival.js" defer></script>
+</head>
+<body data-section="quantum">
+<a class="skip" href="#qc-halls">跳到四个展馆</a>
+<main id="qc-main">
+  <section class="fs-hero qc-hero" aria-labelledby="qc-h1">
+    <div class="qc-orbit" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
+    <p class="eyebrow">MOLASTRIA · QUANTUM CARNIVAL</p>
+    <h1 id="qc-h1">量子嘉年华<span class="fs-h1-en" lang="en" translate="no">Quantum Carnival</span></h1>
+    <blockquote class="fs-question" id="qc-quote"></blockquote>
+    <p class="lead" id="qc-lead"></p>
+    <p class="fs-honest" id="qc-honest"></p>
+    <nav class="fs-jump" id="qc-jump" aria-label="本页内容"></nav>
+  </section>
+
+  <section class="fs-block" id="qc-halls" aria-labelledby="qc-halls-h" tabindex="-1">
+    <h2 id="qc-halls-h"></h2>
+    <p class="muted" id="qc-halls-note"></p>
+    <div class="qc-hall-grid" id="qc-hall-grid"></div>
+  </section>
+
+  <section class="fs-block" id="qc-links" aria-labelledby="qc-links-h" tabindex="-1">
+    <h2 id="qc-links-h"></h2>
+    <p class="muted" id="qc-links-note"></p>
+    <ol class="qc-links" id="qc-link-list"></ol>
+  </section>
+
+  <section class="fs-block" id="qc-routes" aria-labelledby="qc-routes-h" tabindex="-1">
+    <h2 id="qc-routes-h"></h2>
+    <p class="muted" id="qc-routes-note"></p>
+    <div class="qc-route-grid" id="qc-route-grid"></div>
+  </section>
+
+  <section class="fs-block" id="qc-around" aria-labelledby="qc-around-h" tabindex="-1">
+    <h2 id="qc-around-h"></h2>
+    <p class="muted" id="qc-around-note"></p>
+    <div class="qc-around" id="qc-around-grid"></div>
+  </section>
+
+  <footer class="fs-foot" id="qc-foot"></footer>
+  <noscript><p class="fs-note">这个页面需要 JavaScript 才能显示内容。</p></noscript>
+</main>
+</body>
+</html>

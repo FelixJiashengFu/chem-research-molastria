@@ -338,6 +338,13 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
+ "量子嘉年华": [
+  "index.html",
+  "fundamental-science/index.html",
+  "quantum/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
  "每周精选": [
   "index.html",
   "digest/index.html",
@@ -881,7 +888,8 @@
   "journals/index.html",
   "scimodels/index.html",
   "fundamental-science/index.html",
-  "fundamental-science/math/index.html"
+  "fundamental-science/math/index.html",
+  "quantum/index.html"
  ],
  "筛选期刊": [
   "journals/index.html"
@@ -1103,6 +1111,15 @@
  "打开数学基础与探索": [
   "fundamental-science/index.html"
  ],
+ "姊妹栏目": [
+  "fundamental-science/index.html"
+ ],
+ "量子物理、量子计算机、量子算法、量子生物学四个展馆：从薛定谔方程、测量和纠缠讲起，到量子比特怎么造、量子计算机能算什么，再到生命里有没有真正“量子”的环节。": [
+  "fundamental-science/index.html"
+ ],
+ "打开量子嘉年华": [
+  "fundamental-science/index.html"
+ ],
  "每个支柱下面都有完整的理论说明：核心公式、关键概念（逐条标注研究状态）、重点问题的解答和参考文献。": [
   "fundamental-science/index.html"
  ],
@@ -1276,11 +1293,18 @@
   "fundamental-science/math/index.html"
  ],
  "这个页面需要 JavaScript 才能显示内容。": [
-  "fundamental-science/math/index.html"
+  "fundamental-science/math/index.html",
+  "quantum/index.html"
  ],
  "位置": [
   "fundamental-science/math/index.html",
   "tools/build-seo.ts"
+ ],
+ "量子嘉年华 · Quantum Carnival · MolAstria": [
+  "quantum/index.html"
+ ],
+ "跳到四个展馆": [
+  "quantum/index.html"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -11264,6 +11288,12 @@
   "tools/build-seo.ts"
  ],
  "为量子力学基础与量子化学准备的数学地图：线性代数、泛函分析与谱理论、群论与表示论、微分几何与拓扑、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论；讲解、大纲、练习、核对过的教材与公开课视频。": [
+  "tools/build-seo.ts"
+ ],
+ "量子嘉年华 · Quantum Carnival": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 的量子母栏目：量子物理、量子计算机、量子算法、量子生物学四个展馆，中英双语讲解、交互演示与核对过的文献和课程。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
