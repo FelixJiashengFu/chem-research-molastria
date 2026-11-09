@@ -1939,27 +1939,27 @@ check('nav order: a long press opens the glass panel without leaving the page; d
   await go(p, '/manual/index.html');
   const order = () => p.$$eval('.cr-links > a[data-id]:not(.cr-pro-link), .cr-more-menu a[data-id]', (a) => a.map((x) => x.dataset.id));
   const url = p.url();
-  const box = await (await p.$('.cr-links > a[data-id="journals"]')).boundingBox();
+  const box = await (await p.$('.cr-links > a[data-id="atlas"]')).boundingBox();
   await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await p.mouse.down();
   await p.waitForTimeout(700);
   await p.mouse.up();
   await p.waitForSelector('.cr-arrange.open');
   assert.equal(p.url(), url, 'the long press did not open the page');
-  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), 'journals', 'the pressed module has focus');
-  // drag journals onto the first tile
-  const from = await (await p.$('.cr-arr-tile[data-id="journals"]')).boundingBox(), to = await (await p.$('.cr-arr-tile[data-id="search"]')).boundingBox();
+  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), 'atlas', 'the pressed module has focus');
+  // drag atlas (always in the visible row, wherever new modules push the rest into 更多) onto the first tile
+  const from = await (await p.$('.cr-arr-tile[data-id="atlas"]')).boundingBox(), to = await (await p.$('.cr-arr-tile[data-id="search"]')).boundingBox();
   await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
   await p.mouse.down();
   for (let i = 1; i <= 10; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + 8 - from.x - from.width / 2) * i) / 10, from.y + from.height / 2 + ((to.y + to.height / 2 - from.y - from.height / 2) * i) / 10);
   await p.mouse.up();
-  assert.deepEqual((await order()).slice(0, 2), ['journals', 'search'], 'dragged to the front');
+  assert.deepEqual((await order()).slice(0, 2), ['atlas', 'search'], 'dragged to the front');
   await p.keyboard.press('ArrowRight');
-  assert.deepEqual((await order()).slice(0, 2), ['search', 'journals'], 'moved one step with the keyboard');
+  assert.deepEqual((await order()).slice(0, 2), ['search', 'atlas'], 'moved one step with the keyboard');
   await p.keyboard.press('Escape');
   await p.waitForSelector('.cr-arrange', { state: 'hidden' });
   await go(p, '/index.html');
-  assert.deepEqual((await order()).slice(0, 3), ['search', 'journals', 'network'], 'kept on the next page');
+  assert.deepEqual((await order()).slice(0, 3), ['search', 'atlas', 'network'], 'kept on the next page');
   // the display panel leads here too; reset brings back the default order
   await p.click('#cr-disp');
   await p.click('.cr-disp-arr');
