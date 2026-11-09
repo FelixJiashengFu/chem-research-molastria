@@ -1785,6 +1785,57 @@ check('math foundations: sub-module page, relations map, subject reader, self-ch
   await finish(e);
 });
 
+check('realms of physics: nav entry, graph selects from the hash, panel, filters, local graph, cube, English', async () => {
+  const p = await open({ viewport: { width: 1440, height: 1000 } });
+  await go(p, '/physics-realms/index.html#n-gr');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=realms]', 'aria-current'), 'page', 'nav entry marks the section');
+  assert.equal(await p.locator('#pr-graph .pr-node').count(), await p.evaluate(() => window.MOLASTRIA_REALMS.theories.length + window.MOLASTRIA_REALMS.problems.length));
+  assert.match(await text(p, '#pr-panel'), /广义相对论/);
+  assert.match(await text(p, '#pr-panel'), /疆界：在这里失效/);
+  assert.match(await text(p, '#pr-panel'), /水星近日点进动/, 'lists what it explains');
+  // A chip in the panel moves the selection and the address.
+  await p.click('#pr-panel [data-go="p-mercury"]');
+  assert.match(p.url(), /#n-p-mercury$/);
+  assert.match(await text(p, '#pr-panel'), /牛顿万有引力/);
+  // Clicking a node on the canvas selects it.
+  await p.keyboard.press('Escape');
+  await p.evaluate(() => document.querySelector('#pr-graph-wrap').scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await p.click('#pr-zoom [data-z=fit]'); await p.waitForTimeout(600);
+  const box = await p.locator('#pr-graph .pr-node[data-id=qm] circle').boundingBox();
+  await p.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'qm');
+  // Local graph keeps only qm and its neighbours; a branch filter hides a whole branch.
+  await p.check('#pr-local');
+  const n = await p.evaluate(() => window.__realms.nodes());
+  assert.ok(n > 5 && n < 40, `local graph shows ${n} nodes`);
+  await p.uncheck('#pr-local');
+  const all = await p.evaluate(() => window.__realms.nodes());
+  await p.click('.pr-bchip[data-b=cosmo]');
+  assert.ok(await p.evaluate(() => window.__realms.nodes()) < all, 'branch filter hides nodes');
+  await p.click('.pr-bchip[data-b=cosmo]');
+  // Search: Enter picks the first match.
+  await p.fill('#pr-q', 'GPS'); await p.press('#pr-q', 'Enter');
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'p-gps');
+  // The cube points into the graph.
+  await p.click('.pr-cube-v[data-i="4"]');
+  await p.click('#pr-cube-info [data-go]');
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'gr');
+  assert.ok(await p.locator('#pr-bounds-list .pr-bound').count() >= 40, 'one boundary card per theory');
+  assert.ok(await p.locator('#pr-open-list .pr-oq').count() >= 10, 'open problems listed');
+  await p.evaluate(() => localStorage.removeItem('molastria-realms-view'));
+  await finish(p);
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await go(e, '/physics-realms/index.html?lang=en#n-qm');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.equal(await e.title(), 'Realms of Physics · MolAstria');
+  assert.match(await text(e, '#pr-panel'), /Where it works/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,noscript')) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on a phone');
+  await finish(e);
+});
+
 check('quantum carnival: the hub links its live pavilions, the physics page computes its demos, opens chapters and is English in English', async () => {
   const h = await open();
   await go(h, '/quantum/index.html');
@@ -2109,8 +2160,68 @@ check('language switch: every page stays where it was (radar view, calculator ta
   await finish(p);
 });
 
+check('quantum biology: under Quantum Carnival, seven directions, evidence ledger, three working demos, references, English', async () => {
+  const p = await open();
+  await go(p, '/quantum/biology/index.html');
+  const setRange = (sel, v) => p.$eval(sel, (el, val) => { el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); }, String(v));
+  const settle = () => p.waitForTimeout(80); // demos redraw on the next animation frame
+  assert.equal(await p.getAttribute('body', 'data-section'), 'quantum', 'part of Quantum Carnival');
+  assert.equal(await p.locator('.cr-header a[data-id=quantumbio]').count(), 0, 'no nav entry of its own');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=quantum]', 'aria-current'), 'page', 'the 量子嘉年华 entry is current');
+  assert.equal(await p.getAttribute('#qb-crumbs a', 'href'), '../index.html', 'breadcrumb back to the hub');
+  assert.match(await p.textContent('#qb-crumbs'), /量子嘉年华\s*\/\s*量子生物学/);
+  await p.click('#qb-crumbs a');
+  await p.waitForURL(/\/quantum\/index\.html$/);
+  assert.equal(await p.getAttribute('.qc-hall[data-hall=biology]', 'href'), 'biology/index.html', 'the hub card is open and links here');
+  await p.click('.qc-hall[data-hall=biology]');
+  await p.waitForURL(/\/quantum\/biology\/index\.html$/);
+  assert.equal(await p.locator('.qb-level').count(), 3);
+  assert.equal(await p.locator('.fs-pillar').count(), 7);
+  assert.equal(await p.locator('.fs-tab').count(), 7);
+  assert.ok(await p.locator('#s-photo math').count() >= 3, 'MathML formulas render');
+  await p.click('.fs-pillar[data-tab=compass]');
+  assert.equal(await p.isVisible('#s-compass'), true);
+  assert.equal(await p.isVisible('#s-photo'), false);
+  // Demo 1: FMO efficiency at γ = 10 ps⁻¹ beats fully coherent transport (values from tools/quantum-bio-test.mjs).
+  assert.match(await text(p, '#e-read'), /99\.02 %/);
+  await p.click('#e-coherent');
+  assert.match(await text(p, '#e-read'), /90\.56 %/);
+  await p.click('#e-best'); await settle();
+  assert.match(await text(p, '#e-read'), /99\.\d\d %/);
+  // Demo 2: radical-pair yield at 30°, then no direction dependence for an isotropic coupling.
+  assert.match(await text(p, '#r-read'), /0\.4371/);
+  await p.click('#r-iso');
+  assert.match(await text(p, '#r-cap'), /各向同性/);
+  // Demo 3: tunnelling signature, then a wide barrier is nearly classical.
+  const kie = await text(p, '#k-read');
+  assert.match(kie, /16\.3[\s\S]*7\.77[\s\S]*0\.183/);
+  await p.click('#k-classical');
+  assert.match(await text(p, '#k-cap'), /0\.7–1\.2/);
+  await setRange('#k-t', 330); await settle();
+  assert.match(await text(p, '#k-t-v'), /330 K/);
+  // Evidence ledger and library filters.
+  assert.equal(await p.locator('#qb-ledger-grid .fs-theory').count(), 7);
+  await p.click('#qb-ledger-filter .fs-chip[data-kind=contested]');
+  assert.equal(await p.locator('#qb-ledger-grid .fs-theory').count(), 2);
+  assert.equal(await p.locator('.fs-ref').count(), 56);
+  await p.selectOption('#qb-lib-status', 'contested');
+  assert.equal(await p.locator('.fs-ref').count(), 8);
+  await p.click('#s-compass .fs-cite a[data-ref=xu2021]');
+  assert.match(await text(p, '#ref-xu2021'), /cryptochrome 4/);
+  assert.deepEqual(await p.$$eval('#qb-road a', (as) => as.map((a) => new URL(a.href).pathname).filter((x) => !/\.html$/.test(x))), [], 'learning-path links point at pages');
+  await finish(p);
+  const e = await open();
+  await go(e, '/quantum/biology/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#qb-h1'), /Quantum Biology/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -2166,7 +2277,7 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/algorithms/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

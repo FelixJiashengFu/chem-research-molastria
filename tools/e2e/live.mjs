@@ -121,6 +121,17 @@ check('fundamental science page: pillars, MathML formulas, the three demos and t
   assert.deepEqual(p.errors, []);
 });
 
+check('quantum biology page: seven directions, MathML formulas, the three demos and the reference library', async () => {
+  const p = await page('/quantum/biology/');
+  await p.waitForSelector('.fs-pillar');
+  assert.equal(await p.locator('.fs-pillar').count(), 7);
+  assert.ok(await p.locator('math').count() >= 10, 'formulas render as MathML');
+  assert.match(await p.textContent('#e-read'), /99\.02 %/);
+  assert.match(await p.textContent('#r-read'), /0\.4371/);
+  assert.equal(await p.locator('.fs-ref').count(), 56);
+  assert.deepEqual(p.errors, []);
+});
+
 check('installable web app: manifest and its icons, a CI-stamped sw.js, the offline page, the head tags', async () => {
   const get = (path) => fetch(`${SITE}/${path}${path.includes('?') ? '&' : '?'}${bust}`);
   const m = await (await get('manifest.webmanifest')).json();

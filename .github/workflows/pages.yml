@@ -27,10 +27,14 @@ jobs:
           deno-version: v2.x
       - name: Lab logic tests
         run: node --test tools/lab-test.mjs
+      - name: Realms of Physics content
+        run: node --test tools/realms-test.mjs
       - name: Network engine tests
         run: node --test tools/net-test.mjs
       - name: Fundamental Science models and content
         run: node --test tools/fundamental-test.mjs
+      - name: Quantum Biology models and content
+        run: node --test tools/quantum-bio-test.mjs
       - name: Quantum Carnival · physics models and content
         run: node --test tools/quantum-physics-test.mjs
       - name: Quantum Algorithms models and content
