@@ -1904,6 +1904,69 @@ check('quantum carnival: the hub links its live pavilions, the physics page comp
   }
 });
 
+check('quantum algorithms: ledger, map, circuit simulator, four demos, Shor calculator, reader, progress, library and English', async () => {
+  const p = await open({ viewport: { width: 1360, height: 900 } });
+  await go(p, '/quantum/algorithms/index.html');
+  assert.match(await text(p, '#qa-crumbs'), /量子嘉年华/);
+  assert.equal(await p.locator('#qa-ledger-table tbody tr').count(), 14);
+  await p.click('#qa-ledger-filter [data-ev=heuristic]');
+  assert.equal(await p.locator('#qa-ledger-table tbody tr').count(), 3, 'VQE, QAOA and mitigation are heuristic');
+  await p.click('#qa-graph .fm-node[data-id=qpe]');
+  assert.match(await text(p, '#qa-map-panel'), /相位估计/);
+  assert.equal(await p.locator('#qa-graph .fm-edge.on').count(), 4);
+  // Circuit simulator: GHZ gives |000⟩ and |111⟩ at 50 % each; the circuit survives a reload.
+  await p.selectOption('#c-preset', 'ghz');
+  assert.equal(await p.locator('#c-bars .qa-bar').count(), 8);
+  assert.equal(await p.locator('#c-bars .qa-bar:not([data-zero])').count(), 2);
+  assert.match(await text(p, '#c-bars'), /\|111⟩[\s\S]*50\.0%/);
+  await p.click('#c-sample');
+  assert.equal(await p.locator('#c-bars .qa-track b').count(), 8);
+  await p.click('.qa-pal[data-g=X]'); await p.click('.qa-cell[data-q="2"][data-c="5"]');
+  assert.match(await text(p, '#c-read'), /\|110⟩|\|001⟩/);
+  await p.reload();
+  assert.equal(await p.locator('#c-bars .qa-bar').count(), 8, 'circuit kept in localStorage');
+  await p.click('#c-clear');
+  // Grover: the best k for N = 256, M = 1 is 12.
+  await p.fill('#g-qubits', '8'); await p.click('#g-best');
+  assert.equal(await p.inputValue('#g-k'), '12');
+  assert.match(await text(p, '#g-read'), /99\.99%/);
+  for (const id of ['g-canvas', 'p-canvas', 't-canvas', 'v-canvas']) assert.ok(await p.evaluate((i) => document.getElementById(i).width > 300, id), `${id} drawn`);
+  assert.match(await text(p, '#v-read'), /-1\.56/);
+  // Reader: the hash opens a panel; the Shor calculator factors 21.
+  await go(p, '/quantum/algorithms/index.html#a-shor');
+  assert.ok(await p.isVisible('#a-shor'));
+  assert.equal(await p.locator('#qa-panels .fm-panel:not([hidden])').count(), 1);
+  assert.match(await text(p, '#a-shor [data-shor-out]'), /21 = 3 × 7/);
+  await p.fill('#a-shor [data-shor-n]', '35'); await p.fill('#a-shor [data-shor-a]', '2'); await p.click('#a-shor [data-shor-go]');
+  assert.match(await text(p, '#a-shor [data-shor-out]'), /35 = (5 × 7|7 × 5)/);
+  assert.ok(await p.locator('#a-shor math').count() >= 2, 'MathML formulas render');
+  // A demo button loads its preset into the simulator.
+  await p.click('.fm-side-b[data-sub=query]');
+  await p.click('#a-query a[data-demo=circuit]');
+  assert.equal(await p.locator('#c-grid .qa-q').count(), 3, 'Deutsch–Jozsa preset loaded');
+  // Self-checks are stored and can be cleared.
+  await p.click('.fm-side-b[data-sub=mapping]');
+  for (const box of await p.$$('#a-mapping input[data-check]')) await box.check();
+  assert.ok(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-qa-progress'))).length >= 3);
+  await p.click('#qa-reset');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-qa-progress')), '[]');
+  // Library.
+  assert.equal(await p.locator('#qa-lib .fs-ref').count(), 65);
+  await p.selectOption('#qa-f-kind', 'estimate');
+  assert.ok(await p.locator('#qa-lib .fs-ref').count() >= 4);
+  assert.equal(await p.locator('#qa-lib .fm-video').count(), 0);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(p);
+  const e = await open();
+  await go(e, '/quantum/algorithms/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.equal(await e.title(), 'Quantum Algorithms · MolAstria');
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,[lang="zh-CN"],.fm-au') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('display settings: scale, reading size and typeface apply, carry to other pages, are capped in narrow windows and reset', async () => {
   const p = await open({ viewport: { width: 1280, height: 900 } });
   await go(p, '/index.html');
@@ -2214,7 +2277,7 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

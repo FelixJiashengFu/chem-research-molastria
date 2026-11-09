@@ -37,6 +37,8 @@ jobs:
         run: node --test tools/quantum-bio-test.mjs
       - name: Quantum Carnival · physics models and content
         run: node --test tools/quantum-physics-test.mjs
+      - name: Quantum Algorithms models and content
+        run: node --test tools/quantum-algorithms-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
       - name: Account service tests

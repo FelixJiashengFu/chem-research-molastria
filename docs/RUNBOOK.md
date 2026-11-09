@@ -113,6 +113,15 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **演示的数学** 在 `fs-models.js`（纯函数）；改动后让 `fundamental-test.mjs` 里的解析解对照通过。
 - **界面文字**（标题、按钮、控件标签）写中文，照常 `i18n-extract`；英文译文由维护者自己写进 `i18n/en.json`，不要留空，否则 `i18n-translate` 会把空项发给 DeepSeek。
 
+## 量子算法（/quantum/algorithms/）
+
+内容在 `public/quantum/algorithms/qa-data.js`（中英两版并排写，页面按站点语言取用，不经过 i18n），演示的数学在 `qa-models.js`（纯函数，态矢量模拟器、Grover、相位估计、Trotter、VQE、Shor 的经典部分），`qa.js` 只管画。
+
+- **改了内容或数学：** `node --test tools/quantum-algorithms-test.mjs`（对照解析解：QFT 等于 DFT、Grover 闭式解、QPE 的 4/π² 下界、Trotter 一阶和二阶的收敛阶、VQE 收敛到精确基态；并检查每条内容都有中英文、证据等级、文献和公式）。
+- **加文献：** 照原样写进 `refs`，运行 `node tools/quantum-algorithms-refs.mjs`（DOI 走 OpenAlex，加 `--crossref` 改问 Crossref；arXiv 编号走 arXiv 接口）。只有网址的条目要手动核对。
+- **加公式：** 在 `math` 里写 LaTeX（不要夹中文，英文页也会显示），运行 `node tools/fundamental-math.mjs quantum` 生成 `qa-math.js`。
+- **加视频：** 先把视频加进教学视频栏目（`videos-data.js`，那里有核对流程），再在 `qa-data.js` 的 `videos` 里按 id 引用。
+
 ## 量子生物学栏目（/quantum/biology/，在量子嘉年华下）
 
 写法和基础科学栏目一样：内容全部在 `public/quantum/biology/qb-data.js`（`T(中文, English)` 并排），演示的数学在 `qb-models.js`（纯函数），页面在 `qb.js`，版式直接用 `../fundamental-science/fundamental.css`，只有本栏目独有的部分写在 `qb.css`。

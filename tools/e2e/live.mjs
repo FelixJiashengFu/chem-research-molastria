@@ -77,6 +77,15 @@ check('playground: the games load, and the calculator opens in its frame and com
   assert.deepEqual(p.errors, []);
 });
 
+check('quantum algorithms: the page renders its demos and the Shor calculator', async () => {
+  const p = await page('/quantum/algorithms/index.html');
+  await p.waitForSelector('#qa-ledger-table tbody tr');
+  assert.equal(await p.locator('#qa-panels .fm-panel').count(), 14);
+  assert.ok(await p.locator('#qa-panels math').count() > 10, 'MathML formulas');
+  assert.match(await p.locator('[data-shor-out]').innerText(), /21 = 3 × 7/);
+  assert.deepEqual(p.errors, []);
+});
+
 check('search: a Chinese term finds English entries, and the pricing page loads', async () => {
   const p = await page('/index.html?q=' + encodeURIComponent('电解液'));
   await p.waitForSelector('.result-row');
