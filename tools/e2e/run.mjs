@@ -2046,8 +2046,62 @@ check('language switch: every page stays where it was (radar view, calculator ta
   await finish(p);
 });
 
+check('quantum computers: under the Quantum Carnival nav entry, seven parts, six platforms, three working demos, references, English', async () => {
+  const p = await open();
+  await go(p, '/quantum/computing/index.html');
+  const setRange = (sel, v) => p.$eval(sel, (el, val) => { el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); }, String(v));
+  const settle = () => p.waitForTimeout(80); // demos redraw on the next animation frame
+  assert.equal(await p.getAttribute('.cr-header a[data-id=quantum]', 'aria-current'), 'page', 'the Quantum Carnival nav entry is current');
+  assert.equal(await p.getAttribute('.qc-crumbs a', 'href'), '../index.html');
+  assert.equal(await p.locator('.qc-level').count(), 3);
+  assert.equal(await p.locator('.fs-pillar').count(), 7);
+  assert.equal(await p.locator('.fs-tab').count(), 7);
+  assert.ok(await p.locator('#s-qubit math').count() >= 3, 'MathML formulas render');
+  await p.click('.fs-pillar[data-tab=qec]');
+  assert.equal(await p.isVisible('#s-qec'), true);
+  assert.equal(await p.isVisible('#s-qubit'), false);
+  assert.equal(await p.locator('.qc-plat').count(), 6);
+  assert.equal(await p.locator('#qc-timeline li').count(), 20);
+  // Demo 1: default π pulse (Ω/2π = 5 MHz, T₁ = 10 μs, T₂ ≈ 4 μs), then an ideal qubit flips fully.
+  assert.match(await text(p, '#b-read'), /π[\s\S]*99\.\d\d %/);
+  await p.click('#b-ideal'); await settle();
+  assert.match(await text(p, '#b-read'), /100\.00 %/);
+  await p.click('#b-detune'); await settle();
+  assert.match(await text(p, '#b-cap'), /50%/);
+  // Demo 2: Sycamore-level errors on 53 qubits and 20 layers give F ≈ 0.09 % (sliders snap to 0.001 in log₁₀).
+  await p.click('#c-syc'); await settle();
+  assert.match(await text(p, '#c-read'), /0\.09\d\d %/);
+  await p.click('#c-logical'); await settle();
+  assert.match(await text(p, '#c-read'), /98\.4 %/);
+  // Demo 3: repetition code below and above the threshold; the surface-code calculator at p = 0.1 %.
+  assert.match(await text(p, '#q-read'), /d31(?!\d)[\s\S]*192,100/);
+  await setRange('#q-p', 0.6); await settle();
+  assert.match(await text(p, '#q-rep-cap'), /50%/);
+  await p.click('#q-good'); await settle();
+  assert.match(await text(p, '#q-read'), /d13(?!\d)/);
+  // Ledger, library and the hub card.
+  assert.equal(await p.locator('#qc-ledger-grid .fs-theory').count(), 7);
+  await p.click('#qc-ledger-filter .fs-chip[data-kind=contested]');
+  assert.equal(await p.locator('#qc-ledger-grid .fs-theory').count(), 4);
+  assert.equal(await p.locator('.fs-ref').count(), 57);
+  await p.click('#s-qec .fs-cite a[data-ref=google2025]');
+  assert.match(await text(p, '#ref-google2025'), /below the surface code threshold/);
+  await go(p, '/quantum/computing/index.html#qc-noise');
+  await p.waitForTimeout(150);
+  assert.equal(await p.isVisible('#s-noise'), true, '#qc-noise opens part 02');
+  await finish(p);
+  const e = await open();
+  await go(e, '/quantum/computing/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#qcomp-h1'), /Quantum Computers/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/computing/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -2103,7 +2157,7 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

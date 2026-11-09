@@ -1,4 +1,4 @@
-// Builds public/fundamental-science/fs-math.js and math/fm-math.js: every formula of the Fundamental Science section (LaTeX in fs-data.js, key `math`)
+// Builds public/fundamental-science/fs-math.js, math/fm-math.js and the formula files of the Quantum Carnival pavilions (e.g. public/quantum/computing/qc-math.js): every formula (LaTeX in the data file, key `math`)
 // converted to MathML by KaTeX, so the page renders math natively, offline and without a script library.
 //   node tools/fundamental-math.mjs          (needs network once, for npx to fetch katex)
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -8,8 +8,8 @@ import vm from 'node:vm';
 const KATEX = 'katex@0.16.11';
 // The sub-module 数学基础与探索 (math/fm-data.js → math/fm-math.js) is built the same way.
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-const build = (dataFile, global, outFile) => {
-  const root = new URL('../public/fundamental-science/', import.meta.url);
+const build = (dataFile, global, outFile, dir = 'fundamental-science') => {
+  const root = new URL(`../public/${dir}/`, import.meta.url);
   const sandbox = { window: {} };
   vm.runInNewContext(readFileSync(new URL(dataFile, root), 'utf8'), sandbox);
   const formulas = sandbox.window[global].math;
@@ -25,8 +25,10 @@ const build = (dataFile, global, outFile) => {
   writeFileSync(new URL(outFile, root), `/* 生成的文件，不要手改：node tools/fundamental-math.mjs 从 ${src} 的 LaTeX 用 ${KATEX} 生成 MathML。 */
 window.${global}_MATH = ${JSON.stringify(out, null, 1)};
 `);
-  console.log(`\nwrote ${Object.keys(out).length} formulas to public/fundamental-science/${outFile}`);
+  console.log(`\nwrote ${Object.keys(out).length} formulas to public/${dir}/${outFile}`);
 };
 build('fs-data.js', 'MOLASTRIA_FS', 'fs-math.js');
 build('math/fm-data.js', 'MOLASTRIA_FM', 'math/fm-math.js');
 build('../quantum/physics/qp-data.js', 'MOLASTRIA_QP', '../quantum/physics/qp-math.js');
+// 量子计算机栏目（quantum/computing/qc-data.js → qc-math.js）
+build('qc-data.js', 'MOLASTRIA_QC', 'qc-math.js', 'quantum/computing');
