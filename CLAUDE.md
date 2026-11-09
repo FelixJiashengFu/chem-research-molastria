@@ -139,6 +139,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **ChemRxiv：** 官网对程序返回 Cloudflare 验证，不要绕过；用 Crossref（前缀 10.26434）。Crossref 里没有学科字段，靠关键词筛。
 - **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。`i18n.js` 的 `SKIP` 选择器要写窄：`.card h3` 曾把实验室所有卡片标题一起跳过，现在是 `article.card h3`（只跳论文卡片）；`textarea` 只跳过内容，placeholder 照常翻译。`i18n-extract` 不抽资源名和 `hub/net-engine.js`，那里要显示英文的文字直接手加到 `i18n/en.json`（有译文的手加词条会保留）。只有一个汉字的模板（如 `${n} 条`）永远不会被翻译，写成至少两个汉字（`共 ${n} 条`）。
 - **计算接口 `/v1` 的报错要写两种语言：** 在线模型路径上的 `fail(状态, 中文, 英文, code)` 第三个参数是给程序看的英文，漏了的话 `/v1` 会把中文当英文返回。网站自己的接口只用中文那一句。
+- **Cloudflare 拦脚本的默认 User-Agent：** `api.molastria.com` 对 `Python-urllib/3.x` 返回 403（不是我们的 JSON）。给程序看的示例都要自己设 User-Agent。
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。

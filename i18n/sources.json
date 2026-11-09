@@ -6053,6 +6053,12 @@
  "UMA、eSEN 和 AllScAIP 采用 FAIR Chemistry License，ANI-2x 是 MIT 许可，用它们算出的结果请遵守各自的许可并引用原论文。MACE 系列（MACE-OFF23、MACE-OMOL-0、MACE-MDP）采用学术软件许可（ASL），只限学术、非商业研究，所以不通过 API 提供，要用请到在线模型页。": [
   "api/index.html"
  ],
+ "请求头 User-Agent：": [
+  "api/index.html"
+ ],
+ "接口前面的 Cloudflare 会拒绝 Python urllib 默认的 User-Agent，返回 403，而且不是 JSON。像上面的示例那样给请求设一个自己的 User-Agent 就可以。": [
+  "api/index.html"
+ ],
  "地区：": [
   "api/index.html"
  ],

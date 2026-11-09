@@ -151,6 +151,7 @@
     <li><b>一次一个：</b> 同一个账号同时只能有一个任务在排队或计算，网站上提交的也算在内。等它算完再交下一个。</li>
     <li><b>缓存：</b> 算过的同一个任务会直接返回结果，同样计次。这时 <code translate="no">status</code> 直接是 <code translate="no">done</code>，没有任务编号。</li>
     <li><b>模型许可：</b> UMA、eSEN 和 AllScAIP 采用 FAIR Chemistry License，ANI-2x 是 MIT 许可，用它们算出的结果请遵守各自的许可并引用原论文。MACE 系列（MACE-OFF23、MACE-OMOL-0、MACE-MDP）采用学术软件许可（ASL），只限学术、非商业研究，所以不通过 API 提供，要用请到在线模型页。</li>
+    <li><b>请求头 User-Agent：</b> 接口前面的 Cloudflare 会拒绝 Python urllib 默认的 User-Agent，返回 403，而且不是 JSON。像上面的示例那样给请求设一个自己的 User-Agent 就可以。</li>
     <li><b>地区：</b> 按照模型许可要求遵守的出口管制规定，部分地区不能使用。</li>
     <li><b>保管好 key：</b> 一个账号最多 3 个。不要把 key 写进公开的网页或公开的代码仓库；泄露了就到账号页撤销，撤销立刻生效。</li>
     <li><b>报错：</b> 出错时返回 <code translate="no">{ "error": { "code", "message", "message_zh" } }</code>，英文和中文各一句。常见的 code 值： <code translate="no">unauthorized</code> （key 不对或已撤销）、 <code translate="no">quota_exceeded</code> （今天的次数不够）、 <code translate="no">job_in_progress</code> （上一个任务还没算完）、 <code translate="no">offline</code> （电脑离线）、 <code translate="no">licence</code> （这个模型不通过 API 提供）、 <code translate="no">invalid_request</code> （请求里有不合法的值）</li>

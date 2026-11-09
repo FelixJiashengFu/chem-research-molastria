@@ -31,9 +31,10 @@ check('compute API for programs: open to any origin, described without a key, cl
   assert.equal((await fetch(`${API}/keys`)).status, 401, 'keys are made by a signed-in account');
   const page = await (await fetch(`${SITE}/api/?v=${Date.now()}`)).text();
   assert.match(page, /id="compute"/);
-  // A script's default user agent must get through Cloudflare (Python's urllib is a common one to be blocked).
-  const py = await fetch(`${API}/v1`, { headers: { 'User-Agent': 'Python-urllib/3.12' } });
-  assert.equal(py.status, 200, 'Python-urllib user agent is not blocked');
+  // Cloudflare refuses urllib's default user agent (403, seen 2026-11-09); the documented example sets its own, which must get through.
+  const py = await fetch(`${API}/v1`, { headers: { 'User-Agent': 'my-script/1.0' } });
+  assert.equal(py.status, 200, 'the user agent of the Python example is not blocked');
+  assert.match(page.includes('compute.js') ? await (await fetch(`${SITE}/api/compute.js?v=${Date.now()}`)).text() : '', /"User-Agent": "my-script\/1\.0"/);
 });
 
 check('account service allows the site and the desktop app, and nobody else', async () => {

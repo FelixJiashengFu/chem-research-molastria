@@ -71,7 +71,7 @@ def call(path, body=None):
         data=json.dumps(body).encode() if body else None,
         headers={"Authorization": "Bearer " + KEY,
                  "Content-Type": "application/json",
-                 "User-Agent": "my-script/1.0"})
+                 "User-Agent": "my-script/1.0"})  # urllib's default User-Agent is refused (403)
     try:
         with urllib.request.urlopen(req) as r:
             return json.load(r)
