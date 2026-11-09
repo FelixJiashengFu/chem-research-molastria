@@ -53,12 +53,12 @@ check('desktop update feed matches the latest release', async () => {
   console.log(`     desktop ${latest.version}`);
 });
 
-check('weekly picks: the preview is public (at most five picks), the full issue needs an account', async () => {
+check('weekly picks: the whole issue is public, the subscription state needs an account', async () => {
   const r = await fetch(`${API}/digest/preview`);
   assert.equal(r.status, 200);
   const d = await r.json();
   assert.ok(Array.isArray(d.items));
-  assert.ok(d.items.length <= 5 && d.items.every((it) => it.title));
+  assert.ok(d.items.length === d.total && d.items.every((it) => it.title)); // content is free since 2026-11-08; before that the preview stopped at five
   assert.equal((await fetch(`${API}/digest/latest`)).status, 401);
   console.log(`     ${d.week || 'no issue yet'}, ${d.total} papers${d.items.some((it) => it.why_zh) ? ', comments public' : ''}`);
 });

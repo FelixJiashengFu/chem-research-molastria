@@ -27,7 +27,7 @@ public/               发布目录，推到 main 就上线
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
-  digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和前五篇带点评），digest-card.js 是首页的卡片
+  digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
   fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
