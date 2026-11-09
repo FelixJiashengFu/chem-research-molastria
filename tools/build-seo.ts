@@ -316,6 +316,7 @@ await write("404.html", `<!doctype html>
 const urls = [
   ["", "1.0", "weekly"], ["lab/", "0.9", "weekly"], ["meta/", "0.8", "monthly"], ["models/", "0.8", "weekly"], ["train/", "0.9", "weekly"], ["radar/", "0.8", "weekly"], ["research-atlas/", "0.8", "monthly"], ["qchem/", "0.8", "monthly"], ["download/", "0.8", "monthly"], ["about/", "0.5", "yearly"], ["pro/", "0.7", "monthly"], ["pro/terms.html", "0.2", "yearly"], ["pro/refund.html", "0.2", "yearly"], ["pro/privacy.html", "0.2", "yearly"], ["resources/", "0.9", "weekly"], ["guide/", "0.8", "monthly"],
   ["manual/", "0.8", "monthly"], ["journals/", "0.8", "monthly"], ["scimodels/", "0.8", "monthly"], ["videos/", "0.8", "monthly"], ["fundamental-science/", "0.8", "monthly"], ["fundamental-science/math/", "0.8", "monthly"], ["digest/", "0.8", "weekly"], ["atlas/", "0.8", "monthly"], ["hub/", "0.7", "weekly"], ["hub/network.html", "0.6", "monthly"],
+  ["api/", "0.7", "monthly"],
   ["quantum/", "0.8", "monthly"],
   ["quantum/biology/", "0.8", "monthly"],
   ["quantum/physics/", "0.8", "monthly"],
