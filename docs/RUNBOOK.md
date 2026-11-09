@@ -148,6 +148,19 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **改字段：** 加字段随便加。删字段、改含义不要在 v1 里做：新建 `v2/`，v1 的文件保留。
 - **上线后检查：** `curl -sI "https://molastria.com/api/v1/index.json?x=1" | grep -i access-control` 应有 `access-control-allow-origin: *`。
 
+## 计算接口和 API key（api.molastria.com/v1）
+
+给程序用的在线模型计算，在账号服务里（`deploy/account-worker.js` 的 `v1()` 和 `/keys`），说明页是 `/api/#compute`（`public/api/compute.js`）。链路和网站的在线模型相同，只是身份换成 key：程序 → `api.molastria.com/v1/*`（查 key、不查来源网站）→ 同一个 `uma()` → Cloudflare Tunnel → 站长电脑。
+
+- **key 在哪：** D1 的 `api_keys` 表，只有 SHA-256 和开头 10 个字符。谁也查不出原文，用户丢了只能撤销重发。
+- **看有没有人用：** `npx wrangler d1 execute molastria --remote --command "SELECT COUNT(*) AS n, COUNT(last_used) AS used, MAX(last_used) AS latest FROM api_keys"`（不要把带邮箱的查询结果贴到仓库或聊天里）。
+- **撤掉某个 key：** 用户自己在账号页撤销。站长要强制撤销时让用户自己运行：`npx wrangler d1 execute molastria --remote --command "DELETE FROM api_keys WHERE prefix = 'mola_xxxxx'"`。
+- **接口的总量：** `wrangler.toml` 的 `API_DAILY_TOTAL`（所有 key 合起来每天的次数，默认 2000）。嫌多嫌少改这个数再部署。
+- **电脑被接口占满时：** 把 `wrangler.toml` 的 `API_COMPUTE` 改成 `"0"` 再 `npx wrangler deploy`，`/v1` 全部返回 503，网站自己的在线模型照常。恢复时改回 `"1"`。
+- **加一个在线模型或一种计算：** 账号服务的 `UMA_MODELS` 里 tier 是 `fair` 的模型自动出现在 `/v1/models`，`asl` 的永远不会。说明页 `compute.js` 的 `JOBS` 和模型列表要跟着改，`tools/account-test.ts` 会对照两边（对不上就失败）。
+- **改接口：** 和开放数据接口一样，v1 只加字段。已经公开的：四个路径、`usage` 和 `cost` 字段、`X-RateLimit-*` 响应头、错误的 `code` 值。
+- **上线后检查：** `curl -s https://api.molastria.com/v1` 应返回说明；`node tools/e2e/live.mjs` 里有一条检查任何来源都能预检、没有 key 是 401。带真实 key 的提交要站长自己试（`/api/#compute` 的“带上 key 试一次”）。
+
 ## 教学视频（/videos/）
 
 全部条目在 `public/videos/videos-data.js`，一行一条：`p`（`yt` / `bili`）、`k`（`video`、`playlist`、`multipart`）、`id`、标题和频道（照平台原文）、`topic`、`lang`（讲课语言）、`subs`（另加的字幕）、`level`、`official`、`reupload`、`sw`、`note`（中英两版，MolAstria 写的）。文件开头有字段说明。

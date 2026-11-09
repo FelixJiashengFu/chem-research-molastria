@@ -133,6 +133,8 @@ test('OpenAPI 与 llms.txt：每个数据集都有路径和结构，链接指向
   assert.match(llms, /^# MolAstria\n\n> /);
   for (const e of index.endpoints) assert.ok(llms.includes(`(${e.url}): ${e.count} entries`), e.id);
   assert.ok(llms.includes('CC BY 4.0'));
+  // The compute API: where it is, that it needs a key a person makes, and what the compute is.
+  assert.match(llms, /## Compute API[\s\S]*https:\/\/api\.molastria\.com\/v1[\s\S]*Authorization: Bearer mola_[\s\S]*RTX 2080[^\n]*best effort[^\n]*may be offline[^\n]*MACE models[^\n]*not offered/);
 });
 
 // ── the JS client (public/api/v1/molastria.mjs), reading the files as they would be served ──

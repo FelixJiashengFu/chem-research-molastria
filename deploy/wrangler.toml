@@ -34,6 +34,8 @@ UMA_DAILY = "40"                                   # 匿名访客每天的在线
 UMA_DAILY_ACCOUNT = "100"                          # 登录的免费账号每天的次数
 UMA_DAILY_PRO = "200"                              # Pro 支持者每天的次数（UMA、OMol25 和 ANI-2x 共用）
 ASL_DAILY = "40"                                   # MACE 系列（学术许可）每位访客每天的次数，账号和 Pro 都不加
+API_DAILY_TOTAL = "2000"                           # 所有 API key 加起来每天最多用多少次，免得脚本把网站访客挤出队列；0 表示不设上限
+API_COMPUTE = "1"                                  # 给程序用的计算接口 /v1（用账号页生成的 API key）；改成 "0" 再部署就关掉，网站自己的在线模型不受影响
 
 # 密钥不要写在这里，用 npx wrangler secret put <名字> 逐个填入：
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions

@@ -85,7 +85,7 @@
     return sets.map((name) => `curl -s ${PUBLIC}${name}.json | jq -r${args} '.items[]${test} | .name // .title'`).join('\n');
   }
   function drawCode() {
-    for (const t of document.querySelectorAll('.api-tabs [role=tab]')) t.setAttribute('aria-selected', String(t.dataset.tab === state.tab));
+    for (const t of document.querySelectorAll('#api-tabs [role=tab]')) t.setAttribute('aria-selected', String(t.dataset.tab === state.tab));
     $('api-code').firstElementChild.textContent = code(state.tab);
   }
 
@@ -139,7 +139,7 @@
     state.q = $('api-q').value = b.textContent.trim(); // the chip as shown, so English pages try English words
     writeHash(); run();
   });
-  document.querySelector('.api-tabs').addEventListener('click', (e) => {
+  $('api-tabs').addEventListener('click', (e) => {
     const t = e.target.closest('[role=tab]');
     if (t) { state.tab = t.dataset.tab; drawCode(); }
   });

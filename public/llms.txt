@@ -16,6 +16,13 @@ Programs and AI agents should read the open data API instead of scraping pages. 
 - [JavaScript client](https://molastria.com/api/v1/molastria.mjs): zero-dependency ES module with a bilingual search across the datasets
 - [Documentation](https://molastria.com/api/): conventions, licence, live explorer, embeddable widget
 
+## Compute API (needs a free API key)
+
+- Base: https://api.molastria.com/v1. Submit machine-learned-potential calculations (UMA, eSEN, AllScAIP, ANI-2x: single points, optimisations, frequencies, conformers, scans, molecular dynamics, reaction and ionisation energies) with `POST /jobs`, then poll `GET /jobs/{id}` until `status` is `done` or `error`. `GET /models` lists models, jobs and what each costs; `GET /me` shows what is left today.
+- Auth: `Authorization: Bearer mola_…`. A person makes the key on https://molastria.com/pro/account.html after signing in with an email; a program cannot sign up by itself. A free account has 100 uses a day, Pro supporters 200.
+- The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not rely on it for anything with a deadline. The MACE models (Academic Software License) are not offered through the API.
+- [Documentation](https://molastria.com/api/#compute): fields, costs, rules, error codes, examples in Python, JavaScript and curl
+
 ## Pages for people
 
 - [Resource catalogue: databases, software, datasets and courses](https://molastria.com/atlas/)
@@ -23,7 +30,7 @@ Programs and AI agents should read the open data API instead of scraping pages. 
 - [Science foundation models: model cards and official prices](https://molastria.com/scimodels/)
 - [Teaching videos: courses and tutorials on YouTube and Bilibili](https://molastria.com/videos/)
 - [Explainer handbook](https://molastria.com/manual/): 20 chapters on how to choose and use these resources
-- [Online models](https://molastria.com/models/): UMA, MACE and ANI-2x calculations in the browser (no programmatic access yet)
+- [Online models](https://molastria.com/models/): UMA, MACE and ANI-2x calculations in the browser
 
 ## Optional
 

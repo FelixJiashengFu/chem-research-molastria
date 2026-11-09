@@ -13,6 +13,7 @@
      GET  /me                           订阅、额度、课题组成员
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
+     GET  /keys                         自己的 API key（只有前缀，没有原文）；POST {name} 生成一个，原文只在这次返回；DELETE {id} 撤销
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
      GET  /digest/preview               每周精选的完整一期（概览、全部论文和点评），公开
@@ -21,6 +22,12 @@
      POST /digest/send-me               把最新一期发到自己的邮箱，需登录，每天 3 次
      POST /admin/digest/build           站长：重新生成本周精选
      GET、POST /digest/unsubscribe?t=   邮件里的退订链接，不需要登录
+   给程序用的计算接口（/v1，用 Authorization: Bearer mola_… 的 API key，不查来源网站；报错同时带英文和中文）：
+     GET  /v1                           说明和文档地址，不用 key
+     GET  /v1/me                        这个 key 的档位和今天的次数
+     GET  /v1/models                    可用的模型、每种计算花几次、GPU 在不在线
+     POST /v1/jobs                      提交一个计算（和网站的 /uma/jobs 同一个队列、同一份每天次数；MACE 系列是学术许可，不提供）
+     GET  /v1/jobs/<id>                 查询进度和结果
    定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js）。
 
    赠送的 Pro：grants 表里 source = admin 的是站长本人（永久 Pro，可以发 VIP 卡），这一行用 wrangler d1 execute
@@ -54,7 +61,9 @@ const normEmail = (v) => {
   const e = String(v || '').trim().toLowerCase();
   return e.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? e : '';
 };
-const fail = (status, message) => Object.assign(new Error(message), { status });
+// `en` is the same message in English and `code` a word a program can branch on: the compute API (/v1) answers with all three;
+// the site shows the Chinese and translates it itself.
+const fail = (status, message, en, code) => Object.assign(new Error(message), { status, en, code });
 
 function json(data, headers, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
@@ -336,28 +345,28 @@ const UMA_PARAMS = {
 // No default for these; spins and pa's mode have one on the computer (the two lowest multiplicities, protonate).
 const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'] };
 function umaParams(job, raw) {
-  if (raw !== undefined && raw !== null && (typeof raw !== 'object' || Array.isArray(raw))) throw fail(400, '参数（params）必须是一个对象');
+  if (raw !== undefined && raw !== null && (typeof raw !== 'object' || Array.isArray(raw))) throw fail(400, '参数（params）必须是一个对象', 'params must be an object');
   const out = {};
   for (const [k, check] of Object.entries(UMA_PARAMS[job])) {
     if (raw?.[k] === undefined) continue;
     const v = check(raw[k]);
-    if (v === undefined) throw fail(400, `参数 ${k} 的值不在允许的范围内`);
+    if (v === undefined) throw fail(400, `参数 ${k} 的值不在允许的范围内`, `The value of parameter ${k} is outside the allowed range`);
     out[k] = v;
   }
   const missing = (UMA_REQUIRED[job] || []).filter((k) => !(k in out));
-  if (missing.length) throw fail(400, `这项计算需要参数 ${missing.join('、')}`);
-  if (job === 'scan' && (out.end ?? 180) <= (out.start ?? -180)) throw fail(400, '扫描的终止角要大于起始角');
+  if (missing.length) throw fail(400, `这项计算需要参数 ${missing.join('、')}`, `This calculation needs the parameter ${missing.join(', ')}`);
+  if (job === 'scan' && (out.end ?? 180) <= (out.start ?? -180)) throw fail(400, '扫描的终止角要大于起始角', "The scan's end angle must be greater than its start angle");
   return out;
 }
 /** A standard XYZ text: atom count (1-120), a comment line, then one "Symbol x y z" line per atom. */
 function umaXyz(v) {
-  if (typeof v !== 'string' || v.length > 12000 || /[^\x20-\x7e\t\r\n]/.test(v)) throw fail(400, 'XYZ 结构不合法：最多 12000 个字符，只能包含普通 ASCII 字符');
+  if (typeof v !== 'string' || v.length > 12000 || /[^\x20-\x7e\t\r\n]/.test(v)) throw fail(400, 'XYZ 结构不合法：最多 12000 个字符，只能包含普通 ASCII 字符', 'Invalid XYZ structure: at most 12000 characters, plain ASCII only');
   const lines = v.replace(/\r/g, '').replace(/^\s*\n/, '').split('\n');
   const n = Number(lines[0].trim());
-  if (!Number.isInteger(n) || n < 1 || n > 120) throw fail(400, 'XYZ 结构的第一行要是原子数，在线计算最多 120 个原子');
+  if (!Number.isInteger(n) || n < 1 || n > 120) throw fail(400, 'XYZ 结构的第一行要是原子数，在线计算最多 120 个原子', 'The first line of the XYZ structure must be the atom count; online calculations take at most 120 atoms');
   const atoms = lines.slice(2, 2 + n);
   const okLine = (l) => { const f = l.trim().split(/\s+/); return f.length >= 4 && /^[A-Z][a-z]?$/.test(f[0]) && f.slice(1, 4).every((x) => x !== '' && Number.isFinite(Number(x))); };
-  if (atoms.length !== n || !atoms.every(okLine)) throw fail(400, 'XYZ 结构不合法：原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致');
+  if (atoms.length !== n || !atoms.every(okLine)) throw fail(400, 'XYZ 结构不合法：原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致', 'Invalid XYZ structure: each atom line must read "symbol x y z", and the number of lines must match the atom count on the first line');
   return lines.slice(0, 2 + n).join('\n') + '\n';
 }
 
@@ -366,7 +375,7 @@ async function visitorId(env, who) { // the computer sees a stable hash of the v
   return [...bytes.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 async function umaOrigin(env, path, init = {}) {
-  if (!env.UMA_ORIGIN || !env.UMA_SERVER_SECRET) throw fail(503, 'UMA 计算服务还没有开通');
+  if (!env.UMA_ORIGIN || !env.UMA_SERVER_SECRET) throw fail(503, 'UMA 计算服务还没有开通', 'The calculation service is not set up yet');
   const res = await fetch(env.UMA_ORIGIN.replace(/\/+$/, '') + path, {
     ...init,
     headers: {
@@ -379,7 +388,8 @@ async function umaOrigin(env, path, init = {}) {
   const data = await res.json().catch(() => ({}));
   return { status: res.status, data };
 }
-async function uma(request, env, cors, path, ip) {
+/** `api` is set for a program calling with an API key (/v1): { email, pro }. */
+async function uma(request, env, cors, path, ip, api = null) {
   const key = `${request.method} ${path}`;
   if (key === 'GET /uma/health') {
     try {
@@ -399,56 +409,58 @@ async function uma(request, env, cors, path, ip) {
     }
   }
   const country = request.cf?.country || '';
-  if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务');
+  if (UMA_BLOCKED.has(country)) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务', 'Under the export control rules the model licences require us to follow, the online calculation service is not available in this region');
   if (key === 'POST /uma/jobs') {
     const raw = await request.text();
-    if (raw.length > 16000) throw fail(413, '请求内容过大');
+    if (raw.length > 16000) throw fail(413, '请求内容过大', 'Request too large');
     let body;
-    try { body = JSON.parse(raw || '{}'); } catch { throw fail(400, '请求不是合法的 JSON'); }
-    if (!body || typeof body !== 'object' || Array.isArray(body)) throw fail(400, '请求不是合法的 JSON');
+    try { body = JSON.parse(raw || '{}'); } catch { throw fail(400, '请求不是合法的 JSON', 'The request is not valid JSON'); }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw fail(400, '请求不是合法的 JSON', 'The request is not valid JSON');
     const job = String(body.job || 'ipea');
     const model = String(body.model || 'uma-s-1p2p1');
-    if (!Object.hasOwn(UMA_MODELS, model)) throw fail(400, '没有这个在线模型');
-    if (!Object.hasOwn(UMA_COST, job)) throw fail(400, '没有这种计算');
-    if (!umaJobsOf(model).includes(job)) throw fail(400, '这个模型不做这种计算');
+    if (!Object.hasOwn(UMA_MODELS, model)) throw fail(400, '没有这个在线模型', 'No such online model');
+    if (!Object.hasOwn(UMA_COST, job)) throw fail(400, '没有这种计算', 'No such calculation');
+    if (!umaJobsOf(model).includes(job)) throw fail(400, '这个模型不做这种计算', 'This model does not do that calculation');
     const tier = UMA_MODELS[model];
+    // A tick in a browser is how a visitor confirms academic use; a program cannot give that, so the API leaves these models out.
+    if (tier === 'asl' && api) throw fail(403, 'MACE 模型采用学术软件许可（ASL），不通过 API 提供；可以在网站的在线模型页上使用', V1_ASL, 'licence');
     if (tier === 'asl' && body.academic !== true) throw fail(400, 'MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”');
     // Structure: exactly one of SMILES and XYZ; a reaction brings its species in params.reaction instead.
     const given = (v) => v !== undefined && v !== null && v !== '';
     const out = {};
     if (job === 'rxn') {
-      if (given(body.smiles) || given(body.xyz)) throw fail(400, '反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ');
+      if (given(body.smiles) || given(body.xyz)) throw fail(400, '反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ', "A reaction's species go in the reaction SMILES; do not also give SMILES or XYZ");
     } else if (given(body.smiles) === given(body.xyz)) {
-      throw fail(400, given(body.smiles) ? 'SMILES 和 XYZ 只能给一个' : '请给出分子的 SMILES 或 XYZ 结构');
+      throw fail(400, given(body.smiles) ? 'SMILES 和 XYZ 只能给一个' : '请给出分子的 SMILES 或 XYZ 结构', given(body.smiles) ? 'Give either SMILES or XYZ, not both' : "Give the molecule's SMILES or XYZ structure");
     } else if (given(body.smiles)) {
       const smiles = String(body.smiles).trim();
-      if (!SMILES_RE.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长');
+      if (!SMILES_RE.test(smiles)) throw fail(400, 'SMILES 含有不支持的字符或太长', 'The SMILES contains unsupported characters or is too long');
       out.smiles = smiles;
     } else {
-      if (UMA_SMILES_ONLY.has(job) || (job === 'polar' && body.params?.average === true)) throw fail(400, '这项计算要从 SMILES 生成结构，不接受 XYZ');
+      if (UMA_SMILES_ONLY.has(job) || (job === 'polar' && body.params?.average === true)) throw fail(400, '这项计算要从 SMILES 生成结构，不接受 XYZ', 'This calculation builds its structures from SMILES and does not take XYZ');
       out.xyz = umaXyz(body.xyz);
     }
     Object.assign(out, { job, model }); // the same field order as API v2, so old requests reach the computer unchanged
     for (const [k, lo, hi] of [['charge', -2, 2], ['spin', 1, 4]]) {
       if (body[k] === undefined || body[k] === null || body[k] === '') continue;
       const v = Number(body[k]);
-      if (!Number.isInteger(v) || v < lo || v > hi) throw fail(400, '电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间');
+      if (!Number.isInteger(v) || v < lo || v > hi) throw fail(400, '电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间', 'Charge must be between -2 and 2, spin multiplicity between 1 and 4');
       out[k] = v;
     }
-    if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1');
+    if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1', 'This model takes neutral closed-shell molecules only: charge 0 and multiplicity 1');
     const params = umaParams(job, body.params);
     if (Object.keys(params).length) out.params = params;
     // Conformer-averaged polarisability and the thermochemistry options need frequency runs: 5 uses each.
     const cost = (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
-    const email = await signedIn(env, request).catch(() => null);
-    const pro = email ? (await access(env, email)).pro : false;
-    let counter, limit, used, more = '';
+    const email = api ? api.email : await signedIn(env, request).catch(() => null);
+    const pro = api ? api.pro : email ? (await access(env, email)).pro : false;
+    let counter, limit, used, more = '', moreEn = '';
     if (tier === 'asl') { // the same for everyone: an account or a paid plan must not buy more of an academic-only model
       [counter, limit, used] = [`asl:${ip}`, Number(env.ASL_DAILY || 40), '今天的 MACE 计算次数已用完'];
     } else if (pro) { // the three allowances: Pro supporters, free accounts, anonymous visitors
       [counter, limit, used] = [`uma:${email}`, Number(env.UMA_DAILY_PRO || 200), '今天的在线模型计算次数已用完'];
     } else if (email) {
-      [counter, limit, used, more] = [`uma:${email}`, Number(env.UMA_DAILY_ACCOUNT || 100), '今天的在线模型计算次数已用完', '，Pro 支持者每天更多'];
+      [counter, limit, used, more, moreEn] = [`uma:${email}`, Number(env.UMA_DAILY_ACCOUNT || 100), '今天的在线模型计算次数已用完', '，Pro 支持者每天更多', '; Pro supporters get more'];
     } else {
       [counter, limit, used, more] = [`uma:${ip}`, Number(env.UMA_DAILY || 40), '今天的在线模型计算次数已用完', '，登录免费账号每天更多'];
     }
@@ -457,37 +469,126 @@ async function uma(request, env, cors, path, ip) {
     if (n > limit) {
       await refund(env, counter, cost);
       const left = Math.max(0, limit - (n - cost));
-      if (!left) throw fail(429, `${used}（每天 ${limit} 次${more}），明天再来`);
-      throw fail(429, `今天还剩 ${left} 次，这项计算要用 ${cost} 次（每天 ${limit} 次${more}）；换一项花费少的计算，或明天再来`);
+      if (!left) throw fail(429, `${used}（每天 ${limit} 次${more}），明天再来`, `Today's online model uses are used up (${limit} a day${moreEn}); come back tomorrow`, 'quota_exceeded');
+      throw fail(429, `今天还剩 ${left} 次，这项计算要用 ${cost} 次（每天 ${limit} 次${more}）；换一项花费少的计算，或明天再来`, `${left} uses left today and this calculation needs ${cost} (${limit} a day${moreEn}); choose a cheaper calculation or come back tomorrow`, 'quota_exceeded');
+    }
+    // Programs together get a share of the day, so scripts cannot crowd the site's own visitors off one home GPU.
+    const total = api ? Math.max(0, Number(env.API_DAILY_TOTAL ?? 2000) || 0) : 0;
+    const giveBack = async () => { await refund(env, counter, cost); if (total) await refund(env, 'v1:all', cost); };
+    if (total && (await bump(env, 'v1:all', 86400, cost)) > total) {
+      await giveBack();
+      throw fail(429, '今天通过 API 提交的计算已经到了总量上限，明天再来，或者到网站的在线模型页上算', 'The API as a whole has reached its total for today; come back tomorrow, or use the online models page of the site', 'api_busy');
     }
     out.who = await visitorId(env, email || ip); // one job at a time per visitor, checked on the computer
     let status, data;
     try {
       ({ status, data } = await umaOrigin(env, '/jobs', { method: 'POST', body: JSON.stringify(out) }));
     } catch {
-      await refund(env, counter, cost);
-      throw fail(503, '站长的 GPU 现在离线，请稍后再试');
+      await giveBack();
+      throw fail(503, '站长的 GPU 现在离线，请稍后再试', "The site owner's GPU is offline right now, try again later", 'offline');
     }
     if (status >= 400) { // refused on the computer (busy visitor, full queue, unknown element): not counted
-      await refund(env, counter, cost);
-      if (status === 429) throw fail(429, '你已经有一个任务在排队或计算，等它完成再提交下一个');
-      throw fail(status === 503 ? 503 : 400, data.error ? `计算服务：${data.error}` : '计算服务暂时不可用');
+      await giveBack();
+      if (status === 429) throw fail(429, '你已经有一个任务在排队或计算，等它完成再提交下一个', 'You already have a job queued or running; wait for it to finish before submitting the next one', 'job_in_progress');
+      throw fail(status === 503 ? 503 : 400, data.error ? `计算服务：${data.error}` : '计算服务暂时不可用', data.error ? `Calculation service: ${data.error}` : 'The calculation service is not available right now');
+    }
+    if (api) { // a program cannot see the site's counter, so the answer says what the job cost and what is left
+      const usage = { used: Math.min(n, limit), limit, remaining: Math.max(0, limit - n), reset: (await windowOf(env, counter)).reset };
+      return json({ ...data, cost, usage }, { ...cors, ...rateHeaders(usage) }, status);
     }
     return json(data, cors, status);
   }
   const m = /^\/uma\/jobs\/([0-9a-f]{16})$/.exec(path);
   if (request.method === 'GET' && m) {
-    if (!(await allow(env, `uma-poll:${ip}`, 1200, 3600))) throw fail(429, '查询太频繁，请稍后再试');
+    if (!(await allow(env, api ? `v1-poll:${api.email}` : `uma-poll:${ip}`, 1200, 3600))) throw fail(429, '查询太频繁，请稍后再试', 'Too many requests, try again later');
     try {
       const { status, data } = await umaOrigin(env, `/jobs/${m[1]}`);
-      if (status === 404) throw fail(404, '没有找到这个任务（完成后保留一小时）');
+      if (status === 404) throw fail(404, '没有找到这个任务（完成后保留一小时）', 'No such job (finished jobs are kept for an hour)');
       return json(data, { ...cors, 'Cache-Control': 'no-store' }, status);
     } catch (e) {
       if (e.status) throw e;
-      throw fail(503, '站长的 GPU 现在离线，请稍后再试');
+      throw fail(503, '站长的 GPU 现在离线，请稍后再试', "The site owner's GPU is offline right now, try again later", 'offline');
     }
   }
-  throw fail(404, '没有这个接口');
+  throw fail(404, '没有这个接口', 'No such endpoint');
+}
+
+// ── API keys and the compute API for programs (/v1) ─────────────────────
+// A free account makes its own keys on the account page. A key is shown once, when it is made: the table keeps its SHA-256
+// and its first characters (so the page can tell keys apart). Revoking a key deletes its row.
+// /v1 is the same queue as /uma, reached with a key instead of a browser session: any origin may call it, the uses are the
+// account's own daily allowance (shared with what it uses on the site), and only models whose licence allows it are offered.
+const KEY_PREFIX = 'mola_', MAX_KEYS = 3;
+const KEY_RE = /^mola_[A-Za-z0-9_-]{43}$/;
+const V1_DOCS = 'https://molastria.com/api/#compute';
+const V1_ASL = 'The MACE models are under the Academic Software License (ASL) and are not offered through the API; use them on the online models page of the site';
+const V1_NOTE = {
+  zh: '算力是站长电脑上的 RTX 2080，尽力而为，可能离线；不要用在有时限的任务上。',
+  en: "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it."
+};
+const V1_CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Expose-Headers': 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset',
+  'Access-Control-Max-Age': '86400'
+};
+const V1_CODES = { 400: 'invalid_request', 401: 'unauthorized', 403: 'forbidden', 404: 'not_found', 413: 'too_large', 429: 'too_many_requests', 451: 'region', 503: 'unavailable' };
+const rateHeaders = (u) => ({ 'X-RateLimit-Limit': String(u.limit), 'X-RateLimit-Remaining': String(u.remaining), 'X-RateLimit-Reset': String(u.reset) });
+const v1Models = Object.keys(UMA_MODELS).filter((id) => UMA_MODELS[id] === 'fair');
+const v1Costs = Object.fromEntries(Object.entries(UMA_COST).filter(([job]) => v1Models.some((id) => umaJobsOf(id).includes(job))));
+
+async function keyRows(env, email) {
+  return (await env.DB.prepare('SELECT substr(hash, 1, 16) AS id, prefix, name, created, last_used FROM api_keys WHERE email = ?1 ORDER BY created, rowid').bind(email).all()).results;
+}
+/** The account behind this request's API key. Only keys are taken here, never the sign-in token of a browser. */
+async function keyOwner(env, request) {
+  const key = bearer(request);
+  if (!key) throw fail(401, '请在请求头里带上 API key：Authorization: Bearer mola_…', 'Send your API key in the request header: Authorization: Bearer mola_…');
+  const hash = KEY_RE.test(key) ? await sha256(key) : '';
+  const row = hash && await env.DB.prepare('SELECT email, prefix, name, created, last_used FROM api_keys WHERE hash = ?1').bind(hash).first();
+  if (!row) throw fail(401, '这个 API key 无效或已撤销，在账号页可以重新生成', 'This API key is not valid or has been revoked; make a new one on the account page');
+  const t = now();
+  if (!row.last_used || row.last_used < t - 3600) await env.DB.prepare('UPDATE api_keys SET last_used = ?2 WHERE hash = ?1').bind(hash, t).run().catch(() => {});
+  return row;
+}
+async function v1(request, env, path, ip) {
+  const cors = V1_CORS;
+  const key = `${request.method} ${path}`;
+  if (key === 'GET /v1') { // what this is and where the documentation lives; needs no key
+    return json({
+      service: 'molastria-compute', version: 1, docs: V1_DOCS, auth: 'Authorization: Bearer mola_…', note: V1_NOTE,
+      endpoints: ['GET /v1/me', 'GET /v1/models', 'POST /v1/jobs', 'GET /v1/jobs/{id}']
+    }, cors);
+  }
+  if (env.API_COMPUTE === '0') throw fail(503, '计算接口暂时关闭', 'The compute API is switched off for now');
+  if (UMA_BLOCKED.has(request.cf?.country || '')) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务', 'Under the export control rules the model licences require us to follow, the online calculation service is not available in this region');
+  const owner = await keyOwner(env, request);
+  const pro = (await access(env, owner.email)).pro;
+  if (key === 'GET /v1/me') {
+    const limit = Number(pro ? env.UMA_DAILY_PRO || 200 : env.UMA_DAILY_ACCOUNT || 100);
+    const w = await windowOf(env, `uma:${owner.email}`);
+    const usage = { used: Math.min(w.n, limit), limit, remaining: Math.max(0, limit - w.n), reset: w.reset };
+    return json({ tier: pro ? 'pro' : 'free', usage, key: { prefix: owner.prefix, name: owner.name, created: owner.created } }, { ...cors, ...rateHeaders(usage) });
+  }
+  if (key === 'GET /v1/models') {
+    if (!(await allow(env, `v1-poll:${owner.email}`, 1200, 3600))) throw fail(429, '查询太频繁，请稍后再试', 'Too many requests, try again later');
+    let health = null;
+    try {
+      const { status, data } = await umaOrigin(env, '/health');
+      if (status === 200 && data && typeof data === 'object') health = data;
+    } catch { /* offline, or not set up: the list below still says what exists */ }
+    const live = health?.models && typeof health.models === 'object' ? health.models : {};
+    const models = v1Models.map((id) => {
+      const v = live[id] && typeof live[id] === 'object' ? live[id] : {};
+      return { id, ready: !!v.ready, queue: Number(v.queue) || 0, charged: UMA_CHARGED.has(id), jobs: umaJobsOf(id).filter((j) => !Array.isArray(v.jobs) || v.jobs.includes(j)) };
+    });
+    return json({ online: !!health?.ready, gpu: String(health?.gpu || ''), models, costs: v1Costs, cost_with_thermo: 5, note: V1_NOTE }, cors);
+  }
+  if (key === 'POST /v1/jobs' || (request.method === 'GET' && /^\/v1\/jobs\/[0-9a-f]{16}$/.test(path))) {
+    return uma(request, env, cors, path.replace('/v1/', '/uma/'), ip, { email: owner.email, pro });
+  }
+  throw fail(404, '没有这个接口', 'No such endpoint');
 }
 
 // ── routes ──────────────────────────────────────────────────────────────
@@ -589,6 +690,29 @@ async function route(request, env, cors) {
       }
     }
     return json(await view(env, await access(env, me)), cors);
+  }
+
+  if (path === '/keys') { // API keys of the signed-in account, free or paid
+    const me = await signedIn(env, request);
+    const listed = async (extra = {}) => json({ ...extra, keys: await keyRows(env, me), max: MAX_KEYS }, cors);
+    if (request.method === 'GET') return listed();
+    if (request.method === 'POST') {
+      if (!(await allow(env, `keys:${me}`, 10, 3600))) throw fail(429, '生成得太频繁，请一小时后再试');
+      const name = String(body.name || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 40);
+      const made = KEY_PREFIX + randomToken();
+      // One statement checks the limit and inserts, so two requests at once cannot both get the last place.
+      const row = await env.DB.prepare(
+        'INSERT INTO api_keys (hash, email, prefix, name, created) SELECT ?1, ?2, ?3, ?4, ?5 WHERE (SELECT COUNT(*) FROM api_keys WHERE email = ?2) < ?6 RETURNING prefix'
+      ).bind(await sha256(made), me, made.slice(0, 10), name, now(), MAX_KEYS).first();
+      if (!row) throw fail(409, `每个账号最多 ${MAX_KEYS} 个 API key，先撤销一个不用的`);
+      return listed({ key: made });
+    }
+    if (request.method === 'DELETE') {
+      const id = String(body.id || '');
+      const row = /^[0-9a-f]{16}$/.test(id) && await env.DB.prepare('DELETE FROM api_keys WHERE email = ?1 AND substr(hash, 1, 16) = ?2 RETURNING prefix').bind(me, id).first();
+      if (!row) throw fail(404, '没有这个 API key');
+      return listed();
+    }
   }
 
   if (key === 'POST /cards/redeem') {
@@ -732,6 +856,21 @@ export default {
   async fetch(request, env) {
     // Linked from emails and posted to by mail apps, so it comes before the check of which sites may call this service.
     if (new URL(request.url).pathname.replace(/\/+$/, '') === '/digest/unsubscribe' && ['GET', 'POST'].includes(request.method)) return unsubscribe(request, env);
+    // The compute API for programs: the key is the permission, so any origin may call it (and no cookie is involved).
+    const path = new URL(request.url).pathname.replace(/\/+$/, '');
+    if (path === '/v1' || path.startsWith('/v1/')) {
+      if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: V1_CORS });
+      try {
+        return await v1(request, env, path, request.headers.get('CF-Connecting-IP') || 'local');
+      } catch (e) {
+        if (!e.status) console.error(e);
+        const status = e.status || 500;
+        const error = e.status
+          ? { code: e.code || V1_CODES[status] || 'error', message: e.en || e.message, message_zh: e.message }
+          : { code: 'server_error', message: 'The service failed, try again later', message_zh: '账号服务出错了，请稍后再试' };
+        return json({ error }, V1_CORS, status);
+      }
+    }
     const origin = request.headers.get('Origin') || '';
     const allowed = list(env.ALLOWED_ORIGINS || DEFAULT_ORIGINS);
     const originOk = !origin || allowed.includes('*') || allowed.includes(origin);

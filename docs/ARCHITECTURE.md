@@ -22,7 +22,7 @@ flowchart TB
 ```
 
 - **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。关系网的实体与连线在打开页面时由目录快照现算（`hub/net-engine.js`，约 0.1–0.3 秒）。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。
-- **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选；还把 `/uma/*` 经 Cloudflare Tunnel 转给站长电脑上的在线模型服务（15 个模型：UMA、OMol25 的 eSEN / AllScAIP、MACE、ANI-2x；决定谁能用哪个、限次、地区限制、共享暗号）。
+- **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选；还把 `/uma/*` 经 Cloudflare Tunnel 转给站长电脑上的在线模型服务（15 个模型：UMA、OMol25 的 eSEN / AllScAIP、MACE、ANI-2x；决定谁能用哪个、限次、地区限制、共享暗号）。同一个队列也开给程序：`/v1/*` 用账号页生成的 API key（D1 的 `api_keys` 表只存哈希），不查来源网站，次数算在 key 的主人头上，MACE 系列不提供。
 - **桌面版**（Tauri）内置同一套网页，多了检查更新和“在本机运行 UMA”：`desktop/src-tauri/src/uma.rs` 找到访客的 Python，用编译进应用的 `uma/runner.py` 计算；页面只传经过校验的参数（SMILES、任务、模型等），日志靠轮询 `uma_poll` 取回。
 - 网站不接触卡号；AI 对话内容不保存。
 
@@ -41,6 +41,13 @@ v1/molastria.mjs（JS 库：取数据、搜索）  →  api/embed.js（别人网
 ```
 
 没有 key、没有计数、没有服务器端的搜索；要按次数分档或开放计算时再接账号服务（`docs/DECISIONS.md` 2026-11-09）。
+
+计算不在这里：给程序用的计算接口在账号服务里（`api.molastria.com/v1`，要 API key），说明写在同一个 `/api/` 页的“计算接口”一段（`compute.js`）。
+
+```text
+程序（带 Authorization: Bearer mola_…）  →  账号服务 /v1/*：查 key（api_keys，只存哈希）、挡住 MACE、按账号计次
+        →  和网站的 /uma/* 同一段代码  →  Cloudflare Tunnel  →  站长电脑上的 tools/uma-server（RTX 2080，可能离线）
+```
 
 ## 付款和登录
 

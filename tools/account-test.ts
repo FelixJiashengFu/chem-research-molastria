@@ -779,5 +779,169 @@ await test("online models: the code's daily allowances match wrangler.toml (40 /
   eq([me.data.role, me.data.usage.limit], ["free", Number(want("FREE_DAILY_ASKS"))], "free hosted AI default");
 });
 
+// ── API keys and the compute API for programs (/v1) ─────────────────────
+let freeKey = "", proKey = "";
+await test("API keys: an account makes, lists and revokes its own; only the hash is stored", async () => {
+  eq((await call("GET", "/keys")).status, 401, "needs a signed-in account");
+  eq((await call("GET", "/keys", undefined, memberToken)).data, { keys: [], max: 3 });
+  const made = await call("POST", "/keys", { name: "  my\u0000 laptop  " }, memberToken);
+  eq(made.status, 200);
+  freeKey = made.data.key;
+  if (!/^mola_[A-Za-z0-9_-]{43}$/.test(freeKey)) throw new Error(`unexpected key format: ${freeKey}`);
+  eq(made.data.keys.map((k: any) => [k.prefix, k.name, k.last_used]), [[freeKey.slice(0, 10), "my laptop", null]], "listed by prefix and name");
+  // The table: no key text anywhere, the SHA-256 instead.
+  const rows = sqlite.prepare("SELECT * FROM api_keys").all() as any[];
+  if (JSON.stringify(rows).includes(freeKey)) throw new Error("the key itself was stored");
+  const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(freeKey)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  eq([rows.length, rows[0].hash, rows[0].email], [1, hash, "a@lab.edu"]);
+  const listed = await call("GET", "/keys", undefined, memberToken);
+  if (JSON.stringify(listed.data).includes(freeKey) || JSON.stringify(listed.data).includes(hash)) throw new Error("a listing must not show the key or its whole hash");
+  eq(listed.data.keys[0].id, hash.slice(0, 16));
+  // Three keys an account, and only its own can be revoked.
+  eq((await call("POST", "/keys", {}, memberToken)).status, 200);
+  const third = await call("POST", "/keys", { name: "x".repeat(99) }, memberToken);
+  eq([third.status, third.data.keys.length, third.data.keys[2].name.length], [200, 3, 40], "names are cut to 40 characters");
+  const full = await call("POST", "/keys", {}, memberToken);
+  eq([full.status, full.data.error?.message], [409, "每个账号最多 3 个 API key，先撤销一个不用的"]);
+  proKey = (await call("POST", "/keys", { name: "pro" }, adminToken)).data.key;
+  eq((await call("DELETE", "/keys", { id: listed.data.keys[0].id }, adminToken)).status, 404, "another account's key cannot be revoked");
+  eq((await call("DELETE", "/keys", { id: "'; DROP TABLE api_keys; --" }, memberToken)).status, 404);
+  const gone = await call("DELETE", "/keys", { id: third.data.keys[2].id }, memberToken);
+  eq([gone.status, gone.data.keys.length], [200, 2]);
+  eq((await call("GET", "/v1/me", undefined, third.data.key, "")).status, 401, "a revoked key stops working at once");
+  // A key is for /v1 only: it does not sign in to the account.
+  eq((await call("GET", "/me", undefined, freeKey)).status, 401);
+  eq((await call("GET", "/keys", undefined, freeKey)).status, 401);
+});
+
+await test("compute API: any origin with a key; never a sign-in token; errors in English and Chinese", async () => {
+  resetUses();
+  Object.assign(env, { UMA_ORIGIN: "https://uma.test/", UMA_SERVER_SECRET: "uma-secret-for-tests-0123456789abcdef" });
+  const elsewhere = "https://someone-elses-lab.example";
+  eq((await call("GET", "/me", undefined, memberToken, elsewhere)).status, 403, "the account routes still refuse other sites");
+  const pre = await worker.fetch(new Request("https://api.test/v1/jobs", { method: "OPTIONS", headers: { Origin: elsewhere, "Access-Control-Request-Headers": "authorization, content-type" } }), env);
+  eq([pre.status, pre.headers.get("Access-Control-Allow-Origin"), pre.headers.get("Access-Control-Allow-Headers")], [204, "*", "Content-Type, Authorization"], "preflight from any site");
+  const root = await call("GET", "/v1", undefined, undefined, elsewhere);
+  eq([root.status, root.data.docs, root.headers.get("Access-Control-Allow-Origin")], [200, "https://molastria.com/api/#compute", "*"], "the entry needs no key");
+  if (!root.data.note.zh.includes("RTX 2080") || !root.data.note.en.includes("may be offline")) throw new Error("the entry must say what the compute is");
+  const none = await call("GET", "/v1/me", undefined, undefined, elsewhere);
+  eq([none.status, none.data.error.code, none.headers.get("Access-Control-Allow-Origin")], [401, "unauthorized", "*"]);
+  if (/[一-鿿]/.test(none.data.error.message) || !/[一-鿿]/.test(none.data.error.message_zh)) throw new Error("message is English, message_zh Chinese");
+  eq((await call("GET", "/v1/me", undefined, memberToken, elsewhere)).status, 401, "a browser's sign-in token is not an API key");
+  eq((await call("GET", "/v1/me", undefined, "mola_" + "A".repeat(43), elsewhere)).status, 401, "an unknown key");
+  eq((await call("GET", "/v1/me?key=" + freeKey, undefined, undefined, elsewhere)).status, 401, "the key is read from the header only");
+  const me = await call("GET", "/v1/me", undefined, freeKey, elsewhere);
+  eq([me.status, me.data.tier, me.data.usage, me.data.key.name], [200, "free", { used: 0, limit: 100, remaining: 100, reset: 0 }, "my laptop"]);
+  if (JSON.stringify(me.data).includes("a@lab.edu")) throw new Error("a leaked key should not also give away the email");
+  eq((await call("GET", "/v1/me", undefined, proKey, elsewhere)).data.usage.limit, 200, "Pro supporters: 200 a day");
+  const used1 = (sqlite.prepare("SELECT last_used FROM api_keys WHERE prefix = ?").get(freeKey.slice(0, 10)) as any).last_used;
+  if (!(used1 > nowS() - 5)) throw new Error("last_used is recorded");
+  eq((await call("GET", "/v1/nope", undefined, freeKey, elsewhere)).data.error, { code: "not_found", message: "No such endpoint", message_zh: "没有这个接口" });
+  eq((await call("DELETE", "/v1/jobs/0123456789abcdef", undefined, freeKey, elsewhere)).status, 404);
+});
+
+await test("compute API: every refusal a program can get has an English sentence", async () => {
+  const src = await Deno.readTextFile(new URL("../deploy/account-worker.js", import.meta.url));
+  const part = src.slice(src.indexOf("function umaParams("), src.indexOf("// ── routes ──"));
+  const english = /, (?:['"`](?:[A-Z]|params |\$\{left\} uses)|V1_ASL|given\(body\.smiles\) \? '[A-Z]|data\.error \? `[A-Z])/;
+  const missing = part.split("\n").filter((l) => l.includes("fail(") && !l.includes("body.academic !== true") && !english.test(l.slice(l.indexOf("fail("))));
+  eq(missing.map((l) => l.trim()), [], "fail(status, 中文, English) on the online-model routes");
+  if (part.split("\n").filter((l) => l.includes("fail(")).length < 30) throw new Error("the check no longer finds the refusals");
+});
+
+await test("compute API: models without MACE, jobs on the account's own allowance, polling", async () => {
+  const elsewhere = "https://someone-elses-lab.example";
+  const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
+  eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
+  const ids: string[] = models.data.models.map((m: any) => m.id);
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x")], [10, 0, true], "the ten models whose licence allows it");
+  eq(models.data.models[0], { id: "uma-s-1p2p1", ready: true, queue: 1, charged: true, jobs: ["opt", "md", "ipea", "bde"] }, "a model's jobs as the computer reports them");
+  eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn"] }, "not loaded right now");
+  eq([models.data.costs.md, models.data.costs.polar, models.data.costs.ir, models.data.cost_with_thermo], [5, undefined, undefined, 5], "only the jobs these models do");
+  if (JSON.stringify(models.data).includes("secret")) throw new Error("the model list leaked the secret");
+  // The documentation page (public/api/compute.js) lists the same jobs, costs and models as the service.
+  const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
+  const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
+  eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
+  // A job: same checks as the site, the account's counter, and what is left comes back with the answer.
+  const job = await call("POST", "/v1/jobs", { smiles: "CCO", job: "freq", model: "uma-s-1p2p1", extra: "dropped", academic: true }, freeKey, elsewhere);
+  eq([job.status, job.data.id, job.data.status, job.data.cost], [202, "0123456789abcdef", "queued", 3]);
+  eq({ ...job.data.usage, reset: 0 }, { used: 3, limit: 100, remaining: 97, reset: 0 });
+  if (!(job.data.usage.reset > nowS() + 86000)) throw new Error("reset is when the day's count starts again");
+  eq([job.headers.get("X-RateLimit-Limit"), job.headers.get("X-RateLimit-Remaining"), job.headers.get("X-RateLimit-Reset")], ["100", "97", String(job.data.usage.reset)]);
+  eq(job.headers.get("Access-Control-Expose-Headers"), "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset");
+  eq(sentBody(), { smiles: "CCO", job: "freq", model: "uma-s-1p2p1" }, "only checked fields reach the computer");
+  const who = (umaCalls.at(-1)?.body as any).who;
+  eq([used("uma:a@lab.edu"), used("uma:local")], [3, 0], "counted on the account, not on the address");
+  // The same account on the site: one allowance, one job at a time (the same visitor id).
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" }, memberToken)).status, 202);
+  eq([used("uma:a@lab.edu"), (umaCalls.at(-1)?.body as any).who], [4, who], "shared with what the account uses on the site");
+  eq((await call("GET", "/v1/me", undefined, freeKey, elsewhere)).data.usage.remaining, 96);
+  // MACE: academic licence, not through the API, whatever the request says; nothing is counted or sent.
+  const sentBefore = umaCalls.length;
+  for (const model of ["mace-off23-small", "mace-off23-medium", "mace-off23-large", "mace-omol-0", "mace-mdp"]) {
+    const r = await call("POST", "/v1/jobs", { smiles: "CCO", job: model === "mace-mdp" ? "polar" : "opt", model, academic: true }, proKey, elsewhere);
+    eq([r.status, r.data.error.code], [403, "licence"], model);
+    if (!r.data.error.message.includes("Academic Software License") || !r.data.error.message_zh.includes("ASL")) throw new Error("the refusal names the licence");
+  }
+  eq([umaCalls.length - sentBefore, used("asl:local"), used("uma:boss@molastria.com")], [0, 0, 0]);
+  // Refusals a program can tell apart.
+  const bad = await call("POST", "/v1/jobs", { smiles: "CCO", job: "tddft" }, freeKey, elsewhere);
+  eq([bad.status, bad.data.error], [400, { code: "invalid_request", message: "No such calculation", message_zh: "没有这种计算" }]);
+  const busy = await call("POST", "/v1/jobs", { smiles: "CCCC", job: "opt" }, freeKey, elsewhere);
+  eq([busy.status, busy.data.error.code, used("uma:a@lab.edu")], [429, "job_in_progress", 4], "a busy account's job is refused and not counted");
+  sqlite.prepare("UPDATE throttle SET n = 98 WHERE key = 'uma:a@lab.edu'").run();
+  const over = await call("POST", "/v1/jobs", { smiles: "CCO", job: "md" }, freeKey, elsewhere);
+  eq([over.status, over.data.error.code, over.data.error.message], [429, "quota_exceeded", "2 uses left today and this calculation needs 5 (100 a day; Pro supporters get more); choose a cheaper calculation or come back tomorrow"]);
+  eq(used("uma:a@lab.edu"), 98, "a job that does not fit costs nothing");
+  // Polling: by job id, on the account's own counter.
+  const polls0 = used("uma-poll:local");
+  const done = await call("GET", "/v1/jobs/0123456789abcdef", undefined, freeKey, elsewhere);
+  eq([done.status, done.data.status, done.data.result.ip_uma_s, done.headers.get("Access-Control-Allow-Origin")], [200, "done", 10.9, "*"]);
+  eq((await call("GET", "/v1/jobs/0123456789abcdef", undefined, undefined, elsewhere)).status, 401, "polling needs the key too");
+  eq((await call("GET", "/v1/jobs/ffffffffffffffff", undefined, freeKey, elsewhere)).data.error.code, "not_found");
+  eq([used("v1-poll:a@lab.edu") > 0, used("uma-poll:local") - polls0], [true, 0]);
+});
+
+await test("compute API: offline, switched off, blocked regions", async () => {
+  const elsewhere = "https://someone-elses-lab.example";
+  resetUses();
+  umaOffline = true;
+  const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
+  eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
+  const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 10, false], "the list still says what exists");
+  umaOffline = false;
+  const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
+  Object.defineProperty(req, "cf", { value: { country: "KP" } });
+  const res = await worker.fetch(req, env);
+  eq([res.status, (await res.json()).error.code, used("uma:a@lab.edu")], [451, "region", 0]);
+  env.API_COMPUTE = "0";
+  const closed = await call("GET", "/v1/me", undefined, freeKey, elsewhere);
+  eq([closed.status, closed.data.error.code], [503, "unavailable"], "the owner's switch");
+  eq((await call("GET", "/v1", undefined, undefined, elsewhere)).status, 200);
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt" }, memberToken)).status, 202, "the site itself keeps working");
+  delete env.API_COMPUTE;
+  // All keys together have a share of the day; the site itself is outside it.
+  resetUses();
+  env.API_DAILY_TOTAL = "4";
+  sqlite.prepare("DELETE FROM throttle WHERE key = 'v1:all'").run();
+  eq((await call("POST", "/v1/jobs", { smiles: "CCO", job: "freq" }, freeKey, elsewhere)).status, 202);
+  const crowded = await call("POST", "/v1/jobs", { smiles: "CCO", job: "freq" }, proKey, elsewhere);
+  eq([crowded.status, crowded.data.error.code, used("v1:all"), used("uma:boss@molastria.com")], [429, "api_busy", 3, 0], "over the API's share: refused, nothing counted");
+  eq((await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, proKey, elsewhere)).status, 202, "a cheaper job still fits");
+  eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "freq" }, adminToken)).status, 202, "the site is not held back by the API's share");
+  eq(used("v1:all"), 4);
+  eq((await call("POST", "/v1/jobs", { smiles: "CCCC", job: "opt" }, freeKey, elsewhere)).status, 429);
+  eq(used("v1:all"), 4, "a job the computer refuses gives the API's share back too");
+  env.API_DAILY_TOTAL = "0";
+  eq((await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, proKey, elsewhere)).status, 202, "0 switches the share off");
+  delete env.API_DAILY_TOTAL;
+  delete env.UMA_ORIGIN;
+  eq((await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere)).status, 503, "not set up");
+});
+
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 if (failed) Deno.exit(1);

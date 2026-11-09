@@ -14,6 +14,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/api/v1';
 const SITE = 'https://molastria.com';
 const BASE = `${SITE}/api/v1`;
+const COMPUTE = 'https://api.molastria.com/v1'; // the compute API for programs (deploy/account-worker.js), described in llms.txt
 const SCHEMA = '1.0';
 
 const LICENSE = {
@@ -275,11 +276,18 @@ function llms(index) {
     `- [JavaScript client](${BASE}/molastria.mjs): zero-dependency ES module with a bilingual search across the datasets`,
     `- [Documentation](${SITE}/api/): conventions, licence, live explorer, embeddable widget`,
     '',
+    '## Compute API (needs a free API key)',
+    '',
+    `- Base: ${COMPUTE}. Submit machine-learned-potential calculations (UMA, eSEN, AllScAIP, ANI-2x: single points, optimisations, frequencies, conformers, scans, molecular dynamics, reaction and ionisation energies) with \`POST /jobs\`, then poll \`GET /jobs/{id}\` until \`status\` is \`done\` or \`error\`. \`GET /models\` lists models, jobs and what each costs; \`GET /me\` shows what is left today.`,
+    `- Auth: \`Authorization: Bearer mola_…\`. A person makes the key on ${SITE}/pro/account.html after signing in with an email; a program cannot sign up by itself. A free account has 100 uses a day, Pro supporters 200.`,
+    "- The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not rely on it for anything with a deadline. The MACE models (Academic Software License) are not offered through the API.",
+    `- [Documentation](${SITE}/api/#compute): fields, costs, rules, error codes, examples in Python, JavaScript and curl`,
+    '',
     '## Pages for people',
     '',
     ...index.endpoints.filter((e) => e.page !== `${SITE}/`).map((e) => `- [${e.title.en}](${e.page})`),
     `- [Explainer handbook](${SITE}/manual/): 20 chapters on how to choose and use these resources`,
-    `- [Online models](${SITE}/models/): UMA, MACE and ANI-2x calculations in the browser (no programmatic access yet)`,
+    `- [Online models](${SITE}/models/): UMA, MACE and ANI-2x calculations in the browser`,
     '',
     '## Optional',
     '',
