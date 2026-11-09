@@ -14,6 +14,7 @@
     ['hub', 'hub/index.html', '论文与社区'],
     ['radar', 'radar/index.html', '预印本雷达'],
     ['research', 'research-atlas/index.html', '研究图谱', true],
+    ['realms', 'physics-realms/index.html', '物理疆界图', true],
     ['digest', 'digest/index.html', '每周精选', true],
     ['journals', 'journals/index.html', '期刊发表'],
     ['scimodels', 'scimodels/index.html', '科学大模型', true],
