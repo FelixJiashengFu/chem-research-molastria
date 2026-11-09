@@ -29,3 +29,4 @@ window.${global}_MATH = ${JSON.stringify(out, null, 1)};
 };
 build('fs-data.js', 'MOLASTRIA_FS', 'fs-math.js');
 build('math/fm-data.js', 'MOLASTRIA_FM', 'math/fm-math.js');
+build('../quantum/physics/qp-data.js', 'MOLASTRIA_QP', '../quantum/physics/qp-math.js');

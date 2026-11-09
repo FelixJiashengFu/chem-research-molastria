@@ -5,7 +5,7 @@
 window.MOLASTRIA_QUANTUM_SECTIONS = [
 
   {
-    id: 'physics', path: 'physics/index.html', live: false,
+    id: 'physics', path: 'physics/index.html', live: true,
     glyph: 'ψ ħ ⟨Â⟩ |↑⟩',
     title: { zh: '量子物理', en: 'Quantum Physics' },
     blurb: {

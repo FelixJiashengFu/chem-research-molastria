@@ -1785,6 +1785,74 @@ check('math foundations: sub-module page, relations map, subject reader, self-ch
   await finish(e);
 });
 
+check('quantum carnival: the hub links its live pavilions, the physics page computes its demos, opens chapters and is English in English', async () => {
+  const h = await open();
+  await go(h, '/quantum/index.html');
+  assert.equal(await h.getAttribute('.cr-links a[data-id=quantum]', 'aria-current'), 'page', 'nav marks the carnival');
+  assert.equal(await h.locator('#qc-hall-grid .qc-hall').count(), 4, 'four pavilions');
+  await h.click('#qc-hall-grid a[href="physics/index.html"]');
+  await h.waitForSelector('#qp-panels .fm-panel');
+  assert.match(h.url(), /\/quantum\/physics\/index\.html$/);
+  assert.equal(await h.getAttribute('.cr-links a[data-id=quantum]', 'aria-current'), 'page', 'nav still marks the carnival');
+  assert.match(await text(h, '#qp-crumbs'), /量子嘉年华/);
+  await finish(h);
+  const p = await open();
+  const errs = []; p.on('pageerror', (e) => errs.push(e.message));
+  await go(p, '/quantum/physics/index.html');
+  assert.equal(await p.locator('#qp-act-grid .fm-tier').count(), 3, 'three acts');
+  assert.equal(await p.locator('#qp-time-list li').count(), 21, 'timeline');
+  // Demo 1: the harmonic oscillator ground state matches ħω/2.
+  await p.fill('#d1-p', '38'); // ω = 0.4 + 1.6 × 0.38 = 1.008
+  assert.match(await text(p, '#d1-read'), /0\.50[34]\d*\s*\((解析|exact) 0\.504\)/);
+  await p.selectOption('#d1-kind', 'double');
+  assert.match(await text(p, '#d1-read'), /隧穿劈裂/);
+  // Demo 2: a deuteron tunnels far less than an electron, and the packet run moves weight past the barrier.
+  const T = async () => Number((await text(p, '#d2-read .fs-big')).replace(/\s*×\s*10/, 'e').replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => '-0123456789'['⁻⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)]));
+  const te = await T(); await p.selectOption('#d2-m', 'd'); assert.ok(await T() < te * 1e-3, 'deuteron ≪ electron');
+  await p.selectOption('#d2-m', 'e'); await p.click('#d2-go');
+  await p.waitForFunction(() => /已穿过势垒的概率：0\.[1-9]/.test(document.querySelector('#d2-pcap').textContent), null, { timeout: 15000 });
+  // Demo 3: 0°, 90°, 0° lets a quarter through; demo 4: the optimal angles give 2√2.
+  assert.match(await text(p, '#d3-read'), /穿过全部三台\s*0\.25/);
+  await p.click('#d3-go'); assert.match(await text(p, '#d3-chain'), /1000/);
+  await p.fill('#d4-b', '10'); assert.doesNotMatch(await text(p, '#d4-read'), /-2\.828/);
+  await p.click('#d4-best'); assert.match(await text(p, '#d4-read'), /量子力学的 S\s*-2\.828/);
+  await p.click('#d4-go'); assert.match(await text(p, '#d4-read'), /模拟实验的 S\s*-2\.[6-9]\d*\s*±/);
+  // Reader: one panel at a time, MathML, the hash opens a chapter, ticks are remembered.
+  assert.equal(await p.locator('.fm-panel:not([hidden])').count(), 1);
+  await p.click('.fm-side-b[data-sub=ent]');
+  assert.ok(await p.isVisible('#c-ent'));
+  assert.ok(await p.locator('#c-ent math').count() >= 3, 'MathML formulas render');
+  assert.equal(await p.locator('#c-ent a[href="https://doi.org/10.1103/PhysRev.47.777"]').count(), 1, 'EPR with its DOI');
+  await go(p, '/quantum/physics/index.html#c-cond');
+  assert.ok(await p.isVisible('#c-cond'));
+  await p.click('.fm-side-b[data-sub=birth]');
+  for (const box of await p.$$('#c-birth input[data-check]')) await box.check();
+  assert.match(await text(p, '#qp-start-box'), /薛定谔方程/, 'next chapter suggested');
+  await p.reload();
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-qp-progress'))).length, 4);
+  // Library filters.
+  await p.selectOption('#qp-f-type', 'paper');
+  assert.match(await text(p, '#qp-lib-count'), /共 36 篇论文、0 本教材与讲义、0 门课程/);
+  await p.selectOption('#qp-f-type', ''); await p.check('#qp-f-free');
+  assert.equal(await p.locator('#qp-lib .fm-book:not(:has(.fm-free))').count(), 0, 'only free books');
+  assert.deepEqual(errs, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/quantum/physics/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.equal(await e.title(), 'Quantum Physics · Quantum Carnival · MolAstria');
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,.fm-cite[lang="zh-CN"],.fm-cite [lang="zh-CN"],.fm-au,.fm-video .fm-title') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+  for (const path of ['/quantum/index.html', '/quantum/physics/index.html']) {
+    const m = await open({ viewport: { width: 390, height: 844 } });
+    await go(m, path);
+    assert.ok(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `no sideways scroll at phone width: ${path}`);
+    await finish(m);
+  }
+});
+
 check('display settings: scale, reading size and typeface apply, carry to other pages, are capped in narrow windows and reset', async () => {
   const p = await open({ viewport: { width: 1280, height: 900 } });
   await go(p, '/index.html');
