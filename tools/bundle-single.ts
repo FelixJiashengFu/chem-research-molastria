@@ -18,6 +18,8 @@ const PAGES: Record<string, { file: string; title: string }> = {
   scimodels: { file: "scimodels/index.html", title: "科学大模型" },
   videos: { file: "videos/index.html", title: "教学视频" },
   fundamental: { file: "fundamental-science/index.html", title: "进一步基础科学发现" },
+  quantum: { file: "quantum/index.html", title: "量子嘉年华" },
+  quantumbio: { file: "quantum/biology/index.html", title: "量子生物学" },
   atlas: { file: "atlas/index.html", title: "数据库" },
   hub: { file: "hub/index.html", title: "论文与社区" },
   lab: { file: "lab/index.html", title: "AI 实验室" },

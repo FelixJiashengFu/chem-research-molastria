@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="量子物理（Quantum Physics）：量子嘉年华的第一个展馆。十二章分三幕，从黑体辐射、薛定谔方程、测量与自旋，到全同粒子、纠缠与 Bell 不等式、退相干、散射，再到相对论与量子场、凝聚态和量子光学。中英双语讲解、关键公式、Python 练习、四个交互演示，原始论文在 Crossref 逐条核对。">
+  <meta name="theme-color" content="#173f34">
+  <title>量子物理 · Quantum Physics · 量子嘉年华 · MolAstria</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../../i18n.js" defer></script>
+  <script src="../../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../../shared-nav.css">
+  <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="../../fundamental-science/math/fm.css">
+  <link rel="stylesheet" href="qp.css">
+  <script src="../../shared-nav.js" defer></script>
+  <script src="../sections.js" defer></script>
+  <script src="qp-data.js" defer></script>
+  <script src="qp-math.js" defer></script>
+  <script src="qp-models.js" defer></script>
+  <script src="qp.js" defer></script>
+</head>
+<body data-section="quantum">
+<a class="skip" href="#qp-chapters">跳到十二章详解</a>
+<main id="qp-main">
+  <section class="fs-hero fm-hero" aria-labelledby="qp-h1">
+    <nav class="fm-crumbs" id="qp-crumbs" aria-label="位置"></nav>
+    <p class="eyebrow">MOLASTRIA · QUANTUM CARNIVAL · PHYSICS</p>
+    <h1 id="qp-h1">量子物理<span class="fs-h1-en" lang="en" translate="no">Quantum Physics</span></h1>
+    <blockquote class="fs-question" id="qp-quote"></blockquote>
+    <p class="lead" id="qp-lead"></p>
+    <p class="fs-honest" id="qp-honest"></p>
+    <dl class="fm-stats" id="qp-stats"></dl>
+    <nav class="fs-jump" id="qp-jump" aria-label="本页内容"></nav>
+  </section>
+
+  <section class="fs-block" id="qp-acts" aria-labelledby="qp-acts-h" tabindex="-1">
+    <h2 id="qp-acts-h"></h2>
+    <p class="muted" id="qp-acts-note"></p>
+    <div class="fm-tier-grid" id="qp-act-grid"></div>
+  </section>
+
+  <section class="fs-block" id="qp-timeline" aria-labelledby="qp-timeline-h" tabindex="-1">
+    <h2 id="qp-timeline-h"></h2>
+    <p class="muted" id="qp-timeline-note"></p>
+    <ol class="qp-time" id="qp-time-list"></ol>
+  </section>
+
+  <section class="fs-block fs-lab" id="qp-lab" aria-labelledby="qp-lab-h" tabindex="-1">
+    <h2 id="qp-lab-h"></h2>
+    <p class="muted" id="qp-lab-note"></p>
+    <div id="qp-demos"></div>
+  </section>
+
+  <section class="fs-block fm-reader" id="qp-chapters" aria-labelledby="qp-chapters-h" tabindex="-1">
+    <h2 id="qp-chapters-h"></h2>
+    <div class="fm-reader-grid">
+      <nav class="fm-side" id="qp-side" aria-labelledby="qp-chapters-h"></nav>
+      <div id="qp-panels"></div>
+    </div>
+  </section>
+
+  <section class="fs-block" id="qp-start" aria-labelledby="qp-start-h" tabindex="-1">
+    <h2 id="qp-start-h"></h2>
+    <p class="muted" id="qp-start-note"></p>
+    <div class="fm-start" id="qp-start-box"></div>
+  </section>
+
+  <section class="fs-block" id="qp-library" aria-labelledby="qp-library-h" tabindex="-1">
+    <h2 id="qp-library-h"></h2>
+    <p class="muted" id="qp-lib-note"></p>
+    <div class="fs-lib-filters" role="search" id="qp-lib-filters"></div>
+    <p class="fs-count" id="qp-lib-count" role="status" aria-live="polite"></p>
+    <div class="fm-lib" id="qp-lib"></div>
+  </section>
+
+  <footer class="fs-foot" id="qp-foot"></footer>
+  <noscript><p class="fs-note">这个页面需要 JavaScript 才能显示内容。</p></noscript>
+</main>
+</body>
+</html>

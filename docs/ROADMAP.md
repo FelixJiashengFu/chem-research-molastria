@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 量子嘉年华（`/quantum/`，2026-11-09）：母栏目和第一个展馆“量子物理”（`/quantum/physics/`，十二章、四个演示、36 篇原始论文、27 本教材与讲义、15 门课程）。其余三个展馆（量子计算机、量子算法、量子生物学）各自上线时把 `sections.js` 里自己那块改成 `live: true`。上线后在 Safari 和桌面版里看一眼 MathML 公式和演示 2 的波包动画（只在 Chromium 里测过）；视频链接每半年复查一次；单文件离线版没有收录量子物理页（数学子模块也没有收录），以后可以一起加。
 - 研究图谱（`/research-atlas/`，2026-11-08）：整站从 university-science-research-network 复制，二十所学校已全部建好（复制过来约 150 MB），图谱更新后重新运行 `tools/vendor-atlas.mjs`。只在无头 Chrome 里测过缩放（125%，地图的放大缩小按钮和滚轮、sigma 网络、手机 390 px）；iPad 主屏幕应用里开缩放看一眼框内的网络图和地图能否拖动、点选。
 - 付费模式改成 OpenAlex 的做法（2026-11-08，PR 待合并）：内容全部免费（每周精选全文和邮件、ANI-2x），任何邮箱都能登录免费账号（在线模型每天 100 次、AI 托管每天 5 次），Pro 改叫“Pro 支持者”，价格和 Stripe 链接不变。**要先部署账号服务（`/ship-worker`），再推网站。** 上线后看：每天发出的验证码邮件数（Resend 免费版每天 100 封，每周精选最多占 80 封，注册的人多了要升级 Resend 或调低 `DAILY_MAIL_CAP`）；DeepSeek 每天花多少（免费账号的托管问答）；一个月后看付费人数有没有变化。已安装的旧桌面版在下一个版本之前，ANI-2x 仍显示“Pro 会员”、免费账号看不到托管 AI。
 
@@ -15,6 +16,7 @@
 - 桌面版的系统通知（预印本雷达“测试通知”，下一个桌面版本）：WebView 本身没有可用的网页通知，改走 tauri-plugin-notification。只在模拟的桌面环境里测过，发布后要在 Mac 和 Windows 的安装版里各点一次“测试通知”，看系统通知是否弹出（Mac 第一次可能要在“系统设置 → 通知”里允许 MolAstria）。点通知不会跳回应用（插件在桌面上没有点击回调）。
 - 游乐场（2026-11-07，桌面版 0.1.17）：上线后跑 `node tools/e2e/live.mjs`；在 iPad 主屏幕应用里打开缩放（如 125%）看一眼预印本雷达和量子化学计算器不再被切掉（只在无头 WebKit 和 Chrome 里测过），再各玩一局小游戏。桌面浏览器（Chrome/Edge）开了界面缩放时，其他页面里用 `100vh` 的侧栏会比窗口高一点（Chrome 把 vh 乘了 CSS zoom），桌面版和 iPad 不受影响，以后可以统一换算。
 - 显示设置与金属箭头（2026-11-07，桌面版 0.1.16）：只在 Chromium（无头 Chrome）里测过。要在真机上看一次：iPad 主屏幕应用里的界面缩放（Safari 的 CSS zoom 与 Chrome 的坐标换算可能不同，网状查询的拖动和基础科学页的演示 3 拖动要试）、Mac 桌面版的原生缩放（WKWebView）和 Ctrl / ⌘ 加 = − 0、Windows 桌面版的原生缩放；楷体在 Windows 上是否装有 KaiTi。
+- 量子生物学栏目（`/quantum/biology/`，2026-11-09）上线后：跑一次 `node tools/e2e/live.mjs`；在 Safari 和桌面版里看一眼公式和三个演示（只在 Chromium 里测过）；文献是在 Crossref 逐条核对过的，但核对是经由网页抓取完成的，站长电脑上方便时可以再跑一次 `NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs quantum-biology`。以后可以加：教学视频里的量子生物学条目（云端连不上 YouTube 和哔哩哔哩，没有核对视频）、演示 1 换成 HEOM 或加入振动模式、演示 2 加入多个核与射频场。
 - 子模块“数学基础与探索”（`/fundamental-science/math/`，2026-11-08）上线后：在 Safari 和桌面版里看一眼关系图和公式；视频链接每半年复查一次（YouTube 和哔哩哔哩的转载可能下架，页面上写了核对日期）；以后可以给每门学科加一套带答案的小测验。
 - 物理疆界图（`/physics-realms/`，2026-11-09）：42 个理论、67 个问题、213 条关系的力导向网状图，内容在 `pr-data.js`（`tools/realms-test.mjs` 查完整性）。上线后在 iPad 和 iPhone 的 Safari 里试一次拖动节点、双指缩放（只在无头 Chrome 里测过模拟触摸）；量子嘉年华合并后，在 `quantum/carnival.js` 的 AROUND 末尾加一行反向链接，量子物理页的页脚也链过来。以后可以加：每个理论的入门教材与视频、按年代播放理论出现的顺序。
 - 基础科学栏目（`/fundamental-science/`，2026-11-07）上线后：跑一次 `node tools/e2e/live.mjs`；在 iPhone / Mac 的 Safari 和桌面版里看一眼 MathML 公式的排版（只在 Chromium 里测过）；单文件离线版（`tools/bundle-single.ts`）里打开这一页确认演示能用（没有实测）。之后可以考虑：演示 2 加入随机薛定谔方程的单次轨迹、演示 3 加入两个以上电子态，以及把文献库扩充到 GRW/CSL 的参数排除图。

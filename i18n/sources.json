@@ -149,6 +149,7 @@
  "排序": [
   "index.html",
   "fundamental-science/index.html",
+  "quantum/biology/index.html",
   "hub/index.html",
   "models/models.js",
   "radar/app/app.js"
@@ -334,8 +335,18 @@
  "进一步基础科学发现": [
   "index.html",
   "fundamental-science/index.html",
+  "quantum/biology/index.html",
   "about/index.html",
   "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "量子嘉年华": [
+  "index.html",
+  "fundamental-science/index.html",
+  "quantum/index.html",
+  "quantum/biology/index.html",
+  "shared-nav.js",
+  "quantum/biology/qb.js",
   "tools/build-seo.ts"
  ],
  "每周精选": [
@@ -726,7 +737,8 @@
  "回到顶部": [
   "atlas/index.html",
   "manual/index.html",
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -882,6 +894,9 @@
   "scimodels/index.html",
   "fundamental-science/index.html",
   "fundamental-science/math/index.html",
+  "quantum/index.html",
+  "quantum/physics/index.html",
+  "quantum/biology/index.html",
   "physics-realms/index.html"
  ],
  "筛选期刊": [
@@ -1053,6 +1068,7 @@
  "讲解手册": [
   "videos/index.html",
   "fundamental-science/index.html",
+  "quantum/biology/index.html",
   "about/index.html",
   "shared-nav.js",
   "hub/network.js"
@@ -1085,7 +1101,8 @@
   "fundamental-science/index.html"
  ],
  "科研文献": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "数学基础与探索": [
   "fundamental-science/index.html",
@@ -1102,6 +1119,15 @@
   "fundamental-science/index.html"
  ],
  "打开数学基础与探索": [
+  "fundamental-science/index.html"
+ ],
+ "姊妹栏目": [
+  "fundamental-science/index.html"
+ ],
+ "量子物理、量子计算机、量子算法、量子生物学四个展馆：从薛定谔方程、测量和纠缠讲起，到量子比特怎么造、量子计算机能算什么，再到生命里有没有真正“量子”的环节。": [
+  "fundamental-science/index.html"
+ ],
+ "打开量子嘉年华": [
   "fundamental-science/index.html"
  ],
  "每个支柱下面都有完整的理论说明：核心公式、关键概念（逐条标注研究状态）、重点问题的解答和参考文献。": [
@@ -1123,7 +1149,8 @@
   "fundamental-science/index.html"
  ],
  "演示 1": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "量子叠加与坍缩": [
   "fundamental-science/index.html"
@@ -1144,10 +1171,12 @@
   "fundamental-science/index.html"
  ],
  "模型说明与局限": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "演示 2": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "分子量子相干：标准振荡与附加退相干": [
   "fundamental-science/index.html"
@@ -1175,7 +1204,8 @@
   "fundamental-science/index.html"
  ],
  "演示 3": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "圆锥交叉与 Berry 相位": [
   "fundamental-science/index.html"
@@ -1220,22 +1250,27 @@
   "fundamental-science/index.html"
  ],
  "研究领域": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "全部领域": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "研究状态": [
   "fundamental-science/index.html"
  ],
  "全部状态": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "按年份（早到晚）": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "按年份（晚到早）": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "MolAstria · 进一步基础科学发现": [
   "fundamental-science/index.html"
@@ -1268,7 +1303,8 @@
   "fundamental-science/index.html"
  ],
  "筛选文献": [
-  "fundamental-science/index.html"
+  "fundamental-science/index.html",
+  "quantum/biology/index.html"
  ],
  "数学基础与探索 · Mathematical Foundations & Exploration · MolAstria": [
   "fundamental-science/math/index.html"
@@ -1278,11 +1314,198 @@
  ],
  "这个页面需要 JavaScript 才能显示内容。": [
   "fundamental-science/math/index.html",
+  "quantum/index.html",
+  "quantum/physics/index.html",
   "physics-realms/index.html"
  ],
  "位置": [
   "fundamental-science/math/index.html",
+  "quantum/physics/index.html",
+  "quantum/biology/index.html",
   "tools/build-seo.ts"
+ ],
+ "量子嘉年华 · Quantum Carnival · MolAstria": [
+  "quantum/index.html"
+ ],
+ "跳到四个展馆": [
+  "quantum/index.html"
+ ],
+ "量子物理 · Quantum Physics · 量子嘉年华 · MolAstria": [
+  "quantum/physics/index.html"
+ ],
+ "跳到十二章详解": [
+  "quantum/physics/index.html"
+ ],
+ "量子物理": [
+  "quantum/physics/index.html",
+  "radar/app/app.js",
+  "tools/build-seo.ts"
+ ],
+ "量子生物学 · Quantum Biology · MolAstria": [
+  "quantum/biology/index.html"
+ ],
+ "跳到研究方向": [
+  "quantum/biology/index.html"
+ ],
+ "量子生物学": [
+  "quantum/biology/index.html",
+  "quantum/biology/qb.js",
+  "tools/build-seo.ts"
+ ],
+ "七个研究方向": [
+  "quantum/biology/index.html"
+ ],
+ "证据账本": [
+  "quantum/biology/index.html"
+ ],
+ "交互式实验室": [
+  "quantum/biology/index.html"
+ ],
+ "学习路线": [
+  "quantum/biology/index.html"
+ ],
+ "什么算量子生物学": [
+  "quantum/biology/index.html"
+ ],
+ "量子效应在生物中的三个层次": [
+  "quantum/biology/index.html"
+ ],
+ "前六个方向大致按证据从强到弱排列，第七部分是计算方法。每个方向下面有核心公式、关键结论（逐条标注证据强度）、常见问题的解答和参考文献。": [
+  "quantum/biology/index.html"
+ ],
+ "研究方向详解": [
+  "quantum/biology/index.html"
+ ],
+ "三个演示都在浏览器里直接求解对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。": [
+  "quantum/biology/index.html"
+ ],
+ "FMO 复合物中的能量传递：退相干能帮忙吗": [
+  "quantum/biology/index.html"
+ ],
+ "纯退相干率 γ": [
+  "quantum/biology/index.html"
+ ],
+ "反应中心捕获速率 κ": [
+  "quantum/biology/index.html"
+ ],
+ "激子损失速率 Γ": [
+  "quantum/biology/index.html"
+ ],
+ "初始激发的位点": [
+  "quantum/biology/index.html"
+ ],
+ "位点 1": [
+  "quantum/biology/index.html"
+ ],
+ "位点 6": [
+  "quantum/biology/index.html"
+ ],
+ "完全相干（γ = 0）": [
+  "quantum/biology/index.html",
+  "quantum/biology/qb.js"
+ ],
+ "移到效率最高处": [
+  "quantum/biology/index.html"
+ ],
+ "前 2 ps 内七个位点的布居（实线）与已被反应中心取走的比例（虚线）。": [
+  "quantum/biology/index.html"
+ ],
+ "自由基对罗盘：单重态产率随磁场方向变化": [
+  "quantum/biology/index.html"
+ ],
+ "磁场强度 B": [
+  "quantum/biology/index.html"
+ ],
+ "磁场与分子轴的夹角 θ": [
+  "quantum/biology/index.html",
+  "quantum/biology/qb.js"
+ ],
+ "超精细耦合 A∥（沿轴）": [
+  "quantum/biology/index.html"
+ ],
+ "超精细耦合 A⊥（垂直于轴）": [
+  "quantum/biology/index.html"
+ ],
+ "自由基对寿命 1/k": [
+  "quantum/biology/index.html"
+ ],
+ "恢复地磁场参数": [
+  "quantum/biology/index.html"
+ ],
+ "各向同性耦合": [
+  "quantum/biology/index.html"
+ ],
+ "极坐标图：半径是该方向的单重态产率相对平均值的变化，指针是当前磁场方向。": [
+  "quantum/biology/index.html"
+ ],
+ "酶里的氢隧穿：同位素效应与 Arrhenius 图": [
+  "quantum/biology/index.html"
+ ],
+ "势垒高度 V₀（含零点能）": [
+  "quantum/biology/index.html"
+ ],
+ "势垒虚频 ν‡（H）": [
+  "quantum/biology/index.html"
+ ],
+ "C–H 伸缩频率": [
+  "quantum/biology/index.html"
+ ],
+ "温度 T": [
+  "quantum/biology/index.html"
+ ],
+ "接近经典（宽势垒）": [
+  "quantum/biology/index.html"
+ ],
+ "窄势垒": [
+  "quantum/biology/index.html"
+ ],
+ "氢与氘的速率比（同位素效应）随温度变化：实线含隧穿，虚线只有零点能差（半经典）。": [
+  "quantum/biology/index.html"
+ ],
+ "尚未解决的问题": [
+  "quantum/biology/index.html"
+ ],
+ "这些问题都没有公认的答案；标注表示它属于活跃研究、存在争议，还是依赖推测性的假说。": [
+  "quantum/biology/index.html"
+ ],
+ "从量子化学出发进入量子生物学的五个阶段，每一步都链接到本站已有的栏目。全部内容免费。": [
+  "quantum/biology/index.html"
+ ],
+ "证据强度": [
+  "quantum/biology/index.html"
+ ],
+ "MolAstria · 量子生物学": [
+  "quantum/biology/index.html"
+ ],
+ "本页区分已确立的结论、活跃研究、存在争议的主张与推测性假说；演示是教学用的简化模型，不代表对真实体系的定量预测。": [
+  "quantum/biology/index.html"
+ ],
+ "游乐场与量子化学计算器": [
+  "quantum/biology/index.html"
+ ],
+ "证据强度的四种标注": [
+  "quantum/biology/index.html"
+ ],
+ "按证据强度筛选": [
+  "quantum/biology/index.html"
+ ],
+ "传递效率随退相干率变化": [
+  "quantum/biology/index.html"
+ ],
+ "前 2 皮秒各位点的布居": [
+  "quantum/biology/index.html"
+ ],
+ "单重态产率随磁场方向变化": [
+  "quantum/biology/index.html"
+ ],
+ "产率的极坐标图": [
+  "quantum/biology/index.html"
+ ],
+ "Arrhenius 图": [
+  "quantum/biology/index.html"
+ ],
+ "同位素效应随温度变化": [
+  "quantum/biology/index.html"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -1883,6 +2106,7 @@
   "meta/index.html",
   "train/index.html",
   "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js",
   "radar/app/app.js"
  ],
  "通过": [
@@ -4375,7 +4599,8 @@
   "pro/index.html"
  ],
  "常见问题": [
-  "pro/index.html"
+  "pro/index.html",
+  "quantum/biology/qb.js"
  ],
  "为什么这么多东西免费？": [
   "pro/index.html"
@@ -6494,19 +6719,22 @@
   "videos/videos.js"
  ],
  "阅读详解": [
-  "fundamental-science/fundamental.js"
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "重点问题": [
   "fundamental-science/fundamental.js"
  ],
  "核心公式": [
-  "fundamental-science/fundamental.js"
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "关键概念": [
   "fundamental-science/fundamental.js"
  ],
  "本节参考文献": [
-  "fundamental-science/fundamental.js"
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "相关的理论详解": [
   "fundamental-science/fundamental.js"
@@ -6524,10 +6752,12 @@
   "fundamental-science/fundamental.js"
  ],
  "显示 {0} / {1} 篇": [
-  "fundamental-science/fundamental.js"
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "引用于": [
-  "fundamental-science/fundamental.js"
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "FCI 维数计算器": [
   "fundamental-science/fundamental.js"
@@ -6717,6 +6947,148 @@
  ],
  "分量": [
   "fundamental-science/fundamental.js"
+ ],
+ "关键结论": [
+  "quantum/biology/qb.js"
+ ],
+ "没有这一类的主张。": [
+  "quantum/biology/qb.js"
+ ],
+ "共 {0} 篇。每一篇的题目、作者、年份、期刊和卷号都在 {1} 于 Crossref 核对过。可以按研究领域和证据强度筛选；每条都通过 DOI 链接到出版方。": [
+  "quantum/biology/qb.js"
+ ],
+ "0（完全相干）": [
+  "quantum/biology/qb.js"
+ ],
+ "纯退相干率 γ（ps⁻¹）": [
+  "quantum/biology/qb.js"
+ ],
+ "传递效率 η": [
+  "quantum/biology/qb.js"
+ ],
+ "传递效率 η(γ)": [
+  "quantum/biology/qb.js"
+ ],
+ "时间（ps）": [
+  "quantum/biology/qb.js"
+ ],
+ "布居": [
+  "quantum/biology/qb.js"
+ ],
+ "已捕获": [
+  "quantum/biology/qb.js"
+ ],
+ "损失的比例": [
+  "quantum/biology/qb.js"
+ ],
+ "平均传递时间": [
+  "quantum/biology/qb.js"
+ ],
+ "完全相干时的效率": [
+  "quantum/biology/qb.js"
+ ],
+ "效率最高的 γ（曲线上）": [
+  "quantum/biology/qb.js"
+ ],
+ "γ = 0：纯量子演化。激发在色素之间来回振荡，一部分被相消干涉“困住”，到达位点 3 的速度变慢，损失增加。": [
+  "quantum/biology/qb.js"
+ ],
+ "退相干较弱：比完全相干时好，但激发仍在一些位点上停留较久。": [
+  "quantum/biology/qb.js"
+ ],
+ "退相干率与能量差和耦合（几十到几百 cm⁻¹）相当：干涉造成的“陷阱”被打破，激发最快到达反应中心，这就是环境辅助的量子传输。": [
+  "quantum/biology/qb.js"
+ ],
+ "退相干过强：每一步跳跃都被频繁打断，传递变慢（量子 Zeno 效应），效率重新下降。": [
+  "quantum/biology/qb.js"
+ ],
+ "传递效率随退相干率变化；当前效率 {0}%": [
+  "quantum/biology/qb.js"
+ ],
+ "单重态产率 Φ": [
+  "quantum/biology/qb.js"
+ ],
+ "单重态产率 Φ(θ)": [
+  "quantum/biology/qb.js"
+ ],
+ "当前方向的单重态产率": [
+  "quantum/biology/qb.js"
+ ],
+ "各方向的最大值 / 最小值": [
+  "quantum/biology/qb.js"
+ ],
+ "各向异性 ΔΦ_S = 最大 − 最小": [
+  "quantum/biology/qb.js"
+ ],
+ "电子 Larmor 周期 2π/(γ_e B)": [
+  "quantum/biology/qb.js"
+ ],
+ "寿命 / Larmor 周期": [
+  "quantum/biology/qb.js"
+ ],
+ "超精细耦合各向同性时，产率与磁场方向无关：罗盘需要各向异性的耦合才能“指方向”。": [
+  "quantum/biology/qb.js"
+ ],
+ "自由基对在一个 Larmor 周期内就已反应，磁场来不及改变自旋演化，方向效应很弱。把寿命调长或把磁场调强试试。": [
+  "quantum/biology/qb.js"
+ ],
+ "曲线关于 90° 对称：把 B 换成 −B 不改变产率，所以这种罗盘只能感知倾角，不分南北，与知更鸟的倾角罗盘一致。": [
+  "quantum/biology/qb.js"
+ ],
+ "单重态产率随方向变化；各向异性 {0}": [
+  "quantum/biology/qb.js"
+ ],
+ "分子轴": [
+  "quantum/biology/qb.js"
+ ],
+ "H（无隧穿）": [
+  "quantum/biology/qb.js"
+ ],
+ "D（无隧穿）": [
+  "quantum/biology/qb.js"
+ ],
+ "温度（K）": [
+  "quantum/biology/qb.js",
+  "models/models.js"
+ ],
+ "含隧穿": [
+  "quantum/biology/qb.js"
+ ],
+ "只有零点能差": [
+  "quantum/biology/qb.js"
+ ],
+ "同位素效应 k_H/k_D（含隧穿）": [
+  "quantum/biology/qb.js"
+ ],
+ "半经典值（只有零点能差）": [
+  "quantum/biology/qb.js"
+ ],
+ "隧穿修正 Q_H / Q_D": [
+  "quantum/biology/qb.js"
+ ],
+ "指前因子之比 A_H/A_D（278–318 K）": [
+  "quantum/biology/qb.js"
+ ],
+ "活化能差 E_a(D) − E_a(H)": [
+  "quantum/biology/qb.js"
+ ],
+ "也明显超过零点能给出的": [
+  "quantum/biology/qb.js"
+ ],
+ "接近零点能给出的": [
+  "quantum/biology/qb.js"
+ ],
+ "，已超过 2π，速率主要来自势垒下方深处的隧穿": [
+  "quantum/biology/qb.js"
+ ],
+ "A_H/A_D = {0}，小于半经典下限 0.7，同位素效应 {1} {2} {3}：这是实验中用来判断氢隧穿的典型特征。u = hν‡/(k_B T) = {4}{5}。": [
+  "quantum/biology/qb.js"
+ ],
+ "A_H/A_D = {0}，在半经典范围 0.7–1.2 之内，同位素效应接近零点能给出的 {1}：势垒宽时隧穿很弱，Arrhenius 图上的实线和虚线几乎重合。": [
+  "quantum/biology/qb.js"
+ ],
+ "Arrhenius 图；{0} K 时同位素效应 {1}": [
+  "quantum/biology/qb.js"
  ],
  "已过 {0} / {1} 关": [
   "qchem/play.js"
@@ -8222,9 +8594,6 @@
  "④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
   "models/models.js"
  ],
- "温度（K）": [
-  "models/models.js"
- ],
  "加上热校正（焓与吉布斯自由能，要先算频率）": [
   "models/models.js"
  ],
@@ -9716,9 +10085,6 @@
   "radar/app/app.js"
  ],
  "统计学习": [
-  "radar/app/app.js"
- ],
- "量子物理": [
   "radar/app/app.js"
  ],
  "统计力学": [
@@ -11271,6 +11637,21 @@
   "tools/build-seo.ts"
  ],
  "为量子力学基础与量子化学准备的数学地图：线性代数、泛函分析与谱理论、群论与表示论、微分几何与拓扑、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论；讲解、大纲、练习、核对过的教材与公开课视频。": [
+  "tools/build-seo.ts"
+ ],
+ "量子嘉年华 · Quantum Carnival": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 的量子母栏目：量子物理、量子计算机、量子算法、量子生物学四个展馆，中英双语讲解、交互演示与核对过的文献和课程。": [
+  "tools/build-seo.ts"
+ ],
+ "量子生物学 · Quantum Biology": [
+  "tools/build-seo.ts"
+ ],
+ "量子物理 · Quantum Physics": [
+  "tools/build-seo.ts"
+ ],
+ "量子嘉年华的量子物理展馆：从量子的诞生到量子场、凝聚态与量子光学的十二章中英双语讲解，四个浏览器里实时计算的交互演示（一维定态、隧穿、Stern–Gerlach、Bell 不等式），关键实验时间线，以及核对过的原始论文、教材与公开课。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
