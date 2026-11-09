@@ -1,5 +1,12 @@
 # 更新记录
 
+## 0.2.1（2026-11-09）
+
+- **资源目录与网站同步：** `search_resources` 和 `catalog_status` 的目录从 103 条、11 类增加到 214 条、17 类
+  （新增量子化学程序、周期体系第一性原理、波函数分析、课程教材、量子计算、科学大模型）。条目放在
+  `catalog/resources.json`，由仓库的 `tools/build-api.mjs` 从网站数据生成，和 MolAstria 开放数据接口
+  （`https://molastria.com/api/v1/resources.json`，另有英文说明）同源；原有 103 条的编号和内容不变。
+
 ## 0.2.0（2026-11-06）
 
 - **MCP 工具接通：** `search_structures`、`get_record`、`search_molecules`、`find_qm_data`、`get_basis`、

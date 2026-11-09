@@ -26,7 +26,7 @@ def test_stdio_handshake_lists_tools_and_calls(tmp_path):
             return init, tools, status, basis, bad
 
     init, tools, status, basis, bad = asyncio.run(run())
-    assert init.serverInfo.name == "chemdb-agent" and init.serverInfo.version == "0.2.0"
+    assert init.serverInfo.name == "chemdb-agent" and init.serverInfo.version == "0.2.1"
     assert sorted(t.name for t in tools) == EXPECTED_TOOLS
     assert all(p.get("description") for t in tools for p in t.inputSchema.get("properties", {}).values())
     assert status.structured_content["data_dir"] == str(tmp_path)
