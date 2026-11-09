@@ -27,6 +27,8 @@ jobs:
           deno-version: v2.x
       - name: Lab logic tests
         run: node --test tools/lab-test.mjs
+      - name: Realms of Physics content
+        run: node --test tools/realms-test.mjs
       - name: Network engine tests
         run: node --test tools/net-test.mjs
       - name: Fundamental Science models and content

@@ -119,6 +119,8 @@ for (const f of ["shared-nav.js", "app.js", "atlas/app.js", "manual/app.js", "jo
 // Error messages the account service sends back are shown as-is, so they need translations too.
 fromJS(await Deno.readTextFile(new URL("deploy/account-worker.js", repo)), "deploy/account-worker.js");
 fromJS(await Deno.readTextFile(new URL("tools/build-seo.ts", repo)), "tools/build-seo.ts");
+// 物理疆界图的正文在 pr.js 里成对写好了中英文，只抽页面骨架。
+fromHTML(await read("physics-realms/index.html"), "physics-realms/index.html");
 
 const g = globalThis as any;
 g.window = g;

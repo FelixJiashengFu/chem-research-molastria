@@ -896,7 +896,8 @@
   "fundamental-science/math/index.html",
   "quantum/index.html",
   "quantum/physics/index.html",
-  "quantum/biology/index.html"
+  "quantum/biology/index.html",
+  "physics-realms/index.html"
  ],
  "筛选期刊": [
   "journals/index.html"
@@ -1314,7 +1315,8 @@
  "这个页面需要 JavaScript 才能显示内容。": [
   "fundamental-science/math/index.html",
   "quantum/index.html",
-  "quantum/physics/index.html"
+  "quantum/physics/index.html",
+  "physics-realms/index.html"
  ],
  "位置": [
   "fundamental-science/math/index.html",
@@ -5783,6 +5785,11 @@
  ],
  "研究图谱": [
   "shared-nav.js"
+ ],
+ "物理疆界图": [
+  "shared-nav.js",
+  "tools/build-seo.ts",
+  "physics-realms/index.html"
  ],
  "计算化学研究导航": [
   "shared-nav.js"
@@ -11665,6 +11672,12 @@
  "中美二十所大学的数学、物理、化学教授合作网络，北美与中国量子化学 / 计算化学课题组地图，Top 20 学者档案，中美细分方向对比与北美计算化学产业报告。数据来自 OpenAlex。": [
   "tools/build-seo.ts"
  ],
+ "物理疆界图 · Realms of Physics": [
+  "tools/build-seo.ts"
+ ],
+ "经典力学、电磁学、热力学与统计物理、相对论、量子力学、量子场论、凝聚态、宇宙学与量子引力前沿的理论，连同它们能解释和解释不了的问题，画成一张网状图；每个理论都写明适用范围和失效之处。": [
+  "tools/build-seo.ts"
+ ],
  "MolAstria 游乐场": [
   "tools/build-seo.ts"
  ],
@@ -11691,6 +11704,12 @@
  ],
  "链接可能已经改名。可以从这些入口继续：": [
   "tools/build-seo.ts"
+ ],
+ "物理疆界图 · Realms of Physics · MolAstria": [
+  "physics-realms/index.html"
+ ],
+ "跳到网状图": [
+  "physics-realms/index.html"
  ],
  "综合化合物与化学信息": [
   "atlas data",

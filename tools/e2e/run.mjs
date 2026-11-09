@@ -1785,6 +1785,57 @@ check('math foundations: sub-module page, relations map, subject reader, self-ch
   await finish(e);
 });
 
+check('realms of physics: nav entry, graph selects from the hash, panel, filters, local graph, cube, English', async () => {
+  const p = await open({ viewport: { width: 1440, height: 1000 } });
+  await go(p, '/physics-realms/index.html#n-gr');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=realms]', 'aria-current'), 'page', 'nav entry marks the section');
+  assert.equal(await p.locator('#pr-graph .pr-node').count(), await p.evaluate(() => window.MOLASTRIA_REALMS.theories.length + window.MOLASTRIA_REALMS.problems.length));
+  assert.match(await text(p, '#pr-panel'), /广义相对论/);
+  assert.match(await text(p, '#pr-panel'), /疆界：在这里失效/);
+  assert.match(await text(p, '#pr-panel'), /水星近日点进动/, 'lists what it explains');
+  // A chip in the panel moves the selection and the address.
+  await p.click('#pr-panel [data-go="p-mercury"]');
+  assert.match(p.url(), /#n-p-mercury$/);
+  assert.match(await text(p, '#pr-panel'), /牛顿万有引力/);
+  // Clicking a node on the canvas selects it.
+  await p.keyboard.press('Escape');
+  await p.evaluate(() => document.querySelector('#pr-graph-wrap').scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await p.click('#pr-zoom [data-z=fit]'); await p.waitForTimeout(600);
+  const box = await p.locator('#pr-graph .pr-node[data-id=qm] circle').boundingBox();
+  await p.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'qm');
+  // Local graph keeps only qm and its neighbours; a branch filter hides a whole branch.
+  await p.check('#pr-local');
+  const n = await p.evaluate(() => window.__realms.nodes());
+  assert.ok(n > 5 && n < 40, `local graph shows ${n} nodes`);
+  await p.uncheck('#pr-local');
+  const all = await p.evaluate(() => window.__realms.nodes());
+  await p.click('.pr-bchip[data-b=cosmo]');
+  assert.ok(await p.evaluate(() => window.__realms.nodes()) < all, 'branch filter hides nodes');
+  await p.click('.pr-bchip[data-b=cosmo]');
+  // Search: Enter picks the first match.
+  await p.fill('#pr-q', 'GPS'); await p.press('#pr-q', 'Enter');
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'p-gps');
+  // The cube points into the graph.
+  await p.click('.pr-cube-v[data-i="4"]');
+  await p.click('#pr-cube-info [data-go]');
+  assert.equal(await p.evaluate(() => window.__realms.picked()), 'gr');
+  assert.ok(await p.locator('#pr-bounds-list .pr-bound').count() >= 40, 'one boundary card per theory');
+  assert.ok(await p.locator('#pr-open-list .pr-oq').count() >= 10, 'open problems listed');
+  await p.evaluate(() => localStorage.removeItem('molastria-realms-view'));
+  await finish(p);
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await go(e, '/physics-realms/index.html?lang=en#n-qm');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.equal(await e.title(), 'Realms of Physics · MolAstria');
+  assert.match(await text(e, '#pr-panel'), /Where it works/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,noscript')) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on a phone');
+  await finish(e);
+});
+
 check('quantum carnival: the hub links its live pavilions, the physics page computes its demos, opens chapters and is English in English', async () => {
   const h = await open();
   await go(h, '/quantum/index.html');
