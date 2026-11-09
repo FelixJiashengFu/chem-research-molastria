@@ -569,7 +569,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "103 条 · 已实现": [
+ "214 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -617,7 +617,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 103 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 214 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -13182,6 +13182,18 @@
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 开放数据接口 · MolAstria open data API": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 整理的计算化学开放数据，中英双语的静态 JSON：资源目录（数据库、软件、数据集、课程）、期刊投稿指南、科学大模型与官方价格、教学视频和中英术语表。免费、不用注册、不用 key。Curated, bilingual open data for computational chemistry as static JSON: a resource catalogue, a journal guide, science foundation models with official prices, teaching videos and a Chinese-English term table. Free, no sign-up, no key.": [
+  "tools/build-seo.ts"
+ ],
+ "计算化学": [
+  "tools/build-seo.ts"
+ ],
+ "开放数据": [
   "tools/build-seo.ts"
  ],
  "用开源小模型训练你自己的化学研究 Agent": [

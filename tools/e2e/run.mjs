@@ -1165,11 +1165,11 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   await finish(home);
 });
 
-check('agent: the Agent section shows chemdb-agent 0.2.0 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
+check('agent: the Agent section shows chemdb-agent 0.2.1 as implemented, the integrated counts match the catalogue, the download is the packed source', async () => {
   const p = await open();
   await go(p, '/atlas/index.html#agent');
   await p.waitForFunction(() => !document.getElementById('view-agent').hidden);
-  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.0/);
+  assert.match(await text(p, '#view-agent .agent-intro .pill'), /v0\.2\.1/);
   // The query tools, QCArchive and export are wired now; only the "not yet covered" row stays pending.
   assert.doesNotMatch(await p.innerText('#view-agent'), /占位|待接线/);
   assert.equal(await p.locator('#view-agent .state.pending').count(), 1);
