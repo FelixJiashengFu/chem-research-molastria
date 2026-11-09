@@ -27,8 +27,8 @@ window.MOLASTRIA_QUANTUM_SECTIONS = [
   },
 
   {
-    id: 'algorithms', path: 'algorithms/index.html', live: false,
-    glyph: 'H CNOT QFT ⟨H⟩',
+    id: 'algorithms', path: 'algorithms/index.html', live: true,
+    glyph: 'H CNOT ⟨H⟩',
     title: { zh: '量子算法', en: 'Quantum Algorithms' },
     blurb: {
       zh: '从电路模型到 Shor、Grover、哈密顿量模拟与 VQE，配可运行的量子电路模拟器。',
@@ -38,14 +38,14 @@ window.MOLASTRIA_QUANTUM_SECTIONS = [
   },
 
   {
-    id: 'biology', path: 'biology/index.html', live: false,
+    id: 'biology', path: 'biology/index.html', live: true,
     glyph: 'FMO ⇌ •• H/D',
     title: { zh: '量子生物学', en: 'Quantum Biology' },
     blurb: {
-      zh: '生命里有没有真正“量子”的环节：光合作用的能量传递、候鸟的自由基对磁罗盘、酶反应中的氢隧穿，以及每一条证据现在站得多稳。配可交互的演示和逐条核对的文献。',
-      en: 'Where life might be genuinely quantum: energy transfer in photosynthesis, the radical-pair magnetic compass of migratory birds, hydrogen tunnelling in enzymes, and how firm each line of evidence really is. With interactive demos and references checked one by one.',
+      zh: '生命里有没有真正“量子”的环节：光合作用的能量传递、候鸟的自由基对磁罗盘、酶里的氢隧穿、DNA 突变与嗅觉，每条结论都标明证据强度。配三个交互演示和 56 篇核对过的文献。',
+      en: 'Where life might be genuinely quantum: energy transfer in photosynthesis, the radical-pair compass of migratory birds, hydrogen tunnelling in enzymes, DNA mutations and smell, each claim labelled by strength of evidence. With three interactive demos and 56 checked references.',
     },
-    topics: { zh: ['能量传递', '自由基对', '氢隧穿', '证据账本'], en: ['Energy transfer', 'Radical pairs', 'H tunnelling', 'Evidence ledger'] },
+    topics: { zh: ['能量传递', '自由基对罗盘', '氢隧穿', '证据账本'], en: ['Energy transfer', 'Radical-pair compass', 'H tunnelling', 'Evidence ledger'] },
   },
 
 ];

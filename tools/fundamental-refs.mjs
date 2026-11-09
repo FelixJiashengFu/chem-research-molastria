@@ -2,12 +2,14 @@
 // public/fundamental-science/fs-data.js the DOI must resolve, and the year, volume, first author and title must match.
 // Run it after adding references; it waits between requests to respect Crossref's rate limit.
 //   NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs
+//   NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs quantum-biology     (the Quantum Biology section's qb-data.js)
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const sandbox = { window: {} };
-vm.runInNewContext(readFileSync(new URL('../public/fundamental-science/fs-data.js', import.meta.url), 'utf8'), sandbox);
-const refs = sandbox.window.MOLASTRIA_FS.refs;
+const qb = process.argv[2] === 'quantum-biology';
+vm.runInNewContext(readFileSync(new URL(qb ? '../public/quantum/biology/qb-data.js' : '../public/fundamental-science/fs-data.js', import.meta.url), 'utf8'), sandbox);
+const refs = (qb ? sandbox.window.MOLASTRIA_QB : sandbox.window.MOLASTRIA_FS).refs;
 const UA = { 'User-Agent': 'MolAstria-reference-check/1.0 (https://molastria.com)' };
 const wait = (ms) => new Promise((ok) => setTimeout(ok, ms));
 const norm = (s) => String(s || '').normalize('NFKD').replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();

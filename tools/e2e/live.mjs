@@ -77,6 +77,15 @@ check('playground: the games load, and the calculator opens in its frame and com
   assert.deepEqual(p.errors, []);
 });
 
+check('quantum algorithms: the page renders its demos and the Shor calculator', async () => {
+  const p = await page('/quantum/algorithms/index.html');
+  await p.waitForSelector('#qa-ledger-table tbody tr');
+  assert.equal(await p.locator('#qa-panels .fm-panel').count(), 14);
+  assert.ok(await p.locator('#qa-panels math').count() > 10, 'MathML formulas');
+  assert.match(await p.locator('[data-shor-out]').innerText(), /21 = 3 × 7/);
+  assert.deepEqual(p.errors, []);
+});
+
 check('search: a Chinese term finds English entries, and the pricing page loads', async () => {
   const p = await page('/index.html?q=' + encodeURIComponent('电解液'));
   await p.waitForSelector('.result-row');
@@ -109,6 +118,17 @@ check('fundamental science page: pillars, MathML formulas, the three demos and t
   assert.match(await p.textContent('#b-read'), /1\.0000 π/);
   assert.match(await p.textContent('#c-read'), /42 ps/);
   assert.equal(await p.locator('.fs-ref').count(), 36);
+  assert.deepEqual(p.errors, []);
+});
+
+check('quantum biology page: seven directions, MathML formulas, the three demos and the reference library', async () => {
+  const p = await page('/quantum/biology/');
+  await p.waitForSelector('.fs-pillar');
+  assert.equal(await p.locator('.fs-pillar').count(), 7);
+  assert.ok(await p.locator('math').count() >= 10, 'formulas render as MathML');
+  assert.match(await p.textContent('#e-read'), /99\.02 %/);
+  assert.match(await p.textContent('#r-read'), /0\.4371/);
+  assert.equal(await p.locator('.fs-ref').count(), 56);
   assert.deepEqual(p.errors, []);
 });
 

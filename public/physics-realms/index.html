@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="物理疆界图：经典力学、电磁学、热力学与统计物理、相对论、量子力学、量子场论、凝聚态、宇宙学和量子引力前沿的四十多个理论，连同它们能解释和解释不了的六十多个问题，画成一张可以拖动缩放的网状图；每个理论都写明适用范围、在哪里失效、被哪个理论接替。">
+  <meta name="theme-color" content="#173f34">
+  <title>物理疆界图 · Realms of Physics · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="pr.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="pr-data.js" defer></script>
+  <script src="pr.js" defer></script>
+</head>
+<body data-section="realms">
+<a class="skip" href="#pr-map">跳到网状图</a>
+<main>
+  <section class="pr-hero" aria-labelledby="pr-h1">
+    <p class="eyebrow">MOLASTRIA · PHYSICS · REALMS OF VALIDITY</p>
+    <h1 id="pr-h1">物理疆界图<span class="pr-h1-en" lang="en" translate="no">Realms of Physics</span></h1>
+    <blockquote class="pr-quote" id="pr-quote"></blockquote>
+    <p class="lead" id="pr-lead"></p>
+    <p class="pr-honest" id="pr-honest"></p>
+    <dl class="pr-stats" id="pr-stats"></dl>
+    <nav class="pr-jump" id="pr-jump" aria-label="本页内容"></nav>
+  </section>
+
+  <section class="pr-block" id="pr-map" aria-labelledby="pr-map-h" tabindex="-1">
+    <h2 id="pr-map-h"></h2>
+    <p class="muted" id="pr-map-note"></p>
+    <div class="pr-tools" id="pr-tools"></div>
+    <div class="pr-map">
+      <div class="pr-graph-box">
+        <div class="pr-graph-wrap" id="pr-graph-wrap">
+          <div class="pr-zoom" id="pr-zoom"></div>
+          <svg class="pr-graph" id="pr-graph" role="img"></svg>
+          <p class="pr-count" id="pr-count" aria-live="polite"></p>
+        </div>
+        <div class="pr-legend" id="pr-legend"></div>
+      </div>
+      <aside class="pr-panel" id="pr-panel" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section class="pr-block" id="pr-cube" aria-labelledby="pr-cube-h" tabindex="-1">
+    <h2 id="pr-cube-h"></h2>
+    <p class="muted" id="pr-cube-note"></p>
+    <div class="pr-cube">
+      <svg class="pr-cube-svg" id="pr-cube-svg" viewBox="0 0 520 300" role="group"></svg>
+      <div class="pr-cube-info" id="pr-cube-info" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="pr-block" id="pr-bounds" aria-labelledby="pr-bounds-h" tabindex="-1">
+    <h2 id="pr-bounds-h"></h2>
+    <p class="muted" id="pr-bounds-note"></p>
+    <div class="pr-bounds-filter" id="pr-bounds-filter"></div>
+    <div class="pr-bounds" id="pr-bounds-list"></div>
+  </section>
+
+  <section class="pr-block" id="pr-open" aria-labelledby="pr-open-h" tabindex="-1">
+    <h2 id="pr-open-h"></h2>
+    <p class="muted" id="pr-open-note"></p>
+    <div class="pr-open" id="pr-open-list"></div>
+  </section>
+
+  <footer class="pr-foot" id="pr-foot"></footer>
+  <noscript><p>这个页面需要 JavaScript 才能显示内容。</p></noscript>
+</main>
+</body>
+</html>
