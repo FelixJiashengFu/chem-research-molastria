@@ -1,9 +1,9 @@
 {
  "openapi": "3.1.0",
  "info": {
-  "title": "MolAstria open data API",
+  "title": "MolAstria API: open data and compute",
   "version": "1.0",
-  "description": "Static, read-only JSON: no key, no sign-up, no rate limit, CORS open. Each dataset is one whole file; filter on your side. Text fields are bilingual objects { zh, en }. Schemas are inferred from the published data.",
+  "description": "Two parts. Open data (tag \"open data\"): static, read-only JSON, no key, no sign-up, no rate limit, CORS open; each dataset is one whole file, filter on your side; text fields are bilingual objects { zh, en }; schemas are inferred from the published data. Compute (tag \"compute\", server https://api.molastria.com): calculations with machine-learned potentials for a free API key made on https://molastria.com/pro/account.html; submit, then poll. The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.",
   "license": {
    "name": "Creative Commons Attribution 4.0 International",
    "identifier": "CC-BY-4.0"
@@ -14,7 +14,17 @@
  },
  "servers": [
   {
-   "url": "https://molastria.com/api/v1"
+   "url": "https://molastria.com/api/v1",
+   "description": "Open data (static files)"
+  }
+ ],
+ "tags": [
+  {
+   "name": "open data"
+  },
+  {
+   "name": "compute",
+   "description": "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it."
   }
  ],
  "paths": {
@@ -33,7 +43,11 @@
        }
       }
      }
-    }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
    }
   },
   "/resources.json": {
@@ -51,7 +65,11 @@
        }
       }
      }
-    }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
    }
   },
   "/journals.json": {
@@ -69,7 +87,11 @@
        }
       }
      }
-    }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
    }
   },
   "/scimodels.json": {
@@ -87,7 +109,11 @@
        }
       }
      }
-    }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
    }
   },
   "/videos.json": {
@@ -105,7 +131,11 @@
        }
       }
      }
-    }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
    }
   },
   "/terms.json": {
@@ -119,6 +149,302 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/terms"
+        }
+       }
+      }
+     }
+    },
+    "tags": [
+     "open data"
+    ],
+    "security": []
+   }
+  },
+  "/v1/status": {
+   "servers": [
+    {
+     "url": "https://api.molastria.com",
+     "description": "Account service (the compute API)"
+    }
+   ],
+   "get": {
+    "operationId": "computeStatus",
+    "tags": [
+     "compute"
+    ],
+    "summary": "Whether the GPU answered the last probe and how often it was online over the last 7 days. No key.",
+    "security": [],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeStatus"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/me": {
+   "servers": [
+    {
+     "url": "https://api.molastria.com",
+     "description": "Account service (the compute API)"
+    }
+   ],
+   "get": {
+    "operationId": "computeMe",
+    "tags": [
+     "compute"
+    ],
+    "summary": "The key's tier and today's uses",
+    "security": [
+     {
+      "apiKey": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeMe"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No key, or a key that is not valid",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/models": {
+   "servers": [
+    {
+     "url": "https://api.molastria.com",
+     "description": "Account service (the compute API)"
+    }
+   ],
+   "get": {
+    "operationId": "computeModels",
+    "tags": [
+     "compute"
+    ],
+    "summary": "Models, the calculations each one does, what each calculation costs, and whether the GPU is online",
+    "security": [
+     {
+      "apiKey": []
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeModels"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No key, or a key that is not valid",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/jobs": {
+   "servers": [
+    {
+     "url": "https://api.molastria.com",
+     "description": "Account service (the compute API)"
+    }
+   ],
+   "post": {
+    "operationId": "computeSubmit",
+    "tags": [
+     "compute"
+    ],
+    "summary": "Queue a calculation; answers at once with the job id. Poll GET /v1/jobs/{id}.",
+    "security": [
+     {
+      "apiKey": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ComputeJobRequest"
+       },
+       "example": {
+        "smiles": "CCO",
+        "job": "opt",
+        "model": "uma-s-1p2p1"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "A result the service had already computed (cached: true)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeJob"
+        }
+       }
+      }
+     },
+     "202": {
+      "description": "Queued",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeJob"
+        }
+       }
+      }
+     },
+     "400": {
+      "description": "A field is missing or outside its range",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No key, or a key that is not valid",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "A model whose licence does not allow the API (licence)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Out of uses for today (quota_exceeded), a job already queued or running (job_in_progress), or the API as a whole is at its total for today (api_busy)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The GPU is offline (offline) or the API is switched off (unavailable)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/jobs/{id}": {
+   "servers": [
+    {
+     "url": "https://api.molastria.com",
+     "description": "Account service (the compute API)"
+    }
+   ],
+   "get": {
+    "operationId": "computeJob",
+    "tags": [
+     "compute"
+    ],
+    "summary": "The state of a job: queued, running, done (with result) or error. Finished jobs are kept for an hour.",
+    "security": [
+     {
+      "apiKey": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[0-9a-f]{16}$"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeJob"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No key, or a key that is not valid",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "No such job",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "The GPU is offline (offline) or the API is switched off (unavailable)",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ComputeError"
         }
        }
       }
@@ -1654,6 +1980,382 @@
      "count",
      "items"
     ]
+   },
+   "ComputeUsage": {
+    "type": "object",
+    "description": "Today's uses of the account (shared with what it runs on the site).",
+    "properties": {
+     "used": {
+      "type": "integer"
+     },
+     "limit": {
+      "type": "integer"
+     },
+     "remaining": {
+      "type": "integer"
+     },
+     "reset": {
+      "type": "integer",
+      "description": "Unix time at which the count starts again"
+     }
+    },
+    "required": [
+     "used",
+     "limit",
+     "remaining",
+     "reset"
+    ]
+   },
+   "ComputeError": {
+    "type": "object",
+    "properties": {
+     "error": {
+      "type": "object",
+      "properties": {
+       "code": {
+        "type": "string",
+        "description": "For programs.",
+        "examples": [
+         "unauthorized",
+         "invalid_request",
+         "quota_exceeded",
+         "job_in_progress",
+         "offline",
+         "api_busy",
+         "licence",
+         "not_found",
+         "too_many_requests",
+         "region",
+         "unavailable"
+        ]
+       },
+       "message": {
+        "type": "string",
+        "description": "English"
+       },
+       "message_zh": {
+        "type": "string",
+        "description": "Chinese"
+       }
+      },
+      "required": [
+       "code",
+       "message",
+       "message_zh"
+      ]
+     }
+    },
+    "required": [
+     "error"
+    ]
+   },
+   "ComputeJobRequest": {
+    "type": "object",
+    "description": "Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead). At most 30 heavy atoms and 120 atoms.",
+    "properties": {
+     "job": {
+      "type": "string",
+      "enum": [
+       "sp",
+       "opt",
+       "freq",
+       "conf",
+       "scan",
+       "md",
+       "rxn",
+       "ipea",
+       "spin",
+       "bde",
+       "pa"
+      ],
+      "default": "ipea",
+      "description": "sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity. GET /v1/models says which model does which."
+     },
+     "model": {
+      "type": "string",
+      "enum": [
+       "uma-s-1p2p1",
+       "uma-s-1p2",
+       "uma-s-1p2p1-ft-d4rev",
+       "uma-s-1p1",
+       "allscaip-md-conserving-all-omol",
+       "allscaip-md-direct-all-omol",
+       "esen-sm-conserving-all-omol",
+       "esen-sm-direct-all-omol",
+       "esen-md-direct-all-omol",
+       "ani-2x"
+      ],
+      "default": "uma-s-1p2p1"
+     },
+     "smiles": {
+      "type": "string",
+      "maxLength": 200
+     },
+     "xyz": {
+      "type": "string",
+      "maxLength": 12000,
+      "description": "Standard XYZ text: atom count, a comment line, then \"symbol x y z\" lines."
+     },
+     "charge": {
+      "type": "integer",
+      "minimum": -2,
+      "maximum": 2,
+      "default": 0
+     },
+     "spin": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4,
+      "default": 1,
+      "description": "Spin multiplicity. Models that are not \"charged\" take 0 and 1 only."
+     },
+     "params": {
+      "type": "object",
+      "description": "Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}."
+     }
+    },
+    "required": [
+     "job"
+    ]
+   },
+   "ComputeJob": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Absent when a cached result comes straight back."
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "queued",
+       "running",
+       "done",
+       "error"
+      ]
+     },
+     "position": {
+      "type": "integer",
+      "description": "Place in the queue while queued"
+     },
+     "cached": {
+      "type": "boolean"
+     },
+     "result": {
+      "type": "object",
+      "description": "Depends on the job; energies in eV, lengths in Å."
+     },
+     "error": {
+      "type": "string"
+     },
+     "cost": {
+      "type": "integer",
+      "description": "Uses this job took (on submit)"
+     },
+     "usage": {
+      "$ref": "#/components/schemas/ComputeUsage"
+     }
+    },
+    "required": [
+     "status"
+    ]
+   },
+   "ComputeMe": {
+    "type": "object",
+    "properties": {
+     "tier": {
+      "type": "string",
+      "enum": [
+       "free",
+       "pro"
+      ]
+     },
+     "usage": {
+      "$ref": "#/components/schemas/ComputeUsage"
+     },
+     "key": {
+      "type": "object",
+      "properties": {
+       "prefix": {
+        "type": "string"
+       },
+       "name": {
+        "type": "string"
+       },
+       "created": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   },
+   "ComputeModels": {
+    "type": "object",
+    "properties": {
+     "online": {
+      "type": "boolean"
+     },
+     "gpu": {
+      "type": "string"
+     },
+     "models": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string",
+         "enum": [
+          "uma-s-1p2p1",
+          "uma-s-1p2",
+          "uma-s-1p2p1-ft-d4rev",
+          "uma-s-1p1",
+          "allscaip-md-conserving-all-omol",
+          "allscaip-md-direct-all-omol",
+          "esen-sm-conserving-all-omol",
+          "esen-sm-direct-all-omol",
+          "esen-md-direct-all-omol",
+          "ani-2x"
+         ]
+        },
+        "ready": {
+         "type": "boolean"
+        },
+        "queue": {
+         "type": "integer"
+        },
+        "charged": {
+         "type": "boolean",
+         "description": "Handles charge and spin"
+        },
+        "jobs": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "sp",
+           "opt",
+           "freq",
+           "conf",
+           "scan",
+           "md",
+           "rxn",
+           "ipea",
+           "spin",
+           "bde",
+           "pa"
+          ]
+         }
+        }
+       }
+      }
+     },
+     "costs": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "description": "Uses per job"
+     },
+     "cost_with_thermo": {
+      "type": "integer"
+     },
+     "note": {
+      "type": "object",
+      "description": "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.",
+      "properties": {
+       "zh": {
+        "type": "string"
+       },
+       "en": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   },
+   "ComputeStatus": {
+    "type": "object",
+    "properties": {
+     "online": {
+      "type": [
+       "boolean",
+       "null"
+      ],
+      "description": "The last probe; null when there is no recent probe"
+     },
+     "checked": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "description": "Unix time of that probe"
+     },
+     "gpu": {
+      "type": "string"
+     },
+     "uptime": {
+      "type": "object",
+      "properties": {
+       "window_days": {
+        "type": "integer"
+       },
+       "every_minutes": {
+        "type": "integer"
+       },
+       "samples": {
+        "type": "integer"
+       },
+       "ratio": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "days": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "date": {
+           "type": "string",
+           "format": "date",
+           "description": "UTC"
+          },
+          "samples": {
+           "type": "integer"
+          },
+          "ratio": {
+           "type": [
+            "number",
+            "null"
+           ]
+          }
+         }
+        }
+       }
+      }
+     },
+     "note": {
+      "type": "object",
+      "description": "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.",
+      "properties": {
+       "zh": {
+        "type": "string"
+       },
+       "en": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  },
+  "securitySchemes": {
+   "apiKey": {
+    "type": "http",
+    "scheme": "bearer",
+    "description": "An API key (mola_…) made on the account page."
    }
   }
  }

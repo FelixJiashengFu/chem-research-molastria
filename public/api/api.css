@@ -55,6 +55,12 @@
 .api-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--faint)}
 .api-live[data-state=on] .api-dot{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 20%,transparent)}
 .api-live[data-state=off] .api-dot{background:var(--warn)}
+.api-uptime{display:flex;align-items:flex-end;gap:12px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.api-updays{flex:none;display:flex;align-items:flex-end;gap:4px;height:34px}
+.api-upday{display:flex;align-items:flex-end;width:14px;height:100%;border-radius:3px;background:color-mix(in srgb,var(--line) 60%,transparent);overflow:hidden}
+.api-upday i{display:block;width:100%;background:var(--ok);border-radius:3px 3px 0 0}
+.api-upday[data-empty]{background:none;border:1px dashed var(--line)}
+.api-gpu .api-uptime p{font-size:13px;line-height:1.6;color:var(--ink-2)}
 .doc .api-steps{margin:14px 0;padding:0;list-style:none;counter-reset:step;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .api-steps li{counter-increment:step;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.75;color:var(--ink-2);overflow-wrap:anywhere}
 .api-steps li b{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}

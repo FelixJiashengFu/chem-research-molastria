@@ -1,7 +1,8 @@
 """chemdb-agent MCP 服务器入口（fastmcp，标准输入输出）。
 
-九个工具都接到真实适配器上：每个数据源在线程里查询，超过 ``CHEMDB_SOURCE_TIMEOUT``
+十二个工具都接到真实适配器上：每个数据源在线程里查询，超过 ``CHEMDB_SOURCE_TIMEOUT``
 （默认 90 秒）就单独记为超时，其他来源的结果照常返回；完整记录按 record_id 缓存在数据目录里。
+其中三个（run_calculation、get_calculation、compute_status）调用 MolAstria 的计算接口，用机器学习势算分子。
 启动：``python -m chemdb_agent.server``。
 """
 
@@ -32,6 +33,9 @@ mcp = FastMCP(
         "search_molecules 查分子（PubChem、ChEMBL、ChEBI），find_qm_data / fetch_dataset_shard 找并下载 "
         "QCArchive 量子化学数据，get_record 取完整记录，export_training_set 导出 extxyz / ASE 数据库训练集，"
         "get_basis 取基组，search_resources 查资源目录，catalog_status 看数据源与本地数据。"
+        "要算而不是查：run_calculation 把分子交给 MolAstria 的在线机器学习势（UMA、eSEN、AllScAIP、ANI-2x）做单点、"
+        "优化、频率、构象、电离能等计算，get_calculation 取还没算完的任务，compute_status 看算力在不在线和今天还剩几次。"
+        "那份算力是站长电脑上的一块 RTX 2080，尽力而为，可能离线。"
     ),
     version=__version__,
 )
@@ -535,6 +539,85 @@ def export_training_set(
         records = [_load_record(rid)[0] for rid in dict.fromkeys(record_ids)]
     return {"status": "ok", **export.export_training_set(
         records, out, fmt, level_of_theory=level_of_theory, allow_mixed=allow_mixed, overwrite=overwrite)}
+
+
+# -- 计算：MolAstria 的在线机器学习势 -----------------------------------------
+
+
+def _job_view(job: dict[str, Any]) -> dict[str, Any]:
+    """任务的状态写成工具的返回值：算完给结果，没算完给任务号和下一步怎么做。"""
+    state = job.get("status")
+    out: dict[str, Any] = {"status": "ok" if state == "done" else "pending" if state in ("queued", "running") else "error", "job_status": state}
+    for k in ("id", "model", "job", "position", "progress", "cached", "cost", "usage", "result", "error"):
+        if k in job:
+            out["job_id" if k == "id" else k] = job[k]
+    if out["status"] == "pending":
+        out["next"] = f"还没算完（任务继续在排队或计算）。稍后用 get_calculation(job_id=\"{job.get('id')}\") 取结果；完成后保留一小时。"
+    return out
+
+
+@mcp.tool()
+@_tool_errors
+def run_calculation(
+    smiles: Annotated[str | None, Field(description="分子的 SMILES，如 CCO；与 xyz 二选一。反应能（job=rxn）不填这里，把反应 SMILES 写进 params.reaction")] = None,
+    job: Annotated[Literal["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"], Field(description="计算种类：sp 单点能与受力，opt 几何优化，freq 振动频率与热化学，conf 构象搜索，scan 二面角扫描，md 分子动力学，rxn 反应能，ipea 电离能与电子亲和能，spin 自旋态能隙，bde 键解离能，pa 质子亲和能。花费（次）：sp/opt/ipea 1，spin/bde/pa 2，freq/rxn 3，conf/scan/md 5")] = "opt",
+    model: Annotated[Literal["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "uma-s-1p1", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "ani-2x"], Field(description="模型，默认 UMA-S 1.2.1。ipea、spin、bde、pa 只有能处理电荷和自旋的模型做（uma-s-1p2p1、uma-s-1p2、uma-s-1p2p1-ft-d4rev 和两个 allscaip）；compute_status 列出每个模型现在能做什么")] = "uma-s-1p2p1",
+    xyz: Annotated[str | None, Field(description="标准 XYZ 文本（第一行原子数，第二行注释，之后每行“元素 x y z”，单位 Å），最多 120 个原子；与 smiles 二选一")] = None,
+    charge: Annotated[int | None, Field(ge=-2, le=2, description="总电荷，默认 0")] = None,
+    spin: Annotated[int | None, Field(ge=1, le=4, description="自旋多重度，默认 1")] = None,
+    params: Annotated[dict[str, Any] | None, Field(description="这种计算的参数，都可省略，除非标了必填：opt {fmax}；freq {temperature, symmetry}；conf {n, temperature, window_kcal}；scan {atoms 必填（四个原子序号）, start, end, points}；md {temperature, timestep_fs, steps, friction}；rxn {reaction 必填, thermo, temperature}；ipea {mode}；spin {spins}；bde {bond 必填（两个原子序号）, thermo, temperature}；pa {site 必填, mode, thermo, temperature}")] = None,
+    wait_s: Annotated[float, Field(ge=0, le=600, description="最多等多少秒；到时间还没算完就返回任务号，之后用 get_calculation 取。0 表示提交后立刻返回")] = 120,
+) -> dict[str, Any]:
+    """用 MolAstria 的在线机器学习势算一个分子（单点、优化、频率、构象、扫描、动力学、反应能、电离能等），等到算完并返回结果。
+
+    需要环境变量 MOLASTRIA_API_KEY（免费，在 https://molastria.com/pro/account.html 生成）。每次计算从账号每天的次数里扣
+    （免费账号 100 次，Pro 支持者 200 次），一个账号同时只能有一个任务。算力是站长电脑上的 RTX 2080，尽力而为，可能离线：
+    离线或排队时会如实报错或返回任务号，不要反复重试。能量单位 eV，长度 Å。结果是机器学习势的预测，不是 DFT。
+    """
+    from chemdb_agent.adapters import molastria_compute as mc
+
+    if job != "rxn" and (smiles is None) == (xyz is None):
+        raise ValueError("smiles 和 xyz 要给一个，且只能给一个")
+    submitted = mc.submit(job=job, model=model, smiles=smiles.strip() if smiles else None, xyz=xyz, charge=charge, spin=spin, params=params)
+    return _job_view(mc.wait(submitted, wait_s))
+
+
+@mcp.tool()
+@_tool_errors
+def get_calculation(
+    job_id: Annotated[str, Field(description="run_calculation 返回的任务号（16 位十六进制）")],
+    wait_s: Annotated[float, Field(ge=0, le=600, description="最多再等多少秒；0 表示只看一眼现在的状态")] = 60,
+) -> dict[str, Any]:
+    """取一个还没算完的计算的状态或结果（任务完成后保留一小时）。需要 MOLASTRIA_API_KEY。"""
+    from chemdb_agent.adapters import molastria_compute as mc
+
+    job_id = job_id.strip().lower()
+    if len(job_id) != 16 or any(c not in "0123456789abcdef" for c in job_id):
+        raise ValueError("job_id 应为 run_calculation 返回的 16 位十六进制任务号")
+    return _job_view(mc.wait(mc.get(job_id), wait_s))
+
+
+@mcp.tool()
+@_tool_errors
+def compute_status() -> dict[str, Any]:
+    """MolAstria 的算力现在在不在线、最近 7 天的在线率；配了 MOLASTRIA_API_KEY 时还有可用的模型、每种计算的花费和今天还剩几次。提交计算前先看一眼。"""
+    from chemdb_agent.adapters import molastria_compute as mc
+
+    out: dict[str, Any] = {"status": "ok", "note": mc.NOTE, "docs": mc.DOCS, "key_configured": bool(mc.configured_key())}
+    try:
+        st = mc.status()
+        out.update(online=st.get("online"), checked=st.get("checked"), gpu=st.get("gpu"), uptime=st.get("uptime"))
+    except net.SourceError as e:  # 状态查不到不影响下面带 key 的部分
+        out["status_error"] = _message(e)
+    if not out["key_configured"]:
+        out["key_hint"] = f"还没有配置 MOLASTRIA_API_KEY：在 {mc.ACCOUNT_PAGE} 用邮箱登录后生成（免费），写进环境变量后重启这个 MCP 服务器。"
+        return out
+    listed = mc.models()
+    out.update(online=listed.get("online"), gpu=listed.get("gpu") or out.get("gpu"), models=listed.get("models"), costs=listed.get("costs"),
+               cost_with_thermo=listed.get("cost_with_thermo"))
+    account = mc.me()
+    out.update(tier=account.get("tier"), usage=account.get("usage"))
+    return out
 
 
 def main() -> None:

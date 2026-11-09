@@ -27,7 +27,7 @@ public/               发布目录，推到 main 就上线
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
-  digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和前五篇带点评），digest-card.js 是首页的卡片
+  digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
   fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
@@ -37,9 +37,9 @@ public/               发布目录，推到 main 就上线
   quantum/algorithms/  量子嘉年华的“量子算法”展馆：qa-data.js 是全部内容（14 个算法，中英双语，每个带加速的证据等级；化学资源估算；65 篇文献在 OpenAlex / arXiv 核对过），qa-models.js 是演示的数学（态矢量模拟器等，纯函数），qa.js 渲染，qa-math.js 是生成的 MathML
   quantum/computing/  量子嘉年华 · 量子计算机：qc-data.js 是全部内容（中英两版，每条带确定程度，文献在 OpenAlex 核对过），qc-models.js 是演示的数学（纯函数，tools/quantum-computing-test.mjs 测），qc-math.js 是生成的 MathML；只讲硬件与纠错，算法在 quantum/algorithms/
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
-  api/                开放数据接口：v1/ 是给程序读的静态 JSON（资源目录、期刊、科学大模型与价格、教学视频，中英双语，CC BY 4.0），外加中英术语表、openapi.json，由 tools/build-api.mjs 从各栏目的数据文件生成（同时生成站点根的 llms.txt）；v1/molastria.mjs 是手写的零依赖 JS 库（跨数据集搜索，中英同义词互通，没有 DOM，tools/api-test.mjs 测）；embed.js 是给别人网页用的嵌入卡片（shadow DOM，自带中英文字，不走 i18n）；index.html + api.js 是说明页：搜索台、跟着搜索变的代码、嵌入卡片生成器，只用公开的接口；compute.js 是说明页里“计算接口”一段（在线状态、带 key 试一次、示例代码），接口本身在账号服务的 /v1。v1 只加字段，删改字段要出 v2
+  api/                开放数据接口：v1/ 是给程序读的静态 JSON（资源目录、期刊、科学大模型与价格、教学视频，中英双语，CC BY 4.0），外加中英术语表、openapi.json，由 tools/build-api.mjs 从各栏目的数据文件生成（同时生成站点根的 llms.txt）；v1/molastria.mjs 是手写的零依赖 JS 库（跨数据集搜索，中英同义词互通，没有 DOM，tools/api-test.mjs 测）；v1/molastria.py 是手写的零依赖 Python 客户端（读数据集、提交计算并等结果，tools/molastria-py-test.py 测）；embed.js 是给别人网页用的嵌入卡片（shadow DOM，自带中英文字，不走 i18n）；index.html + api.js 是说明页：搜索台、跟着搜索变的代码、嵌入卡片生成器，只用公开的接口；compute.js 是说明页里“计算接口”一段（在线状态和 7 天在线率、带 key 试一次、示例代码），接口本身在账号服务的 /v1。v1 只加字段，删改字段要出 v2
   about/              关于页：阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
-  pro/                价格页、账号页 account.html + account-page.js（含生成和撤销 API key）、条款
+  pro/                价格页、账号页 account.html + account-page.js（含生成和撤销 API key、今天的用量和最近的计算）、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   research-atlas/     研究图谱外层页面（中美二十所大学数理化网络、量子化学地图、Top 20、中美对比、北美产业）；app/ 是 university-science-research-network 的整站构建，由 tools/vendor-atlas.mjs 复制，不要手改；英文、Tт 字体和主题由外层页面经网址参数和 postMessage（ra-host）传进去，译文在那个仓库的 i18n/en.json，用本站的 i18n.js；每月 5 日 atlas-sync.yml 自动重新复制
@@ -47,14 +47,14 @@ public/               发布目录，推到 main 就上线
   qchem/              游乐场（地址仍是 /qchem/）：三个展区十四个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
-deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1 和 API key）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
+deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录和每 15 分钟一次的在线率探测）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口；src/notify.rs 把页面的通知（预印本雷达）转成系统通知；Mac 上 window.print() 改走 print_page 命令（WKWebView 自己不打印）
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-tools/uma-server/     在线模型：站长电脑上的服务 server.py（15 个模型，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；secret.local、cache*.json 不进 git
+tools/uma-server/     在线模型：站长电脑上的服务 server.py（15 个模型，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；start.ps1 启动服务和隧道（-KeepAlive 崩溃后重启），autostart.ps1 装成登录后自动启动；secret.local、cache*.json 不进 git
 tools/cloud/          站长的云端 GPU 批量计算：run.mjs（本机，经 gcloud）+ batch_uma.py / batch_mace.py / remote.sh（虚拟机上）；cloud.local.json 不进 git
-agent/chemdb-agent/   chemdb-agent 源码（计算化学 MCP 服务器，Python；测试与 venv 说明见其 README）。下载包由 python tools/pack-chemdb-agent.py 生成
+agent/chemdb-agent/   chemdb-agent 源码（计算化学 MCP 服务器，Python；十二个工具，其中三个经计算接口 /v1 提交计算；测试与 venv 说明见其 README）。下载包由 python tools/pack-chemdb-agent.py 生成
 maintenance/          Python 爬虫与合并脚本，单元测试是 test_*.py（离线）；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
 ```
 
@@ -66,6 +66,7 @@ deno run --allow-read tools/account-test.ts             # 账号服务接口测�
 node --test tools/lab-test.mjs                          # 实验室逻辑测试
 node tools/build-api.mjs                                # 开放数据接口：重新生成 public/api/v1/ 和 chemdb-agent 的 catalog/resources.json（改了目录、期刊、科学大模型、视频的数据后跑；发布时 CI 也会跑）
 node --test tools/api-test.mjs                          # 开放数据接口：内容完整、双语齐全、代号都对得上；JS 库的搜索（同义词互通、排序、筛选）
+python3 tools/molastria-py-test.py                      # Python 客户端 molastria.py：对着本地假服务测提交、等待、报错和命令行
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
 node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
@@ -140,6 +141,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **i18n：** 带 `{0}` 的词条至少要有 2 个汉字才生效；一个按钮和一个列表同名会共用一条译文（雷达的“收藏”因此把列表改成了“我的收藏”）。`i18n.js` 的 `SKIP` 选择器要写窄：`.card h3` 曾把实验室所有卡片标题一起跳过，现在是 `article.card h3`（只跳论文卡片）；`textarea` 只跳过内容，placeholder 照常翻译。`i18n-extract` 不抽资源名和 `hub/net-engine.js`，那里要显示英文的文字直接手加到 `i18n/en.json`（有译文的手加词条会保留）。只有一个汉字的模板（如 `${n} 条`）永远不会被翻译，写成至少两个汉字（`共 ${n} 条`）。
 - **计算接口 `/v1` 的报错要写两种语言：** 在线模型路径上的 `fail(状态, 中文, 英文, code)` 第三个参数是给程序看的英文，漏了的话 `/v1` 会把中文当英文返回。网站自己的接口只用中文那一句。
 - **Cloudflare 拦脚本的默认 User-Agent：** `api.molastria.com` 对 `Python-urllib/3.x` 返回 403（不是我们的 JSON）。给程序看的示例都要自己设 User-Agent。
+- **`pro.css` 的表格规则管到所有表格：** `td:not(:first-child){text-align:center;white-space:nowrap}` 是给价格表写的，账号页里新加的表格也会被它压成一行、撑出横向滚动；新表格要自己写回 `white-space:normal`（账号页的用量表就是这样）。
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。

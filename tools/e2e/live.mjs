@@ -37,6 +37,25 @@ check('compute API for programs: open to any origin, described without a key, cl
   assert.match(page.includes('compute.js') ? await (await fetch(`${SITE}/api/compute.js?v=${Date.now()}`)).text() : '', /"User-Agent": "my-script\/1\.0"/);
 });
 
+check('compute API: the uptime record is public, and the one-file Python client is served and not blocked', async () => {
+  // Probed every 15 minutes by the account service's cron; this only reads the record.
+  const res = await fetch(`${API}/v1/status`, { headers: { Origin: 'https://someone-elses-lab.example' } });
+  const s = await res.json();
+  assert.deepEqual([res.status, res.headers.get('access-control-allow-origin')], [200, '*']);
+  assert.ok([true, false, null].includes(s.online), 'online is yes, no, or unknown');
+  assert.deepEqual([s.uptime.window_days, s.uptime.every_minutes, s.uptime.days.length], [7, 15, 7]);
+  assert.ok(s.uptime.days.every((d) => /^\d{4}-\d\d-\d\d$/.test(d.date) && (d.ratio === null || (d.ratio >= 0 && d.ratio <= 1))));
+  assert.match(s.note.en, /RTX 2080.*best effort.*may be offline/);
+  // The cron has run since the deployment if a probe is on record (the first one comes within 15 minutes).
+  assert.ok(s.checked === null || Date.now() / 1000 - s.checked < 86400, 'the last probe is less than a day old');
+  const client = await (await fetch(`${SITE}/api/v1/molastria.py?v=${Date.now()}`)).text();
+  const agent = /^USER_AGENT = "(molastria-python\/)" \+ __version__$/m.exec(client)?.[1] + /^__version__ = "([\d.]+)"$/m.exec(client)?.[1];
+  assert.match(agent, /^molastria-python\/\d+\.\d+\.\d+$/);
+  assert.equal((await fetch(`${API}/v1/status`, { headers: { 'User-Agent': agent } })).status, 200, `Cloudflare lets ${agent} through`);
+  const spec = await (await fetch(`${SITE}/api/v1/openapi.json?v=${Date.now()}`)).json();
+  assert.ok(spec.paths['/v1/status'] && spec.paths['/v1/jobs'], 'openapi.json describes the compute API');
+});
+
 check('account service allows the site and the desktop app, and nobody else', async () => {
   const preflight = (origin) => fetch(`${API}/auth/start`, { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST' } });
   for (const origin of ['https://molastria.com', 'http://tauri.localhost', 'tauri://localhost']) {
@@ -53,12 +72,12 @@ check('desktop update feed matches the latest release', async () => {
   console.log(`     desktop ${latest.version}`);
 });
 
-check('weekly picks: the preview is public (at most five picks), the full issue needs an account', async () => {
+check('weekly picks: the whole issue is public, the subscription state needs an account', async () => {
   const r = await fetch(`${API}/digest/preview`);
   assert.equal(r.status, 200);
   const d = await r.json();
   assert.ok(Array.isArray(d.items));
-  assert.ok(d.items.length <= 5 && d.items.every((it) => it.title));
+  assert.ok(d.items.length === d.total && d.items.every((it) => it.title)); // content is free since 2026-11-08; before that the preview stopped at five
   assert.equal((await fetch(`${API}/digest/latest`)).status, 401);
   console.log(`     ${d.week || 'no issue yet'}, ${d.total} papers${d.items.some((it) => it.why_zh) ? ', comments public' : ''}`);
 });

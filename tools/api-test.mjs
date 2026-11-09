@@ -129,11 +129,19 @@ test('OpenAPI 与 llms.txt：每个数据集都有路径和结构，链接指向
   // Fields every entry has are required; optional ones are not.
   const video = o.components.schemas.videos.properties.items.items;
   assert.ok(video.required.includes('url') && !video.required.includes('duration'));
+  // The compute API is described too: its own server, a bearer key, and no key for the status.
+  for (const p of ['/v1/status', '/v1/me', '/v1/models', '/v1/jobs', '/v1/jobs/{id}']) assert.equal(o.paths[p].servers[0].url, 'https://api.molastria.com', p);
+  assert.deepEqual(o.components.securitySchemes.apiKey, { type: 'http', scheme: 'bearer', description: o.components.securitySchemes.apiKey.description });
+  assert.deepEqual([o.paths['/v1/status'].get.security, o.paths['/v1/jobs'].post.security, o.paths['/index.json'].get.security], [[], [{ apiKey: [] }], []]);
+  assert.ok(!o.components.schemas.ComputeJobRequest.properties.model.enum.some((m) => m.startsWith('mace')), 'no MACE model in the API');
+  assert.match(o.info.description, /RTX 2080[^\n]*best effort[^\n]*may be offline/);
+  for (const ref of JSON.stringify(o).match(/#\/components\/schemas\/\w+/g)) assert.ok(o.components.schemas[ref.split('/').pop()], ref);
   const llms = built['public/llms.txt'];
   assert.match(llms, /^# MolAstria\n\n> /);
   for (const e of index.endpoints) assert.ok(llms.includes(`(${e.url}): ${e.count} entries`), e.id);
   assert.ok(llms.includes('CC BY 4.0'));
   // The compute API: where it is, that it needs a key a person makes, and what the compute is.
+  assert.ok(llms.includes('(https://molastria.com/api/v1/molastria.py)') && llms.includes('GET /status'));
   assert.match(llms, /## Compute API[\s\S]*https:\/\/api\.molastria\.com\/v1[\s\S]*Authorization: Bearer mola_[\s\S]*RTX 2080[^\n]*best effort[^\n]*may be offline[^\n]*MACE models[^\n]*not offered/);
 });
 

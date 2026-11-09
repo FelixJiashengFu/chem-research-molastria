@@ -13,7 +13,7 @@
      GET  /me                           订阅、额度、课题组成员
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
-     GET  /keys                         自己的 API key（只有前缀，没有原文）；POST {name} 生成一个，原文只在这次返回；DELETE {id} 撤销
+     GET  /keys                         自己的 API key（只有前缀，没有原文）、今天的用量和最近通过 key 提交的计算；POST {name} 生成一个，原文只在这次返回；DELETE {id} 撤销
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
      GET  /digest/preview               每周精选的完整一期（概览、全部论文和点评），公开
@@ -24,11 +24,12 @@
      GET、POST /digest/unsubscribe?t=   邮件里的退订链接，不需要登录
    给程序用的计算接口（/v1，用 Authorization: Bearer mola_… 的 API key，不查来源网站；报错同时带英文和中文）：
      GET  /v1                           说明和文档地址，不用 key
+     GET  /v1/status                    GPU 最近一次探测是否在线、最近 7 天的在线率，不用 key
      GET  /v1/me                        这个 key 的档位和今天的次数
      GET  /v1/models                    可用的模型、每种计算花几次、GPU 在不在线
      POST /v1/jobs                      提交一个计算（和网站的 /uma/jobs 同一个队列、同一份每天次数；MACE 系列是学术许可，不提供）
      GET  /v1/jobs/<id>                 查询进度和结果
-   定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js）。
+   定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js），同一次里探测一下站长的 GPU 在不在线。
 
    赠送的 Pro：grants 表里 source = admin 的是站长本人（永久 Pro，可以发 VIP 卡），这一行用 wrangler d1 execute
    手动写入（见 PAYMENTS.md），不经过任何接口；兑换了 VIP 卡的人直接按 cards 表里的兑换记录算有效期。
@@ -494,6 +495,9 @@ async function uma(request, env, cors, path, ip, api = null) {
     }
     if (api) { // a program cannot see the site's counter, so the answer says what the job cost and what is left
       const usage = { used: Math.min(n, limit), limit, remaining: Math.max(0, limit - n), reset: (await windowOf(env, counter)).reset };
+      // For the account page: which key ran what and what it cost. Never the molecule.
+      await env.DB.prepare('INSERT INTO api_jobs (id, email, key_id, model, job, cost, cached, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)')
+        .bind(typeof data.id === 'string' ? data.id.slice(0, 16) : '', api.email, api.key || '', model, job, cost, data.cached ? 1 : 0, now()).run().catch((e) => console.error('api_jobs', e));
       return json({ ...data, cost, usage }, { ...cors, ...rateHeaders(usage) }, status);
     }
     return json(data, cors, status);
@@ -538,15 +542,80 @@ const rateHeaders = (u) => ({ 'X-RateLimit-Limit': String(u.limit), 'X-RateLimit
 const v1Models = Object.keys(UMA_MODELS).filter((id) => UMA_MODELS[id] === 'fair');
 const v1Costs = Object.fromEntries(Object.entries(UMA_COST).filter(([job]) => v1Models.some((id) => umaJobsOf(id).includes(job))));
 
+const JOBS_SHOWN = 10, JOBS_KEPT_DAYS = 30;
+/** The account's keys, each with what it used in the last 24 hours. */
 async function keyRows(env, email) {
-  return (await env.DB.prepare('SELECT substr(hash, 1, 16) AS id, prefix, name, created, last_used FROM api_keys WHERE email = ?1 ORDER BY created, rowid').bind(email).all()).results;
+  return (await env.DB.prepare(
+    `SELECT substr(k.hash, 1, 16) AS id, k.prefix, k.name, k.created, k.last_used,
+       (SELECT COALESCE(SUM(j.cost), 0) FROM api_jobs j WHERE j.email = k.email AND j.key_id = substr(k.hash, 1, 16) AND j.created > ?2) AS used_24h
+     FROM api_keys k WHERE k.email = ?1 ORDER BY k.created, k.rowid`
+  ).bind(email, now() - 86400).all()).results;
+}
+/** What the account page shows under the keys: today's allowance (shared with the site) and the latest jobs sent with a key. */
+async function keyUsage(env, email) {
+  const pro = (await access(env, email)).pro;
+  const limit = Number(pro ? env.UMA_DAILY_PRO || 200 : env.UMA_DAILY_ACCOUNT || 100);
+  const w = await windowOf(env, `uma:${email}`);
+  const jobs = (await env.DB.prepare(
+    `SELECT j.id, j.model, j.job, j.cost, j.cached, j.created, k.prefix AS key_prefix, k.name AS key_name
+     FROM api_jobs j LEFT JOIN api_keys k ON k.email = j.email AND substr(k.hash, 1, 16) = j.key_id
+     WHERE j.email = ?1 ORDER BY j.created DESC, j.rowid DESC LIMIT ?2`
+  ).bind(email, JOBS_SHOWN).all()).results.map((j) => ({ ...j, cached: !!j.cached }));
+  return { usage: { used: Math.min(w.n, limit), limit, remaining: Math.max(0, limit - w.n), reset: w.reset }, jobs };
+}
+
+// ── is the GPU there? ───────────────────────────────────────────────────
+// The scheduled task asks the computer every 15 minutes and keeps per-day counts in one row (status.uptime), so the public
+// answer costs one small read however often it is asked. "Best effort" is then a number anyone can check.
+const UPTIME_SLOT = 900, UPTIME_KEPT_DAYS = 35, UPTIME_SHOWN_DAYS = 7;
+const dayOf = (t) => new Date(t * 1000).toISOString().slice(0, 10);
+async function uptimeRow(env) {
+  const row = await env.DB.prepare("SELECT body FROM status WHERE name = 'uptime'").first();
+  try { const v = JSON.parse(row?.body || '{}'); return v && typeof v === 'object' ? v : {}; } catch { return {}; }
+}
+async function probeUptime(env) {
+  if (!env.UMA_ORIGIN || !env.UMA_SERVER_SECRET) return null; // no computer set up: nothing to record
+  const t = now(), slot = t - (t % UPTIME_SLOT);
+  const state = await uptimeRow(env);
+  if (state.last?.slot === slot) return state; // this quarter of an hour is already counted
+  let online = false, gpu = '';
+  try {
+    const { status, data } = await umaOrigin(env, '/health');
+    online = status === 200 && !!data?.ready;
+    gpu = online ? String(data.gpu || '').slice(0, 80) : '';
+  } catch { /* offline */ }
+  const days = state.days && typeof state.days === 'object' ? state.days : {};
+  const today = dayOf(slot), [up, n] = Array.isArray(days[today]) ? days[today] : [0, 0];
+  days[today] = [up + (online ? 1 : 0), n + 1];
+  // The first probe of a day also forgets job records older than a month.
+  if (!n) await env.DB.prepare('DELETE FROM api_jobs WHERE created < ?1').bind(t - JOBS_KEPT_DAYS * 86400).run();
+  const oldest = dayOf(slot - UPTIME_KEPT_DAYS * 86400);
+  for (const d of Object.keys(days)) if (d < oldest) delete days[d];
+  const next = { last: { slot, online, gpu: gpu || state.last?.gpu || '' }, days };
+  await env.DB.prepare("INSERT INTO status (name, body, updated) VALUES ('uptime', ?1, ?2) ON CONFLICT(name) DO UPDATE SET body = ?1, updated = ?2").bind(JSON.stringify(next), t).run();
+  return next;
+}
+function uptimeView(state) {
+  const t = now(), days = [];
+  let up = 0, n = 0;
+  for (let i = UPTIME_SHOWN_DAYS - 1; i >= 0; i--) {
+    const date = dayOf(t - i * 86400), [u, c] = Array.isArray(state.days?.[date]) ? state.days[date] : [0, 0];
+    up += u; n += c;
+    days.push({ date, samples: c, ratio: c ? Math.round((u / c) * 1000) / 1000 : null });
+  }
+  const fresh = state.last && t - state.last.slot < 3 * UPTIME_SLOT; // a missed probe or two is not "offline"; an old answer is "unknown"
+  return {
+    online: fresh ? !!state.last.online : null, checked: state.last?.slot || null, gpu: state.last?.gpu || '',
+    uptime: { window_days: UPTIME_SHOWN_DAYS, every_minutes: UPTIME_SLOT / 60, samples: n, ratio: n ? Math.round((up / n) * 1000) / 1000 : null, days },
+    note: V1_NOTE
+  };
 }
 /** The account behind this request's API key. Only keys are taken here, never the sign-in token of a browser. */
 async function keyOwner(env, request) {
   const key = bearer(request);
   if (!key) throw fail(401, '请在请求头里带上 API key：Authorization: Bearer mola_…', 'Send your API key in the request header: Authorization: Bearer mola_…');
   const hash = KEY_RE.test(key) ? await sha256(key) : '';
-  const row = hash && await env.DB.prepare('SELECT email, prefix, name, created, last_used FROM api_keys WHERE hash = ?1').bind(hash).first();
+  const row = hash && await env.DB.prepare('SELECT substr(hash, 1, 16) AS id, email, prefix, name, created, last_used FROM api_keys WHERE hash = ?1').bind(hash).first();
   if (!row) throw fail(401, '这个 API key 无效或已撤销，在账号页可以重新生成', 'This API key is not valid or has been revoked; make a new one on the account page');
   const t = now();
   if (!row.last_used || row.last_used < t - 3600) await env.DB.prepare('UPDATE api_keys SET last_used = ?2 WHERE hash = ?1').bind(hash, t).run().catch(() => {});
@@ -558,8 +627,11 @@ async function v1(request, env, path, ip) {
   if (key === 'GET /v1') { // what this is and where the documentation lives; needs no key
     return json({
       service: 'molastria-compute', version: 1, docs: V1_DOCS, auth: 'Authorization: Bearer mola_…', note: V1_NOTE,
-      endpoints: ['GET /v1/me', 'GET /v1/models', 'POST /v1/jobs', 'GET /v1/jobs/{id}']
+      endpoints: ['GET /v1/status', 'GET /v1/me', 'GET /v1/models', 'POST /v1/jobs', 'GET /v1/jobs/{id}']
     }, cors);
+  }
+  if (key === 'GET /v1/status') { // public and cheap: one row, and a browser may keep the answer for five minutes
+    return new Response(JSON.stringify(uptimeView(await uptimeRow(env))), { headers: { ...cors, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
   }
   if (env.API_COMPUTE === '0') throw fail(503, '计算接口暂时关闭', 'The compute API is switched off for now');
   if (UMA_BLOCKED.has(request.cf?.country || '')) throw fail(451, '按照模型许可要求遵守的出口管制规定，这个地区不能使用在线计算服务', 'Under the export control rules the model licences require us to follow, the online calculation service is not available in this region');
@@ -586,7 +658,7 @@ async function v1(request, env, path, ip) {
     return json({ online: !!health?.ready, gpu: String(health?.gpu || ''), models, costs: v1Costs, cost_with_thermo: 5, note: V1_NOTE }, cors);
   }
   if (key === 'POST /v1/jobs' || (request.method === 'GET' && /^\/v1\/jobs\/[0-9a-f]{16}$/.test(path))) {
-    return uma(request, env, cors, path.replace('/v1/', '/uma/'), ip, { email: owner.email, pro });
+    return uma(request, env, cors, path.replace('/v1/', '/uma/'), ip, { email: owner.email, pro, key: owner.id });
   }
   throw fail(404, '没有这个接口', 'No such endpoint');
 }
@@ -694,7 +766,7 @@ async function route(request, env, cors) {
 
   if (path === '/keys') { // API keys of the signed-in account, free or paid
     const me = await signedIn(env, request);
-    const listed = async (extra = {}) => json({ ...extra, keys: await keyRows(env, me), max: MAX_KEYS }, cors);
+    const listed = async (extra = {}) => json({ ...extra, keys: await keyRows(env, me), max: MAX_KEYS, ...(await keyUsage(env, me)) }, cors);
     if (request.method === 'GET') return listed();
     if (request.method === 'POST') {
       if (!(await allow(env, `keys:${me}`, 10, 3600))) throw fail(429, '生成得太频繁，请一小时后再试');
@@ -849,7 +921,10 @@ export default {
   async scheduled(event, env) {
     try {
       if (event.cron === BUILD_CRON) await buildDigest(env);
-      else await sendPending(env, { access, sendMail });
+      else {
+        await probeUptime(env).catch((e) => console.error('uptime probe failed', e)); // its own catch: mail still goes out
+        await sendPending(env, { access, sendMail });
+      }
     } catch (e) { console.error('scheduled task failed', event.cron, e); }
   },
 
