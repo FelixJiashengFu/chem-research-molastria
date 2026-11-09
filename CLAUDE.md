@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是晨光科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -32,7 +32,7 @@ public/               发布目录，推到 main 就上线
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
   fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
-  about/              关于页：晨光科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
+  about/              关于页：阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改

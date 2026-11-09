@@ -1,4 +1,4 @@
-/* 关于页（Morning Glory 晨光科技与 MolAstria）：只用 shared-nav.css 的变量。 */
+/* 关于页（Morning Glory 阿斯特赖亚科技与 MolAstria）：只用 shared-nav.css 的变量。 */
 .about{max-width:860px}
 .mg-hero{text-align:center;padding:12px 0 18px}
 .mg-mark{width:64px;height:64px;color:var(--gold);margin-bottom:10px}
@@ -50,3 +50,52 @@
   .mg-dirs{grid-template-columns:1fr}
 }
 html[lang=en] .mg-dir .mg-en{display:none}
+
+/* MolAstria 品牌故事（#story，story.js 按语言画）：星图与分子的连线、罗马数字章节、逐级深入的台阶、引文与结语。 */
+.story{position:relative;margin:30px 0 34px;padding:30px clamp(18px,4vw,44px) 34px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--gold-soft),transparent 380px),var(--surface);text-align:center}
+.story-mark{width:min(220px,70%);height:auto;color:var(--gold);margin:0 auto 8px;display:block}
+.story .eyebrow{margin:0 0 8px;letter-spacing:2.4px}
+.story h2{font-family:var(--font-serif);font-weight:600;font-size:clamp(22px,3.4vw,30px);line-height:1.45;margin:0;border:0;padding:0;text-wrap:balance}
+html[lang=en] .story h2,html[lang=en] .story-ch h3{font-family:var(--font-num)}
+.story-en{font-family:var(--font-num);font-style:italic;color:var(--muted);font-size:14px!important;letter-spacing:.2px}
+.story-ch{text-align:left;max-width:640px;margin:32px auto 0;padding-top:26px;border-top:1px solid var(--line)}
+.story-ch h3{display:flex;align-items:baseline;gap:12px;margin:0;font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--ink)}
+.story-num{font:400 22px/1 var(--font-num);color:var(--gold);min-width:28px}
+.story-ch>.story-en{margin:2px 0 0 40px!important}
+.story-ch>h3+p:not(.story-en),.story-ch>.story-en+*{margin-top:14px!important}
+.story-ch p{font-size:15px!important;line-height:1.95!important;color:var(--ink-2);margin:0 0 10px}
+html[lang=en] .story-ch p{line-height:1.8!important}
+.story-ch strong{color:var(--ink);font-weight:600}
+.story-ch em{font-family:var(--font-num);font-style:italic}
+.story-key{margin:16px 0!important;padding:2px 0 2px 14px;border-left:2px solid var(--gold);font-family:var(--font-serif);font-size:16px!important;color:var(--ink)!important}
+html[lang=en] .story-key{font-family:var(--font-num);font-style:italic;font-size:16.5px!important}
+.story-why{text-align:center;margin:14px 0 18px!important;font:400 26px/1.4 var(--font-serif)!important;letter-spacing:1px;color:var(--gold)!important}
+.story-why strong{color:inherit;font-weight:600}
+/* 一层层往下：每一级多缩进一点，左边一条金色的线把台阶连起来。 */
+.story-ladder{list-style:none;margin:16px 0 18px;padding:0;counter-reset:lad}
+.story-ladder li{counter-increment:lad;position:relative;margin:0 0 4px calc(var(--i,0) * 18px);padding:6px 0 8px 30px;border-left:1px solid color-mix(in srgb,var(--gold) 55%,transparent);font-size:14.5px;line-height:1.85;color:var(--ink-2)}
+.story-ladder li::before{content:counter(lad);position:absolute;left:-11px;top:8px;width:21px;height:21px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px var(--gold);font:400 12px/21px var(--font-num);color:var(--gold);text-align:center}
+.story-ladder li:nth-child(2){--i:1}.story-ladder li:nth-child(3){--i:2}.story-ladder li:nth-child(4){--i:3}.story-ladder li:nth-child(5){--i:4}
+.story-questions{list-style:none;padding:0;margin:12px 0 16px;display:grid;gap:8px}
+.story-questions li{position:relative;padding:8px 14px 8px 34px;background:var(--surface-2);border-radius:10px;font-family:var(--font-serif);font-size:15px;line-height:1.7;color:var(--ink)}
+html[lang=en] .story-questions li{font-family:var(--font-num);font-style:italic}
+.story-questions li::before{content:"?";position:absolute;left:13px;top:7px;font:italic 400 17px var(--font-num);color:var(--gold)}
+.story-stanza{list-style:none;margin:22px 0 4px;padding:18px 0 0;border-top:1px dashed var(--line-strong);text-align:center;display:grid;gap:4px}
+.story-stanza li{font-family:var(--font-serif);font-size:16px;line-height:1.9;color:var(--ink)}
+html[lang=en] .story-stanza li{font-family:var(--font-num);font-style:italic}
+.story-stanza li:last-child{margin-top:6px;color:var(--gold)}
+.story-quote{margin:20px 0 6px;padding:16px 20px;border-left:3px solid var(--gold);background:var(--gold-soft);border-radius:0 10px 10px 0}
+.story-quote p{margin:0!important;font-family:var(--font-num);font-style:italic;font-size:17px!important;line-height:1.6!important;color:var(--ink)}
+.story-quote p.story-zh{font-family:var(--font-serif);font-style:normal;font-size:14.5px!important;color:var(--ink-2);margin-top:6px!important}
+.story-quote p.story-cite{font-family:var(--font-sans);font-style:normal;font-size:12px!important;color:var(--muted);letter-spacing:.3px;margin-top:8px!important}
+.story-coda{margin:38px auto 0;padding-top:30px;border-top:1px solid var(--line);max-width:640px}
+.story-coda p{margin:0}
+.story-coda-name{font:400 13px var(--font-num);letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px!important}
+.story-coda-en{font-family:var(--font-num);font-size:clamp(18px,2.6vw,23px)!important;line-height:1.5!important;color:var(--ink);font-weight:600;text-wrap:balance}
+.story-coda .story-zh{font-family:var(--font-serif);font-size:15px!important;color:var(--accent-2);margin-top:6px!important}
+.story-rule{display:block;width:56px;height:1px;margin:20px auto;background:var(--gold)}
+.story-coda-line{font-family:var(--font-num);font-style:italic;font-size:16px!important;line-height:1.6!important;color:var(--ink-2);text-wrap:balance}
+@media (max-width:640px){
+  .story-ch>.story-en{margin-left:0!important}
+  .story-ladder li{margin-left:calc(var(--i,0) * 8px)}
+}

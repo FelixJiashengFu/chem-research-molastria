@@ -1,12 +1,12 @@
 # 品牌与商标说明 · Trademarks and brand assets
 
-**MIT 许可证只适用于本仓库的源代码，不包括下面这些品牌元素。** 它们归 16513778 Canada Inc.（品牌 Morning Glory / 晨光科技）所有，保留所有权利，未经书面许可，不得用于其他网站、应用、产品、服务或宣传材料。
+**MIT 许可证只适用于本仓库的源代码，不包括下面这些品牌元素。** 它们归 16513778 Canada Inc.（品牌 Morning Glory / 阿斯特赖亚科技）所有，保留所有权利，未经书面许可，不得用于其他网站、应用、产品、服务或宣传材料。
 
 **The MIT License covers this repository's source code only. It does not cover the brand assets below.** They belong to 16513778 Canada Inc. (brand: Morning Glory), which reserves all rights in them; they may not be used for other websites, apps, products, services or promotion without written permission.
 
 ## 包括 · What this covers
 
-- 名称 **Morning Glory**、**晨光科技**、**晨光实验室**，以及口号 “Intelligence Beyond Boundaries.”。The names **Morning Glory**, **晨光科技** and **晨光实验室**, and the slogan “Intelligence Beyond Boundaries.”
+- 名称 **Morning Glory**、**阿斯特赖亚科技**（2026-11-08 起的中文名），以及原中文名 **晨光科技**、**晨光实验室**；口号 “Intelligence Beyond Boundaries.”。The names **Morning Glory** and **阿斯特赖亚科技** (the Chinese name since 2026-11-08), the former Chinese names **晨光科技** and **晨光实验室**, and the slogan “Intelligence Beyond Boundaries.”
 - 名称 **MolAstria**（含 Mol*Astria* 字样的写法）。The name **MolAstria**, including the Mol*Astria* wordmark.
 - 徽标：圆角方块中的苯环、倾斜的电子轨道与四角星（`public/shared-nav.js` 中的 `mark`、`public/favicon.svg`、`public/assets/pwa/` 里的图标）。The logo: a benzene ring on a tilted electron orbit with a four-point star in a rounded tile (`mark` in `public/shared-nav.js`, `public/favicon.svg`, the icons in `public/assets/pwa/`).
 - 品牌视频与图片：`public/assets/brand/` 里的全部文件。The brand videos and images in `public/assets/brand/`.

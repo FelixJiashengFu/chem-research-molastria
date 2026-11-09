@@ -355,6 +355,9 @@
   "shared-nav.js",
   "radar/app/app.js"
  ],
+ "品牌故事": [
+  "index.html"
+ ],
  "站点地图": [
   "index.html"
  ],
@@ -1085,7 +1088,8 @@
  ],
  "数学基础与探索": [
   "fundamental-science/index.html",
-  "fundamental-science/math/index.html"
+  "fundamental-science/math/index.html",
+  "tools/build-seo.ts"
  ],
  "核心研究理念": [
   "fundamental-science/index.html"
@@ -4698,7 +4702,7 @@
  "1. 服务内容": [
   "pro/terms.html"
  ],
- "MolAstria 由 Jiasheng Fu 以个人身份运营，本条款中的“我们”指运营者本人，付款也由运营者本人收取。MolAstria 是 Morning Glory（晨光科技）品牌旗下的项目，名称与徽标归 16513778 Canada Inc. 所有。": [
+ "MolAstria 由 Jiasheng Fu 以个人身份运营，本条款中的“我们”指运营者本人，付款也由运营者本人收取。MolAstria 是 Morning Glory（阿斯特赖亚科技）品牌旗下的项目，名称与徽标归 16513778 Canada Inc. 所有。": [
   "pro/terms.html"
  ],
  "详见关于页": [
@@ -5036,11 +5040,11 @@
  "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
   "download/index.html"
  ],
- "关于 · Morning Glory 晨光科技与 MolAstria": [
+ "关于 · Morning Glory 阿斯特赖亚科技与 MolAstria": [
   "about/index.html",
   "tools/build-seo.ts"
  ],
- "MORNING GLORY · 晨光科技": [
+ "MORNING GLORY · 阿斯特赖亚科技": [
   "about/index.html"
  ],
  "智能无界，探索未知。": [
@@ -5049,7 +5053,10 @@
  "从人工智能到科学发现。": [
   "about/index.html"
  ],
- "MolAstria 是晨光科技（Morning Glory）旗下的 AI 与科学计算项目。": [
+ "MolAstria 是阿斯特赖亚科技（Morning Glory）旗下的 AI 与科学计算项目。": [
+  "about/index.html"
+ ],
+ "MolAstria — 从分子出发，探索现实的深层本质": [
   "about/index.html"
  ],
  "Morning Glory 是 16513778 Canada Inc. 在多伦多发展的新兴科技品牌，关注 AI 应用、智能自动化、数据分析与科学计算。": [
@@ -5073,8 +5080,9 @@
  "中文名称": [
   "about/index.html"
  ],
- "晨光科技 / 晨光实验室": [
-  "about/index.html"
+ "阿斯特赖亚科技": [
+  "about/index.html",
+  "tools/build-seo.ts"
  ],
  "企业性质": [
   "about/index.html"
@@ -5097,7 +5105,7 @@
  "加拿大联邦注册公司 · 法律实体": [
   "about/index.html"
  ],
- "晨光科技 · 科技品牌": [
+ "阿斯特赖亚科技 · 科技品牌": [
   "about/index.html"
  ],
  "AI 与科学计算": [
@@ -5250,7 +5258,7 @@
  "合作与问题：": [
   "about/index.html"
  ],
- "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 晨光科技，再下面是 MolAstria 与三个规划中的方向": [
+ "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 阿斯特赖亚科技，再下面是 MolAstria 与三个规划中的方向": [
   "about/index.html"
  ],
  "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
@@ -5588,7 +5596,7 @@
  "AI 助手": [
   "shared-nav.js"
  ],
- "晨光科技（Morning Glory）旗下项目": [
+ "阿斯特赖亚科技（Morning Glory）旗下项目": [
   "shared-nav.js"
  ],
  "由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源": [
@@ -11252,13 +11260,13 @@
  "进一步基础科学发现 · Advancing Fundamental Science": [
   "tools/build-seo.ts"
  ],
+ "数学基础与探索 · Mathematical Foundations & Exploration": [
+  "tools/build-seo.ts"
+ ],
+ "为量子力学基础与量子化学准备的数学地图：线性代数、泛函分析与谱理论、群论与表示论、微分几何与拓扑、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论；讲解、大纲、练习、核对过的教材与公开课视频。": [
+  "tools/build-seo.ts"
+ ],
  "计算化学论文与社区": [
-  "tools/build-seo.ts"
- ],
- "晨光科技": [
-  "tools/build-seo.ts"
- ],
- "晨光实验室": [
   "tools/build-seo.ts"
  ],
  "用开源小模型训练你自己的化学研究 Agent": [
