@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -2398,8 +2398,125 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
   await finish(p);
 });
 
+check('open data API: files are valid, docs page lists them from index.json, footer link, English, phone width', async () => {
+  const p = await open({ viewport: { width: 390, height: 844 } });
+  await go(p, '/api/index.html');
+  await p.waitForSelector('.api-set');
+  const index = await (await p.request.get(`${SITE}/api/v1/index.json`)).json();
+  assert.equal(await p.locator('.api-set').count(), index.endpoints.length);
+  for (const e of index.endpoints) {
+    const res = await p.request.get(`${SITE}/api/v1/${e.id}.json`);
+    assert.equal(res.status(), 200, e.id);
+    assert.equal((await res.json()).items.length, e.count, e.id);
+    assert.match(await text(p, `.api-set:has(a.api-url[href="v1/${e.id}.json"])`), new RegExp(`共 ${e.count} 条`));
+  }
+  for (const f of ['api/v1/openapi.json', 'api/v1/molastria.mjs', 'api/embed.js', 'llms.txt']) assert.equal((await p.request.get(`${SITE}/${f}`)).status(), 200, f);
+  for (const href of await p.locator('.api-files a').evaluateAll((as) => as.map((a) => a.href.split('#')[0]))) assert.equal((await p.request.get(href)).status(), 200, href);
+  assert.match(await text(p, '#api-updated'), /最近核对 \d{4}-\d{2}-\d{2}/);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  // Every page's footer line links here.
+  await go(p, '/about/index.html');
+  await p.click('.cr-legal a[href*="api/"]');
+  await p.waitForURL(/\/api\//);
+  await go(p, '/api/index.html?lang=en');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await p.waitForSelector('.api-set'); await p.waitForSelector('.api-hit');
+  assert.match(await text(p, 'h1'), /Open data API/);
+  assert.match(await text(p, '.api-set'), /Resource catalogue[\s\S]*\d+ entries · checked/);
+  assert.equal(await p.inputValue('#api-q'), 'density functional', 'English pages start with an English query');
+  assert.match(await text(p, '#api-status'), /^\d+ results, showing the first 6$/);
+  assert.ok(!/[\u4e00-\u9fff]/.test(await p.evaluate(() => [...document.querySelectorAll('main > :not(#api-hits):not(.api-embed):not(pre), .api-form')].map((n) => n.innerText).join('\n').replace(/密度泛函/g, ''))), 'page text fully in English');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll in English at phone width');
+  await finish(p);
+});
+
+check('open data API: live search (bilingual synonyms, dataset chips, shareable address) and code that follows the search', async () => {
+  const p = await open();
+  await p.addInitScript(() => { navigator.clipboard.writeText = (t) => { window.__copied = t; return Promise.resolve(); }; });
+  await go(p, '/api/index.html');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), '密度泛函');
+  const count = async () => +(await text(p, '#api-status')).match(/共 (\d+) 条/)[1];
+  const zh = await count(), zhTitles = await p.locator('.api-hit-title').allTextContents();
+  assert.ok(zh > 20);
+  assert.ok(zhTitles.some((t) => /DFT/.test(t) && !/密度泛函/.test(t)), 'finds entries that only say DFT');
+  await p.fill('#api-q', 'DFT');
+  await p.waitForFunction(() => /#q=DFT$/.test(location.hash));
+  await p.waitForTimeout(200);
+  assert.equal(await count(), zh, '“DFT” and “密度泛函” match the same entries');
+  assert.deepEqual(await p.locator('.api-hit-title').allTextContents(), zhTitles);
+  // Chips: counts for every dataset; pressing one narrows the list and the code.
+  const videos = +(await text(p, '#api-in [data-set=videos] b'));
+  assert.ok(videos > 0 && videos < zh);
+  await p.click('#api-in [data-set=videos]');
+  await p.waitForFunction(() => /in=videos/.test(location.hash));
+  await p.waitForFunction((n) => new RegExp(`共 ${n} 条`).test(document.querySelector('#api-status').textContent), videos);
+  assert.deepEqual([...new Set(await p.locator('.api-kind').allTextContents())], ['videos']);
+  assert.match(await text(p, '#api-code'), /search\("DFT", \{ datasets: \["videos"\], limit: 6 \}\)/);
+  await p.click('.api-tabs [data-tab=py]');
+  assert.match(await text(p, '#api-code'), /words = "DFT"\.lower\(\)\.split\(\)[\s\S]*for name in \["videos"\]/);
+  await p.click('.api-tabs [data-tab=curl]');
+  assert.match(await text(p, '#api-code'), /^curl -s https:\/\/molastria\.com\/api\/v1\/videos\.json \| jq -r --arg w0 'dft' /);
+  await p.click('.api-copy[data-copy=api-code]');
+  assert.match(await p.evaluate(() => window.__copied), /^curl -s /);
+  assert.match(await text(p, '.api-copy[data-copy=api-code]'), /已复制/);
+  // A result shows its raw entry; its title goes to the resource itself.
+  await p.click('.api-hit summary');
+  assert.match(await text(p, '.api-hit details[open] pre'), /"platform": "(youtube|bilibili)"/);
+  assert.match(await p.getAttribute('.api-hit-title', 'href'), /^https:\/\/(www\.youtube\.com|www\.bilibili\.com)\//);
+  // The address restores the search (embed cards link here this way); nonsense finds nothing, without errors.
+  await go(p, '/api/index.html#q=orca&in=resources');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), 'orca');
+  assert.equal(await text(p, '.api-hit-title'), 'ORCA');
+  assert.equal(await p.getAttribute('#api-in [data-set=resources]', 'aria-pressed'), 'true');
+  await p.fill('#api-q', 'zzzz-nothing');
+  await p.waitForFunction(() => /没有找到/.test(document.querySelector('#api-status').textContent));
+  assert.equal(await p.locator('.api-hit').count(), 0);
+  await p.click('#api-tries [data-try] >> nth=1');
+  await p.waitForSelector('.api-hit');
+  assert.equal(await p.inputValue('#api-q'), 'ORCA');
+  await finish(p);
+});
+
+check('open data API: embed card (builder preview and snippet, a bare script tag on another page, dark theme, English, no style leaks)', async () => {
+  const p = await open();
+  await go(p, '/api/index.html');
+  const card = (sel, q) => p.evaluate(([s, inner]) => { const r = document.querySelector(s)?.shadowRoot; return inner ? [...(r?.querySelectorAll(inner) || [])].map((n) => n.textContent) : !!r; }, [sel, q]);
+  await p.waitForFunction(() => document.querySelector('#api-preview').shadowRoot?.querySelectorAll('li').length === 4);
+  assert.match(await text(p, '#api-snippet'), /^<script async src="https:\/\/molastria\.com\/api\/embed\.js" data-q="机器学习势" data-limit="4"><\/script>$/);
+  await p.fill('#api-embed-form [name=q]', 'ORCA');
+  await p.selectOption('#api-embed-form [name=dataset]', 'resources');
+  await p.fill('#api-embed-form [name=limit]', '2');
+  await p.selectOption('#api-embed-form [name=lang]', 'en');
+  await p.selectOption('#api-embed-form [name=theme]', 'dark');
+  await p.waitForFunction(() => document.querySelector('#api-preview').shadowRoot?.querySelectorAll('li').length === 2 && document.querySelector('#api-preview').dataset.theme === 'dark');
+  assert.equal((await card('#api-preview', '.t'))[0], 'ORCA');
+  assert.deepEqual([...new Set(await card('#api-preview', '.k'))], ['Resource']);
+  assert.match((await card('#api-preview', 'footer'))[0], /See all \d+ on MolAstria.*Data: MolAstria open data API.*CC BY 4\.0/);
+  assert.match(await text(p, '#api-snippet'), /data-q="ORCA" data-dataset="resources" data-limit="2" data-lang="en" data-theme="dark"/);
+  // On someone else's page: one script tag, the card appears after it and the page's own CSS does not reach inside.
+  await go(p, '/offline.html');
+  await p.evaluate(() => {
+    document.head.insertAdjacentHTML('beforeend', '<style>a{color:rgb(255,0,0)!important} li{padding:99px!important}</style>');
+    const s = Object.assign(document.createElement('script'), { src: '/api/embed.js' });
+    Object.assign(s.dataset, { q: '密度泛函', dataset: 'journals,videos', limit: '3', title: 'DFT 入门' });
+    document.body.append(s);
+  });
+  await p.waitForFunction(() => document.querySelector('.molastria-embed')?.shadowRoot?.querySelectorAll('li').length === 3);
+  assert.equal((await card('.molastria-embed', 'header span'))[0], 'DFT 入门');
+  assert.ok((await card('.molastria-embed', '.k')).every((k) => k === '期刊' || k === '视频'));
+  const style = await p.evaluate(() => { const r = document.querySelector('.molastria-embed').shadowRoot; return [getComputedStyle(r.querySelector('a')).color, getComputedStyle(r.querySelector('li')).paddingTop]; });
+  assert.notEqual(style[0], 'rgb(255, 0, 0)'); assert.equal(style[1], '12px');
+  assert.ok(await p.evaluate(() => [...document.querySelector('.molastria-embed').shadowRoot.querySelectorAll('a')].every((a) => /^https:\/\//.test(a.href) && a.rel === 'noopener')));
+  // Nothing matches: says so instead of an empty box.
+  await p.evaluate(() => window.MolAstriaEmbed.render(document.querySelector('.molastria-embed'), { q: 'zzzz-nothing', lang: 'en' }));
+  await p.waitForFunction(() => /Nothing matches/.test(document.querySelector('.molastria-embed').shadowRoot.querySelector('.state')?.textContent));
+  await finish(p);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

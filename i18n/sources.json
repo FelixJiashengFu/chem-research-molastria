@@ -316,12 +316,16 @@
  "科学大模型": [
   "index.html",
   "about/index.html",
+  "api/index.html",
   "shared-nav.js",
+  "api/api.js",
   "tools/build-seo.ts"
  ],
  "教学视频": [
   "index.html",
+  "api/index.html",
   "shared-nav.js",
+  "api/api.js",
   "tools/build-seo.ts"
  ],
  "Meta × 化学": [
@@ -559,6 +563,8 @@
   "hub/index.html",
   "hub/network.html",
   "train/index.html",
+  "api/index.html",
+  "api/api.js",
   "app.js",
   "atlas/app.js",
   "tools/build-seo.ts"
@@ -692,7 +698,9 @@
   "atlas/index.html"
  ],
  "复制代码": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "api/index.html",
+  "api/api.js"
  ],
  "Materials Project 官方接口需在项目目录的 .env 里设置 MP_API_KEY，不设也能用其余数据源。代码示例中的路径须替换为项目的实际位置；网页不会保存 API key。": [
   "atlas/index.html"
@@ -780,6 +788,7 @@
  ],
  "中文": [
   "manual/index.html",
+  "api/index.html",
   "videos/videos.js"
  ],
  "打印当前章节": [
@@ -1046,7 +1055,8 @@
   "videos/index.html"
  ],
  "语言": [
-  "videos/index.html"
+  "videos/index.html",
+  "api/index.html"
  ],
  "全部语言": [
   "videos/index.html"
@@ -2013,7 +2023,8 @@
   "hub/network.html"
  ],
  "试试：": [
-  "hub/network.html"
+  "hub/network.html",
+  "api/index.html"
  ],
  "全网概览": [
   "hub/network.html",
@@ -2313,6 +2324,7 @@
   "lab/index.html",
   "meta/index.html",
   "train/index.html",
+  "api/index.html",
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
   "quantum/computing/qc.js",
@@ -3073,7 +3085,8 @@
   "meta/index.html"
  ],
  "数据集": [
-  "meta/index.html"
+  "meta/index.html",
+  "api/index.html"
  ],
  "工具与应用": [
   "meta/index.html"
@@ -4382,7 +4395,8 @@
   "train/index.html"
  ],
  "代码": [
-  "train/index.html"
+  "train/index.html",
+  "api/index.html"
  ],
  "数据": [
   "train/index.html",
@@ -5698,6 +5712,169 @@
  "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 阿斯特赖亚科技，再下面是 MolAstria 与三个规划中的方向": [
   "about/index.html"
  ],
+ "开放数据接口 · MolAstria": [
+  "api/index.html"
+ ],
+ "开放数据接口": [
+  "api/index.html",
+  "shared-nav.js"
+ ],
+ "免费 · 不用注册 · 不用 key · 中英双语 ·": [
+  "api/index.html"
+ ],
+ "MolAstria 整理的数据可以直接被程序读取：每个数据集是一个静态 JSON 文件，用任何语言发一个 GET 请求就能拿到。网页可以跨域读取，AI 智能体也可以直接用。": [
+  "api/index.html"
+ ],
+ "搜一下": [
+  "api/index.html"
+ ],
+ "嵌入卡片": [
+  "api/index.html"
+ ],
+ "给 AI 和程序": [
+  "api/index.html"
+ ],
+ "许可": [
+  "api/index.html"
+ ],
+ "下面这个搜索台只用了开放接口和一个不到 200 行的 JS 库，没有服务器。中英文同义词互通：搜“密度泛函”也会找到只写了 DFT 的条目。": [
+  "api/index.html"
+ ],
+ "这次搜索的代码": [
+  "api/index.html"
+ ],
+ "跟着上面的搜索变，复制就能跑。": [
+  "api/index.html"
+ ],
+ "正在读取数据集列表…": [
+  "api/index.html"
+ ],
+ "总入口列出全部数据集、条数和核对日期：": [
+  "api/index.html"
+ ],
+ "嵌到你的网页里": [
+  "api/index.html"
+ ],
+ "一行代码，把一组资源放到课程主页、课题组 wiki 或博客上。卡片自带样式，不受所在页面影响；数据更新后卡片跟着更新。": [
+  "api/index.html"
+ ],
+ "关键词": [
+  "api/index.html",
+  "hub/network.js"
+ ],
+ "期刊": [
+  "api/index.html",
+  "api/api.js"
+ ],
+ "条数": [
+  "api/index.html"
+ ],
+ "跟随页面": [
+  "api/index.html"
+ ],
+ "配色主题": [
+  "api/index.html"
+ ],
+ "跟随系统": [
+  "api/index.html"
+ ],
+ "浅色": [
+  "api/index.html"
+ ],
+ "深色": [
+  "api/index.html"
+ ],
+ "贴到网页里：": [
+  "api/index.html"
+ ],
+ "给大模型看的站点说明，告诉它数据在哪、怎么署名。": [
+  "api/index.html"
+ ],
+ "OpenAPI 3.1 描述，字段结构是从数据本身推出来的，可以直接导入支持 OpenAPI 的智能体平台和代码生成器。": [
+  "api/index.html"
+ ],
+ "零依赖的 JS 库，浏览器、Deno、Node 18 以上都能用，带中英互通的搜索。": [
+  "api/index.html"
+ ],
+ "MolAstria 的 MCP 服务器，装在自己电脑上，让 Claude 等客户端直接检索晶体、分子和量子化学数据。它随包带着同一份资源目录，离线也能查。": [
+  "api/index.html"
+ ],
+ "约定": [
+  "api/index.html"
+ ],
+ "格式：": [
+  "api/index.html"
+ ],
+ "每个文件开头有三个字段：": [
+  "api/index.html"
+ ],
+ "（现在是 1.0）、": [
+  "api/index.html"
+ ],
+ "（这份数据的核对日期）和": [
+  "api/index.html"
+ ],
+ "（条数）。条目放在数组": [
+  "api/index.html"
+ ],
+ "里，双语文字写成": [
+  "api/index.html"
+ ],
+ "版本：": [
+  "api/index.html"
+ ],
+ "v1 只会加字段，不会删字段或改含义；要改就出 v2，v1 继续保留。": [
+  "api/index.html"
+ ],
+ "更新：": [
+  "api/index.html"
+ ],
+ "数据随网站一起发布，核对过才改日期。文件会被浏览器和 CDN 缓存约 10 分钟。": [
+  "api/index.html"
+ ],
+ "用量：": [
+  "api/index.html"
+ ],
+ "没有次数限制。文件不大，建议在自己这边缓存一天，不要每次请求都来取。": [
+  "api/index.html"
+ ],
+ "不保证：": [
+  "api/index.html"
+ ],
+ "这是个人运营的免费服务，尽力保持可用，但没有可用性承诺。链接和价格会过时，每个数据集都带核对日期，重要的事请到原始出处再核一次。": [
+  "api/index.html"
+ ],
+ "许可与署名": [
+  "api/index.html"
+ ],
+ "许可：可以免费使用、转载和改编，包括商业用途，只要注明来源。署名写法：": [
+  "api/index.html"
+ ],
+ "这个许可适用于 MolAstria 自己整理和撰写的内容：条目的选取与分类、中英文说明、核对记录。第三方的名称、标题、链接和价格属于各自的权利人，这里只作事实引用。网站代码另按 MIT 许可开源。": [
+  "api/index.html"
+ ],
+ "还没有开放的": [
+  "api/index.html"
+ ],
+ "在线模型计算（UMA、MACE、ANI-2x 等）现在只能在": [
+  "api/index.html"
+ ],
+ "模型页": [
+  "api/index.html",
+  "meta/meta.js"
+ ],
+ "里用，还没有给程序调用的 key；网状查询的实体与关系也还没有放进接口。下一步先做哪个，看大家想用哪个。想用其中一个，或者接口缺了什么字段，请告诉我们：": [
+  "api/index.html"
+ ],
+ "搜资源、期刊、模型、视频…": [
+  "api/index.html"
+ ],
+ "搜索开放数据": [
+  "api/index.html"
+ ],
+ "示例语言": [
+  "api/index.html"
+ ],
  "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
  ],
@@ -6666,6 +6843,49 @@
  ],
  "到下载页手动安装": [
   "shared-nav.js"
+ ],
+ "密度泛函": [
+  "api/api.js"
+ ],
+ "开放获取 期刊": [
+  "api/api.js"
+ ],
+ "Gaussian 教程": [
+  "api/api.js"
+ ],
+ "激发态": [
+  "api/api.js"
+ ],
+ "数据没有读到，请稍后再试。": [
+  "api/api.js"
+ ],
+ "没有找到，换个词试试。": [
+  "api/api.js"
+ ],
+ "共 {0} 条，显示前 {1} 条": [
+  "api/api.js"
+ ],
+ "共 {0} 条结果": [
+  "api/api.js"
+ ],
+ "最近核对 {0}": [
+  "api/api.js"
+ ],
+ "共 {0} 条 · 核对于 {1}": [
+  "api/api.js"
+ ],
+ "网页版": [
+  "api/api.js",
+  "radar/app/app.js"
+ ],
+ "数据集列表没有读到，请直接打开": [
+  "api/api.js"
+ ],
+ "已复制": [
+  "api/api.js",
+  "meta/meta.js",
+  "models/models.js",
+  "train/train.js"
  ],
  "深度教程": [
   "app.js",
@@ -8758,9 +8978,6 @@
  "条目": [
   "hub/network.js"
  ],
- "关键词": [
-  "hub/network.js"
- ],
  "全网": [
   "hub/network.js"
  ],
@@ -9587,11 +9804,6 @@
  "CF3 取代的 DOL，改善 DOL 的抗氧化性": [
   "lab/chem.js"
  ],
- "已复制": [
-  "meta/meta.js",
-  "models/models.js",
-  "train/train.js"
- ],
  "图片无法读取": [
   "meta/meta.js"
  ],
@@ -9745,9 +9957,6 @@
   "meta/meta.js"
  ],
  "已经登录，但这个账号还没有 facebook/UMA 的下载权限：到": [
-  "meta/meta.js"
- ],
- "模型页": [
   "meta/meta.js"
  ],
  "申请，Meta 批准后点「重新检测」。": [
@@ -12453,9 +12662,6 @@
   "radar/app/app.js"
  ],
  "版本": [
-  "radar/app/app.js"
- ],
- "网页版": [
   "radar/app/app.js"
  ],
  "预印本雷达 v{0} · {1} · {2}": [

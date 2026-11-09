@@ -37,6 +37,7 @@ public/               发布目录，推到 main 就上线
   quantum/algorithms/  量子嘉年华的“量子算法”展馆：qa-data.js 是全部内容（14 个算法，中英双语，每个带加速的证据等级；化学资源估算；65 篇文献在 OpenAlex / arXiv 核对过），qa-models.js 是演示的数学（态矢量模拟器等，纯函数），qa.js 渲染，qa-math.js 是生成的 MathML
   quantum/computing/  量子嘉年华 · 量子计算机：qc-data.js 是全部内容（中英两版，每条带确定程度，文献在 OpenAlex 核对过），qc-models.js 是演示的数学（纯函数，tools/quantum-computing-test.mjs 测），qc-math.js 是生成的 MathML；只讲硬件与纠错，算法在 quantum/algorithms/
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
+  api/                开放数据接口：v1/ 是给程序读的静态 JSON（资源目录、期刊、科学大模型与价格、教学视频，中英双语，CC BY 4.0），外加中英术语表、openapi.json，由 tools/build-api.mjs 从各栏目的数据文件生成（同时生成站点根的 llms.txt）；v1/molastria.mjs 是手写的零依赖 JS 库（跨数据集搜索，中英同义词互通，没有 DOM，tools/api-test.mjs 测）；embed.js 是给别人网页用的嵌入卡片（shadow DOM，自带中英文字，不走 i18n）；index.html + api.js 是说明页：搜索台、跟着搜索变的代码、嵌入卡片生成器，只用公开的接口。v1 只加字段，删改字段要出 v2
   about/              关于页：阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
   pro/                价格页、账号页 account.html + account-page.js、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
@@ -63,6 +64,8 @@ maintenance/          Python 爬虫与合并脚本，单元测试是 test_*.py�
 deno run --allow-net --allow-read tools/serve.ts 8830   # 本地预览 public/
 deno run --allow-read tools/account-test.ts             # 账号服务接口测试
 node --test tools/lab-test.mjs                          # 实验室逻辑测试
+node tools/build-api.mjs                                # 开放数据接口：重新生成 public/api/v1/ 和 chemdb-agent 的 catalog/resources.json（改了目录、期刊、科学大模型、视频的数据后跑；发布时 CI 也会跑）
+node --test tools/api-test.mjs                          # 开放数据接口：内容完整、双语齐全、代号都对得上；JS 库的搜索（同义词互通、排序、筛选）
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
 node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
@@ -101,7 +104,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js` 和 `public/quantum/computing/qc-math.js`（都用 `tools/fundamental-math.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js` 和 `public/quantum/computing/qc-math.js`（都用 `tools/fundamental-math.mjs`）、`public/api/v1/*.json`、`public/llms.txt` 和 `agent/chemdb-agent/src/chemdb_agent/catalog/resources.json`（都用 `node tools/build-api.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 

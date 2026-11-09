@@ -26,6 +26,22 @@ flowchart TB
 - **桌面版**（Tauri）内置同一套网页，多了检查更新和“在本机运行 UMA”：`desktop/src-tauri/src/uma.rs` 找到访客的 Python，用编译进应用的 `uma/runner.py` 计算；页面只传经过校验的参数（SMILES、任务、模型等），日志靠轮询 `uma_poll` 取回。
 - 网站不接触卡号；AI 对话内容不保存。
 
+## 开放数据接口
+
+给程序和别人的网页用的出口，全部是静态文件，不经过账号服务：
+
+```text
+各栏目的数据文件（atlas/content.js、journals-data.js、scimodels-data.js、videos-data.js、search-terms.js、i18n/en.json）
+        │  tools/build-api.mjs（本地手动跑；发布时 CI 再跑一次）
+        ▼
+public/api/v1/*.json、openapi.json、public/llms.txt          chemdb-agent 的 catalog/resources.json（同一份目录）
+        │  GitHub Pages（允许跨域读取）
+        ▼
+v1/molastria.mjs（JS 库：取数据、搜索）  →  api/embed.js（别人网页上的卡片）、/api/ 说明页的搜索台、任何程序
+```
+
+没有 key、没有计数、没有服务器端的搜索；要按次数分档或开放计算时再接账号服务（`docs/DECISIONS.md` 2026-11-09）。
+
 ## 付款和登录
 
 ```mermaid

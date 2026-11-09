@@ -138,6 +138,16 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
 
+## 开放数据接口（/api/）
+
+`public/api/v1/*.json` 是给程序读的，由 `tools/build-api.mjs` 从 `atlas/content.js`、`journals/journals-data.js`、`scimodels/scimodels-data.js`、`videos/videos-data.js` 和 `i18n/en.json` 生成。
+
+- **改了这些数据之后：** `node tools/build-api.mjs`，再 `node --test tools/api-test.mjs`。忘了跑也不影响线上（发布时 CI 会重新生成），但本地预览和桌面版里是旧的。同一个脚本也生成 chemdb-agent 的 `catalog/resources.json`；目录变了要再跑 `python tools/pack-chemdb-agent.py` 更新下载包。
+- **加一个数据集：** 在 `build-api.mjs` 里加一个函数并放进 `sets`，在 `api-test.mjs` 加检查。说明页的列表读自 `v1/index.json`，不用改页面。只放 MolAstria 自己整理和撰写的内容。
+- **JS 库和嵌入卡片：** `public/api/v1/molastria.mjs` 和 `public/api/embed.js` 是手写的，不是生成的。库的结果形状（`dataset, id, title, subtitle, summary, url, page, item, score`）和 `embed.js` 的 `data-*` 属性已经公开，别人的网页在用，改名等于破坏别人的页面；要改就加新的，旧的保留。新数据集要能被搜到，在 `molastria.mjs` 的 `SHAPE` 里加一项。
+- **改字段：** 加字段随便加。删字段、改含义不要在 v1 里做：新建 `v2/`，v1 的文件保留。
+- **上线后检查：** `curl -sI "https://molastria.com/api/v1/index.json?x=1" | grep -i access-control` 应有 `access-control-allow-origin: *`。
+
 ## 教学视频（/videos/）
 
 全部条目在 `public/videos/videos-data.js`，一行一条：`p`（`yt` / `bili`）、`k`（`video`、`playlist`、`multipart`）、`id`、标题和频道（照平台原文）、`topic`、`lang`（讲课语言）、`subs`（另加的字幕）、`level`、`official`、`reupload`、`sw`、`note`（中英两版，MolAstria 写的）。文件开头有字段说明。

@@ -1,0 +1,85 @@
+{
+ "api": "molastria-open-data",
+ "schema": "1.0",
+ "license": {
+  "id": "CC-BY-4.0",
+  "name": "Creative Commons Attribution 4.0 International",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "attribution": "MolAstria (https://molastria.com)",
+  "scope": {
+   "zh": "适用于 MolAstria 自己整理和撰写的内容：条目的选取与分类、中英文说明、核对记录。第三方的名称、标题、链接和价格属于各自的权利人，这里只作事实引用。",
+   "en": "Covers what MolAstria compiled and wrote: the selection and classification of entries, the Chinese and English descriptions, and the verification records. Third-party names, titles, links and prices belong to their owners and are cited here as facts."
+  }
+ },
+ "attribution": "MolAstria (https://molastria.com)",
+ "docs": "https://molastria.com/api/",
+ "updated": "2026-11-08",
+ "endpoints": [
+  {
+   "id": "resources",
+   "url": "https://molastria.com/api/v1/resources.json",
+   "title": {
+    "zh": "资源目录：数据库、软件、数据集与课程",
+    "en": "Resource catalogue: databases, software, datasets and courses"
+   },
+   "count": 214,
+   "updated": "2026-11-05",
+   "page": "https://molastria.com/atlas/"
+  },
+  {
+   "id": "journals",
+   "url": "https://molastria.com/api/v1/journals.json",
+   "title": {
+    "zh": "期刊投稿指南：计算化学相关期刊与预印本平台",
+    "en": "Journal guide: computational-chemistry journals and preprint servers"
+   },
+   "count": 48,
+   "updated": "2026-11-06",
+   "page": "https://molastria.com/journals/"
+  },
+  {
+   "id": "scimodels",
+   "url": "https://molastria.com/api/v1/scimodels.json",
+   "title": {
+    "zh": "科学大模型：模型卡与官方价格对比",
+    "en": "Science foundation models: model cards and official prices"
+   },
+   "count": 27,
+   "updated": "2026-11-06",
+   "page": "https://molastria.com/scimodels/"
+  },
+  {
+   "id": "videos",
+   "url": "https://molastria.com/api/v1/videos.json",
+   "title": {
+    "zh": "教学视频：YouTube 与哔哩哔哩上的课程和教程",
+    "en": "Teaching videos: courses and tutorials on YouTube and Bilibili"
+   },
+   "count": 189,
+   "updated": "2026-11-08",
+   "page": "https://molastria.com/videos/"
+  },
+  {
+   "id": "terms",
+   "url": "https://molastria.com/api/v1/terms.json",
+   "title": {
+    "zh": "中英术语表：互为同义的计算化学术语",
+    "en": "Term table: computational-chemistry synonyms in Chinese and English"
+   },
+   "count": 109,
+   "updated": "2026-11-05",
+   "page": "https://molastria.com/"
+  }
+ ],
+ "client": {
+  "javascript": "https://molastria.com/api/v1/molastria.mjs",
+  "embed": "https://molastria.com/api/embed.js"
+ },
+ "openapi": "https://molastria.com/api/v1/openapi.json",
+ "agent": {
+  "name": "chemdb-agent",
+  "kind": "MCP server",
+  "download": "https://molastria.com/atlas/downloads/chemdb-agent.zip",
+  "page": "https://molastria.com/atlas/#agent"
+ }
+}

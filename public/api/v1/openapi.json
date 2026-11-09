@@ -1,0 +1,1660 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "MolAstria open data API",
+  "version": "1.0",
+  "description": "Static, read-only JSON: no key, no sign-up, no rate limit, CORS open. Each dataset is one whole file; filter on your side. Text fields are bilingual objects { zh, en }. Schemas are inferred from the published data.",
+  "license": {
+   "name": "Creative Commons Attribution 4.0 International",
+   "identifier": "CC-BY-4.0"
+  },
+  "contact": {
+   "url": "https://molastria.com/api/"
+  }
+ },
+ "servers": [
+  {
+   "url": "https://molastria.com/api/v1"
+  }
+ ],
+ "paths": {
+  "/index.json": {
+   "get": {
+    "operationId": "listDatasets",
+    "summary": "List every dataset with its entry count and check date",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/index"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/resources.json": {
+   "get": {
+    "operationId": "get_resources",
+    "summary": "Resource catalogue: databases, software, datasets and courses (214 entries, whole file)",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/resources"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/journals.json": {
+   "get": {
+    "operationId": "get_journals",
+    "summary": "Journal guide: computational-chemistry journals and preprint servers (48 entries, whole file)",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/journals"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/scimodels.json": {
+   "get": {
+    "operationId": "get_scimodels",
+    "summary": "Science foundation models: model cards and official prices (27 entries, whole file)",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/scimodels"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/videos.json": {
+   "get": {
+    "operationId": "get_videos",
+    "summary": "Teaching videos: courses and tutorials on YouTube and Bilibili (189 entries, whole file)",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/videos"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/terms.json": {
+   "get": {
+    "operationId": "get_terms",
+    "summary": "Term table: computational-chemistry synonyms in Chinese and English (109 entries, whole file)",
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/terms"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "index": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "name": {
+        "type": "string"
+       },
+       "url": {
+        "type": "string"
+       },
+       "attribution": {
+        "type": "string"
+       },
+       "scope": {
+        "type": "object",
+        "properties": {
+         "zh": {
+          "type": "string"
+         },
+         "en": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "zh",
+         "en"
+        ]
+       }
+      },
+      "required": [
+       "id",
+       "name",
+       "url",
+       "attribution",
+       "scope"
+      ]
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "endpoints": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "url": {
+         "type": "string"
+        },
+        "title": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "count": {
+         "type": "integer"
+        },
+        "updated": {
+         "type": "string"
+        },
+        "page": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "url",
+        "title",
+        "count",
+        "updated",
+        "page"
+       ]
+      }
+     },
+     "client": {
+      "type": "object",
+      "properties": {
+       "javascript": {
+        "type": "string"
+       },
+       "embed": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "javascript",
+       "embed"
+      ]
+     },
+     "openapi": {
+      "type": "string"
+     },
+     "agent": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "kind": {
+        "type": "string"
+       },
+       "download": {
+        "type": "string"
+       },
+       "page": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "kind",
+       "download",
+       "page"
+      ]
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "updated",
+     "endpoints",
+     "client",
+     "openapi",
+     "agent"
+    ]
+   },
+   "resources": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "string"
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "dataset": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "categories": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "code": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        },
+        "count": {
+         "type": "integer"
+        }
+       },
+       "required": [
+        "code",
+        "zh",
+        "en",
+        "count"
+       ]
+      }
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "number": {
+         "type": "integer"
+        },
+        "name": {
+         "type": "string"
+        },
+        "url": {
+         "type": "string"
+        },
+        "page": {
+         "type": "string"
+        },
+        "category_code": {
+         "type": "string"
+        },
+        "description": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "access": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "agent_integration": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "number",
+        "name",
+        "url",
+        "page",
+        "category_code",
+        "description",
+        "access",
+        "agent_integration"
+       ]
+      }
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "dataset",
+     "updated",
+     "count",
+     "categories",
+     "items"
+    ]
+   },
+   "journals": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "string"
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "dataset": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "categories": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "publishers": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "open_access_models": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "article_types": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "guidance_fields": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "link_names": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "name": {
+         "type": "string"
+        },
+        "abbreviation": {
+         "type": "string"
+        },
+        "short": {
+         "type": "string"
+        },
+        "page": {
+         "type": "string"
+        },
+        "category": {
+         "type": "string"
+        },
+        "publisher": {
+         "type": "string"
+        },
+        "issn": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "type": {
+            "type": "string"
+           },
+           "value": {
+            "type": "string"
+           }
+          },
+          "required": [
+           "type",
+           "value"
+          ]
+         }
+        },
+        "open_access": {
+         "type": "string"
+        },
+        "article_types": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        "links": {
+         "type": "object",
+         "properties": {
+          "home": {
+           "type": "string"
+          },
+          "guide": {
+           "type": "string"
+          },
+          "submit": {
+           "type": "string"
+          },
+          "policy": {
+           "type": "string"
+          },
+          "extra": {
+           "type": "string"
+          },
+          "oa": {
+           "type": "string"
+          },
+          "about": {
+           "type": "string"
+          },
+          "info": {
+           "type": "string"
+          },
+          "types": {
+           "type": "string"
+          },
+          "process": {
+           "type": "string"
+          },
+          "shop": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "home"
+         ]
+        },
+        "guidance": {
+         "type": "object",
+         "properties": {
+          "scope": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "types": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "oa": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "review": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "preprint": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "data": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "si": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "tpl": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          },
+          "num": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            },
+            "sources": {
+             "type": "array",
+             "items": {
+              "type": "object"
+             }
+            }
+           },
+           "required": [
+            "zh",
+            "en",
+            "sources"
+           ]
+          }
+         },
+         "required": [
+          "scope"
+         ]
+        },
+        "name_zh": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "name",
+        "abbreviation",
+        "short",
+        "page",
+        "category",
+        "publisher",
+        "issn",
+        "open_access",
+        "article_types",
+        "links",
+        "guidance"
+       ]
+      }
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "dataset",
+     "updated",
+     "count",
+     "categories",
+     "publishers",
+     "open_access_models",
+     "article_types",
+     "guidance_fields",
+     "link_names",
+     "items"
+    ]
+   },
+   "scimodels": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "string"
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "dataset": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "groups": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "access_kinds": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "resource_number": {
+         "type": "integer"
+        },
+        "name": {
+         "type": "string"
+        },
+        "page": {
+         "type": "string"
+        },
+        "group": {
+         "type": "string"
+        },
+        "organisation": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "year": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "size": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "licence": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "access": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        "cost": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "what": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "special": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "input": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "output": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "limits": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "links": {
+         "type": "object",
+         "properties": {
+          "hugging_face": {
+           "type": [
+            "null",
+            "string"
+           ]
+          },
+          "announcement": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "url": {
+              "type": "string"
+             },
+             "zh": {
+              "type": "string"
+             },
+             "en": {
+              "type": "string"
+             }
+            },
+            "required": [
+             "url",
+             "zh",
+             "en"
+            ]
+           }
+          },
+          "more_hugging_face": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "url": {
+              "type": "string"
+             },
+             "zh": {
+              "type": "string"
+             },
+             "en": {
+              "type": "string"
+             }
+            },
+            "required": [
+             "url",
+             "zh",
+             "en"
+            ]
+           }
+          },
+          "code": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "hugging_face",
+          "announcement"
+         ]
+        },
+        "try_online": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "url": {
+            "type": "string"
+           },
+           "zh": {
+            "type": "string"
+           },
+           "en": {
+            "type": "string"
+           }
+          },
+          "required": [
+           "url",
+           "zh",
+           "en"
+          ]
+         }
+        },
+        "name_en": {
+         "type": "string"
+        },
+        "try_online_none": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        }
+       },
+       "required": [
+        "id",
+        "resource_number",
+        "name",
+        "page",
+        "group",
+        "organisation",
+        "year",
+        "access",
+        "cost",
+        "what",
+        "special",
+        "input",
+        "output",
+        "limits",
+        "links"
+       ]
+      }
+     },
+     "prices": {
+      "type": "object",
+      "properties": {
+       "updated": {
+        "type": "string"
+       },
+       "unit": {
+        "type": "object",
+        "properties": {
+         "zh": {
+          "type": "string"
+         },
+         "en": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "zh",
+         "en"
+        ]
+       },
+       "exchange_rate": {
+        "type": "object",
+        "properties": {
+         "cny_per_usd": {
+          "type": "number"
+         },
+         "date": {
+          "type": "string"
+         },
+         "source": {
+          "type": "string"
+         },
+         "label": {
+          "type": "object",
+          "properties": {
+           "zh": {
+            "type": "string"
+           },
+           "en": {
+            "type": "string"
+           }
+          },
+          "required": [
+           "zh",
+           "en"
+          ]
+         }
+        },
+        "required": [
+         "cny_per_usd",
+         "date",
+         "source",
+         "label"
+        ]
+       },
+       "items": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "id": {
+           "type": "string"
+          },
+          "model": {
+           "type": "string"
+          },
+          "science_model": {
+           "type": "string"
+          },
+          "provider": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            }
+           },
+           "required": [
+            "zh",
+            "en"
+           ]
+          },
+          "currency": {
+           "type": "string"
+          },
+          "input": {
+           "type": "number"
+          },
+          "output": {
+           "type": "number"
+          },
+          "note": {
+           "type": "object",
+           "properties": {
+            "zh": {
+             "type": "string"
+            },
+            "en": {
+             "type": "string"
+            }
+           },
+           "required": [
+            "zh",
+            "en"
+           ]
+          },
+          "source": {
+           "type": "string"
+          },
+          "tier": {
+           "type": "string"
+          },
+          "model_en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "id",
+          "model",
+          "provider",
+          "currency",
+          "input",
+          "output",
+          "note",
+          "source"
+         ]
+        }
+       }
+      },
+      "required": [
+       "updated",
+       "unit",
+       "exchange_rate",
+       "items"
+      ]
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "dataset",
+     "updated",
+     "count",
+     "groups",
+     "access_kinds",
+     "items",
+     "prices"
+    ]
+   },
+   "videos": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "string"
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "dataset": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "topics": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "zh": {
+         "type": "string"
+        },
+        "en": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "zh",
+        "en"
+       ]
+      }
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "platform": {
+         "type": "string"
+        },
+        "kind": {
+         "type": "string"
+        },
+        "url": {
+         "type": "string"
+        },
+        "page": {
+         "type": "string"
+        },
+        "title": {
+         "type": "string"
+        },
+        "channel": {
+         "type": "string"
+        },
+        "topic": {
+         "type": "string"
+        },
+        "language": {
+         "type": "string"
+        },
+        "level": {
+         "type": "string"
+        },
+        "parts": {
+         "type": "integer"
+        },
+        "official_upload": {
+         "type": "boolean"
+        },
+        "note": {
+         "type": "object",
+         "properties": {
+          "zh": {
+           "type": "string"
+          },
+          "en": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "zh",
+          "en"
+         ]
+        },
+        "subtitles": {
+         "type": "string"
+        },
+        "year": {
+         "type": "string"
+        },
+        "reupload": {
+         "type": "boolean"
+        },
+        "original": {
+         "type": "string"
+        },
+        "software": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        "duration": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "platform",
+        "kind",
+        "url",
+        "page",
+        "title",
+        "channel",
+        "topic",
+        "language",
+        "level",
+        "note"
+       ]
+      }
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "dataset",
+     "updated",
+     "count",
+     "topics",
+     "items"
+    ]
+   },
+   "terms": {
+    "type": "object",
+    "properties": {
+     "api": {
+      "type": "string"
+     },
+     "schema": {
+      "type": "string"
+     },
+     "license": {
+      "type": "string"
+     },
+     "attribution": {
+      "type": "string"
+     },
+     "docs": {
+      "type": "string"
+     },
+     "dataset": {
+      "type": "string"
+     },
+     "updated": {
+      "type": "string"
+     },
+     "count": {
+      "type": "integer"
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "terms": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "terms"
+       ]
+      }
+     }
+    },
+    "required": [
+     "api",
+     "schema",
+     "license",
+     "attribution",
+     "docs",
+     "dataset",
+     "updated",
+     "count",
+     "items"
+    ]
+   }
+  }
+ }
+}
