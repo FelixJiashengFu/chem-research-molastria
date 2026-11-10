@@ -197,3 +197,8 @@ main.play-main{max-width:1200px;margin:0 auto;padding:0 32px 56px}
 .cube-switches button[aria-pressed=true] span{color:var(--ink-2)}
 .cube-switches button:disabled{cursor:default;opacity:.75}
 @media (max-width:430px){.cir-pal{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}.play-card-tag{position:static;align-self:flex-start}}
+
+/* 15：二维波包画墙（play-wave2d.js）。画布上拖动是画墙，所以不让它滚动页面 */
+.wv-cv{touch-action:none;cursor:crosshair}
+.wv-cv:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#wv-phase[aria-pressed=true]{border-color:var(--gold);background:var(--gold-soft)}
