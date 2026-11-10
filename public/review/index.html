@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 复习卡片：中英术语、研习台的知识点和你自己写的卡片，按遗忘曲线安排复习（开源的 FSRS 算法），可以导出到 Anki。卡片和进度只存在这台设备的浏览器里。">
+  <meta name="theme-color" content="#173f34">
+  <title>复习卡片 · 按遗忘曲线复习计算化学与量子知识 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="review.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../search-terms.js" defer></script>
+  <script src="review-core.js" defer></script>
+  <script src="review.js" defer></script>
+</head>
+<body data-section="review">
+<main class="rv">
+  <header class="rv-mast">
+    <p class="rv-eyebrow">MOLASTRIA · REVIEW</p>
+    <h1>复习卡片<span lang="en" translate="no">Review cards</span></h1>
+    <p class="rv-lead">读过的东西，快要忘的时候再出现一次。每张卡按你的回答安排下一次复习，用的是开源的 FSRS 间隔重复算法。卡片和进度只存在这台设备的浏览器里，不上传。</p>
+  </header>
+
+  <section class="rv-box" aria-labelledby="rv-study-h">
+    <div class="rv-top">
+      <h2 id="rv-study-h" class="rv-h2">今天的复习</h2>
+      <p class="rv-status" id="rv-status" role="status" aria-live="polite"></p>
+    </div>
+    <div class="rv-card" id="rv-card" hidden>
+      <p class="rv-tag" id="rv-tag"></p>
+      <div class="rv-front" id="rv-front"></div>
+      <div class="rv-back" id="rv-back" hidden></div>
+    </div>
+    <div class="rv-actions" id="rv-actions" hidden>
+      <button type="button" class="rv-show" id="rv-show">显示答案<kbd>空格</kbd></button>
+      <div class="rv-rate" id="rv-rate" role="group" aria-label="这张卡记得怎么样" hidden>
+        <button type="button" data-r="1"><b>重来</b><small data-iv="1"></small><kbd>1</kbd></button>
+        <button type="button" data-r="2"><b>困难</b><small data-iv="2"></small><kbd>2</kbd></button>
+        <button type="button" data-r="3"><b>良好</b><small data-iv="3"></small><kbd>3</kbd></button>
+        <button type="button" data-r="4"><b>简单</b><small data-iv="4"></small><kbd>4</kbd></button>
+      </div>
+    </div>
+    <div class="rv-done" id="rv-done" hidden>
+      <p class="rv-done-mark" aria-hidden="true">✦</p>
+      <h3 id="rv-done-h">今天的复习做完了</h3>
+      <p id="rv-done-text"></p>
+    </div>
+    <p class="rv-note" id="rv-sched-note"></p>
+  </section>
+
+  <section class="rv-box" aria-labelledby="rv-decks-h">
+    <h2 id="rv-decks-h" class="rv-h2">卡组</h2>
+    <div class="rv-decks" id="rv-decks"></div>
+    <div class="rv-settings">
+      <label>术语卡的方向
+        <select id="rv-dir">
+          <option value="auto">跟随界面语言</option>
+          <option value="zh-en">中文 → 英文</option>
+          <option value="en-zh">英文 → 中文</option>
+        </select>
+      </label>
+      <label>每天最多学几张新卡
+        <input type="number" id="rv-new" min="0" max="200" step="1" inputmode="numeric">
+      </label>
+    </div>
+  </section>
+
+  <section class="rv-box" aria-labelledby="rv-add-h">
+    <h2 id="rv-add-h" class="rv-h2">写一张自己的卡</h2>
+    <form class="rv-form" id="rv-form">
+      <label>正面（问题）<textarea id="rv-f" rows="3" maxlength="1000" required placeholder="例如：精确的非相对论能量减去 Hartree–Fock 能量，叫什么？"></textarea></label>
+      <label>背面（答案）<textarea id="rv-b" rows="3" maxlength="1000" required placeholder="例如：相关能（Löwdin 的定义，同一个哈密顿量下比较）。"></textarea></label>
+      <label>标签（可选，用空格分开）<input id="rv-t" maxlength="120" placeholder="例如：量子化学 电子相关"></label>
+      <div class="rv-form-row"><button type="submit" class="rv-btn primary">加入卡组</button><span id="rv-form-msg" role="status"></span></div>
+    </form>
+    <details class="rv-mine" id="rv-mine-box">
+      <summary id="rv-mine-sum">我的卡片</summary>
+      <ul id="rv-mine" class="rv-mine-list"></ul>
+    </details>
+  </section>
+
+  <section class="rv-box" aria-labelledby="rv-out-h">
+    <h2 id="rv-out-h" class="rv-h2">导出与备份</h2>
+    <p class="rv-p">导出到 Anki：在 Anki 里选“文件 → 导入”，选下载的文件即可，正面、背面和标签会自动对上（需要 Anki 2.1.54 或更新的版本）。只导出勾选的卡组。备份文件包含你的卡片和复习进度，可以在另一台设备上恢复。</p>
+    <div class="rv-btns">
+      <button type="button" class="rv-btn primary" id="rv-anki">导出到 Anki <i class="ico-ext ico-down" aria-hidden="true"></i></button>
+      <button type="button" class="rv-btn" id="rv-backup">下载备份 <i class="ico-ext ico-down" aria-hidden="true"></i></button>
+      <label class="rv-btn rv-file">从备份恢复<input type="file" id="rv-restore" accept=".json,application/json"></label>
+      <button type="button" class="rv-btn danger" id="rv-reset">清除全部进度</button>
+    </div>
+    <p class="rv-msg" id="rv-out-msg" role="status"></p>
+  </section>
+
+  <section class="rv-credits">
+    <p>调度用 <a href="https://github.com/open-spaced-repetition/ts-fsrs" rel="noopener">ts-fsrs</a>（FSRS 算法的 TypeScript 实现，MIT 许可），第一次打开时从 jsDelivr 载入；载不到时改用简化的间隔（每次乘一个固定倍数），联网后接着用 FSRS。“把复习嵌进阅读”的想法来自 Andy Matuschak 和 Michael Nielsen 的 <a href="https://quantum.country/" rel="noopener">Quantum Country</a>。研习台的卡片只读取研习台的知识图，不会改动研习台里的任何记录。</p>
+  </section>
+</main>
+</body>
+</html>

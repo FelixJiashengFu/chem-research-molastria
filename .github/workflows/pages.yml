@@ -43,6 +43,10 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
+      - name: 3D molecule viewer helpers
+        run: node --test tools/mol3d-test.mjs
+      - name: Review cards (decks, queue, Anki export)
+        run: node --test tools/review-test.mjs
       - name: Open data API content
         run: node --test tools/api-test.mjs
       - name: Python client (public/api/v1/molastria.py) against a stand-in service
