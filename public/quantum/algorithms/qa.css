@@ -102,3 +102,21 @@
   .qa-circ-top{flex-direction:column;align-items:stretch}
 }
 @media print{.qa-palette,.qa-circ-top .fs-btns{display:none}}
+
+/* 旋转门、测量、逐列查看与 Bloch 球 */
+.qa-angle{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font:600 13px var(--font-num);color:var(--muted)}
+.qa-angle input{width:68px;min-height:38px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);font:600 13px var(--font-num)}
+.qa-g-rot{flex-direction:column;gap:1px;font-size:11px;line-height:1}
+.qa-g-rot b{font-size:12px}
+.qa-g-rot small{font-size:9.5px;font-weight:500;color:var(--muted)}
+.qa-g-m{color:var(--accent-text)}
+.qa-after .qa-g:not(.qa-g-empty){opacity:.35}
+.qa-step{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:8px 0 0;font-size:13px;color:var(--muted)}
+.qa-step input{flex:1;min-width:160px;max-width:420px;accent-color:var(--accent)}
+.qa-step output{font:600 13px var(--font-num);color:var(--ink)}
+.qa-bloch{display:flex;flex-wrap:wrap;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+.qa-bl{margin:0;display:grid;justify-items:center;gap:2px}
+.qa-bl figcaption{font:500 11.5px var(--font-num);color:var(--muted)}
+.qa-circ-top>*{min-width:0;max-width:100%}
+.qa-sel{max-width:100%}
+.qa-sel select{max-width:100%;min-width:0;text-overflow:ellipsis}

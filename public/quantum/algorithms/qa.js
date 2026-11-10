@@ -200,24 +200,38 @@
 
   // ── 演示 1：量子线路模拟器 ────────────────────────────────────────────
   demoHead('c', 1, '量子线路模拟器', 'Quantum circuit simulator',
-    '选一个门再点格子放上去，再点一次就删掉。同一列里的 • 控制这一列所有其他的门（所以 • 加 X 是 CNOT，两个 • 加 X 是 Toffoli）；一列里放两个 × 就交换这两个比特。点左边的 |0⟩ 可以把初态改成 |1⟩。最多 5 个比特、12 列。',
-    'Pick a gate, then click a cell to place it; click again to remove it. A • controls every other gate in its column (so • plus X is a CNOT, two • plus X is a Toffoli); two × in one column swap those qubits. Click |0⟩ on the left to start that qubit in |1⟩. Up to 5 qubits and 12 columns.');
+    '选一个门再点格子放上去，再点一次就删掉。同一列里的 • 控制这一列所有其他的门（所以 • 加 X 是 CNOT，两个 • 加 X 是 Toffoli）；一列里放两个 × 就交换这两个比特。Rx、Ry、Rz 是带角度的旋转门，角度在右边的框里填（以 π 为单位）；M 在中途测量这个比特，之后控制在它上面的门就是按测量结果的经典控制。点左边的 |0⟩ 可以把初态改成 |1⟩；拖动“看第几列之后”可以一列一列地看态怎么变。最多 5 个比特、12 列。',
+    'Pick a gate, then click a cell to place it; click again to remove it. A • controls every other gate in its column (so • plus X is a CNOT, two • plus X is a Toffoli); two × in one column swap those qubits. Rx, Ry and Rz are rotations by the angle in the box (in units of π); M measures that qubit mid-circuit, and later gates controlled on it are classically controlled by the outcome. Click |0⟩ on the left to start that qubit in |1⟩; drag “after column” to step through the circuit. Up to 5 qubits and 12 columns.');
   const COLS = 12, MAXQ = 5;
-  const GLAB = { H: 'H', X: 'X', Y: 'Y', Z: 'Z', S: 'S', Sdg: 'S†', T: 'T', Tdg: 'T†', '•': '•', x: '×' };
+  const GLAB = { H: 'H', X: 'X', Y: 'Y', Z: 'Z', S: 'S', Sdg: 'S†', T: 'T', Tdg: 'T†', '•': '•', x: '×', M: 'M', Rx: 'Rx', Ry: 'Ry', Rz: 'Rz' };
+  // 角度（以 π 为单位）写成 π/2、−π/4、0.35π 这样
+  const turnsLabel = (t) => { const f = [[1, 'π'], [-1, '−π'], [0.5, 'π/2'], [-0.5, '−π/2'], [0.25, 'π/4'], [-0.25, '−π/4'], [2, '2π'], [-2, '−2π'], [1.5, '3π/2'], [-1.5, '−3π/2'], [0.75, '3π/4'], [-0.75, '−3π/4']].find(([v]) => Math.abs(v - t) < 1e-9); return f ? f[1] : `${String(t).replace('-', '−')}π`; };
+  const glab = (g) => { const p = M.parseGate(g); return !p ? '' : p.turns === undefined ? GLAB[p.name] : `${p.name}(${turnsLabel(p.turns)})`; };
   const saved = store.get('molastria-qa-circuit', null);
-  const circ = { n: 2, init: 0, grid: [], tool: 'H', samples: null };
+  const circ = { n: 2, init: 0, grid: [], tool: 'H', samples: null, step: COLS, turns: 0.5 };
   const emptyGrid = (n) => Array.from({ length: COLS }, () => new Array(n).fill(''));
   const loadPreset = (k) => { const p = M.presets[k]; circ.n = p.n; circ.init = p.init || 0; circ.grid = emptyGrid(p.n); p.grid.forEach((col, i) => { circ.grid[i] = col.slice(); }); circ.samples = null; };
-  if (saved && saved.n >= 1 && saved.n <= MAXQ && Array.isArray(saved.grid) && saved.grid.length === COLS && saved.grid.every((c) => Array.isArray(c) && c.length === saved.n && c.every((g) => g === '' || GLAB[g]))) Object.assign(circ, { n: saved.n, init: saved.init | 0, grid: saved.grid });
+  if (saved && saved.n >= 1 && saved.n <= MAXQ && Array.isArray(saved.grid) && saved.grid.length === COLS && saved.grid.every((c) => Array.isArray(c) && c.length === saved.n && c.every((g) => g === '' || M.parseGate(g)))) Object.assign(circ, { n: saved.n, init: saved.init | 0, grid: saved.grid });
   else loadPreset('bell');
   const saveCirc = () => store.set('molastria-qa-circuit', { n: circ.n, init: circ.init, grid: circ.grid });
-  const presetNames = { bell: ['Bell 态', 'Bell state'], ghz: ['GHZ 态（3 比特）', 'GHZ state (3 qubits)'], kickback: ['相位回踢', 'Phase kickback'], dj: ['Deutsch–Jozsa（平衡函数）', 'Deutsch–Jozsa (balanced)'], bv: ['Bernstein–Vazirani（s = 101）', 'Bernstein–Vazirani (s = 101)'], grover: ['两比特 Grover（找 |11⟩）', 'Two-qubit Grover (find |11⟩)'], qft: ['三比特 QFT 作用在 |001⟩', 'Three-qubit QFT on |001⟩'] };
+  const presetNames = { teleport: ['量子隐形传态（中途测量 + 经典控制）', 'Teleportation (mid-circuit measurement + classical control)'], measure: ['测量打断干涉：H · M · H', 'Measurement breaks interference: H · M · H'], rotation: ['单比特旋转 Rx(π/2)', 'Single-qubit rotation Rx(π/2)'], bell: ['Bell 态', 'Bell state'], ghz: ['GHZ 态（3 比特）', 'GHZ state (3 qubits)'], kickback: ['相位回踢', 'Phase kickback'], dj: ['Deutsch–Jozsa（平衡函数）', 'Deutsch–Jozsa (balanced)'], bv: ['Bernstein–Vazirani（s = 101）', 'Bernstein–Vazirani (s = 101)'], grover: ['两比特 Grover（找 |11⟩）', 'Two-qubit Grover (find |11⟩)'], qft: ['三比特 QFT 作用在 |001⟩', 'Three-qubit QFT on |001⟩'] };
   $('#c-palette').setAttribute('aria-label', en ? 'Gates' : '门');
-  $('#c-palette').innerHTML = [...M.GRID_GATES, 'erase'].map((g) => `<button type="button" class="qa-pal" data-g="${g}" aria-pressed="${circ.tool === g}" translate="no" title="${esc(g === '•' ? (en ? 'Control' : '控制') : g === 'x' ? (en ? 'Swap' : '交换') : g === 'erase' ? (en ? 'Eraser' : '橡皮') : g)}">${g === 'erase' ? esc(en ? 'Erase' : '橡皮') : esc(GLAB[g])}</button>`).join('');
+  const palTitle = (g) => (g === '•' ? (en ? 'Control' : '控制') : g === 'x' ? (en ? 'Swap' : '交换') : g === 'M' ? (en ? 'Measure (Z basis)' : '测量（Z 基）') : g === 'erase' ? (en ? 'Eraser' : '橡皮') : M.ROT.includes(g) ? (en ? `${g}(θ): rotation by the angle in the box` : `${g}(θ)：按右边框里的角度旋转`) : g);
+  $('#c-palette').innerHTML = [...M.GRID_GATES, ...M.ROT, 'erase'].map((g) => `<button type="button" class="qa-pal" data-g="${g}" aria-pressed="${circ.tool === g}" translate="no" title="${esc(palTitle(g))}">${g === 'erase' ? esc(en ? 'Erase' : '橡皮') : esc(GLAB[g])}</button>`).join('')
+    + `<label class="qa-angle" title="${esc(en ? 'Rotation angle in units of π' : '旋转角，以 π 为单位')}"><span translate="no">θ =</span><input type="number" id="c-angle" value="0.5" min="-2" max="2" step="0.05" inputmode="decimal" aria-label="${esc(en ? 'Rotation angle θ in units of π' : '旋转角 θ（以 π 为单位）')}"><span translate="no">π</span></label>`;
   $('#c-btns').innerHTML = `<label class="qa-sel"><span class="sr">${L('预设', 'Preset')}</span><select id="c-preset" translate="no"><option value="">${esc(en ? 'Load a preset…' : '载入预设线路…')}</option>${Object.keys(presetNames).map((k) => `<option value="${k}">${esc(en ? presetNames[k][1] : presetNames[k][0])}</option>`).join('')}</select></label>
     <button type="button" class="button" id="c-minus" aria-label="${esc(en ? 'Remove a qubit' : '减少一个比特')}">− ${L('比特', 'qubit')}</button><button type="button" class="button" id="c-plus" aria-label="${esc(en ? 'Add a qubit' : '增加一个比特')}">+ ${L('比特', 'qubit')}</button>
     <button type="button" class="button" id="c-sample">${L('测量 1000 次', 'Measure 1000 times')}</button><button type="button" class="button" id="c-clear">${L('清空', 'Clear')}</button>`;
   const phaseIcon = (re, im, c) => { const a = Math.atan2(im, re); return `<svg width="14" height="14" viewBox="-7 -7 14 14" aria-hidden="true"><circle r="6" fill="none" stroke="${c.line}"/><line x1="0" y1="0" x2="${(6 * Math.cos(a)).toFixed(2)}" y2="${(-6 * Math.sin(a)).toFixed(2)}" stroke="${c.accent}" stroke-width="1.8"/></svg>`; };
+  // Bloch 球侧视：圆是 x–z 平面（上 |0⟩，下 |1⟩，右 +x），箭头是 (x, z)，小圆点的大小和颜色表示 y 分量
+  const blochSvg = (q, [x, y, z], c) => {
+    const R = 34, len = Math.hypot(x, y, z);
+    return `<figure class="qa-bl"><svg viewBox="-44 -44 88 88" width="88" height="88" role="img" aria-label="${esc(en ? `Qubit ${q}: x ${x.toFixed(2)}, y ${y.toFixed(2)}, z ${z.toFixed(2)}` : `比特 ${q}：x ${x.toFixed(2)}，y ${y.toFixed(2)}，z ${z.toFixed(2)}`)}">
+      <circle r="${R}" fill="none" stroke="${c.line}"/><ellipse rx="${R}" ry="${R * 0.28}" fill="none" stroke="${c.line}" stroke-dasharray="3 3"/>
+      <text x="0" y="-${R + 3}" text-anchor="middle" font-size="9" fill="${c.muted}">|0⟩</text><text x="0" y="${R + 10}" text-anchor="middle" font-size="9" fill="${c.muted}">|1⟩</text>
+      ${len > 1e-6 ? `<line x1="0" y1="0" x2="${(R * x).toFixed(2)}" y2="${(-R * z).toFixed(2)}" stroke="${c.accent}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${(R * x).toFixed(2)}" cy="${(-R * z).toFixed(2)}" r="${(2.5 + 2.5 * Math.abs(y)).toFixed(2)}" fill="${y >= 0 ? c.gold : c.violet}"/>` : `<circle r="2.5" fill="${c.muted}"/>`}
+    </svg><figcaption translate="no">q${q} · |r| ${len.toFixed(2)}</figcaption></figure>`;
+  };
   const drawCircuit = () => {
     const { n, grid } = circ, g = $('#c-grid');
     g.style.setProperty('--cols', COLS);
@@ -231,38 +245,38 @@
         const link = col.some((x) => x === '•' || x === 'x') && used.length > 1;
         const lo = Math.min(...used), hi = Math.max(...used);
         const up = link && q > lo && q <= hi, down = link && q >= lo && q < hi;
-        const inner = !v ? '<span class="qa-g qa-g-empty"></span>' : v === '•' ? '<span class="qa-g qa-g-ctl"></span>' : v === 'x' ? '<span class="qa-g qa-g-swap">×</span>' : `<span class="qa-g">${esc(GLAB[v])}</span>`;
-        html += `<button type="button" class="qa-cell${issues[c] ? ' qa-colbad' : ''}" style="grid-row:${q + 1};grid-column:${c + 2}" data-q="${q}" data-c="${c}"${up ? ' data-up' : ''}${down ? ' data-down' : ''} aria-label="${esc(en ? `Qubit ${q}, column ${c + 1}: ${v ? GLAB[v] : 'empty'}` : `比特 ${q}，第 ${c + 1} 列：${v ? GLAB[v] : '空'}`)}" translate="no">${inner}</button>`;
+        const rot = M.parseGate(v)?.turns !== undefined;
+        const inner = !v ? '<span class="qa-g qa-g-empty"></span>' : v === '•' ? '<span class="qa-g qa-g-ctl"></span>' : v === 'x' ? '<span class="qa-g qa-g-swap">×</span>' : v === 'M' ? '<span class="qa-g qa-g-m"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 17a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 17 17 8" stroke="currentColor" stroke-width="1.8"/></svg></span>' : rot ? `<span class="qa-g qa-g-rot"><b>${esc(M.parseGate(v).name)}</b><small>${esc(turnsLabel(M.parseGate(v).turns))}</small></span>` : `<span class="qa-g">${esc(GLAB[v])}</span>`;
+        html += `<button type="button" class="qa-cell${issues[c] ? ' qa-colbad' : ''}${c >= circ.step ? ' qa-after' : ''}" style="grid-row:${q + 1};grid-column:${c + 2}" data-q="${q}" data-c="${c}"${up ? ' data-up' : ''}${down ? ' data-down' : ''} aria-label="${esc(en ? `Qubit ${q}, column ${c + 1}: ${v ? glab(v) : 'empty'}` : `比特 ${q}，第 ${c + 1} 列：${v ? glab(v) : '空'}`)}" translate="no">${inner}</button>`;
       }
       html += `<div class="qa-tail" style="grid-row:${q + 1};grid-column:${COLS + 2}"></div>`;
     }
     g.innerHTML = html;
     const bad = issues.map((x, i) => [x, i]).filter(([x]) => x);
-    $('#c-issue').innerHTML = bad.length ? C(esc(bad.map(([x, i]) => (en ? `Column ${i + 1}: ${x === 'swap' ? 'a swap needs exactly two ×' : 'a control needs a gate to act on'} (ignored)` : `第 ${i + 1} 列：${x === 'swap' ? '交换要正好两个 ×' : '控制点要有作用的门'}（这一列被忽略）`)).join(en ? '; ' : '；'))) : '';
-    // 模拟
-    const s = M.basis(n, circ.init);
-    grid.forEach((col, i) => { if (!issues[i]) M.runColumn(s, col); });
-    const p = M.probs(s), c = css(), N = 1 << n;
+    const why = (x) => (x === 'swap' ? (en ? 'a swap needs exactly two ×' : '交换要正好两个 ×') : x === 'measure' ? (en ? 'put measurements and controls in different columns' : '测量和控制点要放在不同的列') : (en ? 'a control needs a gate to act on' : '控制点要有作用的门'));
+    $('#c-issue').innerHTML = bad.length ? C(esc(bad.map(([x, i]) => (en ? `Column ${i + 1}: ${why(x)} (ignored)` : `第 ${i + 1} 列：${why(x)}（这一列被忽略）`)).join(en ? '; ' : '；'))) : '';
+    // 模拟到第 step 列之后：中途测量让态变成几个分支（系综），只有一个分支时才有确定的相位
+    const ens = M.runGridEnsemble(n, grid, circ.init, circ.step, (i) => !!issues[i]);
+    const pure = ens.length === 1, s = ens[0].s;
+    const p = M.ensembleProbs(ens), c = css(), N = 1 << n;
+    $('#c-step-o').textContent = circ.step >= COLS ? (en ? 'end of circuit' : '整条线路之后') : circ.step === 0 ? (en ? 'initial state' : '初态') : (en ? `after column ${circ.step}` : `第 ${circ.step} 列之后`);
+    $('#c-bloch').innerHTML = [...Array(n).keys()].map((q) => blochSvg(q, M.bloch(ens, q), c)).join('');
     const shown = [...Array(N).keys()];
     const counts = circ.samples;
-    $('#c-bars').innerHTML = shown.map((k) => `<div class="qa-bar"${p[k] < 1e-12 ? ' data-zero' : ''}><code>|${M.label(n, k)}⟩</code><span class="qa-track"><i style="width:${(p[k] * 100).toFixed(2)}%"></i>${counts ? `<b style="width:${(counts[k] / 10).toFixed(1)}%"></b>` : ''}</span><span class="qa-p">${(p[k] * 100).toFixed(1)}%</span><span class="qa-ph">${p[k] > 1e-12 ? `${phaseIcon(s.re[k], s.im[k], c)}${Math.round(Math.atan2(s.im[k], s.re[k]) / Math.PI * 180)}°` : ''}</span></div>`).join('');
-    $('#c-cap').innerHTML = `${L('每个基矢的测量概率；圆里的指针是振幅的相位（0° 向右）。', 'Probability of each basis state; the dial shows the phase of the amplitude (0° points right).')}${counts ? ` ${L('金色细条：1000 次模拟测量的频率。', 'Gold strip: frequencies from 1000 simulated measurements.')}` : ''}`;
+    $('#c-bars').innerHTML = shown.map((k) => `<div class="qa-bar"${p[k] < 1e-12 ? ' data-zero' : ''}><code>|${M.label(n, k)}⟩</code><span class="qa-track"><i style="width:${(p[k] * 100).toFixed(2)}%"></i>${counts ? `<b style="width:${(counts[k] / 10).toFixed(1)}%"></b>` : ''}</span><span class="qa-p">${(p[k] * 100).toFixed(1)}%</span><span class="qa-ph">${pure && p[k] > 1e-12 ? `${phaseIcon(s.re[k], s.im[k], c)}${Math.round(Math.atan2(s.im[k], s.re[k]) / Math.PI * 180)}°` : ''}</span></div>`).join('');
+    $('#c-cap').innerHTML = `${L('每个基矢的测量概率；圆里的指针是振幅的相位（0° 向右）。', 'Probability of each basis state; the dial shows the phase of the amplitude (0° points right).')}${pure ? '' : ` ${L(`中途测量把态分成了 ${ens.length} 个分支，概率是各分支的加权和，没有单一的相位。`, `Mid-circuit measurement split the state into ${ens.length} branches; probabilities are their weighted sum and there is no single phase.`)}`}${counts ? ` ${L('金色细条：1000 次模拟测量的频率（整条线路）。', 'Gold strip: frequencies from 1000 simulated measurements (whole circuit).')}` : ''}`;
     const nz = p.filter((v) => v > 1e-12).length, best = p.indexOf(Math.max(...p));
     const gates = grid.reduce((t, col, i) => t + (issues[i] ? 0 : col.filter((x) => x && x !== '•').length - (col.filter((x) => x === 'x').length === 2 ? 1 : 0)), 0);
-    // 两比特时给出纠缠度（约化密度矩阵的纯度）
+    // 比特 0 约化态的纯度 Tr ρ² = (1 + |r|²)/2，r 是它的 Bloch 向量
     let purity = null;
-    if (n >= 2) {
-      const half = 1 << (n - 1), rho = [[0, 0], [0, 0, 0]];
-      let r00 = 0, r11 = 0, r01r = 0, r01i = 0;
-      for (let k = 0; k < half; k++) { const a = k, b = k + half; r00 += p[a]; r11 += p[b]; r01r += s.re[a] * s.re[b] + s.im[a] * s.im[b]; r01i += s.im[a] * s.re[b] - s.re[a] * s.im[b]; }
-      void rho; purity = r00 * r00 + r11 * r11 + 2 * (r01r * r01r + r01i * r01i);
-    }
+    if (n >= 2 || !pure) { const r = M.bloch(ens, 0); purity = (1 + r[0] ** 2 + r[1] ** 2 + r[2] ** 2) / 2; }
     readout($('#c-read'), [
       [['比特数', 'Qubits'], n], [['门数（不计控制点）', 'Gates (controls not counted)'], gates],
       [['非零振幅的基矢', 'Basis states with non-zero amplitude'], `${nz} / ${N}`],
       [['最可能的读数', 'Most likely outcome'], `|${M.label(n, best)}⟩ · ${(p[best] * 100).toFixed(1)}%`, true],
-      ...(purity !== null ? [[['比特 0 约化态的纯度 Tr ρ²', 'Purity Tr ρ² of qubit 0'], `${purity.toFixed(3)}${purity < 0.999 ? (en ? ' (entangled)' : '（与其余比特纠缠）') : ''}`]] : []),
-      [['归一化 ⟨ψ|ψ⟩', 'Norm ⟨ψ|ψ⟩'], M.norm(s).toFixed(12)],
+      ...(purity !== null ? [[['比特 0 约化态的纯度 Tr ρ²', 'Purity Tr ρ² of qubit 0'], `${purity.toFixed(3)}${purity < 0.999 ? (pure ? (en ? ' (entangled)' : '（与其余比特纠缠）') : (en ? ' (mixed: entanglement or measurement)' : '（混态：纠缠或测量造成）')) : ''}`]] : []),
+      ...(pure ? [] : [[['测量分支数', 'Measurement branches'], ens.length]]),
+      [['归一化（总概率）', 'Norm (total probability)'], p.reduce((a, b) => a + b, 0).toFixed(12)],
     ]);
     $('#c-minus').disabled = n <= 1; $('#c-plus').disabled = n >= MAXQ;
     for (const b of document.querySelectorAll('.qa-pal')) b.setAttribute('aria-pressed', String(b.dataset.g === circ.tool));
@@ -273,7 +287,8 @@
     if (ini) { circ.init ^= 1 << (circ.n - 1 - +ini.dataset.init); circ.samples = null; saveCirc(); drawCircuit(); return; }
     const cell = e.target.closest('.qa-cell'); if (!cell) return;
     const q = +cell.dataset.q, c = +cell.dataset.c, cur = circ.grid[c][q];
-    circ.grid[c][q] = circ.tool === 'erase' || cur === circ.tool ? '' : circ.tool;
+    const put = M.ROT.includes(circ.tool) ? M.rotGate(circ.tool, circ.turns) : circ.tool;
+    circ.grid[c][q] = circ.tool === 'erase' || cur === put ? '' : put;
     circ.samples = null; saveCirc(); drawCircuit();
     document.querySelector(`.qa-cell[data-q="${q}"][data-c="${c}"]`)?.focus();
   });
@@ -282,14 +297,18 @@
   $('#c-minus').addEventListener('click', () => { if (circ.n <= 1) return; circ.n--; circ.init >>= 1; circ.grid = circ.grid.map((col) => col.slice(0, circ.n)); circ.samples = null; saveCirc(); drawCircuit(); });
   $('#c-clear').addEventListener('click', () => { circ.grid = emptyGrid(circ.n); circ.init = 0; circ.samples = null; saveCirc(); drawCircuit(); });
   $('#c-sample').addEventListener('click', () => {
-    const s = M.basis(circ.n, circ.init), issues = circ.grid.map(M.columnIssue);
-    circ.grid.forEach((col, i) => { if (!issues[i]) M.runColumn(s, col); });
-    const p = M.probs(s), counts = new Array(p.length).fill(0);
+    const issues = circ.grid.map(M.columnIssue);
+    const p = M.ensembleProbs(M.runGridEnsemble(circ.n, circ.grid, circ.init, COLS, (i) => !!issues[i])), counts = new Array(p.length).fill(0);
     for (let i = 0; i < 1000; i++) counts[M.sample(p, Math.random())]++;
     circ.samples = counts; drawCircuit();
   });
+  $('#c-angle').addEventListener('input', (e) => { const t = Number(e.target.value); if (Number.isFinite(t) && Math.abs(t) <= 2) { circ.turns = t; if (!M.ROT.includes(circ.tool)) { circ.tool = 'Ry'; drawCircuit(); } } });
+  $('#c-step-l').innerHTML = L('看第几列之后的态', 'Show the state after column');
+  $('#c-step').max = String(COLS); $('#c-step').value = String(COLS);
+  $('#c-step').addEventListener('input', (e) => { circ.step = Math.max(0, Math.min(COLS, Number(e.target.value) || 0)); drawCircuit(); });
+  $('#c-bloch-cap').innerHTML = L('每个比特的 Bloch 球（侧视 x–z 平面，点是 y 分量）。箭头缩短说明这个比特单独看是混态：它和别的比特纠缠了，或者被测量过。', 'Bloch sphere of each qubit (side view in the x–z plane; the dot is the y component). A shorter arrow means the qubit on its own is mixed: entangled with others, or measured.');
   $('#c-more').innerHTML = L('这个模拟器是怎么算的', 'How this simulator works');
-  $('#c-notes').innerHTML = L('态矢量有 2ⁿ 个复数振幅，每个单比特门只更新成对的振幅（受控门只更新控制比特为 1 的那些对），所以 5 个比特只有 32 个振幅，计算是即时的。每多一个比特，内存翻一倍：这正是经典模拟量子线路的根本困难，大约 50 个比特就超出任何超级计算机的内存。', 'The statevector has 2ⁿ complex amplitudes; each single-qubit gate updates amplitudes in pairs (a controlled gate only the pairs whose controls are 1), so 5 qubits mean just 32 amplitudes and the calculation is instant. Every extra qubit doubles the memory: that is the basic difficulty of simulating quantum circuits classically, and around 50 qubits exceed the memory of any supercomputer.');
+  $('#c-notes').innerHTML = L('态矢量有 2ⁿ 个复数振幅，每个单比特门只更新成对的振幅（受控门只更新控制比特为 1 的那些对），所以 5 个比特只有 32 个振幅，计算是即时的。每多一个比特，内存翻一倍：这正是经典模拟量子线路的根本困难，大约 50 个比特就超出任何超级计算机的内存。中途测量会把态分成几个分支，每个分支按测量结果的概率加权，所以模拟器带着一小组态矢量往下算；每个比特的 Bloch 向量来自它在各分支上平均的约化密度矩阵。逐列查看和 Bloch 球的做法借鉴开源模拟器 Quirk（Craig Gidney，Apache-2.0），代码是另写的。', 'The statevector has 2ⁿ complex amplitudes; each single-qubit gate updates amplitudes in pairs (a controlled gate only the pairs whose controls are 1), so 5 qubits mean just 32 amplitudes and the calculation is instant. Every extra qubit doubles the memory: that is the basic difficulty of simulating quantum circuits classically, and around 50 qubits exceed the memory of any supercomputer. A mid-circuit measurement splits the state into branches weighted by the outcome probabilities, so the simulator carries a small ensemble of statevectors; a qubit’s Bloch vector comes from its reduced density matrix averaged over the branches. The live per-column view and the Bloch spheres follow the open-source Quirk simulator (Craig Gidney, Apache-2.0); this code is written separately.');
   drawCircuit();
 
   // ── 演示 2：Grover ────────────────────────────────────────────────────

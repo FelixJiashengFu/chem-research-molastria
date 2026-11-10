@@ -571,7 +571,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "214 条 · 已实现": [
+ "228 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -619,7 +619,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 214 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 228 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -1431,6 +1431,9 @@
  "研究方向详解": [
   "quantum/biology/index.html"
  ],
+ "结构馆：看得见的分子": [
+  "quantum/biology/index.html"
+ ],
  "三个演示都在浏览器里直接求解对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。": [
   "quantum/biology/index.html"
  ],
@@ -1543,6 +1546,9 @@
   "quantum/biology/index.html"
  ],
  "按证据强度筛选": [
+  "quantum/biology/index.html"
+ ],
+ "选择结构": [
   "quantum/biology/index.html"
  ],
  "传递效率随退相干率变化": [
@@ -2237,7 +2243,8 @@
  "清空": [
   "lab/index.html",
   "qchem/index.html",
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "viewer/sketch.js"
  ],
  "当前是合成演示数据。": [
   "lab/index.html"
@@ -3384,7 +3391,9 @@
   "models/index.html"
  ],
  "运行": [
-  "models/index.html"
+  "models/index.html",
+  "qchem/index.html",
+  "qchem/play-wave2d.js"
  ],
  "这个窗口的模型": [
   "models/index.html"
@@ -4957,7 +4966,8 @@
  ],
  "取消": [
   "pro/index.html",
-  "ai/ai.js"
+  "ai/ai.js",
+  "viewer/sketch.js"
  ],
  "前往安全支付": [
   "pro/index.html"
@@ -4978,7 +4988,8 @@
   "pro/index.html",
   "shared-nav.js",
   "ai/ai.js",
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "viewer/sketch.js"
  ],
  "支付方式": [
   "pro/index.html"
@@ -5126,6 +5137,7 @@
  "时间": [
   "pro/account.html",
   "qchem/play-quantum.js",
+  "qchem/play-wave2d.js",
   "radar/app/app.js"
  ],
  "用的 key": [
@@ -6178,7 +6190,7 @@
  "苟日新，日日新": [
   "radar/app/index.html"
  ],
- "游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria": [
+ "游乐场 · 量子化学、量子计算与物理疆界的十五个小游戏 · MolAstria": [
   "qchem/index.html"
  ],
  "跳到游乐场内容": [
@@ -6220,13 +6232,16 @@
  "噪声助推": [
   "qchem/index.html"
  ],
+ "波包画墙": [
+  "qchem/index.html"
+ ],
  "普朗克工坊": [
   "qchem/index.html"
  ],
  "立方体分拣": [
   "qchem/index.html"
  ],
- "用真实的物理公式玩量子世界。三个展区十四个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。": [
+ "用真实的物理公式玩量子世界。三个展区十五个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。": [
   "qchem/index.html"
  ],
  "化学馆": [
@@ -6238,7 +6253,7 @@
  "量子嘉年华分会场": [
   "qchem/index.html"
  ],
- "07–12 · 物理、计算机、算法、生物": [
+ "07–12、15 · 物理、计算机、算法、生物": [
   "qchem/index.html"
  ],
  "物理疆界": [
@@ -6280,7 +6295,7 @@
  "展区二": [
   "qchem/index.html"
  ],
- "四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，再看噪声怎样帮光合作用传递能量。玩完想深入，卡片下方有直通展馆的链接。": [
+ "四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，看噪声怎样帮光合作用传递能量，再画墙引导一个二维波包。玩完想深入，卡片下方有直通展馆的链接。": [
   "qchem/index.html"
  ],
  "Stern–Gerlach 自旋过滤": [
@@ -6311,6 +6326,12 @@
   "qchem/index.html"
  ],
  "激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。": [
+  "qchem/index.html"
+ ],
+ "二维波包画墙": [
+  "qchem/index.html"
+ ],
+ "先在格子上画墙，再放出一个波包：分出两条缝让它干涉，擦薄势垒让它隧穿，或者摆一面镜子把它送进目标框。": [
   "qchem/index.html"
  ],
  "展馆：": [
@@ -6830,6 +6851,54 @@
  "，每个角都连着图上的理论节点。": [
   "qchem/index.html"
  ],
+ "游戏 15 · 量子物理 · 二维含时薛定谔方程": [
+  "qchem/index.html"
+ ],
+ "一个高斯波包在平面上飞行。按“运行”之前，你可以在格子上画墙、擦墙，每关的格数有预算；然后看找到粒子的概率怎样衍射、干涉、隧穿和反射。完成三个关卡，再自由画。": [
+  "qchem/index.html"
+ ],
+ "画墙": [
+  "qchem/index.html"
+ ],
+ "擦除": [
+  "qchem/index.html"
+ ],
+ "回到起点": [
+  "qchem/index.html"
+ ],
+ "清空墙": [
+  "qchem/index.html"
+ ],
+ "看示范": [
+  "qchem/index.html"
+ ],
+ "显示相位": [
+  "qchem/index.html"
+ ],
+ "颜色越浓（从底色经蓝到金），在那里找到粒子的概率越大（画的是 |ψ| 的大小，按当前最大处归一）。紫色是你画的墙，和正文同色的是固定的墙，红色是势垒；虚线外是吸收边界，飞到那里的波包被吸收，不会弹回来。旁边的小图是屏上的累积强度或目标概率随时间的变化。键盘：Tab 选中画面后，方向键移动光标，空格键画或擦。": [
+  "qchem/index.html"
+ ],
+ "波包满足二维含时薛定谔方程，单位取 ħ = m = 1，格距为 1：": [
+  "qchem/index.html"
+ ],
+ "网格是 128 × 128，每步 dt = 0.25，用分裂算符法：先乘 e^(−iV dt/2)，用快速傅里叶变换（FFT）换到动量空间乘 e^(−ik² dt/2)，换回来再乘 e^(−iV dt/2)。每一步只是乘模为 1 的相位，所以总概率守恒到舍入误差（测试里 1000 步后偏离 1 不到 10⁻¹²）。动能那一步在网格上是精确的：自由波包的中心以 k/m 匀速前进，宽度按下式变宽，和解析解相差不到百万分之一格：": [
+  "qchem/index.html"
+ ],
+ "四周有 12 格宽的吸收带（虚线外）：波包到了这里就被逐步吸收，像飞出了画面。墙是 V = 5 的势能，是波包动能（k = 1.2 时为 0.72）的七倍左右。势能不能设得太高，因为 e^(−iV dt) 每隔 2π/dt 就重复一次，太高的墙会变成另一个势能；网格也表示不了墙里急剧衰减的波函数，所以 2 格厚的墙会漏过千分之二左右，4 格厚的约万分之一，比真正的墙漏得多。": [
+  "qchem/index.html"
+ ],
+ "双缝：波长 λ = 2π/k ≈ 5.2 格，缝宽只有一个波长左右。远场的暗纹在 d sinθ = (m + ½)λ 处，靠近中央的条纹间距约为 λL/d；测试在更长的网格上核对了暗纹的位置。游戏里的屏离缝不到 60 格，还不算远场，条纹并不等距。屏上画的是两列格子里 |ψ|² 对时间的累积，比最亮处的 8% 还暗、或者和旁边的峰之间没有明显暗纹的，不算亮纹。": [
+  "qchem/index.html"
+ ],
+ "隧穿：波包动能 E = 0.5，势垒 V = 1。势垒在 y 方向均匀时，问题就是一维方势垒，穿过去的概率和下式（对波包的动量分布取平均）相差不到两成；差别来自势垒只有几格宽，它的宽度本身只准到一格左右。6 格厚时只穿过约万分之一，1 格厚时约 37%。": [
+  "qchem/index.html"
+ ],
+ "局限：这是二维的玩具模型，长度以格为单位，不对应真实的电子、缝和距离。打开“显示相位”后，颜色表示 ψ 的相位（金色 0、绿色 +π/2、蓝色 π、紫色 −π/2），亮度仍是 |ψ| 的大小；墙也是紫色，在相位图里要靠形状分辨。": [
+  "qchem/index.html"
+ ],
+ "的“薛定谔方程与一维问题”一章讲波包扩散和隧穿，“量子的诞生”一章讲单电子双缝实验。": [
+  "qchem/index.html"
+ ],
  "游乐场需要启用 JavaScript。": [
   "qchem/index.html"
  ],
@@ -6911,7 +6980,8 @@
  ],
  "目标": [
   "qchem/index.html",
-  "qchem/play.js"
+  "qchem/play.js",
+  "qchem/play-wave2d.js"
  ],
  "质量、长度、时间三个量纲的指数": [
   "qchem/index.html"
@@ -6922,6 +6992,123 @@
  "ħ-c-G 立方体的八个角": [
   "qchem/index.html"
  ],
+ "画笔": [
+  "qchem/index.html"
+ ],
+ "画墙的格子：方向键移动光标，按住 Shift 一次走 4 格，空格键画墙或擦除": [
+  "qchem/index.html"
+ ],
+ "复习卡片 · 按遗忘曲线复习计算化学与量子知识 · MolAstria": [
+  "review/index.html"
+ ],
+ "复习卡片": [
+  "review/index.html",
+  "shared-nav.js"
+ ],
+ "读过的东西，快要忘的时候再出现一次。每张卡按你的回答安排下一次复习，用的是开源的 FSRS 间隔重复算法。卡片和进度只存在这台设备的浏览器里，不上传。": [
+  "review/index.html"
+ ],
+ "今天的复习": [
+  "review/index.html"
+ ],
+ "显示答案": [
+  "review/index.html"
+ ],
+ "空格": [
+  "review/index.html"
+ ],
+ "重来": [
+  "review/index.html"
+ ],
+ "困难": [
+  "review/index.html"
+ ],
+ "良好": [
+  "review/index.html"
+ ],
+ "简单": [
+  "review/index.html"
+ ],
+ "今天的复习做完了": [
+  "review/index.html",
+  "review/review.js"
+ ],
+ "卡组": [
+  "review/index.html"
+ ],
+ "术语卡的方向": [
+  "review/index.html"
+ ],
+ "跟随界面语言": [
+  "review/index.html"
+ ],
+ "中文 → 英文": [
+  "review/index.html"
+ ],
+ "英文 → 中文": [
+  "review/index.html"
+ ],
+ "每天最多学几张新卡": [
+  "review/index.html"
+ ],
+ "写一张自己的卡": [
+  "review/index.html"
+ ],
+ "正面（问题）": [
+  "review/index.html"
+ ],
+ "背面（答案）": [
+  "review/index.html"
+ ],
+ "标签（可选，用空格分开）": [
+  "review/index.html"
+ ],
+ "加入卡组": [
+  "review/index.html"
+ ],
+ "我的卡片": [
+  "review/index.html",
+  "review/review.js"
+ ],
+ "导出与备份": [
+  "review/index.html"
+ ],
+ "导出到 Anki：在 Anki 里选“文件 → 导入”，选下载的文件即可，正面、背面和标签会自动对上（需要 Anki 2.1.54 或更新的版本）。只导出勾选的卡组。备份文件包含你的卡片和复习进度，可以在另一台设备上恢复。": [
+  "review/index.html"
+ ],
+ "导出到 Anki": [
+  "review/index.html"
+ ],
+ "下载备份": [
+  "review/index.html"
+ ],
+ "从备份恢复": [
+  "review/index.html"
+ ],
+ "清除全部进度": [
+  "review/index.html"
+ ],
+ "调度用": [
+  "review/index.html"
+ ],
+ "（FSRS 算法的 TypeScript 实现，MIT 许可），第一次打开时从 jsDelivr 载入；载不到时改用简化的间隔（每次乘一个固定倍数），联网后接着用 FSRS。“把复习嵌进阅读”的想法来自 Andy Matuschak 和 Michael Nielsen 的": [
+  "review/index.html"
+ ],
+ "。研习台的卡片只读取研习台的知识图，不会改动研习台里的任何记录。": [
+  "review/index.html"
+ ],
+ "这张卡记得怎么样": [
+  "review/index.html"
+ ],
+ "例如：精确的非相对论能量减去 Hartree–Fock 能量，叫什么？": [
+  "review/index.html"
+ ],
+ "例如：相关能（Löwdin 的定义，同一个哈密顿量下比较）。": [
+  "review/index.html"
+ ],
+ "例如：量子化学 电子相关": [
+  "review/index.html"
+ ],
  "研习台 · Study Desk · MolAstria": [
   "learn/index.html"
  ],
@@ -6930,7 +7117,8 @@
  ],
  "研习台": [
   "learn/index.html",
-  "shared-nav.js"
+  "shared-nav.js",
+  "review/review.js"
  ],
  "研习台需要 JavaScript 才能使用。": [
   "learn/index.html"
@@ -7801,6 +7989,18 @@
   "manual/app.js",
   "tools/build-seo.ts"
  ],
+ "动手算：自己写一个 Hartree–Fock": [
+  "manual/app.js"
+ ],
+ "这一章的计算引擎（ORCA、Psi4、Gaussian 等）做的第一件事都是自洽场（SCF）。下面是一段完整的 Python 程序：用 STO-3G 基组对 H₂ 做限制性 Hartree–Fock。积分按 Szabo 和 Ostlund《Modern Quantum Chemistry》第 3 章的闭式公式写（重叠、动能、核吸引、双电子积分和 Boys 函数 F₀），用对称正交化 S^(−1/2)，迭代到能量不再变化，最后扫一遍键长画出势能曲线。": [
+  "manual/app.js"
+ ],
+ "改开头的 R 再运行，看能量怎么变；把 MOLECULE 改成 \"HeH+\"，能看到要迭代好几轮的 SCF。远处的曲线还会告诉你限制性 Hartree–Fock 为什么拆不开 H₂。程序只在你的浏览器里运行，不上传。": [
+  "manual/app.js"
+ ],
+ "参考值：R = 1.4 bohr 时 Szabo 和 Ostlund 给出约 −1.1167 hartree，PySCF 用同样的 STO-3G 算得 −1.116714。写法参照 psi4numpy 的教学程序（BSD-3-Clause），代码是 MolAstria 自己写的。": [
+  "manual/app.js"
+ ],
  "（印刷版）": [
   "journals/journals.js"
  ],
@@ -8653,7 +8853,8 @@
  ],
  "自由玩": [
   "qchem/play.js",
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "{0} 元环，电荷 {1}。假设环是平面的，它是芳香的还是反芳香的？": [
   "qchem/play.js"
@@ -8786,13 +8987,16 @@
   "qchem/play-quantum.js"
  ],
  "第 1 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "第 2 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "第 3 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "经典策略赢到 75%": [
   "qchem/play-quantum.js"
@@ -9241,6 +9445,132 @@
  ],
  "应该是：{0}。{1}": [
   "qchem/play-quantum.js"
+ ],
+ "固定的墙上有一道 32 格宽的口子，金色虚线是屏。在口子里画墙，把它分成两条（或更多）缝，让屏上出现至少 3 条亮纹；5 条两星，7 条三星。最多改 60 格。": [
+  "qchem/play-wave2d.js"
+ ],
+ "一道 6 格厚的势垒（红色）挡在路上，高度是波包动能的两倍，现在几乎什么都穿不过去。最右一列擦不掉，其余可以擦，最多擦 200 格。让至少 20% 的概率穿过去；30% 两星，34% 三星。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包向右飞，绿框是目标。用不超过 70 格墙把它送进框里：结束前（t = 110）框里的概率至少有一刻达到 30%；45% 两星，55% 三星。": [
+  "qchem/play-wave2d.js"
+ ],
+ "自由玩：随便画墙，不限格数，看波包怎样反射、衍射、干涉。": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过缝的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过势垒的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "画面里还剩": [
+  "qchem/play-wave2d.js"
+ ],
+ "两条缝出来的波在屏上叠加，程差是波长的整数倍处变亮，差半个波长处相消；缝距越大，条纹越密。": [
+  "qchem/play-wave2d.js"
+ ],
+ "势垒每厚一格，穿过去的概率大约降为原来的七分之一：隧穿概率随厚度指数衰减。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙对波包像一面镜子：入射角等于反射角。斜线是一格一格的台阶，比波长细，所以还算光滑。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：两条缝的中心离得越远，条纹越密、屏上能数到的越多；缝要窄一些，亮纹才分得开。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：擦掉波包正前方那几十行，只留最右一列。势垒越薄，穿过去的越多。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：在波包前方画一条从左下到右上的 45° 斜线，镜子要比波包宽。": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上的累积强度 · 亮纹 {0} 条": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙格": [
+  "qchem/play-wave2d.js"
+ ],
+ "已用 {0} / {1}": [
+  "qchem/play-wave2d.js"
+ ],
+ "已用 {0}（不限）": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上的亮纹（条）": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里最高": [
+  "qchem/play-wave2d.js"
+ ],
+ "成绩": [
+  "qchem/play-wave2d.js"
+ ],
+ "{0}（最佳 {1}）": [
+  "qchem/play-wave2d.js"
+ ],
+ "共得 {0} / 9 颗星": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上数到 {0} 条亮纹": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过势垒的概率 {0}": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里的概率最高 {0}": [
+  "qchem/play-wave2d.js"
+ ],
+ "暂停": [
+  "qchem/play-wave2d.js"
+ ],
+ "继续": [
+  "qchem/play-wave2d.js"
+ ],
+ "计算中…": [
+  "qchem/play-wave2d.js"
+ ],
+ "跑完了。画面里还剩 {0}，其余都被四周的吸收边界吸收了。": [
+  "qchem/play-wave2d.js"
+ ],
+ "示范解法：{0}，{1}。看过示范的布局不计分，按“清空墙”自己画一个。": [
+  "qchem/play-wave2d.js"
+ ],
+ "过关！{0}，得 {1}。{2}": [
+  "qchem/play-wave2d.js"
+ ],
+ "{0}，还没过关。{1}": [
+  "qchem/play-wave2d.js"
+ ],
+ "预算用完了：这一关最多改 {0} 格。擦掉一些再画。": [
+  "qchem/play-wave2d.js"
+ ],
+ "这还是示范的布局，改了也不计分；按“清空墙”从头画。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙改了，波包回到了起点。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包正在飞：先按“暂停”，再改墙（改了以后从头开始）。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包回到了起点，墙都还在。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙清空了，回到这一关的初始布局。": [
+  "qchem/play-wave2d.js"
+ ],
+ "这是一份示范解法，按“运行”看看。看过示范的布局不计分。": [
+  "qchem/play-wave2d.js"
+ ],
+ "已得 {0} / 9 颗星": [
+  "qchem/play-wave2d.js"
  ],
  "本期": [
   "digest/digest.js"
@@ -11146,6 +11476,9 @@
  "计算完成 · {0} · {1}{2}": [
   "models/models.js"
  ],
+ "3D 结构": [
+  "models/models.js"
+ ],
  "，多帧": [
   "models/models.js"
  ],
@@ -11159,6 +11492,15 @@
   "models/models.js"
  ],
  "完整结果": [
+  "models/models.js"
+ ],
+ "{0} 算出的结构": [
+  "models/models.js"
+ ],
+ "输入的结构": [
+  "models/models.js"
+ ],
+ "预览 3D 结构": [
   "models/models.js"
  ],
  "文件太大：在线计算的 XYZ 最多 12000 个字符": [
@@ -11933,16 +12275,19 @@
   "radar/app/app.js"
  ],
  "{0} 分钟后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "{0} 小时 {1} 分钟后": [
   "radar/app/app.js"
  ],
  "{0} 小时后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "{0} 天后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "分钟": [
   "radar/app/app.js"
@@ -12857,7 +13202,8 @@
   "radar/app/app.js"
  ],
  "删除": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "从模板添加": [
   "radar/app/app.js"
@@ -13210,6 +13556,233 @@
  ],
  "设置已保存": [
   "radar/app/app.js"
+ ],
+ "中英术语": [
+  "review/review.js"
+ ],
+ "站内搜索用的中英术语表，每组一张：看中文想英文，或者反过来。": [
+  "review/review.js"
+ ],
+ "研习台知识图里的推理链（由前提推结论）和知识点（讲清楚来龙去脉）。只读，不会改动研习台。": [
+  "review/review.js"
+ ],
+ "你自己写的卡片，写在下面。": [
+  "review/review.js"
+ ],
+ "{0} 个月后": [
+  "review/review.js"
+ ],
+ "{0} 年后": [
+  "review/review.js"
+ ],
+ "由这些推出什么？": [
+  "review/review.js",
+  "review/review-core.js"
+ ],
+ "讲清楚这一条，并说出它从哪里来：": [
+  "review/review.js",
+  "review/review-core.js"
+ ],
+ "来自研习台：": [
+  "review/review.js"
+ ],
+ "对照研习台里的原始讲解，讲不清的地方去那里再练一次。": [
+  "review/review.js"
+ ],
+ "去研习台练习": [
+  "review/review.js"
+ ],
+ "也写作：": [
+  "review/review.js"
+ ],
+ "到期 {0} 张 · 新卡 {1} 张（共 {2} 张）": [
+  "review/review.js"
+ ],
+ "复习": [
+  "review/review.js"
+ ],
+ "新卡": [
+  "review/review.js"
+ ],
+ "还没有可以复习的卡片": [
+  "review/review.js"
+ ],
+ "在下面勾选一个卡组，或者写一张自己的卡。": [
+  "review/review.js"
+ ],
+ "下一张 {0}到期。": [
+  "review/review.js"
+ ],
+ "还有 {0} 张新卡，明天接着学。": [
+  "review/review.js"
+ ],
+ "所有卡片都学过了。": [
+  "review/review.js"
+ ],
+ "这台设备的浏览器不让保存（可能是隐私模式），关掉页面后进度会丢失。": [
+  "review/review.js"
+ ],
+ "研习台还没有知识点。在研习台学完一节，这里会自动出现卡片。": [
+  "review/review.js"
+ ],
+ "共 {0} 张": [
+  "review/review.js"
+ ],
+ "新卡 {0} 张": [
+  "review/review.js"
+ ],
+ "到期 {0} 张": [
+  "review/review.js"
+ ],
+ "我的卡片（共 {0} 张）": [
+  "review/review.js"
+ ],
+ "还没有自己的卡片。": [
+  "review/review.js"
+ ],
+ "最多 {0} 张，先删掉一些。": [
+  "review/review.js"
+ ],
+ "正面和背面都要写。": [
+  "review/review.js"
+ ],
+ "已加入，会作为新卡出现在今天的复习里。": [
+  "review/review.js"
+ ],
+ "没有勾选的卡组可以导出。": [
+  "review/review.js"
+ ],
+ "已导出 {0} 张卡片。": [
+  "review/review.js"
+ ],
+ "备份已下载。": [
+  "review/review.js"
+ ],
+ "这个文件太大，不像是复习卡片的备份。": [
+  "review/review.js"
+ ],
+ "这不是复习卡片的备份文件。": [
+  "review/review.js"
+ ],
+ "已从备份恢复。": [
+  "review/review.js"
+ ],
+ "清除全部复习进度和自己的卡片？这一步不能撤销，建议先下载备份。": [
+  "review/review.js"
+ ],
+ "已清除。": [
+  "review/review.js"
+ ],
+ "正在载入 FSRS 调度算法…": [
+  "review/review.js"
+ ],
+ "没能载入 FSRS（需要联网访问 cdn.jsdelivr.net），先用简化的间隔安排复习，联网后会接着用 FSRS。": [
+  "review/review.js"
+ ],
+ "来自研习台：{0}": [
+  "review/review-core.js"
+ ],
+ "对照研习台里的原始讲解。": [
+  "review/review-core.js"
+ ],
+ "也写作：{0}": [
+  "review/review-core.js"
+ ],
+ "3Dmol.js 载入后不可用": [
+  "viewer/mol3d.js"
+ ],
+ "3Dmol.js 载入失败（需要联网访问 cdn.jsdelivr.net）": [
+  "viewer/mol3d.js"
+ ],
+ "球棍": [
+  "viewer/mol3d.js"
+ ],
+ "棍": [
+  "viewer/mol3d.js"
+ ],
+ "空间填充": [
+  "viewer/mol3d.js"
+ ],
+ "线": [
+  "viewer/mol3d.js"
+ ],
+ "卡通": [
+  "viewer/mol3d.js"
+ ],
+ "mount: 没有容器": [
+  "viewer/mol3d.js"
+ ],
+ "3D 分子结构": [
+  "viewer/mol3d.js"
+ ],
+ "正在载入 3D 查看器…": [
+  "viewer/mol3d.js"
+ ],
+ "样式": [
+  "viewer/mol3d.js"
+ ],
+ "自动旋转": [
+  "viewer/mol3d.js"
+ ],
+ "复位": [
+  "viewer/mol3d.js"
+ ],
+ "保存图片": [
+  "viewer/mol3d.js"
+ ],
+ "帧": [
+  "viewer/mol3d.js"
+ ],
+ "这段 XYZ 读不出原子。": [
+  "viewer/mol3d.js"
+ ],
+ "{0} · {1} 个原子": [
+  "viewer/mol3d.js"
+ ],
+ "PDB 编号不对。": [
+  "viewer/mol3d.js"
+ ],
+ "正在从 RCSB PDB 下载 {0}…": [
+  "viewer/mol3d.js"
+ ],
+ "{0} 下载失败（需要联网访问 files.rcsb.org）。": [
+  "viewer/mol3d.js"
+ ],
+ "第 {0} / {1} 帧": [
+  "viewer/mol3d.js"
+ ],
+ "查看 3D 结构": [
+  "viewer/mol3d.js"
+ ],
+ "Kekule.js 载入后不可用": [
+  "viewer/sketch.js"
+ ],
+ "分子绘制器载入失败（需要联网访问 cdn.jsdelivr.net）": [
+  "viewer/sketch.js"
+ ],
+ "画一个分子": [
+  "viewer/sketch.js"
+ ],
+ "左边工具栏选原子、键和环，点画布放上去；拖动可以连键。画好后点“用这个分子”。": [
+  "viewer/sketch.js"
+ ],
+ "正在载入绘制器…": [
+  "viewer/sketch.js"
+ ],
+ "用这个分子": [
+  "viewer/sketch.js"
+ ],
+ "画板上还没有分子。": [
+  "viewer/sketch.js"
+ ],
+ "画板上有好几个分子，请只留一个（或把它们连起来）。": [
+  "viewer/sketch.js"
+ ],
+ "这个结构转不成 SMILES，检查一下有没有悬空的键。": [
+  "viewer/sketch.js"
+ ],
+ "画结构": [
+  "viewer/sketch.js"
  ],
  "账号服务还没有配置 Stripe 密钥": [
   "deploy/account-worker.js"
@@ -13592,6 +14165,12 @@
  "每周一从 ChemRxiv、arXiv 化学物理和计算化学期刊的新论文里挑出值得读的十篇左右，每篇一句解读；前五篇和点评公开。": [
   "tools/build-seo.ts"
  ],
+ "MolAstria 复习卡片 · Review cards": [
+  "tools/build-seo.ts"
+ ],
+ "中英术语、研习台的知识点和自己写的卡片，按 FSRS 间隔重复算法安排复习，可导出到 Anki。": [
+  "tools/build-seo.ts"
+ ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
   "tools/build-seo.ts"
  ],
@@ -13667,7 +14246,7 @@
  "MolAstria 游乐场": [
   "tools/build-seo.ts"
  ],
- "用真实的物理公式玩量子世界的十四个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
+ "用真实的物理公式玩量子世界的十五个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [
@@ -14594,6 +15173,48 @@
   "atlas data"
  ],
  "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。": [
+  "atlas data"
+ ],
+ "用 Psi4 的积分加 NumPy，一步步写出 Hartree–Fock、MP2、耦合簇等方法：交互教程（Jupyter 笔记本）加参考实现，BSD-3 许可。": [
+  "atlas data"
+ ],
+ "适合化学各门课程的计算化学实验活动，可在 WebMO 演示服务器或 JupyterHub 上在线完成；教师材料需申请，BSD-3 许可。": [
+  "atlas data"
+ ],
+ "Andrew D. White 的在线教材，讲分子与材料的深度学习，从基础一直讲到图神经网络和等变神经网络；CC BY-NC 3.0（非商业）许可。": [
+  "atlas data"
+ ],
+ "科罗拉多大学 PhET 的交互模拟，面向学原子结构的本科生：比较玻尔、德布罗意和薛定谔等氢原子模型。": [
+  "atlas data"
+ ],
+ "浏览器里拖拽搭量子线路，每一步实时显示振幅、Bloch 球和密度矩阵；开源，Apache-2.0。本站量子算法展馆的线路模拟器借了它的思路。": [
+  "atlas data"
+ ],
+ "开放量子系统与量子光学的 Python 工具箱：Lindblad 主方程、蒙特卡洛轨迹等求解器，官网附教程笔记本；BSD-3 许可。": [
+  "atlas data"
+ ],
+ "网页用的 WebGL 分子查看器 JavaScript 库，读 PDB、SDF、MOL2、XYZ 和 cube 等格式；BSD-3 许可。本站的 3D 分子查看器用的就是它。": [
+  "atlas data"
+ ],
+ "RCSB PDB 和 PDBe 官网集成的开源大分子查看与分析工具包，在浏览器里看蛋白、核酸、配体，以及冷冻电镜密度等体积数据。": [
+  "atlas data"
+ ],
+ "结构–性质交互探索器：一边是性质或描述符的散点图，点一个点另一边显示对应的分子或材料结构（反过来也行），适合看机器学习描述符和大批计算结果；BSD 许可。": [
+  "atlas data"
+ ],
+ "网页里画分子、看 3D 结构、按名称和编号搜化合物；基础功能免费、不用注册，另有付费的高级功能。": [
+  "atlas data"
+ ],
+ "纯 JavaScript 化学信息学库，带分子绘制器和 2D/3D 显示；MIT 许可。本站的“画结构”绘制器用的就是它。": [
+  "atlas data"
+ ],
+ "EPAM 的开源网页化学结构编辑器，读写 Molfile（V2000/V3000）、扩展 SMILES、RXN、InChI 等格式；Apache-2.0 许可，有在线演示。": [
+  "atlas data"
+ ],
+ "生物信息学 Python 库：序列与比对、PDB 结构模块、访问 NCBI 的 Entrez 数据库，自带详尽教程；宽松的 Biopython 许可。": [
+  "atlas data"
+ ],
+ "在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。": [
   "atlas data"
  ],
  "一百零三个入口，先分清去哪一层": [

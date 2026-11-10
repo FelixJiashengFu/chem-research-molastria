@@ -13,10 +13,12 @@
   <link rel="stylesheet" href="../../shared-nav.css">
   <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
   <link rel="stylesheet" href="qb.css">
+  <link rel="stylesheet" href="../../viewer/mol3d.css">
   <script src="../../shared-nav.js" defer></script>
   <script src="qb-data.js" defer></script>
   <script src="qb-math.js" defer></script>
   <script src="qb-models.js" defer></script>
+  <script src="../../viewer/mol3d.js" defer></script>
   <script src="qb.js" defer></script>
 </head>
 <body data-section="quantum">
@@ -63,6 +65,16 @@
     <p class="muted" id="qb-ledger-note"></p>
     <div class="fs-kind-filter" role="group" aria-label="按证据强度筛选" id="qb-ledger-filter"></div>
     <div class="fs-theory-grid" id="qb-ledger-grid"></div>
+  </section>
+
+  <section class="fs-block" id="qb-structures" aria-labelledby="qb-structures-h" tabindex="-1">
+    <h2 id="qb-structures-h">结构馆：看得见的分子</h2>
+    <p class="muted" id="qb-struct-note"></p>
+    <div class="qb-struct-pick" role="group" aria-label="选择结构" id="qb-struct-pick"></div>
+    <div class="qb-struct-body">
+      <div class="qb-struct-3d" id="qb-struct-3d"></div>
+      <div class="qb-struct-text" id="qb-struct-text" aria-live="polite"></div>
+    </div>
   </section>
 
   <section class="fs-block fs-lab" id="qb-lab" aria-labelledby="qb-lab-h" tabindex="-1">

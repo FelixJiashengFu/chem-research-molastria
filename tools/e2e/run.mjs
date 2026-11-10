@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -436,6 +436,8 @@ check('research atlas: the copied site loads in its frame, follows the theme, mi
   await Promise.all([p.waitForEvent('framenavigated', { predicate: (fr) => /schools\/mit\/$/.test(fr.url()) }), f.evaluate(() => { location.href = '../schools/mit/'; })]);
   const mit = p.frame({ url: /research-atlas\/app\/schools\/mit\// });
   await mit.waitForSelector('h1');
+  // The host sends the typeface again once the new page has loaded (postMessage), so wait for it rather than read it at once: under load it lands after the h1.
+  await mit.waitForFunction(() => document.documentElement.dataset.raFont === 'serif', null, { timeout: 5000 }).catch(() => {});
   assert.equal(await mit.evaluate(() => document.documentElement.dataset.raFont), 'serif', 'the typeface survives a link inside the frame');
   await finish(p);
   // In English the atlas is translated by the site's own i18n.js with the atlas dictionary.
@@ -519,7 +521,7 @@ check('playground: overview, then each game plays by its rules (configuration, s
   const p = await open();
   await go(p, '/qchem/index.html');
   assert.equal((await text(p, '.cr-links a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
-  assert.equal(await p.locator('.play-card').count(), 15, 'calculator + 14 games in three zones');
+  assert.equal(await p.locator('.play-card').count(), 16, 'calculator + 15 games in three zones');
   assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
   // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
   await p.click('#play-tabs a[data-view=config]');
@@ -644,7 +646,7 @@ check('playground zones 2 and 3: spin filters, Bell game, circuits, error correc
 
 check('playground in English: games and canvas labels are translated, no Chinese left', async () => {
   const p = await open();
-  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube']) {
+  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube', '#play-wave']) {
     await go(p, '/qchem/index.html?lang=en' + v);
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     const left = await p.evaluate(() => [...document.querySelectorAll('main .play-view:not([hidden]), #play-tabs')].map((e) => e.innerText).join('\n').match(/[^\n]*[㐀-鿿][^\n]*/g));
@@ -2867,8 +2869,363 @@ check('open data API: embed card (builder preview and snippet, a bare script tag
   await finish(p);
 });
 
+check('3D molecule viewer and sketcher: the model API sample turns in 3D, the sketcher hands the SMILES back', async () => {
+  const p = await open();
+  await go(p, '/models/index.html');
+  await p.check('input[name=m-mode][value=xyz]');
+  await p.click('#m-xyz-sample');
+  await p.click('#m-xyz-3d .m3-open');
+  await p.waitForSelector('#m-xyz-3d[data-ready=true]', { timeout: 30000 });
+  assert.match(await text(p, '#m-xyz-3d .m3-info'), /H2O · 3 个原子/);
+  assert.ok(await p.evaluate(() => document.querySelector('#m-xyz-3d canvas').width > 300), '3Dmol.js drew on a canvas');
+  await p.selectOption('#m-xyz-3d .m3-bar select', 'sphere');
+  // The sketcher opens with the current SMILES drawn and gives back the same molecule.
+  await p.check('input[name=m-mode][value=smiles]').catch(() => {});
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  const before = await p.inputValue('#m-smiles');
+  await p.click('.sk-open');
+  await p.waitForSelector('.sk-dialog[data-ready=true]', { timeout: 30000 });
+  await p.click('.sk-ok');
+  await p.waitForFunction(() => !document.querySelector('.sk-dialog').open, null, { timeout: 10000 });
+  assert.ok((await p.inputValue('#m-smiles')).length >= before.length - 2, 'a SMILES came back');
+  await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 10000 });
+  await finish(p);
+});
+
+check('quantum biology structure gallery: six PDB structures, the first loads when scrolled to, buttons switch', async () => {
+  const cif = ['data_MINI', 'loop_', ...'group_PDB id type_symbol label_atom_id label_alt_id label_comp_id label_asym_id label_entity_id label_seq_id pdbx_PDB_ins_code Cartn_x Cartn_y Cartn_z occupancy B_iso_or_equiv auth_seq_id auth_comp_id auth_asym_id auth_atom_id pdbx_PDB_model_num'.split(' ').map((k) => `_atom_site.${k}`),
+    'ATOM 1 N N . GLY A 1 1 ? 0.000 0.000 0.000 1.00 10.00 1 GLY A N 1', 'ATOM 2 C CA . GLY A 1 1 ? 1.458 0.000 0.000 1.00 10.00 1 GLY A CA 1',
+    'ATOM 3 C C . GLY A 1 1 ? 2.009 1.420 0.000 1.00 10.00 1 GLY A C 1', 'ATOM 4 O O . GLY A 1 1 ? 1.251 2.390 0.000 1.00 10.00 1 GLY A O 1',
+    'HETATM 5 FE FE . FE2 B 2 . ? 4.000 5.000 1.000 1.00 10.00 901 FE2 A FE 1', ''].join('\n');
+  for (const lang of ['', '?lang=en']) {
+    const p = await open({ viewport: { width: lang ? 390 : 1280, height: 900 }, colorScheme: lang ? 'dark' : 'light' });
+    const asked = [];
+    await p.context().route('https://files.rcsb.org/**', (r) => { asked.push(r.request().url()); return r.fulfill({ body: cif, headers: { 'access-control-allow-origin': '*' } }); });
+    await go(p, `/quantum/biology/index.html${lang}`);
+    assert.equal(await p.locator('.qb-struct-btn').count(), 6);
+    assert.equal(asked.length, 0, 'nothing downloads before the gallery is on screen');
+    await p.locator('#qb-structures').scrollIntoViewIfNeeded();
+    await p.waitForSelector('#qb-struct-3d[data-ready=true]', { timeout: 30000 });
+    await p.click('.qb-struct-btn[data-pdb="3PZW"]');
+    await p.waitForFunction(() => document.querySelector('.qb-struct-btn[data-pdb="3PZW"]').getAttribute('aria-pressed') === 'true');
+    assert.ok(asked.some((u) => /3PZW/i.test(u)), 'the chosen entry is fetched from RCSB');
+    assert.match(await text(p, '#qb-struct-text'), lang ? /[A-Za-z]{4}/ : /[一-鿿]/);
+    assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+    await finish(p);
+  }
+});
+
+check('quantum algorithms circuit: rotation gates, mid-circuit measurement, step through columns, Bloch spheres', async () => {
+  const p = await open({ viewport: { width: 1360, height: 900 } });
+  await go(p, '/quantum/algorithms/index.html');
+  // Teleportation: after the whole circuit, q2 carries the pure state that started on q0.
+  await p.selectOption('#c-preset', 'teleport');
+  assert.equal(await p.locator('#c-bloch .qa-bl').count(), 3);
+  assert.deepEqual(await p.$$eval('#c-bloch figcaption', (x) => x.map((y) => y.textContent)), ['q0 · |r| 0.00', 'q1 · |r| 0.00', 'q2 · |r| 1.00']);
+  assert.match(await text(p, '#c-read'), /测量分支数/);
+  // Step back to after column 5: q0 is still partly coherent, q2 is not yet.
+  await p.fill('#c-step', '5'); await p.dispatchEvent('#c-step', 'input');
+  assert.match(await text(p, '#c-step-o'), /5/);
+  assert.equal(await p.locator('#c-grid .qa-after').count() > 0, true, 'later columns are greyed');
+  assert.deepEqual(await p.$$eval('#c-bloch figcaption', (x) => x.map((y) => y.textContent)), ['q0 · |r| 0.45', 'q1 · |r| 0.00', 'q2 · |r| 0.00']);
+  // Rx(π/2) on |0⟩ gives 50 % / 50 %.
+  await p.selectOption('#c-preset', 'rotation');
+  assert.equal(await p.locator('#c-bars .qa-bar:not([data-zero])').count(), 2);
+  assert.match(await text(p, '#c-bars'), /50\.0%[\s\S]*50\.0%/);
+  // A rotation gate placed by hand keeps its angle through a reload.
+  await p.click('#c-clear');
+  await p.fill('#c-angle', '1'); await p.dispatchEvent('#c-angle', 'input');
+  await p.click('.qa-pal[data-g=Ry]'); await p.click('.qa-cell[data-q="0"][data-c="0"]');
+  assert.match(await text(p, '#c-bars'), /\|1⟩[\s\S]*100\.0%|\|10?⟩[\s\S]*100\.0%/);
+  await p.reload();
+  assert.match(await text(p, '#c-grid'), /Ry/);
+  await p.click('#c-clear');
+  await finish(p);
+});
+
+check('resource catalogue: 228 entries, the 2026-11-10 additions are searchable in both languages', async () => {
+  const p = await open();
+  await go(p, '/atlas/index.html');
+  assert.match(await text(p, '.filter[data-filter=all]'), /228/);
+  await p.fill('#search', 'Quirk');
+  await p.waitForTimeout(300);
+  assert.match(await text(p, 'main'), /Quirk/);
+  await finish(p);
+  const e = await open();
+  await go(e, '/index.html?lang=en');
+  assert.equal(await text(e, '#stat-atlas'), '228');
+  await finish(e);
+});
+
+check('review cards: three decks, FSRS schedule, own cards, Anki export and backup, offline fallback, English', async () => {
+  const LEARN = JSON.stringify({ sessions: [{ id: 's1', title: '谐振子' }], props: [{ id: 'p1', text: '谐振子的能级等间距', sessionIds: ['s1'] }, { id: 'p2', text: '升降算符满足 [a, a†] = 1', sessionIds: ['s1'] }, { id: 'p3', text: '基态能量是 ħω/2', sessionIds: ['s1'] }], chains: [{ id: 'c1', premises: ['p1', 'p2'], conclusion: 'p3' }] });
+  const seed = (l) => { try { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('molastria-learn', l); sessionStorage.setItem('seeded', '1'); } } catch { /* private mode */ } };
+  const p = await open({ init: { content: `(${seed})(${JSON.stringify(LEARN)})` }, acceptDownloads: true });
+  await go(p, '/review/index.html');
+  await p.waitForFunction(() => document.body.dataset.scheduler, null, { timeout: 20000 });
+  assert.equal(await p.evaluate(() => document.body.dataset.scheduler), 'fsrs', 'ts-fsrs loaded from jsDelivr');
+  assert.match(await text(p, '#rv-status'), /到期 0 张 · 新卡 15 张（共 113 张）/);
+  assert.match(await text(p, '#rv-decks'), /共 109 张[\s\S]*共 4 张/);
+  // The Study Desk's chain comes first: premises on the front, the conclusion on the back.
+  assert.match(await text(p, '#rv-front'), /由这些推出什么？[\s\S]*升降算符/);
+  await p.keyboard.press('Space');
+  assert.match(await text(p, '#rv-back'), /基态能量/);
+  assert.deepEqual(await p.$$eval('#rv-rate small', (x) => x.map((y) => y.textContent)), ['1 分钟后', '6 分钟后', '10 分钟后', await p.$eval('#rv-rate [data-iv="4"]', (y) => y.textContent)]);
+  await p.keyboard.press('3');
+  assert.match(await text(p, '#rv-status'), /新卡 14 张/);
+  const stored = JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-review')));
+  assert.equal(Object.keys(stored.sched).length, 1);
+  assert.equal(stored.newDay.n, 1);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-learn').length > 50), true, 'the Study Desk store is untouched');
+  // An own card goes to the front of the new cards.
+  await p.fill('#rv-f', '相关能的定义？'); await p.fill('#rv-b', 'E_exact − E_HF'); await p.fill('#rv-t', '量子化学');
+  await p.click('#rv-form button[type=submit]');
+  assert.match(await text(p, '#rv-front'), /相关能的定义/);
+  assert.match(await text(p, '#rv-mine-sum'), /共 1 张/);
+  // Anki export: headers, one line per card, tags.
+  const dl = p.waitForEvent('download'); await p.click('#rv-anki');
+  const anki = readFileSync(await (await dl).path(), 'utf8').trimEnd().split('\n');
+  assert.deepEqual(anki.slice(0, 5), ['#separator:Tab', '#html:true', '#notetype:Basic', '#deck:MolAstria', '#tags column:3']);
+  assert.equal(anki.length, 5 + 114);
+  assert.ok(anki.includes('相关能的定义？\tE_exact − E_HF\tMolAstria MolAstria::mine 量子化学'));
+  // Backup and restore round-trip; clearing asks first.
+  const bk = p.waitForEvent('download'); await p.click('#rv-backup');
+  const backup = await (await bk).path();
+  await p.click('#rv-reset');
+  assert.match(await text(p, '#rv-mine-sum'), /共 0 张/);
+  await p.setInputFiles('#rv-restore', backup);
+  await p.waitForFunction(() => /共 1 张/.test(document.getElementById('rv-mine-sum').textContent));
+  assert.match(await text(p, '#rv-status'), /新卡 14 张（共 114 张）/, 'the review done before the backup still counts today');
+  assert.equal(Object.keys(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-review'))).sched).length, 1);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await finish(p);
+  // Offline: the simple schedule takes over and says so.
+  const o = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  await o.context().route('https://cdn.jsdelivr.net/npm/ts-fsrs@*/**', (r) => r.abort());
+  await go(o, '/review/index.html?lang=en');
+  await o.waitForFunction(() => document.body.dataset.scheduler === 'simple', null, { timeout: 20000 });
+  await o.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.match(await text(o, '#rv-sched-note'), /FSRS/);
+  assert.match(await text(o, '#rv-status'), /Due 0/);
+  await o.click('#rv-show');
+  assert.deepEqual(await o.$$eval('#rv-rate small', (x) => x.map((y) => y.textContent)), ['in 10 min', 'in 1 day', 'in 1 day', 'in 4 days']);
+  const han = await o.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,[translate=no],textarea') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page outside card content');
+  assert.ok(await o.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await finish(o);
+});
+
+check('math foundations: probability demos (law of large numbers, CLT) and Lean resources; realms: double pendulum', async () => {
+  const p = await open({ viewport: { width: 1280, height: 900 } });
+  await go(p, '/fundamental-science/math/index.html#m-pr');
+  // The demos sit in the probability panel only and compute once scrolled into view.
+  assert.equal(await p.locator('.fm-panel .fm-prob').count(), 1);
+  assert.equal(await p.locator('#m-pr #fm-prob + .fm-res').count(), 1, 'placed before the books');
+  await p.locator('#fm-prob').scrollIntoViewIfNeeded();
+  await p.waitForFunction(() => document.querySelector('#fm-lln-read dd'));
+  assert.match(await text(p, '#fm-lln-read'), /种子\s*2026/);
+  // Law of large numbers: N = 10 000 draws of a fair die, the running mean sits near 3.5.
+  await p.locator('#fm-lln-n').fill('4');
+  assert.equal(await text(p, '#fm-lln-n-v'), 'N = 10000');
+  const xN = Number(await p.getAttribute('#fm-lln-read dd[data-v]', 'data-v'));
+  assert.ok(Math.abs(xN - 3.5) < 0.06, `running mean ${xN}`);
+  await p.click('#fm-lln-new');
+  assert.match(await text(p, '#fm-lln-read'), /种子\s*2027/);
+  // Central limit theorem: loaded die, n = 30; the spread of the means matches σ/√n, more draws accumulate, reset is reproducible.
+  await p.selectOption('#fm-clt-d', 'loaded');
+  await p.locator('#fm-clt-n').fill('9');
+  assert.equal(await text(p, '#fm-clt-n-v'), 'n = 30');
+  const ratio = Number(await p.getAttribute('#fm-clt-read dd.fs-big', 'data-v'));
+  assert.ok(Math.abs(ratio - 1) < 0.1, `sd of means / (σ/√n) = ${ratio}`);
+  await p.click('#fm-clt-go');
+  assert.equal(await p.getAttribute('#fm-clt-read dd[data-v]', 'data-v'), '2000');
+  const once = await text(p, '#fm-clt-read');
+  await p.click('#fm-clt-reset'); await p.click('#fm-clt-go');
+  assert.equal(await text(p, '#fm-clt-read'), once, 'same seed, same histogram');
+  // Lean resources in the bibliographies.
+  assert.equal(await p.locator('#m-la a.fm-title[href^="https://adam.math.hhu.de/"]', { hasText: 'Natural Number Game' }).count(), 1);
+  assert.match(await text(p, '#m-mt .fm-res'), /Mathematics in Lean[\s\S]*Set Theory Game[\s\S]*Theorem Proving in Lean 4/);
+  assert.match(await text(p, '#m-na .fm-res'), /Functional Programming in Lean/);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(p);
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  await go(e, '/fundamental-science/math/index.html?lang=en#m-pr');
+  await e.locator('#fm-prob').scrollIntoViewIfNeeded();
+  await e.waitForFunction(() => document.querySelector('#fm-clt-read dd'));
+  assert.match(await text(e, '#fm-prob-h'), /law of large numbers/);
+  assert.doesNotMatch(await text(e, '#fm-prob'), /[㐀-鿿]/, 'demo is English on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on a phone');
+  await finish(e);
+
+  // Double pendulum: loads its maths only when the chaos (or analytical mechanics) panel opens; RK4 keeps energy; pause stops time.
+  const r = await open({ viewport: { width: 1440, height: 1000 } });
+  await go(r, '/physics-realms/index.html#n-gr');
+  assert.equal(await r.evaluate(() => !!window.MOLASTRIA_REALMS_MODELS), false, 'not loaded up front');
+  await r.evaluate(() => window.__realms.select('chaos'));
+  await r.waitForSelector('#pr-dp-cv');
+  assert.equal(await r.evaluate(() => !!window.MOLASTRIA_REALMS_MODELS), true);
+  await r.evaluate(() => { const pn = document.querySelector('#pr-panel'); pn.scrollTop = pn.scrollHeight; });
+  await r.click('#pr-dp-play');
+  assert.equal(await r.getAttribute('#pr-dp-play', 'aria-pressed'), 'true');
+  await r.waitForTimeout(2500);
+  await r.click('#pr-dp-play');
+  const v = await r.$$eval('#pr-dp-read dd', (dd) => dd.map((d) => d.dataset.v));
+  assert.ok(Number(v[0]) > 1, `time advanced: ${v[0]} s`);
+  assert.ok(Number(v[1]) > 1e-6 && Number(v[1]) < 1e-2, `separation grew from 1e-6: ${v[1]}`);
+  assert.ok(Number(v[3]) < 1e-6, `energy drift ${v[3]}`);
+  await r.waitForTimeout(400);
+  assert.equal(await r.$eval('#pr-dp-read dd', (d) => d.dataset.v), v[0], 'paused: time stands still');
+  await r.click('#pr-dp-reset');
+  assert.equal(await r.$eval('#pr-dp-read dd', (d) => d.dataset.v), '0');
+  await r.evaluate(() => window.__realms.select('newton'));
+  assert.equal(await r.locator('#pr-dp').count(), 0, 'other theories have no demo');
+  await r.evaluate(() => window.__realms.select('analytic'));
+  await r.waitForSelector('#pr-dp-cv');
+  await finish(r);
+});
+
+// A stand-in for Pyodide (the real one is 9 MB from jsDelivr; --net uses it): prints a line, returns a small chart,
+// raises for print(y) with Pyodide-style frames, and never returns for `while True`, so Stop can be tested.
+const FAKE_PYODIDE = `export async function loadPyodide() {
+  let out = () => {};
+  const dict = () => { const m = new Map(); return { get: (k) => m.get(k), has: (k) => m.has(k), set: (k, v) => m.set(k, v), destroy() {} }; };
+  return {
+    loadedPackages: {},
+    setStdout(o) { out = o.batched; }, setStderr() {}, setStdin() {},
+    globals: { get: () => dict },
+    runPython(src, { globals }) { globals.set('to_json', (c) => JSON.stringify(c)); },
+    async loadPackage(names) { for (const n of names) this.loadedPackages[n] = 'stand-in'; },
+    async loadPackagesFromImports() {},
+    async runPythonAsync(code, { globals }) {
+      if (code.includes('while True')) await new Promise(() => {});
+      if (code.includes('print(y)')) throw new Error('Traceback (most recent call last):\\n  File "/lib/python314.zip/_pyodide/_base.py", line 597, in eval_code_async\\n    await CodeRunner(\\n  File "h2_rhf.py", line 2, in <module>\\nNameError: name \\'y\\' is not defined');
+      out('stand-in run, ' + code.split('\\n').length + ' lines');
+      globals.set('chart', { title: 'stand-in', x: [0, 1, 2], series: [{ name: 'E', y: [1, 0, 1] }] });
+    },
+  };
+}`;
+check('python in the browser: run, output, chart, errors, stop and offline in the handbook and the physics pavilion (stand-in Pyodide unless --net)', async () => {
+  const stand = async (p) => { if (!NET) await p.context().route(/^https:\/\/cdn\.jsdelivr\.net\/pyodide\/v[\d.]+\/full\/pyodide\.mjs$/, (r) => r.fulfill({ contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: FAKE_PYODIDE })); };
+  const settled = (p, box) => p.waitForFunction((s) => ['done', 'error', 'offline'].includes(document.querySelector(s).dataset.state), box, { timeout: 60000 });
+  // Handbook: the Hartree–Fock box sits only after the compute-engines chapter.
+  const p = await open();
+  await stand(p);
+  await go(p, '/manual/index.html#p12-cat10a');
+  const box = '.guide-try-run';
+  await p.waitForSelector(`${box}[data-ready=true]`);
+  assert.match(await text(p, `${box} .py-status`), /约 9\.2 MB，含 numpy/, 'says how much the first run downloads');
+  assert.match(await p.inputValue(`${box} .py-code`), /^R = 1\.4 /m);
+  await p.click(`${box} .py-run`);
+  await settled(p, box);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'done');
+  assert.match(await text(p, `${box} .py-out`), NET ? /total energy\s+-1\.116714 hartree/ : /stand-in run/);
+  assert.ok(await p.isVisible(`${box} .py-chart canvas`), 'the chart is drawn');
+  await p.fill(`${box} .py-code`, 'x = 1\nprint(y)\n');
+  await p.click(`${box} .py-run`);
+  await settled(p, box);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'error');
+  const err = await text(p, `${box} .py-out`);
+  assert.match(err, /File "h2_rhf\.py", line 2[\s\S]*NameError/); assert.doesNotMatch(err, /_pyodide/, 'Pyodide\'s own frames are dropped');
+  await p.fill(`${box} .py-code`, 'while True:\n    pass\n');
+  await p.click(`${box} .py-run`);
+  await p.waitForSelector(`${box}[data-state=running]`);
+  await p.click(`${box} .py-stop`);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'stopped');
+  await p.click(`${box} .py-reset`);
+  assert.match(await p.inputValue(`${box} .py-code`), /^# Restricted Hartree-Fock/);
+  await p.click('#guide-next');
+  assert.ok(await p.locator('.guide-try').isHidden(), 'other chapters have no box');
+  await finish(p);
+  // Pavilion: English and phone width.
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await stand(e);
+  await go(e, '/quantum/physics/index.html?lang=en#c-wave');
+  const qb = '#c-wave .qp-py-run';
+  await e.waitForSelector(`${qb}[data-ready=true]`);
+  assert.equal(await text(e, `${qb} .py-run`), 'Run');
+  await e.click(`${qb} .py-run`);
+  await settled(e, qb);
+  assert.match(await text(e, `${qb} .py-out`), NET ? /^ 0 {4}0\.499988 {4}0\.500000/m : /stand-in run/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  await finish(e);
+  // Offline: says so and starts nothing.
+  const o = await open();
+  await go(o, '/quantum/physics/index.html#c-wave');
+  await o.context().setOffline(true);
+  await o.click(`${qb} .py-run`);
+  assert.match(await text(o, `${qb} .py-status`), /现在离线/);
+  assert.equal(o.workers().length, 0);
+  await finish(o);
+});
+
+check('playground 15: a mirror steers the wave packet into the box; the demo is not scored', async () => {
+  const p = await open();
+  await go(p, '/qchem/index.html#play-wave');
+  const at = async (cx, cy) => { const b = await p.locator('#wv-cv').boundingBox(), G = b.width < 520 ? b.width : Math.min(b.height, b.width * 0.68); return [b.x + cx * G / 128, b.y + cy * G / 128]; };
+  await p.click('#wv-levels button >> nth=2');
+  const [x0, y0] = await at(81, 105), [x1, y1] = await at(101, 85);
+  await p.mouse.move(x0, y0); await p.mouse.down(); await p.mouse.move(x1, y1, { steps: 30 }); await p.mouse.up();
+  await p.click('#wv-go');
+  await p.waitForFunction(() => /过关|还没过关/.test(document.getElementById('wv-msg').textContent), null, { timeout: 60000 });
+  assert.match(await text(p, '#wv-msg'), /过关！框里的概率最高/);
+  const best = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-play')).wave);
+  assert.ok((await best()).steer >= 1);
+  await p.click('#wv-levels button >> nth=1'); await p.click('#wv-demo'); await p.click('#wv-go');
+  await p.waitForFunction(() => /示范解法：/.test(document.getElementById('wv-msg').textContent), null, { timeout: 60000 });
+  assert.equal((await best()).tunnel, undefined);
+  assert.ok(await p.$eval('#wv-cv', (e) => e.dataset.msPerStep));
+  await finish(p);
+});
+
+check('formula questions: MathLive answers graded with targeted hints, nudge, worked answer, stored progress, text fallback, English', async () => {
+  const quiz = async (p, path, sel, kind = 'math-field') => {
+    await go(p, path);
+    await p.waitForTimeout(300); // the page scrolls to the chapter list 60 ms after the hash is read
+    await p.evaluate((s) => document.querySelector(s).scrollIntoView({ block: 'start' }), sel);
+    await p.waitForSelector(`${sel} ${kind}`, { timeout: 40000 }); // MathLive loads from jsDelivr once the block is in view
+  };
+  const grade = async (p, li, value) => {
+    await p.evaluate(([s, v]) => { document.querySelector(`${s} math-field, ${s} .fq-text`).value = v; document.querySelector(`${s} .fq-check`).click(); }, [li, value]);
+    await p.waitForFunction((s) => { const f = document.querySelector(`${s} .fq-fb`); return f.textContent && !/判分|Checking/.test(f.textContent); }, li, { timeout: 40000 }); // Compute Engine loads on first check
+    return text(p, `${li} .fq-fb`);
+  };
+  const p = await open();
+  await quiz(p, '/quantum/physics/index.html#c-wave', '#c-wave .fq');
+  const li = '#c-wave #fq-wave-1';
+  assert.match(await grade(p, li, String.raw`\frac{n^2\pi^2\hbar^2}{8mL^2}`), /^提示：.*换成 ħ/, 'the h-versus-ħ mistake gets its own hint');
+  assert.ok(await p.isHidden(`${li} .fq-hint`) && await p.isHidden(`${li} .fq-sol`));
+  assert.match(await grade(p, li, String.raw`\frac{n^2\pi^2\hbar^2}{mL^2}`), /^提示：.*p²\/\(2m\)/);
+  assert.match(await text(p, `${li} .fq-hint`), /^再想想：/, 'a general nudge after two tries');
+  assert.match(await grade(p, li, String.raw`\frac{\hbar^2}{2mL^2}`), /答案里应该出现：n/);
+  assert.ok(await p.isVisible(`${li} .fq-sol`), 'the worked answer opens after three tries');
+  assert.match(await grade(p, li, String.raw`\frac{n^2h^2}{8mL^2}`), /^答对了/, 'written with h instead of ħ is still right');
+  assert.match(await grade(p, '#c-wave #fq-wave-2', String.raw`\sqrt{\frac{2}{L}}`), /^答对了/);
+  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-qp-quiz'))).sort(), ['wave-1', 'wave-2']);
+  await p.reload();
+  await p.waitForSelector('#c-wave #fq-wave-1 .fq-done');
+  await finish(p);
+  // jsDelivr unreachable: plain text boxes with ASCII maths and a note; still graded.
+  const t = await open();
+  await t.context().route(/cdn\.jsdelivr\.net/, (r) => r.abort());
+  await quiz(t, '/fundamental-science/math/index.html#m-la', '#m-la .fq', '.fq-text');
+  assert.match(await text(t, '#m-la .fq-note'), /普通文本框/);
+  await t.fill('#m-la #fq-la-1 .fq-text', 'alpha+-beta');
+  await t.press('#m-la #fq-la-1 .fq-text', 'Enter');
+  await t.waitForFunction(() => /答对了/.test(document.querySelector('#m-la #fq-la-1 .fq-fb').textContent));
+  assert.match(await grade(t, '#m-la #fq-la-2', '8^4'), /^提示：.*8⁴/);
+  await finish(t);
+  // English, phone width: the block is English and fits.
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await quiz(e, '/quantum/physics/index.html?lang=en#c-ent', '#c-ent .fq');
+  assert.match(await text(e, '#c-ent .fq-h'), /Work it out/);
+  assert.match(await grade(e, '#c-ent #fq-ent-1', '2'), /^Hint: 2 is the bound for local hidden variables/);
+  assert.match(await grade(e, '#c-ent #fq-ent-1', String.raw`2\sqrt{2}`), /^Correct/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(e);
+});
+
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/learn/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

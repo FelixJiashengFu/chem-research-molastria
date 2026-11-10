@@ -37,6 +37,12 @@
 .qp-hall[data-hall=algorithms]{color:color-mix(in srgb,var(--violet,var(--info)) 80%,var(--ink))}
 .qp-hall[data-hall=biology]{color:color-mix(in srgb,var(--ok) 80%,var(--ink))}
 
+/* 章节里能运行的 Python（viewer/pyrun.js） */
+.qp-py{min-width:0}
+.qp-py>p:not(.fm-practice-t){margin:0 0 10px;font-size:14px;line-height:1.85;color:var(--ink-2)}
+.qp-py .qp-py-note{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.qp-py .qp-py-note a{color:var(--accent-text)}
+
 /* 章节侧栏里的原始论文 */
 .qp-papers{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:12.5px}
 .qp-papers a{color:var(--accent-text);font-weight:600}

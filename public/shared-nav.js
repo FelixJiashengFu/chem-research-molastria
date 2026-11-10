@@ -20,6 +20,7 @@
     ['scimodels', 'scimodels/index.html', '科学大模型', true],
     ['lab', 'lab/index.html', 'AI 实验室'],
     ['learn', 'learn/index.html', '研习台', true],
+    ['review', 'review/index.html', '复习卡片', true],
     ['meta', 'meta/index.html', 'Meta', true],
     ['models', 'models/index.html', '模型接口', true],
     ['qchem', 'qchem/index.html', '游乐场', true],

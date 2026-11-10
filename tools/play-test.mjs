@@ -249,3 +249,124 @@ test('ħ-c-G cube: the cases cover all eight corners and use the same corners as
   const src = readFileSync(new URL('../public/qchem/play-quantum.js', import.meta.url), 'utf8');
   for (const x of Q.cubeCases) assert.match(src, new RegExp(`\\n\\s+${x.id}: \\[`), `${x.id} has a bilingual text`);
 });
+
+// ── 15：二维波包画墙（play-wave2d-models.js）────────────────────────────────
+const wbox = { window: {} };
+vm.runInNewContext(readFileSync(new URL('../public/qchem/play-wave2d-models.js', import.meta.url), 'utf8'), wbox);
+const W2 = wbox.window.MOLASTRIA_WAVE2D;
+
+test('2D wave packet: the radix-2 FFT matches a direct DFT and inverts', () => {
+  const n = 16, re = Float64Array.from({ length: n }, (_, i) => Math.sin(i * 1.7) + 0.3), im = Float64Array.from({ length: n }, (_, i) => Math.cos(i * i * 0.4));
+  const a = Float64Array.from(re), b = Float64Array.from(im), p = W2.plan(n);
+  W2.fft(a, b, p);
+  for (let k = 0; k < n; k++) {
+    let sr = 0, si = 0;
+    for (let j = 0; j < n; j++) { const ph = (-2 * Math.PI * j * k) / n; sr += re[j] * Math.cos(ph) - im[j] * Math.sin(ph); si += re[j] * Math.sin(ph) + im[j] * Math.cos(ph); }
+    close(a[k], sr, 1e-12, `Re X_${k}`); close(b[k], si, 1e-12, `Im X_${k}`);
+  }
+  W2.fft(a, b, p, true);
+  for (let j = 0; j < n; j++) { close(a[j] / n, re[j], 1e-14, 'round trip re'); close(b[j] / n, im[j], 1e-14, 'round trip im'); }
+  assert.throws(() => W2.plan(96), /power of 2/);
+});
+
+test('2D wave packet: the split-operator step is unitary with walls and barriers; with the absorbing edges, norm + absorbed = 1', () => {
+  const N = W2.N, V = new Float64Array(N * N);
+  for (let y = 0; y < N; y++) { for (let x = 60; x < 64; x++) if (y < 56 || y > 72) V[y * N + x] = W2.WALL; V[y * N + 90] = 1; }
+  const s = W2.sim({ nx: N, dt: 0.25, V, absorb: 0 });
+  W2.gaussian(s, { x0: 30, y0: 64, sx: 6, sy: 12, kx: 1.2, ky: 0.3 });
+  close(W2.norm(s), 1, 1e-14, 'normalised packet');
+  W2.step(s, 1000);
+  close(W2.norm(s), 1, 1e-12, 'periodic box: |ψ|² summed stays 1 after 1000 steps');
+  const a = W2.sim({ nx: N, dt: 0.25, V });
+  W2.gaussian(a, { x0: 30, y0: 64, sx: 6, sy: 12, kx: 1.2, ky: 0.3 });
+  let last = 1;
+  for (let k = 0; k < 8; k++) { W2.step(a, 50); const nm = W2.norm(a); assert.ok(nm <= last + 1e-15, 'absorption only removes probability'); last = nm; close(nm + W2.absorbed(a), 1, 1e-12, 'every bit of lost probability is accounted for'); }
+  assert.ok(last < 0.5, 'the edges really absorb');
+  assert.ok(W2.WALL * 0.25 < Math.PI, 'V·dt stays below π, so e^{−iV dt} does not alias the wall into a different potential');
+});
+
+test('2D wave packet: a free packet moves at k/m and spreads as σ(t) = σ₀√(1 + (t/(2σ₀²))²) (ħ = m = 1)', () => {
+  const s = W2.sim({ nx: W2.N, dt: 0.25, absorb: 0 });
+  const x0 = 36, y0 = 50, s0x = 5, s0y = 7, kx = 1, ky = 0.5;
+  W2.gaussian(s, { x0, y0, sx: s0x, sy: s0y, kx, ky });
+  for (const T of [20, 40]) {
+    W2.step(s, Math.round(T / 0.25) - s.steps);
+    const m = W2.moments(s);
+    close(m.x, x0 + kx * T, 1e-6, `⟨x⟩ at t = ${T}`); close(m.y, y0 + ky * T, 1e-6, `⟨y⟩ at t = ${T}`);
+    close(m.sx, W2.freeWidth(s0x, T), 1e-6, `σx at t = ${T}`); close(m.sy, W2.freeWidth(s0y, T), 1e-6, `σy at t = ${T}`);
+  }
+  close(W2.freeWidth(5, 50), 5 * Math.SQRT2, 1e-12, 'σ grows by √2 at t = 2σ₀²');
+});
+
+test('2D wave packet: double-slit dark fringes sit where d·sinθ = (m + ½)λ, spaced λL/d near the centre', () => {
+  const nx = 256, ny = 128, k = 2, d = 16, w = 4, xw = 64, xs = 228, dt = 0.2, lam = (2 * Math.PI) / k, L = xs - (xw + 2), c = ny / 2;
+  const V = new Float64Array(nx * ny);
+  for (let y = 0; y < ny; y++) {
+    const open = Math.abs(y + 0.5 - (c - d / 2)) < w / 2 || Math.abs(y + 0.5 - (c + d / 2)) < w / 2;
+    if (!open) for (let x = xw; x < xw + 4; x++) V[y * nx + x] = 10; // E = 2 here, so the wall is raised to 10 (V·dt = 2)
+  }
+  const s = W2.sim({ nx, ny, dt, V });
+  W2.gaussian(s, { x0: 30, y0: c - 0.5, sx: 10, sy: 16, kx: k });
+  const I = new Float64Array(ny);
+  for (let n = 0; n < 700; n++) { W2.step(s); for (let y = 0; y < ny; y++) { const i = y * nx + xs; I[y] += s.re[i] ** 2 + s.im[i] ** 2; } }
+  const top = Math.max(...I), mins = [];
+  for (let y = 13; y < ny - 13; y++) if (I[y] < I[y - 1] && I[y] <= I[y + 1] && I[y] < 0.1 * top) {
+    const den = I[y - 1] - 2 * I[y] + I[y + 1]; mins.push(y + (den > 0 ? (I[y - 1] - I[y + 1]) / (2 * den) : 0) + 0.5 - c); // parabolic, relative to the axis
+  }
+  const inner = mins.filter((v) => Math.abs(v) < 30), outer = mins.filter((v) => Math.abs(v) >= 30);
+  assert.equal(inner.length, 2, `two dark fringes beside the central bright one: ${mins.map((v) => v.toFixed(1))}`);
+  close(inner[1] - inner[0], (lam * L) / d, 0.05 * ((lam * L) / d), 'their spacing is λL/d');
+  for (const v of inner) close(Math.abs(v), L * Math.tan(Math.asin(lam / (2 * d))), 1.5, 'm = 0 dark fringe');
+  assert.ok(outer.length >= 1, 'the next dark fringes are on the screen');
+  for (const v of outer) close(Math.abs(v), L * Math.tan(Math.asin((1.5 * lam) / d)), 2.5, 'm = 1 dark fringe');
+  const f = W2.fringes(I, 12, ny - 12);
+  assert.equal(f.count, 3, 'the counter sees the central and the two first-order bright fringes');
+});
+
+test('2D wave packet: a barrier uniform in y transmits what the 1D square-barrier formula gives (averaged over the packet’s k)', () => {
+  const N = W2.N;
+  const T1 = (k, V, a) => { const E = (k * k) / 2, q = Math.sqrt(2 * Math.abs(V - E)), f = E < V ? Math.sinh(q * a) : Math.sin(q * a); return 1 / (1 + (V * V * f * f) / (4 * E * Math.abs(V - E))); };
+  const avg = (k0, sx, V, a) => { const sk = 1 / (2 * sx); let s = 0, w = 0; for (let i = -400; i <= 400; i++) { const k = k0 + (i / 100) * sk, g = Math.exp(-((k - k0) ** 2) / (2 * sk * sk)); s += g * T1(k, V, a); w += g; } return s / w; };
+  const through = (V0, a) => {
+    const V = new Float64Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 60; x < 60 + a; x++) V[y * N + x] = V0;
+    const s = W2.sim({ nx: N, dt: 0.25, V });
+    W2.gaussian(s, { x0: 28, y0: 64, sx: 8, sy: 10, kx: 1 });
+    W2.step(s, 320);
+    return W2.prob(s, [60 + a, 0, N, N], true);
+  };
+  // the barrier is a few grid points wide, so its width is only defined to about a cell: allow 20 %
+  for (const a of [2, 3, 4]) { const sim = through(1, a), ref = avg(1, 8, 1, a); close(sim / ref, 1, 0.2, `V = 2E, ${a} cells: ${sim.toFixed(5)} vs ${ref.toFixed(5)}`); }
+  assert.ok(through(W2.WALL, 4) < 3e-4, 'a 4-cell wall lets almost nothing through');
+  assert.ok(through(W2.WALL, 2) < 5e-3, 'a 2-cell wall leaks a few tenths of a per cent at most (the grid cannot resolve the decay inside it)');
+});
+
+test('2D wave packet: the fringe counter counts bright fringes, not the weak side lobes of one slit', () => {
+  const ys = Array.from({ length: 101 }, (_, i) => i - 50);
+  const two = ys.map((y) => Math.cos((Math.PI * y) / 12) ** 2 * Math.exp(-((y / 40) ** 2)));
+  assert.equal(W2.fringes(two).count, 9, 'cos² fringes every 12 rows under a broad envelope');
+  const sinc = ys.map((y) => { const u = (Math.PI * y) / 14; return y ? (Math.sin(u) / u) ** 2 : 1; });
+  assert.equal(W2.fringes(sinc).count, 1, 'a single slit’s 4.7 % side lobes are below the threshold');
+  assert.equal(W2.fringes(new Float64Array(20)).count, 0);
+});
+
+test('2D wave packet levels: each reference solution fits the budget and earns three stars; doing nothing earns none', () => {
+  assert.equal(new Set(W2.levels.map((L) => L.id)).size, W2.levels.length);
+  assert.equal(W2.levels.filter((L) => L.goal.type === 'none').length, 1, 'one free-play level');
+  for (const L of W2.levels) {
+    if (L.goal.type === 'none') continue;
+    assert.equal(L.stars.length, 3, `${L.id}: three star thresholds`);
+    const base = W2.layout(L), ref = W2.refCells(L);
+    for (let i = 0; i < base.length; i++) if (!W2.editable(base[i])) assert.equal(ref[i], base[i], `${L.id}: locked cells stay`);
+    assert.ok(W2.edits(L, ref) <= L.budget, `${L.id}: the reference uses ${W2.edits(L, ref)} of ${L.budget} cells`);
+    const none = W2.runner(L, base).run(), best = W2.runner(L, ref).run();
+    assert.equal(none.stars, 0, `${L.id}: no edits, no stars (${none.value})`);
+    assert.equal(best.stars, 3, `${L.id}: the reference gets three stars (${best.value})`);
+  }
+  // the brush leaves no corner-only gaps on a diagonal: every block shares an edge with the next
+  const line = W2.brushLine(10, 30, 30, 10);
+  for (let i = 1; i < line.length; i++) assert.ok(Math.abs(line[i][0] - line[i - 1][0]) < W2.BRUSH && Math.abs(line[i][1] - line[i - 1][1]) < W2.BRUSH);
+  // tunnelling: the locked column cannot be erased, so the barrier can be thinned but never opened
+  const tun = W2.levels.find((L) => L.id === 'tunnel'), cells = W2.paint(W2.layout(tun), [[0, 0, W2.N, W2.N, W2.EMPTY]]);
+  assert.ok(cells.every((v) => v === W2.EMPTY || v === W2.BARRIER_LOCK) && cells.some((v) => v === W2.BARRIER_LOCK));
+});

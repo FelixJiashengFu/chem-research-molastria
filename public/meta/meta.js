@@ -716,5 +716,6 @@ If the image shows no chemical structure, return {"molecules":[],"note":"<what t
     if (data.uma) rows.push(`<li><a href="https://huggingface.co/facebook/UMA" target="_blank" rel="noopener">facebook/UMA</a><span>模型库最近更新 ${esc(data.uma)}</span></li>`);
     $('live-list').innerHTML = rows.join('') || '<li><span>暂时读不到 GitHub 和 Hugging Face。</span><a href="https://github.com/facebookresearch/fairchem/releases" target="_blank" rel="noopener">直接去 GitHub 看 <i class="ico-ext" aria-hidden="true"></i></a></li>';
   }
+  window.MolAstriaSketch?.attach($('u-smiles')); // “画结构”按钮：画完填回 SMILES（viewer/sketch.js）
   live().catch(() => {});
 })();

@@ -25,6 +25,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Lab logic tests
         run: node --test tools/lab-test.mjs
       - name: Realms of Physics content
@@ -33,6 +36,10 @@ jobs:
         run: node --test tools/net-test.mjs
       - name: Fundamental Science models and content
         run: node --test tools/fundamental-test.mjs
+      - name: Math foundations · probability demos
+        run: node --test tools/fm-prob-test.mjs
+      - name: Formula questions (grader, parser, every answer checked numerically)
+        run: node --test tools/formula-check-test.mjs
       - name: Quantum Biology models and content
         run: node --test tools/quantum-bio-test.mjs
       - name: Quantum Carnival · physics models and content
@@ -43,6 +50,15 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
+      - name: 3D molecule viewer helpers
+        run: node --test tools/mol3d-test.mjs
+      - name: Review cards (decks, queue, Anki export)
+        run: node --test tools/review-test.mjs
+      # The two in-browser Python exercises are run here with the runner's Python + numpy and checked against PySCF and exact levels.
+      - name: Python in the browser (runner helpers, H₂ Hartree–Fock, 1D Schrödinger solver)
+        run: |
+          python -m pip install numpy
+          node --test tools/pyrun-test.mjs
       - name: Study Desk logic and site sources
         run: node --test tools/learn-test.mjs tools/learn-sources-test.mjs
       - name: Open data API content

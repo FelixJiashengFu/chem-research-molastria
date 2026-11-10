@@ -163,3 +163,45 @@ test('content: every id resolves, every formula has MathML, references and the h
   const hub = load('../sections.js').MOLASTRIA_QUANTUM_SECTIONS.find((s) => s.id === 'algorithms');
   assert.equal(hub.path, 'algorithms/index.html');
 });
+
+test('rotation gates, mid-circuit measurement and Bloch vectors', () => {
+  // Gate strings: rotations carry their angle in units of π; anything else is refused.
+  assert.equal(JSON.stringify(M.parseGate('Ry:0.5')), JSON.stringify({ name: 'Ry', turns: 0.5 }));
+  for (const bad of ['Ry:3', 'Rq:0.5', 'Ry:', 'Ry:0.12345', 'H:1', 'eval']) assert.equal(M.parseGate(bad), null, bad);
+  assert.equal(M.rotGate('Rz', 0.33333), 'Rz:0.333');
+  // Ry(θ)|0⟩ = cos(θ/2)|0⟩ + sin(θ/2)|1⟩, Bloch vector (sin θ, 0, cos θ).
+  for (const t of [0, 0.25, 0.5, 1, -0.7]) {
+    const e = M.runGridEnsemble(1, [[M.rotGate('Ry', t)]]);
+    const [x, y, z] = M.bloch(e, 0);
+    close(x, Math.sin(t * Math.PI), 1e-12, `Ry(${t}π) x`); close(y, 0, 1e-12, 'y'); close(z, Math.cos(t * Math.PI), 1e-12, 'z');
+  }
+  // Rx(π/2)|0⟩ points along −y; Rz only turns the phase.
+  const rx = M.bloch(M.runGridEnsemble(1, M.presets.rotation.grid), 0);
+  close(rx[1], -1, 1e-12, 'Rx(π/2)|0⟩ is −y');
+  const rz = M.bloch(M.runGridEnsemble(1, [['H'], ['Rz:0.5']]), 0);
+  close(rz[1], 1, 1e-12, 'Rz(π/2)H|0⟩ is +y');
+  // Measurement between two H kills the interference: 50/50 instead of |0⟩.
+  close(M.ensembleProbs(M.runGridEnsemble(1, M.presets.measure.grid))[0], 0.5, 1e-12, 'H M H');
+  close(M.ensembleProbs(M.runGridEnsemble(1, [['H'], ['H']]))[0], 1, 1e-12, 'H H = I');
+  // Measuring one half of a Bell pair leaves two branches, each a product state; the reduced states stay maximally mixed.
+  const bm = M.runGridEnsemble(2, [...M.presets.bell.grid, ['M', '']]);
+  assert.equal(bm.length, 2);
+  bm.forEach((b) => close(b.w, 0.5, 1e-12, 'each branch has weight ½'));
+  M.bloch(bm, 1).forEach((v, i) => close(v, 0, 1e-12, `measured Bell half ${i}`));
+  // Teleportation: qubit 2 ends in the Bloch vector qubit 0 started with, in every branch.
+  const tp = M.runGridEnsemble(3, M.presets.teleport.grid);
+  assert.equal(tp.length, 4, 'four measurement outcomes');
+  const want = [Math.sin(0.35 * Math.PI), 0, Math.cos(0.35 * Math.PI)];
+  for (const b of tp) M.bloch([{ w: 1, s: b.s }], 2).forEach((v, i) => close(v, want[i], 1e-12, `teleported component ${i}`));
+  // A pure single qubit has |r| = 1; a Bell half has |r| = 0.
+  const bell = M.runGridEnsemble(2, M.presets.bell.grid);
+  close(Math.hypot(...M.bloch(bell, 0)), 0, 1e-12, 'Bell half is maximally mixed');
+  // Without measurements the ensemble is the plain statevector.
+  const g = M.runGridEnsemble(3, M.presets.ghz.grid);
+  assert.equal(g.length, 1); assert.deepEqual(probsOf(M.ensembleProbs(g)), probsOf(M.probs(M.runGrid(3, M.presets.ghz.grid))));
+  // A column that mixes a control and a measurement is flagged.
+  assert.equal(M.columnIssue(['•', 'M']), 'measure');
+  assert.equal(M.columnIssue(['M', 'M']), '');
+  // Stepping: after column 0 of the Bell circuit only H has acted.
+  close(M.ensembleProbs(M.runGridEnsemble(2, M.presets.bell.grid, 0, 1))[2], 0.5, 1e-12, 'after column 1: (|00⟩+|10⟩)/√2');
+});

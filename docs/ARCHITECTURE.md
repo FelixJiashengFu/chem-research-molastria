@@ -11,7 +11,8 @@ flowchart TB
   V -->|桌面版更新| R["GitHub Releases"]
   V -->|访客自己的 key| AI["DeepSeek / Meta Muse"]
   V -->|预印本雷达| CR["Crossref · DataCite · arXiv"]
-  V -->|AI 实验室、Meta 页| JS["jsDelivr（RDKit.js）"]
+  V -->|AI 实验室、Meta 页、3D 查看器、绘制器、复习卡片| JS["jsDelivr（RDKit.js、3Dmol.js、Kekule.js、ts-fsrs）"]
+  V -->|结构馆、3D 查看器| PDB["RCSB PDB（files.rcsb.org）"]
   V -->|Meta 页：fairchem 版本| GH["GitHub API · Hugging Face API"]
   W --> D1["Cloudflare D1"]
   W -->|只读查订阅| SA["Stripe API"]
@@ -21,7 +22,7 @@ flowchart TB
   PB["Porkbun 域名"] --> DNS["Cloudflare DNS"]
 ```
 
-- **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。关系网的实体与连线在打开页面时由目录快照现算（`hub/net-engine.js`，约 0.1–0.3 秒）。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。
+- **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。关系网的实体与连线在打开页面时由目录快照现算（`hub/net-engine.js`，约 0.1–0.3 秒）。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。几个较大的第三方库（RDKit.js、3Dmol.js、Kekule.js、ts-fsrs）不进仓库，第一次用到时从 jsDelivr 按固定版本载入，载不到时页面照常能用；复习卡片的进度只存在浏览器的 `molastria-review`，研习台的 `molastria-learn` 它只读不写。
 - **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选；还把 `/uma/*` 经 Cloudflare Tunnel 转给站长电脑上的在线模型服务（15 个模型：UMA、OMol25 的 eSEN / AllScAIP、MACE、ANI-2x；决定谁能用哪个、限次、地区限制、共享暗号）。同一个队列也开给程序：`/v1/*` 用账号页生成的 API key（D1 的 `api_keys` 表只存哈希），不查来源网站，次数算在 key 的主人头上，MACE 系列不提供。
 - **桌面版**（Tauri）内置同一套网页，多了检查更新和“在本机运行 UMA”：`desktop/src-tauri/src/uma.rs` 找到访客的 Python，用编译进应用的 `uma/runner.py` 计算；页面只传经过校验的参数（SMILES、任务、模型等），日志靠轮询 `uma_poll` 取回。
 - **研习台**（`/learn/`）也完全在浏览器里：页面直接调用访客选的 AI（自己的 key 发往 DeepSeek / Muse / OpenAI 兼容服务，或经账号服务的托管额度），模型只回 JSON，校验后由页面自己画；会话、知识图和改过的提示词只存在 `localStorage`，不经过账号服务。作为依据的栏目数据文件（如 `quantum/physics/qp-data.js`）用到时才加载。
@@ -147,7 +148,7 @@ sequenceDiagram
 | Resend | 验证码和每周精选邮件 | 免费：每天 100 封、每月 3000 封；超出后 Pro US$20/月 |
 | GitHub Pages | 网站 | 免费：1 GB，带宽软上限 100 GB/月 |
 | GitHub Actions、Releases | 构建、发布 | 公开仓库免费 |
-| Crossref、DataCite、arXiv、jsDelivr | 数据和 CDN | 免费 |
+| Crossref、DataCite、arXiv、jsDelivr、RCSB PDB | 数据和 CDN | 免费 |
 | Cloudflare Tunnel | 把站长电脑上的在线模型服务（`tools/uma-server`）接到账号服务，不开入站端口 | 免费 |
 | Google Cloud（站长自己的 L4 虚拟机） | AI 实验室的批量 UMA / MACE-OFF23 计算，不对外服务（`tools/cloud/`） | 按开机时长计费，算完自动关机，最长 2 小时 |
 

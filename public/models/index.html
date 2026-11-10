@@ -12,11 +12,14 @@
   <script src="../backdrop.js" defer></script>
   <link rel="stylesheet" href="../shared-nav.css">
   <link rel="stylesheet" href="models.css">
+  <link rel="stylesheet" href="../viewer/mol3d.css">
   <script src="../shared-nav.js" defer></script>
   <script src="../pay/config.js" defer></script>
   <script src="../ai/config.js" defer></script>
   <script src="../ai/ai.js" defer></script>
   <script src="../lab/chem.js" defer></script>
+  <script src="../viewer/sketch.js" defer></script>
+  <script src="../viewer/mol3d.js" defer></script>
   <script src="models.js" defer></script>
 </head>
 <body data-section="models">
@@ -63,6 +66,7 @@
             <div id="m-xyz-box" hidden>
               <label class="md-wide">XYZ 结构（标准格式：原子数、注释行、每行“元素 x y z”，单位 Å，最多 120 个原子）<textarea id="m-xyz" rows="8" spellcheck="false" placeholder="3&#10;water&#10;O 0.000 0.000 0.000&#10;H 0.000 0.000 0.960&#10;H 0.930 0.000 -0.240"></textarea></label>
               <div class="md-row"><label class="button small md-file">上传 .xyz 文件<input type="file" id="m-xyz-file" accept=".xyz,text/plain" hidden></label><button type="button" class="text-button" id="m-xyz-sample">用示例（水）</button></div>
+              <div id="m-xyz-3d" class="md-3d"></div>
             </div>
             <p class="md-check" id="m-check" role="status"></p>
           </div>

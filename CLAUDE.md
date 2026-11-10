@@ -26,14 +26,16 @@ public/               发布目录，推到 main 就上线
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
+  viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测。pyrun.js 是浏览器里运行 Python 的代码框（Pyodide 314.0.7，jsDelivr，第一次约 9.2 MB，跑在 Web Worker 里，“停止”直接结束它；界面文字自带中英两版，标 translate="no"），练习程序在 py-examples.js（讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理“薛定谔方程与一维问题”一章的一维薛定谔求解器），tools/pyrun-test.mjs 用本机 python3 + numpy 对照 PySCF 和解析解核对。formula-check.js 是“写公式作答”的题块和判分（MathLive 0.111.1 输入、Compute Engine 0.69.1 判等价，都从 jsDelivr 按需载入；载不到时退回纯文本框和内置的小解析器），常见错误各有提示，错两次给方向、错三次给解答；界面文字自带中英两版，标 translate="no"；tools/formula-check-test.mjs 测
+  review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
-  fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
+  fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-prob.js 是概率论演示（大数定律、中心极限定理）的数学（纯函数，tools/fm-prob-test.mjs 测），fm-quiz.js 是每门学科的公式题（答案、常见错误和提示，做对的存 molastria-fm-quiz），fm-math.js 和 fm-quiz-math.js 是生成的 MathML
   quantum/biology/    量子嘉年华下的量子生物学：qb-data.js 是全部内容（中英两版，七个方向、证据账本，每条带证据状态：已确立 / 活跃研究 / 存在争议 / 推测性假说，文献在 Crossref 核对过），qb-models.js 是三个演示的数学（纯函数），qb-math.js 是生成的 MathML；版式用 ../../fundamental-science/fundamental.css
   quantum/            母栏目“量子嘉年华”：sections.js 是四个展馆（量子物理、量子计算机、量子算法、量子生物学）的卡片数据，每个展馆一块、互不交叉，live 为 false 时显示“即将上线”；carnival.js 画入口页（展馆、通道、路线）
-  quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-math.js 是生成的 MathML；地址 #c-<章> 打开一章
+  quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-quiz.js 是每章的公式题（做对的存 molastria-qp-quiz），qp-math.js 和 qp-quiz-math.js 是生成的 MathML；地址 #c-<章> 打开一章
   quantum/algorithms/  量子嘉年华的“量子算法”展馆：qa-data.js 是全部内容（14 个算法，中英双语，每个带加速的证据等级；化学资源估算；65 篇文献在 OpenAlex / arXiv 核对过），qa-models.js 是演示的数学（态矢量模拟器等，纯函数），qa.js 渲染，qa-math.js 是生成的 MathML
   quantum/computing/  量子嘉年华 · 量子计算机：qc-data.js 是全部内容（中英两版，每条带确定程度，文献在 OpenAlex 核对过），qc-models.js 是演示的数学（纯函数，tools/quantum-computing-test.mjs 测），qc-math.js 是生成的 MathML；只讲硬件与纠错，算法在 quantum/algorithms/
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
@@ -43,9 +45,9 @@ public/               发布目录，推到 main 就上线
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   research-atlas/     研究图谱外层页面（中美二十所大学数理化网络、量子化学地图、Top 20、中美对比、北美产业）；app/ 是 university-science-research-network 的整站构建，由 tools/vendor-atlas.mjs 复制，不要手改；英文、Tт 字体和主题由外层页面经网址参数和 postMessage（ra-host）传进去，译文在那个仓库的 i18n/en.json，用本站的 i18n.js；图谱仓库 main 有新提交时 atlas-sync.yml（每 3 小时检查一次）自动重新复制并上线
-  physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性
+  physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
   learn/              研习台（AI 家教）：先摸底、画路线、一步一检，练习分开做，学到的命题和推理链存成跨会话的知识图；learn-core.js 是纯逻辑（状态、路线图、评分、知识图、练习选题、模型回答的校验、提示词，tools/learn-test.mjs 测），learn-sources.js 把六个讲解栏目改写成可当依据的章节、外加站内演示白名单（tools/learn-sources-test.mjs 查锚点），learn-graph.js 画路线图、知识图和示意图（SVG，不收模型的 HTML/SVG），learn.js 是界面；走 ai/ai.js 的 ChemAI（访客自己的 key 或托管额度），数据只存 localStorage（molastria-learn、molastria-learn-prompts）；#goal=qp:<章> 从站内一章开始，量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学各章都有入口
-  qchem/              游乐场（地址仍是 /qchem/）：三个展区十四个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
+  qchem/              游乐场（地址仍是 /qchem/）：三个展区十五个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；15（二维波包画墙，展区二）在 play-wave2d.js，数学在 play-wave2d-models.js（分裂算符解二维薛定谔方程，自己写的 FFT），经 MOLASTRIA_PLAY_WAVE 拿到同样的工具；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录和每 15 分钟一次的在线率探测）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
@@ -70,13 +72,18 @@ node --test tools/api-test.mjs                          # 开放数据接口：�
 python3 tools/molastria-py-test.py                      # Python 客户端 molastria.py：对着本地假服务测提交、等待、报错和命令行
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
+node --test tools/fm-prob-test.mjs                      # 数学子模块的概率论演示：大数定律、中心极限定理对照解析结果，同一个种子同一个结果
+node --test tools/formula-check-test.mjs                # 公式题：判分的各种情形、内置解析器、题目数据，每个答案都用数值独立核对
 node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
-node --test tools/play-test.mjs                         # 游乐场：十四个游戏的物理对照已知结果和解析解，关卡都能过关、电路题的最少门数穷举核对
+node --test tools/play-test.mjs                         # 游乐场：十五个游戏的物理对照已知结果和解析解（二维波包：幺正、自由波包展宽、双缝条纹间距），关卡都能过关、电路题的最少门数穷举核对
 node --test tools/learn-test.mjs tools/learn-sources-test.mjs   # 研习台：纯逻辑（路线图、评分、知识图、练习选题、校验、提示词）；六个来源都能改写成章节，演示白名单的地址和锚点都存在
 node --test tools/quantum-physics-test.mjs                # 量子嘉年华 · 量子物理：四个演示对照解析解，章节的公式、论文、书目、视频都能对上
 node tools/fundamental-math.mjs                         # 基础科学栏目：把 fs-data.js 里的 LaTeX 用 KaTeX 转成 fs-math.js（MathML）
 NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：逐条在 Crossref 核对文献
 node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示的数学对照解析解，内容完整
+node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
+node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
+node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
 node tools/quantum-algorithms-refs.mjs                  # 量子算法：文献在 OpenAlex / arXiv 核对
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次
 node tools/e2e/run.mjs                                  # 浏览器端到端（假 Stripe、假邮件、假 AI，免费）；可加关键词只跑部分，--net 含真实雷达搜索
@@ -107,7 +114,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js` 和 `public/quantum/computing/qc-math.js`（都用 `tools/fundamental-math.mjs`）、`public/api/v1/*.json`、`public/llms.txt` 和 `agent/chemdb-agent/src/chemdb_agent/catalog/resources.json`（都用 `node tools/build-api.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js`、`public/quantum/computing/qc-math.js`、`public/fundamental-science/math/fm-quiz-math.js` 和 `public/quantum/physics/qp-quiz-math.js`（都用 `tools/fundamental-math.mjs`；只重建公式题用 `node tools/fundamental-math.mjs quiz`）、`public/api/v1/*.json`、`public/llms.txt` 和 `agent/chemdb-agent/src/chemdb_agent/catalog/resources.json`（都用 `node tools/build-api.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 
@@ -148,6 +155,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。
+- **MathLive 的输入框：** 点一下之后约 60 ms 才把焦点移进去，浏览器测试里点完要等一下再打字（或者直接给 `math-field` 的 `value` 赋值再点“检查”）；数学子模块和量子物理页读到地址里的 `#…` 后也要过 60 ms 才滚动，测试先等 300 ms 再自己滚到题块。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。

@@ -2,6 +2,24 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-10 学习功能大补充：借鉴 GitHub 上的学习项目，库从 CDN 按需载入，代码自己写
+
+站长看了调研报告（GitHub 上帮助学量子、数理化生的开源项目）后说“报告里能用的全做”，和研习台（#102）一起上线。
+
+- **第三方库只在用到时从 jsDelivr 载入，版本写死**，和实验室载入 RDKit.js 一样：3Dmol.js 2.5.5（BSD-3，3D 分子与蛋白）、Kekule.js 1.0.4（MIT，画结构出 SMILES）、ts-fsrs 5.4.2（MIT，复习调度）。不进仓库、不加构建步骤；载不到时页面照常能用（查看器和绘制器显示一句原因，复习卡片改用简化间隔）。代价是第一次打开要联网，桌面版也一样（桌面版没有 CSP，能直接载入）。
+- **3D 查看器选 3Dmol.js，不选 Mol\*：** Mol\* 功能更全，但一个包几 MB，还要自己的样式表；我们只要转着看小分子和几个 PDB 结构，3Dmol.js 一个文件、几百 KB。目录里收了 Mol\*，给要做蛋白分析的人。
+- **绘制器选 Kekule.js，不选 Ketcher：** Ketcher 是 React 应用，嵌进来要整套前端；Kekule.js 是普通脚本，能直接放进弹窗。
+- **线路模拟器“参考 Quirk 的思路，代码另写”：** Quirk 是 Apache-2.0，可以抄，但它的代码是一整个应用，拆出来比照着态矢量模拟器补旋转门、中途测量和 Bloch 球更费事。中途测量用系综（按概率分支，每支带权重），这样“逐列查看”能显示测量后的混合态，不用随机数。
+- **复习卡片只读研习台的数据：** `molastria-learn` 由研习台写，复习卡片只读它的知识图生成卡片，进度存在自己的 `molastria-review`。两边各管各的，研习台改了数据结构，复习卡片最坏是少几张卡，不会弄坏研习台的记录。卡片编号是内容的哈希（术语卡）或研习台里的编号，所以术语表或知识图更新后，已经复习过的卡不会丢进度。
+- **复习卡片的“导出到 Anki”用纯文本，不生成 .apkg：** .apkg 是 SQLite 数据库，要在浏览器里带一个 SQLite；Anki 2.1.54 起的纯文本导入支持文件头（分隔符、HTML、笔记类型、卡组、标签列），选文件就能导入。代价是不带复习进度，只带卡片内容。
+- **浏览器里的 Python 用 Pyodide，不用 JupyterLite：** JupyterLite 是一整个笔记本应用，要单独部署；我们只要“一段能改能跑的程序 + 输出 + 一张图”，Pyodide 加一个手写的代码框就够。Pyodide 跑在 Web Worker 里（页面不卡，“停止”直接结束 Worker），只带 numpy，不带 matplotlib（太大）：程序给全局变量 `chart` 赋一个字典，页面自己在 canvas 上画。第一次运行约下载 9.2 MB，页面上写明，点“运行”才开始下载。练习程序是自己写的，写法参照 psi4numpy（BSD-3）和 qmsolve（BSD-3），结果用 PySCF 和解析解核对，CI 里用真的 Python 跑一遍（`tools/pyrun-test.mjs`）。
+- **公式题用 MathLive 输入、Compute Engine 判等价，提示照 Oppia 的做法写：** 先试 Compute Engine 的符号相等，再在几组随机取值上比数值（带相对容差）；不对时逐条和“常见错误”比，命中就给那条错误专属的提示；错两次给一句方向，错三次打开解答。题目和错误写在数据文件里（`fm-quiz.js`、`qp-quiz.js`），CI 里检查每个答案判为对、每个常见错误判为它自己，每个答案还用另写的数值计算（积分、对角化、数格点等）独立核对一遍。两个库载不到时退回纯文本框和一个内置的小解析器（ASCII 数学），题照样能做。做对的题只记在浏览器里，不碰各页原有的勾选进度。
+- **二维波包游戏和概率、双摆演示都自己写数学，不引库：** 二维含时薛定谔方程用分裂算符法加一个自己写的基 2 FFT（128×128 网格），概率演示用固定种子的随机数，双摆用 RK4；都是纯函数，有测试对照解析结果（幺正、自由波包展宽、双缝条纹间距、能量守恒）。引一个 FFT 或物理库换来的东西不多，还要多一次网络请求。
+- **Lean 4 的书和游戏只做链接：** Mathematics in Lean、Functional Programming in Lean 是 CC BY 4.0，Theorem Proving in Lean 4 和 Natural Number Game 是 Apache-2.0，Set Theory Game 是 GPL-3.0，The Mechanics of Proof 版权归作者；都放在书目里链出去，不搬内容。核对不上的（Linear Algebra Game、Real Analysis Game、Logic and Mechanized Reasoning）没收。
+- **调度用 FSRS（ts-fsrs），不用 SM-2：** FSRS 从 Anki 23.10 起内置（可选），按它的公开基准，同样的记住比例下复习次数比 SM-2 少；ts-fsrs 是 open-spaced-repetition 维护的 TypeScript 实现。离线时的简化间隔只为了能用，不追求准。
+- **资源目录 214 → 228 条，ChemRxiv 条目的 id 保持不变：** `maintenance/merge_data.py` 重新合并时会给 ChemRxiv 条目重新编号、改变顺序，而容器里连不上 Crossref（`tools/hub-chemrxiv.ts` 跑不了）。这次按网址把旧 id 换回来、ChemRxiv 条目放回最后，相当于手动模拟了 `hub-chemrxiv.ts` 的那一步。站长电脑上下次跑 `/refresh-chemrxiv` 会正常覆盖。
+- **许可要留意的：** PhET 的模拟是 CC BY 4.0，可以链接和嵌入；OpenStax 有几本是 CC BY-NC，Deep Learning for Molecules & Materials（dmol.pub）的正文也是 CC BY-NC，只做链接，不搬内容（MolAstria 有 Pro 收费，NC 内容不进站）。Molecular Nodes 是 GPL-3.0，只在操作手册里介绍用它做视频，不抄它的代码；它渲染出来的图和视频不受 GPL 约束。
+
 ## 2026-11-10 研习台：照着一个开源 AI 家教的思路自己重写，模型只回 JSON
 
 站长想把一个开源 AI 家教应用的核心功能搬进 MolAstria。思路借鉴自开源项目 LearnHarness（AGPL-3.0），代码与提示词全部自写，未复制其任何代码或文字。

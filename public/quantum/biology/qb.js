@@ -36,6 +36,32 @@
   for (const el of document.querySelectorAll('[data-demo-notes]')) { el.innerHTML = rich(tx(D.demos[el.dataset.demoNotes].notes)); el.setAttribute('translate', 'no'); el.lang = lang; }
   for (const el of document.querySelectorAll('.fs-demo .fs-formula[data-math]')) { if (MATH[el.dataset.math]) { el.innerHTML = MATH[el.dataset.math]; el.tabIndex = 0; } else el.textContent = D.math[el.dataset.math]?.[0] || ''; }
 
+  // ── 结构馆：每个方向一个真实结构，3D 查看器在 ../../viewer/mol3d.js ──────────
+  const S3 = D.structures || [];
+  let s3cur = null, s3view = null, s3seen = false;
+  $('#qb-struct-note').innerHTML = C(esc(tx(D.structuresNote)));
+  $('#qb-struct-pick').innerHTML = S3.map((s, i) => `<button type="button" class="qb-struct-btn" data-pdb="${s.id}" aria-pressed="${i === 0}"><b translate="no">${s.id}</b>${C(esc(tx(s.title)))}<span class="qb-struct-sec">${secById[s.section].num} · ${C(esc(tx(secById[s.section].title)))}</span></button>`).join('');
+  function showStructure(id, load) {
+    const s = S3.find((x) => x.id === id);
+    if (!s) return;
+    for (const b of document.querySelectorAll('.qb-struct-btn')) b.setAttribute('aria-pressed', String(b.dataset.pdb === id));
+    $('#qb-struct-text').innerHTML = `${C(esc(tx(s.title)), 'h3')}${C(rich(tx(s.text)), 'p')}<p class="fs-cite" translate="no">${esc(s.cite.authors)} (${s.cite.year}) <i>${esc(s.cite.journal)}</i> · <a href="https://doi.org/${esc(s.cite.doi)}" target="_blank" rel="noopener">doi:${esc(s.cite.doi)}</a></p><p class="fs-cite">${secLink(s.section)}</p>`;
+    if (!load || s3cur === id || !window.MolAstriaMol3D) return;
+    s3cur = id;
+    s3view?.destroy();
+    s3view = null;
+    const box = $('#qb-struct-3d');
+    window.MolAstriaMol3D.mount(box, { pdbId: s.id, style: s.style, name: s.id, label: tx(s.title), highlight: s.hi.map((h) => ({ sel: { resn: h.resn }, color: h.color })) })
+      .then((v) => { if (s3cur === id) s3view = v; else v.destroy(); }, () => { /* 框里已写明原因 */ });
+  }
+  $('#qb-struct-pick').addEventListener('click', (e) => { const b = e.target.closest('.qb-struct-btn'); if (b) showStructure(b.dataset.pdb, true); });
+  if (S3.length) {
+    showStructure(S3[0].id, false);
+    // 滚到这一节才下载第一个结构，免得每个访客都下载几 MB。
+    const io = typeof IntersectionObserver === 'function' ? new IntersectionObserver((es) => { if (!s3seen && es.some((x) => x.isIntersecting)) { s3seen = true; io.disconnect(); showStructure(document.querySelector('.qb-struct-btn[aria-pressed=true]').dataset.pdb, true); } }, { rootMargin: '200px' }) : null;
+    if (io) io.observe($('#qb-structures')); else showStructure(S3[0].id, true);
+  }
+
   // ── 研究方向与详解 ──────────────────────────────────────────────────────
   $('#qb-pillar-grid').innerHTML = D.pillars.map((p) => `<a class="fs-pillar" href="#s-${p.id}" data-tab="${p.id}">
     <span class="fs-num">${p.num}</span>${C(esc(tx(p.title)), 'h3')}${C(esc(tx(p.summary)), 'p')}<span class="fs-more">阅读详解 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>`).join('');

@@ -184,3 +184,11 @@ a.fm-title:hover{text-decoration:underline}
   .fm-res,.fm-lib-g .fm-cards,.fm-rel-list{grid-template-columns:minmax(0,1fr)}
 }
 @media print{.fm-side,.fm-map-panel,.fm-copy,.fs-jump{display:none}.fm-panel[hidden]{display:block!important}}
+
+/* 概率论详解里的交互演示（大数定律、中心极限定理）：版式用 fundamental.css 的 .fs-demo */
+.fm-prob{margin-top:8px;border-top:1px solid var(--line);padding-top:2px}
+.fm-prob-note{margin:0 0 12px;font-size:13px;color:var(--muted)}
+.fm-prob .fs-demo{background:var(--paper)}
+.fm-prob .fs-demo>header h3{font-size:16px}
+@media (max-width:1280px){.fm-prob .fs-demo-body{grid-template-columns:minmax(0,1fr)}}
+.fm-prob .fs-controls select{min-height:36px;padding:4px 8px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface)}

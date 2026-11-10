@@ -36,6 +36,33 @@
     $('#guide-article').innerHTML = doc.body.innerHTML;
     $('#reader-progress').textContent = `${String(guideIndex+1).padStart(2,'0')} / ${guides.length} · ${labels[guideIndex]}`;
     $('#guide-prev').disabled = guideIndex===0; $('#guide-next').disabled = guideIndex===guides.length-1;
+    renderTry();
+  }
+  // 动手算：按章节 id 在正文后面接一段能在浏览器里运行的 Python（viewer/pyrun.js 运行，程序在 viewer/py-examples.js）。
+  // 这块在 .guide-article 外面，界面文字跟站点语言走（i18n 词典），代码框自带中英文字。每章的框只建一次，换章时藏起来，改过的代码和输出都留着。
+  const TRY = {
+    'p12-cat10a': {
+      example: 'h2',
+      title: '动手算：自己写一个 Hartree–Fock',
+      intro: '这一章的计算引擎（ORCA、Psi4、Gaussian 等）做的第一件事都是自洽场（SCF）。下面是一段完整的 Python 程序：用 STO-3G 基组对 H₂ 做限制性 Hartree–Fock。积分按 Szabo 和 Ostlund《Modern Quantum Chemistry》第 3 章的闭式公式写（重叠、动能、核吸引、双电子积分和 Boys 函数 F₀），用对称正交化 S^(−1/2)，迭代到能量不再变化，最后扫一遍键长画出势能曲线。',
+      tip: '改开头的 R 再运行，看能量怎么变；把 MOLECULE 改成 "HeH+"，能看到要迭代好几轮的 SCF。远处的曲线还会告诉你限制性 Hartree–Fock 为什么拆不开 H₂。程序只在你的浏览器里运行，不上传。',
+      credit: '参考值：R = 1.4 bohr 时 Szabo 和 Ostlund 给出约 −1.1167 hartree，PySCF 用同样的 STO-3G 算得 −1.116714。写法参照 psi4numpy 的教学程序（BSD-3-Clause），代码是 MolAstria 自己写的。',
+      link: ['https://github.com/psi4/psi4numpy', 'psi4numpy'],
+    },
+  };
+  const tryBoxes = {};
+  function renderTry() {
+    const id = guides[guideIndex].id;
+    for (const [k, box] of Object.entries(tryBoxes)) box.hidden = k !== id;
+    const spec = TRY[id], ex = spec && window.MOLASTRIA_PY_EXAMPLES && window.MOLASTRIA_PY_EXAMPLES[spec.example];
+    if (!spec || !ex || !window.MolAstriaPy || tryBoxes[id]) return;
+    const box = document.createElement('section');
+    box.className = 'guide-try'; box.dataset.try = id; box.setAttribute('aria-labelledby', `try-${id}-h`);
+    box.innerHTML = `<p class="guide-try-k" translate="no">TRY IT</p><h2 id="try-${id}-h">${escape(spec.title)}</h2><p>${escape(spec.intro)}</p><p>${escape(spec.tip)}</p><div class="guide-try-run"></div>`
+      + `<p class="guide-try-note">${escape(spec.credit)} <a href="${spec.link[0]}" target="_blank" rel="noopener noreferrer" translate="no">${escape(spec.link[1])} <i class="ico-ext" aria-hidden="true"></i></a></p>`;
+    $('#guide-article').after(box);
+    tryBoxes[id] = box;
+    window.MolAstriaPy.mount(box.querySelector('.guide-try-run'), { code: ex.code, packages: ex.packages, name: ex.name, plot: true });
   }
   function selectGuide(index) {
     guideIndex = Math.max(0,Math.min(index,guides.length-1)); renderGuide();
