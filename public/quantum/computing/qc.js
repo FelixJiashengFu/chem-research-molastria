@@ -49,6 +49,7 @@
   panels.innerHTML = D.sections.map((s, i) => `<div class="fs-panel" role="tabpanel" id="s-${s.id}" aria-labelledby="tab-${s.id}" tabindex="-1"${i ? ' hidden' : ''}>
     ${C(`${s.num} · ${esc(tx(s.title))}`, 'h3')}
     ${C(rich(tx(s.intro)), 'p', 'fs-intro')}
+    <p class="fs-study"><a class="button" href="../../learn/index.html#goal=qc:${s.id}">${L('用研习台学这一部分', 'Study this in the Study Desk')} <i class="ico-ext ico-right" aria-hidden="true"></i></a></p>
     <h4 class="fs-sub-h">核心公式</h4>
     <div class="fs-formulas">${s.formulas.map(([k, cap]) => `<figure>${formula(k)}${C(rich(tx(cap)), 'figcaption')}</figure>`).join('')}</div>
     <h4 class="fs-sub-h">关键结论</h4>

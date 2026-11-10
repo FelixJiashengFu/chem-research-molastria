@@ -1,0 +1,98 @@
+/* ==== learn-graph.js 的 SVG 样式 · BEGIN ===================================
+   研习台的三种图：学习路线图（.lg-plan）、知识图（.lg-kg）、AI 示意图（.lg-diagram）。
+   颜色全部来自 shared-nav.css 的变量，深浅两种主题自动跟着变；类名都以 lg- 开头。
+   知识图的高度用 --lg-kg-h 调（默认 540 px，手机 420 px），不要用 vh（CSS zoom 下会被再乘一次）。 */
+
+/* ── 公共 ── */
+.lg-arrow path{fill:var(--line-strong)}
+.lg-arrow-on path{fill:var(--accent-text)}
+
+/* ── 学习路线图 ── */
+svg.lg-plan{display:block;max-width:100%;height:auto;margin:0 auto;overflow:visible;font-family:var(--font-sans)}
+.lg-plan-edge{fill:none;stroke:var(--line-strong);stroke-width:1.5}
+.lg-plan-edge.held{stroke-dasharray:3 3;opacity:.7}
+.lg-plan-edge.on{stroke:var(--accent-text);stroke-width:2}
+.lg-pnode{cursor:pointer;outline:none}
+.lg-pbox{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.3;transition:stroke .15s,fill .15s}
+.lg-plabel{font-size:13px;font-weight:550;fill:var(--ink);dominant-baseline:central}
+.lg-plabel tspan{dominant-baseline:central}
+.lg-ico{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lg-ico-dot{fill:var(--muted)}
+.lg-ico-ring{fill:none;stroke:var(--faint);stroke-width:1.5}
+.lg-pnode:hover .lg-pbox{stroke:var(--accent-2)}
+.lg-pnode:focus-visible .lg-pbox{stroke:var(--gold);stroke-width:3}
+/* 已掌握：淡、带勾 */
+.lg-pnode[data-st=held] .lg-pbox{fill:var(--surface-2);stroke:var(--line);stroke-dasharray:4 3}
+.lg-pnode[data-st=held] .lg-plabel{fill:var(--muted);font-weight:500}
+/* 已学会：实心强调色 */
+.lg-pnode[data-st=done] .lg-pbox{fill:var(--accent);stroke:var(--accent)}
+.lg-pnode[data-st=done] .lg-plabel{fill:var(--accent-ink)}
+.lg-pnode[data-st=done] .lg-ico{stroke:var(--accent-ink)}
+/* 正在学：描边 + 呼吸光圈 */
+.lg-pnode[data-st=doing] .lg-pbox{fill:var(--accent-soft);stroke:var(--accent-text);stroke-width:2.2}
+.lg-pnode[data-st=doing] .lg-ico-dot{fill:var(--accent-text)}
+.lg-pulse{fill:none;stroke:var(--accent-text);stroke-width:2;opacity:.35;animation:lg-pulse 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes lg-pulse{0%,100%{opacity:.08}50%{opacity:.5}}
+/* 待学：只有描边 */
+.lg-pnode[data-st=todo] .lg-pbox{fill:var(--surface)}
+/* 不稳：警示色 */
+.lg-pnode[data-st=shaky] .lg-pbox{fill:color-mix(in srgb,var(--warn) 13%,var(--surface));stroke:var(--warn);stroke-width:1.6}
+.lg-pnode[data-st=shaky] .lg-ico{stroke:var(--warn)}
+.lg-pnode[data-st=shaky] .lg-ico-dot{fill:var(--warn)}
+/* 当前节点、目标节点 */
+.lg-pnode.is-current .lg-pbox{stroke:var(--gold);stroke-width:2.6}
+.lg-pnode.is-current .lg-pulse{stroke:var(--gold)}
+.lg-goal-ring{fill:none;stroke:var(--gold);stroke-width:1;stroke-dasharray:2 2;opacity:.9}
+.lg-pnode[data-st=done] .lg-goal-ring{stroke:var(--accent-ink);opacity:.6}
+.lg-empty-text{font-size:13px;fill:var(--muted)}
+
+/* ── 知识图 ── */
+.lg-kg{position:relative}
+.lg-kg-wrap{position:relative;height:var(--lg-kg-h,540px);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--accent) 5%,var(--surface)),var(--surface) 72%)}
+@media (max-width:560px){.lg-kg-wrap{height:var(--lg-kg-h,420px)}}
+.lg-kg-svg{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;font-family:var(--font-sans);--lg-label:11px}
+.lg-kg-svg.lg-panning,.lg-kg-svg.lg-dragging{cursor:grabbing}
+.lg-kg-zoom{position:absolute;right:10px;top:10px;display:flex;gap:4px;z-index:2}
+.lg-zbtn{min-width:34px;height:34px;padding:0 9px;border:1px solid var(--line-strong);border-radius:6px;background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink);font:600 16px/1 var(--font-sans);cursor:pointer}
+.lg-zbtn.lg-zfit{font-size:12px}
+.lg-zbtn:hover{background:var(--surface-2)}
+.lg-zbtn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.lg-ke{stroke:color-mix(in srgb,var(--muted) 45%,transparent);stroke-width:1.2;transition:opacity .15s,stroke .15s}
+.lg-ke.hl{stroke:var(--accent-text);stroke-width:2}
+.lg-kn{cursor:pointer;outline:none}
+.lg-kn circle{fill:var(--lg-c);stroke:var(--surface);stroke-width:1.5;transition:opacity .15s}
+.lg-kn[data-c="0"]{--lg-c:var(--accent-2)}
+.lg-kn[data-c="1"]{--lg-c:var(--info)}
+.lg-kn[data-c="2"]{--lg-c:var(--violet)}
+.lg-kn[data-c="3"]{--lg-c:var(--gold)}
+.lg-kn[data-c="4"]{--lg-c:var(--ok)}
+.lg-kn[data-c="5"]{--lg-c:var(--danger)}
+.lg-kn text{font-size:var(--lg-label);font-weight:550;fill:var(--ink-2);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round;pointer-events:none;opacity:0;transition:opacity .15s}
+.lg-kn.lg-big text,.lg-near .lg-kn text,.lg-kn.hl text,.lg-kn.match text{opacity:1}
+.lg-kn text.lg-lhide{opacity:0}
+.lg-kn:focus-visible circle,.lg-kn.on circle{stroke:var(--gold);stroke-width:3}
+.lg-kn.on text{font-weight:700;fill:var(--ink)}
+.lg-focus .lg-kn:not(.hl){opacity:.18}
+.lg-focus .lg-kn:not(.hl) text{opacity:0}
+.lg-focus .lg-ke:not(.hl){opacity:.08}
+.lg-kn.hl text{fill:var(--ink)}
+.lg-searching .lg-kn:not(.match):not(.hl){opacity:.22}
+.lg-kn.match circle{stroke:var(--gold);stroke-width:2.6}
+.lg-kg-empty{display:grid;place-content:center;gap:6px;min-height:220px;padding:24px;border:1px dashed var(--line-strong);border-radius:12px;background:var(--surface);color:var(--muted);text-align:center;font-size:14px}
+.lg-kg-empty strong{color:var(--ink);font-size:15px;font-weight:600}
+.lg-kg-empty p{margin:0;max-width:44ch}
+
+/* ── AI 示意图 ── */
+.lg-diagram{margin:12px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);overflow-x:auto}
+.lg-dg-svg{display:block;max-width:100%;height:auto;margin:0 auto;font-family:var(--font-sans)}
+.lg-dn rect{fill:var(--surface);stroke:var(--accent-2);stroke-width:1.3}
+.lg-dlabel{font-size:12.5px;font-weight:550;fill:var(--ink);dominant-baseline:central}
+.lg-dlabel tspan{dominant-baseline:central}
+.lg-dg-edge{fill:none;stroke:var(--line-strong);stroke-width:1.4}
+.lg-dg-elabel{font-size:11px;fill:var(--muted);paint-order:stroke;stroke:var(--surface-2);stroke-width:4px;stroke-linejoin:round}
+
+@media (prefers-reduced-motion:reduce){
+  .lg-pulse{animation:none;opacity:.4}
+  .lg-pbox,.lg-ke,.lg-kn circle,.lg-kn text{transition:none}
+}
+/* ==== learn-graph.js 的 SVG 样式 · END ===================================== */

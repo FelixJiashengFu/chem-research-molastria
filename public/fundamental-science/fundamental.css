@@ -82,6 +82,7 @@ math{font-family:"Cambria Math","STIX Two Math","Latin Modern Math","Noto Sans M
 .fs-panel:focus{outline:none}
 .fs-panel>h3{margin:0 0 4px;font-size:20px;line-height:1.4}
 .fs-panel>.fs-intro{margin:0 0 16px;max-width:92ch;font-size:14.5px;line-height:1.95;color:var(--ink-2)}
+.fs-panel>.fs-study{margin:-4px 0 18px}
 .fs-sub-h{margin:22px 0 8px;font-size:15px;font-weight:600;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .fs-formulas{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .fs-formulas figure{margin:0;min-width:0}
