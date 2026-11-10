@@ -631,6 +631,29 @@
     }
     return { html, csv: csv.join('\n'), xyz: xyzOut };
   }
+  /** What the Code Desk needs to write an input from this result: every frame, which one to start on, and each
+      frame's own charge and multiplicity when they differ (spin states, the species of a reaction). */
+  function codeImport(x) {
+    const r = x.r, charge = Number.isInteger(r.charge) ? r.charge : 0, mult = Number.isInteger(r.spin) ? r.spin : 1;
+    const low = (arr, key) => arr.reduce((k, v, i) => (Number(v?.[key]) < Number(arr[k]?.[key]) ? i : k), 0);
+    let frame = 0, meta = null;
+    if (r.job === 'spin') { // one frame per state, the view joins them in this order
+      const s = r.states || [];
+      meta = s.map((v) => ({ charge, mult: v.spin }));
+      frame = low(s, 'energy_ev');
+    } else if (r.job === 'rxn') { // server.py writes one frame per distinct (smiles, charge, spin), in order of appearance
+      const seen = new Set();
+      meta = [];
+      for (const v of r.species || []) {
+        const k = `${v.smiles}|${v.charge}|${v.spin}`;
+        if (!seen.has(k)) { seen.add(k); meta.push({ charge: v.charge, mult: v.spin }); }
+      }
+    } else if (r.job === 'scan') frame = low(r.points || [], 'energy_ev');
+    else if (r.job === 'md') frame = Math.max(0, (x.view.xyz.match(/^\s*\d+\s*$/gm) || []).length - 1);
+    // conf: the frames come sorted, rank 1 first
+    const tag = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 20);
+    return { xyz: x.view.xyz, frame, meta, charge, mult, name: `${tag(x.model.split('-')[0]) || 'model'}-${tag(r.job) || 'mol'}`, model: MODELS[x.model]?.name || x.model, job: JOBS[r.job]?.name || r.job };
+  }
   /** The few numbers the comparison table shows for each job. */
   function summary(r) {
     const t = r.thermo || {};
@@ -667,7 +690,7 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}</div>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}</div>`;
       const foot = `<p class="muted small">${x.r.seconds ?? '?'} 秒 · 机器学习势的预测，不是 DFT 计算${x.r.direct_forces ? ' · 直接受力型模型：力不是能量的导数，频率由受力差分得到' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
       html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
@@ -692,6 +715,12 @@
     }
     if (b.dataset.act === 'xyz') save(`${stem}.xyz`, x.view.xyz, 'chemical/x-xyz');
     if (b.dataset.act === 'conf-xyz') save(`${stem}_${Number(b.dataset.k) + 1}.xyz`, x.r.conformers[Number(b.dataset.k)].xyz || '', 'chemical/x-xyz');
+    // results live only in memory: leaving mid-run abandons a job that is already paid for, so both hand-offs wait for the run to end
+    if ((b.dataset.act === 'code' || b.dataset.act === 'lab') && busy) { toast('还在算，这一轮算完再送过去'); return; }
+    if (b.dataset.act === 'code') { // the Code Desk reads molastria-code-import once, then writes PySCF / ORCA / … input from it
+      try { localStorage.setItem('molastria-code-import', JSON.stringify(codeImport(x))); } catch { toast('浏览器存储不可用，请下载结构后在代码台粘贴'); return; }
+      location.href = '../code/index.html#input';
+    }
     if (b.dataset.act === 'lab') { // the AI Lab reads UMA-S adiabatic IP / EA columns, the same hand-off as the Meta page used
       const csv = `smiles,name,ip_uma_s,ea_uma_s\n${x.r.smiles},,${x.r.ip_uma_s ?? x.r.ip_ev},${x.r.ea_uma_s ?? x.r.ea_ev}`;
       try { localStorage.setItem('molastria-lab-import', csv); } catch { toast('浏览器存储不可用，请复制 CSV 到 AI 实验室手动导入'); return; }

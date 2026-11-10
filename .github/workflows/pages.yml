@@ -61,9 +61,11 @@ jobs:
           node --test tools/pyrun-test.mjs
       - name: Study Desk logic and site sources
         run: node --test tools/learn-test.mjs tools/learn-sources-test.mjs
-      - name: Code desk (generated PySCF scripts run for real)
+      # openchemlib (in tools/e2e) is what the page loads from jsDelivr for SMILES → 3D; the NWChem / CP2K / Q-Chem readers use tools/code-fixtures.
+      - name: Code desk (generated PySCF scripts run for real, real program outputs, SMILES → 3D)
         run: |
           python -m pip install pyscf
+          npm ci --prefix tools/e2e
           node --test tools/code-test.mjs
       - name: Open Model Hall content (companies, items, task comparisons, pavilion pages)
         run: node --test tools/open-models-test.mjs

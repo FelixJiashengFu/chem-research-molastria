@@ -1,0 +1,226 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                   NWChem Nuclear Hessian and Frequency Analysis
+                   ---------------------------------------------
+
+
+                         NWChem Finite-difference Hessian
+                         --------------------------------
+
+
+         Total SCF energy =    -74.963023129097
+      One-electron energy =   -122.361419053825
+
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.268162D+00
+              MO Center=  1.9D-18,  2.1D-17, -7.2D-02, r^2= 5.4D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-6.175646D-01
+              MO Center= -2.1D-31, -2.5D-16, -1.4D-01, r^2= 8.3D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-4.530217D-01
+              MO Center=  4.7D-17,  4.5D-16,  1.6D-01, r^2= 6.2D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-3.912368D-01
+              MO Center= -8.8D-17,  1.6D-31,  1.2D-01, r^2= 4.2D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 6.051720D-01
+              MO Center=  1.0D-17, -2.6D-15, -3.9D-01, r^2= 1.1D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 7.415976D-01
+              MO Center=  2.9D-33,  2.2D-15, -2.3D-01, r^2= 1.0D+00
+
+
+ center of mass
+ --------------
+
+          Triplet pairs               -0.003044746714
+          Total MP2 energy           -74.998568775084
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023156809
+      One-electron energy =   -122.361415989315
+
+          Triplet pairs               -0.003044749139
+          Total MP2 energy           -74.998568819656
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023156809
+      One-electron energy =   -122.361415989315
+
+          Triplet pairs               -0.003044749139
+          Total MP2 energy           -74.998568819656
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963022634526
+      One-electron energy =   -122.361419976046
+
+          Triplet pairs               -0.003044747103
+          Total MP2 energy           -74.998568295726
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963022634526
+      One-electron energy =   -122.361419976046
+
+          Triplet pairs               -0.003044747103
+          Total MP2 energy           -74.998568295726
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963084225890
+      One-electron energy =   -122.355864000604
+
+          Triplet pairs               -0.003049983221
+          Total MP2 energy           -74.998663755789
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.962961370133
+      One-electron energy =   -122.366973954240
+
+          Triplet pairs               -0.003039524351
+          Total MP2 energy           -74.998473179585
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023140156
+      One-electron energy =   -122.361417925034
+
+          Triplet pairs               -0.003044747472
+          Total MP2 energy           -74.998568792185
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023140156
+      One-electron energy =   -122.361417925034
+
+          Triplet pairs               -0.003044747472
+          Total MP2 energy           -74.998568792185
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963046508324
+      One-electron energy =   -122.357988528127
+
+          Triplet pairs               -0.003045778918
+          Total MP2 energy           -74.998606490502
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.962999225188
+      One-electron energy =   -122.364850627599
+
+          Triplet pairs               -0.003043716310
+          Total MP2 energy           -74.998530553063
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.962992258170
+      One-electron energy =   -122.364196430683
+
+          Triplet pairs               -0.003042133652
+          Total MP2 energy           -74.998520982497
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963053686069
+      One-electron energy =   -122.358641452002
+
+          Triplet pairs               -0.003047363087
+          Total MP2 energy           -74.998616270647
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023140156
+      One-electron energy =   -122.361417925034
+
+          Triplet pairs               -0.003044747472
+          Total MP2 energy           -74.998568792185
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963023140156
+      One-electron energy =   -122.361417925034
+
+          Triplet pairs               -0.003044747472
+          Total MP2 energy           -74.998568792185
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.962999225188
+      One-electron energy =   -122.364850627599
+
+          Triplet pairs               -0.003043716310
+          Total MP2 energy           -74.998530553063
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963046508324
+      One-electron energy =   -122.357988528127
+
+          Triplet pairs               -0.003045778918
+          Total MP2 energy           -74.998606490502
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.962992258170
+      One-electron energy =   -122.364196430683
+
+          Triplet pairs               -0.003042133652
+          Total MP2 energy           -74.998520982497
+          -------------------------------------------
+
+
+         Total SCF energy =    -74.963053686069
+      One-electron energy =   -122.358641452002
+
+          Triplet pairs               -0.003047363087
+          Total MP2 energy           -74.998616270647
+          -------------------------------------------
+
+
+ center of mass
+ --------------
+
+          -------------------------------------------------
+             (Projected Frequencies expressed in cm-1)
+
+
+ 
+ P.Frequency       -0.00       -0.00       -0.00        0.00        0.00        0.00
+ 
+
+ 
+ P.Frequency     1896.98     4414.78     4715.02
+ 
+
+
+ Task  times  cpu:        0.9s     wall:        2.4s
+ Summary of allocated global arrays
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Total times  cpu:        0.9s     wall:        2.4s
+[0] ARMCI Warning: Freed 1 leaked allocations

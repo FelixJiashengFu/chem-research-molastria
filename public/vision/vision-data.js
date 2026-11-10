@@ -129,9 +129,9 @@ window.MOLASTRIA_VISION = {
         items: [
           ['live', '开放数据接口：资源目录、期刊、科学大模型和教学视频的 JSON，CC BY 4.0，配 JS 和 Python 库', 'Open data API: JSON for the catalogue, journals, science LLMs and videos under CC BY 4.0, with JS and Python clients', 'api/index.html'],
           ['live', '计算接口 api.molastria.com/v1：免费账号生成 API key 就能提交计算（算力是站长电脑上的一张 RTX 2080，尽力而为，可能离线）', 'Compute API at api.molastria.com/v1: any free account can create an API key and submit jobs (the hardware is one RTX 2080 on the operator’s own computer, best effort, sometimes offline)', 'api/index.html'],
-          ['live', '开源代码台：九个程序的输入生成、五个程序的输出解读、软件体检；chemdb-agent 把这些能力交给 AI Agent', 'Code Desk: inputs for nine programs, output reading for five, software health checks; chemdb-agent hands these abilities to AI agents', 'code/index.html'],
+          ['live', '开源代码台：九个程序的输入生成、八个程序的输出解读、软件体检；chemdb-agent 把这些能力交给 AI Agent', 'Code Desk: inputs for nine programs, output reading for eight, software health checks; chemdb-agent hands these abilities to AI agents', 'code/index.html'],
           ['live', '全站代码以 MIT 许可开源；桌面版能在本机跑 UMA', 'All site code is open source under MIT; the desktop app can run UMA locally', 'download/index.html'],
-          ['next', '代码台的输出解读加 CP2K、NWChem、Q-Chem；从 SMILES 直接生成三维坐标；模型接口算完的结构一键送进输入生成', 'Code Desk: read CP2K, NWChem and Q-Chem outputs; build 3D coordinates straight from SMILES; send a structure from the Model API into input generation in one click'],
+          ['live', '代码台的输出解读加 CP2K、NWChem、Q-Chem；从 SMILES 直接生成三维坐标；模型接口算完的结构一键送进输入生成', 'Code Desk: read CP2K, NWChem and Q-Chem outputs; build 3D coordinates straight from SMILES; send a structure from the Model API into input generation in one click', 'code/index.html#input'],
           ['idea', '真有需求以后：租用按需 GPU，给实验室和机构提供有配额、优先级和服务承诺的计算。内容仍然全部免费', 'Once demand is real: rent on-demand GPUs and offer labs and institutions computing with quotas, priority and a service commitment, while all content stays free'],
         ],
       },

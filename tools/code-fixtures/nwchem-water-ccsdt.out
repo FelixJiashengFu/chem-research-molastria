@@ -1,0 +1,38 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+         Total SCF energy =    -74.963023129097
+
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.268162D+00
+
+ Vector    3  Occ=2.000000D+00  E=-6.175646D-01
+
+ Vector    4  Occ=2.000000D+00  E=-4.530217D-01
+
+ Vector    5  Occ=2.000000D+00  E=-3.912368D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.051720D-01
+
+ Vector    7  Occ=0.000000D+00  E= 7.415976D-01
+
+ center of mass
+
+  Using  1 OpenMP thread(s) in CCSD
+  IO offset    20.000000000000000     
+  IO error message >End of File
+  file_read_ga: failing reading from ./w_ccsdt_sp.t2
+  Failed reading restart vector from ./w_ccsdt_sp.t2
+  Using MP2 initial guess vector
+
+ Total MP2 energy:            -74.998568775083626
+
+ Total CCSD energy:            -75.012461697596805
+
+ Total CCSD(T) energy:                 -75.012529107317619
+
+ Total times  cpu:        0.1s     wall:        0.1s

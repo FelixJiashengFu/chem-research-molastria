@@ -1,1 +1,3 @@
 *.sh text eol=lf
+# 代码台输出解读的真实样本：示例要逐行对照，换行不能被改成 CRLF
+tools/code-fixtures/** text eol=lf

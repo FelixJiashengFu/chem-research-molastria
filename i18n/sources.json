@@ -57,7 +57,8 @@
   "train/index.html"
  ],
  "工具": [
-  "index.html"
+  "index.html",
+  "shared-nav.js"
  ],
  "教程": [
   "index.html"
@@ -1144,6 +1145,7 @@
  "数学基础与探索": [
   "fundamental-science/index.html",
   "fundamental-science/math/index.html",
+  "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "核心研究理念": [
@@ -1372,6 +1374,7 @@
   "quantum/biology/index.html",
   "quantum/algorithms/index.html",
   "quantum/computing/index.html",
+  "meta/index.html",
   "tools/build-seo.ts"
  ],
  "量子嘉年华 · Quantum Carnival · MolAstria": [
@@ -1390,6 +1393,7 @@
   "quantum/physics/index.html",
   "quantum/computing/index.html",
   "qchem/index.html",
+  "shared-nav.js",
   "radar/app/app.js",
   "tools/build-seo.ts"
  ],
@@ -1403,6 +1407,7 @@
   "quantum/biology/index.html",
   "quantum/computing/index.html",
   "qchem/index.html",
+  "shared-nav.js",
   "quantum/biology/qb.js",
   "tools/build-seo.ts"
  ],
@@ -1581,6 +1586,7 @@
   "quantum/algorithms/index.html",
   "quantum/computing/index.html",
   "qchem/index.html",
+  "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "量子计算机 · Quantum Computers · MolAstria": [
@@ -1595,6 +1601,7 @@
  "量子计算机": [
   "quantum/computing/index.html",
   "qchem/index.html",
+  "shared-nav.js",
   "tools/build-seo.ts"
  ],
  "七个部分": [
@@ -1812,7 +1819,8 @@
  ],
  "探索": [
   "hub/index.html",
-  "hub/network.html"
+  "hub/network.html",
+  "shared-nav.js"
  ],
  "网状查询": [
   "hub/index.html",
@@ -2246,6 +2254,7 @@
  "清空": [
   "lab/index.html",
   "qchem/index.html",
+  "shared-nav.js",
   "radar/app/app.js",
   "viewer/sketch.js"
  ],
@@ -2309,6 +2318,7 @@
  "停止": [
   "lab/index.html",
   "meta/index.html",
+  "code/index.html",
   "ai/ai.js"
  ],
  "查看提示词": [
@@ -3302,6 +3312,9 @@
  "搜索名称、体系、方法…": [
   "meta/index.html"
  ],
+ "开放模型馆的其他展馆": [
+  "meta/index.html"
+ ],
  "量子化学模型接口 · 15 个机器学习势在线计算 · MolAstria": [
   "models/index.html"
  ],
@@ -3432,6 +3445,7 @@
   "models/index.html",
   "pro/index.html",
   "pro/account.html",
+  "shared-nav.js",
   "pro/account-page.js"
  ],
  "100 次，Pro 支持者 200 次": [
@@ -4674,7 +4688,8 @@
   "pro/index.html"
  ],
  "Pro 支持者": [
-  "pro/index.html"
+  "pro/index.html",
+  "shared-nav.js"
  ],
  "/ 年": [
   "pro/index.html",
@@ -5039,7 +5054,8 @@
   "pro/account.html"
  ],
  "我的账号": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "任何邮箱都能登录，账号本身免费。Pro 支持者的权益绑定在付款邮箱上，换设备或换浏览器时用这个邮箱收验证码登录即可。": [
   "pro/account.html"
@@ -5055,6 +5071,7 @@
  ],
  "用邮箱登录": [
   "pro/account.html",
+  "shared-nav.js",
   "pro/account-page.js"
  ],
  "我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。": [
@@ -5084,16 +5101,19 @@
   "pro/account.html"
  ],
  "我有 VIP 卡": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "管理订阅、付款方式与发票": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "需要取消或修改订阅时，打开 Stripe 收据邮件里的“管理订阅”链接。": [
   "pro/account.html"
  ],
  "AI 托管额度": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "次 ·": [
   "pro/account.html"
@@ -5193,7 +5213,8 @@
   "pro/account.html"
  ],
  "生成": [
-  "pro/account.html"
+  "pro/account.html",
+  "code/index.html"
  ],
  "兑换 VIP 卡": [
   "pro/account.html"
@@ -5214,16 +5235,19 @@
   "pro/account.html"
  ],
  "成为 Pro 支持者": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "退出登录": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "6 位数字": [
   "pro/account.html"
  ],
  "已用 AI 托管额度": [
-  "pro/account.html"
+  "pro/account.html",
+  "shared-nav.js"
  ],
  "成员邮箱": [
   "pro/account.html"
@@ -5406,7 +5430,8 @@
   "pro/privacy.html"
  ],
  "账号": [
-  "pro/privacy.html"
+  "pro/privacy.html",
+  "shared-nav.js"
  ],
  "用邮箱登录（免费账号）或购买 Pro、课题组版后，账号服务（运行在 Cloudflare 上）会保存：你的邮箱；从 Stripe 查到的订阅状态（套餐、席位数、续费或到期时间）；登录会话（只保存不可逆的摘要）；AI 托管额度和在线模型的使用次数；课题组购买者添加的成员邮箱。登录验证码和课题组邀请通过 Resend 发送到你的邮箱。": [
   "pro/privacy.html"
@@ -5794,6 +5819,15 @@
   "about/index.html"
  ],
  "（其中的研究主线都还处在计划阶段，不声称任何新发现）": [
+  "about/index.html"
+ ],
+ "站长的文章": [
+  "about/index.html"
+ ],
+ "《工业革命2.5：我愿成为“曼哈顿计划2.0”的一份子》": [
+  "about/index.html"
+ ],
+ "写了做这件事的理由；同一页后半部分是 MolAstria 接下来能做什么的展望，每一项都标明已上线、规划中还是设想。": [
   "about/index.html"
  ],
  "定位": [
@@ -7190,7 +7224,16 @@
  "三重态氧气": [
   "code/index.html"
  ],
+ "从 SMILES 生成三维坐标": [
+  "code/index.html"
+ ],
+ "在你的浏览器里搭几个构象、补齐氢，用 MMFF94 力场各自优化，按力场能量排好，填进下面的坐标框。第一次要从 jsDelivr 下载约 2.5 MB 的 OpenChemLib。力场结构只是起点，正式计算前请先用 xTB 或 DFT 优化。": [
+  "code/index.html"
+ ],
  "XYZ 坐标（单位 Å；可以带原子数和注释两行，也可以只有“元素 x y z”）": [
+  "code/index.html"
+ ],
+ "用哪一帧（多帧的 XYZ：几个构象、几个自旋态或者反应里的几个分子）": [
   "code/index.html"
  ],
  "文件名": [
@@ -7226,7 +7269,7 @@
  "程序输出": [
   "code/index.html"
  ],
- "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian 和 PySCF；只在浏览器里读，不上传。": [
+ "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。": [
   "code/index.html"
  ],
  "选择文件": [
@@ -7237,6 +7280,9 @@
   "code/code.js"
  ],
  "自动识别": [
+  "code/index.html"
+ ],
+ "示例": [
   "code/index.html"
  ],
  "试一段示例": [
@@ -7255,7 +7301,7 @@
  "思路借鉴开源的": [
   "code/index.html"
  ],
- "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。": [
+ "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。": [
   "code/index.html"
  ],
  "查一个软件": [
@@ -7320,7 +7366,10 @@
  "从论文反查代码：论文的“代码可用性”一节、补充材料和作者主页。": [
   "code/index.html"
  ],
- "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、ORCA 的商用）要有授权。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
+ "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是": [
+  "code/index.html"
+ ],
+ "（BSD-3）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
  "数据库目录": [
@@ -7338,29 +7387,194 @@
  "把 .out / .log 的内容粘贴到这里": [
   "code/index.html"
  ],
- "示例": [
-  "code/index.html"
+ "发现": [
+  "shared-nav.js"
+ ],
+ "找资源、读新论文、看研究版图": [
+  "shared-nav.js"
  ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
+ "一次搜遍目录、讲解手册和收藏夹": [
+  "shared-nav.js"
+ ],
+ "search 搜索 home 首页 收藏": [
+  "shared-nav.js"
+ ],
+ "按类别浏览数据库与研究资源": [
+  "shared-nav.js"
+ ],
+ "database catalogue 目录": [
+  "shared-nav.js"
+ ],
+ "资源、方法和概念之间的关系网": [
+  "shared-nav.js"
+ ],
+ "graph 关系 network": [
+  "shared-nav.js"
+ ],
  "研究图谱": [
   "shared-nav.js"
  ],
- "计算化学研究导航": [
+ "中美大学的数理化研究网络与产业地图": [
   "shared-nav.js"
  ],
- "全站导航": [
+ "university 大学 map": [
   "shared-nav.js"
  ],
- "更多{0}": [
+ "28 个预印本来源的新论文": [
   "shared-nav.js"
  ],
- "我的 Pro 账号": [
+ "每周值得读的计算化学论文和点评": [
   "shared-nav.js"
  ],
- "MolAstria Pro 与桌面版下载": [
+ "论文快照、论坛和社区讨论": [
+  "shared-nav.js"
+ ],
+ "学习": [
+  "shared-nav.js"
+ ],
+ "从讲解、视频到 AI 家教和小游戏": [
+  "shared-nav.js"
+ ],
+ "20 章中英双语的计算化学讲解": [
+  "shared-nav.js"
+ ],
+ "handbook guide 手册": [
+  "shared-nav.js"
+ ],
+ "YouTube 和哔哩哔哩上的课程与教程": [
+  "shared-nav.js"
+ ],
+ "编程语言": [
+  "shared-nav.js"
+ ],
+ "计算物理与化学要用的编程语言，从入门到并行": [
+  "shared-nav.js"
+ ],
+ "python fortran c++ julia code language 编程 语言": [
+  "shared-nav.js"
+ ],
+ "AI 家教：先摸底、画路线、一步一检": [
+  "shared-nav.js"
+ ],
+ "tutor ai 家教": [
+  "shared-nav.js"
+ ],
+ "间隔重复复习术语和学过的知识点": [
+  "shared-nav.js"
+ ],
+ "十五个量子小游戏和浏览器里的量子化学计算器": [
+  "shared-nav.js"
+ ],
+ "game 游戏 calculator": [
+  "shared-nav.js"
+ ],
+ "量子世界与基础科学的前沿": [
+  "shared-nav.js"
+ ],
+ "四个展馆：量子物理、计算机、算法、生物学": [
+  "shared-nav.js"
+ ],
+ "quantum 量子": [
+  "shared-nav.js"
+ ],
+ "尚未解决的基础问题，每条标明研究状态": [
+  "shared-nav.js"
+ ],
+ "42 个物理理论和它们之间的关系图": [
+  "shared-nav.js"
+ ],
+ "愿景：工业革命2.5": [
+  "shared-nav.js"
+ ],
+ "站长的文章，和 MolAstria 接下来能做什么": [
+  "shared-nav.js"
+ ],
+ "vision 愿景 essay manhattan 曼哈顿 roadmap 路线图 future": [
+  "shared-nav.js"
+ ],
+ "模型与 AI": [
+  "shared-nav.js"
+ ],
+ "科学模型、在线计算和 AI 研究流程": [
+  "shared-nav.js"
+ ],
+ "开放模型馆": [
+  "shared-nav.js"
+ ],
+ "Meta、DeepMind、微软、英伟达等 11 家公司的开放科学模型": [
+  "shared-nav.js"
+ ],
+ "meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 open models": [
+  "shared-nav.js"
+ ],
+ "微软": [
+  "shared-nav.js"
+ ],
+ "英伟达": [
+  "shared-nav.js"
+ ],
+ "深势科技": [
+  "shared-nav.js"
+ ],
+ "全部 11 家": [
+  "shared-nav.js"
+ ],
+ "27 个科学语言模型和价格对比": [
+  "shared-nav.js"
+ ],
+ "llm language model price 价格": [
+  "shared-nav.js"
+ ],
+ "在线跑 15 个机器学习势：优化、频率、光谱": [
+  "shared-nav.js"
+ ],
+ "uma mace ani api compute 计算": [
+  "shared-nav.js"
+ ],
+ "AI 化学家提出分子、计算来验证的闭环演示": [
+  "shared-nav.js"
+ ],
+ "用开放模型当老师训练自己的小模型": [
+  "shared-nav.js"
+ ],
+ "计算化学 MCP 服务器和 Agent 的做法": [
+  "shared-nav.js"
+ ],
+ "写输入、投稿、接数据、装桌面版": [
+  "shared-nav.js"
+ ],
+ "计算化学程序的输入生成、输出解读与软件体检": [
+  "shared-nav.js"
+ ],
+ "pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标": [
+  "shared-nav.js"
+ ],
+ "期刊选择与投稿指导": [
+  "shared-nav.js"
+ ],
+ "journal submit 投稿": [
+  "shared-nav.js"
+ ],
+ "程序可读的数据集、JS / Python 库与计算接口": [
+  "shared-nav.js"
+ ],
+ "桌面版": [
+  "shared-nav.js"
+ ],
+ "Windows 和 macOS 应用，可在本机跑 UMA": [
+  "shared-nav.js"
+ ],
+ "desktop download windows mac app 下载": [
+  "shared-nav.js"
+ ],
+ "搜索栏目": [
+  "shared-nav.js"
+ ],
+ "搜索栏目（Ctrl / ⌘ + K）": [
   "shared-nav.js"
  ],
  "切换到中文": [
@@ -7385,6 +7599,46 @@
  "AI 助手": [
   "shared-nav.js"
  ],
+ "固定“{0}”到顶栏": [
+  "shared-nav.js"
+ ],
+ "固定到顶栏": [
+  "shared-nav.js"
+ ],
+ "计算化学研究导航": [
+  "shared-nav.js"
+ ],
+ "全站导航": [
+  "shared-nav.js"
+ ],
+ "栏目": [
+  "shared-nav.js"
+ ],
+ "全部栏目": [
+  "shared-nav.js"
+ ],
+ "搜索栏目，比如“量子”“AlphaFold”“Python”": [
+  "shared-nav.js"
+ ],
+ "常用": [
+  "shared-nav.js",
+  "radar/app/app.js"
+ ],
+ "整理": [
+  "shared-nav.js"
+ ],
+ "分组": [
+  "shared-nav.js"
+ ],
+ "没有找到这个栏目。可以换个说法，或者到“统一搜索”里搜资源。": [
+  "shared-nav.js"
+ ],
+ "点栏目旁边的图钉把它固定到顶栏；顶栏上的分组和按钮按住就能拖动换位；方向键选择，回车打开，Esc 关闭": [
+  "shared-nav.js"
+ ],
+ "从顶栏取下": [
+  "shared-nav.js"
+ ],
  "阿斯特赖亚科技（Morning Glory）旗下项目": [
   "shared-nav.js"
  ],
@@ -7397,25 +7651,119 @@
  "{0}：第 {1} 位，共 {2} 个": [
   "shared-nav.js"
  ],
- "调整导航顺序": [
+ "{0}（按 Delete 取下）": [
   "shared-nav.js"
  ],
- "拖动入口，排成你习惯的顺序；也可以用方向键。只保存在这台设备上。": [
+ "顶栏上的常用入口": [
   "shared-nav.js"
  ],
- "导航入口": [
+ "固定的栏目直接显示在顶栏上。拖动排成你习惯的顺序，也可以用方向键；点 × 或按 Delete 取下。只保存在这台设备上。": [
   "shared-nav.js"
  ],
- "在顶栏上也能直接拖动入口换位置；按住一个入口不动再松开，会回到这里": [
+ "已固定": [
   "shared-nav.js"
  ],
- "恢复默认": [
+ "还没有固定任何栏目。从下面选几个常用的：": [
+  "shared-nav.js"
+ ],
+ "顶栏上的入口、五个分组和右边的按钮都能按住直接拖动换位": [
+  "shared-nav.js"
+ ],
+ "分组和按钮恢复默认顺序": [
   "shared-nav.js"
  ],
  "完成": [
   "shared-nav.js"
  ],
- "已恢复默认顺序": [
+ "分组和按钮已恢复默认顺序": [
+  "shared-nav.js"
+ ],
+ "已全部取下": [
+  "shared-nav.js"
+ ],
+ "课题组": [
+  "shared-nav.js",
+  "pro/account-page.js"
+ ],
+ "课题组成员": [
+  "shared-nav.js",
+  "pro/account-page.js"
+ ],
+ "站长": [
+  "shared-nav.js",
+  "pro/account-page.js"
+ ],
+ "登录": [
+  "shared-nav.js",
+  "pro/account-page.js"
+ ],
+ "登录、Pro 与桌面版": [
+  "shared-nav.js"
+ ],
+ "我的账号：{0}（{1}）": [
+  "shared-nav.js"
+ ],
+ "登录 MolAstria": [
+  "shared-nav.js"
+ ],
+ "邮箱收一个 6 位验证码就能登录，不需要密码。所有内容不登录也能看。": [
+  "shared-nav.js"
+ ],
+ "支持 MolAstria，AI 托管额度和在线模型次数更多": [
+  "shared-nav.js"
+ ],
+ "开放数据接口与计算接口": [
+  "shared-nav.js"
+ ],
+ "登录后可以生成自己的 API key": [
+  "shared-nav.js"
+ ],
+ "登录后可以订阅邮件": [
+  "shared-nav.js"
+ ],
+ "Windows 和 macOS，可在本机跑 UMA": [
+  "shared-nav.js"
+ ],
+ "条款": [
+  "shared-nav.js"
+ ],
+ "隐私": [
+  "shared-nav.js"
+ ],
+ "24 小时内": [
+  "shared-nav.js"
+ ],
+ "本月": [
+  "shared-nav.js"
+ ],
+ "付款未成功": [
+  "shared-nav.js"
+ ],
+ "套餐、额度、课题组成员": [
+  "shared-nav.js"
+ ],
+ "给程序用的计算接口，今天的用量": [
+  "shared-nav.js"
+ ],
+ "订阅邮件或发一份到邮箱": [
+  "shared-nav.js"
+ ],
+ "站长：VIP 卡": [
+  "shared-nav.js"
+ ],
+ "发卡、收回、生成本期精选": [
+  "shared-nav.js"
+ ],
+ "订阅与付款": [
+  "shared-nav.js"
+ ],
+ "AI 托管额度和在线模型次数更多": [
+  "shared-nav.js"
+ ],
+ "Windows 和 macOS": [
+  "shared-nav.js"
+ ],
+ "价格与条款": [
   "shared-nav.js"
  ],
  "默认": [
@@ -7461,10 +7809,10 @@
  "Aa 计算化学": [
   "shared-nav.js"
  ],
- "导航顺序": [
+ "常用入口": [
   "shared-nav.js"
  ],
- "把顶栏的入口排成你习惯的顺序；也可以长按任一入口": [
+ "把常用的栏目固定到顶栏，并排好顺序": [
   "shared-nav.js"
  ],
  "调整": [
@@ -7474,6 +7822,9 @@
   "shared-nav.js"
  ],
  "设置保存在这台设备上，所有页面通用": [
+  "shared-nav.js"
+ ],
+ "恢复默认": [
   "shared-nav.js"
  ],
  "AI 模块加载失败": [
@@ -10234,7 +10585,8 @@
   "lab/lab.js"
  ],
  "已停止。": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/code.js"
  ],
  "RDKit 未能载入，无法过滤": [
   "lab/lab.js"
@@ -11697,6 +12049,9 @@
  "下载结构（.xyz{0}）": [
   "models/models.js"
  ],
+ "送进代码台写输入": [
+  "models/models.js"
+ ],
  "· 直接受力型模型：力不是能量的导数，频率由受力差分得到": [
   "models/models.js"
  ],
@@ -11707,6 +12062,12 @@
   "models/models.js"
  ],
  "{0} 算出的结构": [
+  "models/models.js"
+ ],
+ "还在算，这一轮算完再送过去": [
+  "models/models.js"
+ ],
+ "浏览器存储不可用，请下载结构后在代码台粘贴": [
   "models/models.js"
  ],
  "输入的结构": [
@@ -12283,15 +12644,6 @@
  "{0} 自动续费": [
   "pro/account-page.js"
  ],
- "课题组": [
-  "pro/account-page.js"
- ],
- "课题组成员": [
-  "pro/account-page.js"
- ],
- "站长": [
-  "pro/account-page.js"
- ],
  "免费账号 · 从当天第一次提问起 24 小时后重置": [
   "pro/account-page.js"
  ],
@@ -12308,9 +12660,6 @@
   "pro/account-page.js"
  ],
  "填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。": [
-  "pro/account-page.js"
- ],
- "登录": [
   "pro/account-page.js"
  ],
  "请填写 VIP 卡号。": [
@@ -12552,9 +12901,6 @@
   "radar/app/app.js"
  ],
  "全选或取消这一组": [
-  "radar/app/app.js"
- ],
- "常用": [
   "radar/app/app.js"
  ],
  "arXiv、ChemRxiv、bioRxiv 等常用来源": [
@@ -14016,6 +14362,84 @@
  "复制失败": [
   "code/code.js"
  ],
+ "没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。": [
+  "code/code.js"
+ ],
+ "先写一个 SMILES。": [
+  "code/code.js"
+ ],
+ "SMILES 里不能有空格。": [
+  "code/code.js"
+ ],
+ "这个 SMILES 读不出来：{0}": [
+  "code/code.js"
+ ],
+ "重原子有 {0} 个，超过了浏览器里能算的 {1} 个；这么大的分子请在本机用 RDKit 或 CREST 搭构象。": [
+  "code/code.js"
+ ],
+ "搭出的构象和写的立体构型都对不上，换一种写法再试。": [
+  "code/code.js"
+ ],
+ "方括号里的 {0} 写明了 {1} 个氢，OpenChemLib 读成了 {2} 个，算出来会是另一个分子。自由基请换一种写法，比如二氧化氮写成 N(=O)[O]。": [
+  "code/code.js"
+ ],
+ "搭不出三维结构：检查一下价态，或者环是不是太紧张。": [
+  "code/code.js"
+ ],
+ "出错了：{0}": [
+  "code/code.js"
+ ],
+ "SMILES 里有 {0} 处立体构型没写，按第一个搭出的结构定成了 {1}；要另一个异构体，请在 SMILES 里用 @、@@、/、\\ 写明。": [
+  "code/code.js"
+ ],
+ "有的构象搭出来立体构型不对，已经去掉，只留和 SMILES 一致的。": [
+  "code/code.js"
+ ],
+ "MMFF94 力场算不了这个分子（不认识某些原子或价态，或者算不出能量），坐标没有优化，只是一个粗糙的起点，请先用 xTB 优化。": [
+  "code/code.js"
+ ],
+ "有的构象 MMFF94 算不出能量，坐标没有优化，排在最后；用前面优化过的那几个更好。": [
+  "code/code.js"
+ ],
+ "单个原子：多重度按洪特规则填成基态的 {0}；要算别的态请自己改。": [
+  "code/code.js"
+ ],
+ "单个原子：多重度只按电子数的奇偶填成了 {0}；过渡金属的原子和离子基态常是高自旋（比如 Fe²⁺ 是五重态），请查表核对。": [
+  "code/code.js"
+ ],
+ "SMILES 里有 {0} 个互不相连的部分，它们之间的相对位置是随手摆的。": [
+  "code/code.js"
+ ],
+ "有 {0} 个未成对电子，多重度按高自旋填成 {1}；MMFF94 是给闭壳层分子做的，自由基的结构只能作参考。": [
+  "code/code.js"
+ ],
+ "生成了一个结构，已用 MMFF94 优化。": [
+  "code/code.js"
+ ],
+ "生成了一个结构（没有优化）。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好，现在用的是能量最低的一个。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好；现在用的是第 {2} 个，比最低的高 {3} kcal/mol。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好；现在用的是第 {2} 个，这一个没有优化。": [
+  "code/code.js"
+ ],
+ "正在载入 OpenChemLib，搭构象…": [
+  "code/code.js"
+ ],
+ "正在用 MMFF94 优化第 {0} 个构象（共 {1} 个）…": [
+  "code/code.js"
+ ],
+ "这个结构来自模型接口：": [
+  "code/code.js"
+ ],
+ "。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。": [
+  "code/code.js"
+ ],
  "最终能量": [
   "code/code.js"
  ],
@@ -14166,6 +14590,9 @@
  "第一行写的是 {0} 个原子，实际读到 {1} 个": [
   "code/code-core.js"
  ],
+ "第 {0} 帧写的是 {1} 个原子，实际读到 {2} 个": [
+  "code/code-core.js"
+ ],
  "没有读到原子": [
   "code/code-core.js"
  ],
@@ -14253,7 +14680,7 @@
  "CP2K 不做 GFN-FF；可以选 GFN1-xTB。": [
   "code/code-core.js"
  ],
- "CP2K 2024.1 起才支持 GFN2-xTB，旧版本只有 GFN1；不行就把 GFN_TYPE 改成 1。": [
+ "CP2K 自带的 xTB 只有 GFN0 和 GFN1；GFN2-xTB 要走 tblite 后端（GFN_TYPE TBLITE），CP2K 编译时要带上 tblite（conda-forge 的 2026.2 没带，会报 “Built without TBLITE”）。按 CP2K 2026.2 的输入手册写；跑不了就改选 GFN1-xTB。": [
   "code/code-core.js"
  ],
  "CP2K 这里固定用 PBE + DZVP-MOLOPT-SR-GTH（GPW 的标准搭配），没有按 {0} / {1} 写；杂化泛函和高斯基组要另外设置 HFX 段。": [
@@ -14292,13 +14719,22 @@
  "先给一个分子": [
   "code/code-core.js"
  ],
+ "开壳层：HOMO 取 α、β 里较高的一个，LUMO 取较低的一个": [
+  "code/code-core.js"
+ ],
  "GFN-xTB 总能量": [
   "code/code-core.js"
  ],
  "开壳层：能隙只按 alpha 轨道算。": [
   "code/code-core.js"
  ],
- "认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF）": [
+ "CP2K 的振动分析把各个位移点的能量写在 PROJECT-r-0.out 这类副本文件里，主输出里没有总能量。": [
+  "code/code-core.js"
+ ],
+ "Q-Chem 的这个任务是有限差分（一系列位移结构或外加电场下的能量），没有单独印出未扰动的能量；要能量请另算一次单点。": [
+  "code/code-core.js"
+ ],
+ "认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem）": [
   "code/code-core.js"
  ],
  "有 1 个虚频（{0} cm⁻¹）：如果找的是过渡态，这是对的；如果找的是极小点，结构还没到底。": [
@@ -14314,6 +14750,9 @@
   "code/code-core.js"
  ],
  "结构优化没有收敛。": [
+  "code/code-core.js"
+ ],
+ "程序没有正常结束，报错是：{0}": [
   "code/code-core.js"
  ],
  "程序没有正常结束。": [
@@ -14781,7 +15220,7 @@
  "MolAstria 开源代码台 · Code Desk": [
   "tools/build-seo.ts"
  ],
- "一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读 xTB、ORCA、Psi4、Gaussian、PySCF 的输出；查软件包的版本、许可证、已知漏洞和存档；跨引擎搜代码。": [
+ "从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查软件包的版本、许可证、已知漏洞和存档；跨引擎搜代码。": [
   "tools/build-seo.ts"
  ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
@@ -14860,6 +15299,21 @@
   "tools/build-seo.ts"
  ],
  "用真实的物理公式玩量子世界的十五个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
+  "tools/build-seo.ts"
+ ],
+ "开放模型馆 · Open Model Hall": [
+  "tools/build-seo.ts"
+ ],
+ "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan 开放给科研的化学、材料与生物分子 AI 模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。": [
+  "tools/build-seo.ts"
+ ],
+ "工业革命2.5：我愿成为“曼哈顿计划2.0”的一份子": [
+  "tools/build-seo.ts"
+ ],
+ "愿景": [
+  "tools/build-seo.ts"
+ ],
+ "计算物理与化学的编程语言 · Programming languages for computational physics and chemistry": [
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [

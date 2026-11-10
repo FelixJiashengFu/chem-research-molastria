@@ -1,7 +1,7 @@
 /* 开源代码台的纯逻辑（没有 DOM，tools/code-test.mjs 测）：
    1. 读分子（XYZ），核对电荷和自旋多重度；
    2. 为 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 写输入，导出 QCSchema；
-   3. 读 xTB、ORCA、Psi4、Gaussian、PySCF 的输出（思路借鉴 cclib，BSD-3；代码是自己写的）；
+   3. 读 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出（思路借鉴 cclib，BSD-3；代码是自己写的）；
    4. 按许可证判断一份代码能不能放进 MIT 许可的 MolAstria；
    5. 代码搜索的链接、PyPI / OSV 返回值的整理。
    浏览器里是 window.MolAstriaCode，node 里是 module.exports。 */
@@ -29,15 +29,47 @@
     return Z[one] ? one : '';
   }
 
-  /** 读 XYZ：标准格式（原子数 + 注释行）或者只有“元素 x y z”的若干行。返回 { atoms:[{el,x,y,z}], comment, errors }。 */
-  function parseXYZ(text) {
+  /** 多帧 XYZ（构象、轨迹、扫描）拆成一帧一段，带上每一帧在原文里从第几行开始（从 0 数）；
+      只有一帧、或者格式对不上时返回 null，交给单帧的读法报错。 */
+  function frameBlocks(text) {
     const lines = String(text || '').replace(/\r/g, '').split('\n');
-    while (lines.length && !lines[0].trim()) lines.shift();
+    const frames = [];
+    let i = 0;
+    while (i < lines.length) {
+      while (i < lines.length && !lines[i].trim()) i++;
+      if (i >= lines.length) break;
+      const m = /^\s*(\d+)\s*$/.exec(lines[i]);
+      if (!m || +m[1] < 1) return null;
+      const n = +m[1], block = lines.slice(i, i + n + 2);
+      if (block.length < n + 2 || block.slice(2).some((l) => !l.trim() || /^\s*\d+\s*$/.test(l))) return null;
+      frames.push({ text: block.join('\n'), start: i });
+      i += n + 2;
+    }
+    return frames.length > 1 ? frames : null;
+  }
+  const splitFrames = (text) => frameBlocks(text)?.map((b) => b.text) ?? null;
+
+  /** 读 XYZ：标准格式（原子数 + 注释行）或者只有“元素 x y z”的若干行；多帧的文件读第 frame 帧（从 0 数）。
+      返回 { atoms:[{el,x,y,z}], comment, errors, frames（共几帧）, frame, comments（每帧的注释） }。报错里的行号按整个文件数。 */
+  function parseXYZ(text, frame = 0) {
+    const multi = frameBlocks(text);
+    if (multi) {
+      const k = Math.min(Math.max(0, Math.floor(Number(frame) || 0)), multi.length - 1);
+      const r = parseOne(multi[k].text, multi[k].start, k);
+      return { ...r, frames: multi.length, frame: k, comments: multi.map((b) => (b.text.split('\n')[1] || '').trim()) };
+    }
+    return { ...parseOne(text), frames: 1, frame: 0, comments: [] };
+  }
+  /** 读一帧。off：这一帧前面还有几行（报错的行号加上它）；k：多帧文件里的第几帧（单帧是 -1）。 */
+  function parseOne(text, off = 0, k = -1) {
+    const lines = String(text || '').replace(/\r/g, '').split('\n');
+    while (lines.length && !lines[0].trim()) { lines.shift(); off++; }
     let comment = '', declared = null;
     if (lines.length && /^\s*\d+\s*$/.test(lines[0])) {
       declared = Number(lines[0].trim());
       comment = (lines[1] || '').trim();
       lines.splice(0, 2);
+      off += 2;
     }
     const atoms = [], errors = [];
     lines.forEach((raw, i) => {
@@ -46,10 +78,12 @@
       const p = line.split(/[\s,]+/);
       const el = element(p[0]);
       const xyz = p.slice(1, 4).map(Number);
-      if (!el || p.length < 4 || xyz.some((v) => !Number.isFinite(v))) { errors.push(`第 ${i + 1 + (declared === null ? 0 : 2)} 行读不懂：${line.slice(0, 40)}`); return; }
+      if (!el || p.length < 4 || xyz.some((v) => !Number.isFinite(v))) { errors.push(`第 ${i + 1 + off} 行读不懂：${line.slice(0, 40)}`); return; }
       atoms.push({ el, x: xyz[0], y: xyz[1], z: xyz[2] });
     });
-    if (declared !== null && declared !== atoms.length && !errors.length) errors.push(`第一行写的是 ${declared} 个原子，实际读到 ${atoms.length} 个`);
+    if (declared !== null && declared !== atoms.length && !errors.length) {
+      errors.push(k < 0 ? `第一行写的是 ${declared} 个原子，实际读到 ${atoms.length} 个` : `第 ${k + 1} 帧写的是 ${declared} 个原子，实际读到 ${atoms.length} 个`);
+    }
     if (!atoms.length && !errors.length) errors.push('没有读到原子');
     return { atoms, comment, errors };
   }
@@ -255,13 +289,13 @@
     const box = [xs, ys, zs].map((v) => Math.ceil(Math.max(...v) - Math.min(...v) + 10)); // 两边各留 5 Å 真空
     const kinds = [...new Set(atoms.map((a) => a.el))];
     const xtb = o.kind === 'xtb';
-    if (xtb && o.method === 'GFN2-xTB') notes.push('CP2K 2024.1 起才支持 GFN2-xTB，旧版本只有 GFN1；不行就把 GFN_TYPE 改成 1。');
+    if (xtb && o.method === 'GFN2-xTB') notes.push('CP2K 自带的 xTB 只有 GFN0 和 GFN1；GFN2-xTB 要走 tblite 后端（GFN_TYPE TBLITE），CP2K 编译时要带上 tblite（conda-forge 的 2026.2 没带，会报 “Built without TBLITE”）。按 CP2K 2026.2 的输入手册写；跑不了就改选 GFN1-xTB。');
     if (!xtb && o.method !== 'PBE') notes.push(`CP2K 这里固定用 PBE + DZVP-MOLOPT-SR-GTH（GPW 的标准搭配），没有按 ${o.method} / ${BASIS_NAME.pretty[o.basis]} 写；杂化泛函和高斯基组要另外设置 HFX 段。`);
     if (o.solvent) notes.push('溶剂模型（SCCS）没有写进去，这里是真空。');
     const run = o.opt ? 'GEO_OPT' : o.freq ? 'VIBRATIONAL_ANALYSIS' : 'ENERGY';
     if (o.task === 'optfreq') notes.push('CP2K 一个输入只做一种 RUN_TYPE：先跑 GEO_OPT，再把结果改成 VIBRATIONAL_ANALYSIS。');
     const dft = xtb
-      ? ['    &QS', '      METHOD xTB', '      &XTB', `        GFN_TYPE ${o.method === 'GFN1-xTB' ? 1 : 2}`, '      &END XTB', '    &END QS']
+      ? ['    &QS', '      METHOD xTB', '      &XTB', ...(o.method === 'GFN1-xTB' ? ['        GFN_TYPE 1'] : ['        GFN_TYPE TBLITE', '        &TBLITE', '          METHOD GFN2', '        &END TBLITE']), '      &END XTB', '    &END QS']
       : ['    BASIS_SET_FILE_NAME BASIS_MOLOPT', '    POTENTIAL_FILE_NAME GTH_POTENTIALS', '    &MGRID', '      CUTOFF 400', '      REL_CUTOFF 50', '    &END MGRID', '    &XC', '      &XC_FUNCTIONAL PBE', '      &END XC_FUNCTIONAL', ...(o.d3 ? ['      &VDW_POTENTIAL', '        POTENTIAL_TYPE PAIR_POTENTIAL', '        &PAIR_POTENTIAL', '          TYPE DFTD3(BJ)', '          PARAMETER_FILE_NAME dftd3.dat', '          REFERENCE_FUNCTIONAL PBE', '        &END PAIR_POTENTIAL', '      &END VDW_POTENTIAL'] : []), '    &END XC', '    &POISSON', '      PERIODIC NONE', '      POISSON_SOLVER MT', '    &END POISSON'];
     const L = ['&GLOBAL', `  PROJECT ${o.name}`, `  RUN_TYPE ${run}`, '  PRINT_LEVEL LOW', '&END GLOBAL', '&FORCE_EVAL', '  METHOD QS', '  &DFT',
       `    CHARGE ${o.charge}`, `    MULTIPLICITY ${o.mult}`, ...(o.open ? ['    UKS'] : []), ...dft,
@@ -333,6 +367,10 @@
   const last = (arr) => arr[arr.length - 1];
 
   function detect(t) {
+    // 先认横幅很独特的三个：CP2K 跑 xTB 时输出里也有 “xTB” 和 “Eh”，要排在 xTB 前面
+    if (/CP2K\|\s+version string|\[ABORT\][\s\S]*Routine Calling Stack|\*\*\*\* \*\*\*\* \*\*\*\*\*\*\s+\*\*\s+PROGRAM STARTED AT|ENERGY\| Total FORCE_EVAL/.test(t)) return 'cp2k';
+    if (/Northwest Computational Chemistry Package|NWChem Input Module|Total times\s+cpu:/.test(t)) return 'nwchem';
+    if (/Welcome to Q-Chem|Q-Chem, Inc\.|Thank you very much for using Q-Chem|Total energy in the final basis set/.test(t)) return 'qchem';
     if (/\bx\s?T\s?B\b|xtb version|\|\s+TOTAL ENERGY\s+-?\d/.test(t) && /Eh/.test(t)) return 'xtb';
     if (/O\s+R\s+C\s+A|FINAL SINGLE POINT ENERGY|ORCA TERMINATED/.test(t)) return 'orca';
     if (/Psi4: An Open-Source Ab Initio|Psi4 exiting|@\w*-?[RU](?:HF|KS) Final Energy/.test(t)) return 'psi4';
@@ -343,6 +381,21 @@
 
   /** 从 Gaussian 一行特征值里取数：它的定宽格式会把负数连在一起（-10.12345-10.23456）。 */
   const floats = (s) => (String(s).match(/-?\d+\.\d+/g) || []).map(Number);
+  /** 带指数的数（CP2K 的 1.5771062461E+03、NWChem 的 -4.989594D-01）。 */
+  const sci = (s) => (String(s).match(/-?\d+\.\d+(?:[ED][+-]?\d+)?/gi) || []).map(num);
+  /** 由各自旋的占据和空轨道能量（hartree）算能隙（eV）：HOMO 取最高的占据轨道，LUMO 取最低的空轨道。 */
+  /** 两种标记（比如“收敛了”和“没收敛”）哪个在后面就按哪个：一个文件里有好几次优化时，看最后一次。都没有是 null。 */
+  function laterOf(t, yes, no) {
+    const y = last(all(yes, t)), n = last(all(no, t));
+    if (!y && !n) return null;
+    return !n || (!!y && y.index > n.index);
+  }
+  function gapOf(spins, r) {
+    const occ = spins.flatMap((x) => x.occ), vir = spins.flatMap((x) => x.vir);
+    if (!occ.length || !vir.length) return;
+    r.gap = (Math.min(...vir) - Math.max(...occ)) * HARTREE_EV;
+    if (spins.length > 1) r.gapNote = '开壳层：HOMO 取 α、β 里较高的一个，LUMO 取较低的一个';
+  }
 
   const PARSE = {};
   PARSE.xtb = (t, r) => {
@@ -432,12 +485,123 @@
     if (/Traceback \(most recent call last\)/.test(t)) r.normal = false;
   };
 
+  // NWChem（7.2.2 实跑核对）：SCF / DFT / MP2 / CCSD(T) / TCE 的能量，“Optimization converged”，
+  // 投影后的频率（P.Frequency，虚频是负数，前 6 个平动转动约为 0），最后一次 “Molecular Orbital Analysis” 里的轨道能量。
+  // 能量只看最后一个算出能量的 task（先粗优化再精算、优化完再算单点）。数值差分会在一个个位移结构上各算一次能量，
+  // 最后一个不是这个结构的：优化取最后一行 “@ 步数 能量” 那一次，有限差分 Hessian 和数值梯度取头一次（参考结构）。
+  const NW_E = [
+    [/CCSD\(T\) total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, () => 'CCSD(T) total energy (TCE)'],
+    [/Total CCSD\(T\) energy:\s*(-?\d+\.\d+)/g, () => 'Total CCSD(T) energy'],
+    [/CCSD total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, () => 'CCSD total energy (TCE)'],
+    [/Total CCSD energy:\s*(-?\d+\.\d+)/g, () => 'Total CCSD energy'],
+    [/Total MP2 energy:?\s+(-?\d+\.\d+)/g, () => 'Total MP2 energy'],
+    [/Total (SCF|DFT) energy =\s+(-?\d+\.\d+)/g, (m) => `Total ${m[1]} energy`],
+  ];
+  function nwEnergy(t) {
+    // 每个 task 开始时 NWChem 都重新读一次输入，印一行 “NWChem Input Module”（“Task times” 在打印级别低时没有）
+    const seg = t.split(/^\s*NWChem Input Module\s*$/m).reverse().find((s) => NW_E.some(([re]) => all(re, s).length));
+    if (!seg) return null;
+    const [re, label] = NW_E.find(([x]) => all(x, seg).length);
+    const val = (m) => num(m[m.length - 1]);
+    const hits = all(re, seg);
+    let m = last(hits);
+    const steps = all(/^@\s+\d+\s+(-?\d+\.\d+)/gm, seg);
+    const fd = last(all(/NWChem (?:Finite-difference Hessian|Numerical Gradients Module)/g, seg));
+    if (steps.length) { // 优化：“@” 那一行只有 8 位小数，找和它对得上的那一次，取完整的位数
+      const at = num(last(steps)[1]);
+      m = [...hits].reverse().find((h) => Math.abs(val(h) - at) < 6e-9);
+      if (!m) return { energy: at, label: `${label(last(hits))} (@ ${last(steps)[0].trim().split(/\s+/)[1]})` };
+    } else if (fd) m = hits.find((h) => h.index > fd.index) || m;
+    return { energy: val(m), label: label(m) };
+  }
+  PARSE.nwchem = (t, r) => {
+    const e = nwEnergy(t);
+    if (e) { r.energy = e.energy; r.energyLabel = e.label; }
+    if (/Calculation failed to converge/.test(t)) r.scfConverged = false;
+    else if (/Total (?:SCF|DFT) energy =/.test(t)) r.scfConverged = true;
+    r.optConverged = laterOf(t, /^\s*Optimization converged\s*$/gm, /Failed to converge in maximum number of steps/g);
+    const fr = all(/^\s*P\.Frequency\s+([^\n]+)/gm, t.split(/\(Projected Frequencies expressed in cm-1\)/).slice(-1)[0]).flatMap((m) => sci(m[1]));
+    if (fr.length) r.freqs = fr.filter((v) => Math.abs(v) > 1e-3);
+    const heads = all(/(?:^|\n)\s*(?:\S+ )?Final (Alpha |Beta )?Molecular Orbital Analysis/g, t);
+    const lastHead = last(heads);
+    if (lastHead) {
+      const blocks = lastHead[1] === 'Beta ' && heads.length > 1 ? heads.slice(-2) : [lastHead];
+      gapOf(blocks.map((h) => {
+        const seg = t.slice(h.index + h[0].length).split(/\n\s*(?:\S+ )?Final (?:Alpha |Beta )?Molecular Orbital Analysis|\n\s*center of mass|\n\s*Task\s+times/)[0];
+        const v = all(/Vector\s+\d+\s+Occ=\s*(\S+)\s+E=\s*(\S+)/g, seg).map((m) => ({ occ: num(m[1]), e: num(m[2]) }));
+        return { occ: v.filter((x) => x.occ > 0.5).map((x) => x.e), vir: v.filter((x) => x.occ < 0.5).map((x) => x.e) };
+      }), r);
+    }
+    r.normal = /There is an error in the input file|ARMCI Error|MPI_ABORT|\b(?:energy|optimize|freq|gradient) failed\b/.test(t) ? false : /^\s*Total times\s+cpu:/m.test(t) ? true : null;
+    // 报错那一段：两行横线之间的一句话（后面跟一个数字），再往下是 “current input line”
+    const er = /-{20,}\n\s*(\S[^\n]*?)\s+-?\d+\s*\n\s*-{20,}\n\s*-{20,}\n\s*current input line/.exec(t);
+    if (er) r.errorText = er[1].trim();
+  };
+  // CP2K（2026.2 实跑核对；7.x 以前写的是 “energy (a.u.):”）：每一步的 “ENERGY| Total FORCE_EVAL” 取最后一个；SCF 和几何优化的收敛；
+  // VIBRATIONAL_ANALYSIS 的 “VIB|Frequency”（科学计数法，虚频是负数）。默认输出里没有 HOMO–LUMO 能隙，不读。
+  PARSE.cp2k = (t, r) => {
+    const e = last(all(/ENERGY\| Total FORCE_EVAL \( \w+ \) energy [[(](?:a\.u\.|hartree)[\])]:?\s+(-?\d+\.\d+)/g, t));
+    if (e) { r.energy = num(e[1]); r.energyLabel = 'ENERGY| Total FORCE_EVAL'; }
+    if (/SCF run NOT converged/.test(t)) r.scfConverged = false;
+    else if (/SCF run converged in/.test(t)) r.scfConverged = true;
+    r.optConverged = laterOf(t, /GEOMETRY OPTIMIZATION COMPLETED/g, /MAXIMUM NUMBER OF OPTIMIZATION STEPS REACHED/g);
+    const fr = all(/VIB\|Frequency \(cm\^-1\)\s+([^\n]+)/g, t).flatMap((m) => sci(m[1]));
+    if (fr.length) r.freqs = fr;
+    if (!e && fr.length) r.energyHint = 'CP2K 的振动分析把各个位移点的能量写在 PROJECT-r-0.out 这类副本文件里，主输出里没有总能量。';
+    r.normal = /\[ABORT\]/.test(t) ? false : /PROGRAM ENDED AT/.test(t) ? true : null;
+    // [ABORT] 框里的话：去掉框线、小人和源文件位置
+    const ab = /\[ABORT\][^\n]*\n((?:[^\n]*\n){1,8}?)\s*\*{20,}/.exec(t);
+    if (ab) r.errorText = ab[1].split('\n').map((l) => l.replace(/^\s*\*\s?/, '').replace(/\*\s*$/, '').replace(/^\s*(?:\\___\/|\||O\/\||\/\| \||\/ \\)/, '').replace(/\S+\.F:\d+\s*$/, '').trim()).filter(Boolean).join(' ');
+  };
+  // Q-Chem（5.4 和 6.0 的真实输出，cclib 回归数据，BSD-3）：最后一个 “Total energy in the final basis set”，
+  // MP2 / MP3 / MP4 / CCSD / CCSD(T) 优先；“OPTIMIZATION CONVERGED”；“Frequency:” 行（虚频是负数）；
+  // 最后一组 “Orbital Energies” 里 Alpha 和 Beta 的 Occupied / Virtual（a.u.，只有三位小数）。
+  // 能量只看最后一个算出能量的 job（多个 job 的输入用 @@@ 隔开），有限差分（“Starting / Finishing finite difference”）里的位移结构不算。
+  const QC_E = [
+    [/CCSD\(T\) total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD(T) total energy'],
+    [/CCSD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD total energy'],
+    [/^\s*EMP4\s*=\s*(-?\d+\.\d+)/gm, 'EMP4'],
+    [/^\s*EMP4SDQ\s*=\s*(-?\d+\.\d+)/gm, 'EMP4SDQ'],
+    [/CCD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCD total energy'],
+    [/^\s*MP3 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP3 energy'],
+    [/^\s*EMP3\s*=\s*(-?\d+\.\d+)/gm, 'EMP3'],
+    [/RI-MP2 TOTAL ENERGY\s*=\s*(-?\d+\.\d+)/g, 'RI-MP2 TOTAL ENERGY'],
+    [/MP2\s+total energy\s*=\s*(-?\d+\.\d+)/g, 'MP2 total energy'],
+    [/^\s*MP2 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP2 energy'],
+    [/^\s*EMP2\s*=\s*(-?\d+\.\d+)/gm, 'EMP2'],
+    [/Total energy in the final basis set\s*=\s*(-?\d+\.\d+)/g, 'Total energy in the final basis set'],
+  ];
+  PARSE.qchem = (t, r) => {
+    const job = t.split(/\n[^\n]*Welcome to Q-Chem/).map((s) => s.replace(/# Starting finite difference calculation[\s\S]*?(?:# Finishing finite difference calculation|$)/g, ''))
+      .reverse().find((s) => QC_E.some(([re]) => all(re, s).length));
+    const pick = job && QC_E.map(([re, label]) => [last(all(re, job)), label]).find(([m]) => m);
+    if (pick) { r.energy = num(pick[0][1]); r.energyLabel = pick[1]; }
+    else if (/# Starting finite difference calculation/.test(t)) r.energyHint = 'Q-Chem 的这个任务是有限差分（一系列位移结构或外加电场下的能量），没有单独印出未扰动的能量；要能量请另算一次单点。';
+    if (/SCF failed to converge|Convergence failure/.test(t)) r.scfConverged = false;
+    else if (/Total energy in the final basis set/.test(t)) r.scfConverged = true;
+    r.optConverged = laterOf(t, /\*\*\s+OPTIMIZATION CONVERGED\s+\*\*/g, /MAXIMUM OPTIMIZATION CYCLES REACHED/g);
+    // 只看最后一段振动分析（VPT2 非谐计算会把谐振频率再印一遍）
+    const fr = all(/^\s*Frequency:\s+([^\n]+)/gm, t.split(/\*\*\s+VIBRATIONAL ANALYSIS\s+\*\*/).slice(-1)[0]).flatMap((m) => floats(m[1]));
+    if (fr.length) r.freqs = fr;
+    const ob = last(all(/Orbital Energies \(a\.u\.\)[^\n]*\n\s*-+\n([\s\S]*?)\n\s*-{20,}/g, t));
+    if (ob) {
+      const spins = ob[1].split(/(?:Alpha|Beta) MOs/).slice(1).map((b) => {
+        const [occ = '', vir = ''] = b.split(/-- Virtual --/);
+        return { occ: floats(occ.split(/-- Occupied --/)[1] || ''), vir: floats(vir) };
+      });
+      gapOf(/Restricted/.test(ob[1]) ? spins.slice(0, 1) : spins, r);
+    }
+    r.normal = /Q-Chem fatal error occurred/.test(t) ? false : /Thank you very much for using Q-Chem/.test(t) ? true : null;
+    const fe = /Q-Chem fatal error occurred[^\n]*\n\s*\n?\s*(\S[^\n]*)/.exec(t);
+    if (fe) r.errorText = fe[1].trim();
+  };
+
   /** 读一段输出，返回 { program, energy(Eh), energyEV, energyLabel, normal, scfConverged, optConverged, gap(eV), freqs, imaginary, warnings }。 */
   function parseOutput(text, program) {
     const t = String(text || '').replace(/\r/g, '');
     const p = program || detect(t);
-    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, freqs: [], imaginary: [], warnings: [] };
-    if (!p) { r.warnings.push('认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF）'); return r; }
+    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, gapNote: '', errorText: '', freqs: [], imaginary: [], warnings: [] };
+    if (!p) { r.warnings.push('认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem）'); return r; }
     PARSE[p](t, r);
     r.energyEV = r.energy === null ? null : r.energy * HARTREE_EV;
     r.imaginary = r.freqs.filter((v) => v < 0);
@@ -447,8 +611,9 @@
     if (small.length && small.length === r.imaginary.length) r.warnings.push('虚频都很小（不到 50 cm⁻¹），常是积分格点或收敛标准太松引起的数值噪声。');
     if (r.scfConverged === false) r.warnings.push('SCF 没有收敛，能量不能用。');
     if (r.optConverged === false) r.warnings.push('结构优化没有收敛。');
-    if (r.normal === false) r.warnings.push('程序没有正常结束。');
-    if (r.energy === null) r.warnings.push('没找到最终能量。');
+    if (r.normal === false) r.warnings.push(r.errorText ? `程序没有正常结束，报错是：${r.errorText}` : '程序没有正常结束。');
+    if (r.energy === null) r.warnings.push(r.energyHint || '没找到最终能量。');
+    delete r.energyHint;
     return r;
   }
 
@@ -583,7 +748,7 @@
 
   const pure = {
     SYMBOLS, Z, BOHR_ANGSTROM, HARTREE_EV, HARTREE_KCAL, METHODS, BASES, BASIS_NAME, TASKS, TASK_LABEL, PROGRAMS, USES, CHEM_REPOS,
-    element, parseXYZ, formula, checkSpin, generate, detect, parseOutput, energyDiff, licenceFamily, licenceVerdict, searchLinks,
+    element, parseXYZ, splitFrames, formula, checkSpin, generate, detect, parseOutput, energyDiff, licenceFamily, licenceVerdict, searchLinks,
     pypiName, parseTarget, summarizePypi, summarizeOsv,
   };
   if (typeof module === 'object' && module.exports) module.exports = pure;

@@ -1,0 +1,22 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+
+ Q-Chem 6.0, Q-Chem, Inc., Pleasanton, CA (2022)
+
+    6     -74.9659919548      6.31e-06  Convergence criterion met
+
+ Total energy in the final basis set =      -74.9672988069
+
+ 
+                    Orbital Energies (a.u.)
+ --------------------------------------------------------------
+ 
+ Alpha MOs
+ -- Occupied --
+-20.2380  -1.2470  -0.5993  -0.4432  -0.3853
+ -- Virtual --
+  0.5766   0.7135
+ --------------------------------------------------------------
+
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

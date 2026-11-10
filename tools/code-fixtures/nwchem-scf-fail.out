@@ -1,0 +1,58 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+
+      Calculation failed to converge
+      ------------------------------
+
+         Total DFT energy =      -76.366147274040
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.916421D+01
+
+ Vector    2  Occ=2.000000D+00  E=-1.019802D+00
+
+ Vector    3  Occ=2.000000D+00  E=-5.380799D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.812352D-01
+
+ Vector    5  Occ=2.000000D+00  E=-3.049039D-01
+
+ Vector    6  Occ=0.000000D+00  E= 5.994229D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.444493D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.709564D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.552691D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.806758D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.246824D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.058290D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.372078D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.719161D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.732507D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.769308D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.290416D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.586155D+00
+
+ center of mass
+
+ ------------------------------------------------------------------------
+ dft energy failed                                                                                  0
+ ------------------------------------------------------------------------
+ ------------------------------------------------------------------------
+  current input line : 
+    23: task dft energy

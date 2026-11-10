@@ -44,7 +44,7 @@
       ['agent', 'atlas/index.html#agent', 'Agent 工程', 'Agent Engineering', '计算化学 MCP 服务器和 Agent 的做法', 'An MCP server for computational chemistry and agent patterns', 0, 'mcp agent chemdb'],
     ] },
     { id: 'make', zh: '工具', en: 'Tools', hint: ['写输入、投稿、接数据、装桌面版', 'Write inputs, publish, use the data, get the app'], items: [
-      ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb input 输入'],
+      ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标'],
       ['journals', 'journals/index.html', '期刊发表', 'Journals', '期刊选择与投稿指导', 'Choosing a journal and submitting', 0, 'journal submit 投稿'],
       ['api', 'api/index.html', '开放数据接口', 'Open Data API', '程序可读的数据集、JS / Python 库与计算接口', 'Machine-readable datasets, JS / Python clients and the compute API', 1, 'api json openapi python'],
       ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],

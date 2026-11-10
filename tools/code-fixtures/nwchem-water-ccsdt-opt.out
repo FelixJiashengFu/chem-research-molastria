@@ -1,0 +1,735 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                           NWChem Geometry Optimization
+                           ----------------------------
+
+
+                         NWChem Numerical Gradients Module
+                         ---------------------------------
+
+
+         Total SCF energy =    -74.963023129097
+      One-electron energy =   -122.361419053825
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035545645986508
+ Total MP2 energy:            -74.998568775083626
+
+
+ CCSD corr. energy:             -0.049438568499685
+ Total CCSD energy:            -75.012461697596805
+
+
+ (T) corr. energy:                      -0.000067409720804
+ Total CCSD(T) energy:                 -75.012529107317619
+
+
+
+         Total SCF energy =    -74.963272809348
+      One-electron energy =   -122.319221361563
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035724362298727
+ Total MP2 energy:            -74.998997171647119
+
+
+ CCSD corr. energy:             -0.049729671232671
+ Total CCSD energy:            -75.013002480581065
+
+
+ (T) corr. energy:                      -0.000068273077210
+ Total CCSD(T) energy:                 -75.013070753658283
+
+
+
+         Total SCF energy =    -74.962685826926
+      One-electron energy =   -122.403853391593
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035369499697488
+ Total MP2 energy:            -74.998055326623572
+
+
+ CCSD corr. energy:             -0.049152244707701
+ Total CCSD energy:            -75.011838071633790
+
+
+ (T) corr. energy:                      -0.000066563038341
+ Total CCSD(T) energy:                 -75.011904634672135
+
+
+
+         Total SCF energy =    -74.963110471607
+      One-electron energy =   -122.337870651285
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035645477918515
+ Total MP2 energy:            -74.998755949525517
+
+
+ CCSD corr. energy:             -0.049602574546483
+ Total CCSD energy:            -75.012713046153479
+
+
+ (T) corr. energy:                      -0.000067910695018
+ Total CCSD(T) energy:                 -75.012780956848502
+
+
+
+         Total SCF energy =    -74.962787099401
+      One-electron energy =   -122.385420905054
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035449301298973
+ Total MP2 energy:            -74.998236400700222
+
+
+ CCSD corr. energy:             -0.049281577814311
+ Total CCSD energy:            -75.012068677215566
+
+
+ (T) corr. energy:                      -0.000066909978888
+ Total CCSD(T) energy:                 -75.012135587194450
+
+
+
+         Total SCF energy =    -74.963725759146
+      One-electron energy =   -122.293399259039
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035963780840802
+ Total MP2 energy:            -74.999689539986875
+
+
+ CCSD corr. energy:             -0.050046731749145
+ Total CCSD energy:            -75.013772490895221
+
+
+ (T) corr. energy:                      -0.000067178895145
+ Total CCSD(T) energy:                 -75.013839669790357
+
+
+
+         Total SCF energy =    -74.962221182082
+      One-electron energy =   -122.429443634084
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.035134460143156
+ Total MP2 energy:            -74.997355642225330
+
+
+ CCSD corr. energy:             -0.048839748054685
+ Total CCSD energy:            -75.011060930136864
+
+
+ (T) corr. energy:                      -0.000067676236629
+ Total CCSD(T) energy:                 -75.011128606373489
+
+
+
+@ Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+@ ---- ---------------- -------- -------- -------- -------- -------- --------
+@    0     -75.01252911  0.0D+00  0.07114  0.05866  0.00000  0.00000      0.7
+                                                                    
+
+
+         Total SCF energy =    -74.955472744250
+      One-electron energy =   -120.727033659370
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.046762524459745
+ Total MP2 energy:            -75.002235268709299
+
+
+ CCSD corr. energy:             -0.065956903956386
+ Total CCSD energy:            -75.021429648205938
+
+
+ (T) corr. energy:                      -0.000077714890464
+ Total CCSD(T) energy:                 -75.021507363096404
+
+
+
+                         NWChem Numerical Gradients Module
+                         ---------------------------------
+
+
+         Total SCF energy =    -74.962528708948
+      One-electron energy =   -121.200967229138
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043020872344345
+ Total MP2 energy:            -75.005549581292129
+
+
+ CCSD corr. energy:             -0.060496334117141
+ Total CCSD energy:            -75.023025043064933
+
+
+ (T) corr. energy:                      -0.000072855798672
+ Total CCSD(T) energy:                 -75.023097898863597
+
+
+
+         Total SCF energy =    -74.962121598718
+      One-electron energy =   -121.163912899744
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043216880965259
+ Total MP2 energy:            -75.005338479683687
+
+
+ CCSD corr. energy:             -0.060821898874572
+ Total CCSD energy:            -75.022943497593005
+
+
+ (T) corr. energy:                      -0.000073559444752
+ Total CCSD(T) energy:                 -75.023017057037748
+
+
+
+         Total SCF energy =    -74.962875757077
+      One-electron energy =   -121.238209471614
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042827664858924
+ Total MP2 energy:            -75.005703421935877
+
+
+ CCSD corr. energy:             -0.060176215500969
+ Total CCSD energy:            -75.023051972577932
+
+
+ (T) corr. energy:                      -0.000072170618074
+ Total CCSD(T) energy:                 -75.023124143196000
+
+
+
+         Total SCF energy =    -74.961785012524
+      One-electron energy =   -121.136264886278
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043539127267558
+ Total MP2 energy:            -75.005324139791952
+
+
+ CCSD corr. energy:             -0.061240158226588
+ Total CCSD energy:            -75.023025170750969
+
+
+ (T) corr. energy:                      -0.000073237448959
+ Total CCSD(T) energy:                 -75.023098408199928
+
+
+
+         Total SCF energy =    -74.963188126551
+      One-electron energy =   -121.265782324142
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042510155473472
+ Total MP2 energy:            -75.005698282024738
+
+
+ CCSD corr. energy:             -0.059762477135159
+ Total CCSD energy:            -75.022950603686425
+
+
+ (T) corr. energy:                      -0.000072548394767
+ Total CCSD(T) energy:                 -75.023023152081194
+
+
+
+         Total SCF energy =    -74.962270916282
+      One-electron energy =   -121.180544262069
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043127802250024
+ Total MP2 energy:            -75.005398718531993
+
+
+ CCSD corr. energy:             -0.060676494318495
+ Total CCSD energy:            -75.022947410600466
+
+
+ (T) corr. energy:                      -0.000073255936756
+ Total CCSD(T) energy:                 -75.023020666537221
+
+
+
+         Total SCF energy =    -74.962688060318
+      One-electron energy =   -121.221757897208
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042917690125175
+ Total MP2 energy:            -75.005605750443536
+
+
+ CCSD corr. energy:             -0.060324106322943
+ Total CCSD energy:            -75.023012166641294
+
+
+ (T) corr. energy:                      -0.000072456993640
+ Total CCSD(T) energy:                 -75.023084623634944
+
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    1     -75.02309790 -1.1D-02  0.00417  0.00307  0.04858  0.11426      1.5
+                                                                    
+
+
+         Total SCF energy =    -74.962404331253
+      One-electron energy =   -121.236025857651
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043317345289832
+ Total MP2 energy:            -75.005721676542464
+
+
+ CCSD corr. energy:             -0.060679083358101
+ Total CCSD energy:            -75.023083414610724
+
+
+ (T) corr. energy:                      -0.000070854913553
+ Total CCSD(T) energy:                 -75.023154269524284
+
+
+
+                         NWChem Numerical Gradients Module
+                         ---------------------------------
+
+
+         Total SCF energy =    -74.962543367609
+      One-electron energy =   -121.221210597081
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043189879132201
+ Total MP2 energy:            -75.005733246741613
+
+
+ CCSD corr. energy:             -0.060598548979598
+ Total CCSD energy:            -75.023141916589012
+
+
+ (T) corr. energy:                      -0.000071464749747
+ Total CCSD(T) energy:                 -75.023213381338763
+
+
+
+         Total SCF energy =    -74.962196132617
+      One-electron energy =   -121.184416857093
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043381214293358
+ Total MP2 energy:            -75.005577346910783
+
+
+ CCSD corr. energy:             -0.060916500667297
+ Total CCSD energy:            -75.023112633284725
+
+
+ (T) corr. energy:                      -0.000072063113093
+ Total CCSD(T) energy:                 -75.023184696397806
+
+
+
+         Total SCF energy =    -74.962830192296
+      One-electron energy =   -121.258186601127
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043001325816388
+ Total MP2 energy:            -75.005831518112828
+
+
+ CCSD corr. energy:             -0.060285796477484
+ Total CCSD energy:            -75.023115988773924
+
+
+ (T) corr. energy:                      -0.000070884424616
+ Total CCSD(T) energy:                 -75.023186873198540
+
+
+
+         Total SCF energy =    -74.961747038850
+      One-electron energy =   -121.155631374009
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043718328440705
+ Total MP2 energy:            -75.005465367290540
+
+
+ CCSD corr. energy:             -0.061353744562157
+ Total CCSD energy:            -75.023100783411991
+
+
+ (T) corr. energy:                      -0.000072053924029
+ Total CCSD(T) energy:                 -75.023172837336020
+
+
+
+         Total SCF energy =    -74.963254109515
+      One-electron energy =   -121.286920993454
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042669008485938
+ Total MP2 energy:            -75.005923118000780
+
+
+ CCSD corr. energy:             -0.059853140344824
+ Total CCSD energy:            -75.023107249859663
+
+
+ (T) corr. energy:                      -0.000070957673036
+ Total CCSD(T) energy:                 -75.023178207532695
+
+
+
+         Total SCF energy =    -74.962322408018
+      One-electron energy =   -121.201012224905
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043293354318958
+ Total MP2 energy:            -75.005615762337172
+
+
+ CCSD corr. energy:             -0.060773252840468
+ Total CCSD energy:            -75.023095660858672
+
+
+ (T) corr. energy:                      -0.000071800052721
+ Total CCSD(T) energy:                 -75.023167460911395
+
+
+
+         Total SCF energy =    -74.962666032170
+      One-electron energy =   -121.241768129243
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043090131382297
+ Total MP2 energy:            -75.005756163552519
+
+
+ CCSD corr. energy:             -0.060431524409657
+ Total CCSD energy:            -75.023097556579870
+
+
+ (T) corr. energy:                      -0.000071131157378
+ Total CCSD(T) energy:                 -75.023168687737254
+
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2     -75.02321338 -1.2D-04  0.00014  0.00011  0.01058  0.01992      2.3
+                                     ok       ok                    
+
+
+         Total SCF energy =    -74.962566457607
+      One-electron energy =   -121.223320410807
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043174101806518
+ Total MP2 energy:            -75.005740559413297
+
+
+ CCSD corr. energy:             -0.060575554810809
+ Total CCSD energy:            -75.023142012417594
+
+
+ (T) corr. energy:                      -0.000071444177863
+ Total CCSD(T) energy:                 -75.023213456595457
+
+
+
+                         NWChem Numerical Gradients Module
+                         ---------------------------------
+
+
+         Total SCF energy =    -74.962566457607
+
+
+ MP2 Corr. energy:             -0.043174101806518
+ Total MP2 energy:            -75.005740559413297
+
+
+ CCSD corr. energy:             -0.060575535010677
+ Total CCSD energy:            -75.023141992617454
+
+
+ (T) corr. energy:                      -0.000071444250161
+ Total CCSD(T) energy:                 -75.023213436867621
+
+
+
+         Total SCF energy =    -74.962220133673
+      One-electron energy =   -121.186517507207
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043365407715279
+ Total MP2 energy:            -75.005585541387930
+
+
+ CCSD corr. energy:             -0.060893428339097
+ Total CCSD energy:            -75.023113562011744
+
+
+ (T) corr. energy:                      -0.000072043152424
+ Total CCSD(T) energy:                 -75.023185605164159
+
+
+
+         Total SCF energy =    -74.962852329645
+      One-electron energy =   -121.260305675848
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042985577304476
+ Total MP2 energy:            -75.005837906949765
+
+
+ CCSD corr. energy:             -0.060262841376401
+ Total CCSD energy:            -75.023115171021686
+
+
+ (T) corr. energy:                      -0.000070863432972
+ Total CCSD(T) energy:                 -75.023186034454653
+
+
+
+         Total SCF energy =    -74.961772614126
+      One-electron energy =   -121.157734195334
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043702347204952
+ Total MP2 energy:            -75.005474961330947
+
+
+ CCSD corr. energy:             -0.061330462834906
+ Total CCSD energy:            -75.023103076960894
+
+
+ (T) corr. energy:                      -0.000072031530214
+ Total CCSD(T) energy:                 -75.023175108491117
+
+
+
+         Total SCF energy =    -74.963274678456
+      One-electron energy =   -121.289037651204
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.042653434294167
+ Total MP2 energy:            -75.005928112749913
+
+
+ CCSD corr. energy:             -0.059830395186437
+ Total CCSD energy:            -75.023105073642185
+
+
+ (T) corr. energy:                      -0.000070939037919
+ Total CCSD(T) energy:                 -75.023176012680096
+
+
+
+         Total SCF energy =    -74.962345992383
+      One-electron energy =   -121.203116273697
+
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.242369D+00
+              MO Center=  1.3D-18, -6.1D-03,  2.0D-04, r^2= 5.4D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-5.689916D-01
+              MO Center= -3.3D-20, -6.3D-04, -1.2D-01, r^2= 8.7D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-4.616601D-01
+              MO Center=  4.3D-17,  2.1D-03,  1.6D-01, r^2= 7.1D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-3.930324D-01
+              MO Center= -5.4D-17, -3.3D-03,  1.8D-01, r^2= 4.2D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 5.489066D-01
+              MO Center=  9.6D-18,  5.2D-02, -3.6D-01, r^2= 1.1D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 6.412415D-01
+              MO Center= -2.3D-20, -5.4D-02, -2.2D-01, r^2= 1.0D+00
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043277566024941
+ Total MP2 energy:            -75.005623558408232
+
+
+ CCSD corr. energy:             -0.060750212009693
+ Total CCSD energy:            -75.023096204392985
+
+
+ (T) corr. energy:                      -0.000071779917884
+ Total CCSD(T) energy:                 -75.023167984310874
+
+
+
+         Total SCF energy =    -74.962688550007
+      One-electron energy =   -121.243883871500
+
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.243805D+00
+              MO Center=  1.3D-18,  6.1D-03, -1.0D-03, r^2= 5.4D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-5.697336D-01
+              MO Center=  3.6D-20,  5.7D-04, -1.2D-01, r^2= 8.7D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-4.626718D-01
+              MO Center=  4.3D-17, -2.0D-03,  1.6D-01, r^2= 7.1D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-3.932772D-01
+              MO Center= -5.4D-17,  3.3D-03,  1.8D-01, r^2= 4.2D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 5.517046D-01
+              MO Center=  9.5D-18, -5.2D-02, -3.6D-01, r^2= 1.1D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 6.434093D-01
+              MO Center=  6.8D-20,  5.5D-02, -2.2D-01, r^2= 1.0D+00
+
+
+ center of mass
+ --------------
+
+ MP2 Corr. energy:             -0.043074364576891
+ Total MP2 energy:            -75.005762914583940
+
+
+ CCSD corr. energy:             -0.060408537405538
+ Total CCSD energy:            -75.023097087412580
+
+
+ (T) corr. energy:                      -0.000071110343291
+ Total CCSD(T) energy:                 -75.023168197755879
+
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    3     -75.02321344 -5.6D-08  0.00003  0.00002  0.00009  0.00022      3.0
+                                     ok       ok       ok       ok  
+
+      ----------------------
+      Optimization converged
+      ----------------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    3     -75.02321344 -5.6D-08  0.00003  0.00002  0.00009  0.00022      3.0
+                                     ok       ok       ok       ok  
+
+
+ Task  times  cpu:        1.2s     wall:        3.0s
+ Summary of allocated global arrays
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Total times  cpu:        1.2s     wall:        3.0s
+[0] ARMCI Warning: Freed 1 leaked allocations

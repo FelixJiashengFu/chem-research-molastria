@@ -1424,7 +1424,10 @@ check('open model hall: eleven pavilions, task comparison, filters; a pavilion p
   assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page', 'Meta counts as part of the hall');
   await finish(p);
   const e = await open({ viewport: { width: 390, height: 844 } });
+  // GitHub refuses unauthenticated readers after 60 requests an hour; the fallback sentence must still fit a phone
+  await e.context().route('https://api.github.com/**', (r) => r.fulfill({ status: 403, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{"message":"API rate limit exceeded"}' }));
   await go(e, '/open-models/microsoft/index.html?lang=en');
+  assert.match(await text(e, '#om-rel'), /Could not read releases/);
   assert.match(await text(e, 'main h1'), /Microsoft/);
   assert.doesNotMatch(await e.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
@@ -2799,7 +2802,10 @@ check('vision: the operator\'s essay in full (28 paragraphs, 3 source links), bi
   await p.click('.vs-bi');
   assert.equal(await p.locator('.vs-en:visible').count(), 28, 'every paragraph gets its translation');
   assert.equal(await p.locator('.vo-card').count(), 4);
-  for (const st of ['live', 'next', 'idea']) assert.ok(await p.locator(`.vo-card .vo-${st}`).count() >= 4, `each card has ${st}`);
+  // Every outlook item is drawn with its own status tag; "next" items move to "live" as the roadmap ships, so count against the data.
+  const want = await p.evaluate(() => { const n = { live: 0, next: 0, idea: 0 }; for (const c of window.MOLASTRIA_VISION.outlook.pledges) for (const [st] of c.items) n[st]++; return n; });
+  for (const st of ['live', 'next', 'idea']) assert.equal(await p.locator(`.vo-card .vo-${st}`).count(), want[st], `${st} items`);
+  assert.ok(want.live >= 4 && want.idea >= 4, `live ${want.live}, idea ${want.idea}`);
   for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\//, `site link ${href} is relative to /vision/`);
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
   assert.equal(await p.locator('.cr-legal a[href$="vision/index.html"]').count(), 1);
@@ -3212,6 +3218,162 @@ check('code desk: inputs for nine programs, spin check, output reader, software 
   assert.match(await text(e, '.cd-tabs'), /Write inputs[\s\S]*Read outputs/);
   assert.match(await text(e, '#in-status'), /electrons/);
   assert.doesNotMatch(await e.evaluate(() => document.querySelector('main').innerText), /[㐀-鿿]/, 'no Chinese left on the input tab');
+  await finish(e);
+});
+
+/** Serves OpenChemLib (the SMILES → 3D library the code desk loads from jsDelivr) from tools/e2e/node_modules. */
+const OCL_DIST = join(ROOT, 'tools/e2e/node_modules/openchemlib/dist/');
+async function localOCL(ctx, delay = 0) {
+  const served = { 'openchemlib.js': 0, 'resources.json': 0 };
+  await ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/openchemlib@[\d.]+\/dist\/(openchemlib\.js|resources\.json)$/, async (r) => {
+    const f = new URL(r.request().url()).pathname.split('/').pop();
+    served[f]++;
+    if (delay) await new Promise((ok) => setTimeout(ok, delay));
+    await r.fulfill({ status: 200, contentType: f.endsWith('.json') ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(join(OCL_DIST, f)) });
+  });
+  return served;
+}
+
+check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem demos, English', async () => {
+  const p = await open();
+  const served = await localOCL(p.context());
+  p.workerCount = 0;
+  p.on('worker', () => { p.workerCount++; });
+  await go(p, '/code/index.html');
+  const embed = async (page, smiles) => {
+    await page.fill('#in-smiles', smiles);
+    await page.click('#in-embed');
+    await page.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
+    return text(page, '#in-embed-status');
+  };
+  // L-alanine: several conformers, all the same enantiomer, sorted by MMFF94 energy
+  assert.match(await embed(p, 'C[C@H](N)C(=O)O'), /搭了 \d+ 个构象，去掉重复的还剩 \d+ 个/);
+  assert.equal(p.workerCount, 1, 'the force field runs in a Web Worker');
+  assert.match(await text(p, '#in-status'), /C3H7NO2 · 13 个原子 · 48 个电子/);
+  assert.match(await p.inputValue('#in-xyz'), /^13\nconformer 1\/\d+ from SMILES C\[C@H\]\(N\)C\(=O\)O \| MMFF94s\+ E = -?\d+\.\d{3} kcal\/mol\n/);
+  assert.equal(await p.isVisible('#in-frame-row'), true);
+  const n = await p.locator('#in-frame option').count();
+  assert.ok(n >= 2, `${n} conformers`);
+  const first = await text(p, '#in-code');
+  await p.selectOption('#in-frame', String(n - 1));
+  assert.notEqual(await text(p, '#in-code'), first, 'the input is written from the chosen frame');
+  assert.match(await text(p, '#in-status'), /C3H7NO2/);
+  assert.match(await text(p, '#in-embed-status'), new RegExp(`现在用的是第 ${n} 个，比最低的高 \\d+\\.\\d\\d kcal/mol`), 'the status follows the chosen frame');
+  // pasting another multi-frame file starts again from its first frame
+  await p.fill('#in-xyz', '3\nfirst\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n3\nsecond\nO 0 0 0.1\nH 0 0.76 0.69\nH 0 -0.76 0.69\n3\nthird\nO 0 0 0.2\nH 0 0.76 0.79\nH 0 -0.76 0.79\n');
+  assert.equal(await p.inputValue('#in-frame'), '0');
+  assert.equal(await text(p, '#in-embed-status'), '', 'the SMILES status went with the molecule it described');
+  await embed(p, 'C[C@H](N)C(=O)O');
+  // charge and multiplicity come from the SMILES
+  await embed(p, '[CH3]');
+  assert.equal(await p.inputValue('#in-mult'), '2');
+  assert.equal(await p.getAttribute('#in-status', 'data-bad'), 'false');
+  assert.match(await text(p, '#in-embed-notes'), /未成对电子/);
+  await embed(p, 'CC(=O)[O-]');
+  assert.equal(await p.inputValue('#in-charge'), '-1');
+  assert.equal(p.workerCount, 1, 'one worker for every run: the library stays loaded');
+  assert.deepEqual(served, { 'openchemlib.js': 1, 'resources.json': 1 }, 'OpenChemLib is fetched once');
+  // an odd electron count OpenChemLib does not flag still gets an even multiplicity; a bare atom follows Hund's rule
+  await embed(p, '[Cu+2]');
+  assert.deepEqual([await p.inputValue('#in-mult'), await p.getAttribute('#in-status', 'data-bad')], ['2', 'false']);
+  await embed(p, '[N]');
+  assert.equal(await p.inputValue('#in-mult'), '4');
+  assert.match(await text(p, '#in-embed-notes'), /洪特规则/);
+  // a bracket atom OpenChemLib would give a hydrogen is refused, not silently changed
+  assert.match(await embed(p, 'O=[N]=O'), /方括号里的 \[N\] 写明了 0 个氢，OpenChemLib 读成了 1 个/);
+  // unspecified stereo is fixed and said; a bad SMILES is said and the coordinates stay
+  await embed(p, 'CC(N)C(=O)O');
+  assert.match(await text(p, '#in-embed-notes'), /1 处立体构型没写，按第一个搭出的结构定成了 \S*@/);
+  const before = await p.inputValue('#in-xyz');
+  assert.match(await embed(p, 'C1CC'), /这个 SMILES 读不出来：.*ring closure/);
+  assert.equal(await p.getAttribute('#in-embed-status', 'data-bad'), 'true');
+  assert.equal(await p.inputValue('#in-xyz'), before);
+  // the sketcher button sits next to the SMILES box
+  assert.equal(await p.isVisible('.cd-smi-row .sk-open'), true);
+  // a sample clears the frames and the notes about the old molecule
+  await p.click('[data-sample=water]');
+  assert.equal(await p.isHidden('#in-frame-row'), true);
+  assert.deepEqual([await text(p, '#in-embed-status'), await text(p, '#in-embed-notes')], ['', '']);
+  // output demos for the three new readers
+  await p.click('#t-output');
+  await p.selectOption('#out-demo-prog', 'nwchem');
+  assert.match(await text(p, '#out-result'), /NWChem[\s\S]*-76\.40702414 Eh[\s\S]*结构优化收敛[\s\S]*9\.673 eV[\s\S]*1710\.8 3721\.1 3844\.9/);
+  await p.selectOption('#out-demo-prog', 'cp2k');
+  assert.match(await text(p, '#out-result'), /CP2K[\s\S]*结构优化没有收敛/);
+  await p.selectOption('#out-demo-prog', 'qchem');
+  assert.match(await text(p, '#out-result'), /Q-Chem[\s\S]*1\.823 eV开壳层：HOMO 取 α、β 里较高的一个/);
+  await p.selectOption('#out-demo-prog', 'orca');
+  assert.match(await text(p, '#out-result'), /ORCA[\s\S]*1 个虚频/);
+  // the library cannot load: the page says so and nothing breaks
+  await p.click('#t-input');
+  await p.context().unrouteAll();
+  await p.context().route(/cdn\.jsdelivr\.net\/npm\/openchemlib/, (r) => r.abort());
+  await p.evaluate(() => window.MolAstriaSmiles3D.stop(true)); // the idle worker holds the loaded copy; end it so a new one fetches again
+  assert.match(await embed(p, 'CCO'), /没载入 OpenChemLib/);
+  await finish(p);
+  const e = await open();
+  await localOCL(e.context());
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await embed(e, 'CC(N)C(=O)O'); // frames, a status line and a note showing
+  assert.equal(await e.isVisible('#in-frame-row'), true);
+  assert.doesNotMatch(await e.evaluate(() => document.querySelector('main').innerText), HAN, 'no Chinese left on the input tab with frames and notes');
+  await e.click('#t-output');
+  for (const k of ['nwchem', 'cp2k', 'qchem']) {
+    await e.selectOption('#out-demo-prog', k);
+    assert.doesNotMatch(await text(e, '#out-result'), HAN, `${k} result in English`);
+  }
+  await finish(e);
+});
+
+check('code desk: without module workers the SMILES runs in the page, and Stop still stops it', async () => {
+  const p = await open({ init: { content: 'window.Worker = function () { throw new Error(\'no module workers\'); };' } });
+  await localOCL(p.context(), 1500);
+  await go(p, '/code/index.html');
+  const before = await p.inputValue('#in-xyz');
+  await p.fill('#in-smiles', 'CCO');
+  await p.click('#in-embed');
+  await p.waitForTimeout(300);
+  await p.click('#in-embed-stop');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.waitForTimeout(2500); // the library arrives after the stop: nothing may change
+  assert.equal(await p.inputValue('#in-xyz'), before);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.fill('#in-smiles', 'CCN'); // and the next run works in the page
+  await p.click('#in-embed');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
+  assert.match(await p.inputValue('#in-xyz'), /from SMILES CCN/);
+  await finish(p);
+});
+
+check('models page: a result goes to the code desk with its frames, charges and multiplicities', async () => {
+  const p = await openModels();
+  await runJob(p, 'spin');
+  await p.click('#m-result [data-act=code]');
+  await p.waitForURL(/code\/index\.html#input/);
+  await p.waitForSelector('#in-import:not([hidden])');
+  assert.match(await text(p, '#in-import'), /这个结构来自模型接口：UMA-S 1\.2\.1 · 自旋态能隙/);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-code-import')), null, 'read once');
+  assert.equal(await p.locator('#in-frame option').count(), 2, 'one frame per spin state');
+  assert.deepEqual([await p.inputValue('#in-frame'), await p.inputValue('#in-mult')], ['0', '1'], 'starts on the lower state');
+  await p.selectOption('#in-frame', '1');
+  assert.equal(await p.inputValue('#in-mult'), '3', 'each state keeps its own multiplicity');
+  assert.equal(await p.getAttribute('#in-status', 'data-bad'), 'false');
+  assert.equal(await p.inputValue('#in-name'), 'uma-spin');
+  // a reload keeps the molecule but not the notice
+  await p.reload({ waitUntil: 'networkidle' });
+  assert.equal(await p.isHidden('#in-import'), true);
+  assert.equal(await p.inputValue('#in-mult'), '3');
+  await finish(p);
+  // a model name with Chinese in it is translated on the English page
+  const IMPORT = JSON.stringify({ xyz: '3\nw\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n', charge: 0, mult: 1, name: 'esen-opt', model: 'eSEN-sm 直接受力型', job: '结构优化' });
+  const e = await open({ init: { content: `try { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('molastria-code-import', ${JSON.stringify(IMPORT)}); sessionStorage.setItem('seeded', '1'); } } catch {}` } });
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForSelector('#in-import:not([hidden])');
+  assert.doesNotMatch(await text(e, '#in-import'), HAN, await text(e, '#in-import'));
+  assert.match(await text(e, '#in-import'), /eSEN-sm/);
   await finish(e);
 });
 
