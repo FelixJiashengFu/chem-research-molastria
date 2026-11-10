@@ -161,6 +161,7 @@
         <h4>${L('通向', 'Leads to')}</h4><div class="fm-chips">${rels(s.id, 'out').map((r) => chip(r[1])).join('')}</div>
         <h4>${L('过关自测', 'Self-check')}</h4><ul class="fm-checks">${s.checks.map((t, k) => `<li><label><input type="checkbox" data-check="${s.id}:${k}"${progress.has(`${s.id}:${k}`) ? ' checked' : ''}>${R(t)}</label></li>`).join('')}</ul>
       </aside></div>
+      <div class="fq" data-fq="MOLASTRIA_FM_QUIZ" data-fq-item="${s.id}" data-fq-store="molastria-fm-quiz"></div>
       <div class="fm-res"><div><h4>${L('教材与文献', 'Textbooks & papers')}</h4><ul class="fm-cards">${s.books.map((id) => bookCard(B[id])).join('')}</ul></div>
         <div><h4>${L('视频与在线课程', 'Videos & online courses')}</h4>${s.videos.length ? `<ul class="fm-cards">${s.videos.map((id) => videoCard(V[id])).join('')}</ul>` : `<p class="muted">${L('这一门没有我们核对过、值得推荐的完整视频课；建议直接读上面的书，Landsman 的书免费开放。', 'We found no complete video course for this subject that we could verify and recommend; read the books above directly. Landsman\'s book is open access.')}</p>`}</div></div>
     </article>`).join('');

@@ -1,0 +1,56 @@
+/* 公式答题（formula-check.js）：题目块、MathLive 输入框、反馈和解答。颜色只用 shared-nav.css 的变量。 */
+.fq{margin:18px 0 6px;padding:4px 18px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.fq[hidden]{display:none}
+.fq .fq-h{margin:16px 0 6px}
+.fq-lead,.fq-help{margin:0 0 6px;font-size:13.5px;line-height:1.75;color:var(--ink-2)}
+.fq-help{color:var(--muted);font-size:12.5px}
+.fq-note{margin:8px 0;padding:8px 12px;border-left:3px solid var(--warn);border-radius:4px;background:var(--surface-2);font-size:13px;line-height:1.7;color:var(--ink-2)}
+.fq-note[hidden]{display:none}
+.fq-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:14px}
+.fq-item{min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.fq-q{display:flex;gap:10px;align-items:flex-start}
+.fq-q p{margin:0;font-size:14.5px;line-height:1.8;color:var(--ink);min-width:0}
+.fq-n{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;margin-top:3px;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);font:600 12.5px/1 var(--font-num,inherit)}
+.fq-done{display:inline-block;margin-left:4px;padding:0 8px;border-radius:999px;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);font-size:12px;line-height:1.7;white-space:nowrap}
+.fq-item .fs-formula{margin:10px 0 4px}
+.fq-vars{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.fq-sym{color:var(--ink);font-style:italic;font-family:var(--font-serif,serif)}
+.fq-row{display:flex;gap:10px;align-items:stretch;margin-top:10px}
+.fq-box{flex:1 1 auto;min-width:0;display:flex}
+.fq-wait{flex:1;display:flex;align-items:center;min-height:44px;padding:0 12px;border:1px dashed var(--line-strong);border-radius:6px;color:var(--muted);font-size:13px}
+.fq-row .fq-check{flex:none;min-width:84px}
+math-field.fq-mf{display:block;flex:1;min-width:0;min-height:44px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);font-size:20px;
+  --caret-color:var(--accent);--selection-background-color:var(--accent-soft);--selection-color:var(--ink);--contains-highlight-background-color:var(--surface-3);--placeholder-color:var(--muted);--smart-fence-color:var(--muted)}
+math-field.fq-mf:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+math-field.fq-mf::part(menu-toggle){display:none}
+.fq-text{flex:1;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);font:15px/1.4 var(--font-mono,monospace)}
+.fq-text:focus{outline:2px solid var(--accent);outline-offset:1px}
+.fq-keys{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fq-keys[hidden]{display:none}
+.fq-key{min-width:40px;min-height:34px;padding:2px 10px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface);color:var(--ink);font:italic 16px/1 var(--font-serif,serif);cursor:pointer}
+.fq-key:hover{background:var(--surface-3)}
+.fq-key:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.fq-fb{min-height:1.6em;margin:8px 0 0;font-size:14px;line-height:1.7;color:var(--muted)}
+.fq-fb:empty{min-height:0;margin:0}
+.fq-fb[data-state=ok]{color:var(--ok);font-weight:600}
+.fq-fb[data-state=hint]{color:var(--warn)}
+.fq-fb[data-state=bad]{color:var(--danger)}
+.fq-fb[data-state=info]{color:var(--muted)}
+.fq-hint{margin:8px 0 0;padding:8px 12px;border-left:3px solid var(--info);border-radius:4px;background:var(--surface);font-size:13.5px;line-height:1.75;color:var(--ink-2)}
+.fq-hint[hidden]{display:none}
+.fq-more{margin:8px 0 0}
+.fq-more .button{min-height:34px;padding:4px 12px;font-size:12.5px}
+.fq-sol{margin-top:10px;padding:10px 14px;border:1px solid color-mix(in srgb,var(--accent-2) 45%,var(--line));border-radius:8px;background:var(--accent-soft)}
+.fq-sol[hidden]{display:none}
+.fq-sol p{margin:6px 0;font-size:14px;line-height:1.8;color:var(--ink-2)}
+.fq-sol .fq-sol-h{margin:0 0 4px;font-weight:700;color:var(--ink)}
+.fq-sol .fs-formula{margin:6px 0}
+body{--keyboard-accent-color:var(--accent)}
+@media (max-width:560px){
+  .fq{padding:4px 12px 14px}
+  .fq-item{padding:10px}
+  .fq-row{flex-wrap:wrap}
+  .fq-box{flex-basis:100%}
+  .fq-row .fq-check{flex:1}
+}
+@media print{.fq-lead,.fq-help,.fq-row,.fq-keys,.fq-more,.fq-fb,.fq-hint{display:none}.fq-sol[hidden]{display:block!important}}

@@ -322,6 +322,7 @@
         <h4>${L('过关自测', 'Self-check')}</h4><ul class="fm-checks">${s.checks.map((t, k) => `<li><label><input type="checkbox" data-check="${s.id}:${k}"${progress.has(`${s.id}:${k}`) ? ' checked' : ''}>${R(t)}</label></li>`).join('')}</ul>
         ${s.papers.length ? `<h4>${L('原始论文', 'Original papers')}</h4><ul class="qp-papers">${s.papers.map((id) => { const p = P[id]; return `<li><a href="https://doi.org/${esc(p.doi)}" target="_blank" rel="noopener noreferrer" translate="no">${esc(p.au)} (${p.y}) ${ext}</a><span translate="no">${esc(p.title)}</span></li>`; }).join('')}</ul>` : ''}
       </aside></div>
+      <div class="fq" data-fq="MOLASTRIA_QP_QUIZ" data-fq-item="${s.id}" data-fq-store="molastria-qp-quiz"></div>
       <div class="fm-res"><div><h4>${L('教材与讲义', 'Textbooks & notes')}</h4><ul class="fm-cards">${s.books.map((id) => bookCard(B[id])).join('')}</ul></div>
         <div><h4>${L('课程与视频', 'Courses & videos')}</h4>${s.videos.length ? `<ul class="fm-cards">${s.videos.map((id) => videoCard(V[id])).join('')}</ul>` : `<p class="muted">${L('这一章没有我们核对过、值得推荐的完整视频课；Tong 的量子霍尔讲义和 Ashcroft–Mermin 是更好的起点。', 'We found no complete video course for this chapter that we could verify and recommend; Tong\'s quantum Hall notes and Ashcroft–Mermin are better starting points.')}</p>`}</div></div>
     </article>`).join('');

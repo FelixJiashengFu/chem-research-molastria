@@ -39,3 +39,6 @@ build('../quantum/physics/qp-data.js', 'MOLASTRIA_QP', '../quantum/physics/qp-ma
 build('qa-data.js', 'MOLASTRIA_QA', 'qa-math.js', 'quantum/algorithms/');
 // 量子计算机栏目（quantum/computing/qc-data.js → qc-math.js）
 build('qc-data.js', 'MOLASTRIA_QC', 'qc-math.js', 'quantum/computing/');
+// 写公式作答的题（../viewer/formula-check.js 判分）：题面和解答里的公式
+build('math/fm-quiz.js', 'MOLASTRIA_FM_QUIZ', 'math/fm-quiz-math.js');
+build('qp-quiz.js', 'MOLASTRIA_QP_QUIZ', 'qp-quiz-math.js', 'quantum/physics/');
