@@ -8,7 +8,7 @@ const en: Record<string, string> = JSON.parse(await Deno.readTextFile(enUrl));
 const key = Deno.env.get("DEEPSEEK_API_KEY");
 const todo = Object.keys(en).filter((k) => !en[k]);
 
-const SYSTEM = `You translate the user interface of MolAstria (molastria.com), a Chinese website for computational chemistry: a searchable catalogue of databases, software, tutorials, papers and open-source tools; an interactive resource network; a 20-chapter Chinese guide; a journal directory with a publishing guide; and an "AI Lab" for closed-loop discovery of lithium-battery electrolyte solvent molecules (LLM proposes molecules → RDKit filter → UMA machine-learned potential on Rowan → reliability layer → DFT verification).
+const SYSTEM = `You translate the user interface of MolAstria (molastria.com), a Chinese website for computational chemistry: a searchable catalogue of databases, software, tutorials, papers and open-source tools; an interactive resource network; a 25-chapter Chinese guide; a journal directory with a publishing guide; and an "AI Lab" for closed-loop discovery of lithium-battery electrolyte solvent molecules (LLM proposes molecules → RDKit filter → UMA machine-learned potential on Rowan → reliability layer → DFT verification).
 Translate each Chinese string into concise, natural English as it would appear in a polished scientific web app.
 Rules:
 - Keep every placeholder such as {0} {1} exactly once each; move them if English word order needs it.

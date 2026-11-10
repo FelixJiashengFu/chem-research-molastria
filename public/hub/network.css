@@ -138,3 +138,18 @@
 .filter-line{display:flex;gap:8px;align-items:baseline}
 .filter-line .breakdown{flex:1}
 .filter-label{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:3px;min-width:2.5em}
+
+/* 没找到的词（net-misses.js）：只存在这台设备上的列表。 */
+.net-misses{margin-top:14px}
+.net-misses-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.net-misses-head h2{margin:0;font-size:18px}
+.net-misses-toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.net-misses-list ul{list-style:none;margin:10px 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.net-misses-list li{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 12px;background:var(--paper);max-width:100%}
+.net-miss-q{border:0;background:none;padding:0;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;overflow-wrap:anywhere;text-align:left}
+.net-miss-q:hover{color:var(--accent-text);text-decoration:underline}
+.net-miss-x{border:0;background:none;color:var(--muted);font-size:16px;line-height:1;padding:2px 6px;border-radius:999px;cursor:pointer}
+.net-miss-x:hover{color:var(--ink);background:var(--surface-2)}
+.net-misses-actions{display:flex;gap:8px;flex-wrap:wrap}
+.net-misses-actions[hidden]{display:none}
+.net-miss-note a{color:var(--accent-text)}

@@ -111,6 +111,22 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 
 没有空项时它只写 `public/i18n/en.js`（输出 `nothing to translate`）；还有空项又没有 key 会直接退出，什么也不写。
 
+## 说明讲解手册（/manual/）
+
+正文在 `public/atlas/content.js`（中文，一行 JSON）和 `public/atlas/guides-en.js`（英文，一章一行），两边的章节 id 和顺序要一致；阅读器的中文标签是 `public/manual/app.js` 的 `guideLabels`，SEO 页的是 `tools/build-seo.ts` 的 `LABELS`（两份要相同），英文标签在 `guides-en.js` 的 `labels`。
+
+- **加一章：** 两个文件各插一项（`{id, title, label, html}`，`title` 和 `<h1>` 一致），三处标签各加一个，再把站内写着“25 章”的地方一起改（`grep -rn "25 章\|25-chapter"`，`i18n/en.json` 里对应的译文也要改；网状查询的“本站 N 章讲解”和 `llms.txt` 是按章数算的，不用改）。e2e 的“handbook: its own page”里有章数。
+- **第 12–16 类五章的数字：** 都来自 `tools/handbook-calcs.py`（PySCF 2.15.0）。改了章里的算例，先跑 `python3 tools/handbook-calcs.py <部分>`，把结果写进 `tools/handbook-test.mjs` 的 `REF`，再跑 `node --test tools/handbook-test.mjs`；它还核对每章说的“收录 N 个（编号 …）”和目录第 12–16 类是否一致，所以给这几类加条目时要同时改那一章的开头和表格。硅能带要 `HANDBOOK_SOLID=1`（约 20 分钟）；GitHub Actions 的 `Handbook calculations` 可以手动运行，勾 solid 就会算。
+- **文献：** DOI 在 OpenAlex 逐个查（`https://api.openalex.org/works/doi:<DOI>`，单个查询不受搜索额度限制）；中英两版引用同一组链接（测试会查）。
+
+## 网状查询没找到的词
+
+网状查询把术语表认不出、只能做全文检索的词记在用户自己的浏览器里（`molastria-net-misses`，逻辑在 `public/hub/net-misses.js`，页面上的“没找到的词”）。不会自动汇总到服务器。
+
+- **站长自己看：** 在常用的浏览器里打开网状查询，往下翻到“没找到的词”，查得多的在前。
+- **有人提交了 Issue：** 题目是“网状查询：术语表里没有的词”。挑出真正的术语（不是拼错的、不是整句话），在 `public/search-terms.js` 里加一组或加进已有的组：一组只放互为同义的写法，至少一个中文、一个英文（复习卡片要用），4 个字母以内的英文缩写会按整词匹配。加完跑 `node --test tools/net-test.mjs tools/review-test.mjs`，再 `node tools/build-api.mjs`（开放数据接口的术语表跟着变）。
+- **试一个词现在认不认得：** `node -e` 里照 `tools/net-test.mjs` 开头的写法建网，看 `net.query('词').mode` 是不是 `entity`。
+
 ## 基础科学栏目（/fundamental-science/）
 
 内容全部在 `public/fundamental-science/fs-data.js`，中英两版并排写（`T(中文, English)`），页面按站点语言取用，不经过 i18n 翻译。

@@ -86,7 +86,7 @@
     ['../fundamental-science/math/index.html', 'λ', T('数学基础与探索', 'Mathematical Foundations & Exploration'), T('线性代数、泛函分析、群论、张量网络等十门数学，每门有讲解、大纲、练习和核对过的教材。', 'Ten mathematical subjects from linear algebra and functional analysis to group theory and tensor networks, each with explanations, outlines, exercises and checked textbooks.')],
     ['../qchem/index.html', '⚛', T('游乐场', 'Playground'), T('十五个小游戏：量子化学、量子嘉年华分会场（自旋、贝尔游戏、量子电路、纠错、Grover、二维波包）和物理疆界，以及在浏览器里运行的量子化学计算器。', 'Fifteen games in quantum chemistry, the Quantum Carnival (spin, the Bell game, circuits, error correction, Grover, a 2D wave packet) and the realms of physics, plus a quantum chemistry calculator that runs in the browser.')],
     ['../videos/index.html#t-quantum', '▶', T('教学视频 · 量子计算与量子化学', 'Teaching videos · Quantum computing for chemistry'), T('YouTube 和哔哩哔哩上核对过的课程，量子力学入门课在同一页的“课程”主题里。', 'Checked courses on YouTube and Bilibili; introductory quantum mechanics courses are under the "courses" topic on the same page.')],
-    ['../manual/index.html', '¶', T('讲解手册', 'Handbook'), T('20 章中英双语手册，讲计算化学的数据库、软件与方法。', 'A 20-chapter bilingual handbook on the databases, software and methods of computational chemistry.')],
+    ['../manual/index.html', '¶', T('讲解手册', 'Handbook'), T('25 章中英双语手册，讲计算化学的数据库、软件与方法。', 'A 25-chapter bilingual handbook on the databases, software and methods of computational chemistry.')],
   ];
   $('#qc-around-grid').innerHTML = AROUND.map(([href, g, t, d]) => `<a class="qc-place" href="${href}"><span class="qc-place-g" aria-hidden="true" translate="no">${esc(g)}</span><span>${C(esc(tx(t)), 'b')}${C(esc(tx(d)), 'small')}</span><i class="ico-ext ico-right" aria-hidden="true"></i></a>`).join('');
 

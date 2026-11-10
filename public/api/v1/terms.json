@@ -6,13 +6,22 @@
  "docs": "https://molastria.com/api/",
  "dataset": "terms",
  "updated": "2026-11-05",
- "count": 109,
+ "count": 156,
  "items": [
   {
    "terms": [
     "密度泛函",
     "dft",
     "density functional"
+   ]
+  },
+  {
+   "terms": [
+    "kohn-sham 方程",
+    "kohn-sham equations",
+    "kohn–sham equations",
+    "kohn-sham",
+    "kohn–sham"
    ]
   },
   {
@@ -60,6 +69,59 @@
     "casscf",
     "caspt2",
     "nevpt2"
+   ]
+  },
+  {
+   "terms": [
+    "哈特里-福克",
+    "hartree-fock",
+    "hartree–fock",
+    "hartree fock"
+   ]
+  },
+  {
+   "terms": [
+    "自洽场",
+    "self-consistent field",
+    "scf"
+   ]
+  },
+  {
+   "terms": [
+    "微扰理论",
+    "perturbation theory"
+   ]
+  },
+  {
+   "terms": [
+    "mp2 微扰",
+    "second-order møller–plesset",
+    "møller–plesset",
+    "møller-plesset",
+    "moller-plesset",
+    "mp2"
+   ]
+  },
+  {
+   "terms": [
+    "全组态相互作用",
+    "full configuration interaction",
+    "full ci",
+    "fci"
+   ]
+  },
+  {
+   "terms": [
+    "活性空间",
+    "active space",
+    "active-space"
+   ]
+  },
+  {
+   "terms": [
+    "密度矩阵重整化群",
+    "density matrix renormalization group",
+    "dmrg"
    ]
   },
   {
@@ -122,6 +184,209 @@
   },
   {
    "terms": [
+    "非绝热",
+    "非绝热动力学",
+    "nonadiabatic",
+    "non-adiabatic"
+   ]
+  },
+  {
+   "terms": [
+    "面跳跃",
+    "表面跳跃",
+    "surface hopping",
+    "surface-hopping",
+    "fssh"
+   ]
+  },
+  {
+   "terms": [
+    "锥形交叉",
+    "圆锥交叉",
+    "conical intersection"
+   ]
+  },
+  {
+   "terms": [
+    "平面波",
+    "plane wave",
+    "plane-wave"
+   ]
+  },
+  {
+   "terms": [
+    "投影缀加波",
+    "projector augmented wave",
+    "projector-augmented wave",
+    "paw"
+   ]
+  },
+  {
+   "terms": [
+    "周期性边界条件",
+    "periodic boundary condition",
+    "pbc"
+   ]
+  },
+  {
+   "terms": [
+    "布里渊区",
+    "brillouin zone"
+   ]
+  },
+  {
+   "terms": [
+    "k 点",
+    "k点",
+    "k-point",
+    "k-points",
+    "k point"
+   ]
+  },
+  {
+   "terms": [
+    "超胞",
+    "supercell"
+   ]
+  },
+  {
+   "terms": [
+    "费米能级",
+    "fermi level",
+    "fermi energy"
+   ]
+  },
+  {
+   "terms": [
+    "准粒子",
+    "quasiparticle"
+   ]
+  },
+  {
+   "terms": [
+    "gw 近似",
+    "gw approximation",
+    "gw method",
+    "gw"
+   ]
+  },
+  {
+   "terms": [
+    "激子",
+    "exciton"
+   ]
+  },
+  {
+   "terms": [
+    "bethe-salpeter 方程",
+    "bethe-salpeter equation",
+    "bethe–salpeter equation",
+    "bethe-salpeter",
+    "bethe–salpeter"
+   ]
+  },
+  {
+   "terms": [
+    "自旋轨道耦合",
+    "spin-orbit coupling",
+    "spin–orbit coupling",
+    "spin orbit coupling",
+    "soc"
+   ]
+  },
+  {
+   "terms": [
+    "量子计算",
+    "量子计算机",
+    "quantum computing",
+    "quantum computer",
+    "quantum computation"
+   ]
+  },
+  {
+   "terms": [
+    "量子比特",
+    "qubit"
+   ]
+  },
+  {
+   "terms": [
+    "量子电路",
+    "量子线路",
+    "quantum circuit"
+   ]
+  },
+  {
+   "terms": [
+    "变分量子本征求解器",
+    "variational quantum eigensolver",
+    "vqe"
+   ]
+  },
+  {
+   "terms": [
+    "量子相位估计",
+    "quantum phase estimation",
+    "qpe"
+   ]
+  },
+  {
+   "terms": [
+    "费米子映射",
+    "费米子到量子比特的映射",
+    "fermion-to-qubit mapping",
+    "qubit mapping"
+   ]
+  },
+  {
+   "terms": [
+    "jordan-wigner 变换",
+    "jordan-wigner transformation",
+    "jordan–wigner transformation",
+    "jordan-wigner",
+    "jordan–wigner"
+   ]
+  },
+  {
+   "terms": [
+    "bravyi-kitaev 变换",
+    "bravyi-kitaev transformation",
+    "bravyi–kitaev transformation",
+    "bravyi-kitaev",
+    "bravyi–kitaev"
+   ]
+  },
+  {
+   "terms": [
+    "泡利串",
+    "泡利算符串",
+    "pauli string",
+    "pauli strings"
+   ]
+  },
+  {
+   "terms": [
+    "特罗特分解",
+    "trotterization",
+    "trotter-suzuki",
+    "trotter"
+   ]
+  },
+  {
+   "terms": [
+    "量子纠错",
+    "quantum error correction",
+    "qec"
+   ]
+  },
+  {
+   "terms": [
+    "表面码",
+    "surface code"
+   ]
+  },
+  {
+   "terms": [
     "机器学习",
     "machine learning",
     "machine-learning",
@@ -158,6 +423,7 @@
   {
    "terms": [
     "泛函",
+    "杂化泛函",
     "exchange-correlation functional",
     "hybrid functional"
    ]
@@ -233,6 +499,7 @@
   {
    "terms": [
     "能带",
+    "能带结构",
     "band structure",
     "band gap",
     "带隙"
@@ -252,6 +519,31 @@
     "atomic charge",
     "partial charge",
     "population analysis"
+   ]
+  },
+  {
+   "terms": [
+    "自然布居分析",
+    "natural population analysis",
+    "npa"
+   ]
+  },
+  {
+   "terms": [
+    "mulliken 布居",
+    "mulliken population",
+    "mulliken charge",
+    "mulliken"
+   ]
+  },
+  {
+   "terms": [
+    "löwdin 布居",
+    "löwdin population",
+    "löwdin charge",
+    "lowdin charge",
+    "löwdin",
+    "lowdin"
    ]
   },
   {
@@ -386,6 +678,47 @@
    "terms": [
     "电子密度",
     "electron density"
+   ]
+  },
+  {
+   "terms": [
+    "分子中的原子",
+    "atoms in molecules",
+    "qtaim"
+   ]
+  },
+  {
+   "terms": [
+    "bader 电荷",
+    "bader charge"
+   ]
+  },
+  {
+   "terms": [
+    "内禀原子轨道",
+    "intrinsic atomic orbital",
+    "iao"
+   ]
+  },
+  {
+   "terms": [
+    "内禀成键轨道",
+    "intrinsic bond orbital",
+    "ibo"
+   ]
+  },
+  {
+   "terms": [
+    "福井函数",
+    "fukui function",
+    "fukui"
+   ]
+  },
+  {
+   "terms": [
+    "概念密度泛函",
+    "conceptual dft",
+    "conceptual density functional theory"
    ]
   },
   {
@@ -705,6 +1038,27 @@
     "入门",
     "tutorial",
     "guide"
+   ]
+  },
+  {
+   "terms": [
+    "教材",
+    "教科书",
+    "textbook"
+   ]
+  },
+  {
+   "terms": [
+    "公开课",
+    "网课",
+    "online course",
+    "mooc"
+   ]
+  },
+  {
+   "terms": [
+    "讲义",
+    "lecture notes"
    ]
   },
   {

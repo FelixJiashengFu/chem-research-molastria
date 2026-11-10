@@ -67,6 +67,12 @@ jobs:
           python -m pip install pyscf
           npm ci --prefix tools/e2e
           node --test tools/code-test.mjs
+      # Content checks only (chapter counts match the catalogue, example numbers present in both languages);
+      # handbook.yml reruns the PySCF calculations behind those numbers when the chapters or the script change.
+      - name: Handbook chapters 12–16 (catalogue counts, example numbers, both languages)
+        run: node --test tools/handbook-test.mjs
+        env:
+          HANDBOOK_SKIP_PYTHON: 1
       - name: Open Model Hall content (companies, items, task comparisons, pavilion pages)
         run: node --test tools/open-models-test.mjs
       # Every snippet the page marks as run is run again with whatever compilers the runner has; missing ones are skipped.

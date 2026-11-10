@@ -19,6 +19,8 @@
   let state = { q: '', src: '' };
   let sourceFilter = '', typeFilter = '', shown = 30;
   let trail = [];
+  let recordNext = false;                   // the next render comes from the search box (or a ?q= link), so a miss is recorded
+  const counted = new Set();                // each word is counted once per visit
   const display = (e) => EN && e.nameEn ? e.nameEn.replace(/^./, (c) => c.toUpperCase()) : tr(e.name);
   const sourceOf = (id) => NET.sourceById.get(id) || { id, name: id, color: '#7d8a80' };
 
@@ -394,7 +396,8 @@
     } else if (R.mode === 'text') {
       f.innerHTML = `<div class="focus-kind k-query">全文检索</div><h2 id="resultTitle">「${esc(R.q)}」</h2>` +
         `<div class="focus-stats"><span>${primary.length} 条命中</span><span>${R.related.length} 个关联概念</span></div>` +
-        (R.suggestions?.length ? `<p class="focus-note">没有找到。你是不是要找：${R.suggestions.map((s) => entityChip(s.entity)).join('')}</p>` : '');
+        (R.suggestions?.length ? `<p class="focus-note">没有找到。你是不是要找：${R.suggestions.map((s) => entityChip(s.entity)).join('')}</p>` : '') +
+        (missed(R.q) ? `<p class="focus-note net-miss-note">术语表里还没有这个词。<a href="#misses">已记进这台设备上的“没找到的词”</a></p>` : '');
     } else if (R.mode === 'source') {
       f.innerHTML = `<div class="focus-kind k-source">来源</div><h2 id="resultTitle">${esc(R.source.name)}</h2><p class="focus-desc">${esc(R.source.role || '')}</p>` +
         `<div class="focus-stats"><span>${primary.length} 条条目</span><span>${R.related.length} 个常见概念</span></div>` +
@@ -451,9 +454,57 @@
       i === trail.length - 1 ? `<b>${esc(t.label)}</b>` : `<button type="button" data-trail="${i}">${esc(t.label)}</button><span aria-hidden="true">›</span>`).join('') : '';
   }
 
+  /* ---------- words the term table did not know (net-misses.js; this device only) ---------- */
+  const MISSES = window.MolAstriaNetMisses;
+  function loadMisses() { try { return MISSES.parse(localStorage.getItem(MISSES.KEY)); } catch { return MISSES ? MISSES.parse(null) : null; } }
+  function saveMisses(s) { try { if (s.off || s.items.length) localStorage.setItem(MISSES.KEY, JSON.stringify(s)); else localStorage.removeItem(MISSES.KEY); } catch { /* storage blocked */ } renderMisses(); }
+  const missed = (q) => !!MISSES && loadMisses().items.some((x) => MISSES.keyOf(x.q) === MISSES.keyOf(q));
+  function noteMiss() {
+    if (!MISSES || !recordNext || state.src) return;
+    const key = MISSES.keyOf(state.q);
+    if (counted.has(key) || !MISSES.missOf(R)) return;
+    counted.add(key);
+    saveMisses(MISSES.record(loadMisses(), state.q, R));
+  }
+  function renderMisses() {
+    if (!MISSES || !$('missList')) return;
+    const s = loadMisses(), list = MISSES.ranked(s);
+    $('missOn').checked = !s.off;
+    $('missActions').hidden = !list.length;
+    $('missList').innerHTML = s.off ? '<p class="small muted">已关闭，不再记录；以前记下的也已清空。</p>'
+      : !list.length ? '<p class="small muted">还没有记下的词。</p>'
+      : `<ul>${list.map((x) => `<li><button type="button" class="net-miss-q" data-miss-q="${esc(x.q)}" translate="no">${esc(x.q)}</button><span class="small muted">${x.n} 次 · 全文 ${x.hits} 条</span><button type="button" class="net-miss-x" data-miss-x="${esc(x.q)}" aria-label="删除这个词">×</button></li>`).join('')}</ul>`;
+    if (list.length) {
+      const opts = EN ? { title: 'Network query: words the term table does not know', intro: 'The network query did not recognise these words (full-text search only); suggested additions to the term table search-terms.js:', line: (x) => `- ${x.q} (${x.n}×, ${x.hits} full-text hits)` } : {};
+      const iss = MISSES.issueUrl(s, opts);
+      $('missIssue').href = iss.url;
+      $('missIssue').title = iss.included < iss.total ? `地址太长，只放了查得最多的 ${iss.included} 个词` : '';
+    }
+  }
+  function bindMisses() {
+    if (!MISSES || !$('missList')) return;
+    $('missOn').addEventListener('change', (ev) => { saveMisses(MISSES.setOff(loadMisses(), !ev.target.checked)); $('missMsg').textContent = ev.target.checked ? '已开启记录。' : '已关闭并清空。'; if (R) renderFocus(); });
+    $('missClear').addEventListener('click', () => { saveMisses(MISSES.clear(loadMisses())); $('missMsg').textContent = '已清空。'; });
+    $('missCopy').addEventListener('click', async () => {
+      const text = MISSES.toText(loadMisses(), EN ? { times: 'times', hits: 'full-text hits' } : undefined);
+      try { await navigator.clipboard.writeText(text); $('missMsg').textContent = '已复制到剪贴板。'; }
+      catch { $('missMsg').textContent = '浏览器不让复制，请手动选中上面的词。'; }
+    });
+    $('missList').addEventListener('click', (ev) => {
+      const x = ev.target.closest('[data-miss-x]');
+      if (x) { saveMisses(MISSES.remove(loadMisses(), x.dataset.missX)); return; }
+      const q = ev.target.closest('[data-miss-q]');
+      if (q) { navigate({ q: q.dataset.missQ }); document.querySelector('.net-graph-panel').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); }
+    });
+    // Another tab of the site changed the list.
+    window.addEventListener('storage', (ev) => { if (ev.key === MISSES.KEY) renderMisses(); });
+    renderMisses();
+  }
+
   /* ---------- navigation ---------- */
   function render() {
     R = state.src ? NET.source(state.src) : NET.query(state.q);
+    noteMiss(); recordNext = false;
     sourceFilter = ''; typeFilter = ''; shown = 30;
     $('netQ').value = state.q || '';
     const label = R.mode === 'entity' ? display(R.center) : R.mode === 'source' ? R.source.name : R.mode === 'text' ? R.q : '';
@@ -463,8 +514,9 @@
     document.title = (label ? label + ' · ' : '') + '网状查询 · MolAstria';
     buildGraph(); renderFocus(); renderRelated(); renderResults(); renderTrail();
   }
-  function navigate(next, push = true) {
+  function navigate(next, push = true, typed = false) {
     state = { q: next.q || '', src: next.src || '' };
+    recordNext = typed;
     if (push) {
       const u = new URL(location.href);
       u.searchParams.delete('q'); u.searchParams.delete('src'); u.searchParams.delete('select');
@@ -503,10 +555,10 @@
       if (ev.key === 'ArrowDown') { ev.preventDefault(); move(1); }
       else if (ev.key === 'ArrowUp') { ev.preventDefault(); move(-1); }
       else if (ev.key === 'Escape') closeSuggest();
-      else if (ev.key === 'Enter') { ev.preventDefault(); const it = items[active]; navigate({ q: it ? it.q : input.value.trim() }); }
+      else if (ev.key === 'Enter') { ev.preventDefault(); const it = items[active]; navigate({ q: it ? it.q : input.value.trim() }, true, true); }
     });
-    $('netSuggest').addEventListener('mousedown', (ev) => { const li = ev.target.closest('li'); if (li) { ev.preventDefault(); navigate({ q: items[Number(li.dataset.i)].q }); } });
-    $('netGo').addEventListener('click', () => navigate({ q: input.value.trim() }));
+    $('netSuggest').addEventListener('mousedown', (ev) => { const li = ev.target.closest('li'); if (li) { ev.preventDefault(); navigate({ q: items[Number(li.dataset.i)].q }, true, true); } });
+    $('netGo').addEventListener('click', () => navigate({ q: input.value.trim() }, true, true));
     document.addEventListener('keydown', (ev) => { if (ev.key === '/' && !/input|textarea|select/i.test(document.activeElement?.tagName || '')) { ev.preventDefault(); input.focus(); } });
   }
 
@@ -555,7 +607,7 @@
     $('relayoutBtn').addEventListener('click', () => { for (const n of nodes) if (!n.center) { const a = Math.random() * Math.PI * 2; n.fx = n.fy = null; n.x = Math.cos(a) * 40; n.y = Math.sin(a) * 40; } alpha = 1; fitPending = true; });
     $('fitBtn').addEventListener('click', () => fitView());
     $('netBack').addEventListener('click', () => history.back());
-    renderStats(); renderDirectory(); bindGraph(); bindSearch();
+    renderStats(); renderDirectory(); bindGraph(); bindSearch(); bindMisses();
     // ?q= and ?src= links; the old ?select=tag:X / db:id / src:id links still work.
     const p = new URLSearchParams(location.search);
     const sel = p.get('select') || '';
@@ -565,6 +617,7 @@
     if (p.get('q')) state.q = p.get('q');
     if (p.get('src')) state.src = p.get('src');
     history.replaceState(state, '', location.href);
+    recordNext = !!state.q && !state.src;    // a ?q= link carries a search someone typed (the home page passes its query on)
     render(); requestAnimationFrame(loop);
   }
   document.addEventListener('DOMContentLoaded', () => window.ChemI18n?.ready?.then(() => {

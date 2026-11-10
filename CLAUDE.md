@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、开源代码台（计算化学程序的输入生成、输出解读与软件体检）、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、25 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、开源代码台（计算化学程序的输入生成、输出解读与软件体检）、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -24,7 +24,7 @@ public/               发布目录，推到 main 就上线
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
   ai/ai.js            AI 助手：服务商、托管额度（只有 DeepSeek V4 Flash）、可拖宽窗口；六个吉祥物（MASCOTS，点顶部头像换，存 molastria-ai-mascot），面板从关到开时吉祥物进场 5 秒（纯 CSS，可跳过；选吉祥物的面板里能关，存 molastria-ai-intro）
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
-  manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
+  manual/             讲解手册阅读器（25 章）；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来；第 12–16 类五章（id p14b-cat12 … p14f-cat16）的算例由 tools/handbook-calcs.py（PySCF）算出，tools/handbook-test.mjs 核对条数、编号和数字
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测。pyrun.js 是浏览器里运行 Python 的代码框（Pyodide 314.0.7，jsDelivr，第一次约 9.2 MB，跑在 Web Worker 里，“停止”直接结束它；界面文字自带中英两版，标 translate="no"），练习程序在 py-examples.js（讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理“薛定谔方程与一维问题”一章的一维薛定谔求解器），tools/pyrun-test.mjs 用本机 python3 + numpy 对照 PySCF 和解析解核对。smiles3d.js 是 SMILES → 三维坐标（OpenChemLib 9.25.1，jsDelivr 按需载入约 2.5 MB，在 Web Worker 里搭构象、MMFF94s+ 优化、按能量排序，立体构型逐个核对；embed() 是纯函数，tools/code-test.mjs 用 tools/e2e 装的 openchemlib 测），开源代码台在用。formula-check.js 是“写公式作答”的题块和判分（MathLive 0.111.1 输入、Compute Engine 0.69.1 判等价，都从 jsDelivr 按需载入；载不到时退回纯文本框和内置的小解析器），常见错误各有提示，错两次给方向、错三次给解答；界面文字自带中英两版，标 translate="no"；tools/formula-check-test.mjs 测
   review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
@@ -52,7 +52,7 @@ public/               发布目录，推到 main 就上线
   physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
   learn/              研习台（AI 家教）：先摸底、画路线、一步一检，练习分开做，学到的命题和推理链存成跨会话的知识图；learn-core.js 是纯逻辑（状态、路线图、评分、知识图、练习选题、模型回答的校验、提示词，tools/learn-test.mjs 测），learn-sources.js 把六个讲解栏目改写成可当依据的章节、外加站内演示白名单（tools/learn-sources-test.mjs 查锚点），learn-graph.js 画路线图、知识图和示意图（SVG，不收模型的 HTML/SVG），learn.js 是界面；走 ai/ai.js 的 ChemAI（访客自己的 key 或托管额度），数据只存 localStorage（molastria-learn、molastria-learn-prompts）；#goal=qp:<章> 从站内一章开始，量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学各章都有入口
   qchem/              游乐场（地址仍是 /qchem/）：三个展区十五个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；15（二维波包画墙，展区二）在 play-wave2d.js，数学在 play-wave2d-models.js（分裂算符解二维薛定谔方程，自己写的 FFT），经 MOLASTRIA_PLAY_WAVE 拿到同样的工具；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
-  hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
+  hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）；net-misses.js 是“没找到的词”的纯逻辑（术语表认不出的查询只记在本机 molastria-net-misses，可复制、预填 GitHub Issue、删除、关闭，不发服务器）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录和每 15 分钟一次的在线率探测）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口；src/notify.rs 把页面的通知（预印本雷达）转成系统通知；Mac 上 window.print() 改走 print_page 命令（WKWebView 自己不打印）
@@ -74,7 +74,8 @@ node --test tools/lab-test.mjs                          # 实验室逻辑测试
 node tools/build-api.mjs                                # 开放数据接口：重新生成 public/api/v1/ 和 chemdb-agent 的 catalog/resources.json（改了目录、期刊、科学大模型、视频的数据后跑；发布时 CI 也会跑）
 node --test tools/api-test.mjs                          # 开放数据接口：内容完整、双语齐全、代号都对得上；JS 库的搜索（同义词互通、排序、筛选）
 python3 tools/molastria-py-test.py                      # Python 客户端 molastria.py：对着本地假服务测提交、等待、报错和命令行
-node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
+node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）和“没找到的词”
+node --test tools/handbook-test.mjs                     # 讲解手册第 12–16 类五章：条数编号对得上目录、算例数字中英都在；本机有 PySCF 时重算（约 4 分钟，HANDBOOK_SKIP_PYTHON=1 跳过，HANDBOOK_SOLID=1 加算硅能带约 20 分钟）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
 node --test tools/fm-prob-test.mjs                      # 数学子模块的概率论演示：大数定律、中心极限定理对照解析结果，同一个种子同一个结果
 node --test tools/formula-check-test.mjs                # 公式题：判分的各种情形、内置解析器、题目数据，每个答案都用数值独立核对

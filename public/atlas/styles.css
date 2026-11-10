@@ -34,3 +34,5 @@ body[data-section="atlas"] .nav-item,body[data-section="atlas"] .guide-toc butto
 /* 深色模式下的插图：保持色相，压低亮度。 */
 :root[data-theme=dark] .hero-art svg,:root[data-theme=dark] .agent-flow svg{filter:invert(.86) hue-rotate(180deg) saturate(.8)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero-art svg{filter:invert(.86) hue-rotate(180deg) saturate(.8)}}
+/* 讲解手册的表格：单词不在字母中间断开（正文的 anywhere 会把窄列压成一个字母一行），放不下时表格自己横向滚动。 */
+.guide-article th,.guide-article td{overflow-wrap:break-word}

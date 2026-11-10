@@ -307,7 +307,7 @@
  "资源目录（静态页）": [
   "index.html"
  ],
- "说明讲解手册 20 章": [
+ "说明讲解手册 25 章": [
   "index.html"
  ],
  "期刊发表": [
@@ -2043,7 +2043,7 @@
  "看它连着什么": [
   "hub/network.html"
  ],
- "目录里的全部条目、20 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
+ "目录里的全部条目、25 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
   "hub/network.html"
  ],
  "点任何节点，网就换成以它为中心。": [
@@ -2100,6 +2100,35 @@
  "加载更多结果": [
   "hub/network.html"
  ],
+ "没找到的词": [
+  "hub/network.html"
+ ],
+ "记下术语表认不出的词": [
+  "hub/network.html"
+ ],
+ "术语表认不出、只能按全文检索的词会记在这里，帮我们补术语表。它们": [
+  "hub/network.html"
+ ],
+ "只存在这台设备的浏览器里": [
+  "hub/network.html"
+ ],
+ "，不会发到任何服务器。想帮忙的话，可以复制出来，或者到 GitHub 提一个 Issue：页面会预先填好这些词，你看过全文再决定提不提交。点一个词再查一次，点 × 删掉它。": [
+  "hub/network.html"
+ ],
+ "复制列表": [
+  "hub/network.html"
+ ],
+ "到 GitHub 提交": [
+  "hub/network.html"
+ ],
+ "清空": [
+  "hub/network.html",
+  "lab/index.html",
+  "qchem/index.html",
+  "shared-nav.js",
+  "radar/app/app.js",
+  "viewer/sketch.js"
+ ],
  "所有数据库与软件官网总表": [
   "hub/network.html"
  ],
@@ -2112,7 +2141,7 @@
  "节点从哪来": [
   "hub/network.html"
  ],
- "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 20 章也作为条目参与。": [
+ "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 25 章也作为条目参与。": [
   "hub/network.html"
  ],
  "连线从哪来": [
@@ -2250,13 +2279,6 @@
  ],
  "导出项目": [
   "lab/index.html"
- ],
- "清空": [
-  "lab/index.html",
-  "qchem/index.html",
-  "shared-nav.js",
-  "radar/app/app.js",
-  "viewer/sketch.js"
  ],
  "当前是合成演示数据。": [
   "lab/index.html"
@@ -5473,7 +5495,7 @@
  "下载 MolAstria 桌面版": [
   "download/index.html"
  ],
- "完整的资源目录、20 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
+ "完整的资源目录、25 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
   "download/index.html"
  ],
  "发布页": [
@@ -5794,7 +5816,7 @@
  "：27 个模型的能力与价格对比": [
   "about/index.html"
  ],
- "：20 章双语讲解与投稿指南": [
+ "：25 章双语讲解与投稿指南": [
   "about/index.html"
  ],
  "更大规模的高性能计算。目前的计算跑在单张 GPU 和按需租用的云端 GPU 上。": [
@@ -7439,7 +7461,7 @@
  "从讲解、视频到 AI 家教和小游戏": [
   "shared-nav.js"
  ],
- "20 章中英双语的计算化学讲解": [
+ "25 章中英双语的计算化学讲解": [
   "shared-nav.js"
  ],
  "handbook guide 手册": [
@@ -8540,6 +8562,26 @@
   "tools/build-seo.ts"
  ],
  "11 · 社区与中文入口": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "12 · 量子化学程序与方法库": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "13 · 周期体系与凝聚态": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "14 · 波函数分析与动力学": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "15 · 量子力学与量子化学课程": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "16 · 量子计算与量子化学算法": [
   "manual/app.js",
   "tools/build-seo.ts"
  ],
@@ -10343,6 +10385,12 @@
  "没有找到。你是不是要找：{0}": [
   "hub/network.js"
  ],
+ "术语表里还没有这个词。": [
+  "hub/network.js"
+ ],
+ "已记进这台设备上的“没找到的词”": [
+  "hub/network.js"
+ ],
  "{0} 条条目": [
   "hub/network.js"
  ],
@@ -10377,6 +10425,37 @@
   "hub/network.js"
  ],
  "路径：": [
+  "hub/network.js"
+ ],
+ "已关闭，不再记录；以前记下的也已清空。": [
+  "hub/network.js"
+ ],
+ "还没有记下的词。": [
+  "hub/network.js"
+ ],
+ "{0} 次 · 全文 {1} 条": [
+  "hub/network.js"
+ ],
+ "删除这个词": [
+  "hub/network.js"
+ ],
+ "地址太长，只放了查得最多的 {0} 个词": [
+  "hub/network.js"
+ ],
+ "已开启记录。": [
+  "hub/network.js"
+ ],
+ "已关闭并清空。": [
+  "hub/network.js"
+ ],
+ "已清空。": [
+  "hub/network.js"
+ ],
+ "已复制到剪贴板。": [
+  "hub/network.js",
+  "pro/account-page.js"
+ ],
+ "浏览器不让复制，请手动选中上面的词。": [
   "hub/network.js"
  ],
  "以「{0}」为中心": [
@@ -12738,9 +12817,6 @@
   "pro/account-page.js"
  ],
  "读缓存": [
-  "pro/account-page.js"
- ],
- "已复制到剪贴板。": [
   "pro/account-page.js"
  ],
  "复制下面的 key：": [
@@ -15814,6 +15890,7 @@
  ],
  "量子化学程序与方法库": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -15894,6 +15971,7 @@
  ],
  "周期体系与凝聚态第一性原理": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -15941,6 +16019,7 @@
  ],
  "波函数分析、可视化与动力学": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -15991,6 +16070,7 @@
  ],
  "量子计算与量子化学算法": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -16014,6 +16094,7 @@
  ],
  "量子力学与量子化学课程教材": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],

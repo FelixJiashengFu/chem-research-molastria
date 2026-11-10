@@ -1109,14 +1109,14 @@ check('handbook: its own page, Chinese and English chapters, the choice is remem
   await p.waitForSelector('#guide-article h1');
   assert.match(await text(p, '#view-guide .page-intro h1'), /^说明讲解手册/);
   assert.equal(await p.getAttribute('.cr-mega a[data-id=manual]', 'aria-current'), 'page');
-  assert.equal(await p.locator('#guide-toc button').count(), 20);
+  assert.equal(await p.locator('#guide-toc button').count(), 25);
   assert.equal(await p.locator('.sidebar, #view-resources, #view-agent').count(), 0, 'no database views on the handbook page');
   assert.equal(await p.locator('#view-guide .page-intro p').count(), 0);
   assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
   await p.click('[data-guide-lang=en]');
   assert.equal(await text(p, '#guide-article h1'), 'Drugs, bioactivity & chemical space');
   assert.equal(await p.getAttribute('#guide-article', 'lang'), 'en');
-  assert.equal(await text(p, '#reader-progress'), '09 / 20 · 05 · Drugs & chemical space');
+  assert.equal(await text(p, '#reader-progress'), '09 / 25 · 05 · Drugs & chemical space');
   await p.click('#guide-next');
   assert.equal(await text(p, '#guide-article h1'), 'Metabolites, natural products & reaction pathways');
   await p.reload({ waitUntil: 'networkidle' });
@@ -1141,7 +1141,7 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   await oldAddress(p, '/atlas/index.html#guide/p08-cat05', /\/manual\/index\.html#p08-cat05$/);
   assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
   await oldAddress(p, '/atlas/index.html#guide', /\/manual\/index\.html$/);
-  assert.equal(await text(p, '#reader-progress'), '02 / 20 · 三分钟导读');
+  assert.equal(await text(p, '#reader-progress'), '02 / 25 · 三分钟导读');
   await finish(p);
   const en = await open();
   await oldAddress(en, '/atlas/index.html?lang=en#guide/p00-cover', /\/manual\/index\.html\?lang=en#p00-cover$/);
@@ -1505,6 +1505,75 @@ check('network: the searched term is the centre, suggestions complete, clicking 
   await go(en, '/hub/network.html?lang=en&q=' + encodeURIComponent('静电势'));
   await en.waitForFunction(() => document.getElementById('resultTitle')?.textContent.trim() === 'Electrostatic potential');
   await finish(en);
+});
+
+check('network: a word the term table does not know is kept on this device only, can be removed, copied out and turned off', async () => {
+  const p = await open({ permissions: ['clipboard-read', 'clipboard-write'] });
+  const outside = [];
+  p.on('request', (r) => { if (!r.url().startsWith(SITE) && /qwertyzz/i.test(r.url() + (r.postData() || ''))) outside.push(r.url()); });
+  await go(p, '/hub/network.html');
+  assert.equal(await p.locator('#missActions').isVisible(), false);
+  assert.match(await p.innerText('#missList'), /还没有记下的词/);
+  await p.fill('#netQ', 'qwertyzz');
+  await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.match(await p.innerText('#netFocus'), /已记进这台设备上的“没找到的词”/);
+  assert.match(await p.innerText('#missList'), /qwertyzz\s*1 次 · 全文 0 条/);
+  // A known term, and the same word again in this visit, add nothing.
+  await p.fill('#netQ', 'Multiwfn'); await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().center?.name === 'Multiwfn');
+  await p.goBack();
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  let stored = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')));
+  assert.deepEqual(stored.items.map((x) => [x.q, x.n]), [['qwertyzz', 1]]);
+  // A ?q= link counts once per visit, and the list survives a reload.
+  await go(p, '/hub/network.html?q=' + encodeURIComponent('zzqq plasmonic gizmo'));
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo', 'qwertyzz'], 'same count: the latest first');
+  assert.equal(await p.getAttribute('#missList .net-miss-q', 'translate'), 'no');
+  const issue = new URL(await p.getAttribute('#missIssue', 'href'));
+  assert.equal(issue.pathname, '/FelixJiashengFu/chem-research-molastria/issues/new');
+  assert.match(issue.searchParams.get('body'), /- qwertyzz（1 次，全文命中 0 条）/);
+  await p.click('#missCopy');
+  await p.waitForFunction(() => /已复制/.test(document.getElementById('missMsg').textContent));
+  assert.match(await p.evaluate(() => navigator.clipboard.readText()), /^qwertyzz\t1 次\t0 条全文命中/m);
+  // Clicking a word searches it again without counting it; × removes it.
+  await p.click('#missList .net-miss-q >> text=qwertyzz');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().q === 'qwertyzz');
+  assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')).items.find((x) => x.q === 'qwertyzz').n), 1);
+  await p.click('[data-miss-x="qwertyzz"]');
+  assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo']);
+  // Turning recording off clears the list and stops it.
+  await p.uncheck('#missOn');
+  stored = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')));
+  assert.deepEqual(stored, { v: 1, off: true, items: [] });
+  await p.fill('#netQ', 'qwertyzz'); await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.doesNotMatch(await p.innerText('#netFocus'), /已记进/);
+  assert.match(await p.innerText('#missList'), /已关闭/);
+  assert.deepEqual(outside, [], 'the words never leave the page');
+  await finish(p);
+  const phone = await open({ viewport: { width: 390, height: 844 }, init: () => localStorage.setItem('molastria-net-misses', JSON.stringify({ v: 1, items: [{ q: 'a-very-long-unbroken-search-word-that-must-wrap-somewhere', n: 3, hits: 0, first: 1, last: 1 }] })) });
+  await go(phone, '/hub/network.html');
+  assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll with a long word');
+  await finish(phone);
+});
+
+check('handbook: the five chapters for categories 12–16 open in both languages and link to the site pages they name', async () => {
+  const p = await open();
+  await go(p, '/manual/index.html#p14f-cat16');
+  await p.waitForSelector('#guide-article h1');
+  assert.equal(await text(p, '#guide-article h1'), '量子计算与量子化学算法');
+  assert.match(await text(p, '#reader-progress'), /^22 \/ 25 · 16 · /);
+  assert.ok(await p.locator('#guide-article a[href="../quantum/algorithms/index.html"]').count() > 0);
+  await p.click('[data-guide-lang=en]');
+  assert.match(await text(p, '#guide-article h1'), /^Quantum computing/);
+  for (const [id, h1] of [['p14b-cat12', /^Quantum chemistry programs/], ['p14c-cat13', /^Periodic systems/], ['p14d-cat14', /^Wavefunction analysis/], ['p14e-cat15', /^Courses/]]) {
+    await go(p, `/manual/index.html#${id}`);
+    await p.waitForSelector('#guide-article h1');
+    assert.match(await text(p, '#guide-article h1'), h1, id);
+  }
+  await finish(p);
 });
 
 check('train page: the weekly Hugging Face check shows its date, link stats and new models', async () => {
@@ -2806,7 +2875,7 @@ check('vision: the operator\'s essay in full (28 paragraphs, 3 source links), bi
   const want = await p.evaluate(() => { const n = { live: 0, next: 0, idea: 0 }; for (const c of window.MOLASTRIA_VISION.outlook.pledges) for (const [st] of c.items) n[st]++; return n; });
   for (const st of ['live', 'next', 'idea']) assert.equal(await p.locator(`.vo-card .vo-${st}`).count(), want[st], `${st} items`);
   assert.ok(want.live >= 4 && want.idea >= 4, `live ${want.live}, idea ${want.idea}`);
-  for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\//, `site link ${href} is relative to /vision/`);
+  for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\/(?!\.\.\/)/, `site link ${href} is relative to /vision/ (one level up, the data gives paths from the site root)`);
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
   assert.equal(await p.locator('.cr-legal a[href$="vision/index.html"]').count(), 1);
   await go(p, '/about/index.html');
@@ -3384,8 +3453,10 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   await go(p, '/review/index.html');
   await p.waitForFunction(() => document.body.dataset.scheduler, null, { timeout: 20000 });
   assert.equal(await p.evaluate(() => document.body.dataset.scheduler), 'fsrs', 'ts-fsrs loaded from jsDelivr');
-  assert.match(await text(p, '#rv-status'), /到期 0 张 · 新卡 15 张（共 113 张）/);
-  assert.match(await text(p, '#rv-decks'), /共 109 张[\s\S]*共 4 张/);
+  // One card per group of the term table (public/search-terms.js), plus the Study Desk's four.
+  const terms = (() => { const w = {}; new Function('window', readFileSync(join(ROOT, 'public/search-terms.js'), 'utf8'))(w); return w.MolAstriaTerms.groups.length; })();
+  assert.match(await text(p, '#rv-status'), new RegExp(`到期 0 张 · 新卡 15 张（共 ${terms + 4} 张）`));
+  assert.match(await text(p, '#rv-decks'), new RegExp(`共 ${terms} 张[\\s\\S]*共 4 张`));
   // The Study Desk's chain comes first: premises on the front, the conclusion on the back.
   assert.match(await text(p, '#rv-front'), /由这些推出什么？[\s\S]*升降算符/);
   await p.keyboard.press('Space');
@@ -3406,7 +3477,7 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   const dl = p.waitForEvent('download'); await p.click('#rv-anki');
   const anki = readFileSync(await (await dl).path(), 'utf8').trimEnd().split('\n');
   assert.deepEqual(anki.slice(0, 5), ['#separator:Tab', '#html:true', '#notetype:Basic', '#deck:MolAstria', '#tags column:3']);
-  assert.equal(anki.length, 5 + 114);
+  assert.equal(anki.length, 5 + terms + 5);
   assert.ok(anki.includes('相关能的定义？\tE_exact − E_HF\tMolAstria MolAstria::mine 量子化学'));
   // Backup and restore round-trip; clearing asks first.
   const bk = p.waitForEvent('download'); await p.click('#rv-backup');
@@ -3415,7 +3486,7 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   assert.match(await text(p, '#rv-mine-sum'), /共 0 张/);
   await p.setInputFiles('#rv-restore', backup);
   await p.waitForFunction(() => /共 1 张/.test(document.getElementById('rv-mine-sum').textContent));
-  assert.match(await text(p, '#rv-status'), /新卡 14 张（共 114 张）/, 'the review done before the backup still counts today');
+  assert.match(await text(p, '#rv-status'), new RegExp(`新卡 14 张（共 ${terms + 5} 张）`), 'the review done before the backup still counts today');
   assert.equal(Object.keys(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-review'))).sched).length, 1);
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await finish(p);
