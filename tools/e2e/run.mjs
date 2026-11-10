@@ -436,6 +436,8 @@ check('research atlas: the copied site loads in its frame, follows the theme, mi
   await Promise.all([p.waitForEvent('framenavigated', { predicate: (fr) => /schools\/mit\/$/.test(fr.url()) }), f.evaluate(() => { location.href = '../schools/mit/'; })]);
   const mit = p.frame({ url: /research-atlas\/app\/schools\/mit\// });
   await mit.waitForSelector('h1');
+  // The host sends the typeface again once the new page has loaded (postMessage), so wait for it rather than read it at once: under load it lands after the h1.
+  await mit.waitForFunction(() => document.documentElement.dataset.raFont === 'serif', null, { timeout: 5000 }).catch(() => {});
   assert.equal(await mit.evaluate(() => document.documentElement.dataset.raFont), 'serif', 'the typeface survives a link inside the frame');
   await finish(p);
   // In English the atlas is translated by the site's own i18n.js with the atlas dictionary.
