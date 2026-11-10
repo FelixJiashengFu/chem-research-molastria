@@ -2873,6 +2873,80 @@ check('math foundations: probability demos (law of large numbers, CLT) and Lean 
   await finish(r);
 });
 
+// A stand-in for Pyodide (the real one is 9 MB from jsDelivr; --net uses it): prints a line, returns a small chart,
+// raises for print(y) with Pyodide-style frames, and never returns for `while True`, so Stop can be tested.
+const FAKE_PYODIDE = `export async function loadPyodide() {
+  let out = () => {};
+  const dict = () => { const m = new Map(); return { get: (k) => m.get(k), has: (k) => m.has(k), set: (k, v) => m.set(k, v), destroy() {} }; };
+  return {
+    loadedPackages: {},
+    setStdout(o) { out = o.batched; }, setStderr() {}, setStdin() {},
+    globals: { get: () => dict },
+    runPython(src, { globals }) { globals.set('to_json', (c) => JSON.stringify(c)); },
+    async loadPackage(names) { for (const n of names) this.loadedPackages[n] = 'stand-in'; },
+    async loadPackagesFromImports() {},
+    async runPythonAsync(code, { globals }) {
+      if (code.includes('while True')) await new Promise(() => {});
+      if (code.includes('print(y)')) throw new Error('Traceback (most recent call last):\\n  File "/lib/python314.zip/_pyodide/_base.py", line 597, in eval_code_async\\n    await CodeRunner(\\n  File "h2_rhf.py", line 2, in <module>\\nNameError: name \\'y\\' is not defined');
+      out('stand-in run, ' + code.split('\\n').length + ' lines');
+      globals.set('chart', { title: 'stand-in', x: [0, 1, 2], series: [{ name: 'E', y: [1, 0, 1] }] });
+    },
+  };
+}`;
+check('python in the browser: run, output, chart, errors, stop and offline in the handbook and the physics pavilion (stand-in Pyodide unless --net)', async () => {
+  const stand = async (p) => { if (!NET) await p.context().route(/^https:\/\/cdn\.jsdelivr\.net\/pyodide\/v[\d.]+\/full\/pyodide\.mjs$/, (r) => r.fulfill({ contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: FAKE_PYODIDE })); };
+  const settled = (p, box) => p.waitForFunction((s) => ['done', 'error', 'offline'].includes(document.querySelector(s).dataset.state), box, { timeout: 60000 });
+  // Handbook: the Hartree–Fock box sits only after the compute-engines chapter.
+  const p = await open();
+  await stand(p);
+  await go(p, '/manual/index.html#p12-cat10a');
+  const box = '.guide-try-run';
+  await p.waitForSelector(`${box}[data-ready=true]`);
+  assert.match(await text(p, `${box} .py-status`), /约 9\.2 MB，含 numpy/, 'says how much the first run downloads');
+  assert.match(await p.inputValue(`${box} .py-code`), /^R = 1\.4 /m);
+  await p.click(`${box} .py-run`);
+  await settled(p, box);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'done');
+  assert.match(await text(p, `${box} .py-out`), NET ? /total energy\s+-1\.116714 hartree/ : /stand-in run/);
+  assert.ok(await p.isVisible(`${box} .py-chart canvas`), 'the chart is drawn');
+  await p.fill(`${box} .py-code`, 'x = 1\nprint(y)\n');
+  await p.click(`${box} .py-run`);
+  await settled(p, box);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'error');
+  const err = await text(p, `${box} .py-out`);
+  assert.match(err, /File "h2_rhf\.py", line 2[\s\S]*NameError/); assert.doesNotMatch(err, /_pyodide/, 'Pyodide\'s own frames are dropped');
+  await p.fill(`${box} .py-code`, 'while True:\n    pass\n');
+  await p.click(`${box} .py-run`);
+  await p.waitForSelector(`${box}[data-state=running]`);
+  await p.click(`${box} .py-stop`);
+  assert.equal(await p.getAttribute(box, 'data-state'), 'stopped');
+  await p.click(`${box} .py-reset`);
+  assert.match(await p.inputValue(`${box} .py-code`), /^# Restricted Hartree-Fock/);
+  await p.click('#guide-next');
+  assert.ok(await p.locator('.guide-try').isHidden(), 'other chapters have no box');
+  await finish(p);
+  // Pavilion: English and phone width.
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await stand(e);
+  await go(e, '/quantum/physics/index.html?lang=en#c-wave');
+  const qb = '#c-wave .qp-py-run';
+  await e.waitForSelector(`${qb}[data-ready=true]`);
+  assert.equal(await text(e, `${qb} .py-run`), 'Run');
+  await e.click(`${qb} .py-run`);
+  await settled(e, qb);
+  assert.match(await text(e, `${qb} .py-out`), NET ? /^ 0 {4}0\.499988 {4}0\.500000/m : /stand-in run/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  await finish(e);
+  // Offline: says so and starts nothing.
+  const o = await open();
+  await go(o, '/quantum/physics/index.html#c-wave');
+  await o.context().setOffline(true);
+  await o.click(`${qb} .py-run`);
+  assert.match(await text(o, `${qb} .py-status`), /现在离线/);
+  assert.equal(o.workers().length, 0);
+  await finish(o);
+});
+
 check('phone width: no sideways scrolling', async () => {
   for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });

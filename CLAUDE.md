@@ -26,7 +26,7 @@ public/               发布目录，推到 main 就上线
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   manual/             讲解手册阅读器；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
-  viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测
+  viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测。pyrun.js 是浏览器里运行 Python 的代码框（Pyodide 314.0.7，jsDelivr，第一次约 9.2 MB，跑在 Web Worker 里，“停止”直接结束它；界面文字自带中英两版，标 translate="no"），练习程序在 py-examples.js（讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理“波函数”一章的一维薛定谔求解器），tools/pyrun-test.mjs 用本机 python3 + numpy 对照 PySCF 和解析解核对
   review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
@@ -80,6 +80,7 @@ NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：�
 node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示的数学对照解析解，内容完整
 node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
 node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
+node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
 node tools/quantum-algorithms-refs.mjs                  # 量子算法：文献在 OpenAlex / arXiv 核对
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次
 node tools/e2e/run.mjs                                  # 浏览器端到端（假 Stripe、假邮件、假 AI，免费）；可加关键词只跑部分，--net 含真实雷达搜索
