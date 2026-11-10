@@ -3391,7 +3391,9 @@
   "models/index.html"
  ],
  "运行": [
-  "models/index.html"
+  "models/index.html",
+  "qchem/index.html",
+  "qchem/play-wave2d.js"
  ],
  "这个窗口的模型": [
   "models/index.html"
@@ -5135,6 +5137,7 @@
  "时间": [
   "pro/account.html",
   "qchem/play-quantum.js",
+  "qchem/play-wave2d.js",
   "radar/app/app.js"
  ],
  "用的 key": [
@@ -6187,7 +6190,7 @@
  "苟日新，日日新": [
   "radar/app/index.html"
  ],
- "游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria": [
+ "游乐场 · 量子化学、量子计算与物理疆界的十五个小游戏 · MolAstria": [
   "qchem/index.html"
  ],
  "跳到游乐场内容": [
@@ -6229,13 +6232,16 @@
  "噪声助推": [
   "qchem/index.html"
  ],
+ "波包画墙": [
+  "qchem/index.html"
+ ],
  "普朗克工坊": [
   "qchem/index.html"
  ],
  "立方体分拣": [
   "qchem/index.html"
  ],
- "用真实的物理公式玩量子世界。三个展区十四个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。": [
+ "用真实的物理公式玩量子世界。三个展区十五个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。": [
   "qchem/index.html"
  ],
  "化学馆": [
@@ -6247,7 +6253,7 @@
  "量子嘉年华分会场": [
   "qchem/index.html"
  ],
- "07–12 · 物理、计算机、算法、生物": [
+ "07–12、15 · 物理、计算机、算法、生物": [
   "qchem/index.html"
  ],
  "物理疆界": [
@@ -6289,7 +6295,7 @@
  "展区二": [
   "qchem/index.html"
  ],
- "四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，再看噪声怎样帮光合作用传递能量。玩完想深入，卡片下方有直通展馆的链接。": [
+ "四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，看噪声怎样帮光合作用传递能量，再画墙引导一个二维波包。玩完想深入，卡片下方有直通展馆的链接。": [
   "qchem/index.html"
  ],
  "Stern–Gerlach 自旋过滤": [
@@ -6320,6 +6326,12 @@
   "qchem/index.html"
  ],
  "激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。": [
+  "qchem/index.html"
+ ],
+ "二维波包画墙": [
+  "qchem/index.html"
+ ],
+ "先在格子上画墙，再放出一个波包：分出两条缝让它干涉，擦薄势垒让它隧穿，或者摆一面镜子把它送进目标框。": [
   "qchem/index.html"
  ],
  "展馆：": [
@@ -6839,6 +6851,54 @@
  "，每个角都连着图上的理论节点。": [
   "qchem/index.html"
  ],
+ "游戏 15 · 量子物理 · 二维含时薛定谔方程": [
+  "qchem/index.html"
+ ],
+ "一个高斯波包在平面上飞行。按“运行”之前，你可以在格子上画墙、擦墙，每关的格数有预算；然后看找到粒子的概率怎样衍射、干涉、隧穿和反射。完成三个关卡，再自由画。": [
+  "qchem/index.html"
+ ],
+ "画墙": [
+  "qchem/index.html"
+ ],
+ "擦除": [
+  "qchem/index.html"
+ ],
+ "回到起点": [
+  "qchem/index.html"
+ ],
+ "清空墙": [
+  "qchem/index.html"
+ ],
+ "看示范": [
+  "qchem/index.html"
+ ],
+ "显示相位": [
+  "qchem/index.html"
+ ],
+ "颜色越浓（从底色经蓝到金），在那里找到粒子的概率越大（画的是 |ψ| 的大小，按当前最大处归一）。紫色是你画的墙，和正文同色的是固定的墙，红色是势垒；虚线外是吸收边界，飞到那里的波包被吸收，不会弹回来。旁边的小图是屏上的累积强度或目标概率随时间的变化。键盘：Tab 选中画面后，方向键移动光标，空格键画或擦。": [
+  "qchem/index.html"
+ ],
+ "波包满足二维含时薛定谔方程，单位取 ħ = m = 1，格距为 1：": [
+  "qchem/index.html"
+ ],
+ "网格是 128 × 128，每步 dt = 0.25，用分裂算符法：先乘 e^(−iV dt/2)，用快速傅里叶变换（FFT）换到动量空间乘 e^(−ik² dt/2)，换回来再乘 e^(−iV dt/2)。每一步只是乘模为 1 的相位，所以总概率守恒到舍入误差（测试里 1000 步后偏离 1 不到 10⁻¹²）。动能那一步在网格上是精确的：自由波包的中心以 k/m 匀速前进，宽度按下式变宽，和解析解相差不到百万分之一格：": [
+  "qchem/index.html"
+ ],
+ "四周有 12 格宽的吸收带（虚线外）：波包到了这里就被逐步吸收，像飞出了画面。墙是 V = 5 的势能，是波包动能（k = 1.2 时为 0.72）的七倍左右。势能不能设得太高，因为 e^(−iV dt) 每隔 2π/dt 就重复一次，太高的墙会变成另一个势能；网格也表示不了墙里急剧衰减的波函数，所以 2 格厚的墙会漏过千分之二左右，4 格厚的约万分之一，比真正的墙漏得多。": [
+  "qchem/index.html"
+ ],
+ "双缝：波长 λ = 2π/k ≈ 5.2 格，缝宽只有一个波长左右。远场的暗纹在 d sinθ = (m + ½)λ 处，靠近中央的条纹间距约为 λL/d；测试在更长的网格上核对了暗纹的位置。游戏里的屏离缝不到 60 格，还不算远场，条纹并不等距。屏上画的是两列格子里 |ψ|² 对时间的累积，比最亮处的 8% 还暗、或者和旁边的峰之间没有明显暗纹的，不算亮纹。": [
+  "qchem/index.html"
+ ],
+ "隧穿：波包动能 E = 0.5，势垒 V = 1。势垒在 y 方向均匀时，问题就是一维方势垒，穿过去的概率和下式（对波包的动量分布取平均）相差不到两成；差别来自势垒只有几格宽，它的宽度本身只准到一格左右。6 格厚时只穿过约万分之一，1 格厚时约 37%。": [
+  "qchem/index.html"
+ ],
+ "局限：这是二维的玩具模型，长度以格为单位，不对应真实的电子、缝和距离。打开“显示相位”后，颜色表示 ψ 的相位（金色 0、绿色 +π/2、蓝色 π、紫色 −π/2），亮度仍是 |ψ| 的大小；墙也是紫色，在相位图里要靠形状分辨。": [
+  "qchem/index.html"
+ ],
+ "的“薛定谔方程与一维问题”一章讲波包扩散和隧穿，“量子的诞生”一章讲单电子双缝实验。": [
+  "qchem/index.html"
+ ],
  "游乐场需要启用 JavaScript。": [
   "qchem/index.html"
  ],
@@ -6920,7 +6980,8 @@
  ],
  "目标": [
   "qchem/index.html",
-  "qchem/play.js"
+  "qchem/play.js",
+  "qchem/play-wave2d.js"
  ],
  "质量、长度、时间三个量纲的指数": [
   "qchem/index.html"
@@ -6929,6 +6990,12 @@
   "qchem/index.html"
  ],
  "ħ-c-G 立方体的八个角": [
+  "qchem/index.html"
+ ],
+ "画笔": [
+  "qchem/index.html"
+ ],
+ "画墙的格子：方向键移动光标，按住 Shift 一次走 4 格，空格键画墙或擦除": [
   "qchem/index.html"
  ],
  "复习卡片 · 按遗忘曲线复习计算化学与量子知识 · MolAstria": [
@@ -7907,6 +7974,18 @@
   "manual/app.js",
   "tools/build-seo.ts"
  ],
+ "动手算：自己写一个 Hartree–Fock": [
+  "manual/app.js"
+ ],
+ "这一章的计算引擎（ORCA、Psi4、Gaussian 等）做的第一件事都是自洽场（SCF）。下面是一段完整的 Python 程序：用 STO-3G 基组对 H₂ 做限制性 Hartree–Fock。积分按 Szabo 和 Ostlund《Modern Quantum Chemistry》第 3 章的闭式公式写（重叠、动能、核吸引、双电子积分和 Boys 函数 F₀），用对称正交化 S^(−1/2)，迭代到能量不再变化，最后扫一遍键长画出势能曲线。": [
+  "manual/app.js"
+ ],
+ "改开头的 R 再运行，看能量怎么变；把 MOLECULE 改成 \"HeH+\"，能看到要迭代好几轮的 SCF。远处的曲线还会告诉你限制性 Hartree–Fock 为什么拆不开 H₂。程序只在你的浏览器里运行，不上传。": [
+  "manual/app.js"
+ ],
+ "参考值：R = 1.4 bohr 时 Szabo 和 Ostlund 给出约 −1.1167 hartree，PySCF 用同样的 STO-3G 算得 −1.116714。写法参照 psi4numpy 的教学程序（BSD-3-Clause），代码是 MolAstria 自己写的。": [
+  "manual/app.js"
+ ],
  "（印刷版）": [
   "journals/journals.js"
  ],
@@ -8754,7 +8833,8 @@
  ],
  "自由玩": [
   "qchem/play.js",
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "{0} 元环，电荷 {1}。假设环是平面的，它是芳香的还是反芳香的？": [
   "qchem/play.js"
@@ -8887,13 +8967,16 @@
   "qchem/play-quantum.js"
  ],
  "第 1 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "第 2 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "第 3 关": [
-  "qchem/play-quantum.js"
+  "qchem/play-quantum.js",
+  "qchem/play-wave2d.js"
  ],
  "经典策略赢到 75%": [
   "qchem/play-quantum.js"
@@ -9342,6 +9425,132 @@
  ],
  "应该是：{0}。{1}": [
   "qchem/play-quantum.js"
+ ],
+ "固定的墙上有一道 32 格宽的口子，金色虚线是屏。在口子里画墙，把它分成两条（或更多）缝，让屏上出现至少 3 条亮纹；5 条两星，7 条三星。最多改 60 格。": [
+  "qchem/play-wave2d.js"
+ ],
+ "一道 6 格厚的势垒（红色）挡在路上，高度是波包动能的两倍，现在几乎什么都穿不过去。最右一列擦不掉，其余可以擦，最多擦 200 格。让至少 20% 的概率穿过去；30% 两星，34% 三星。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包向右飞，绿框是目标。用不超过 70 格墙把它送进框里：结束前（t = 110）框里的概率至少有一刻达到 30%；45% 两星，55% 三星。": [
+  "qchem/play-wave2d.js"
+ ],
+ "自由玩：随便画墙，不限格数，看波包怎样反射、衍射、干涉。": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过缝的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过势垒的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里的概率": [
+  "qchem/play-wave2d.js"
+ ],
+ "画面里还剩": [
+  "qchem/play-wave2d.js"
+ ],
+ "两条缝出来的波在屏上叠加，程差是波长的整数倍处变亮，差半个波长处相消；缝距越大，条纹越密。": [
+  "qchem/play-wave2d.js"
+ ],
+ "势垒每厚一格，穿过去的概率大约降为原来的七分之一：隧穿概率随厚度指数衰减。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙对波包像一面镜子：入射角等于反射角。斜线是一格一格的台阶，比波长细，所以还算光滑。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：两条缝的中心离得越远，条纹越密、屏上能数到的越多；缝要窄一些，亮纹才分得开。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：擦掉波包正前方那几十行，只留最右一列。势垒越薄，穿过去的越多。": [
+  "qchem/play-wave2d.js"
+ ],
+ "提示：在波包前方画一条从左下到右上的 45° 斜线，镜子要比波包宽。": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上的累积强度 · 亮纹 {0} 条": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙格": [
+  "qchem/play-wave2d.js"
+ ],
+ "已用 {0} / {1}": [
+  "qchem/play-wave2d.js"
+ ],
+ "已用 {0}（不限）": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上的亮纹（条）": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里最高": [
+  "qchem/play-wave2d.js"
+ ],
+ "成绩": [
+  "qchem/play-wave2d.js"
+ ],
+ "{0}（最佳 {1}）": [
+  "qchem/play-wave2d.js"
+ ],
+ "共得 {0} / 9 颗星": [
+  "qchem/play-wave2d.js"
+ ],
+ "屏上数到 {0} 条亮纹": [
+  "qchem/play-wave2d.js"
+ ],
+ "穿过势垒的概率 {0}": [
+  "qchem/play-wave2d.js"
+ ],
+ "框里的概率最高 {0}": [
+  "qchem/play-wave2d.js"
+ ],
+ "暂停": [
+  "qchem/play-wave2d.js"
+ ],
+ "继续": [
+  "qchem/play-wave2d.js"
+ ],
+ "计算中…": [
+  "qchem/play-wave2d.js"
+ ],
+ "跑完了。画面里还剩 {0}，其余都被四周的吸收边界吸收了。": [
+  "qchem/play-wave2d.js"
+ ],
+ "示范解法：{0}，{1}。看过示范的布局不计分，按“清空墙”自己画一个。": [
+  "qchem/play-wave2d.js"
+ ],
+ "过关！{0}，得 {1}。{2}": [
+  "qchem/play-wave2d.js"
+ ],
+ "{0}，还没过关。{1}": [
+  "qchem/play-wave2d.js"
+ ],
+ "预算用完了：这一关最多改 {0} 格。擦掉一些再画。": [
+  "qchem/play-wave2d.js"
+ ],
+ "这还是示范的布局，改了也不计分；按“清空墙”从头画。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙改了，波包回到了起点。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包正在飞：先按“暂停”，再改墙（改了以后从头开始）。": [
+  "qchem/play-wave2d.js"
+ ],
+ "波包回到了起点，墙都还在。": [
+  "qchem/play-wave2d.js"
+ ],
+ "墙清空了，回到这一关的初始布局。": [
+  "qchem/play-wave2d.js"
+ ],
+ "这是一份示范解法，按“运行”看看。看过示范的布局不计分。": [
+  "qchem/play-wave2d.js"
+ ],
+ "已得 {0} / 9 颗星": [
+  "qchem/play-wave2d.js"
  ],
  "本期": [
   "digest/digest.js"
@@ -14020,7 +14229,7 @@
  "MolAstria 游乐场": [
   "tools/build-seo.ts"
  ],
- "用真实的物理公式玩量子世界的十四个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
+ "用真实的物理公式玩量子世界的十五个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。": [
   "tools/build-seo.ts"
  ],
  "Meta × 化学：Muse 识图、UMA 脚本与开放数据集": [
