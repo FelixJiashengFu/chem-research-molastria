@@ -151,3 +151,15 @@ CREATE TABLE IF NOT EXISTS sync_items (
   updated INTEGER NOT NULL,
   PRIMARY KEY (email, key)
 );
+
+-- 网状查询没找到的词（2026-11-10）：访客的浏览器第一次记下一个术语表认不出的词时匿名报一次（POST /net/miss）。
+-- 只存词本身：term 是 NFKC + 小写后的写法（主键），shown 是最近一次的原样写法，n 是报过几次（大致是多少个浏览器查过），
+-- hits 是最近一次的全文命中数，first / last 是第一次和最近一次的时间。不存 IP、账号、来源网站。最多 3000 行，满了先删报得少、最久没报的。
+CREATE TABLE IF NOT EXISTS net_misses (
+  term TEXT PRIMARY KEY,
+  shown TEXT NOT NULL,
+  n INTEGER NOT NULL,
+  hits INTEGER NOT NULL,
+  first INTEGER NOT NULL,
+  last INTEGER NOT NULL
+);

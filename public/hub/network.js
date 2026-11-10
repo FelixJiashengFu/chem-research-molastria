@@ -21,6 +21,7 @@
   let trail = [];
   let recordNext = false;                   // the next render comes from the search box (or a ?q= link), so a miss is recorded
   const counted = new Set();                // each word is counted once per visit
+  const reported = new Set();               // words this visit reported to the site owner (the focus note says so)
   const display = (e) => EN && e.nameEn ? e.nameEn.replace(/^./, (c) => c.toUpperCase()) : tr(e.name);
   const sourceOf = (id) => NET.sourceById.get(id) || { id, name: id, color: '#7d8a80' };
 
@@ -397,7 +398,7 @@
       f.innerHTML = `<div class="focus-kind k-query">全文检索</div><h2 id="resultTitle">「${esc(R.q)}」</h2>` +
         `<div class="focus-stats"><span>${primary.length} 条命中</span><span>${R.related.length} 个关联概念</span></div>` +
         (R.suggestions?.length ? `<p class="focus-note">没有找到。你是不是要找：${R.suggestions.map((s) => entityChip(s.entity)).join('')}</p>` : '') +
-        (missed(R.q) ? `<p class="focus-note net-miss-note">术语表里还没有这个词。<a href="#misses">已记进这台设备上的“没找到的词”</a></p>` : '');
+        (missed(R.q) ? `<p class="focus-note net-miss-note">术语表里还没有这个词。<a href="#misses">已记进这台设备上的“没找到的词”</a>${reported.has(MISSES.keyOf(R.q)) ? '，这个词也匿名报给了站长。' : ''}</p>` : '');
     } else if (R.mode === 'source') {
       f.innerHTML = `<div class="focus-kind k-source">来源</div><h2 id="resultTitle">${esc(R.source.name)}</h2><p class="focus-desc">${esc(R.source.role || '')}</p>` +
         `<div class="focus-stats"><span>${primary.length} 条条目</span><span>${R.related.length} 个常见概念</span></div>` +
@@ -454,22 +455,38 @@
       i === trail.length - 1 ? `<b>${esc(t.label)}</b>` : `<button type="button" data-trail="${i}">${esc(t.label)}</button><span aria-hidden="true">›</span>`).join('') : '';
   }
 
-  /* ---------- words the term table did not know (net-misses.js; this device only) ---------- */
+  /* ---------- words the term table did not know (net-misses.js) ----------
+     The list stays on this device. The first time a word is kept, the word alone (and its full-text hit count) is also reported
+     to the account service once, so the site owner sees which words people miss across the site (deploy/account-worker.js,
+     POST /net/miss; it keeps no IP or account). No sign-in token and no other searches go with it; "匿名报给站长" turns it off. */
   const MISSES = window.MolAstriaNetMisses;
   function loadMisses() { try { return MISSES.parse(localStorage.getItem(MISSES.KEY)); } catch { return MISSES ? MISSES.parse(null) : null; } }
-  function saveMisses(s) { try { if (s.off || s.items.length) localStorage.setItem(MISSES.KEY, JSON.stringify(s)); else localStorage.removeItem(MISSES.KEY); } catch { /* storage blocked */ } renderMisses(); }
+  function saveMisses(s) { try { if (s.off || !s.share || s.items.length) localStorage.setItem(MISSES.KEY, JSON.stringify(s)); else localStorage.removeItem(MISSES.KEY); } catch { /* storage blocked */ } renderMisses(); }
+  function reportMiss(word) {
+    const base = String(window.MOLASTRIA_PAY?.accountApi || '').replace(/\/+$/, '');
+    if (!base || location.protocol === 'file:') return false;   // the single-file copy has no site origin the service accepts
+    // read the (tiny) body: an unread response keeps the request open in Chromium, which holds the connection and stalls "network idle"
+    fetch(`${base}/net/miss`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(word), credentials: 'omit' })
+      .then((r) => r.text()).catch(() => {});
+    return true;
+  }
   const missed = (q) => !!MISSES && loadMisses().items.some((x) => MISSES.keyOf(x.q) === MISSES.keyOf(q));
   function noteMiss() {
     if (!MISSES || !recordNext || state.src) return;
     const key = MISSES.keyOf(state.q);
     if (counted.has(key) || !MISSES.missOf(R)) return;
     counted.add(key);
-    saveMisses(MISSES.record(loadMisses(), state.q, R));
+    const before = loadMisses();
+    const word = MISSES.reportOf(before, state.q, R);
+    saveMisses(MISSES.record(before, state.q, R));
+    if (word && reportMiss(word)) reported.add(key);
   }
   function renderMisses() {
     if (!MISSES || !$('missList')) return;
     const s = loadMisses(), list = MISSES.ranked(s);
     $('missOn').checked = !s.off;
+    $('missShare').checked = !s.off && s.share;
+    $('missShare').disabled = s.off;
     $('missActions').hidden = !list.length;
     $('missList').innerHTML = s.off ? '<p class="small muted">已关闭，不再记录；以前记下的也已清空。</p>'
       : !list.length ? '<p class="small muted">还没有记下的词。</p>'
@@ -484,6 +501,7 @@
   function bindMisses() {
     if (!MISSES || !$('missList')) return;
     $('missOn').addEventListener('change', (ev) => { saveMisses(MISSES.setOff(loadMisses(), !ev.target.checked)); $('missMsg').textContent = ev.target.checked ? '已开启记录。' : '已关闭并清空。'; if (R) renderFocus(); });
+    $('missShare').addEventListener('change', (ev) => { saveMisses(MISSES.setShare(loadMisses(), ev.target.checked)); $('missMsg').textContent = ev.target.checked ? '以后新记下的词会匿名报给站长。' : '不再报给站长，词只留在这台设备上。'; });
     $('missClear').addEventListener('click', () => { saveMisses(MISSES.clear(loadMisses())); $('missMsg').textContent = '已清空。'; });
     $('missCopy').addEventListener('click', async () => {
       const text = MISSES.toText(loadMisses(), EN ? { times: 'times', hits: 'full-text hits' } : undefined);

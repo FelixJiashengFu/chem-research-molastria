@@ -144,6 +144,8 @@
 .net-misses-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .net-misses-head h2{margin:0;font-size:18px}
 .net-misses-toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.net-misses-toggles{display:inline-flex;flex-wrap:wrap;gap:4px 16px}
+.net-misses-toggle:has(input:disabled){opacity:.55;cursor:default}
 .net-misses-list ul{list-style:none;margin:10px 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .net-misses-list li{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 12px;background:var(--paper);max-width:100%}
 .net-miss-q{border:0;background:none;padding:0;color:var(--ink);font:inherit;font-size:13.5px;cursor:pointer;overflow-wrap:anywhere;text-align:left}

@@ -2,7 +2,7 @@
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
    Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
-     redeemCard(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild()} */
+     redeemCard(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild(), netMisses(), dropNetMiss(), clearNetMisses()} */
 (() => {
   'use strict';
   if (window.MolAstriaAccount) return;
@@ -66,6 +66,9 @@
     digest: () => call('/digest/latest'),
     digestSubscribe: (on) => call('/digest/subscribe', { method: on ? 'POST' : 'DELETE', body: { lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
     digestSendMe: () => call('/digest/send-me', { method: 'POST', body: { lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
-    digestBuild: () => call('/admin/digest/build', { method: 'POST', body: {} })
+    digestBuild: () => call('/admin/digest/build', { method: 'POST', body: {} }),
+    netMisses: () => call('/admin/net-misses'),
+    dropNetMiss: (term) => call('/admin/net-misses', { method: 'DELETE', body: { term } }),
+    clearNetMisses: () => call('/admin/net-misses', { method: 'DELETE', body: { all: true } })
   };
 })();

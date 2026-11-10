@@ -128,6 +128,14 @@
       <ul class="acct-cardlist" id="card-list"></ul>
     </div>
 
+    <div class="acct-card" id="misses-card" hidden aria-labelledby="misses-h">
+      <h2 id="misses-h">全站没找到的词</h2>
+      <p class="acct-sub">访客在网状查询里搜了、术语表认不出的词。每个浏览器每个词只报一次，所以次数大致是多少个浏览器查过；只有词和次数，没有账号和 IP，访客可以关掉上报。常见的词补进术语表（search-terms.js）之后，在这里删掉。</p>
+      <p class="acct-misses-actions"><button type="button" class="btn" id="misses-copy">复制列表</button><button type="button" class="btn" id="misses-clear">全部删掉</button><span id="misses-total" class="acct-sub"></span></p>
+      <p class="co-msg" id="misses-msg" role="status" aria-live="polite"></p>
+      <ul class="acct-cardlist" id="misses-list"></ul>
+    </div>
+
     <div class="acct-card" id="redeem-card" hidden aria-labelledby="redeem-h">
       <h2 id="redeem-h">兑换 VIP 卡</h2>
       <p class="acct-sub" id="redeem-sub">有朋友送的 VIP 卡？填卡号兑换，Pro 立即生效；有期限的卡会在当前有效期之后顺延。</p>

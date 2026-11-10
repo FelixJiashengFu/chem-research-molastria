@@ -17,6 +17,9 @@
      GET  /sync?since=<版本>            云同步：每份存档的版本、云端的空间，以及版本比 since 新的存档原文
      POST /sync {items:[{key, base, body}]}  传上改过的存档；base 是这台设备上次看到的版本，对不上的放进 conflicts 退回去合并
      DELETE /sync                       删掉云端的全部存档
+     POST /net/miss {q, hits}           网状查询里术语表认不出的词，访客的浏览器新记下一个时匿名报一次，不需要登录；
+                                        只存词、次数和全文命中数，不存 IP、账号、来源（规则和 public/hub/net-misses.js 一样）
+     GET  /admin/net-misses             站长：全站没找到的词，按次数排；DELETE {term} 删一个，DELETE {all: true} 全部删掉
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
      GET  /digest/preview               每周精选的完整一期（概览、全部论文和点评），公开
@@ -242,9 +245,9 @@ async function redeem(env, email, code) {
   if (!taken) throw fail(409, '这张 VIP 卡刚刚被别人用掉了');
 }
 const cardList = async (env) => (await env.DB.prepare('SELECT code, days, note, created, redeemed_by, redeemed_at, revoked FROM cards ORDER BY created DESC, code LIMIT 500').all()).results;
-async function signedInAdmin(env, request) {
+async function signedInAdmin(env, request, refusal = '只有站长可以管理 VIP 卡') {
   const me = await signedIn(env, request);
-  if ((await grantOf(env, me))?.source !== 'admin') throw fail(403, '只有站长可以管理 VIP 卡');
+  if ((await grantOf(env, me))?.source !== 'admin') throw fail(403, refusal);
   return me;
 }
 
@@ -748,6 +751,40 @@ async function sync(request, env, cors, url) {
   return json({ saved, conflicts, full, ...(await syncState(env, me)), limit, pro }, cors);
 }
 
+// ── words the Network view did not know ─────────────────────────────────
+// A visitor's browser keeps the searches the term table did not recognise (public/hub/net-misses.js); the first time it keeps
+// a word it also reports it here once, unless the visitor turned that off. Only the word, how many browsers reported it and the
+// last full-text hit count are kept: no IP, account, page or time of day beyond first/last. The filter is the browser's
+// worthKeeping(), repeated so a hand-made request cannot store an address, an email or a long number. One limit for everybody
+// (NET_MISS_HOURLY) instead of a per-IP counter, so nothing about who sent it lands in the throttle table either.
+const MISS_LEN = 60, MISS_ROWS = 3000;
+const missText = (q) => String(q ?? '').replace(/\s+/g, ' ').trim();
+const missKey = (q) => missText(q).normalize('NFKC').toLowerCase();
+function missWorth(q) {
+  const s = missText(q);
+  if ([...s].length < 2 || s.length > MISS_LEN) return false;
+  if (/[\u0000-\u001f\u007f]/.test(s) || /[@/\\]|:\/\/|^www\./i.test(s)) return false;
+  if (/\d{6,}/.test(s.replace(/[\s-]/g, ''))) return false;
+  return true;
+}
+async function missList(env) {
+  const words = (await env.DB.prepare('SELECT shown AS q, n, hits, first, last FROM net_misses ORDER BY n DESC, last DESC LIMIT 300').all()).results;
+  const { total } = await env.DB.prepare('SELECT COUNT(*) AS total FROM net_misses').first();
+  return { words, total };
+}
+async function netMiss(env, body, cors) {
+  const shown = missText(body.q);
+  if (!missWorth(shown)) throw fail(400, '这个词不记');
+  const hits = Math.max(0, Math.min(99999, Math.floor(Number(body.hits)) || 0));
+  if (!(await allow(env, 'net-miss', Number(env.NET_MISS_HOURLY || 300), 3600))) throw fail(429, '提交太频繁，请稍后再试');
+  const t = now();
+  const row = await env.DB.prepare('INSERT INTO net_misses (term, shown, n, hits, first, last) VALUES (?1, ?2, 1, ?3, ?4, ?4) ON CONFLICT(term) DO UPDATE SET shown = ?2, n = n + 1, hits = ?3, last = ?4 RETURNING n')
+    .bind(missKey(shown), shown, hits, t).first();
+  // A new word may push the table over MISS_ROWS: the words reported least, longest ago, go first.
+  if (row.n === 1) await env.DB.prepare('DELETE FROM net_misses WHERE term IN (SELECT term FROM net_misses ORDER BY n ASC, last ASC LIMIT MAX((SELECT COUNT(*) FROM net_misses) - ?1, 0))').bind(MISS_ROWS).run();
+  return json({ ok: true }, cors);
+}
+
 async function route(request, env, cors) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -905,6 +942,17 @@ async function route(request, env, cors) {
       return json({ cards: await cardList(env) }, cors);
     }
     if (request.method === 'GET') return json({ cards: await cardList(env) }, cors);
+  }
+
+  if (key === 'POST /net/miss') return netMiss(env, body, cors);
+  if (path === '/admin/net-misses' && (request.method === 'GET' || request.method === 'DELETE')) {
+    await signedInAdmin(env, request, '只有站长可以看全站没找到的词');
+    if (request.method === 'DELETE') {
+      if (body.all === true) await env.DB.prepare('DELETE FROM net_misses').run();
+      else if (missKey(body.term)) await env.DB.prepare('DELETE FROM net_misses WHERE term = ?1').bind(missKey(body.term)).run();
+      else throw fail(400, '要删哪个词？');
+    }
+    return json(await missList(env), cors);
   }
 
   if (key === 'GET /digest/preview') {

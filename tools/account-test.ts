@@ -1079,5 +1079,61 @@ await test("sync: a record bigger than the limit for one record is refused befor
   eq(sqlite.prepare("SELECT COUNT(*) AS n FROM sync_items WHERE key = 'molastria-learn' AND email = 'boss@molastria.com'").get(), { n: 0 });
 });
 
+// ── words the Network view did not know ─────────────────────────────────
+await test("network misses: anyone reports a word anonymously; repeats count; nothing about the sender is kept", async () => {
+  const r = await call("POST", "/net/miss", { q: "  Plasmonic   Gizmo ", hits: 3 });
+  eq([r.status, r.data], [200, { ok: true }]);
+  eq((await call("POST", "/net/miss", { q: "plasmonic gizmo", hits: 1 }, proToken)).status, 200, "a token is ignored, not needed");
+  eq((await call("POST", "/net/miss", { q: "ＰＬＡＳＭＯＮＩＣ gizmo" })).status, 200, "full-width letters are the same word");
+  const row = sqlite.prepare("SELECT * FROM net_misses").all();
+  eq(row.map((x: any) => [x.term, x.shown, x.n, x.hits]), [["plasmonic gizmo", "ＰＬＡＳＭＯＮＩＣ gizmo", 3, 0]]);
+  eq(Object.keys(row[0]).sort(), ["first", "hits", "last", "n", "shown", "term"], "no column for an IP, account or page");
+  const throttle = sqlite.prepare("SELECT key FROM throttle WHERE key LIKE 'net-miss%'").all();
+  eq(throttle, [{ key: "net-miss" }], "one shared limit, no per-IP row");
+  // The same filter as the browser: addresses, emails, paths, long numbers, too short or too long, control characters.
+  for (const q of ["x", "https://example.com", "www.example.com", "me@example.com", "10.1021/jacs", "7732-18-5", "416 555 0199 12", "a".repeat(61), "ab\u0007c", "", null])
+    eq((await call("POST", "/net/miss", { q })).status, 400, `refused ${JSON.stringify(q)}`);
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM net_misses").get(), { n: 1 });
+  // Sites that may not use the service are refused like everywhere else.
+  eq((await call("POST", "/net/miss", { q: "evil word" }, undefined, "https://evil.example")).status, 403);
+});
+
+await test("network misses: one hourly limit for everybody; the table keeps at most 3000 words", async () => {
+  env.NET_MISS_HOURLY = "2";
+  sqlite.prepare("DELETE FROM throttle WHERE key = 'net-miss'").run();
+  eq((await call("POST", "/net/miss", { q: "word one" })).status, 200);
+  eq((await call("POST", "/net/miss", { q: "word two" })).status, 200);
+  const third = await call("POST", "/net/miss", { q: "word three" });
+  eq([third.status, third.data.error?.message], [429, "提交太频繁，请稍后再试"]);
+  delete env.NET_MISS_HOURLY;
+  sqlite.prepare("DELETE FROM throttle WHERE key = 'net-miss'").run();
+  // Fill to the cap with old single reports; a new word pushes out the oldest of those, never a word reported more often.
+  const t = nowS() - 86400;
+  const ins = sqlite.prepare("INSERT INTO net_misses (term, shown, n, hits, first, last) VALUES (?, ?, 1, 0, ?, ?)");
+  const have = (sqlite.prepare("SELECT COUNT(*) AS n FROM net_misses").get() as any).n;
+  for (let i = 0; i < 3000 - have; i++) ins.run(`old word ${i}`, `old word ${i}`, t + i, t + i);
+  eq((await call("POST", "/net/miss", { q: "brand new word" })).status, 200);
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM net_misses").get(), { n: 3000 });
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM net_misses WHERE term IN ('old word 0', 'brand new word', 'plasmonic gizmo')").get(), { n: 2 });
+  eq(sqlite.prepare("SELECT n FROM net_misses WHERE term = 'plasmonic gizmo'").get(), { n: 3 });
+});
+
+await test("network misses: only the admin sees the ranking and deletes words", async () => {
+  eq((await call("GET", "/admin/net-misses")).status, 401);
+  const reader = (await signIn("reader@example.com")).data.token;
+  const no = await call("GET", "/admin/net-misses", undefined, reader);
+  eq([no.status, no.data.error?.message], [403, "只有站长可以看全站没找到的词"]);
+  const list = await call("GET", "/admin/net-misses", undefined, adminToken);
+  eq([list.status, list.data.total, list.data.words.length], [200, 3000, 300]);
+  eq(list.data.words[0], { q: "ＰＬＡＳＭＯＮＩＣ gizmo", n: 3, hits: 0, first: list.data.words[0].first, last: list.data.words[0].last });
+  eq(Object.keys(list.data.words[0]).sort(), ["first", "hits", "last", "n", "q"]);
+  const one = await call("DELETE", "/admin/net-misses", { term: "Plasmonic Gizmo" }, adminToken);
+  eq([one.status, one.data.total, one.data.words.some((w: any) => /gizmo/i.test(w.q))], [200, 2999, false]);
+  eq((await call("DELETE", "/admin/net-misses", {}, adminToken)).status, 400);
+  eq((await call("DELETE", "/admin/net-misses", { all: true }, reader)).status, 403);
+  const all = await call("DELETE", "/admin/net-misses", { all: true }, adminToken);
+  eq([all.status, all.data], [200, { words: [], total: 0 }]);
+});
+
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 if (failed) Deno.exit(1);
