@@ -60,7 +60,7 @@ body.glassy { background: radial-gradient(900px 600px at 85% -10%, color-mix(in 
   <section class="hero">
     <div class="eyebrow">Research Atlas · 2026</div>
     <h1>中美<em>·</em>研究图谱</h1>
-    <p class="lede">从中美二十所大学的数理化院系网络出发，延伸到整个北美和中国的量子化学与计算化学：谁在做、在哪里、和谁合作、影响力如何、资本流向哪里。七个模块，默认按下面的顺序阅读最顺，也可以拖动卡片换成你喜欢的顺序。</p>
+    <p class="lede">从中美加二十多所大学的数理化院系网络出发，延伸到整个北美和中国的量子化学与计算化学：谁在做、在哪里、和谁合作、影响力如何、资本流向哪里。七个模块，默认按下面的顺序阅读最顺，也可以拖动卡片换成你喜欢的顺序。</p>
     <div class="hero-figs">
       <div><b>1,991</b><span>位教授 / 课题组负责人</span></div>
       <div><b>38 万</b><span>篇论文进入分析</span></div>
@@ -77,7 +77,7 @@ body.glassy { background: radial-gradient(900px 600px at 85% -10%, color-mix(in 
     <div class="mods-head"><div><div class="eyebrow">Modules</div><h2>七个模块</h2></div>
       <p>按住任意一张卡片拖动，可以调整模块顺序，顶部导航会跟着变；顺序只保存在你的浏览器里。<button type="button" id="mreset" class="linkbtn">恢复默认顺序</button></p></div>
     <div class="mods" id="mods">
-      <div class="tile glass" data-key="schools"><div class="row1"><span class="no">01</span><span class="tag">20 所学校 · 交互网络</span></div><h3><a href="schools/">大学数理化研究网络</a></h3><p>每所学校的数学、物理、化学教授如何通过论文、主题、合作者和产业连成一张网。点开列表选择学校，列表同样可以拖动排序。</p>
+      <div class="tile glass" data-key="schools"><div class="row1"><span class="no">01</span><span class="tag" id="nSchools">20 所学校 · 交互网络</span></div><h3><a href="schools/">大学数理化研究网络</a></h3><p>每所学校的数学、物理、化学教授如何通过论文、主题、合作者和产业连成一张网。点开列表选择学校，列表同样可以拖动排序。</p>
         <ul class="sch-mini" id="schmini"></ul>
         <div class="nums"><span><b>20</b>所中美名校</span><span><b id="sLive">2</b>所已上线</span><span><b id="sProf">434</b>位教授</span><span><b id="sNet">30</b>张网络</span></div></div>
       <div class="tile glass" data-key="na-map"><div class="row1"><span class="no">02</span><span class="tag">真实地图</span></div><h3><a href="na-quantum-chem-map/">北美量子化学合作地图</a></h3><p>教授落在学校的真实经纬度上，线是合写论文；点开任何一位看主要论文、近期论文与网内合作者。可按方向、国家筛选。</p>
@@ -137,10 +137,11 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script>
 addEventListener("DOMContentLoaded", () => fetch("schools/stats.json").then(r => r.json()).then(st => {
-  const all = Object.assign({ uoft: [298, 52000, 12], stanford: [136, 40000, 18] }, st);
-  const live = Object.keys(all).filter(k => (window.RA_NAV?.SCHOOLS || []).some(s => s[0] === k && s[4]) || k === "uoft" || k === "stanford");
+  const all = Object.assign({ uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], udem: [96, 17545, 22] }, st);
+  const live = Object.keys(all).filter(k => (window.RA_NAV?.SCHOOLS || []).some(s => s[0] === k && s[4]) || k === "uoft" || k === "stanford" || k === "waterloo" || k === "udem");
   const sum = i => live.reduce((a, k) => a + all[k][i], 0);
   document.getElementById("sLive").textContent = live.length;
+  const ns = document.getElementById("nSchools"); if (ns && window.RA_NAV) ns.textContent = `${window.RA_NAV.SCHOOLS.length} 所学校 · 交互网络`;
   document.getElementById("sProf").textContent = sum(0).toLocaleString();
   document.getElementById("sNet").textContent = sum(2);
 }).catch(() => {}));

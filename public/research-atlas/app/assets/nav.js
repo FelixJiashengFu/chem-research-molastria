@@ -19,6 +19,8 @@
   const SCHOOLS = [
     ["uoft", "多伦多大学", "University of Toronto", "CA", "uoft/"],
     ["stanford", "斯坦福大学", "Stanford University", "US", "stanford/"],
+    ["waterloo", "滑铁卢大学", "University of Waterloo", "CA", "waterloo/"],
+    ["udem", "蒙特利尔大学", "Université de Montréal", "CA", "udem/"],
     ["mit", "麻省理工学院", "MIT", "US", "schools/mit/"],
     ["harvard", "哈佛大学", "Harvard University", "US", "schools/harvard/"],
     ["caltech", "加州理工学院", "Caltech", "US", "schools/caltech/"],
@@ -191,7 +193,7 @@
     const pop = document.createElement("div"); pop.className = "ra-pop ra-glass"; pop.hidden = true;
     const paint = () => {
       pop.innerHTML = `<div class="hd"><b>选择学校</b><span>按住拖动可排序</span></div><ul class="ra-sch">${schoolItems()}</ul>
-        <div class="ft"><a href="${R("schools/")}">全部 20 所学校 →</a><button type="button" data-reset>恢复默认顺序</button></div>`;
+        <div class="ft"><a href="${R("schools/")}">全部 ${SCHOOLS.length} 所学校 →</a><button type="button" data-reset>恢复默认顺序</button></div>`;
       pop.querySelector("[data-reset]").onclick = e => { e.stopPropagation(); reset("schools"); };
     };
     paint();

@@ -1,0 +1,170 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 2185,
+  "edges": 5885
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 125,
+  "edges": 184
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 155,
+  "edges": 438
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（纯数学×应用数学×组合与优化×物理与天文×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 307,
+  "edges": 871
+ },
+ {
+  "id": "dept-pure-mathematics",
+  "title": "纯数学系子网",
+  "description": "纯数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 40,
+  "edges": 129
+ },
+ {
+  "id": "dept-applied-mathematics",
+  "title": "应用数学系子网",
+  "description": "应用数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 86,
+  "edges": 203
+ },
+ {
+  "id": "dept-combinatorics-optimization",
+  "title": "组合与优化系子网",
+  "description": "组合与优化系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 62,
+  "edges": 224
+ },
+ {
+  "id": "dept-physics-astronomy",
+  "title": "物理与天文系子网",
+  "description": "物理与天文系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 116,
+  "edges": 370
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 160,
+  "edges": 435
+ },
+ {
+  "id": "area-iqc",
+  "title": "方向子网：量子信息与量子计算（IQC 成员）",
+  "description": "量子计算研究所（IQC）官网列出的 faculty 与 associates，横跨纯数学、应用数学、组合与优化、物理与化学。",
+  "nodes": 75,
+  "edges": 267
+ },
+ {
+  "id": "area-perimeter",
+  "title": "方向子网：理论物理（与 Perimeter 研究所联署）",
+  "description": "至少 5 篇论文同时署名 Perimeter Institute 的教授（OpenAlex 作者机构）。",
+  "nodes": 72,
+  "edges": 230
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理与宇宙学",
+  "description": "主要研究子领域（OpenAlex）为 Astronomy and Astrophysics 的教授。",
+  "nodes": 21,
+  "edges": 73
+ },
+ {
+  "id": "area-cmp-amo",
+  "title": "方向子网：凝聚态 · 原子分子光学 · 软物质",
+  "description": "物理与天文、化学两系中，主要子领域为凝聚态、原子分子光学或材料物理的教授。",
+  "nodes": 89,
+  "edges": 285
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：有机化学 · 生物化学 · 生物分析",
+  "description": "化学系官网标注为 Organic Chemistry / Biochemistry / Bioanalytical Chemistry 方向的教授。",
+  "nodes": 51,
+  "edges": 93
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 理论化学 · 无机与纳米材料",
+  "description": "化学系官网标注为 Physical / Theoretical / Inorganic / Polymer / Analytical Chemistry 或 Nanotechnology 方向的教授。",
+  "nodes": 106,
+  "edges": 253
+ },
+ {
+  "id": "area-math-alg",
+  "title": "方向子网：纯数学：代数 · 数论 · 几何 · 拓扑",
+  "description": "纯数学系官网研究方向含 algebra / number theory / geometry / topology / Lie / representation 的教授。",
+  "nodes": 35,
+  "edges": 110
+ },
+ {
+  "id": "area-math-ana",
+  "title": "方向子网：纯数学：分析 · 算子代数 · 逻辑 · 动力系统",
+  "description": "纯数学系官网研究方向含 analysis / operator / logic / model theory / probability / dynamical 的教授。",
+  "nodes": 13,
+  "edges": 25
+ },
+ {
+  "id": "area-am-bio",
+  "title": "方向子网：应用数学：数学生物与医学 · 动力系统 · 控制",
+  "description": "应用数学系官网标注 Mathematical Biology / Dynamical Systems / Control 方向的教授。",
+  "nodes": 41,
+  "edges": 93
+ },
+ {
+  "id": "area-am-comp",
+  "title": "方向子网：应用数学：流体力学 · 科学计算 · 数值分析",
+  "description": "应用数学系官网标注 Fluid Mechanics / Scientific Computing / Numerical 方向的教授。",
+  "nodes": 31,
+  "edges": 61
+ },
+ {
+  "id": "area-am-mp",
+  "title": "方向子网：应用数学：数学物理 · 量子信息 · 机器学习",
+  "description": "应用数学系官网标注 Mathematical Physics / Quantum Information / Machine Learning 方向的教授。",
+  "nodes": 20,
+  "edges": 44
+ },
+ {
+  "id": "area-co-comb",
+  "title": "方向子网：组合与优化：组合 · 图论",
+  "description": "组合与优化系中，主要子领域（OpenAlex）为 Discrete Mathematics and Combinatorics 或 Computational Theory 的教授。",
+  "nodes": 38,
+  "edges": 134
+ },
+ {
+  "id": "area-co-opt",
+  "title": "方向子网：组合与优化：连续优化 · 运筹 · 密码学 · 量子",
+  "description": "组合与优化系中，主要子领域不属于组合/图论的教授（数值优化、运筹、密码学、量子计算等）。",
+  "nodes": 22,
+  "edges": 55
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 237,
+  "edges": 775
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 222,
+  "edges": 300
+ }
+]

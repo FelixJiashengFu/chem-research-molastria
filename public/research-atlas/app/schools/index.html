@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>大学研究网络</title>
-<meta name="description" content="20 所中美名校（含多伦多大学）的数学、物理、化学教授研究网络：选择学校，拖动卡片排序。">
+<meta name="description" content="二十多所中美加名校的数学、物理、化学教授研究网络：选择学校，拖动卡片排序。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
 <link rel="stylesheet" href="../assets/site.css">
@@ -42,8 +42,8 @@ body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in 
 <main class="wrap">
   <section class="hero" style="padding-bottom:0">
     <div class="eyebrow">01 · Universities</div>
-    <h1>二十所大学的数理化研究网络</h1>
-    <p class="lede">多伦多大学、斯坦福大学，加上美国和中国各九所名校。每所学校都按同一套方法画出数学、物理、化学教授的合作网络、主题子网、跨学科关系和产业网络。二十所学校都已上线，点开卡片即可浏览。</p>
+    <h1>二十多所大学的数理化研究网络</h1>
+    <p class="lede">加拿大、美国和中国的二十多所名校，包括多伦多大学、蒙特利尔大学、斯坦福大学，以及美国和中国各九所名校。每所学校都按同一套方法画出数学、物理、化学教授的合作网络、主题子网、跨学科关系和产业网络。全部学校都已上线，点开卡片即可浏览。</p>
   </section>
   <div class="tools">
     <div class="seg" role="group" aria-label="按国家筛选"><button aria-pressed="true" data-f="all">全部</button><button aria-pressed="false" data-f="US">美国</button><button aria-pressed="false" data-f="CN">中国</button><button aria-pressed="false" data-f="CA">加拿大</button></div>
@@ -55,7 +55,7 @@ body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const N = window.RA_NAV, grid = document.getElementById("grid");
-  const STATS = { uoft: [298, 52000, 12], stanford: [136, 40000, 18] };
+  const STATS = { uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], udem: [96, 17545, 22] };
   const wan = n => n >= 10000 ? (n / 10000).toFixed(1) + " 万" : n.toLocaleString();
   let filt = "all";
   fetch("stats.json").then(r => r.ok ? r.json() : {}).then(j => { for (const k in j) STATS[k] = [j[k][0], j[k][1], j[k][2]]; paint(); }).catch(() => {});
