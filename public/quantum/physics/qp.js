@@ -305,6 +305,21 @@
       ${R(v.note, 'p', 'fm-note')}</li>`;
   const DEMO_NAME = { d1: ['演示 1：一维定态', 'Demo 1: stationary states'], d2: ['演示 2：隧穿', 'Demo 2: tunnelling'], d3: ['演示 3：Stern–Gerlach 串联', 'Demo 3: Stern–Gerlach in series'], d4: ['演示 4：CHSH 实验', 'Demo 4: a CHSH experiment'] };
   const DEMO_ID = { d1: 'states', d2: 'tunnel', d3: 'sg', d4: 'bell' };
+  // 能在浏览器里运行的 Python（viewer/pyrun.js 运行，程序在 viewer/py-examples.js），按章挂在“动手练习”后面
+  const PYEX = window.MOLASTRIA_PY_EXAMPLES || {};
+  const PY = window.MolAstriaPy ? {
+    wave: { example: 'schrodinger',
+      title: ['自己写一个一维薛定谔方程求解器', 'Write your own 1D Schrödinger solver'],
+      body: ['把哈密顿量在格点上写成对称矩阵，numpy.linalg.eigh 一次给出全部能级和波函数。改第 5 行的 POTENTIAL 换势能（harmonic、well、double、morse），程序把最低六个能级和解析解（谐振子 n + ½，Morse 的闭式）并排打印，再画出最低四个波函数。势能参数和演示 1 相同，可以互相对照。程序只在你的浏览器里运行，不上传。',
+        'The Hamiltonian becomes a symmetric matrix on a grid, and numpy.linalg.eigh gives every level and wavefunction at once. Change POTENTIAL on line 5 to switch potentials (harmonic, well, double, morse); the program prints the lowest six levels next to the exact ones (n + ½ for the oscillator, the closed form for Morse) and draws the lowest four wavefunctions. The potentials have the same parameters as demo 1, so you can check one against the other. The program runs only in your browser and nothing is uploaded.'],
+      credit: ['写法参照 qmsolve（BSD-3-Clause），代码是我们自己写的。', 'Modelled on qmsolve (BSD-3-Clause); the code is our own.'], link: 'https://github.com/quantum-visualizations/qmsolve' },
+  } : {};
+  const pyBlock = (id) => {
+    const p = PY[id];
+    if (!p || !PYEX[p.example]) return '';
+    return `<h4>${L('在浏览器里运行', 'Run it in your browser')}</h4><div class="fm-practice qp-py"><p class="fm-practice-t">${L(...p.title)}</p>${C(esc(en ? p.body[1] : p.body[0]), 'p')}
+          <div class="qp-py-run" data-py="${id}"></div><p class="qp-py-note">${L(...p.credit)} <a href="${p.link}" target="_blank" rel="noopener noreferrer" translate="no">qmsolve ${ext}</a></p></div>`;
+  };
   $('#qp-panels').innerHTML = D.chapters.map((s, i) => `<article class="fm-panel" id="c-${s.id}" data-tier="${s.stage}" tabindex="-1"${i ? ' hidden' : ''}>
       <header class="fm-sub-h"><span class="fm-big-glyph" aria-hidden="true">${esc(s.glyph)}</span><div>
         <p class="fm-panel-k" data-tier="${s.stage}">${L(`第 ${num(s.id)} 章`, `Chapter ${num(s.id)}`)} · ${R(stageOf(s.id).name)} · ${R(stageOf(s.id).tag)} · ${L(`约 ${s.weeks} 周`, `about ${s.weeks} weeks`)}</p>
@@ -316,6 +331,7 @@
         <h4>${L('在化学里出现在哪里', 'Where it shows up in chemistry')}</h4><ul class="fm-bul">${s.inChem.map((t) => R(t, 'li')).join('')}</ul>
         <h4>${L('动手练习', 'Hands-on exercise')}</h4><div class="fm-practice"><p class="fm-practice-t">${R(s.practice.title)}</p>${R(s.practice.body, 'p')}
           <div class="fm-code"><button type="button" class="button fm-copy" data-copy="${s.id}">${L('复制代码', 'Copy code')}</button><pre translate="no"><code>${esc(s.practice.code)}</code></pre></div></div>
+        ${pyBlock(s.id)}
         <h4>${L('常见误区', 'Common pitfalls')}</h4><ul class="fm-bul fm-pit">${s.pitfalls.map((t) => R(t, 'li')).join('')}</ul>
       </div><aside class="fm-col-side">
         <h4>${L('分周大纲', 'Week-by-week outline')}</h4><ol class="fm-outline">${s.outline.map(([t, w]) => `<li><span class="fm-wk">${L(`第 ${w} 周`, `Wk ${w}`)}</span>${R(t)}</li>`).join('')}</ol>
@@ -325,6 +341,10 @@
       <div class="fm-res"><div><h4>${L('教材与讲义', 'Textbooks & notes')}</h4><ul class="fm-cards">${s.books.map((id) => bookCard(B[id])).join('')}</ul></div>
         <div><h4>${L('课程与视频', 'Courses & videos')}</h4>${s.videos.length ? `<ul class="fm-cards">${s.videos.map((id) => videoCard(V[id])).join('')}</ul>` : `<p class="muted">${L('这一章没有我们核对过、值得推荐的完整视频课；Tong 的量子霍尔讲义和 Ashcroft–Mermin 是更好的起点。', 'We found no complete video course for this chapter that we could verify and recommend; Tong\'s quantum Hall notes and Ashcroft–Mermin are better starting points.')}</p>`}</div></div>
     </article>`).join('');
+  for (const el of document.querySelectorAll('.qp-py-run')) {
+    const ex = PYEX[PY[el.dataset.py].example];
+    window.MolAstriaPy.mount(el, { code: ex.code, packages: ex.packages, name: ex.name, plot: true, lang: en ? 'en' : 'zh' });
+  }
   const side = $('#qp-side');
   const selectChapter = (id, { scroll = false } = {}) => {
     if (!CH[id]) return false;

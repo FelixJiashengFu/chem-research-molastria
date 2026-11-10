@@ -4,3 +4,11 @@
 .skip-link{z-index:1000}
 .skip-link:focus{top:calc(var(--cr-nav-height,76px) + 8px)}
 @media(max-width:600px){.guide-toc{max-height:180px}.reader-pagination{gap:8px}}
+/* 动手算（app.js 的 TRY，代码框是 viewer/pyrun.js） */
+.guide-try{margin:0 0 28px;padding:22px 0 4px;border-top:1px solid var(--line);color:var(--ink-2);font-size:14px;line-height:1.9;min-width:0}
+.guide-try-k{font:10px/1.7 var(--font-mono);letter-spacing:1.7px;color:var(--accent-text)}
+.guide-try h2{font:22px/1.6 var(--font-serif,Georgia,serif);color:var(--ink);margin:4px 0 8px}
+.guide-try>p{margin:8px 0}
+.guide-try-note{font-size:12px;color:var(--muted)}
+.guide-try-note a{color:var(--accent-text);text-decoration:underline;text-underline-offset:3px}
+@media print{.guide-try{display:none!important}}
