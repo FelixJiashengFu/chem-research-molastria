@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="MolAstria 游乐场：用真实的物理公式玩量子世界。十四个小游戏分三个展区：量子化学（盒中粒子、氢原子轨道、电子排布、隧穿、芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助能量传递），物理疆界（普朗克单位、ħ-c-G 立方体）；以及在浏览器里运行的量子化学计算器 QChem Web。">
+  <meta name="description" content="MolAstria 游乐场：用真实的物理公式玩量子世界。十五个小游戏分三个展区：量子化学（盒中粒子、氢原子轨道、电子排布、隧穿、芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体）；以及在浏览器里运行的量子化学计算器 QChem Web。">
   <meta name="theme-color" content="#173f34">
-  <title>游乐场 · 量子化学、量子计算与物理疆界的十四个小游戏 · MolAstria</title>
+  <title>游乐场 · 量子化学、量子计算与物理疆界的十五个小游戏 · MolAstria</title>
   <!-- seo:start -->
   <link rel="canonical" href="https://molastria.com/qchem/">
   <meta property="og:type" content="website">
@@ -28,11 +28,13 @@
   <script src="play-models.js" defer></script>
   <script src="play-quantum-models.js" defer></script>
   <script src="play-quantum.js" defer></script>
+  <script src="play-wave2d-models.js" defer></script>
+  <script src="play-wave2d.js" defer></script>
   <script src="play.js" defer></script>
 </head>
 <body data-section="qchem" class="qchem-page" data-view="home">
-<!-- 游乐场：十四个小游戏，分三个展区。01–06 在 play.js（物理在 play-models.js），07–14（量子嘉年华与物理疆界）在 play-quantum.js（数学在 play-quantum-models.js），
-     都由 tools/play-test.mjs 测；以及量子化学计算器 QChem Web。
+<!-- 游乐场：十五个小游戏，分三个展区。01–06 在 play.js（物理在 play-models.js），07–14（量子嘉年华与物理疆界）在 play-quantum.js（数学在 play-quantum-models.js），
+     15（二维波包画墙，属展区二）在 play-wave2d.js（数学在 play-wave2d-models.js），都由 tools/play-test.mjs 测；以及量子化学计算器 QChem Web。
      计算器来自 https://github.com/FelixJiashengFu/qchem-web，由 tools/vendor-qchem.ts 复制到 app/，在访问者的浏览器里计算，
      自带中英文词典，界面只有深色一种。地址 #play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器（如 #qd）。 -->
 <a class="skip" href="#play-main">跳到游乐场内容</a>
@@ -51,6 +53,7 @@
   <a href="#play-qec" data-view="qec">纠错救援</a>
   <a href="#play-grover" data-view="grover">Grover 寻宝</a>
   <a href="#play-enaqt" data-view="enaqt">噪声助推</a>
+  <a href="#play-wave" data-view="wave">波包画墙</a>
   <a href="#play-planck" data-view="planck" class="play-tab-zone">普朗克工坊</a>
   <a href="#play-cube" data-view="cube">立方体分拣</a>
 </nav>
@@ -62,10 +65,10 @@
     <header class="play-hero">
       <p class="eyebrow">MOLASTRIA · PLAYGROUND</p>
       <h1 id="play-h1">游乐场<span lang="en" translate="no">Playground</span></h1>
-      <p class="play-lead">用真实的物理公式玩量子世界。三个展区十四个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。</p>
+      <p class="play-lead">用真实的物理公式玩量子世界。三个展区十五个小游戏，从量子化学到量子计算、量子生物学，一直走到物理学的疆界；每个游戏背后的公式都写在“原理与局限”里，并用解析解或已知结果测试过。另有一个在浏览器里运行的量子化学计算器。</p>
       <nav class="play-zones" aria-label="展区">
         <a href="#zone-chem"><b>化学馆</b><span>01–06 · 量子化学</span></a>
-        <a href="#zone-quantum"><b>量子嘉年华分会场</b><span>07–12 · 物理、计算机、算法、生物</span></a>
+        <a href="#zone-quantum"><b>量子嘉年华分会场</b><span>07–12、15 · 物理、计算机、算法、生物</span></a>
         <a href="#zone-realms"><b>物理疆界</b><span>13–14 · ħ、c、G</span></a>
       </nav>
     </header>
@@ -96,7 +99,7 @@
     </div>
 
     <h2 class="play-zone-h" id="zone-quantum"><span>展区二</span>量子嘉年华分会场</h2>
-    <p class="play-zone-lead">四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，再看噪声怎样帮光合作用传递能量。玩完想深入，卡片下方有直通展馆的链接。</p>
+    <p class="play-zone-lead">四个量子嘉年华展馆各出两三道关：测自旋、打赢贝尔游戏、拼量子电路、给量子比特纠错、用 Grover 算法寻宝，看噪声怎样帮光合作用传递能量，再画墙引导一个二维波包。玩完想深入，卡片下方有直通展馆的链接。</p>
     <div class="play-cards">
       <a class="play-card play-card-q" href="#play-sg"><span class="play-card-n">07</span><span class="play-card-tag">量子物理</span><h2>Stern–Gerlach 自旋过滤</h2>
         <p>一串磁场分析器，每个只放行一种自旋。挡住所有原子的那一对，中间多插一个反而能放过去四分之一。</p>
@@ -116,6 +119,9 @@
       <a class="play-card play-card-q" href="#play-enaqt"><span class="play-card-n">12</span><span class="play-card-tag">量子生物学</span><h2>噪声助推能量传递</h2>
         <p>激发能要穿过一张色素网络送到反应中心。调环境的退相干：有的网络怕噪声，有的网络离了噪声寸步难行。</p>
         <span class="play-best" data-best="enaqt"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
+      <a class="play-card play-card-q" href="#play-wave"><span class="play-card-n">15</span><span class="play-card-tag">量子物理</span><h2>二维波包画墙</h2>
+        <p>先在格子上画墙，再放出一个波包：分出两条缝让它干涉，擦薄势垒让它隧穿，或者摆一面镜子把它送进目标框。</p>
+        <span class="play-best" data-best="wave"></span><span class="play-go">开始 <i class="ico-ext ico-right" aria-hidden="true"></i></span></a>
     </div>
     <p class="play-zone-links">展馆：<a href="../quantum/physics/index.html">量子物理</a> · <a href="../quantum/computing/index.html">量子计算机</a> · <a href="../quantum/algorithms/index.html">量子算法</a> · <a href="../quantum/biology/index.html">量子生物学</a> · <a href="../quantum/index.html">量子嘉年华总入口</a></p>
 
@@ -495,6 +501,40 @@
       <p>这个立方体最早来自 Bronstein 1930 年代的讨论，后来由 Zelmanov、Okun 等人整理成“cGh 立方体”。原点是牛顿力学，三条棱的另一端是狭义相对论（1/c）、牛顿引力（G）和量子力学（ħ）；三个面对角是广义相对论（1/c、G）、量子场论（1/c、ħ）和牛顿量子引力（G、ħ）；最远的角三者全开，是还没有建立的量子引力。</p>
       <p>“打开”看的是要解释的那个结果里是否非出现这个常数不可。所以有的题会出乎意料：白矮星的钱德拉塞卡极限 M_Ch ∝ (ħc/G)^{3/2} / m_H² 三个常数都用到了，但它不需要量子引力，只需要相对论性的简并电子加上引力；霍金辐射也是在弯曲时空上做量子场论的半经典结果。开关的划分是粗粒度的教学工具，不是严格的分类：同一个现象往往还用到 e、k_B 等其他常数。</p>
       <p>想深入：<a href="../physics-realms/index.html">物理疆界图</a>，每个角都连着图上的理论节点。</p>
+    </div></details>
+  </section>
+
+  <!-- 15 二维波包画墙（展区二 · 量子物理） -->
+  <section class="play-view" data-view="wave" hidden aria-labelledby="wv-h">
+    <header class="play-head"><p class="eyebrow">游戏 15 · 量子物理 · 二维含时薛定谔方程</p><h2 id="wv-h">二维波包画墙</h2>
+      <p class="play-lead">一个高斯波包在平面上飞行。按“运行”之前，你可以在格子上画墙、擦墙，每关的格数有预算；然后看找到粒子的概率怎样衍射、干涉、隧穿和反射。完成三个关卡，再自由画。</p></header>
+    <div class="play-stage">
+      <div class="play-ctl">
+        <div class="tun-missions" id="wv-levels" role="group" aria-label="关卡"></div>
+        <p class="play-task" id="wv-task"></p>
+        <div class="tun-particle" id="wv-tool" role="group" aria-label="画笔"><button type="button" data-tool="draw">画墙</button><button type="button" data-tool="erase">擦除</button></div>
+        <dl class="play-read" id="wv-read" role="status"></dl>
+        <p class="play-msg" id="wv-msg" aria-live="polite"></p>
+        <div class="play-btns">
+          <button type="button" class="button primary" id="wv-go">运行</button><button type="button" class="button" id="wv-reset">重来</button><button type="button" class="button" id="wv-clear">清空墙</button>
+          <button type="button" class="button" id="wv-demo">看示范</button><button type="button" class="button" id="wv-phase" aria-pressed="false">显示相位</button>
+        </div>
+        <p class="play-score" data-score="wave"></p>
+      </div>
+      <figure class="play-fig"><canvas id="wv-cv" class="wv-cv" width="720" height="490" tabindex="0" role="application" aria-label="画墙的格子：方向键移动光标，按住 Shift 一次走 4 格，空格键画墙或擦除"></canvas>
+        <figcaption>颜色越浓（从底色经蓝到金），在那里找到粒子的概率越大（画的是 |ψ| 的大小，按当前最大处归一）。紫色是你画的墙，和正文同色的是固定的墙，红色是势垒；虚线外是吸收边界，飞到那里的波包被吸收，不会弹回来。旁边的小图是屏上的累积强度或目标概率随时间的变化。键盘：Tab 选中画面后，方向键移动光标，空格键画或擦。</figcaption></figure>
+    </div>
+    <details class="play-how"><summary>原理与局限</summary><div>
+      <p>波包满足二维含时薛定谔方程，单位取 ħ = m = 1，格距为 1：</p>
+      <span class="play-formula">i ∂ψ/∂t = −½ ∇²ψ + V(x, y) ψ</span>
+      <p>网格是 128 × 128，每步 dt = 0.25，用分裂算符法：先乘 e^(−iV dt/2)，用快速傅里叶变换（FFT）换到动量空间乘 e^(−ik² dt/2)，换回来再乘 e^(−iV dt/2)。每一步只是乘模为 1 的相位，所以总概率守恒到舍入误差（测试里 1000 步后偏离 1 不到 10⁻¹²）。动能那一步在网格上是精确的：自由波包的中心以 k/m 匀速前进，宽度按下式变宽，和解析解相差不到百万分之一格：</p>
+      <span class="play-formula">σ(t) = σ₀ √(1 + (ħt / (2mσ₀²))²)</span>
+      <p>四周有 12 格宽的吸收带（虚线外）：波包到了这里就被逐步吸收，像飞出了画面。墙是 V = 5 的势能，是波包动能（k = 1.2 时为 0.72）的七倍左右。势能不能设得太高，因为 e^(−iV dt) 每隔 2π/dt 就重复一次，太高的墙会变成另一个势能；网格也表示不了墙里急剧衰减的波函数，所以 2 格厚的墙会漏过千分之二左右，4 格厚的约万分之一，比真正的墙漏得多。</p>
+      <p>双缝：波长 λ = 2π/k ≈ 5.2 格，缝宽只有一个波长左右。远场的暗纹在 d sinθ = (m + ½)λ 处，靠近中央的条纹间距约为 λL/d；测试在更长的网格上核对了暗纹的位置。游戏里的屏离缝不到 60 格，还不算远场，条纹并不等距。屏上画的是两列格子里 |ψ|² 对时间的累积，比最亮处的 8% 还暗、或者和旁边的峰之间没有明显暗纹的，不算亮纹。</p>
+      <p>隧穿：波包动能 E = 0.5，势垒 V = 1。势垒在 y 方向均匀时，问题就是一维方势垒，穿过去的概率和下式（对波包的动量分布取平均）相差不到两成；差别来自势垒只有几格宽，它的宽度本身只准到一格左右。6 格厚时只穿过约万分之一，1 格厚时约 37%。</p>
+      <span class="play-formula">T = [1 + V² sinh²(κa) / (4E(V − E))]⁻¹，κ = √(2m(V − E)) / ħ</span>
+      <p>局限：这是二维的玩具模型，长度以格为单位，不对应真实的电子、缝和距离。打开“显示相位”后，颜色表示 ψ 的相位（金色 0、绿色 +π/2、蓝色 π、紫色 −π/2），亮度仍是 |ψ| 的大小；墙也是紫色，在相位图里要靠形状分辨。</p>
+      <p>想深入：<a href="../quantum/physics/index.html#c-wave">量子嘉年华 · 量子物理</a>的“薛定谔方程与一维问题”一章讲波包扩散和隧穿，“量子的诞生”一章讲单电子双缝实验。</p>
     </div></details>
   </section>
 </main>
