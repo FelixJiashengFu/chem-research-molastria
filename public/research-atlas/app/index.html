@@ -137,8 +137,8 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script>
 addEventListener("DOMContentLoaded", () => fetch("schools/stats.json").then(r => r.json()).then(st => {
-  const all = Object.assign({ uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], udem: [96, 17545, 22] }, st);
-  const live = Object.keys(all).filter(k => (window.RA_NAV?.SCHOOLS || []).some(s => s[0] === k && s[4]) || k === "uoft" || k === "stanford" || k === "waterloo" || k === "udem");
+  const all = Object.assign({ uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], uiuc: [189, 33500, 25], udem: [96, 17545, 22], mcmaster: [87, 10047, 23], ualberta: [119, 20970, 23], umich: [151, 28101, 23], ucsb: [131, 24726, 21], mcgill: [117, 19258, 22], utaustin: [130, 24370, 23], upenn: [103, 23239, 20], northwestern: [135, 42410, 20], ubc: [218, 27207, 29] }, st);
+  const live = Object.keys(all).filter(k => (window.RA_NAV?.SCHOOLS || []).some(s => s[0] === k && s[4]) || k === "mcgill" || k === "utaustin" || k === "uoft" || k === "stanford" || k === "waterloo" || k === "uiuc" || k === "udem" || k === "mcmaster" || k === "ualberta" || k === "umich" || k === "ubc");
   const sum = i => live.reduce((a, k) => a + all[k][i], 0);
   document.getElementById("sLive").textContent = live.length;
   const ns = document.getElementById("nSchools"); if (ns && window.RA_NAV) ns.textContent = `${window.RA_NAV.SCHOOLS.length} 所学校 · 交互网络`;

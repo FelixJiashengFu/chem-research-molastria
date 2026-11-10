@@ -1,0 +1,163 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 1917,
+  "edges": 5532
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（<100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 99,
+  "edges": 150
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 124,
+  "edges": 344
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 234,
+  "edges": 660
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 99,
+  "edges": 325
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "物理系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 189,
+  "edges": 713
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 179,
+  "edges": 591
+ },
+ {
+  "id": "area-math-alg-geo",
+  "title": "方向子网：数学：代数 · 数论 · 几何 · 拓扑",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Algebra / Number Theory / Geometry / Topology」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 26,
+  "edges": 83
+ },
+ {
+  "id": "area-math-analysis",
+  "title": "方向子网：数学：分析 · 偏微分方程 · 动力系统 · 数学物理",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Analysis / Dynamical Systems / Mathematical Physics」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 45,
+  "edges": 133
+ },
+ {
+  "id": "area-math-appl",
+  "title": "方向子网：数学：应用与计算数学 · 概率统计 · 机器学习",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Applied and Computational / Probability / Artificial Intelligence / Math Education」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 56,
+  "edges": 115
+ },
+ {
+  "id": "area-phys-cmp",
+  "title": "方向子网：物理：凝聚态 · 材料 · 量子信息",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Condensed Matter / Materials / Quantum Information」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 87,
+  "edges": 322
+ },
+ {
+  "id": "area-phys-hep",
+  "title": "方向子网：物理：高能 · 弦论 · 核物理",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「High Energy Physics / String Theory / Nuclear / Neutrino / Particle」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 26,
+  "edges": 102
+ },
+ {
+  "id": "area-phys-astro",
+  "title": "方向子网：物理：宇宙学 · 引力 · 天体物理",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Cosmology / Gravitational / Astrophysics」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 36,
+  "edges": 127
+ },
+ {
+  "id": "area-phys-plasma",
+  "title": "方向子网：物理：等离子体 · 聚变 · 高能量密度与激光",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Plasma / Fusion / High Energy Density / Lasers」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 27,
+  "edges": 67
+ },
+ {
+  "id": "area-phys-amo-bio",
+  "title": "方向子网：物理：原子分子光学 · 生物物理 · 非线性动力学",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Atomic / Optic / Biophysics / Nonlinear / Statistical Physics / Soft Matter」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 48,
+  "edges": 97
+ },
+ {
+  "id": "area-chem-org",
+  "title": "方向子网：化学：有机合成 · 化学生物学",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Organic / Chemical Biology / Aging」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 164,
+  "edges": 516
+ },
+ {
+  "id": "area-chem-mat",
+  "title": "方向子网：化学：无机 · 材料 · 电化学",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Inorganic / Materials」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 91,
+  "edges": 253
+ },
+ {
+  "id": "area-chem-anal",
+  "title": "方向子网：化学：分析 · 质谱 · 结构生物学",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Analytical / Structural Biology」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 66,
+  "edges": 148
+ },
+ {
+  "id": "area-chem-theo",
+  "title": "方向子网：化学：物理化学 · 理论计算",
+  "description": "院系官网研究方向（Fields of Interest，官网未列的按公开研究介绍补充）含「Physical Chemistry / Chemical Theory」的教授，他们的共同主题与合作/相似关系。",
+  "nodes": 68,
+  "edges": 168
+ },
+ {
+  "id": "oden",
+  "title": "Oden 计算工程与科学研究所子网",
+  "description": "院系目录中注明 Oden Institute（计算工程与科学研究所）任职的数学、物理、化学教授，跨系的计算科学群体。",
+  "nodes": 53,
+  "edges": 118
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 264,
+  "edges": 1319
+ },
+ {
+  "id": "institutes",
+  "title": "研究机构网",
+  "description": "教授与校外研究机构、国家实验室、医院和资助机构的联系（OpenAlex 机构类型 nonprofit / facility / government / healthcare）：同一机构与该教授合写 ≥3 篇、且至少连到 2 位教授才显示；另含教授之间的合写关系。",
+  "nodes": 252,
+  "edges": 719
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司，以及公开资料称为其实验室衍生的公司（逐条附来源与原文摘录，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 186,
+  "edges": 253
+ }
+]

@@ -1,0 +1,177 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 2853,
+  "edges": 8605
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 140,
+  "edges": 297
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 181,
+  "edges": 575
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 293,
+  "edges": 921
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 124,
+  "edges": 477
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "物理系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 198,
+  "edges": 945
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 273,
+  "edges": 1018
+ },
+ {
+  "id": "area-quantum",
+  "title": "方向子网：量子信息科学（IQUIST 方向）",
+  "description": "物理系官网研究方向含 Quantum Information Science 的教授，加上前三大研究主题含量子信息的数学系教授。",
+  "nodes": 76,
+  "edges": 326
+ },
+ {
+  "id": "area-cmt",
+  "title": "方向子网：凝聚态理论",
+  "description": "物理系官网标注 Condensed Matter Physics (theoretical) 的教授。",
+  "nodes": 54,
+  "edges": 194
+ },
+ {
+  "id": "area-cme",
+  "title": "方向子网：凝聚态实验",
+  "description": "物理系官网标注 Condensed Matter Physics (experimental) 的教授。",
+  "nodes": 46,
+  "edges": 152
+ },
+ {
+  "id": "area-amo",
+  "title": "方向子网：原子分子与光学物理",
+  "description": "物理系官网标注 Atomic, Molecular, and Optical Physics 的教授。",
+  "nodes": 37,
+  "edges": 94
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理 · 相对论 · 宇宙学",
+  "description": "物理系官网标注 Astrophysics / Relativity / Cosmology 的教授。",
+  "nodes": 40,
+  "edges": 158
+ },
+ {
+  "id": "area-hep-nuc",
+  "title": "方向子网：高能物理与核物理",
+  "description": "物理系官网标注 High Energy Physics 或 Nuclear Physics（理论与实验）的教授。",
+  "nodes": 47,
+  "edges": 211
+ },
+ {
+  "id": "area-biophys",
+  "title": "方向子网：生物物理",
+  "description": "物理系官网标注 Biological Physics 的教授（含化学系跨聘）。",
+  "nodes": 30,
+  "edges": 80
+ },
+ {
+  "id": "area-physed",
+  "title": "方向子网：物理教育研究",
+  "description": "物理系官网标注 Physics Education 的教授。",
+  "nodes": 12,
+  "edges": 24
+ },
+ {
+  "id": "area-chem-org",
+  "title": "方向子网：有机化学",
+  "description": "化学系官网 Organic Chemistry 方向教师页列出的教授。",
+  "nodes": 73,
+  "edges": 187
+ },
+ {
+  "id": "area-chem-inorg",
+  "title": "方向子网：无机化学",
+  "description": "化学系官网 Inorganic Chemistry 方向教师页列出的教授。",
+  "nodes": 41,
+  "edges": 111
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 理论化学",
+  "description": "化学系官网 Physical Chemistry 方向教师页列出的教授。",
+  "nodes": 62,
+  "edges": 135
+ },
+ {
+  "id": "area-chem-anal",
+  "title": "方向子网：分析化学",
+  "description": "化学系官网 Analytical Chemistry 方向教师页列出的教授。",
+  "nodes": 69,
+  "edges": 176
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：化学生物学",
+  "description": "化学系官网 Chemical Biology 方向教师页列出的教授。",
+  "nodes": 71,
+  "edges": 164
+ },
+ {
+  "id": "area-chem-mat",
+  "title": "方向子网：材料化学",
+  "description": "化学系官网 Materials Chemistry 方向教师页列出的教授。",
+  "nodes": 126,
+  "edges": 385
+ },
+ {
+  "id": "area-math-alg",
+  "title": "方向子网：数学：代数 · 数论 · 几何 · 拓扑",
+  "description": "数学系中，主要研究子领域（OpenAlex）为 Algebra and Number Theory 或 Geometry and Topology 的教授。",
+  "nodes": 40,
+  "edges": 132
+ },
+ {
+  "id": "area-math-ana",
+  "title": "方向子网：数学：分析 · 数学物理 · 应用数学 · 概率 · 组合",
+  "description": "数学系中，主要研究子领域（OpenAlex）不是代数/数论/几何/拓扑的教授：分析与偏微分方程、数学物理、应用与计算数学、概率、组合。",
+  "nodes": 92,
+  "edges": 275
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 302,
+  "edges": 1730
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 256,
+  "edges": 444
+ }
+]
