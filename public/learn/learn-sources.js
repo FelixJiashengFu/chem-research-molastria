@@ -209,7 +209,7 @@
     w.head('硬件路线', 'Hardware platforms', (D.platforms || []).filter((p) => p.section === s.id).map((p) => `${pick(p.name, lang)}${st(p.status)}${w.C}${pick(p.plus, lang)} ${pick(p.minus, lang)}`));
   }));
 
-  const ADAPT = {
+  const ADAPT = new Map(Object.entries({
     qp: (src, D) => lecture(src, D, D.chapters || [], 'inChem', (c) => (c.demos || []).map((d) => QP_DEMO[d])),
     fm: (src, D) => lecture(src, D, D.subjects || [], 'inQC', (c) => FM_DEMO[c.id] || []),
     qa: (src, D) => (D.algos || []).map((a) => chapter(src, a.id, a.name, a.tagline, a.demo ? [QA_DEMO[a.demo.id]] : [], (w, lang) => {
@@ -232,7 +232,7 @@
     qc: (src, D) => topical(src, D, QC_DEMO),
     qb: (src, D) => topical(src, D, QB_DEMO),
     fs: (src, D) => topical(src, D, FS_DEMO),
-  };
+  }));
 
   // ── 对外接口 ──────────────────────────────────────────────────────────
   const loading = {};
@@ -261,7 +261,7 @@
     const D = data || (src && root[src.global]);
     if (!src || !D) return [];
     if (cache.has(D) && cache.get(D).src === sourceId) return cache.get(D).list;
-    const adapt = Object.prototype.hasOwnProperty.call(ADAPT, sourceId) ? ADAPT[sourceId] : null;
+    const adapt = ADAPT.get(sourceId);
     if (typeof adapt !== 'function') return [];
     const list = adapt(src, D).filter((c) => c.id && c.name);
     cache.set(D, { src: sourceId, list });
