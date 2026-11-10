@@ -519,7 +519,7 @@ check('playground: overview, then each game plays by its rules (configuration, s
   const p = await open();
   await go(p, '/qchem/index.html');
   assert.equal((await text(p, '.cr-links a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
-  assert.equal(await p.locator('.play-card').count(), 15, 'calculator + 14 games in three zones');
+  assert.equal(await p.locator('.play-card').count(), 16, 'calculator + 15 games in three zones');
   assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
   // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
   await p.click('#play-tabs a[data-view=config]');
@@ -644,7 +644,7 @@ check('playground zones 2 and 3: spin filters, Bell game, circuits, error correc
 
 check('playground in English: games and canvas labels are translated, no Chinese left', async () => {
   const p = await open();
-  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube']) {
+  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube', '#play-wave']) {
     await go(p, '/qchem/index.html?lang=en' + v);
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     const left = await p.evaluate(() => [...document.querySelectorAll('main .play-view:not([hidden]), #play-tabs')].map((e) => e.innerText).join('\n').match(/[^\n]*[㐀-鿿][^\n]*/g));
@@ -2945,6 +2945,25 @@ check('python in the browser: run, output, chart, errors, stop and offline in th
   assert.match(await text(o, `${qb} .py-status`), /现在离线/);
   assert.equal(o.workers().length, 0);
   await finish(o);
+});
+
+check('playground 15: a mirror steers the wave packet into the box; the demo is not scored', async () => {
+  const p = await open();
+  await go(p, '/qchem/index.html#play-wave');
+  const at = async (cx, cy) => { const b = await p.locator('#wv-cv').boundingBox(), G = b.width < 520 ? b.width : Math.min(b.height, b.width * 0.68); return [b.x + cx * G / 128, b.y + cy * G / 128]; };
+  await p.click('#wv-levels button >> nth=2');
+  const [x0, y0] = await at(81, 105), [x1, y1] = await at(101, 85);
+  await p.mouse.move(x0, y0); await p.mouse.down(); await p.mouse.move(x1, y1, { steps: 30 }); await p.mouse.up();
+  await p.click('#wv-go');
+  await p.waitForFunction(() => /过关|还没过关/.test(document.getElementById('wv-msg').textContent), null, { timeout: 60000 });
+  assert.match(await text(p, '#wv-msg'), /过关！框里的概率最高/);
+  const best = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-play')).wave);
+  assert.ok((await best()).steer >= 1);
+  await p.click('#wv-levels button >> nth=1'); await p.click('#wv-demo'); await p.click('#wv-go');
+  await p.waitForFunction(() => /示范解法：/.test(document.getElementById('wv-msg').textContent), null, { timeout: 60000 });
+  assert.equal((await best()).tunnel, undefined);
+  assert.ok(await p.$eval('#wv-cv', (e) => e.dataset.msPerStep));
+  await finish(p);
 });
 
 check('phone width: no sideways scrolling', async () => {

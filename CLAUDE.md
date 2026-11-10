@@ -46,7 +46,7 @@ public/               发布目录，推到 main 就上线
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   research-atlas/     研究图谱外层页面（中美二十所大学数理化网络、量子化学地图、Top 20、中美对比、北美产业）；app/ 是 university-science-research-network 的整站构建，由 tools/vendor-atlas.mjs 复制，不要手改；英文、Tт 字体和主题由外层页面经网址参数和 postMessage（ra-host）传进去，译文在那个仓库的 i18n/en.json，用本站的 i18n.js；图谱仓库 main 有新提交时 atlas-sync.yml（每 3 小时检查一次）自动重新复制并上线
   physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
-  qchem/              游乐场（地址仍是 /qchem/）：三个展区十四个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
+  qchem/              游乐场（地址仍是 /qchem/）：三个展区十五个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；15（二维波包画墙，展区二）在 play-wave2d.js，数学在 play-wave2d-models.js（分裂算符解二维薛定谔方程，自己写的 FFT），经 MOLASTRIA_PLAY_WAVE 拿到同样的工具；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
 deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录和每 15 分钟一次的在线率探测）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
@@ -73,7 +73,7 @@ node --test tools/net-test.mjs                          # 网状查询引擎（�
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
 node --test tools/fm-prob-test.mjs                      # 数学子模块的概率论演示：大数定律、中心极限定理对照解析结果，同一个种子同一个结果
 node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
-node --test tools/play-test.mjs                         # 游乐场：十四个游戏的物理对照已知结果和解析解，关卡都能过关、电路题的最少门数穷举核对
+node --test tools/play-test.mjs                         # 游乐场：十五个游戏的物理对照已知结果和解析解（二维波包：幺正、自由波包展宽、双缝条纹间距），关卡都能过关、电路题的最少门数穷举核对
 node --test tools/quantum-physics-test.mjs                # 量子嘉年华 · 量子物理：四个演示对照解析解，章节的公式、论文、书目、视频都能对上
 node tools/fundamental-math.mjs                         # 基础科学栏目：把 fs-data.js 里的 LaTeX 用 KaTeX 转成 fs-math.js（MathML）
 NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：逐条在 Crossref 核对文献

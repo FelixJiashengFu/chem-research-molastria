@@ -134,6 +134,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 ## 游乐场（/qchem/）
 
 - **六个小游戏** 在 `public/qchem/play.js`，物理是 `play-models.js` 里的纯函数。改了物理就跑 `node --test tools/play-test.mjs`（对照已知结果：苯的离域能 2β、Hα 656.47 nm、Cr/Cu 例外、T + R = 1 等），它也读 `play.js` 里的 `MISSIONS`，确认每个隧穿关卡在滑块上能过关、开局不是已过关。
+- **第 15 个（二维波包画墙）** 在 `play-wave2d.js`，数学在 `play-wave2d-models.js`：128×128 网格上的分裂算符法（ħ = m = 1，dt = 0.25，自己写的基 2 FFT），边上 12 格是吸收层，波包碰到边不会反弹。墙高 V = 5：再高的话 e^(−iV·dt) 的相位会绕回来，墙反而变“透明”；薄墙在网格上会漏一点（两格厚约 2×10⁻³），页面上写了。改了网格或步长要重跑 `node --test tools/play-test.mjs`（幺正到 1e-12、自由波包的 ⟨x⟩ 和 σ(t)、双缝条纹间距 λL/d、势垒透射、每关的参考解都能拿三星），再在 4 倍 CPU 减速下看帧率（2026-11-10：每步 6.1 ms，约 43 帧）。
 - **界面文字** 写中文，照常 `i18n-extract`（`qchem/play.js` 已在列表里）后在 `i18n/en.json` 手写英文；画在 canvas 上的文字用 `ChemI18n.t`，也要有词条。元素名、环名、谱系名按站点语言直接取用（`translate="no"`），不走词典。
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
