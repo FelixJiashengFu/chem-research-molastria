@@ -2804,6 +2804,75 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   await finish(o);
 });
 
+check('math foundations: probability demos (law of large numbers, CLT) and Lean resources; realms: double pendulum', async () => {
+  const p = await open({ viewport: { width: 1280, height: 900 } });
+  await go(p, '/fundamental-science/math/index.html#m-pr');
+  // The demos sit in the probability panel only and compute once scrolled into view.
+  assert.equal(await p.locator('.fm-panel .fm-prob').count(), 1);
+  assert.equal(await p.locator('#m-pr #fm-prob + .fm-res').count(), 1, 'placed before the books');
+  await p.locator('#fm-prob').scrollIntoViewIfNeeded();
+  await p.waitForFunction(() => document.querySelector('#fm-lln-read dd'));
+  assert.match(await text(p, '#fm-lln-read'), /种子\s*2026/);
+  // Law of large numbers: N = 10 000 draws of a fair die, the running mean sits near 3.5.
+  await p.locator('#fm-lln-n').fill('4');
+  assert.equal(await text(p, '#fm-lln-n-v'), 'N = 10000');
+  const xN = Number(await p.getAttribute('#fm-lln-read dd[data-v]', 'data-v'));
+  assert.ok(Math.abs(xN - 3.5) < 0.06, `running mean ${xN}`);
+  await p.click('#fm-lln-new');
+  assert.match(await text(p, '#fm-lln-read'), /种子\s*2027/);
+  // Central limit theorem: loaded die, n = 30; the spread of the means matches σ/√n, more draws accumulate, reset is reproducible.
+  await p.selectOption('#fm-clt-d', 'loaded');
+  await p.locator('#fm-clt-n').fill('9');
+  assert.equal(await text(p, '#fm-clt-n-v'), 'n = 30');
+  const ratio = Number(await p.getAttribute('#fm-clt-read dd.fs-big', 'data-v'));
+  assert.ok(Math.abs(ratio - 1) < 0.1, `sd of means / (σ/√n) = ${ratio}`);
+  await p.click('#fm-clt-go');
+  assert.equal(await p.getAttribute('#fm-clt-read dd[data-v]', 'data-v'), '2000');
+  const once = await text(p, '#fm-clt-read');
+  await p.click('#fm-clt-reset'); await p.click('#fm-clt-go');
+  assert.equal(await text(p, '#fm-clt-read'), once, 'same seed, same histogram');
+  // Lean resources in the bibliographies.
+  assert.equal(await p.locator('#m-la a.fm-title[href^="https://adam.math.hhu.de/"]', { hasText: 'Natural Number Game' }).count(), 1);
+  assert.match(await text(p, '#m-mt .fm-res'), /Mathematics in Lean[\s\S]*Set Theory Game[\s\S]*Theorem Proving in Lean 4/);
+  assert.match(await text(p, '#m-na .fm-res'), /Functional Programming in Lean/);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(p);
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  await go(e, '/fundamental-science/math/index.html?lang=en#m-pr');
+  await e.locator('#fm-prob').scrollIntoViewIfNeeded();
+  await e.waitForFunction(() => document.querySelector('#fm-clt-read dd'));
+  assert.match(await text(e, '#fm-prob-h'), /law of large numbers/);
+  assert.doesNotMatch(await text(e, '#fm-prob'), /[㐀-鿿]/, 'demo is English on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll on a phone');
+  await finish(e);
+
+  // Double pendulum: loads its maths only when the chaos (or analytical mechanics) panel opens; RK4 keeps energy; pause stops time.
+  const r = await open({ viewport: { width: 1440, height: 1000 } });
+  await go(r, '/physics-realms/index.html#n-gr');
+  assert.equal(await r.evaluate(() => !!window.MOLASTRIA_REALMS_MODELS), false, 'not loaded up front');
+  await r.evaluate(() => window.__realms.select('chaos'));
+  await r.waitForSelector('#pr-dp-cv');
+  assert.equal(await r.evaluate(() => !!window.MOLASTRIA_REALMS_MODELS), true);
+  await r.evaluate(() => { const pn = document.querySelector('#pr-panel'); pn.scrollTop = pn.scrollHeight; });
+  await r.click('#pr-dp-play');
+  assert.equal(await r.getAttribute('#pr-dp-play', 'aria-pressed'), 'true');
+  await r.waitForTimeout(2500);
+  await r.click('#pr-dp-play');
+  const v = await r.$$eval('#pr-dp-read dd', (dd) => dd.map((d) => d.dataset.v));
+  assert.ok(Number(v[0]) > 1, `time advanced: ${v[0]} s`);
+  assert.ok(Number(v[1]) > 1e-6 && Number(v[1]) < 1e-2, `separation grew from 1e-6: ${v[1]}`);
+  assert.ok(Number(v[3]) < 1e-6, `energy drift ${v[3]}`);
+  await r.waitForTimeout(400);
+  assert.equal(await r.$eval('#pr-dp-read dd', (d) => d.dataset.v), v[0], 'paused: time stands still');
+  await r.click('#pr-dp-reset');
+  assert.equal(await r.$eval('#pr-dp-read dd', (d) => d.dataset.v), '0');
+  await r.evaluate(() => window.__realms.select('newton'));
+  assert.equal(await r.locator('#pr-dp').count(), 0, 'other theories have no demo');
+  await r.evaluate(() => window.__realms.select('analytic'));
+  await r.waitForSelector('#pr-dp-cv');
+  await finish(r);
+});
+
 check('phone width: no sideways scrolling', async () => {
   for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });

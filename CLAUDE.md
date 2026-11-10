@@ -32,7 +32,7 @@ public/               发布目录，推到 main 就上线
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
   fundamental-science/  进一步基础科学发现：fs-data.js 是全部内容（中英两版，每条带研究状态，文献逐条核对过），fs-models.js 是交互演示的数学（纯函数），fs-math.js 是生成的 MathML
-  fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-math.js 是生成的 MathML
+  fundamental-science/math/  子模块“数学基础与探索”：fm-data.js 是全部内容（10 门学科的讲解、大纲、公式、练习、自测、教材与视频，学科关系图，学习路线，Hall 章节导读；书目 DOI 在 Crossref 核对过，视频逐条核对过），fm.js 渲染，fm-prob.js 是概率论演示（大数定律、中心极限定理）的数学（纯函数，tools/fm-prob-test.mjs 测），fm-math.js 是生成的 MathML
   quantum/biology/    量子嘉年华下的量子生物学：qb-data.js 是全部内容（中英两版，七个方向、证据账本，每条带证据状态：已确立 / 活跃研究 / 存在争议 / 推测性假说，文献在 Crossref 核对过），qb-models.js 是三个演示的数学（纯函数），qb-math.js 是生成的 MathML；版式用 ../../fundamental-science/fundamental.css
   quantum/            母栏目“量子嘉年华”：sections.js 是四个展馆（量子物理、量子计算机、量子算法、量子生物学）的卡片数据，每个展馆一块、互不交叉，live 为 false 时显示“即将上线”；carnival.js 画入口页（展馆、通道、路线）
   quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-math.js 是生成的 MathML；地址 #c-<章> 打开一章
@@ -45,7 +45,7 @@ public/               发布目录，推到 main 就上线
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   research-atlas/     研究图谱外层页面（中美二十所大学数理化网络、量子化学地图、Top 20、中美对比、北美产业）；app/ 是 university-science-research-network 的整站构建，由 tools/vendor-atlas.mjs 复制，不要手改；英文、Tт 字体和主题由外层页面经网址参数和 postMessage（ra-host）传进去，译文在那个仓库的 i18n/en.json，用本站的 i18n.js；图谱仓库 main 有新提交时 atlas-sync.yml（每 3 小时检查一次）自动重新复制并上线
-  physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性
+  physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
   qchem/              游乐场（地址仍是 /qchem/）：三个展区十四个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）
   hub/data.*, merged-data.*   目录快照
@@ -71,6 +71,7 @@ node --test tools/api-test.mjs                          # 开放数据接口：�
 python3 tools/molastria-py-test.py                      # Python 客户端 molastria.py：对着本地假服务测提交、等待、报错和命令行
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
+node --test tools/fm-prob-test.mjs                      # 数学子模块的概率论演示：大数定律、中心极限定理对照解析结果，同一个种子同一个结果
 node --test tools/quantum-bio-test.mjs                  # 量子生物学：演示的数学对照解析解和时间积分，内容的状态、公式、文献都能对上
 node --test tools/play-test.mjs                         # 游乐场：十四个游戏的物理对照已知结果和解析解，关卡都能过关、电路题的最少门数穷举核对
 node --test tools/quantum-physics-test.mjs                # 量子嘉年华 · 量子物理：四个演示对照解析解，章节的公式、论文、书目、视频都能对上
