@@ -22,7 +22,7 @@
       ['hub', 'hub/index.html', '论文与社区', 'Papers & Community', '论文快照、论坛和社区讨论', 'Paper snapshots, forums and community threads', 0, 'forum community papers'],
     ] },
     { id: 'learn', zh: '学习', en: 'Learn', hint: ['从讲解、视频到 AI 家教和小游戏', 'From explainers and videos to an AI tutor and games'], items: [
-      ['manual', 'manual/index.html', '讲解手册', 'Handbook', '20 章中英双语的计算化学讲解', '20 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],
+      ['manual', 'manual/index.html', '讲解手册', 'Handbook', '25 章中英双语的计算化学讲解', '25 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],
       ['videos', 'videos/index.html', '教学视频', 'Videos', 'YouTube 和哔哩哔哩上的课程与教程', 'Courses and tutorials on YouTube and Bilibili', 1, 'video youtube bilibili course'],
       ['programming', 'programming/index.html', '编程语言', 'Programming', '计算物理与化学要用的编程语言，从入门到并行', 'The programming languages of computational physics and chemistry, from basics to parallel', 1, 'python fortran c++ julia code language 编程 语言'],
       ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],

@@ -134,7 +134,7 @@ const embed = (s: string) => s.replace(/<\//g, "<\\/");
 
 const wrapper = `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="MolAstria 单文件版：1,600 多条计算化学资源、网状查询、20 章中英双语讲解手册与 AI 实验室，一个文件即可离线打开。">
+<meta name="description" content="MolAstria 单文件版：1,600 多条计算化学资源、网状查询、25 章中英双语讲解手册与 AI 实验室，一个文件即可离线打开。">
 <title>MolAstria · 单文件版</title>
 <link rel="icon" href="${favicon}" type="image/svg+xml">
 <style>html,body{margin:0;width:100%;height:100%;background:#f6f5ee}#site{border:0;width:100%;height:100%;display:block}#loading{position:fixed;inset:0;display:grid;place-items:center;font:16px "Microsoft YaHei",sans-serif;color:#204f3d;background:#f6f5ee}@media (prefers-color-scheme:dark){html,body,#loading{background:#101613;color:#9fd0aa}}</style></head>
