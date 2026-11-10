@@ -16,7 +16,7 @@
 | `fetch_dataset_shard` | 把 QCArchive 数据集的一段下载到本地目录并登记索引；估计超过 2 GB 要确认 |
 | `export_training_set` | 导出 extxyz / ASE db 与来源清单；理论级别不一致时拒绝并说明差在哪 |
 | `get_basis` | 取基组与 ECP 文本（Basis Set Exchange，离线） |
-| `search_resources` | 查资源目录（与 MolAstria 网站同一份，228 条、17 类；随包安装，离线可用） |
+| `search_resources` | 查资源目录（与 MolAstria 网站同一份，251 条、17 类；随包安装，离线可用） |
 | `catalog_status` | 数据源清单、本地分片、缓存与资源目录概况（不联网） |
 | `run_calculation` | 把一个分子（SMILES 或 XYZ）交给 MolAstria 计算接口，用机器学习势算：单点、优化、频率、构象、扫描、分子动力学等 11 种；默认等到算完 |
 | `get_calculation` | 按任务编号取状态和结果（任务算完后保留一小时） |

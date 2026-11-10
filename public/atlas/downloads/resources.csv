@@ -227,3 +227,26 @@
 226,Ketcher,EPAM 的开源网页化学结构编辑器，读写 Molfile（V2000/V3000）、扩展 SMILES、RXN、InChI 等格式；Apache-2.0 许可，有在线演示。,https://lifescience.opensource.epam.com/ketcher/,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
 227,Biopython,生物信息学 Python 库：序列与比对、PDB 结构模块、访问 NCBI 的 Entrez 数据库，自带详尽教程；宽松的 Biopython 许可。,https://biopython.org/,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
 228,ColabFold,在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。,https://github.com/sokrypton/ColabFold,04,生物大分子与结构,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+229,PySCF,基于 Python 的量子化学框架：HF、DFT、MP2、耦合簇、CASSCF 和周期性体系都能用几行脚本调用，适合方法开发和自动化工作流；Apache-2.0 许可。本站开源代码台能生成 PySCF 脚本。,https://pyscf.org,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+230,xTB,Grimme 组的 GFN-xTB 半经验紧束缚程序：几百个原子的结构优化、频率和分子动力学在普通电脑上也很快，常用来给 DFT 做预筛；LGPL-3.0 许可。,https://github.com/grimme-lab/xtb,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+231,DFTB+,密度泛函紧束缚（DFTB）程序，支持 SCC-DFTB、xTB 哈密顿量、激发态和非平衡格林函数电子输运；LGPL-3.0 许可。,https://dftbplus.org,12,量子化学程序与方法库,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+232,ABINIT,平面波（赝势 / PAW）第一性原理程序，擅长密度泛函微扰理论（声子、介电、弹性）和 GW、Bethe–Salpeter 激发态；主体为 GPL-3.0 许可。,https://www.abinit.org,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+233,Open Babel,化学文件格式转换工具箱：在一百多种分子格式之间互转，还能加氢、生成三维坐标、算指纹，命令行和 Python 都能用；GPL-2.0 许可。,https://openbabel.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+234,cclib,解析计算化学程序输出的 Python 库：从 Gaussian、ORCA、Psi4、Q-Chem 等十几种程序的输出里读出能量、几何、轨道和振动频率，统一成同一套数据结构；BSD-3 许可。本站开源代码台的输出解读借了它的思路。,https://cclib.github.io,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+235,MDAnalysis,分子动力学轨迹分析的 Python 库，读 GROMACS、AMBER、NAMD、LAMMPS 等几十种格式，做 RMSD、氢键、径向分布函数等分析；库整体按 LGPL-3.0+ 发布。,https://www.mdanalysis.org,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+236,MDTraj,轻量快速的分子动力学轨迹读写与分析库，常用于 RMSD、二级结构（DSSP）和接触图，和 NumPy 无缝衔接；LGPL-2.1 许可。,https://github.com/mdtraj/mdtraj,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+237,HOOMD-blue,GPU 加速的通用粒子模拟 Python 包，擅长软物质、胶体和硬粒子蒙特卡洛；BSD-3 许可。,https://hoomd-blue.readthedocs.io,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+238,DeePMD-kit,深度势能（Deep Potential）模型的训练和推理工具，可接 LAMMPS、GROMACS 等做大规模分子动力学，常和 DP-GEN 主动学习一起用；LGPL-3.0 许可。,https://docs.deepmodeling.com/projects/deepmd/,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+239,MACE,高阶等变消息传递的机器学习原子势，提供 MACE-MP-0、MACE-OFF 等现成的基础模型，可接 ASE 和 LAMMPS；MIT 许可。本站模型接口的 MACE-OMOL-0 就来自它。,https://github.com/ACEsuit/mace,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+240,NequIP,E(3) 等变图神经网络原子势，用较少的训练数据就能达到高精度；MIT 许可。,https://github.com/mir-group/nequip,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+241,Allegro,NequIP 团队的严格局域等变原子势，便于并行扩展到超大体系的分子动力学；MIT 许可。,https://github.com/mir-group/allegro,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+242,SchNetPack,基于 PyTorch 的原子尺度神经网络工具箱，内置 SchNet、PaiNN 等模型，能训练能量、力、偶极等性质并跑分子动力学；MIT 许可。,https://github.com/atomistic-machine-learning/schnetpack,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+243,TorchMD-Net,PyTorch 实现的神经网络势框架，包含等变 Transformer、TensorNet 等架构；MIT 许可。,https://github.com/torchmd/torchmd-net,09,机器学习数据集与势函数,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+244,QCSchema,MolSSI 制定的量子化学计算 JSON 交换格式：分子、方法和结果用同一套字段描述，QCEngine、Psi4、QCArchive 都用它；BSD-3 许可。本站开源代码台能把分子导出成 QCSchema。,https://github.com/MolSSI/QCSchema,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+245,QCElemental,MolSSI 的基础数据与模型库：元素周期表、CODATA 物理常数、单位换算和 QCSchema 分子模型的校验；BSD-3 许可。,https://github.com/MolSSI/QCElemental,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+246,QCFractal,QCArchive 背后的服务器软件：批量提交、调度和存储量子化学计算，也可以自己部署一套；BSD-3 许可。,https://github.com/MolSSI/QCFractal,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+247,Software Heritage,联合国教科文组织支持的源代码永久档案，收录 GitHub、GitLab、PyPI 等平台的公开代码及完整历史；用 SWHID 标识符引用某一版本，复现论文时比 main 分支的链接可靠。,https://www.softwareheritage.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+248,Zenodo,CERN 运营的开放科研仓库：上传数据、代码和论文附件即得 DOI；和 GitHub 联动后，每发布一个版本就自动存档并分配 DOI。,https://zenodo.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+249,conda-forge,社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。,https://conda-forge.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+250,Hugging Face Hub,机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。,https://huggingface.co,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+251,OSV,Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。,https://osv.dev,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航

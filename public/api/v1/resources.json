@@ -6,7 +6,7 @@
  "docs": "https://molastria.com/api/",
  "dataset": "resources",
  "updated": "2026-11-05",
- "count": 228,
+ "count": 251,
  "categories": [
   {
    "code": "01",
@@ -60,13 +60,13 @@
    "code": "09",
    "zh": "机器学习数据集与势函数",
    "en": "Machine learning datasets & potentials",
-   "count": 11
+   "count": 17
   },
   {
    "code": "10",
    "zh": "软件、平台与计算入口",
    "en": "Software, platforms & compute entry points",
-   "count": 24
+   "count": 34
   },
   {
    "code": "11",
@@ -78,19 +78,19 @@
    "code": "12",
    "zh": "量子化学程序与方法库",
    "en": "Quantum chemistry programs and method libraries",
-   "count": 25
+   "count": 28
   },
   {
    "code": "13",
    "zh": "周期体系与凝聚态第一性原理",
    "en": "Periodic and condensed-matter first-principles codes",
-   "count": 14
+   "count": 15
   },
   {
    "code": "14",
    "zh": "波函数分析、可视化与动力学",
    "en": "Wavefunction analysis, visualization, and dynamics",
-   "count": 18
+   "count": 21
   },
   {
    "code": "15",
@@ -3753,6 +3753,374 @@
    "description": {
     "zh": "在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。",
     "en": "Predict protein structures and complexes on Google Colab with AlphaFold2 and other models (RoseTTAFold2, ESMFold and more), with fast multiple sequence alignments from MMseqs2; MIT licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 229,
+   "name": "PySCF",
+   "url": "https://pyscf.org",
+   "page": "https://molastria.com/atlas/#resources/229",
+   "category_code": "12",
+   "description": {
+    "zh": "基于 Python 的量子化学框架：HF、DFT、MP2、耦合簇、CASSCF 和周期性体系都能用几行脚本调用，适合方法开发和自动化工作流；Apache-2.0 许可。本站开源代码台能生成 PySCF 脚本。",
+    "en": "Python-based quantum chemistry framework: HF, DFT, MP2, coupled cluster, CASSCF and periodic systems in a few lines of script, well suited to method development and automated workflows; Apache-2.0 licence. MolAstria's Code Desk can generate PySCF scripts."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 230,
+   "name": "xTB",
+   "url": "https://github.com/grimme-lab/xtb",
+   "page": "https://molastria.com/atlas/#resources/230",
+   "category_code": "12",
+   "description": {
+    "zh": "Grimme 组的 GFN-xTB 半经验紧束缚程序：几百个原子的结构优化、频率和分子动力学在普通电脑上也很快，常用来给 DFT 做预筛；LGPL-3.0 许可。",
+    "en": "The Grimme group's GFN-xTB semi-empirical tight-binding program: geometry optimisations, frequencies and molecular dynamics for hundreds of atoms run quickly on an ordinary computer, often used to pre-screen before DFT; LGPL-3.0 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 231,
+   "name": "DFTB+",
+   "url": "https://dftbplus.org",
+   "page": "https://molastria.com/atlas/#resources/231",
+   "category_code": "12",
+   "description": {
+    "zh": "密度泛函紧束缚（DFTB）程序，支持 SCC-DFTB、xTB 哈密顿量、激发态和非平衡格林函数电子输运；LGPL-3.0 许可。",
+    "en": "Density functional tight-binding (DFTB) program supporting SCC-DFTB, xTB Hamiltonians, excited states and non-equilibrium Green's function electron transport; LGPL-3.0 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 232,
+   "name": "ABINIT",
+   "url": "https://www.abinit.org",
+   "page": "https://molastria.com/atlas/#resources/232",
+   "category_code": "13",
+   "description": {
+    "zh": "平面波（赝势 / PAW）第一性原理程序，擅长密度泛函微扰理论（声子、介电、弹性）和 GW、Bethe–Salpeter 激发态；主体为 GPL-3.0 许可。",
+    "en": "Plane-wave (pseudopotential / PAW) first-principles code, strong in density functional perturbation theory (phonons, dielectric and elastic response) and GW and Bethe–Salpeter excited states; mostly GPL-3.0."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 233,
+   "name": "Open Babel",
+   "url": "https://openbabel.org",
+   "page": "https://molastria.com/atlas/#resources/233",
+   "category_code": "10",
+   "description": {
+    "zh": "化学文件格式转换工具箱：在一百多种分子格式之间互转，还能加氢、生成三维坐标、算指纹，命令行和 Python 都能用；GPL-2.0 许可。",
+    "en": "Chemical file-format toolbox: converts between more than a hundred molecular formats, adds hydrogens, generates 3D coordinates and computes fingerprints, from the command line or Python; GPL-2.0 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 234,
+   "name": "cclib",
+   "url": "https://cclib.github.io",
+   "page": "https://molastria.com/atlas/#resources/234",
+   "category_code": "14",
+   "description": {
+    "zh": "解析计算化学程序输出的 Python 库：从 Gaussian、ORCA、Psi4、Q-Chem 等十几种程序的输出里读出能量、几何、轨道和振动频率，统一成同一套数据结构；BSD-3 许可。本站开源代码台的输出解读借了它的思路。",
+    "en": "Python library that parses the output of computational chemistry programs: reads energies, geometries, orbitals and vibrational frequencies from more than a dozen programs such as Gaussian, ORCA, Psi4 and Q-Chem into one data structure; BSD-3 licence. The output reader in MolAstria's Code Desk borrows its ideas."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 235,
+   "name": "MDAnalysis",
+   "url": "https://www.mdanalysis.org",
+   "page": "https://molastria.com/atlas/#resources/235",
+   "category_code": "14",
+   "description": {
+    "zh": "分子动力学轨迹分析的 Python 库，读 GROMACS、AMBER、NAMD、LAMMPS 等几十种格式，做 RMSD、氢键、径向分布函数等分析；库整体按 LGPL-3.0+ 发布。",
+    "en": "Python library for analysing molecular dynamics trajectories; reads dozens of formats from GROMACS, AMBER, NAMD, LAMMPS and more, with RMSD, hydrogen-bond, radial distribution function and other analyses; the library as a whole is released under LGPL-3.0+."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 236,
+   "name": "MDTraj",
+   "url": "https://github.com/mdtraj/mdtraj",
+   "page": "https://molastria.com/atlas/#resources/236",
+   "category_code": "14",
+   "description": {
+    "zh": "轻量快速的分子动力学轨迹读写与分析库，常用于 RMSD、二级结构（DSSP）和接触图，和 NumPy 无缝衔接；LGPL-2.1 许可。",
+    "en": "Lightweight, fast library for reading, writing and analysing molecular dynamics trajectories, commonly used for RMSD, secondary structure (DSSP) and contact maps, working seamlessly with NumPy; LGPL-2.1 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 237,
+   "name": "HOOMD-blue",
+   "url": "https://hoomd-blue.readthedocs.io",
+   "page": "https://molastria.com/atlas/#resources/237",
+   "category_code": "10",
+   "description": {
+    "zh": "GPU 加速的通用粒子模拟 Python 包，擅长软物质、胶体和硬粒子蒙特卡洛；BSD-3 许可。",
+    "en": "GPU-accelerated general-purpose particle simulation package for Python, strong in soft matter, colloids and hard-particle Monte Carlo; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 238,
+   "name": "DeePMD-kit",
+   "url": "https://docs.deepmodeling.com/projects/deepmd/",
+   "page": "https://molastria.com/atlas/#resources/238",
+   "category_code": "09",
+   "description": {
+    "zh": "深度势能（Deep Potential）模型的训练和推理工具，可接 LAMMPS、GROMACS 等做大规模分子动力学，常和 DP-GEN 主动学习一起用；LGPL-3.0 许可。",
+    "en": "Training and inference toolkit for Deep Potential models, plugging into LAMMPS, GROMACS and others for large-scale molecular dynamics, often used together with DP-GEN active learning; LGPL-3.0 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 239,
+   "name": "MACE",
+   "url": "https://github.com/ACEsuit/mace",
+   "page": "https://molastria.com/atlas/#resources/239",
+   "category_code": "09",
+   "description": {
+    "zh": "高阶等变消息传递的机器学习原子势，提供 MACE-MP-0、MACE-OFF 等现成的基础模型，可接 ASE 和 LAMMPS；MIT 许可。本站模型接口的 MACE-OMOL-0 就来自它。",
+    "en": "Machine-learned interatomic potentials built on higher-order equivariant message passing, with ready-made foundation models such as MACE-MP-0 and MACE-OFF, usable from ASE and LAMMPS; MIT licence. MACE-OMOL-0 on MolAstria's model API comes from it."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 240,
+   "name": "NequIP",
+   "url": "https://github.com/mir-group/nequip",
+   "page": "https://molastria.com/atlas/#resources/240",
+   "category_code": "09",
+   "description": {
+    "zh": "E(3) 等变图神经网络原子势，用较少的训练数据就能达到高精度；MIT 许可。",
+    "en": "E(3)-equivariant graph neural network interatomic potentials that reach high accuracy from relatively little training data; MIT licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 241,
+   "name": "Allegro",
+   "url": "https://github.com/mir-group/allegro",
+   "page": "https://molastria.com/atlas/#resources/241",
+   "category_code": "09",
+   "description": {
+    "zh": "NequIP 团队的严格局域等变原子势，便于并行扩展到超大体系的分子动力学；MIT 许可。",
+    "en": "Strictly local equivariant interatomic potentials from the NequIP team, designed to scale in parallel to molecular dynamics of very large systems; MIT licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 242,
+   "name": "SchNetPack",
+   "url": "https://github.com/atomistic-machine-learning/schnetpack",
+   "page": "https://molastria.com/atlas/#resources/242",
+   "category_code": "09",
+   "description": {
+    "zh": "基于 PyTorch 的原子尺度神经网络工具箱，内置 SchNet、PaiNN 等模型，能训练能量、力、偶极等性质并跑分子动力学；MIT 许可。",
+    "en": "PyTorch toolbox for atomistic neural networks with built-in models such as SchNet and PaiNN; trains energies, forces, dipoles and other properties and runs molecular dynamics; MIT licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 243,
+   "name": "TorchMD-Net",
+   "url": "https://github.com/torchmd/torchmd-net",
+   "page": "https://molastria.com/atlas/#resources/243",
+   "category_code": "09",
+   "description": {
+    "zh": "PyTorch 实现的神经网络势框架，包含等变 Transformer、TensorNet 等架构；MIT 许可。",
+    "en": "Neural network potential framework in PyTorch, including the equivariant Transformer, TensorNet and other architectures; MIT licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 244,
+   "name": "QCSchema",
+   "url": "https://github.com/MolSSI/QCSchema",
+   "page": "https://molastria.com/atlas/#resources/244",
+   "category_code": "10",
+   "description": {
+    "zh": "MolSSI 制定的量子化学计算 JSON 交换格式：分子、方法和结果用同一套字段描述，QCEngine、Psi4、QCArchive 都用它；BSD-3 许可。本站开源代码台能把分子导出成 QCSchema。",
+    "en": "MolSSI's JSON exchange format for quantum chemistry calculations: molecules, methods and results described with one set of fields, used by QCEngine, Psi4 and QCArchive; BSD-3 licence. MolAstria's Code Desk can export molecules as QCSchema."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 245,
+   "name": "QCElemental",
+   "url": "https://github.com/MolSSI/QCElemental",
+   "page": "https://molastria.com/atlas/#resources/245",
+   "category_code": "10",
+   "description": {
+    "zh": "MolSSI 的基础数据与模型库：元素周期表、CODATA 物理常数、单位换算和 QCSchema 分子模型的校验；BSD-3 许可。",
+    "en": "MolSSI's library of basic data and models: periodic table, CODATA physical constants, unit conversion and validation of QCSchema molecule models; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 246,
+   "name": "QCFractal",
+   "url": "https://github.com/MolSSI/QCFractal",
+   "page": "https://molastria.com/atlas/#resources/246",
+   "category_code": "10",
+   "description": {
+    "zh": "QCArchive 背后的服务器软件：批量提交、调度和存储量子化学计算，也可以自己部署一套；BSD-3 许可。",
+    "en": "The server software behind QCArchive: submits, schedules and stores quantum chemistry calculations in bulk, and you can deploy your own instance; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 247,
+   "name": "Software Heritage",
+   "url": "https://www.softwareheritage.org",
+   "page": "https://molastria.com/atlas/#resources/247",
+   "category_code": "10",
+   "description": {
+    "zh": "联合国教科文组织支持的源代码永久档案，收录 GitHub、GitLab、PyPI 等平台的公开代码及完整历史；用 SWHID 标识符引用某一版本，复现论文时比 main 分支的链接可靠。",
+    "en": "Permanent source-code archive supported by UNESCO, holding public code and full history from GitHub, GitLab, PyPI and other platforms; cite an exact version with a SWHID identifier, which is more reliable than a link to a main branch when reproducing a paper."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 248,
+   "name": "Zenodo",
+   "url": "https://zenodo.org",
+   "page": "https://molastria.com/atlas/#resources/248",
+   "category_code": "10",
+   "description": {
+    "zh": "CERN 运营的开放科研仓库：上传数据、代码和论文附件即得 DOI；和 GitHub 联动后，每发布一个版本就自动存档并分配 DOI。",
+    "en": "Open research repository run by CERN: upload data, code or paper supplements and get a DOI; linked to GitHub, it archives every release automatically and assigns it a DOI."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 249,
+   "name": "conda-forge",
+   "url": "https://conda-forge.org",
+   "page": "https://molastria.com/atlas/#resources/249",
+   "category_code": "10",
+   "description": {
+    "zh": "社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。",
+    "en": "Community-maintained conda package channel; most computational chemistry software, including PySCF, Psi4, xTB, OpenMM and RDKit, installs with one command."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 250,
+   "name": "Hugging Face Hub",
+   "url": "https://huggingface.co",
+   "page": "https://molastria.com/atlas/#resources/250",
+   "category_code": "10",
+   "description": {
+    "zh": "机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。",
+    "en": "Hosting platform for machine learning models, datasets and online demos; many chemistry and materials model weights (such as UMA) and datasets (such as OMol25) are released here; check each model's weight licence separately."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 251,
+   "name": "OSV",
+   "url": "https://osv.dev",
+   "page": "https://molastria.com/atlas/#resources/251",
+   "category_code": "10",
+   "description": {
+    "zh": "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。",
+    "en": "Open-source vulnerability database started by Google, covering PyPI, npm, crates.io and other ecosystems; look up known vulnerabilities by package name and version through a free API. The software check-up in MolAstria's Code Desk uses it."
    },
    "access": {
     "zh": "免费",

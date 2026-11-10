@@ -2732,17 +2732,20 @@ check('quantum algorithms circuit: rotation gates, mid-circuit measurement, step
   await finish(p);
 });
 
-check('resource catalogue: 228 entries, the 2026-11-10 additions are searchable in both languages', async () => {
+check('resource catalogue: 251 entries, the 2026-11-10 additions are searchable in both languages', async () => {
   const p = await open();
   await go(p, '/atlas/index.html');
-  assert.match(await text(p, '.filter[data-filter=all]'), /228/);
+  assert.match(await text(p, '.filter[data-filter=all]'), /251/);
+  await p.fill('#search', 'PySCF');
+  await p.waitForTimeout(300);
+  assert.match(await text(p, 'main'), /Apache-2.0/);
   await p.fill('#search', 'Quirk');
   await p.waitForTimeout(300);
   assert.match(await text(p, 'main'), /Quirk/);
   await finish(p);
   const e = await open();
   await go(e, '/index.html?lang=en');
-  assert.equal(await text(e, '#stat-atlas'), '228');
+  assert.equal(await text(e, '#stat-atlas'), '251');
   await finish(e);
 });
 

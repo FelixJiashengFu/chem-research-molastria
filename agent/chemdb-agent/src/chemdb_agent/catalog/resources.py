@@ -1,4 +1,4 @@
-"""资源目录：MolAstria 开放数据接口的资源目录（与网站的数据库目录同一份，现有 228 条、17 类）。
+"""资源目录：MolAstria 开放数据接口的资源目录（与网站的数据库目录同一份，现有 251 条、17 类）。
 
 条目在同目录的 ``resources.json`` 里，由仓库的 ``tools/build-api.mjs`` 从网站数据生成，
 和 https://molastria.com/api/v1/resources.json 同源（那里另有英文说明）；不要手改。
