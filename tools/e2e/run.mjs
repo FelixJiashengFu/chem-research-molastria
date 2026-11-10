@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -2696,6 +2696,32 @@ check('about: MolAstria brand story, five chapters, hand-written English, new Ch
   assert.match(await text(p, '#story .story-ch h3'), /The Origin of Our Name/);
   assert.equal(await p.locator('#story .story-zh:visible, #story .story-en:visible').count(), 0, 'no doubled lines in English');
   assert.ok(!/[\u4e00-\u9fff]/.test(await text(p, '#story')), 'story fully in English');
+  await finish(p);
+});
+
+check('vision: the operator\'s essay in full (28 paragraphs, 3 source links), bilingual toggle, outlook with status tags, nav and footer links', async () => {
+  const p = await open({ viewport: { width: 390, height: 844 } });
+  await go(p, '/vision/index.html');
+  assert.match(await text(p, '.vs-hero h1'), /工业革命2.5/);
+  assert.equal(await p.locator('.vs-essay .vs-para').count(), 28);
+  assert.match(await text(p, '#part-1'), /我把正在发生的人工智能浪潮称为“工业革命2.5”。/);
+  assert.match(await text(p, '#part-5'), /以自己的知识、劳动与判断，参与创造值得拥有的未来。/);
+  const srcs = await p.$$eval('.vs-src', (xs) => xs.map((x) => x.href));
+  assert.deepEqual(srcs, ['https://www.nps.gov/mapr/learn/historyculture/index.htm', 'https://www.whitehouse.gov/releases/2025/07/white-house-unveils-americas-ai-action-plan/', 'https://www.energy.gov/science/articles/genesis-mission-frameworks-advancing-frontiers-american-discovery']);
+  assert.equal(await p.locator('.vs-en:visible').count(), 0, 'Chinese page shows only Chinese at first');
+  await p.click('.vs-bi');
+  assert.equal(await p.locator('.vs-en:visible').count(), 28, 'every paragraph gets its translation');
+  assert.equal(await p.locator('.vo-card').count(), 4);
+  for (const st of ['live', 'next', 'idea']) assert.ok(await p.locator(`.vo-card .vo-${st}`).count() >= 4, `each card has ${st}`);
+  for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\//, `site link ${href} is relative to /vision/`);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  assert.equal(await p.locator('.cr-legal a[href$="vision/index.html"]').count(), 1);
+  await go(p, '/about/index.html');
+  assert.equal(await p.locator('main a[href="../vision/index.html"]').count(), 1);
+  await go(p, '/vision/index.html?lang=en');
+  await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.match(await text(p, '.vs-hero h1'), /Industrial Revolution 2.5/);
+  assert.ok(!/[\u4e00-\u9fff]/.test(await text(p, '#vision')), 'page fully in English');
   await finish(p);
 });
 
