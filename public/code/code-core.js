@@ -529,7 +529,7 @@
     const L = LANGS[lang] || '';
     const enc = encodeURIComponent;
     const gh = [q, L && `language:${L[0].includes(' ') || L[0].includes('+') ? `"${L[0]}"` : L[0]}`, chem && `(${CHEM_REPOS.map((r) => `repo:${r}`).join(' OR ')})`].filter(Boolean).join(' ');
-    const sgRepo = chem ? ` repo:^github\\.com/(${CHEM_REPOS.map((r) => r.replace(/[.]/g, '\\.')).join('|')})$` : '';
+    const sgRepo = chem ? ` repo:^github\\.com/(${CHEM_REPOS.map((r) => r.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')).join('|')})$` : '';
     const sg = `context:global ${q}${L ? ` lang:${L[1]}` : ''}${sgRepo}`;
     let grep = `https://grep.app/search?q=${enc(q)}`;
     if (L) grep += `&filter[lang][0]=${enc(L[0])}`;
