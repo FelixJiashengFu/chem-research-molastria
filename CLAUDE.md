@@ -43,6 +43,7 @@ public/               发布目录，推到 main 就上线
   programming/        编程语言教学区：pl-data.js 是全部内容（20 种语言和工具链，中英两版；每种一段代码，大多是同一道 LJ 势能题，tested 标明是否真跑过），pl.js 渲染（地址 #lang-<id>、#code-<id>，Python 用 viewer/pyrun.js 在浏览器里跑），tools/programming-test.mjs 用本机有的编译器重跑标了 tested 的代码
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
   api/                开放数据接口：v1/ 是给程序读的静态 JSON（资源目录、期刊、科学大模型与价格、教学视频，中英双语，CC BY 4.0），外加中英术语表、openapi.json，由 tools/build-api.mjs 从各栏目的数据文件生成（同时生成站点根的 llms.txt）；v1/molastria.mjs 是手写的零依赖 JS 库（跨数据集搜索，中英同义词互通，没有 DOM，tools/api-test.mjs 测）；v1/molastria.py 是手写的零依赖 Python 客户端（读数据集、提交计算并等结果，tools/molastria-py-test.py 测）；embed.js 是给别人网页用的嵌入卡片（shadow DOM，自带中英文字，不走 i18n）；index.html + api.js 是说明页：搜索台、跟着搜索变的代码、嵌入卡片生成器，只用公开的接口；compute.js 是说明页里“计算接口”一段（在线状态和 7 天在线率、带 key 试一次、示例代码），接口本身在账号服务的 /v1。v1 只加字段，删改字段要出 v2
+  vision/             愿景页：vision-data.js 是站长的文章《工业革命2.5》（中文是原文，逐字保留、只增不删；英文手写，不走 i18n）和编者的展望（每条标已上线 / 规划中 / 设想），vision.js 按页面语言画
   about/              关于页：阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
   pro/                价格页、账号页 account.html + account-page.js（含生成和撤销 API key、今天的用量和最近的计算）、条款
   pay/config.js       收款链接、显示价格、accountApi、portalUrl；pay/account.js 是账号客户端

@@ -300,6 +300,7 @@ const mains = [
   await injectHead("open-models/orbital/index.html", "open-models/orbital/"),
   await injectHead("open-models/chai/index.html", "open-models/chai/"),
   await injectHead("open-models/rowan/index.html", "open-models/rowan/"),
+  await injectHead("vision/index.html", "vision/", { jsonld: [{ "@context": "https://schema.org", "@type": "Article", headline: "工业革命2.5：我愿成为“曼哈顿计划2.0”的一份子", alternativeHeadline: "Industrial Revolution 2.5: why I want to be part of Manhattan Project 2.0", inLanguage: ["zh-CN", "en"], url: SITE + "vision/", datePublished: "2026-11-10", author: { "@type": "Person", name: "Jiasheng Fu" }, publisher: { "@type": "Organization", name: "MolAstria", url: SITE } }, crumbs([["首页", ""], ["愿景", "vision/"]])] }),
   await injectHead("programming/index.html", "programming/", { jsonld: [{ "@context": "https://schema.org", "@type": "LearningResource", name: "计算物理与化学的编程语言 · Programming languages for computational physics and chemistry", inLanguage: ["zh-CN", "en"], url: SITE + "programming/", isAccessibleForFree: true, learningResourceType: "tutorial", provider: { "@type": "Organization", name: NAME, url: SITE }, about: ["Python", "Fortran", "C++", "Julia", "OpenMP", "MPI", "CUDA", "MATLAB", "R", "SQL", "Bash", "OpenQASM"] }] }),
   await injectHead("meta/index.html", "meta/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "Meta × 化学：Muse 识图、UMA 脚本与开放数据集", inLanguage: "zh-CN", url: SITE + "meta/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "fairchem", "Meta Muse"] }] }),
   await injectHead("models/index.html", "models/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "量子化学模型接口：15 个机器学习势在线计算", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "models/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "MACE-OFF23", "ANI-2x", "machine learning interatomic potentials"] }] }),
@@ -352,6 +353,7 @@ const urls = [
   ["open-models/chai/", "0.6", "monthly"],
   ["open-models/rowan/", "0.6", "monthly"],
   ["programming/", "0.8", "monthly"],
+  ["vision/", "0.5", "yearly"],
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

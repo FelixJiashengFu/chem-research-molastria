@@ -33,6 +33,7 @@
       ['quantum', 'quantum/index.html', '量子嘉年华', 'Quantum Carnival', '四个展馆：量子物理、计算机、算法、生物学', 'Four pavilions: quantum physics, computers, algorithms and biology', 1, 'quantum 量子', [['量子物理', 'Quantum physics', 'quantum/physics/index.html'], ['量子计算机', 'Quantum computers', 'quantum/computing/index.html'], ['量子算法', 'Quantum algorithms', 'quantum/algorithms/index.html'], ['量子生物学', 'Quantum biology', 'quantum/biology/index.html']]],
       ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', 'Fundamental Science', '尚未解决的基础问题，每条标明研究状态', 'Open fundamental questions, each with its research status', 1, 'fundamental science physics', [['数学基础与探索', 'Mathematical foundations', 'fundamental-science/math/index.html']]],
       ['realms', 'physics-realms/index.html', '物理疆界图', 'Physics Realms', '42 个物理理论和它们之间的关系图', '42 physical theories and how they connect', 1, 'physics map theory'],
+      ['vision', 'vision/index.html', '愿景：工业革命2.5', 'Vision: Industrial Revolution 2.5', '站长的文章，和 MolAstria 接下来能做什么', 'The operator’s essay, and what MolAstria can do next', 1, 'vision 愿景 essay manhattan 曼哈顿 roadmap 路线图 future'],
     ] },
     { id: 'models', zh: '模型与 AI', en: 'Models & AI', hint: ['科学模型、在线计算和 AI 研究流程', 'Science models, online computing and AI research workflows'], items: [
       ['openmodels', 'open-models/index.html', '开放模型馆', 'Open Model Hall', 'Meta、DeepMind、微软、英伟达等 11 家公司的开放科学模型', 'Open science models from Meta, DeepMind, Microsoft, NVIDIA and 7 more', 1, 'meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 open models', [['Meta', 'Meta', 'meta/index.html'], ['Google DeepMind', 'Google DeepMind', 'open-models/deepmind/index.html'], ['微软', 'Microsoft', 'open-models/microsoft/index.html'], ['英伟达', 'NVIDIA', 'open-models/nvidia/index.html'], ['深势科技', 'DP Technology', 'open-models/dp/index.html'], ['全部 11 家', 'All 11 labs', 'open-models/index.html#om-orgs']]],
@@ -316,7 +317,7 @@
   {
     const legal = document.createElement('p');
     legal.className = 'cr-legal';
-    legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">阿斯特赖亚科技（Morning Glory）旗下项目</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a> · <a href="${link('api/index.html')}">开放数据接口</a>`;
+    legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">阿斯特赖亚科技（Morning Glory）旗下项目</a> · <a href="${link('vision/index.html')}">愿景：工业革命2.5</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a> · <a href="${link('api/index.html')}">开放数据接口</a>`;
     const placeLegal = () => {
       if (document.body.classList.contains('radar-page')) return;
       const foot = [...document.querySelectorAll('footer')].filter((f) => !f.closest('.cr-header, dialog, aside')).pop();
