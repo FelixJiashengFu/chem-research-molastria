@@ -174,6 +174,14 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **批量找候选：** `node tools/video-search.mjs yt search [主题 id]` 和 `bili search`，查询词在 `tools/video-queries.json`，结果写到 `tmp-videos/`（不进 git），附平台上的标题、简介、时长、分集、能否嵌入。`yt verify` / `bili verify` 逐条重查数据文件里的视频。要在能上 YouTube 和哔哩哔哩的机器上跑；云端会话上不去时，临时加一个在分支上 push 触发的工作流跑它、把 `tmp-videos/` 提交回分支（2026-11-08 就是这样做的，合并前删掉工作流和结果）。
 - **桌面版** 不嵌入播放器，点封面在系统浏览器里打开原视频（WebView 里嵌入 YouTube 常被拒绝）。
 
+### 自己做教学和宣传视频（Manim、Molecular Nodes）
+
+这两个工具不进网站，只在站长电脑上用来做视频；做出来的视频按上面的流程上传到 YouTube 或哔哩哔哩，再像别的视频一样加进 `videos-data.js`。
+
+- **公式和几何动画用 Manim。** 有两个版本：3Blue1Brown 自己用的 `3b1b/manim` 和社区维护的 `ManimCommunity/manim`（都是 MIT 许可）。用社区版，文档和安装说明更全（`pip install manim`，写 `MathTex` 公式还要装 LaTeX）。脚本放在仓库外，或者放进 `tools/` 下单独的目录并写清楚怎么渲染；渲染出的视频不进 git（太大），只放平台链接。
+- **蛋白和分子动画用 Molecular Nodes。** 它是 Blender 的插件（`BradyAJohnston/MolecularNodes`，GPL-3.0），能把 PDB / mmCIF 结构和分子动力学轨迹读进 Blender，用几何节点上色、做镜头动画。量子生物学结构馆里的六个 PDB 结构（隐花色素、光合复合体等，见 `qb-data.js` 的 `structures`）可以直接拿来做。插件是 GPL，但按 GNU 的 GPL 常见问答，程序的输出不受 GPL 约束（除非输出里含有程序自己的代码），渲染出来的视频可以照常发布；不要把插件的代码复制进本仓库。
+- **两个都别塞进网页。** 网页里的动画照旧手写 SVG / canvas，转分子用 `public/viewer/mol3d.js`（3Dmol.js）。
+
 ## 刷新数据
 
 训练页的模型核对：`node tools/train-models.mjs`（每周四随目录刷新自动跑；本机有 HTTPS 扫描时加 `NODE_USE_SYSTEM_CA=1`）。它只更新 `public/train/models-live.js`，手写的模型介绍要人来改。
