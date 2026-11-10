@@ -1,0 +1,82 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+
+ Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
+
+   11    -382.3003620825      8.88e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3003620825
+
+   11    -382.3076865486      5.29e-10  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3076865486
+
+   10    -382.3082546102      2.25e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3082546102
+
+    9    -382.3082947514      7.22e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3082947514
+
+    7    -382.3082955186      6.71e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3082955186
+
+ Final energy is   -382.30829551861552     
+
+ ******************************
+ **  OPTIMIZATION CONVERGED  **
+ ******************************
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -9.992  -9.992  -0.810  -0.754  -0.718  -0.700  -0.667  -0.589
+  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
+ -0.559  -0.532  -0.510  -0.457  -0.439  -0.411  -0.398  -0.396
+  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
+ -0.374  -0.351  -0.347  -0.325  -0.311  -0.293  -0.287  -0.264
+ 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+  0.381   0.411   0.412   0.427   0.440   0.453   0.478   0.526
+ 17 Ag   18 Ag   18 Bu   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
+  0.546   0.576   0.599   0.625   0.640   0.683   0.717   0.780
+ 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
+  0.795
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -9.992  -9.992  -0.810  -0.754  -0.718  -0.700  -0.667  -0.589
+  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
+ -0.559  -0.532  -0.510  -0.457  -0.439  -0.411  -0.398  -0.396
+  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
+ -0.374  -0.351  -0.347  -0.325  -0.311  -0.293  -0.287  -0.264
+ 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+  0.381   0.411   0.412   0.427   0.440   0.453   0.478   0.526
+ 17 Ag   18 Ag   18 Bu   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
+  0.546   0.576   0.599   0.625   0.640   0.683   0.717   0.780
+ 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
+  0.795
+ 25 Bu                                                                         
+ --------------------------------------------------------------
+
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

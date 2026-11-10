@@ -1,0 +1,57 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+         Total SCF energy =   -147.633942066969
+
+
+                    UHF Final Alpha Molecular Orbital Analysis
+                    ------------------------------------------
+
+ Vector    2  Occ=1.000000D+00  E=-2.044027D+01
+
+ Vector    3  Occ=1.000000D+00  E=-1.620854D+00
+
+ Vector    4  Occ=1.000000D+00  E=-1.089932D+00
+
+ Vector    5  Occ=1.000000D+00  E=-7.168054D-01
+
+ Vector    6  Occ=1.000000D+00  E=-7.168054D-01
+
+ Vector    7  Occ=1.000000D+00  E=-6.085678D-01
+
+ Vector    8  Occ=1.000000D+00  E=-4.131969D-01
+
+ Vector    9  Occ=1.000000D+00  E=-4.131969D-01
+
+ Vector   10  Occ=0.000000D+00  E= 6.907090D-01
+
+
+                     UHF Final Beta Molecular Orbital Analysis
+                     -----------------------------------------
+
+ Vector    2  Occ=1.000000D+00  E=-2.040963D+01
+
+ Vector    3  Occ=1.000000D+00  E=-1.490294D+00
+
+ Vector    4  Occ=1.000000D+00  E=-8.972211D-01
+
+ Vector    5  Occ=1.000000D+00  E=-5.555565D-01
+
+ Vector    6  Occ=1.000000D+00  E=-4.450700D-01
+
+ Vector    7  Occ=1.000000D+00  E=-4.450700D-01
+
+ Vector    8  Occ=0.000000D+00  E= 2.717536D-01
+
+ Vector    9  Occ=0.000000D+00  E= 2.717536D-01
+
+ Vector   10  Occ=0.000000D+00  E= 7.806826D-01
+
+ center of mass
+
+ CCSD total energy / hartree       =      -147.741906964985589
+
+ CCSD(T) total energy / hartree       =      -147.742591624872063
+
+ Total times  cpu:        0.2s     wall:        0.3s

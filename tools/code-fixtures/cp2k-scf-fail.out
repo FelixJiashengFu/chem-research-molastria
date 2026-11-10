@@ -1,0 +1,16 @@
+  **** **** ******  **  PROGRAM STARTED AT               2026-11-10 18:13:14.689
+
+ CP2K| version string:                                       CP2K version 2026.2
+
+ *******************************************************************************
+ *   ___                                                                       *
+ *  /   \                                                                      *
+ * [ABORT]                                                                     *
+ *  \___/     SCF run NOT converged. To continue the calculation regardless,   *
+ *    |             please set the keyword IGNORE_CONVERGENCE_FAILURE.         *
+ *  O/|                                                                        *
+ * /| |                                                                        *
+ * / \                                                            qs_scf.F:702 *
+ *******************************************************************************
+
+ ===== Routine Calling Stack ===== 

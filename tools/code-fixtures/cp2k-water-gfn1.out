@@ -1,0 +1,9 @@
+  **** **** ******  **  PROGRAM STARTED AT               2026-11-10 18:05:07.518
+
+ CP2K| version string:                                       CP2K version 2026.2
+
+  *** SCF run converged in     9 steps ***
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]             -5.768733676277428
+
+  **** **** ******  **  PROGRAM ENDED AT                 2026-11-10 18:05:07.882

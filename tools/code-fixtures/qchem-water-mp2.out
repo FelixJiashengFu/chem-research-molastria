@@ -1,0 +1,34 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+
+ Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
+
+    6     -74.9643287618      8.23e-06  Convergence criterion met
+
+ Total energy in the final basis set =      -74.9643287618
+
+        MP2         total energy =                   -75.00228214 au
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-20.244  -1.251  -0.603  -0.445  -0.388
+  1 A1    2 A1    1 B1    3 A1    1 B2                                         
+ -- Virtual --                   
+  0.571   0.709
+  4 A1    2 B1                                                                 
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-20.244  -1.251  -0.603  -0.445  -0.388
+  1 A1    2 A1    1 B1    3 A1    1 B2                                         
+ -- Virtual --                   
+  0.571   0.709
+  4 A1    2 B1                                                                 
+ --------------------------------------------------------------
+
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

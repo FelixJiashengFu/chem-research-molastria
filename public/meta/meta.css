@@ -171,8 +171,10 @@ input[type=number]{width:88px}
 .mx-live h2{margin:0 0 6px;font-size:20px;font-weight:600}
 .mx-releases{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .mx-releases li{display:flex;justify-content:space-between;gap:16px;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--surface);font-size:13px}
-.mx-releases li a{font-family:var(--font-mono);font-size:12.5px;text-decoration:none}
+.mx-releases li a{min-width:0;overflow-wrap:anywhere;font-family:var(--font-mono);font-size:12.5px;text-decoration:none}
 .mx-releases li span{color:var(--muted);white-space:nowrap;font-size:12px}
+.mx-releases li span:first-child{min-width:0;white-space:normal} /* 读不到 GitHub 时的那句说明（被限流时最常见）要能换行，否则手机上横向滚动 */
+.mx-releases li:has(> span:first-child){flex-wrap:wrap}
 
 .mx-foot{display:flex;gap:30px;justify-content:space-between;padding:20px 0 40px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
 .mx-foot strong{color:var(--ink);font-size:14px;white-space:nowrap}
@@ -185,7 +187,7 @@ input[type=number]{width:88px}
   .mx-hero{grid-template-columns:1fr;gap:32px;padding-top:44px}
   .mx-split,.mx-gen{grid-template-columns:minmax(0,1fr)}
   .mx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .mx-live{grid-template-columns:1fr;gap:14px}
+  .mx-live{grid-template-columns:minmax(0,1fr);gap:14px} /* minmax：一个很长的版本名不会把整栏撑出屏幕 */
 }
 @media(max-width:720px){
   main{padding:0 16px}

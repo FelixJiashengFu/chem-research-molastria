@@ -1,17 +1,24 @@
 // 开源代码台（public/code/code-core.js）的纯逻辑测试：node --test tools/code-test.mjs
 // 输入文件生成器：每个程序的关键字都对、电荷和多重度自洽检查对；本机装了 PySCF（pip install pyscf）时，
 // 真的跑一遍生成的脚本，对照参考能量，再用输出解读读回来（CODE_SKIP_PYTHON=1 跳过）。
-// 输出解读：xTB、ORCA、Psi4、Gaussian 的片段照这些程序真实输出的格式写，PySCF 的是本机实跑的输出。
+// 输出解读：xTB、ORCA、Psi4、Gaussian 的片段照这些程序真实输出的格式写，PySCF 的是本机实跑的输出；
+// NWChem、CP2K、Q-Chem 用 tools/code-fixtures/ 里的真实输出（来源见那里的 README），本机有 nwchem、cp2k.psmp 时也真跑一遍。
+// 从 SMILES 生成坐标（public/viewer/smiles3d.js）：用 tools/e2e 装的 openchemlib（npm ci --prefix tools/e2e），没装就跳过。
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const C = require('../public/code/code-core.js');
+const DEMOS = require('../public/code/code-demos.js');
+const S3 = require('../public/viewer/smiles3d.js');
+const HERE = dirname(fileURLToPath(import.meta.url));
+const fixture = (f) => readFileSync(join(HERE, 'code-fixtures', f), 'utf8');
 
 const WATER = '3\nwater\nO 0.000000 0.000000 0.117300\nH 0.000000 0.757200 -0.469200\nH 0.000000 -0.757200 -0.469200\n';
 const w = C.parseXYZ(WATER).atoms;
@@ -90,6 +97,10 @@ test('输入生成：每个程序的关键字', () => {
   assert.match(r.text, /POTENTIAL GTH-PBE-q1/);
   assert.match(r.text, /ABC 10 12 11/, '分子大小加 10 Å 真空，向上取整');
   assert.match(g('cp2k', { method: 'GFN1-xTB' }).text, /METHOD xTB[\s\S]*GFN_TYPE 1/);
+  r = g('cp2k', { method: 'GFN2-xTB' }); // CP2K 2026.2 只认 GFN_TYPE 0、1、TBLITE；写 2 会报 invalid value for enumeration（见 code-fixtures/cp2k-input-abort.out）
+  assert.match(r.text, /GFN_TYPE TBLITE\n\s+&TBLITE\n\s+METHOD GFN2\n\s+&END TBLITE/);
+  assert.doesNotMatch(r.text, /GFN_TYPE 2/);
+  assert.ok(r.notes.some((n) => /tblite/.test(n)));
   assert.equal(g('cp2k', { method: 'GFN-FF' }).supported, false);
 
   r = g('ase', { method: 'GFN2-xTB', task: 'optfreq' });
@@ -331,6 +342,200 @@ test('软件体检：输入判断、PyPI 与 OSV 的整理', () => {
   assert.deepEqual(C.summarizeOsv({}), []);
 });
 
+test('XYZ：多帧（构象、自旋态、轨迹）选一帧', () => {
+  const two = `${WATER}3\nwater, stretched\nO 0 0 0.2\nH 0 0.8 -0.5\nH 0 -0.8 -0.5\n`;
+  let r = C.parseXYZ(two);
+  assert.equal(r.frames, 2);
+  assert.equal(r.frame, 0);
+  assert.deepEqual(r.comments, ['water', 'water, stretched']);
+  assert.equal(r.atoms[0].z, 0.1173);
+  r = C.parseXYZ(two, 1);
+  assert.equal(r.comment, 'water, stretched');
+  assert.equal(r.atoms[0].z, 0.2);
+  assert.equal(C.parseXYZ(two, 9).frame, 1, '超出范围就用最后一帧');
+  assert.equal(C.parseXYZ(two, -3).frame, 0);
+  // 帧之间可以有空行，原子数可以不同（反应里的几个分子）
+  r = C.parseXYZ(`2\nH2\nH 0 0 0\nH 0 0 0.74\n\n${WATER}`, 1);
+  assert.equal(r.frames, 2);
+  assert.equal(C.formula(r.atoms), 'H2O');
+  // 单帧照旧；不像多帧的文字也照单帧读，原来的报错不变
+  assert.equal(C.parseXYZ(WATER).frames, 1);
+  assert.equal(C.splitFrames(WATER), null);
+  assert.match(C.parseXYZ('4\n\nO 0 0 0\nH 0 0 1').errors[0], /4 个原子，实际读到 2 个/);
+  assert.equal(C.splitFrames('O 0 0 0\nH 0 0 1'), null);
+});
+
+// ── NWChem、CP2K、Q-Chem：真实输出 ──
+const near = (a, b, tol, msg) => assert.ok(a !== null && Math.abs(a - b) < tol, `${msg || ''} ${a} ≠ ${b}`);
+const OUTS = [
+  // [文件, 程序, 能量, { 其他要核对的 }]
+  ['nwchem-water-b3lyp-optfreq.out', 'nwchem', -76.407024141046, { normal: true, scf: true, opt: true, gap: 9.673, freqs: [1710.83, 3721.07, 3844.86] }],
+  ['nwchem-water-mp2.out', 'nwchem', -76.230775616089, { normal: true, label: /MP2/ }],
+  ['nwchem-water-ccsdt.out', 'nwchem', -75.01252910731762, { normal: true, label: /CCSD\(T\)/ }],
+  ['nwchem-o2-uhf.out', 'nwchem', -147.633942066969, { normal: true, gap: 18.638, gapNote: true }],
+  ['nwchem-o2-tce-ccsdt.out', 'nwchem', -147.74259162487206, { normal: true, label: /CCSD\(T\).*TCE/, gap: 18.638, gapNote: true }],
+  ['nwchem-scf-fail.out', 'nwchem', undefined, { normal: false, scf: false, error: 'dft energy failed' }],
+  ['nwchem-opt-fail.out', 'nwchem', undefined, { normal: false, opt: false, error: 'dft optimize failed' }],
+  ['nwchem-input-error.out', 'nwchem', null, { normal: false, error: 'scf_input: unrecognized directive' }],
+  ['cp2k-water-pbe-opt.out', 'cp2k', -17.219621443226934, { normal: true, scf: true, opt: true, gap: null }],
+  ['cp2k-water-pbe-freq.out', 'cp2k', null, { normal: true, freqs: [1577.11, 3878.43, 3986.16], warn: /PROJECT-r-0\.out/ }],
+  ['cp2k-o2-uks.out', 'cp2k', -31.927136079422276, { normal: true, scf: true }],
+  ['cp2k-water-gfn1.out', 'cp2k', -5.768733676277428, { normal: true, scf: true }],
+  ['cp2k-scf-fail.out', 'cp2k', null, { normal: false, scf: false, error: /^SCF run NOT converged/ }],
+  ['cp2k-opt-fail.out', 'cp2k', -17.219605246001397, { normal: true, opt: false }],
+  ['cp2k-input-abort.out', 'cp2k', null, { normal: false, error: 'invalid value for enumeration:2' }],
+  ['qchem-dvb-gopt.out', 'qchem', -382.3082955186, { normal: true, opt: true, gap: 5.170 }],
+  ['qchem-dvb-raman.out', 'qchem', -382.3004424119, { normal: true, imaginary: [-106.88, -102.92], nfreqs: 54 }],
+  ['qchem-dvb-cation-uhf.out', 'qchem', -382.0653088345, { normal: true, gap: 1.823, gapNote: true }],
+  ['qchem-water-ccsdt.out', 'qchem', -75.0177603, { label: /CCSD\(T\)/ }],
+  ['qchem-water-mp2.out', 'qchem', -75.00228214, { label: /MP2/ }],
+  ['qchem-water-ir-anharm.out', 'qchem', -75.2909617066, { freqs: [1860.1, 3939.13, 4272.66] }], // 非谐分析后面又印一遍频率，只算一次
+  ['qchem6-water-smd.out', 'qchem', -74.9672988069, { normal: true }],
+];
+for (const [file, prog, energy, x] of OUTS) {
+  test(`输出解读：${file}`, () => {
+    const r = C.parseOutput(fixture(file));
+    assert.equal(r.program, prog);
+    if (energy === null) assert.equal(r.energy, null);
+    else if (energy !== undefined) near(r.energy, energy, 1e-9, 'E');
+    if ('normal' in x) assert.equal(r.normal, x.normal);
+    if ('scf' in x) assert.equal(r.scfConverged, x.scf);
+    if ('opt' in x) assert.equal(r.optConverged, x.opt);
+    if (x.gap === null) assert.equal(r.gap, null);
+    else if (x.gap !== undefined) near(r.gap, x.gap, 5e-4, 'gap');
+    if (x.gapNote) assert.match(r.gapNote, /开壳层/);
+    else assert.equal(r.gapNote, '');
+    if (x.label) assert.match(r.energyLabel, x.label);
+    if (x.freqs) { assert.equal(r.freqs.length, x.freqs.length); x.freqs.forEach((v, i) => near(r.freqs[i], v, 0.01, `ν${i + 1}`)); }
+    if (x.nfreqs) assert.equal(r.freqs.length, x.nfreqs);
+    if (x.imaginary) assert.deepEqual(r.imaginary, x.imaginary);
+    else assert.deepEqual(r.imaginary, []);
+    if (x.error instanceof RegExp) assert.match(r.errorText, x.error);
+    else if (x.error) assert.equal(r.errorText, x.error);
+    if (x.error) assert.ok(r.warnings.some((w) => w.includes(r.errorText)), '报错写进提示');
+    if (x.warn) assert.ok(r.warnings.some((w) => x.warn.test(w)), r.warnings.join(' / '));
+    // 程序选错了也不该读出别家的东西；自动识别和指定程序结果一样
+    assert.deepEqual(C.parseOutput(fixture(file), prog), r);
+  });
+}
+
+test('输出解读：NWChem 里正常的 CCSD 也会印 “IO error message >End of File”，不算出错', () => {
+  const t = fixture('nwchem-water-ccsdt.out');
+  assert.match(t, /IO error message >End of File\n\s+file_read_ga: failing reading[\s\S]*Failed reading restart vector/);
+  const r = C.parseOutput(t);
+  assert.equal(r.normal, true);
+  assert.equal(r.errorText, '');
+});
+
+test('输出解读：Q-Chem 的报错（照手册格式写的一段，没有真实样本）', () => {
+  const t = ' Welcome to Q-Chem\n\n Q-Chem fatal error occurred in module /home/qchem/libgen/molecule.C, line 1234:\n\n  Wrong number of electrons for given multiplicity\n\n';
+  const r = C.parseOutput(t);
+  assert.equal(r.program, 'qchem');
+  assert.equal(r.normal, false);
+  assert.equal(r.errorText, 'Wrong number of electrons for given multiplicity');
+});
+
+test('读输出的示例：每一段都能读对', () => {
+  assert.deepEqual(Object.keys(DEMOS), ['orca', 'nwchem', 'cp2k', 'qchem']);
+  const r = Object.fromEntries(Object.entries(DEMOS).map(([k, t]) => [k, C.parseOutput(t)]));
+  for (const k of Object.keys(DEMOS)) assert.equal(r[k].program, k);
+  assert.deepEqual(r.orca.imaginary, [-212.37]);
+  near(r.nwchem.energy, -76.407024141046, 1e-12);
+  assert.deepEqual(r.nwchem.freqs, [1710.83, 3721.07, 3844.86]);
+  near(r.nwchem.gap, 9.673, 5e-4);
+  assert.equal(r.cp2k.optConverged, false);
+  assert.match(r.qchem.gapNote, /开壳层/);
+  // 示例里的数字都摘自真实输出：每一行能在对应的样本文件里找到
+  for (const [k, file] of [['cp2k', 'cp2k-opt-fail.out'], ['qchem', 'qchem-dvb-cation-uhf.out'], ['nwchem', 'nwchem-water-b3lyp-optfreq.out']]) {
+    const src = new Set(fixture(file).split('\n'));
+    for (const line of DEMOS[k].split('\n')) if (line.trim()) assert.ok(src.has(line), `${k}: ${line}`);
+  }
+});
+
+// ── 从 SMILES 生成三维坐标（OpenChemLib） ──
+const OCL_PATH = join(HERE, 'e2e', 'node_modules', 'openchemlib', 'dist', 'openchemlib.js');
+let OCL = null;
+if (existsSync(OCL_PATH)) {
+  OCL = await import(pathToFileURL(OCL_PATH).href);
+  OCL.Resources.registerFromNodejs();
+}
+const noOCL = !OCL && '没装 openchemlib（npm ci --prefix tools/e2e）';
+const pos = (r, k = 0) => r.frames[k].atoms;
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+/** 手性中心四个邻居的有符号体积：两个对映体符号相反。 */
+function chiralVolume(atoms, c, nbrs) {
+  const [a, b, d] = nbrs.map((i) => [atoms[i].x - atoms[c].x, atoms[i].y - atoms[c].y, atoms[i].z - atoms[c].z]);
+  return a[0] * (b[1] * d[2] - b[2] * d[1]) - a[1] * (b[0] * d[2] - b[2] * d[0]) + a[2] * (b[0] * d[1] - b[1] * d[0]);
+}
+const neighbours = (atoms, i, cut = 1.7) => atoms.map((a, j) => [j, dist(a, atoms[i])]).filter(([j, d]) => j !== i && d < cut).map(([j]) => j);
+
+test('SMILES → 坐标：小分子、电荷、自由基、键长合理', { skip: noOCL }, () => {
+  let r = S3.embed(OCL, 'O');
+  assert.equal(r.frames.length, 1);
+  assert.equal(C.formula(pos(r)), 'H2O');
+  for (const h of [1, 2]) near(dist(pos(r)[0], pos(r)[h]), 0.97, 0.05, 'O–H');
+  assert.deepEqual([r.charge, r.mult, r.warnings], [0, 1, []]);
+  r = S3.embed(OCL, 'CC(=O)[O-]');
+  assert.deepEqual([r.charge, r.mult], [-1, 1]);
+  assert.equal(C.checkSpin(pos(r), r.charge, r.mult).ok, true);
+  r = S3.embed(OCL, '[NH4+]');
+  assert.deepEqual([r.charge, C.formula(pos(r))], [1, 'H4N']);
+  r = S3.embed(OCL, '[CH3]');
+  assert.deepEqual([r.unpaired, r.mult], [1, 2]);
+  assert.ok(r.warnings.includes('radical'));
+  assert.equal(C.checkSpin(pos(r), r.charge, r.mult).ok, true);
+  r = S3.embed(OCL, '[Na+].[Cl-]');
+  assert.ok(r.warnings.includes('fragments'));
+  // 几何中心在原点；多帧 XYZ 能被代码台读回来
+  r = S3.embed(OCL, 'CCCC');
+  const c = pos(r).reduce((s, a) => s + a.x + a.y + a.z, 0);
+  near(c, 0, 1e-4, '中心');
+  const xyz = S3.toXYZ(r);
+  const back = C.parseXYZ(xyz, r.frames.length - 1);
+  assert.equal(back.frames, r.frames.length);
+  assert.deepEqual(back.errors, []);
+  assert.match(back.comments[0], /^conformer 1\/\d+ from SMILES CCCC \| MMFF94s\+ E = -?\d+\.\d{3} kcal\/mol$/);
+  for (let k = 1; k < r.frames.length; k++) assert.ok(r.frames[k].energy >= r.frames[k - 1].energy, '按能量排好');
+});
+
+test('SMILES → 坐标：立体构型照写的来（L / D 丙氨酸、顺反二氟乙烯）', { skip: noOCL }, () => {
+  const sign = (smi) => {
+    const r = S3.embed(OCL, smi);
+    assert.equal(r.unspecified, 0);
+    return r.frames.map((f) => {
+      const a = f.atoms, ca = 1; // C[C@H](N)C(=O)O：第 1 个原子是 α 碳
+      const heavy = neighbours(a, ca).filter((j) => a[j].el !== 'H').sort((x, y) => x - y); // 甲基 C0、N2、羧基 C3
+      return Math.sign(chiralVolume(a, ca, heavy));
+    });
+  };
+  const L = sign('C[C@H](N)C(=O)O'), D = sign('C[C@@H](N)C(=O)O');
+  assert.ok(L.every((s) => s === L[0]) && D.every((s) => s === D[0]), '每个构象都是同一个对映体');
+  assert.equal(L[0], -D[0], 'L 和 D 符号相反');
+  const ff = (smi) => { const a = pos(S3.embed(OCL, smi)); const f = a.map((x, i) => [x, i]).filter(([x]) => x.el === 'F'); return dist(f[0][0], f[1][0]); };
+  const trans = ff('F/C=C/F'), cis = ff('F/C=C\\F');
+  assert.ok(trans > 3.3 && cis < 3.0, `反式 F–F ${trans.toFixed(2)} Å，顺式 ${cis.toFixed(2)} Å`);
+});
+
+test('SMILES → 坐标：没写的构型定成一种并提示，坏 SMILES 和力场不认识的分子', { skip: noOCL }, () => {
+  let r = S3.embed(OCL, 'CC(N)C(=O)O');
+  assert.equal(r.unspecified, 1);
+  assert.ok(r.warnings.includes('unspecified'));
+  assert.match(r.fixedSmiles, /@/);
+  assert.equal(r.stereoSmiles, r.fixedSmiles);
+  r = S3.embed(OCL, 'O=O');
+  assert.ok(r.warnings.includes('no-forcefield'));
+  assert.equal(r.frames.length, 1);
+  assert.equal(r.frames[0].energy, null);
+  assert.match(S3.toXYZ(r), /not optimised/);
+  assert.equal(S3.embed(OCL, '').error, 'empty');
+  assert.deepEqual(S3.embed(OCL, 'c1ccccc1 C'), { error: 'parse', detail: 'whitespace' });
+  r = S3.embed(OCL, 'C1CC');
+  assert.equal(r.error, 'parse');
+  assert.match(r.detail, /ring closure/);
+  r = S3.embed(OCL, 'C'.repeat(101));
+  assert.deepEqual([r.error, r.heavy, r.max], ['big', 101, 100]);
+});
+
 // ── 真的跑 PySCF ──
 let hasPyscf = false;
 if (!process.env.CODE_SKIP_PYTHON) {
@@ -357,5 +562,34 @@ test('生成的 PySCF 脚本能跑：水 HF/STO-3G 单点和频率、氧气三�
     r = C.parseOutput(out);
     assert.match(out, /2S\+1 = 3\.0/);
     assert.ok(r.energy < -145 && r.energy > -150, `E = ${r.energy}`);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ── 本机有 NWChem、CP2K 时真跑生成的输入（CI 里没有，跳过） ──
+const onPath = (cmd) => { try { execFileSync('which', [cmd], { stdio: 'ignore', timeout: 20000 }); return true; } catch { return false; } };
+const NWCHEM = !process.env.CODE_SKIP_PYTHON && onPath('nwchem');
+const CP2K = !process.env.CODE_SKIP_PYTHON && (process.env.CP2K_EXE || (onPath('cp2k.psmp') ? 'cp2k.psmp' : ''));
+test('生成的 NWChem 输入能跑：水 HF/STO-3G，和 PySCF 的参考能量一致', { skip: !NWCHEM && '本机没有 nwchem' }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'code-nw-'));
+  try {
+    const g = C.generate('nwchem', w, { method: 'HF', basis: 'sto-3g', name: 't' });
+    writeFileSync(join(dir, g.filename), g.text);
+    const out = execFileSync('nwchem', [g.filename], { cwd: dir, encoding: 'utf8', timeout: 300000 });
+    const r = C.parseOutput(out);
+    assert.equal(r.program, 'nwchem');
+    assert.equal(r.normal, true);
+    near(r.energy, -74.9630231384613, 1e-6, 'E'); // 同一几何，PySCF RHF/STO-3G
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test('生成的 CP2K 输入能跑：水 GFN1-xTB 单点', { skip: !CP2K && '本机没有 cp2k.psmp（或设 CP2K_EXE）' }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'code-cp-'));
+  try {
+    const g = C.generate('cp2k', w, { method: 'GFN1-xTB', name: 't' });
+    writeFileSync(join(dir, g.filename), g.text);
+    execFileSync(CP2K, ['-i', g.filename, '-o', 't.out'], { cwd: dir, stdio: 'ignore', timeout: 300000 });
+    const r = C.parseOutput(readFileSync(join(dir, 't.out'), 'utf8'));
+    assert.equal(r.program, 'cp2k');
+    assert.equal(r.normal, true);
+    near(r.energy, -5.768733676277428, 1e-6, 'E'); // CP2K 2026.2 跑同一个输入的结果（code-fixtures/cp2k-water-gfn1.out）
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

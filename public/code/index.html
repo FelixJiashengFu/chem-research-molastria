@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="MolAstria 开源代码台：一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。">
+  <meta name="description" content="MolAstria 开源代码台：从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。">
   <meta name="theme-color" content="#173f34">
   <title>开源代码台 · 计算化学输入生成、输出解读与软件体检 · MolAstria</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -15,7 +15,11 @@
   <link rel="stylesheet" href="code.css">
   <script src="../shared-nav.js" defer></script>
   <script src="../viewer/mol3d.js" defer></script>
+  <script src="../lab/chem.js" defer></script>
+  <script src="../viewer/sketch.js" defer></script>
+  <script src="../viewer/smiles3d.js" defer></script>
   <script src="code-core.js" defer></script>
+  <script src="code-demos.js" defer></script>
   <script src="code.js" defer></script>
 </head>
 <body data-section="code">
@@ -45,10 +49,25 @@
           <button type="button" data-sample="methyl">甲基自由基</button>
           <button type="button" data-sample="o2">三重态氧气</button>
         </div>
+        <p class="cd-import" id="in-import" role="status" hidden></p>
+        <div class="cd-smiles">
+          <label class="cd-field" for="in-smiles">从 SMILES 生成三维坐标</label>
+          <div class="cd-smi-row">
+            <input id="in-smiles" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" translate="no" placeholder="CC(=O)Oc1ccccc1C(=O)O" aria-describedby="in-smiles-help">
+            <button type="button" class="cd-btn primary" id="in-embed">生成</button>
+            <button type="button" class="cd-btn" id="in-embed-stop" hidden>停止</button>
+          </div>
+          <p class="cd-small" id="in-smiles-help">在你的浏览器里搭几个构象、补齐氢，用 MMFF94 力场各自优化，按力场能量排好，填进下面的坐标框。第一次要从 jsDelivr 下载约 2.5 MB 的 OpenChemLib。力场结构只是起点，正式计算前请先用 xTB 或 DFT 优化。</p>
+          <p class="cd-status" id="in-embed-status" role="status" aria-live="polite"></p>
+          <ul class="cd-notes" id="in-embed-notes"></ul>
+        </div>
         <label class="cd-field">XYZ 坐标（单位 Å；可以带原子数和注释两行，也可以只有“元素 x y z”）
           <textarea id="in-xyz" rows="8" spellcheck="false" autocomplete="off"></textarea>
         </label>
         <p class="cd-status" id="in-status" role="status" aria-live="polite"></p>
+        <div class="cd-row" id="in-frame-row" hidden>
+          <label class="cd-grow">用哪一帧（多帧的 XYZ：几个构象、几个自旋态或者反应里的几个分子）<select id="in-frame" translate="no"></select></label>
+        </div>
         <div class="cd-row">
           <label>电荷<input id="in-charge" type="number" step="1" value="0" inputmode="numeric"></label>
           <label>自旋多重度<input id="in-mult" type="number" min="1" step="1" value="1" inputmode="numeric"></label>
@@ -91,11 +110,12 @@
     <div class="cd-grid">
       <div class="cd-box">
         <h2 class="cd-h2">程序输出</h2>
-        <p class="cd-p">把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian 和 PySCF；只在浏览器里读，不上传。</p>
+        <p class="cd-p">把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。</p>
         <textarea id="out-text" rows="12" spellcheck="false" autocomplete="off" placeholder="把 .out / .log 的内容粘贴到这里"></textarea>
         <div class="cd-row">
           <span class="cd-btn cd-filepick"><input id="out-file" type="file" accept=".out,.log,.txt,.dat"><span>选择文件</span></span>
-          <label>程序<select id="out-prog"><option value="">自动识别</option><option value="xtb">xTB</option><option value="orca">ORCA</option><option value="psi4">Psi4</option><option value="gaussian">Gaussian</option><option value="pyscf">PySCF</option></select></label>
+          <label>程序<select id="out-prog"><option value="">自动识别</option><option value="xtb">xTB</option><option value="orca">ORCA</option><option value="psi4">Psi4</option><option value="gaussian">Gaussian</option><option value="pyscf">PySCF</option><option value="nwchem">NWChem</option><option value="cp2k">CP2K</option><option value="qchem">Q-Chem</option></select></label>
+          <label>示例<select id="out-demo-prog"><option value="orca">ORCA</option><option value="nwchem">NWChem</option><option value="cp2k">CP2K</option><option value="qchem">Q-Chem</option></select></label>
           <button type="button" class="cd-btn" id="out-demo">试一段示例</button>
         </div>
       </div>
@@ -112,7 +132,7 @@
         </details>
       </div>
     </div>
-    <p class="cd-small">思路借鉴开源的 <a href="https://cclib.github.io/" target="_blank" rel="noopener noreferrer">cclib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。</p>
+    <p class="cd-small">思路借鉴开源的 <a href="https://cclib.github.io/" target="_blank" rel="noopener noreferrer">cclib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。</p>
   </section>
 
   <!-- 软件体检 -->
@@ -162,7 +182,7 @@
   </section>
 
   <footer class="cd-credits">
-    <p>输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、ORCA 的商用）要有授权。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进 <a href="../atlas/index.html#resources">数据库目录</a>。</p>
+    <p>输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是 <a href="https://github.com/cheminfo/openchemlib-js" target="_blank" rel="noopener noreferrer">OpenChemLib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进 <a href="../atlas/index.html#resources">数据库目录</a>。</p>
   </footer>
 </main>
 </body>

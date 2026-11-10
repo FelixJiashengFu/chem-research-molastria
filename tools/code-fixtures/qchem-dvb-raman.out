@@ -1,0 +1,174 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+
+ Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
+
+   11    -382.3003620945      8.88e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3003620945
+
+   11    -382.3012685127      4.53e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3012685127
+
+   11    -382.3003620946      4.46e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3003620946
+
+   11    -382.3006811054      3.64e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006811054
+
+   10    -382.3007393865      8.14e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3007393865
+
+   10    -382.3006086185      4.59e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006086185
+
+    7    -382.3006086186      8.16e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006086186
+
+   11    -382.3012685127      6.87e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3012685127
+
+   11    -382.3007393865      3.62e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3007393865
+
+   11    -382.3006811054      1.82e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006811054
+
+   10    -382.3006086182      4.57e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006086182
+
+    7    -382.3006086185      8.12e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3006086185
+
+   11    -382.3008489467      4.33e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3008489467
+
+   10    -382.3005038874      3.13e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3005038874
+
+    7    -382.3005038876      8.06e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3005038876
+
+   11    -382.3008489468      3.10e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3008489468
+
+   10    -382.3005038874      3.14e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3005038874
+
+    7    -382.3005038876      8.06e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3005038876
+
+   10    -382.3004424121      3.34e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3004424121
+
+    8    -382.3004424119      5.97e-09  Convergence criterion met
+
+ Total energy in the final basis set =     -382.3004424119
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.018 -10.018 -10.008 -10.008 -10.007 -10.007 -10.006 -10.005
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -9.992  -9.992  -0.818  -0.755  -0.721  -0.704  -0.670  -0.585
+  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
+ -0.561  -0.532  -0.512  -0.462  -0.439  -0.410  -0.400  -0.397
+  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
+ -0.376  -0.358  -0.349  -0.330  -0.305  -0.295  -0.281  -0.263
+ 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
+ -0.216  -0.198  -0.160
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.050   0.091   0.116   0.181   0.280   0.319   0.330   0.365
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+  0.370   0.413   0.416   0.422   0.446   0.469   0.496   0.539
+ 17 Ag   18 Bu   18 Ag   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
+  0.571   0.587   0.610   0.627   0.646   0.693   0.743   0.806
+ 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
+  0.816
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.018 -10.018 -10.008 -10.008 -10.007 -10.007 -10.006 -10.005
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -9.992  -9.992  -0.818  -0.755  -0.721  -0.704  -0.670  -0.585
+  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
+ -0.561  -0.532  -0.512  -0.462  -0.439  -0.410  -0.400  -0.397
+  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
+ -0.376  -0.358  -0.349  -0.330  -0.305  -0.295  -0.281  -0.263
+ 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
+ -0.216  -0.198  -0.160
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.050   0.091   0.116   0.181   0.280   0.319   0.330   0.365
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+  0.370   0.413   0.416   0.422   0.446   0.469   0.496   0.539
+ 17 Ag   18 Bu   18 Ag   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
+  0.571   0.587   0.610   0.627   0.646   0.693   0.743   0.806
+ 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
+  0.816
+ 25 Bu                                                                         
+ --------------------------------------------------------------
+
+ **                       VIBRATIONAL ANALYSIS                       **
+
+ Frequency:      -106.88                -102.92                 161.77
+
+ Frequency:       199.03                 301.38                 301.71
+
+ Frequency:       402.14                 402.39                 447.23
+
+ Frequency:       508.15                 580.32                 649.18
+
+ Frequency:       680.27                 716.19                 716.46
+
+ Frequency:       809.81                 869.09                 911.03
+
+ Frequency:       920.92                1013.66                1013.73
+
+ Frequency:      1038.84                1057.77                1089.98
+
+ Frequency:      1102.04                1102.22                1106.66
+
+ Frequency:      1107.76                1235.94                1271.17
+
+ Frequency:      1272.21                1301.21                1391.34
+
+ Frequency:      1391.90                1437.48                1458.95
+
+ Frequency:      1544.34                1575.34                1591.42
+
+ Frequency:      1673.99                1785.84                1793.60
+
+ Frequency:      1871.80                1876.22                3388.61
+
+ Frequency:      3389.07                3444.31                3448.27
+
+ Frequency:      3461.37                3463.95                3467.17
+
+ Frequency:      3467.34                3524.86                3524.89
+
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

@@ -1,5 +1,6 @@
 /* 开源代码台的界面：四个标签（写输入、读输出、软件体检、搜代码）。逻辑都在 code-core.js（MolAstriaCode）。
-   上次的分子、设置和标签存在 localStorage 的 molastria-code。 */
+   从 SMILES 生成坐标用 viewer/smiles3d.js（MolAstriaSmiles3D），“读输出”的示例在 code-demos.js。
+   上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页把算好的结构放在 molastria-code-import，这里读一次就删掉。 */
 (function () {
   'use strict';
   const C = window.MolAstriaCode;
@@ -48,6 +49,9 @@
     qcschema: ['QCSchema', 'https://molssi-qc-schema.readthedocs.io', 'BSD-3'],
   };
   const st = load();
+  // 多帧的 XYZ（构象、自旋态、反应里的各个分子）：frame 是用哪一帧，frameMeta 是每一帧自己的电荷和多重度（模型接口送来的才有）
+  let frame = Number.isInteger(st.frame) ? st.frame : 0;
+  let frameMeta = Array.isArray(st.frameMeta) ? st.frameMeta : null;
   let prog = C.PROGRAMS.some(([id]) => id === st.prog) ? st.prog : 'pyscf';
   $('in-progs').innerHTML = C.PROGRAMS.map(([id, name]) => `<button type="button" role="tab" data-prog="${id}" aria-selected="${id === prog}" translate="no">${esc(name)}</button>`).join('');
   $('in-progs').addEventListener('click', (e) => {
@@ -65,7 +69,9 @@
   });
   let current = null;
   function render() {
-    const parsed = C.parseXYZ($('in-xyz').value);
+    const parsed = C.parseXYZ($('in-xyz').value, frame);
+    frame = parsed.frame;
+    frames(parsed);
     const o = opts();
     const status = $('in-status');
     let bad = false;
@@ -87,9 +93,26 @@
     $('in-notes').innerHTML = (g.notes || []).map((n) => `<li>${esc(n)}</li>`).join('');
     const a = ABOUT[prog];
     $('in-about').innerHTML = `${link(a[1], a[0])} · 许可：${esc(a[2])}`;
-    save({ xyz: $('in-xyz').value, opts: o });
+    save({ xyz: $('in-xyz').value, opts: o, frame, frameMeta });
     preview(parsed);
   }
+  function frames(p) {
+    const row = $('in-frame-row'), sel = $('in-frame');
+    row.hidden = p.frames < 2;
+    if (p.frames < 2) { sel.innerHTML = ''; delete sel.dataset.key; return; }
+    const key = p.comments.join('\n');
+    if (sel.dataset.key !== key) {
+      sel.innerHTML = p.comments.map((c, i) => `<option value="${i}">${i + 1} / ${p.frames}${c ? ` · ${esc(c.length > 90 ? `${c.slice(0, 90)}…` : c)}` : ''}</option>`).join('');
+      sel.dataset.key = key;
+    }
+    sel.value = String(p.frame);
+  }
+  $('in-frame').addEventListener('change', () => {
+    frame = Number($('in-frame').value) || 0;
+    const m = frameMeta?.[frame];
+    if (m) { $('in-charge').value = m.charge; $('in-mult').value = m.mult; }
+    render();
+  });
   // 3D 预览：点了才载入 3Dmol.js
   let lastXyz = '';
   function preview(parsed) {
@@ -103,10 +126,12 @@
   function setSample(k) {
     const s = SAMPLES[k];
     $('in-xyz').value = s.xyz; $('in-charge').value = s.charge; $('in-mult').value = s.mult; $('in-name').value = s.name;
+    frame = 0; frameMeta = null; $('in-import').hidden = true;
     render();
   }
   document.querySelectorAll('[data-sample]').forEach((b) => b.addEventListener('click', () => setSample(b.dataset.sample)));
-  ['in-xyz', 'in-charge', 'in-mult', 'in-name'].forEach((id) => $(id).addEventListener('input', render));
+  $('in-xyz').addEventListener('input', () => { frameMeta = null; render(); }); // 改过坐标，原来每一帧的电荷和多重度不一定还对
+  ['in-charge', 'in-mult', 'in-name'].forEach((id) => $(id).addEventListener('input', render));
   ['in-method', 'in-basis', 'in-task', 'in-water', 'in-d3'].forEach((id) => $(id).addEventListener('change', render));
   $('in-copy').addEventListener('click', async () => {
     const b = $('in-copy');
@@ -119,50 +144,109 @@
     a.download = current.filename; document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
-  if (st.xyz) {
-    $('in-xyz').value = st.xyz;
+  // ── 从 SMILES 生成三维坐标 ──
+  const S3 = window.MolAstriaSmiles3D;
+  const smi = $('in-smiles');
+  if (window.MolAstriaSketch) window.MolAstriaSketch.attach(smi);
+  if (typeof st.smiles === 'string') smi.value = st.smiles;
+  const embedStatus = (text, bad = false) => { const el = $('in-embed-status'); el.textContent = text; el.dataset.bad = String(bad); };
+  function embedErr(e, r) {
+    const m = e ? String(e.message || e) : r.error;
+    if (m === 'stopped') return tr('已停止。');
+    if (m === 'load') return tr('没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。');
+    if (m === 'empty') return tr('先写一个 SMILES。');
+    if (m === 'parse') return r.detail === 'whitespace' ? tr('SMILES 里不能有空格。') : `这个 SMILES 读不出来：${r.detail || ''}`;
+    if (m === 'big') return `重原子有 ${r.heavy} 个，超过了浏览器里能算的 ${r.max} 个；这么大的分子请在本机用 RDKit 或 CREST 搭构象。`;
+    if (m === 'stereo') return tr('搭出的构象和写的立体构型都对不上，换一种写法再试。');
+    if (m === 'embed') return tr('搭不出三维结构：检查一下价态，或者环是不是太紧张。');
+    return `出错了：${m}`;
+  }
+  function embedNotes(r) {
+    const W = {
+      unspecified: () => `SMILES 里有 ${r.unspecified} 处立体构型没写，按第一个搭出的结构定成了 ${r.fixedSmiles}；要另一个异构体，请在 SMILES 里用 @、@@、/、\\ 写明。`,
+      'stereo-dropped': () => tr('有的构象搭出来立体构型不对，已经去掉，只留和 SMILES 一致的。'),
+      'no-forcefield': () => tr('MMFF94 力场不认识这个分子里的某些原子或价态，坐标没有优化，只是一个粗糙的起点，请先用 xTB 优化。'),
+      fragments: () => `SMILES 里有 ${r.fragments} 个互不相连的部分，它们之间的相对位置是随手摆的。`,
+      radical: () => `有 ${r.unpaired} 个未成对电子，多重度按高自旋填成 ${r.mult}；MMFF94 是给闭壳层分子做的，自由基的结构只能作参考。`,
+    };
+    $('in-embed-notes').innerHTML = r.warnings.map((w) => (W[w] ? `<li>${esc(W[w]())}</li>` : '')).join('');
+  }
+  let embedding = false;
+  async function embedSmiles() {
+    if (embedding || !S3) return;
+    const text = smi.value.trim();
+    $('in-embed-notes').innerHTML = '';
+    if (!text) { embedStatus(tr('先写一个 SMILES。'), true); smi.focus(); return; }
+    embedding = true;
+    $('in-embed').disabled = true; $('in-embed-stop').hidden = false;
+    embedStatus(tr('正在载入 OpenChemLib，搭构象…'));
+    save({ smiles: text });
+    try {
+      const r = await S3.run(text, { onProgress: (k, n) => embedStatus(`正在用 MMFF94 优化第 ${k} 个构象（共 ${n} 个）…`) });
+      if (r.error) { embedStatus(embedErr(null, r), true); return; }
+      $('in-xyz').value = S3.toXYZ(r);
+      $('in-charge').value = r.charge; $('in-mult').value = r.mult;
+      if (Object.values(SAMPLES).some((s) => s.name === $('in-name').value)) $('in-name').value = 'mol';
+      frame = 0; frameMeta = null; $('in-import').hidden = true;
+      render();
+      embedStatus(r.forcefield
+        ? (r.frames.length > 1 ? `搭了 ${r.tried} 个构象，去掉重复的还剩 ${r.frames.length} 个，按 MMFF94 能量从低到高排好，现在用的是能量最低的一个。` : tr('生成了一个结构，已用 MMFF94 优化。'))
+        : tr('生成了一个结构（没有优化）。'));
+      embedNotes(r);
+    } catch (e) {
+      embedStatus(embedErr(e), true);
+    } finally {
+      embedding = false;
+      $('in-embed').disabled = false; $('in-embed-stop').hidden = true;
+    }
+  }
+  $('in-embed').addEventListener('click', embedSmiles);
+  smi.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); embedSmiles(); } });
+  $('in-embed-stop').addEventListener('click', () => S3?.stop());
+  if (!S3) $('in-embed').disabled = true;
+
+  // ── 从模型接口送来的结构 ──
+  const MAX_IMPORT = 2e6;
+  function importFromModels() {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem('molastria-code-import') || 'null'); localStorage.removeItem('molastria-code-import'); } catch { d = null; }
+    if (!d || typeof d.xyz !== 'string' || !d.xyz.trim() || d.xyz.length > MAX_IMPORT) return false;
+    const int = (v, lo, dflt) => (Number.isInteger(v) && v >= lo ? v : dflt);
+    $('in-xyz').value = d.xyz;
+    frameMeta = Array.isArray(d.meta) ? d.meta.slice(0, 1000).map((m) => ({ charge: int(m?.charge, -20, 0), mult: int(m?.mult, 1, 1) })) : null;
+    frame = int(d.frame, 0, 0);
+    const m = frameMeta?.[frame];
+    $('in-charge').value = m ? m.charge : int(d.charge, -20, 0);
+    $('in-mult').value = m ? m.mult : int(d.mult, 1, 1);
+    if (typeof d.name === 'string' && /^[\w.-]{1,40}$/.test(d.name)) $('in-name').value = d.name;
+    const note = $('in-import');
+    note.textContent = '';
+    const part = (tag, text, raw) => { const el = document.createElement(tag); el.textContent = text; if (raw) el.setAttribute('translate', 'no'); note.append(el); };
+    part('span', tr('这个结构来自模型接口：'));
+    if (typeof d.model === 'string') part('b', d.model.slice(0, 60), true);
+    if (typeof d.job === 'string') { note.append(' · '); part('span', d.job.slice(0, 40)); }
+    part('span', tr('。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。'));
+    note.hidden = false;
+    return true;
+  }
+
+  { // 上次的设置（方法、基组、任务、溶剂、色散）照旧；分子用送来的，没有就用上次的
     const o = st.opts || {};
-    if (o.charge !== undefined) $('in-charge').value = o.charge;
-    if (o.mult) $('in-mult').value = o.mult;
-    if (o.name) $('in-name').value = o.name;
     for (const [id, k] of [['in-method', 'method'], ['in-basis', 'basis'], ['in-task', 'task']]) if (o[k] && [...$(id).options].some((x) => x.value === o[k])) $(id).value = o[k];
     $('in-water').checked = !!o.solvent; $('in-d3').checked = !!o.d3;
-    render();
-  } else setSample('water');
+    if (importFromModels()) render();
+    else if (st.xyz) {
+      $('in-xyz').value = st.xyz;
+      if (o.charge !== undefined) $('in-charge').value = o.charge;
+      if (o.mult) $('in-mult').value = o.mult;
+      if (o.name) $('in-name').value = o.name;
+      render();
+    } else setSample('water');
+  }
 
   // ── 读输出 ──
-  const DEMO = `                                 * O   R   C   A *
-               *** SCF CONVERGED AFTER   9 CYCLES ***
-----------------
-ORBITAL ENERGIES
-----------------
-
-  NO   OCC          E(Eh)            E(eV)
-   3   2.0000      -0.313127        -8.5206
-   4   2.0000      -0.247063        -6.7229
-   5   0.0000       0.009880         0.2689
-
-                    ********************************
-                    ***        THE OPTIMIZATION HAS CONVERGED     ***
--------------------------   --------------------
-FINAL SINGLE POINT ENERGY       -114.501230456712
--------------------------   --------------------
------------------------
-VIBRATIONAL FREQUENCIES
------------------------
-
-     6:      -212.37 cm**-1 ***imaginary mode***
-     7:      1189.04 cm**-1
-     8:      1544.71 cm**-1
-     9:      1863.20 cm**-1
-
-
-------------
-NORMAL MODES
-------------
-                             ****ORCA TERMINATED NORMALLY****
-`;
-  const NAMES = { xtb: 'xTB', orca: 'ORCA', psi4: 'Psi4', gaussian: 'Gaussian', pyscf: 'PySCF' };
+  const DEMOS = window.MolAstriaCodeDemos || {};
+  const NAMES = { xtb: 'xTB', orca: 'ORCA', psi4: 'Psi4', gaussian: 'Gaussian', pyscf: 'PySCF', nwchem: 'NWChem', cp2k: 'CP2K', qchem: 'Q-Chem' };
   const yesNo = (v, yes, no) => (v === true ? `<b class="ok">${esc(yes)}</b>` : v === false ? `<b class="no">${esc(no)}</b>` : '<span class="cd-dim">—</span>');
   function readOutput() {
     const text = $('out-text').value;
@@ -178,7 +262,7 @@ NORMAL MODES
     rows.push(['正常结束', yesNo(r.normal, '是', '否')]);
     rows.push(['SCF 收敛', yesNo(r.scfConverged, '收敛', '没有收敛')]);
     if (r.optConverged !== null) rows.push(['结构优化', yesNo(r.optConverged, '收敛', '没有收敛')]);
-    if (r.gap !== null) rows.push(['HOMO–LUMO 能隙', `<span class="cd-num" translate="no">${r.gap.toFixed(3)} eV</span>`]);
+    if (r.gap !== null) rows.push(['HOMO–LUMO 能隙', `<span class="cd-num" translate="no">${r.gap.toFixed(3)} eV</span>${r.gapNote ? `<small class="cd-dim cd-gapnote">${esc(r.gapNote)}</small>` : ''}`]);
     if (r.freqs.length) {
       const shown = r.freqs.slice(0, 12).map((v) => `<span class="${v < 0 ? 'cd-imag' : ''}">${v.toFixed(1)}</span>`).join(' ');
       rows.push(['振动频率 / cm⁻¹', `<span class="cd-freqs" translate="no">${shown}${r.freqs.length > 12 ? ' …' : ''}</span><small class="cd-dim">共 ${r.freqs.length} 个，虚频 ${r.imaginary.length} 个（负数表示虚频）</small>`]);
@@ -189,7 +273,9 @@ NORMAL MODES
   }
   $('out-text').addEventListener('input', readOutput);
   $('out-prog').addEventListener('change', readOutput);
-  $('out-demo').addEventListener('click', () => { $('out-text').value = DEMO; $('out-prog').value = ''; readOutput(); });
+  const demo = () => { $('out-text').value = DEMOS[$('out-demo-prog').value] || ''; $('out-prog').value = ''; readOutput(); };
+  $('out-demo').addEventListener('click', demo);
+  $('out-demo-prog').addEventListener('change', () => { const t = $('out-text').value; if (!t.trim() || Object.values(DEMOS).includes(t)) demo(); });
   $('out-file').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
