@@ -32,13 +32,17 @@
   <script src="../lab/chem.js" defer></script>
   <script src="../viewer/sketch.js" defer></script>
   <script src="meta.js" defer></script>
+  <link rel="stylesheet" href="../open-models/om.css">
+  <script src="../open-models/om-data.js" defer></script>
+  <script src="../open-models/om.js" defer></script>
   <link rel="stylesheet" href="../viewer/mol3d.css">
 </head>
-<body data-section="meta">
+<body data-section="openmodels" data-om-host="meta">
 <a class="skip" href="#vision">跳到工具</a>
 <main>
   <section class="mx-hero">
     <div>
+      <nav class="om-crumbs" id="om-crumbs" aria-label="位置"></nav>
       <p class="eyebrow">META OPEN SCIENCE × MOLASTRIA</p>
       <h1>Meta 的模型与数据，<br><em>在这里接成一条研究流程。</em></h1>
       <p class="lead">Muse 负责读图和提出想法，UMA 负责快速计算，OMol25 的基准告诉我们结果什么时候可信。这一页汇总 MolAstria 用到的 Meta 技术、两个可以直接上手的工具，以及 FAIR Chemistry 开放的模型和数据集。</p>
@@ -233,6 +237,8 @@
     </div>
     <ul id="live-list" class="mx-releases"><li class="muted">正在读取…</li></ul>
   </section>
+
+  <section class="om-switch" id="om-switch" aria-label="开放模型馆的其他展馆"></section>
 
   <footer class="mx-foot">
     <strong>MolAstria · Meta × 化学</strong>
