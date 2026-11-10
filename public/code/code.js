@@ -10,7 +10,9 @@
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { return {}; } };
   const save = (patch) => { try { localStorage.setItem(KEY, JSON.stringify({ ...load(), ...patch })); } catch { /* 隐私模式 */ } };
   const ext = '<i class="ico-ext" aria-hidden="true"></i>';
-  const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>`;
+  // 外来的网址（PyPI 的 project_urls 等）只放行 http(s)，javascript: 之类的一律当纯文字。
+  const safeUrl = (u) => { try { const x = new URL(String(u || '')); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
+  const link = (href, text) => { const u = safeUrl(href); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>` : esc(text); };
 
   // ── 标签 ──
   const TABS = ['input', 'output', 'check', 'search'];
@@ -251,8 +253,8 @@ NORMAL MODES
         fill('ck-pypi', `<dl class="cd-dl"><div><dt>${esc(tr('最新版本'))}</dt><dd translate="no">${esc(s.name)} ${esc(s.version)}${s.released ? ` <small class="cd-dim">${esc(s.released)}</small>` : ''}</dd></div>`
           + `<div><dt>${esc(tr('简介'))}</dt><dd translate="no">${esc(s.summary)}</dd></div>`
           + (s.requiresPython ? `<div><dt>Python</dt><dd translate="no">${esc(s.requiresPython)}</dd></div>` : '')
-          + `<div><dt>${esc(tr('链接'))}</dt><dd>${link(`https://pypi.org/project/${t.name}/`, 'PyPI')} ${Object.entries(s.urls).slice(0, 4).map(([k, u]) => link(u, k)).join(' ')}</dd></div></dl>`
-          + `<p class="cd-small">${esc(tr('conda-forge 上的同名包：'))}${link(`https://anaconda.org/conda-forge/${t.name}`, 'anaconda.org')}</p>`);
+          + `<div><dt>${esc(tr('链接'))}</dt><dd>${link(`https://pypi.org/project/${encodeURIComponent(t.name)}/`, 'PyPI')} ${Object.entries(s.urls).slice(0, 4).map(([k, u]) => link(u, k)).join(' ')}</dd></div></dl>`
+          + `<p class="cd-small">${esc(tr('conda-forge 上的同名包：'))}${link(`https://anaconda.org/conda-forge/${encodeURIComponent(t.name)}`, 'anaconda.org')}</p>`);
         licCard(licence, 'PyPI');
         fetchJSON('https://api.osv.dev/v1/query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ package: { name: t.name, ecosystem: 'PyPI' }, version: s.version }) })
           .then((o) => {
@@ -265,7 +267,7 @@ NORMAL MODES
           .catch(() => fill('ck-osv', failed('OSV', `https://osv.dev/list?ecosystem=PyPI&q=${encodeURIComponent(t.name)}`)));
       } catch {
         if (me !== run) return;
-        fill('ck-pypi', failed('PyPI', `https://pypi.org/project/${t.name}/`));
+        fill('ck-pypi', failed('PyPI', `https://pypi.org/project/${encodeURIComponent(t.name)}/`));
         fill('ck-osv', failed('OSV', `https://osv.dev/list?ecosystem=PyPI&q=${encodeURIComponent(t.name)}`));
         fill('ck-lic', `<p class="cd-dim">${esc(tr('没拿到许可证信息。'))}</p>`);
         pypiFailed = true;
@@ -277,7 +279,7 @@ NORMAL MODES
       return;
     }
     if (repo.kind === 'github') {
-      fetchJSON(`https://api.github.com/repos/${repo.owner}/${repo.repo}`)
+      fetchJSON(`https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}`)
         .then((g) => {
           if (me !== run) return;
           if (g.notFound) { fill('ck-repo', `<p class="cd-warn1">${esc(tr('GitHub 上没有这个仓库。'))}</p>`); return; }
