@@ -4,6 +4,8 @@
    教材：有 DOI 的条目在 Crossref 核对过书名、作者、出版社和年份（checked 那天）；中文教材和没有 DOI 的经典书在出版社或书目网站核对过书名与作者，
    版次以出版社最新为准。视频：YouTube 用 oEmbed、MIT OpenCourseWare 用课程页、哔哩哔哩用视频页核对过标题、上传者和集数；
    official: false 表示别人转载，original 指向原始来源。不要加没核对过的书和视频。
+   Lean 4 的书和交互课程（2026-11-10 加）没有 DOI：书名、作者、版权年份和许可证在作者或 Lean 社区的官方页面与 GitHub 仓库核对，
+   游戏的地址和关卡在 Lean Game Server 的游戏数据里核对；它们是随 Lean 版本更新的在线版。
    公式写成 LaTeX（math），由 tools/fundamental-math.mjs 用 KaTeX 转成 MathML，结果在 fm-math.js（生成的文件，不要手改）。 */
 (() => {
   'use strict';
@@ -116,8 +118,8 @@
           T('“厄米 = 自伴”只在有限维成立。到了无穷维（下一门泛函分析），对称算符可能根本不是自伴的，这正是物理学家常踩的坑。', '"Hermitian = self-adjoint" holds only in finite dimension. In infinite dimension (functional analysis, next) a symmetric operator may fail to be self-adjoint; this is a classic trap for physicists.'),
           T('把矩阵当成线性映射本身。换了基矩阵就变了，但迹、行列式、本征值不变；判断一个量有没有物理意义，就看它在换基下变不变。', 'Treating a matrix as the map itself. A change of basis changes the matrix but not its trace, determinant or eigenvalues; a quantity has physical meaning only if it is basis-independent.'),
         ],
-        books: ['axler-ladr', 'strang-ila', 'halmos-fdvs', 'horn-ma', 'pku-gaodai'],
-        videos: ['v-3b1b', 'v-3b1b-bili', 'v-1806', 'v-qiu'],
+        books: ['axler-ladr', 'strang-ila', 'halmos-fdvs', 'horn-ma', 'pku-gaodai', 'macbeth-mop', 'avigad-massot-mil'],
+        videos: ['v-3b1b', 'v-3b1b-bili', 'v-1806', 'v-qiu', 'r-nng'],
       },
       {
         id: 'fa', tier: 1, glyph: 'σ', weeks: '10–12',
@@ -345,7 +347,7 @@
           T('把基组不完备误差和方法误差混在一起比较。先在同一个方法下做基组收敛，再比较方法；否则可能出现“好方法 + 小基组”恰好碰巧准确的假象。', 'Mixing basis-set incompleteness with method error. Converge the basis for a fixed method first, then compare methods; otherwise "good method + small basis" may look accurate by luck.'),
           T('能量更低就更好？变分方法里是这样，但 CCSD、MP2 和近似 DFT 都不是变分的，它们的能量可以低于精确值。', 'Lower energy is better? For variational methods yes, but CCSD, MP2 and approximate DFT are not variational and can fall below the exact energy.'),
         ],
-        books: ['trefethen-bau', 'golub-vanloan', 'saad-eig', 'higham-acc', 'suli-mayers', 'helgaker-mest', 'lubich-qcmd', 'li-shuzhi'],
+        books: ['trefethen-bau', 'golub-vanloan', 'saad-eig', 'higham-acc', 'suli-mayers', 'helgaker-mest', 'lubich-qcmd', 'li-shuzhi', 'christiansen-fpil'],
         videos: ['v-18065', 'v-1806'],
       },
 
@@ -519,8 +521,8 @@
           T('把 δ(x) 当成一个“很高很窄的函数”去做乘法：两个 δ 相乘没有定义，这是物理推导里很多发散的来源。', 'Treating δ(x) as a "very tall, very narrow function" and multiplying: a product of two deltas is undefined, a source of many divergences in physics derivations.'),
           T('以为测度论只服务于纯数学。它是严格概率论、谱定理和统计力学的共同底座，读 Lieb、Simon 的文章时几乎每一行都在用。', 'Thinking measure theory serves only pure mathematics. It is the common base of rigorous probability, the spectral theorem and statistical mechanics, and is used on nearly every line of papers by Lieb or Simon.'),
         ],
-        books: ['axler-mira', 'stein-shakarchi-ra', 'tao-imt', 'folland-ra', 'zhou-shibian'],
-        videos: ['v-bright-measure', 'v-18102'],
+        books: ['axler-mira', 'stein-shakarchi-ra', 'tao-imt', 'folland-ra', 'zhou-shibian', 'avigad-massot-mil'],
+        videos: ['v-bright-measure', 'v-18102', 'r-stg', 'r-tpil4'],
       },
     ],
 
@@ -739,6 +741,17 @@
         note: T('研究生实分析的标准参考，包括傅里叶分析和分布。', 'The standard graduate real-analysis reference, including Fourier analysis and distributions.') },
       { id: 'zhou-shibian', subj: 'mt', role: 'zh', level: 'core', authors: '周民强', title: '实变函数论', pub: '北京大学出版社',
         note: T('国内实变函数的经典教材，例题丰富。', 'A classic Chinese text on real analysis, rich in worked examples.') },
+
+      // 用 Lean 4 写证明：让计算机逐步检查（在线版，没有 DOI；核对方式见文件开头）
+      { id: 'macbeth-mop', subj: 'la', role: 'alt', level: 'intro', authors: 'Heather Macbeth', title: 'The Mechanics of Proof', ed: T('在线版', 'Online edition'), pub: 'Fordham University (Math 2001), online', year: '2022–2024', url: 'https://hrmacbeth.github.io/math2001/', free: true,
+        note: T('用 Lean 4 学写证明的入门书：从按步计算的证明讲到逻辑、归纳、数论、函数、集合与关系，每一步都由 Lean 检查。为 Fordham 大学低年级本科生的证明课 Math 2001 编写，作者主页免费阅读（版权归作者）。读 Axler 时觉得证明无从下手，可以先做这本书的练习。',
+          'An introduction to writing proofs with Lean 4: from proofs by calculation to logic, induction, number theory, functions, sets and relations, with Lean checking every step. Written for Math 2001, a proof course for early undergraduates at Fordham University; free to read on the author\'s site (copyright the author). If Axler\'s proofs feel hard to start, do this book\'s exercises first.') },
+      { id: 'avigad-massot-mil', subj: 'mt', role: 'alt', level: 'core', authors: 'Jeremy Avigad, Patrick Massot', title: 'Mathematics in Lean', ed: T('在线版，随 Lean 4 与 Mathlib 更新', 'Online, updated with Lean 4 and Mathlib'), pub: 'leanprover-community, online', year: '2020–2025', url: 'https://leanprover-community.github.io/mathematics_in_lean/', free: true,
+        note: T('用 Lean 4 和 Mathlib 把大学数学形式化的标准教程，边读边在 VS Code 里做练习：从逻辑、集合与函数讲到群与环、线性代数、拓扑和微分，最后一章是积分与测度论。正文按 CC BY 4.0 开放。',
+          'The standard tutorial on formalising university mathematics with Lean 4 and Mathlib, read alongside exercises in VS Code: from logic, sets and functions through groups and rings, linear algebra, topology and differential calculus, ending with a chapter on integration and measure theory. The text is under CC BY 4.0.') },
+      { id: 'christiansen-fpil', subj: 'na', role: 'ref', level: 'core', authors: 'David Thrane Christiansen', title: 'Functional Programming in Lean', ed: T('在线版', 'Online edition'), pub: 'Microsoft (2023) · Lean FRO, online', year: 2023, url: 'https://lean-lang.org/functional_programming_in_lean/', free: true,
+        note: T('把 Lean 当作编程语言来学：类型类、单子、依赖类型编程，最后讲怎样证明程序的性质。它不讲数值方法，而是为“写出能被证明正确的计算代码”打基础。Microsoft 2023 年按 CC BY 4.0 发布，现行版本由作者为新版 Lean 修订。',
+          'Lean as a programming language: type classes, monads, dependently typed programming, and finally proving properties of programs. It does not teach numerical methods; it lays the groundwork for computational code that can be proved correct. Released by Microsoft in 2023 under CC BY 4.0; the current version is revised by the author for newer Lean releases.') },
     ],
 
     // 视频与在线课程。p：yt YouTube · bili 哔哩哔哩 · ocw MIT OpenCourseWare · web 网站
@@ -785,6 +798,16 @@
         note: T('测度论系列的第 1 集，每集十来分钟，按 σ-代数、测度、Lebesgue 积分、收敛定理的顺序讲下去，适合配合 Axler 的书。', 'Episode 1 of a measure-theory series of roughly ten-minute videos, going through σ-algebras, measures, the Lebesgue integral and convergence theorems; pairs well with Axler.') },
       { id: 'r-tensornetwork', p: 'web', kind: 'site', url: 'https://tensornetwork.org/', title: 'The Tensor Network', by: 'tensornetwork.org', lang: 'en', level: 'core', official: true,
         note: T('张量网络的开放知识库：MPS、DMRG、TTN、PEPS 的条目和精选综述与学习资源列表。', 'An open knowledge base on tensor networks: entries on MPS, DMRG, TTN and PEPS, plus curated reviews and learning resources.') },
+      // Lean 4 的交互课程与在线书（核对方式见文件开头）
+      { id: 'r-nng', p: 'web', kind: 'site', url: 'https://adam.math.hhu.de/#/g/leanprover-community/nng4', title: 'Natural Number Game', by: 'Kevin Buzzard, Jon Eugster · Lean Game Server', lang: 'en', level: 'intro', official: true,
+        note: T('在浏览器里玩的 Lean 4 证明游戏，不用安装任何东西：从皮亚诺公理出发，一关一关证明 2 + 2 = 4、加法交换律，再到乘法、乘方和 ≤ 的性质，主要工具是归纳法。界面可以切换成中文，进度存在浏览器本地。最初的 Lean 3 版由 Kevin Buzzard 和 Mohammad Pedramfar 编写，代码以 Apache-2.0 开源。',
+          'A Lean 4 proof game played in the browser with nothing to install: starting from the Peano axioms, prove 2 + 2 = 4 and the commutativity of addition, then facts about multiplication, powers and ≤, level by level and mostly by induction. The interface can be switched to Chinese and progress is stored in your browser. The original Lean 3 version was written by Kevin Buzzard and Mohammad Pedramfar; the code is open source under Apache-2.0.') },
+      { id: 'r-stg', p: 'web', kind: 'site', url: 'https://adam.math.hhu.de/#/g/djvelleman/stg4', title: 'Set Theory Game', by: 'Daniel J. Velleman · Lean Game Server', lang: 'en', level: 'intro', official: true,
+        note: T('同一个平台上的集合论证明游戏：子集、补集、交与并，再到集合族的交与并。σ-代数的定义就是“对补集和可数并封闭”，这些操作练熟了，测度论里的证明会顺很多。代码以 GPL-3.0 开源。',
+          'A set-theory proof game on the same platform: subsets, complements, intersections and unions, then intersections and unions of families of sets. A σ-algebra is defined by closure under complements and countable unions, so fluency with these moves makes measure-theory proofs go much more smoothly. The code is open source under GPL-3.0.') },
+      { id: 'r-tpil4', p: 'web', kind: 'site', url: 'https://lean-lang.org/theorem_proving_in_lean4/', title: 'Theorem Proving in Lean 4', by: 'Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich', lang: 'en', level: 'core', official: true,
+        note: T('Lean 4 的标准入门书，讲它背后的依赖类型论：命题即类型、量词与等式、策略、归纳类型与递归、类型类，以及 Lean 用到的公理。想知道“计算机怎样检查一个证明”就读它；在线版随 Lean 版本更新，源码以 Apache-2.0 开源。',
+          'The standard introduction to Lean 4 and the dependent type theory behind it: propositions as types, quantifiers and equality, tactics, inductive types and recursion, type classes, and the axioms Lean relies on. Read it to see how a computer checks a proof; the online text tracks Lean releases, and its source is open under Apache-2.0.') },
     ],
 
     // 起步诊断：勾选会的内容，页面推荐从哪一门开始（存在 localStorage molastria-fm-progress）
