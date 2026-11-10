@@ -775,5 +775,6 @@
   S.win = GROUPS[start] ? start : GROUPS[store.get('molastria-models-win')] ? store.get('molastria-models-win') : 'charged';
   sync();
   refresh();
+  window.MolAstriaSketch?.attach($('m-smiles')); // “画结构”按钮：画完填回 SMILES（viewer/sketch.js）
   rdkit.then(onSmiles, () => { $('m-check').textContent = 'RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。'; $('m-check').dataset.bad = 'true'; });
 })();
