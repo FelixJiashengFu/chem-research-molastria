@@ -103,6 +103,14 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 
 需要环境变量 `DEEPSEEK_API_KEY`。检查 `git diff i18n/en.json` 里的新译文，品牌词和按钮文字常要手改；手改时保持 1 空格缩进，再运行一次 `i18n-translate` 生成 `public/i18n/en.js`。
 
+新词条全部手写好了、只想重新生成 `en.js` 时，不用 key、也不联网：
+
+```bash
+deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-translate.ts
+```
+
+没有空项时它只写 `public/i18n/en.js`（输出 `nothing to translate`）；还有空项又没有 key 会直接退出，什么也不写。
+
 ## 基础科学栏目（/fundamental-science/）
 
 内容全部在 `public/fundamental-science/fs-data.js`，中英两版并排写（`T(中文, English)`），页面按站点语言取用，不经过 i18n 翻译。
@@ -138,6 +146,16 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **界面文字** 写中文，照常 `i18n-extract`（`qchem/play.js` 已在列表里）后在 `i18n/en.json` 手写英文；画在 canvas 上的文字用 `ChemI18n.t`，也要有词条。元素名、环名、谱系名按站点语言直接取用（`translate="no"`），不走词典。
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
+
+## 研习台（/learn/）
+
+AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-sources.js` 是站内内容和演示白名单，`learn-graph.js` 画 SVG，`learn.js` 是界面。决定见 `docs/DECISIONS.md` 2026-11-10（只有那一条可以写出借鉴的开源项目的名字，别处不要写）。
+
+- **提示词** 在 `learn-core.js` 的 `DEFAULT_PROMPTS`（摸底、路线、一步一检、单题评分、练习出题、练习评分、提取笔记、总结），发出去的系统消息第一行由构造函数自动加上 `TASK: <名字>`（e2e 的假 AI 靠它分辨请求；访客改的提示词里写不写都一样）。每段最后写明要的 JSON 形状，改了形状要同时改对应的 `parse…` 校验函数和 `tools/learn-test.mjs`。访客在数据页改过的提示词存在本机 `molastria-learn-prompts`，不受默认值更新影响（数据页有“恢复默认”）。
+- **加一个内容来源：** 在 `learn-sources.js` 的 `SOURCES` 加一项（页面、数据文件、全局变量名、章节锚点前缀），在 `ADAPT` 里写同名的改写函数，把一章变成纯文本；再在那个栏目的渲染脚本里加“用研习台学”的链接（`../../learn/index.html#goal=<来源>:<章 id>`，相对路径按页面深度写）。`tools/learn-sources-test.mjs` 会在 node 里加载每个数据文件，检查每个来源都有章节、中英文都不空。
+- **加一个站内演示：** 在 `learn-sources.js` 的 `DEMOS` 加一条（id、相对站点根的地址、中英文名称和一句话说明、关键词）。锚点必须是那个页面的代码真的会处理的（`#play-…`、`#d-…`、`id="demo-…"` 等），测试会查文件和锚点都在。模型只能返回白名单里的 id。
+- **界面文字** 在 `learn.js` 里用 `L(中文, English)` 成对写，不经过词典；只有 `index.html` 里的几句和 `learn-core.js` 校验报错（`bad('…')`）由 `i18n-extract` 抽取，要在 `i18n/en.json` 手写英文。
+- **测试：** `node --test tools/learn-test.mjs tools/learn-sources-test.mjs`；浏览器检查 `node tools/e2e/run.mjs "study desk"`（假的 DeepSeek，按 `TASK:` 返回固定 JSON：摸底、路线、一步一检带一次补讲、总结、练习、知识图删除、导出再导入、改提示词，最后英文页手机宽度不留中文）。真实服务商的效果只能手动试，见 ROADMAP。
 
 ## 开放数据接口（/api/）
 

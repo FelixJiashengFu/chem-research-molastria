@@ -320,11 +320,13 @@
     return `<h4>${L('在浏览器里运行', 'Run it in your browser')}</h4><div class="fm-practice qp-py"><p class="fm-practice-t">${L(...p.title)}</p>${C(esc(en ? p.body[1] : p.body[0]), 'p')}
           <div class="qp-py-run" data-py="${id}"></div><p class="qp-py-note">${L(...p.credit)} <a href="${p.link}" target="_blank" rel="noopener noreferrer" translate="no">qmsolve ${ext}</a></p></div>`;
   };
+  // 研习台：AI 先摸底、再一步一检地讲这一章（../../learn/ 读 qp-data.js 当依据）
+  const study = (id) => `<a class="button" href="../../learn/index.html#goal=qp:${id}">${L('用研习台学这一章', 'Study this in the Study Desk')} <i class="ico-ext ico-right" aria-hidden="true"></i></a>`;
   $('#qp-panels').innerHTML = D.chapters.map((s, i) => `<article class="fm-panel" id="c-${s.id}" data-tier="${s.stage}" tabindex="-1"${i ? ' hidden' : ''}>
       <header class="fm-sub-h"><span class="fm-big-glyph" aria-hidden="true">${esc(s.glyph)}</span><div>
         <p class="fm-panel-k" data-tier="${s.stage}">${L(`第 ${num(s.id)} 章`, `Chapter ${num(s.id)}`)} · ${R(stageOf(s.id).name)} · ${R(stageOf(s.id).tag)} · ${L(`约 ${s.weeks} 周`, `about ${s.weeks} weeks`)}</p>
         <h3>${R(s.name)}</h3>${R(s.tagline, 'p', 'fm-tagline')}</div></header>
-      ${(s.demos || []).length || (s.links || []).length ? `<div class="qp-try">${(s.demos || []).map((d) => `<a class="button" href="#d-${DEMO_ID[d]}">${L(...DEMO_NAME[d])} <i class="ico-ext ico-down" aria-hidden="true"></i></a>`).join('')}${(s.links || []).map(([id, hash, t]) => `<span class="qp-link">${L('别的展馆：', 'Another pavilion: ')}${hall(id, hash)}${C(` · ${esc(tx(t))}`)}</span>`).join('')}</div>` : ''}
+      <div class="qp-try">${(s.demos || []).map((d) => `<a class="button" href="#d-${DEMO_ID[d]}">${L(...DEMO_NAME[d])} <i class="ico-ext ico-down" aria-hidden="true"></i></a>`).join('')}${study(s.id)}${(s.links || []).map(([id, hash, t]) => `<span class="qp-link">${L('别的展馆：', 'Another pavilion: ')}${hall(id, hash)}${C(` · ${esc(tx(t))}`)}</span>`).join('')}</div>
       <div class="fm-cols"><div class="fm-col-main">
         <h4>${L('讲解', 'Explanation')}</h4><div class="fs-prose">${s.explain.map((p) => R(p, 'p')).join('')}</div>
         <h4>${L('关键公式', 'Key formulas')}</h4>${s.formulas.map(formula).join('')}
