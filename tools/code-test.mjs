@@ -350,7 +350,7 @@ test('生成的 PySCF 脚本能跑：水 HF/STO-3G 单点和频率、氧气三�
     // 参考值：同一几何，PySCF 2.15 RHF/STO-3G
     assert.ok(Math.abs(r.energy - -74.9630231384613) < 1e-6, `E = ${r.energy}`);
     assert.equal(r.scfConverged, true);
-    const fr = (/频率 \/ cm\^-1: \[([^\]]+)\]/.exec(out) || [])[1].trim().split(/\s+/).map(Number);
+    const fr = (/Frequencies \/ cm\^-1: \[([^\]]+)\]/.exec(out) || [])[1].trim().split(/\s+/).map(Number);
     assert.equal(fr.length, 3);
     assert.ok(fr.every((x) => x > 1500 && x < 5000), String(fr));
     out = run(o2, { method: 'HF', basis: 'sto-3g', mult: 3 });

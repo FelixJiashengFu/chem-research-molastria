@@ -184,7 +184,8 @@
   "index.html"
  ],
  "基组": [
-  "index.html"
+  "index.html",
+  "code/index.html"
  ],
  "分子动力学": [
   "index.html",
@@ -571,7 +572,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "228 条 · 已实现": [
+ "251 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -619,7 +620,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 228 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 251 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -1073,7 +1074,8 @@
  ],
  "语言": [
   "videos/index.html",
-  "api/index.html"
+  "api/index.html",
+  "code/index.html"
  ],
  "全部语言": [
   "videos/index.html"
@@ -2047,7 +2049,8 @@
  ],
  "试试：": [
   "hub/network.html",
-  "api/index.html"
+  "api/index.html",
+  "code/index.html"
  ],
  "全网概览": [
   "hub/network.html",
@@ -2700,7 +2703,9 @@
   "pro/account-page.js"
  ],
  "单点能": [
-  "lab/index.html"
+  "lab/index.html",
+  "code/index.html",
+  "code/code-core.js"
  ],
  "Rapid（网页默认）": [
   "lab/index.html"
@@ -2978,11 +2983,13 @@
  "电荷": [
   "meta/index.html",
   "models/index.html",
+  "code/index.html",
   "models/models.js"
  ],
  "自旋多重度": [
   "meta/index.html",
   "models/index.html",
+  "code/index.html",
   "models/models.js"
  ],
  "再用 uma-m-1p1 在同一几何上算单点（AI 实验室用 S / M 的分歧判断结果是否可疑）": [
@@ -3007,17 +3014,21 @@
   "meta/index.html"
  ],
  "运行：": [
-  "meta/index.html"
+  "meta/index.html",
+  "code/index.html"
  ],
  "复制": [
   "meta/index.html",
   "train/index.html",
   "pro/account.html",
+  "code/index.html",
   "meta/meta.js",
-  "train/train.js"
+  "train/train.js",
+  "code/code.js"
  ],
  "下载": [
   "meta/index.html",
+  "code/index.html",
   "models/models.js"
  ],
  "不想装环境：在线计算在“模型接口”页": [
@@ -3627,6 +3638,7 @@
  ],
  "不限": [
   "train/index.html",
+  "code/index.html",
   "radar/app/app.js"
  ],
  "6 GB 或 Mac 8 GB": [
@@ -3720,7 +3732,8 @@
  ],
  "许可证": [
   "train/index.html",
-  "scimodels/scimodels.js"
+  "scimodels/scimodels.js",
+  "code/code.js"
  ],
  "发布": [
   "train/index.html"
@@ -3729,7 +3742,8 @@
   "train/index.html"
  ],
  "链接": [
-  "train/index.html"
+  "train/index.html",
+  "code/code.js"
  ],
  "新": [
   "train/index.html",
@@ -7123,6 +7137,210 @@
  "研习台需要 JavaScript 才能使用。": [
   "learn/index.html"
  ],
+ "开源代码台 · 计算化学输入生成、输出解读与软件体检 · MolAstria": [
+  "code/index.html"
+ ],
+ "开源代码台": [
+  "code/index.html",
+  "shared-nav.js"
+ ],
+ "计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。": [
+  "code/index.html"
+ ],
+ "写输入": [
+  "code/index.html"
+ ],
+ "九个程序 + QCSchema": [
+  "code/index.html"
+ ],
+ "读输出": [
+  "code/index.html"
+ ],
+ "能量、收敛、虚频": [
+  "code/index.html"
+ ],
+ "软件体检": [
+  "code/index.html"
+ ],
+ "版本、许可证、漏洞": [
+  "code/index.html"
+ ],
+ "搜代码": [
+  "code/index.html"
+ ],
+ "五个代码搜索引擎": [
+  "code/index.html"
+ ],
+ "分子": [
+  "code/index.html",
+  "models/models.js"
+ ],
+ "示例：": [
+  "code/index.html"
+ ],
+ "水（H₂O）": [
+  "code/index.html"
+ ],
+ "甲醛": [
+  "code/index.html"
+ ],
+ "甲基自由基": [
+  "code/index.html"
+ ],
+ "三重态氧气": [
+  "code/index.html"
+ ],
+ "XYZ 坐标（单位 Å；可以带原子数和注释两行，也可以只有“元素 x y z”）": [
+  "code/index.html"
+ ],
+ "文件名": [
+  "code/index.html"
+ ],
+ "计算方法": [
+  "code/index.html"
+ ],
+ "任务": [
+  "code/index.html",
+  "lab/lab.js"
+ ],
+ "结构优化": [
+  "code/index.html",
+  "code/code.js",
+  "code/code-core.js"
+ ],
+ "频率": [
+  "code/index.html",
+  "radar/app/app.js",
+  "code/code-core.js"
+ ],
+ "优化 + 频率": [
+  "code/index.html",
+  "code/code-core.js"
+ ],
+ "隐式溶剂：水": [
+  "code/index.html"
+ ],
+ "D3(BJ) 色散校正": [
+  "code/index.html"
+ ],
+ "程序输出": [
+  "code/index.html"
+ ],
+ "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian 和 PySCF；只在浏览器里读，不上传。": [
+  "code/index.html"
+ ],
+ "选择文件": [
+  "code/index.html"
+ ],
+ "程序": [
+  "code/index.html",
+  "code/code.js"
+ ],
+ "自动识别": [
+  "code/index.html"
+ ],
+ "试一段示例": [
+  "code/index.html"
+ ],
+ "读到的结果": [
+  "code/index.html"
+ ],
+ "还没有输出。": [
+  "code/index.html",
+  "code/code.js"
+ ],
+ "两个能量相减": [
+  "code/index.html"
+ ],
+ "思路借鉴开源的": [
+  "code/index.html"
+ ],
+ "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。": [
+  "code/index.html"
+ ],
+ "查一个软件": [
+  "code/index.html"
+ ],
+ "PyPI 包名或 GitHub 仓库网址": [
+  "code/index.html"
+ ],
+ "体检": [
+  "code/index.html"
+ ],
+ "数据来自 PyPI、": [
+  "code/index.html"
+ ],
+ "和 GitHub 的公开接口，由你的浏览器直接去问；哪一家没回答，就只显示链接。许可证的结论是给 MolAstria（MIT 许可、有 Pro 收费）这样的项目的一般性说明，不是法律意见。": [
+  "code/index.html"
+ ],
+ "许可证速查": [
+  "code/index.html"
+ ],
+ "“公开可见”不等于“随便用”。下表是各类许可证在五种用法下的一般结论：": [
+  "code/index.html"
+ ],
+ "可以": [
+  "code/index.html",
+  "app.js",
+  "ai/ai.js",
+  "code/code.js"
+ ],
+ "有条件": [
+  "code/index.html",
+  "code/code.js"
+ ],
+ "不行": [
+  "code/index.html",
+  "code/code.js"
+ ],
+ "在公开代码里找实现": [
+  "code/index.html"
+ ],
+ "函数名、关键字或一段代码": [
+  "code/index.html"
+ ],
+ "只在计算化学的常用仓库里搜": [
+  "code/index.html"
+ ],
+ "研究一个开源项目时看什么": [
+  "code/index.html"
+ ],
+ "别只看 README：还要看核心实现、测试（数值有没有对照）、示例能不能跑，以及文档里的理论和参数说明。": [
+  "code/index.html"
+ ],
+ "记下确切的版本：标签或提交哈希，最好再加 Zenodo DOI 或 Software Heritage 的 SWHID；不要只记一个会变的 main 分支链接。": [
+  "code/index.html"
+ ],
+ "读一读 LICENSE 和 CITATION.cff：模型权重和数据集常有自己的许可证。": [
+  "code/index.html"
+ ],
+ "从软件包反查源码：PyPI、conda-forge 的页面上都有“源代码”链接。": [
+  "code/index.html"
+ ],
+ "从论文反查代码：论文的“代码可用性”一节、补充材料和作者主页。": [
+  "code/index.html"
+ ],
+ "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、ORCA 的商用）要有授权。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
+  "code/index.html"
+ ],
+ "数据库目录": [
+  "code/index.html"
+ ],
+ "开源代码台的四个工具": [
+  "code/index.html"
+ ],
+ "示例分子": [
+  "code/index.html"
+ ],
+ "生成的输入": [
+  "code/index.html"
+ ],
+ "把 .out / .log 的内容粘贴到这里": [
+  "code/index.html"
+ ],
+ "示例": [
+  "code/index.html"
+ ],
  "统一搜索": [
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -7374,7 +7592,8 @@
   "api/api.js",
   "meta/meta.js",
   "models/models.js",
-  "train/train.js"
+  "train/train.js",
+  "code/code.js"
  ],
  "单点能与受力": [
   "api/compute.js",
@@ -7584,10 +7803,6 @@
   "ai/ai.js"
  ],
  "哪些": [
-  "app.js",
-  "ai/ai.js"
- ],
- "可以": [
   "app.js",
   "ai/ai.js"
  ],
@@ -10222,9 +10437,6 @@
  "Tier 3：ωB97M-V 单点": [
   "lab/lab.js"
  ],
- "任务": [
-  "lab/lab.js"
- ],
  "每个 credits": [
   "lab/lab.js"
  ],
@@ -11320,9 +11532,6 @@
  "（换算为 {0} eV）。": [
   "models/models.js"
  ],
- "分子": [
-  "models/models.js"
- ],
  "碎片 {0}": [
   "models/models.js"
  ],
@@ -11396,13 +11605,16 @@
   "models/models.js"
  ],
  "收敛": [
-  "models/models.js"
+  "models/models.js",
+  "code/code.js"
  ],
  "否": [
-  "models/models.js"
+  "models/models.js",
+  "code/code.js"
  ],
  "是": [
-  "models/models.js"
+  "models/models.js",
+  "code/code.js"
  ],
  "虚频数": [
   "models/models.js"
@@ -11498,10 +11710,12 @@
   "models/models.js"
  ],
  "输入的结构": [
-  "models/models.js"
+  "models/models.js",
+  "code/code.js"
  ],
  "预览 3D 结构": [
-  "models/models.js"
+  "models/models.js",
+  "code/code.js"
  ],
  "文件太大：在线计算的 XYZ 最多 12000 个字符": [
   "models/models.js"
@@ -13494,9 +13708,6 @@
  "程序开着（包括只在托盘里）时，按下面的频率自动抓取、筛选并通知你": [
   "radar/app/app.js"
  ],
- "频率": [
-  "radar/app/app.js"
- ],
  "arXiv 每个工作日晚上（北美东部时间）更新一次；其他平台全天陆续发布": [
   "radar/app/app.js"
  ],
@@ -13783,6 +13994,402 @@
  ],
  "画结构": [
   "viewer/sketch.js"
+ ],
+ "学术免费，商用收费": [
+  "code/code.js"
+ ],
+ "商业软件": [
+  "code/code.js"
+ ],
+ "{0} · {1} 个原子 · {2}": [
+  "code/code.js"
+ ],
+ "先把坐标改对。": [
+  "code/code.js"
+ ],
+ "电荷和多重度对不上，先改过来。": [
+  "code/code.js"
+ ],
+ "{0} · 许可：{1}": [
+  "code/code.js"
+ ],
+ "复制失败": [
+  "code/code.js"
+ ],
+ "最终能量": [
+  "code/code.js"
+ ],
+ "正常结束": [
+  "code/code.js"
+ ],
+ "SCF 收敛": [
+  "code/code.js"
+ ],
+ "没有收敛": [
+  "code/code.js"
+ ],
+ "HOMO–LUMO 能隙": [
+  "code/code.js"
+ ],
+ "振动频率 / cm⁻¹": [
+  "code/code.js"
+ ],
+ "共 {0} 个，虚频 {1} 个（负数表示虚频）": [
+  "code/code.js"
+ ],
+ "没有发现问题。": [
+  "code/code.js"
+ ],
+ "文件超过 30 MB，请只贴最后一部分。": [
+  "code/code.js"
+ ],
+ "填两个能量（单位 Eh），算 E₂ − E₁。": [
+  "code/code.js"
+ ],
+ "MIT、BSD、ISC 等宽松许可": [
+  "code/code.js"
+ ],
+ "非商业（CC BY-NC 等）": [
+  "code/code.js"
+ ],
+ "没有许可证": [
+  "code/code.js"
+ ],
+ "商业或自定义许可": [
+  "code/code.js"
+ ],
+ "正在查询…": [
+  "code/code.js"
+ ],
+ "没连上": [
+  "code/code.js"
+ ],
+ "去官网看": [
+  "code/code.js"
+ ],
+ "已知漏洞（OSV）": [
+  "code/code.js"
+ ],
+ "许可证结论": [
+  "code/code.js"
+ ],
+ "源码仓库": [
+  "code/code.js"
+ ],
+ "长期存档（Software Heritage）": [
+  "code/code.js"
+ ],
+ "没写": [
+  "code/code.js"
+ ],
+ "PyPI 上没有这个包。": [
+  "code/code.js"
+ ],
+ "最新版本": [
+  "code/code.js"
+ ],
+ "简介": [
+  "code/code.js"
+ ],
+ "conda-forge 上的同名包：": [
+  "code/code.js"
+ ],
+ "条已知漏洞": [
+  "code/code.js"
+ ],
+ "最新版本没有已知漏洞": [
+  "code/code.js"
+ ],
+ "没拿到许可证信息。": [
+  "code/code.js"
+ ],
+ "不知道源码仓库在哪。": [
+  "code/code.js"
+ ],
+ "PyPI 页面上没写源码仓库。": [
+  "code/code.js"
+ ],
+ "没有仓库网址，查不了存档。": [
+  "code/code.js"
+ ],
+ "在存档里按名字搜": [
+  "code/code.js"
+ ],
+ "GitHub 上没有这个仓库。": [
+  "code/code.js"
+ ],
+ "仓库": [
+  "code/code.js"
+ ],
+ "星标": [
+  "code/code.js"
+ ],
+ "最近推送": [
+  "code/code.js"
+ ],
+ "已归档": [
+  "code/code.js"
+ ],
+ "一年半没有推送": [
+  "code/code.js"
+ ],
+ "GitHub 认出的许可证": [
+  "code/code.js"
+ ],
+ "还没有存档。": [
+  "code/code.js"
+ ],
+ "请 Software Heritage 存一份": [
+  "code/code.js"
+ ],
+ "已存档": [
+  "code/code.js"
+ ],
+ "浏览存档": [
+  "code/code.js"
+ ],
+ "论文里引用某一版本时，用存档页上的 SWHID。": [
+  "code/code.js"
+ ],
+ "常用仓库：": [
+  "code/code.js"
+ ],
+ "代码搜索": [
+  "code/code.js"
+ ],
+ "先写一个关键字。": [
+  "code/code.js"
+ ],
+ "第 {0} 行读不懂：{1}": [
+  "code/code-core.js"
+ ],
+ "第一行写的是 {0} 个原子，实际读到 {1} 个": [
+  "code/code-core.js"
+ ],
+ "没有读到原子": [
+  "code/code-core.js"
+ ],
+ "电荷要是整数": [
+  "code/code-core.js"
+ ],
+ "自旋多重度要是正整数（单重态 1、双重态 2、三重态 3）": [
+  "code/code-core.js"
+ ],
+ "电荷 {0} 比全部核电荷 {1} 还多，没有电子了": [
+  "code/code-core.js"
+ ],
+ "只有 {0} 个电子，最多 {1} 个未成对，多重度不能是 {2}": [
+  "code/code-core.js"
+ ],
+ "{0} 个电子是奇数，多重度应该是偶数（2、4…），现在是 {1}": [
+  "code/code-core.js"
+ ],
+ "{0} 个电子是偶数，多重度应该是奇数（1、3…），现在是 {1}": [
+  "code/code-core.js"
+ ],
+ "{0} 个电子，{1} 个未成对": [
+  "code/code-core.js"
+ ],
+ "PySCF 不做 GFN-xTB：请看 xTB、CREST 或 ASE 标签。": [
+  "code/code-core.js"
+ ],
+ "这里只给 MP2 / CCSD(T) 单点：通常先用 DFT 优化结构，再在优化好的结构上算。": [
+  "code/code-core.js"
+ ],
+ "PySCF 没有 MP2 / CCSD(T) 的解析 Hessian，频率请改用 HF 或 DFT。": [
+  "code/code-core.js"
+ ],
+ "PySCF 的溶剂模型 Hessian 支持有限，频率请先在气相下算。": [
+  "code/code-core.js"
+ ],
+ "D3(BJ) 色散校正只加在 DFT 上。": [
+  "code/code-core.js"
+ ],
+ "Psi4 不做 GFN-xTB：请看 xTB、CREST 或 ASE 标签。": [
+  "code/code-core.js"
+ ],
+ "PCM 要装 PCMSolver；下面的 pcm 段落用水。": [
+  "code/code-core.js"
+ ],
+ "-d3bj 后缀要装 dftd3 或 s-dftd3。": [
+  "code/code-core.js"
+ ],
+ "MP2 / CCSD(T) 的频率 Psi4 会用有限差分，很慢。": [
+  "code/code-core.js"
+ ],
+ "xTB 只做半经验方法，这里用 {0}；基组设置不起作用。": [
+  "code/code-core.js"
+ ],
+ "GFN-xTB 自带 D4 / D3 色散，不用另加。": [
+  "code/code-core.js"
+ ],
+ "CREST 做构象搜索，任务设置（单点、优化、频率）对它不起作用；结果在 crest_conformers.xyz。": [
+  "code/code-core.js"
+ ],
+ "CREST 用 xTB 系方法采样，这里用 {0}。": [
+  "code/code-core.js"
+ ],
+ "ORCA 调用外部的 xtb 程序，要把 xtb 放进 PATH（ORCA 6 起自带）。": [
+  "code/code-core.js"
+ ],
+ "CCSD(T) 没有解析梯度，ORCA 会很慢；通常用 DFT 优化、再算 CCSD(T) 单点。": [
+  "code/code-core.js"
+ ],
+ "Gaussian 不内置 GFN-xTB：请看 xTB、CREST 或 ASE 标签。": [
+  "code/code-core.js"
+ ],
+ "CCSD(T) 的 Freq 是数值差分，非常慢。": [
+  "code/code-core.js"
+ ],
+ "Gaussian 是商业软件，要有授权。": [
+  "code/code-core.js"
+ ],
+ "NWChem 不做 GFN-xTB：请看 xTB、CREST 或 ASE 标签。": [
+  "code/code-core.js"
+ ],
+ "NWChem 的 MP2 / CCSD(T) 频率用数值差分，很慢。": [
+  "code/code-core.js"
+ ],
+ "CP2K 不做 GFN-FF；可以选 GFN1-xTB。": [
+  "code/code-core.js"
+ ],
+ "CP2K 2024.1 起才支持 GFN2-xTB，旧版本只有 GFN1；不行就把 GFN_TYPE 改成 1。": [
+  "code/code-core.js"
+ ],
+ "CP2K 这里固定用 PBE + DZVP-MOLOPT-SR-GTH（GPW 的标准搭配），没有按 {0} / {1} 写；杂化泛函和高斯基组要另外设置 HFX 段。": [
+  "code/code-core.js"
+ ],
+ "溶剂模型（SCCS）没有写进去，这里是真空。": [
+  "code/code-core.js"
+ ],
+ "CP2K 一个输入只做一种 RUN_TYPE：先跑 GEO_OPT，再把结果改成 VIBRATIONAL_ANALYSIS。": [
+  "code/code-core.js"
+ ],
+ "有元素的 GTH 价电子数这里没收录，POTENTIAL 那一行要按 GTH_POTENTIALS 文件手改。": [
+  "code/code-core.js"
+ ],
+ "ASE 这里接的是 tblite 的 {0}（pip install tblite[ase]）；要用 DFT 请看 PySCF 或 Psi4 标签。": [
+  "code/code-core.js"
+ ],
+ "alpb_solvation 要 tblite 0.4 以上。": [
+  "code/code-core.js"
+ ],
+ "坐标单位是 bohr（1 bohr = 0.529177210903 Å，CODATA 2018）。可以交给 QCEngine：qcng.compute(json, \"psi4\")。": [
+  "code/code-core.js"
+ ],
+ "QCSchema 没有统一的溶剂字段，溶剂要写进各程序的 keywords。": [
+  "code/code-core.js"
+ ],
+ "优化输入交给 QCEngine 的优化器：qcng.compute_procedure(json, \"geometric\")。": [
+  "code/code-core.js"
+ ],
+ "频率要在优化后另交一个 driver 为 hessian 的输入。": [
+  "code/code-core.js"
+ ],
+ "不认识的程序 {0}": [
+  "code/code-core.js"
+ ],
+ "先给一个分子": [
+  "code/code-core.js"
+ ],
+ "GFN-xTB 总能量": [
+  "code/code-core.js"
+ ],
+ "开壳层：能隙只按 alpha 轨道算。": [
+  "code/code-core.js"
+ ],
+ "认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF）": [
+  "code/code-core.js"
+ ],
+ "有 1 个虚频（{0} cm⁻¹）：如果找的是过渡态，这是对的；如果找的是极小点，结构还没到底。": [
+  "code/code-core.js"
+ ],
+ "有 {0} 个虚频：这不是极小点，也不是一阶鞍点，要重新优化。": [
+  "code/code-core.js"
+ ],
+ "虚频都很小（不到 50 cm⁻¹），常是积分格点或收敛标准太松引起的数值噪声。": [
+  "code/code-core.js"
+ ],
+ "SCF 没有收敛，能量不能用。": [
+  "code/code-core.js"
+ ],
+ "结构优化没有收敛。": [
+  "code/code-core.js"
+ ],
+ "程序没有正常结束。": [
+  "code/code-core.js"
+ ],
+ "没找到最终能量。": [
+  "code/code-core.js"
+ ],
+ "只放链接或推荐": [
+  "code/code-core.js"
+ ],
+ "把代码放进网站": [
+  "code/code-core.js"
+ ],
+ "打包进桌面版": [
+  "code/code-core.js"
+ ],
+ "在自己的服务器上运行": [
+  "code/code-core.js"
+ ],
+ "作为独立程序调用": [
+  "code/code-core.js"
+ ],
+ "宽松许可：保留版权和许可声明就行。": [
+  "code/code-core.js"
+ ],
+ "Apache-2.0：保留版权、许可和 NOTICE 文件，改过的文件要注明；带明确的专利授权。": [
+  "code/code-core.js"
+ ],
+ "MPL-2.0 是文件级 copyleft：原样放成单独的文件可以和 MIT 代码一起发布，改过的那些文件要继续按 MPL 公开。": [
+  "code/code-core.js"
+ ],
+ "LGPL：作为单独的库调用可以，库本身的改动要按 LGPL 公开，并让用户能换掉这个库；不能把它的代码抄进 MIT 文件。": [
+  "code/code-core.js"
+ ],
+ "GPL：把它的代码放进网站或桌面版就是分发衍生作品，整个作品要按 GPL 发布，和 MolAstria 的 MIT 冲突；只在服务器上运行不算分发；作为独立程序调用、各自分开发布一般可以，但一起分发时要附上它的源码。": [
+  "code/code-core.js"
+ ],
+ "AGPL：和 GPL 一样不能进 MIT 的网站和桌面版；而且用户经网络使用改过的版本时，也要向他们提供源码。": [
+  "code/code-core.js"
+ ],
+ "CC BY：署名就能用（适合文字、图片和数据，不太适合代码）。": [
+  "code/code-core.js"
+ ],
+ "CC BY-SA：署名，改编后的内容要按同样的许可发布。": [
+  "code/code-core.js"
+ ],
+ "非商业（NC）：MolAstria 有 Pro 收费，算商业使用，只能链接。": [
+  "code/code-core.js"
+ ],
+ "没有许可证不等于公有领域：默认保留所有权利，只能链接，思路可以借鉴、代码要自己写。": [
+  "code/code-core.js"
+ ],
+ "商业或自定义许可：按它自己的条款，一般只能链接，或让用户自己装授权版本再调用。": [
+  "code/code-core.js"
+ ],
+ "GitHub 代码搜索": [
+  "code/code-core.js"
+ ],
+ "要登录 GitHub": [
+  "code/code-core.js"
+ ],
+ "支持正则和符号": [
+  "code/code-core.js"
+ ],
+ "不用登录，搜 GitHub 上约一百万个仓库": [
+  "code/code-core.js"
+ ],
+ "按仓库网址关键词搜存档": [
+  "code/code-core.js"
+ ],
+ "Debian 打包的全部源码": [
+  "code/code-core.js"
+ ],
+ "请输入 PyPI 包名（如 pyscf）或 GitHub 仓库网址": [
+  "code/code-core.js"
  ],
  "账号服务还没有配置 Stripe 密钥": [
   "deploy/account-worker.js"
@@ -14169,6 +14776,12 @@
   "tools/build-seo.ts"
  ],
  "中英术语、研习台的知识点和自己写的卡片，按 FSRS 间隔重复算法安排复习，可导出到 Anki。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 开源代码台 · Code Desk": [
+  "tools/build-seo.ts"
+ ],
+ "一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读 xTB、ORCA、Psi4、Gaussian、PySCF 的输出；查软件包的版本、许可证、已知漏洞和存档；跨引擎搜代码。": [
   "tools/build-seo.ts"
  ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
@@ -15215,6 +15828,75 @@
   "atlas data"
  ],
  "在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。": [
+  "atlas data"
+ ],
+ "基于 Python 的量子化学框架：HF、DFT、MP2、耦合簇、CASSCF 和周期性体系都能用几行脚本调用，适合方法开发和自动化工作流；Apache-2.0 许可。本站开源代码台能生成 PySCF 脚本。": [
+  "atlas data"
+ ],
+ "Grimme 组的 GFN-xTB 半经验紧束缚程序：几百个原子的结构优化、频率和分子动力学在普通电脑上也很快，常用来给 DFT 做预筛；LGPL-3.0 许可。": [
+  "atlas data"
+ ],
+ "密度泛函紧束缚（DFTB）程序，支持 SCC-DFTB、xTB 哈密顿量、激发态和非平衡格林函数电子输运；LGPL-3.0 许可。": [
+  "atlas data"
+ ],
+ "平面波（赝势 / PAW）第一性原理程序，擅长密度泛函微扰理论（声子、介电、弹性）和 GW、Bethe–Salpeter 激发态；主体为 GPL-3.0 许可。": [
+  "atlas data"
+ ],
+ "化学文件格式转换工具箱：在一百多种分子格式之间互转，还能加氢、生成三维坐标、算指纹，命令行和 Python 都能用；GPL-2.0 许可。": [
+  "atlas data"
+ ],
+ "解析计算化学程序输出的 Python 库：从 Gaussian、ORCA、Psi4、Q-Chem 等十几种程序的输出里读出能量、几何、轨道和振动频率，统一成同一套数据结构；BSD-3 许可。本站开源代码台的输出解读借了它的思路。": [
+  "atlas data"
+ ],
+ "分子动力学轨迹分析的 Python 库，读 GROMACS、AMBER、NAMD、LAMMPS 等几十种格式，做 RMSD、氢键、径向分布函数等分析；库整体按 LGPL-3.0+ 发布。": [
+  "atlas data"
+ ],
+ "轻量快速的分子动力学轨迹读写与分析库，常用于 RMSD、二级结构（DSSP）和接触图，和 NumPy 无缝衔接；LGPL-2.1 许可。": [
+  "atlas data"
+ ],
+ "GPU 加速的通用粒子模拟 Python 包，擅长软物质、胶体和硬粒子蒙特卡洛；BSD-3 许可。": [
+  "atlas data"
+ ],
+ "深度势能（Deep Potential）模型的训练和推理工具，可接 LAMMPS、GROMACS 等做大规模分子动力学，常和 DP-GEN 主动学习一起用；LGPL-3.0 许可。": [
+  "atlas data"
+ ],
+ "高阶等变消息传递的机器学习原子势，提供 MACE-MP-0、MACE-OFF 等现成的基础模型，可接 ASE 和 LAMMPS；MIT 许可。本站模型接口的 MACE-OMOL-0 就来自它。": [
+  "atlas data"
+ ],
+ "E(3) 等变图神经网络原子势，用较少的训练数据就能达到高精度；MIT 许可。": [
+  "atlas data"
+ ],
+ "NequIP 团队的严格局域等变原子势，便于并行扩展到超大体系的分子动力学；MIT 许可。": [
+  "atlas data"
+ ],
+ "基于 PyTorch 的原子尺度神经网络工具箱，内置 SchNet、PaiNN 等模型，能训练能量、力、偶极等性质并跑分子动力学；MIT 许可。": [
+  "atlas data"
+ ],
+ "PyTorch 实现的神经网络势框架，包含等变 Transformer、TensorNet 等架构；MIT 许可。": [
+  "atlas data"
+ ],
+ "MolSSI 制定的量子化学计算 JSON 交换格式：分子、方法和结果用同一套字段描述，QCEngine、Psi4、QCArchive 都用它；BSD-3 许可。本站开源代码台能把分子导出成 QCSchema。": [
+  "atlas data"
+ ],
+ "MolSSI 的基础数据与模型库：元素周期表、CODATA 物理常数、单位换算和 QCSchema 分子模型的校验；BSD-3 许可。": [
+  "atlas data"
+ ],
+ "QCArchive 背后的服务器软件：批量提交、调度和存储量子化学计算，也可以自己部署一套；BSD-3 许可。": [
+  "atlas data"
+ ],
+ "联合国教科文组织支持的源代码永久档案，收录 GitHub、GitLab、PyPI 等平台的公开代码及完整历史；用 SWHID 标识符引用某一版本，复现论文时比 main 分支的链接可靠。": [
+  "atlas data"
+ ],
+ "CERN 运营的开放科研仓库：上传数据、代码和论文附件即得 DOI；和 GitHub 联动后，每发布一个版本就自动存档并分配 DOI。": [
+  "atlas data"
+ ],
+ "社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。": [
+  "atlas data"
+ ],
+ "机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。": [
+  "atlas data"
+ ],
+ "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。": [
   "atlas data"
  ],
  "一百零三个入口，先分清去哪一层": [

@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -2957,6 +2957,61 @@ check('resource catalogue: 251 entries, the 2026-11-10 additions are searchable 
   const e = await open();
   await go(e, '/index.html?lang=en');
   assert.equal(await text(e, '#stat-atlas'), '251');
+  await finish(e);
+});
+
+check('code desk: inputs for nine programs, spin check, output reader, software check-up (mocked APIs), code search links, English', async () => {
+  const p = await open({ acceptDownloads: true });
+  const ctx = p.context();
+  await ctx.route('https://pypi.org/pypi/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ info: { name: 'pyscf', version: '2.15.0', summary: 'PySCF', license: 'Apache-2.0', requires_python: '>=3.9', project_urls: { Repository: 'https://github.com/pyscf/pyscf' }, classifiers: [] }, urls: [{ upload_time_iso_8601: '2026-11-05T05:41:29Z' }] }) }));
+  await ctx.route('https://api.osv.dev/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{}' }));
+  await ctx.route('https://api.github.com/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ full_name: 'pyscf/pyscf', html_url: 'https://github.com/pyscf/pyscf', stargazers_count: 1720, pushed_at: '2026-11-10T02:30:05Z', archived: false, license: { spdx_id: 'Apache-2.0' } }) }));
+  await ctx.route('https://archive.softwareheritage.org/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ date: '2026-10-30T12:00:00Z', status: 'full' }) }));
+  await go(p, '/code/index.html');
+  assert.match(await text(p, '#in-status'), /H2O · 3 个原子 · 10 个电子/);
+  assert.match(await text(p, '#in-code'), /dft\.RKS\(mol\)/);
+  await p.fill('#in-mult', '2');
+  assert.equal(await p.getAttribute('#in-status', 'data-bad'), 'true');
+  assert.equal(await p.isDisabled('#in-copy'), true);
+  await p.click('[data-sample=o2]');
+  await p.selectOption('#in-task', 'optfreq');
+  await p.click('[data-prog=xtb]');
+  assert.equal(await text(p, '#in-run'), 'xtb o2.xyz --ohess --gfn 2 --chrg 0 --uhf 2');
+  await p.click('[data-prog=orca]');
+  assert.match(await text(p, '#in-code'), /! B3LYP def2-SVP UKS Opt Freq[\s\S]*\* xyz 0 3/);
+  const dl = p.waitForEvent('download');
+  await p.click('#in-save');
+  assert.equal((await dl).suggestedFilename(), 'o2.inp');
+  await p.click('[data-prog=qcschema]');
+  assert.match(await text(p, '#in-code'), /qcschema_optimization_input/);
+  // 读输出
+  await p.click('#t-output');
+  await p.click('#out-demo');
+  assert.match(await text(p, '#out-result'), /ORCA[\s\S]*-114\.50123046 Eh[\s\S]*1 个虚频/);
+  await p.click('.cd-diff summary');
+  await p.fill('#d-e2', '-114.4');
+  assert.match(await text(p, '#d-out'), /kcal\/mol/);
+  // 软件体检
+  await p.click('#t-check');
+  await p.waitForSelector('#ck-swh .ok');
+  assert.match(await text(p, '#ck-out'), /pyscf 2\.15\.0[\s\S]*最新版本没有已知漏洞[\s\S]*Apache-2\.0[\s\S]*1,720[\s\S]*已存档/);
+  assert.match(await text(p, '#lic-table'), /GPL[\s\S]*不行/);
+  // 搜代码
+  await p.click('#t-search');
+  const gh = await p.getAttribute('[data-engine=github]', 'href');
+  assert.match(decodeURIComponent(gh), /def get_veff \(repo:pyscf\/pyscf OR/);
+  await p.uncheck('#sr-chem');
+  assert.doesNotMatch(decodeURIComponent(await p.getAttribute('[data-engine=github]', 'href')), /repo:/);
+  // 刷新后回到同一个标签和分子
+  await p.reload({ waitUntil: 'networkidle' });
+  assert.equal(await p.evaluate(() => document.body.dataset.tab), 'search');
+  await finish(p);
+  const e = await open();
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.match(await text(e, '.cd-tabs'), /Write inputs[\s\S]*Read outputs/);
+  assert.match(await text(e, '#in-status'), /electrons/);
+  assert.doesNotMatch(await e.evaluate(() => document.querySelector('main').innerText), /[㐀-鿿]/, 'no Chinese left on the input tab');
   await finish(e);
 });
 

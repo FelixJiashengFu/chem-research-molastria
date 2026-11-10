@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、20 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、开源代码台（计算化学程序的输入生成、输出解读与软件体检）、预印本雷达、游乐场（量子化学小游戏和浏览器里的量子化学计算器）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -28,6 +28,7 @@ public/               发布目录，推到 main 就上线
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测。pyrun.js 是浏览器里运行 Python 的代码框（Pyodide 314.0.7，jsDelivr，第一次约 9.2 MB，跑在 Web Worker 里，“停止”直接结束它；界面文字自带中英两版，标 translate="no"），练习程序在 py-examples.js（讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理“薛定谔方程与一维问题”一章的一维薛定谔求解器），tools/pyrun-test.mjs 用本机 python3 + numpy 对照 PySCF 和解析解核对。formula-check.js 是“写公式作答”的题块和判分（MathLive 0.111.1 输入、Compute Engine 0.69.1 判等价，都从 jsDelivr 按需载入；载不到时退回纯文本框和内置的小解析器），常见错误各有提示，错两次给方向、错三次给解答；界面文字自带中英两版，标 translate="no"；tools/formula-check-test.mjs 测
   review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
+  code/               开源代码台：code-core.js 是纯逻辑（读 XYZ、电荷与多重度核对、PySCF/Psi4/xTB/CREST/ORCA/Gaussian/NWChem/CP2K/ASE 的输入和 QCSchema、读 xTB/ORCA/Psi4/Gaussian/PySCF 的输出、许可证判断、代码搜索链接、PyPI/OSV 返回值整理；tools/code-test.mjs 测，装了 PySCF 时真跑生成的脚本），code.js 是界面（软件体检由浏览器直接问 PyPI、OSV、GitHub、Software Heritage，哪家没回答就只给链接）；生成的输入里的注释一律英文（<pre> 不翻译）；上次的分子和标签存 molastria-code
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
@@ -83,6 +84,7 @@ NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：�
 node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示的数学对照解析解，内容完整
 node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
 node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
+node --test tools/code-test.mjs                         # 开源代码台：输入生成、输出解读（五个程序的真实格式片段）、许可证、搜索链接；本机有 PySCF 时真跑生成的脚本对照参考能量（CODE_SKIP_PYTHON=1 跳过）
 node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
 node tools/quantum-algorithms-refs.mjs                  # 量子算法：文献在 OpenAlex / arXiv 核对
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次

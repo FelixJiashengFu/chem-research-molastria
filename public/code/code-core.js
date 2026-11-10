@@ -73,7 +73,7 @@
     else if (!Number.isInteger(m) || m < 1) out.message = '自旋多重度要是正整数（单重态 1、双重态 2、三重态 3）';
     else if (ne < 0) out.message = `电荷 ${q} 比全部核电荷 ${nuc} 还多，没有电子了`;
     else if (m - 1 > ne) out.message = `只有 ${ne} 个电子，最多 ${ne} 个未成对，多重度不能是 ${m}`;
-    else if ((ne + m - 1) % 2) out.message = `${ne} 个电子是${ne % 2 ? '奇数' : '偶数'}，多重度应该是${ne % 2 ? '偶数（2、4…）' : '奇数（1、3…）'}，现在是 ${m}`;
+    else if ((ne + m - 1) % 2) out.message = ne % 2 ? `${ne} 个电子是奇数，多重度应该是偶数（2、4…），现在是 ${m}` : `${ne} 个电子是偶数，多重度应该是奇数（1、3…），现在是 ${m}`;
     else { out.ok = true; out.message = `${ne} 个电子，${m - 1} 个未成对`; }
     return out;
   }
@@ -91,6 +91,7 @@
   };
   const TASKS = ['sp', 'opt', 'freq', 'optfreq'];
   const TASK_LABEL = { sp: '单点能', opt: '结构优化', freq: '频率', optfreq: '优化 + 频率' };
+  const TASK_EN = { sp: 'single point', opt: 'optimization', freq: 'frequencies', optfreq: 'optimization + frequencies' }; // 写进输入文件的标题用英文
 
   function norm(opts) {
     const o = { charge: 0, mult: 1, method: 'B3LYP', basis: 'def2-svp', task: 'sp', solvent: '', d3: false, name: 'mol', ...opts };
@@ -116,13 +117,13 @@
     const spin = o.mult - 1;
     const scf = o.kind !== 'dft' ? (o.open ? 'scf.UHF' : 'scf.RHF') : (o.open ? 'dft.UKS' : 'dft.RKS');
     const L = ['from pyscf import gto, scf, dft' + (o.kind === 'post' ? (o.method === 'MP2' ? ', mp' : ', cc') : ''), ''];
-    L.push('mol = gto.M(', '    atom="""', coordLines(atoms, '    '), '    """,', `    basis="${o.basis}",`, `    charge=${o.charge},`, `    spin=${spin},  # 2S = 未成对电子数（多重度 ${o.mult}）`, '    unit="Angstrom",', ')', '');
+    L.push('mol = gto.M(', '    atom="""', coordLines(atoms, '    '), '    """,', `    basis="${o.basis}",`, `    charge=${o.charge},`, `    spin=${spin},  # 2S = number of unpaired electrons (multiplicity ${o.mult})`, '    unit="Angstrom",', ')', '');
     const xc = o.kind === 'dft' ? `\nmf.xc = "${o.method.toLowerCase()}"` : '';
     L.push(`mf = ${scf}(mol)${xc}`);
-    if (o.d3 && o.kind === 'dft') { L.push('mf.disp = "d3bj"  # 要先 pip install pyscf-dispersion'); }
-    if (o.solvent) { L.push(`mf = mf.ddCOSMO()\nmf.with_solvent.eps = ${o.solvent === 'water' ? '78.3553' : '1.0'}  # 水`); }
+    if (o.d3 && o.kind === 'dft') { L.push('mf.disp = "d3bj"  # needs: pip install pyscf-dispersion'); }
+    if (o.solvent) { L.push(`mf = mf.ddCOSMO()\nmf.with_solvent.eps = ${o.solvent === 'water' ? '78.3553' : '1.0'}  # water`); }
     if (o.opt && o.kind !== 'post') {
-      L.push('', 'from pyscf.geomopt.geometric_solver import optimize  # 要先 pip install geometric', 'mol = optimize(mf)', `mf = ${scf}(mol)${xc}`);
+      L.push('', 'from pyscf.geomopt.geometric_solver import optimize  # needs: pip install geometric', 'mol = optimize(mf)', `mf = ${scf}(mol)${xc}`);
       if (o.d3 && o.kind === 'dft') L.push('mf.disp = "d3bj"');
     }
     L.push('mf.kernel()');
@@ -134,7 +135,7 @@
     if (o.freq) {
       if (o.kind === 'post') notes.push('PySCF 没有 MP2 / CCSD(T) 的解析 Hessian，频率请改用 HF 或 DFT。');
       else if (o.solvent) notes.push('PySCF 的溶剂模型 Hessian 支持有限，频率请先在气相下算。');
-      else L.push('', 'from pyscf.hessian import thermo', 'hess = mf.Hessian().kernel()', 'freq = thermo.harmonic_analysis(mol, hess)', 'print("频率 / cm^-1:", freq["freq_wavenumber"])');
+      else L.push('', 'from pyscf.hessian import thermo', 'hess = mf.Hessian().kernel()', 'freq = thermo.harmonic_analysis(mol, hess)', 'print("Frequencies / cm^-1:", freq["freq_wavenumber"])');
     }
     if (o.d3 && o.kind !== 'dft') notes.push('D3(BJ) 色散校正只加在 DFT 上。');
     return { supported: true, text: L.join('\n') + '\n', filename: `${o.name}.py`, run: `python ${o.name}.py`, notes };
@@ -144,7 +145,7 @@
     if (o.kind === 'xtb') return nope('Psi4 不做 GFN-xTB：请看 xTB、CREST 或 ASE 标签。');
     const notes = [];
     const m = o.kind === 'hf' ? 'scf' : o.method.toLowerCase() + (o.d3 && o.kind === 'dft' ? '-d3bj' : '');
-    const L = ['# Psi4 输入', 'memory 2 GB', '', 'molecule {', `  ${o.charge} ${o.mult}`, coordLines(atoms, '  '), '  units angstrom', '  symmetry c1', '}', '', 'set {', `  basis ${o.basis}`];
+    const L = ['# Psi4 input', 'memory 2 GB', '', 'molecule {', `  ${o.charge} ${o.mult}`, coordLines(atoms, '  '), '  units angstrom', '  symmetry c1', '}', '', 'set {', `  basis ${o.basis}`];
     if (o.open) L.push(`  reference ${o.kind === 'dft' ? 'uks' : 'uhf'}`);
     if (o.solvent) { L.push('  pcm true', '  pcm_scf_type total'); notes.push('PCM 要装 PCMSolver；下面的 pcm 段落用水。'); }
     L.push('}');
@@ -215,7 +216,7 @@
     if (o.d3 && o.kind === 'dft') route.push('EmpiricalDispersion=GD3BJ');
     if (o.solvent) route.push('SCRF=(SMD,Solvent=Water)');
     if (o.kind === 'post' && o.freq) notes.push('CCSD(T) 的 Freq 是数值差分，非常慢。');
-    const L = [`%chk=${o.name}.chk`, '%nprocshared=4', '%mem=4GB', route.join(' '), '', `${o.name} ${TASK_LABEL[o.task]}`, '', `${o.charge} ${o.mult}`, coordLines(atoms), '', ''];
+    const L = [`%chk=${o.name}.chk`, '%nprocshared=4', '%mem=4GB', route.join(' '), '', `${o.name} ${TASK_EN[o.task]}`, '', `${o.charge} ${o.mult}`, coordLines(atoms), '', ''];
     if (o.d3 && o.kind !== 'dft') notes.push('D3(BJ) 色散校正只加在 DFT 上。');
     notes.push('Gaussian 是商业软件，要有授权。');
     return { supported: true, text: L.join('\n'), filename: `${o.name}.gjf`, run: `g16 ${o.name}.gjf`, notes };
@@ -224,7 +225,7 @@
   GEN.nwchem = (atoms, o) => {
     if (o.kind === 'xtb') return nope('NWChem 不做 GFN-xTB：请看 xTB、CREST 或 ASE 标签。');
     const notes = [];
-    const L = [`start ${o.name}`, `title "${o.name} ${TASK_LABEL[o.task]}"`, 'memory total 2000 mb', '', `charge ${o.charge}`, '', 'geometry units angstrom noautosym', coordLines(atoms, '  '), 'end', '', 'basis spherical', `  * library ${o.basis}`, 'end', ''];
+    const L = [`start ${o.name}`, `title "${o.name} ${TASK_EN[o.task]}"`, 'memory total 2000 mb', '', `charge ${o.charge}`, '', 'geometry units angstrom noautosym', coordLines(atoms, '  '), 'end', '', 'basis spherical', `  * library ${o.basis}`, 'end', ''];
     let theory;
     if (o.kind === 'dft') {
       const xc = { B3LYP: 'b3lyp', PBE0: 'pbe0', PBE: 'xpbe96 cpbe96' }[o.method];
@@ -282,10 +283,10 @@
     const L = ['from ase import Atoms', 'from tblite.ase import TBLite', ''];
     if (o.opt) L.push('from ase.optimize import BFGS');
     if (o.freq) L.push('from ase.vibrations import Vibrations');
-    L.push('', `symbols = ${JSON.stringify(atoms.map((a) => a.el))}`, 'positions = [', ...atoms.map((a) => `    (${f(a.x)}, ${f(a.y)}, ${f(a.z)}),`), ']', 'atoms = Atoms(symbols=symbols, positions=positions)  # 单位 Å', '');
+    L.push('', `symbols = ${JSON.stringify(atoms.map((a) => a.el))}`, 'positions = [', ...atoms.map((a) => `    (${f(a.x)}, ${f(a.y)}, ${f(a.z)}),`), ']', 'atoms = Atoms(symbols=symbols, positions=positions)  # in Å', '');
     L.push(`atoms.calc = TBLite(method="${meth}", charge=${o.charge}, multiplicity=${o.mult}${o.solvent ? ', alpb_solvation="water"' : ''})`);
     if (o.opt) L.push(`BFGS(atoms, trajectory="${o.name}-opt.traj").run(fmax=0.01)`);
-    L.push('print("能量 / eV:", atoms.get_potential_energy())');
+    L.push('print("Energy / eV:", atoms.get_potential_energy())');
     if (o.freq) L.push(`vib = Vibrations(atoms, name="${o.name}-vib")`, 'vib.run()', 'vib.summary()');
     if (o.solvent) notes.push('alpb_solvation 要 tblite 0.4 以上。');
     return { supported: true, text: L.join('\n') + '\n', filename: `${o.name}_ase.py`, run: `python ${o.name}_ase.py`, notes };
@@ -443,7 +444,7 @@
     if (r.imaginary.length === 1) r.warnings.push(`有 1 个虚频（${r.imaginary[0].toFixed(1)} cm⁻¹）：如果找的是过渡态，这是对的；如果找的是极小点，结构还没到底。`);
     else if (r.imaginary.length > 1) r.warnings.push(`有 ${r.imaginary.length} 个虚频：这不是极小点，也不是一阶鞍点，要重新优化。`);
     const small = r.imaginary.filter((v) => v > -50);
-    if (small.length && small.length === r.imaginary.length) r.warnings.push('虚频都很小（< 50 cm⁻¹），常是积分格点或收敛标准太松引起的数值噪声。');
+    if (small.length && small.length === r.imaginary.length) r.warnings.push('虚频都很小（不到 50 cm⁻¹），常是积分格点或收敛标准太松引起的数值噪声。');
     if (r.scfConverged === false) r.warnings.push('SCF 没有收敛，能量不能用。');
     if (r.optConverged === false) r.warnings.push('结构优化没有收敛。');
     if (r.normal === false) r.warnings.push('程序没有正常结束。');

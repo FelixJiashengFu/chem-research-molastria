@@ -2,6 +2,18 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-10 开源代码台：资源目录里的“平台”只收计算化学相关的，能变成功能的做成站内工具
+
+站长给了一份自己整理的《全球公开代码仓库与科研代码资源目录》（约 150 个入口），说“相关的功能全部加进来”。
+
+- **大多数入口是平台，不是功能：** 通用代码托管（GitLab、Gitee……）、与化学无关的软件包注册中心（Maven、CocoaPods……）、操作系统源码、通用深度学习框架（PyTorch、JAX、TensorFlow）都不收，收了只是一页链接大全。
+- **收进资源目录的（23 条，228 → 251）：** 目录里点名、我们竟然还没有的计算化学软件（PySCF、xTB、DFTB+、ABINIT、Open Babel、cclib、MDAnalysis、MDTraj、HOOMD-blue、DeePMD-kit、MACE、NequIP、Allegro、SchNetPack、TorchMD-Net、QCSchema、QCElemental、QCFractal），以及和复现直接相关的五个入口（Software Heritage、Zenodo、conda-forge、Hugging Face Hub、OSV）。许可证按各仓库的 LICENSE 文件核对（GitHub 显示 NOASSERTION 的 MDAnalysis、MACE、SchNetPack、DFTB+、ABINIT 都读了原文）。
+- **Papers with Code 不收：** 2025 年起由 Hugging Face Papers 接替；2026-11-10 抓取首页只看到论文列表、没看到首页，状态没能从页面确认，所以不收。
+- **做成功能的是第 11–13 节：** 输入生成（第 11 节的程序）、输出解读（cclib 的思路，BSD-3，代码另写）、软件体检（第 7 节的 PyPI、第 13 节的 OSV 和许可证表、第 4 节的 Software Heritage）、代码搜索（第 3 节）。deps.dev、Libraries.io 没接：前者的浏览器跨域支持没能核实，后者要 API key。
+- **软件体检由浏览器直接问各家接口，不经过我们的服务器：** 不增加账号服务的负担和 CPU；PyPI 确认支持跨域，OSV、Software Heritage、GitHub 在云端容器里连不上、没能实测跨域，所以每张卡都有“没连上就给链接”的退路。
+- **许可证结论写成“一般性说明，不是法律意见”：** 按 MolAstria 的情况（MIT、有 Pro 收费、网站和桌面版都算分发）给五种用法的结论；非商业许可因为 Pro 收费一律只链接。
+- **生成的输入里的注释用英文：** `<pre>` 不翻译，中文注释在英文界面会露出来；代码本来就该能直接交给任何人的集群。
+
 ## 2026-11-10 学习功能大补充：借鉴 GitHub 上的学习项目，库从 CDN 按需载入，代码自己写
 
 站长看了调研报告（GitHub 上帮助学量子、数理化生的开源项目）后说“报告里能用的全做”，和研习台（#102）一起上线。

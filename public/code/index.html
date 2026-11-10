@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 开源代码台：一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。">
+  <meta name="theme-color" content="#173f34">
+  <title>开源代码台 · 计算化学输入生成、输出解读与软件体检 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../viewer/mol3d.css">
+  <link rel="stylesheet" href="code.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../viewer/mol3d.js" defer></script>
+  <script src="code-core.js" defer></script>
+  <script src="code.js" defer></script>
+</head>
+<body data-section="code">
+<main class="cd">
+  <header class="cd-mast">
+    <p class="cd-eyebrow">MOLASTRIA · CODE DESK</p>
+    <h1>开源代码台<span lang="en" translate="no">Code Desk</span></h1>
+    <p class="cd-lead">计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。</p>
+  </header>
+
+  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的四个工具">
+    <button type="button" role="tab" id="t-input" aria-controls="p-input" aria-selected="true" data-tab="input"><b>写输入</b><small>九个程序 + QCSchema</small></button>
+    <button type="button" role="tab" id="t-output" aria-controls="p-output" aria-selected="false" data-tab="output"><b>读输出</b><small>能量、收敛、虚频</small></button>
+    <button type="button" role="tab" id="t-check" aria-controls="p-check" aria-selected="false" data-tab="check"><b>软件体检</b><small>版本、许可证、漏洞</small></button>
+    <button type="button" role="tab" id="t-search" aria-controls="p-search" aria-selected="false" data-tab="search"><b>搜代码</b><small>五个代码搜索引擎</small></button>
+  </nav>
+
+  <!-- 写输入 -->
+  <section class="cd-panel" id="p-input" role="tabpanel" aria-labelledby="t-input">
+    <div class="cd-grid">
+      <div class="cd-box">
+        <h2 class="cd-h2">分子</h2>
+        <div class="cd-samples" role="group" aria-label="示例分子">
+          <span>示例：</span>
+          <button type="button" data-sample="water">水（H₂O）</button>
+          <button type="button" data-sample="formaldehyde">甲醛</button>
+          <button type="button" data-sample="methyl">甲基自由基</button>
+          <button type="button" data-sample="o2">三重态氧气</button>
+        </div>
+        <label class="cd-field">XYZ 坐标（单位 Å；可以带原子数和注释两行，也可以只有“元素 x y z”）
+          <textarea id="in-xyz" rows="8" spellcheck="false" autocomplete="off"></textarea>
+        </label>
+        <p class="cd-status" id="in-status" role="status" aria-live="polite"></p>
+        <div class="cd-row">
+          <label>电荷<input id="in-charge" type="number" step="1" value="0" inputmode="numeric"></label>
+          <label>自旋多重度<input id="in-mult" type="number" min="1" step="1" value="1" inputmode="numeric"></label>
+          <label>文件名<input id="in-name" type="text" value="mol" spellcheck="false" autocomplete="off"></label>
+        </div>
+        <div class="cd-row">
+          <label>计算方法<select id="in-method">
+            <optgroup label="从头算与密度泛函"><option>HF</option><option selected>B3LYP</option><option>PBE0</option><option>PBE</option><option>MP2</option><option>CCSD(T)</option></optgroup>
+            <optgroup label="半经验与力场"><option>GFN2-xTB</option><option>GFN1-xTB</option><option>GFN-FF</option></optgroup>
+          </select></label>
+          <label>基组<select id="in-basis"><option value="sto-3g">STO-3G</option><option value="6-31g*">6-31G*</option><option value="def2-svp" selected>def2-SVP</option><option value="def2-tzvp">def2-TZVP</option><option value="cc-pvdz">cc-pVDZ</option><option value="cc-pvtz">cc-pVTZ</option></select></label>
+          <label>任务<select id="in-task"><option value="sp">单点能</option><option value="opt">结构优化</option><option value="freq">频率</option><option value="optfreq">优化 + 频率</option></select></label>
+        </div>
+        <div class="cd-row cd-checks">
+          <label><input id="in-water" type="checkbox"> 隐式溶剂：水</label>
+          <label><input id="in-d3" type="checkbox"> D3(BJ) 色散校正</label>
+        </div>
+        <div class="cd-preview" id="in-preview"></div>
+      </div>
+
+      <div class="cd-box cd-out">
+        <div class="cd-progs" role="tablist" aria-label="程序" id="in-progs"></div>
+        <div class="cd-file">
+          <span class="cd-fname" id="in-fname" translate="no"></span>
+          <span class="cd-btns">
+            <button type="button" class="cd-btn" id="in-copy">复制</button>
+            <button type="button" class="cd-btn" id="in-save">下载</button>
+          </span>
+        </div>
+        <pre class="cd-code" id="in-code" tabindex="0" aria-label="生成的输入"></pre>
+        <p class="cd-run" id="in-run-row"><span>运行：</span><code id="in-run"></code></p>
+        <ul class="cd-notes" id="in-notes"></ul>
+        <p class="cd-small" id="in-about"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 读输出 -->
+  <section class="cd-panel" id="p-output" role="tabpanel" aria-labelledby="t-output" hidden>
+    <div class="cd-grid">
+      <div class="cd-box">
+        <h2 class="cd-h2">程序输出</h2>
+        <p class="cd-p">把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian 和 PySCF；只在浏览器里读，不上传。</p>
+        <textarea id="out-text" rows="12" spellcheck="false" autocomplete="off" placeholder="把 .out / .log 的内容粘贴到这里"></textarea>
+        <div class="cd-row">
+          <span class="cd-btn cd-filepick"><input id="out-file" type="file" accept=".out,.log,.txt,.dat"><span>选择文件</span></span>
+          <label>程序<select id="out-prog"><option value="">自动识别</option><option value="xtb">xTB</option><option value="orca">ORCA</option><option value="psi4">Psi4</option><option value="gaussian">Gaussian</option><option value="pyscf">PySCF</option></select></label>
+          <button type="button" class="cd-btn" id="out-demo">试一段示例</button>
+        </div>
+      </div>
+      <div class="cd-box">
+        <h2 class="cd-h2">读到的结果</h2>
+        <div id="out-result" class="cd-result"><p class="cd-empty">还没有输出。</p></div>
+        <details class="cd-diff">
+          <summary>两个能量相减</summary>
+          <div class="cd-row">
+            <label>E₁ / Eh<input id="d-e1" type="text" inputmode="decimal" spellcheck="false"></label>
+            <label>E₂ / Eh<input id="d-e2" type="text" inputmode="decimal" spellcheck="false"></label>
+          </div>
+          <p class="cd-status" id="d-out" aria-live="polite"></p>
+        </details>
+      </div>
+    </div>
+    <p class="cd-small">思路借鉴开源的 <a href="https://cclib.github.io/" target="_blank" rel="noopener noreferrer">cclib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。</p>
+  </section>
+
+  <!-- 软件体检 -->
+  <section class="cd-panel" id="p-check" role="tabpanel" aria-labelledby="t-check" hidden>
+    <div class="cd-box">
+      <h2 class="cd-h2">查一个软件</h2>
+      <form class="cd-row cd-ask" id="ck-form">
+        <label class="cd-grow">PyPI 包名或 GitHub 仓库网址<input id="ck-q" type="text" value="pyscf" spellcheck="false" autocomplete="off"></label>
+        <button type="submit" class="cd-btn primary">体检</button>
+      </form>
+      <div class="cd-samples" role="group" aria-label="示例">
+        <span>试试：</span>
+        <button type="button" data-ck="pyscf">pyscf</button><button type="button" data-ck="rdkit">rdkit</button><button type="button" data-ck="ase">ase</button><button type="button" data-ck="mdanalysis">mdanalysis</button><button type="button" data-ck="https://github.com/grimme-lab/xtb">grimme-lab/xtb</button>
+      </div>
+      <div id="ck-out" class="cd-check"></div>
+      <p class="cd-small">数据来自 PyPI、<a href="https://osv.dev" target="_blank" rel="noopener noreferrer">OSV <i class="ico-ext" aria-hidden="true"></i></a>、<a href="https://www.softwareheritage.org" target="_blank" rel="noopener noreferrer">Software Heritage <i class="ico-ext" aria-hidden="true"></i></a> 和 GitHub 的公开接口，由你的浏览器直接去问；哪一家没回答，就只显示链接。许可证的结论是给 MolAstria（MIT 许可、有 Pro 收费）这样的项目的一般性说明，不是法律意见。</p>
+    </div>
+    <div class="cd-box">
+      <h2 class="cd-h2">许可证速查</h2>
+      <p class="cd-p">“公开可见”不等于“随便用”。下表是各类许可证在五种用法下的一般结论：<b class="ok">可以</b>、<b class="cond">有条件</b>、<b class="no">不行</b>。</p>
+      <div class="cd-tablewrap"><table class="cd-lic" id="lic-table"></table></div>
+    </div>
+  </section>
+
+  <!-- 搜代码 -->
+  <section class="cd-panel" id="p-search" role="tabpanel" aria-labelledby="t-search" hidden>
+    <div class="cd-box">
+      <h2 class="cd-h2">在公开代码里找实现</h2>
+      <form class="cd-row cd-ask" id="sr-form">
+        <label class="cd-grow">函数名、关键字或一段代码<input id="sr-q" type="text" value="def get_veff" spellcheck="false" autocomplete="off"></label>
+        <label>语言<select id="sr-lang"><option value="">不限</option><option value="python">Python</option><option value="fortran">Fortran</option><option value="cpp">C++</option><option value="c">C</option><option value="julia">Julia</option></select></label>
+      </form>
+      <label class="cd-chk"><input id="sr-chem" type="checkbox" checked> 只在计算化学的常用仓库里搜</label>
+      <p class="cd-small" id="sr-repos"></p>
+      <ul class="cd-links" id="sr-links"></ul>
+      <details class="cd-how">
+        <summary>研究一个开源项目时看什么</summary>
+        <ol>
+          <li>别只看 README：还要看核心实现、测试（数值有没有对照）、示例能不能跑，以及文档里的理论和参数说明。</li>
+          <li>记下确切的版本：标签或提交哈希，最好再加 Zenodo DOI 或 Software Heritage 的 SWHID；不要只记一个会变的 main 分支链接。</li>
+          <li>读一读 LICENSE 和 CITATION.cff：模型权重和数据集常有自己的许可证。</li>
+          <li>从软件包反查源码：PyPI、conda-forge 的页面上都有“源代码”链接。</li>
+          <li>从论文反查代码：论文的“代码可用性”一节、补充材料和作者主页。</li>
+        </ol>
+      </details>
+    </div>
+  </section>
+
+  <footer class="cd-credits">
+    <p>输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、ORCA 的商用）要有授权。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进 <a href="../atlas/index.html#resources">数据库目录</a>。</p>
+  </footer>
+</main>
+</body>
+</html>
