@@ -455,6 +455,7 @@
       <header class="fm-sub-h"><span class="fm-big-glyph" aria-hidden="true">${esc(a.glyph.length > 3 ? a.glyph.slice(0, 3) : a.glyph)}</span><div>
         <p class="fm-panel-k" data-tier="${a.tier}">${R(tierOf(a.id).name)} · ${R(tierOf(a.id).tag)} · <span translate="no">${esc(a.year)}</span></p>
         <h3>${R(a.name)}</h3>${R(a.tagline, 'p', 'fm-tagline')}<p>${ev(a.evidence)}</p></div></header>
+      <p class="fm-study"><a class="button" href="../../learn/index.html#goal=qa:${a.id}">${L('用研习台学这个算法', 'Study this in the Study Desk')} <i class="ico-ext ico-right" aria-hidden="true"></i></a></p>
       <div class="fm-cols"><div class="fm-col-main">
         <h4>${L('讲解', 'Explanation')}</h4><div class="fs-prose">${a.explain.map((p) => R(p, 'p')).join('')}</div>
         <h4>${L('关键公式', 'Key formulas')}</h4>${a.formulas.map(formula).join('')}

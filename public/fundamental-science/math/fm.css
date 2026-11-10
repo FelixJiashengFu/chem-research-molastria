@@ -96,6 +96,7 @@ a.fm-chip:hover{background:color-mix(in srgb,var(--fm-c,var(--accent)) 18%,trans
 .fm-big-glyph{flex:none;display:flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:14px;font:600 26px/1 var(--font-num);color:color-mix(in srgb,var(--fm-c) 80%,var(--ink));background:color-mix(in srgb,var(--fm-c) 12%,transparent);border:1px solid color-mix(in srgb,var(--fm-c) 45%,transparent)}
 .fm-sub-h h3{margin:4px 0 4px;font-size:22px;font-weight:600;line-height:1.3}
 .fm-tagline{margin:0;font:500 15px/1.6 var(--font-serif);color:var(--ink-2)}
+.fm-study{margin:4px 0 16px}
 .fm-panel h4{margin:22px 0 8px;font-size:13px;letter-spacing:1px;font-weight:700;color:var(--muted);text-transform:uppercase}
 .fm-cols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px}
 .fm-col-side{border-left:1px solid var(--line);padding-left:20px}

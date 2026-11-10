@@ -43,6 +43,8 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
+      - name: Study Desk logic and site sources
+        run: node --test tools/learn-test.mjs tools/learn-sources-test.mjs
       - name: Open data API content
         run: node --test tools/api-test.mjs
       - name: Python client (public/api/v1/molastria.py) against a stand-in service

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="研习台：AI 家教先摸底、再画路线、一步一检，练习分开进行，学到的命题和推理链积累成跨会话的知识图。可以从站内的量子物理、数学基础等章节开始；用你自己的 AI key，数据只存在这台设备。">
+  <meta name="theme-color" content="#173f34">
+  <title>研习台 · Study Desk · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="learn-graph.css">
+  <link rel="stylesheet" href="learn.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../ai/config.js" defer></script>
+  <script src="../ai/ai.js" defer></script>
+  <script src="learn-core.js" defer></script>
+  <script src="learn-sources.js" defer></script>
+  <script src="learn-graph.js" defer></script>
+  <script src="learn.js" defer></script>
+</head>
+<body data-section="learn">
+<a class="skip" href="#ln-panel">跳到研习台</a>
+<main id="ln-main">
+  <section class="ln-hero" aria-labelledby="ln-h1">
+    <p class="eyebrow">MOLASTRIA · STUDY DESK</p>
+    <h1 id="ln-h1">研习台<span class="ln-h1-en" lang="en" translate="no">Study Desk</span></h1>
+    <p class="ln-lead" id="ln-lead"></p>
+    <div class="ln-ai" id="ln-ai" aria-live="polite"></div>
+  </section>
+  <nav class="ln-tabs" id="ln-tabs" aria-label="研习台"></nav>
+  <div class="ln-warn" id="ln-warn" role="alert" hidden></div>
+  <section class="ln-panel" id="ln-panel" tabindex="-1" aria-live="off"></section>
+  <p class="sr-only" id="ln-status" role="status" aria-live="polite"></p>
+  <noscript><p class="ln-note">研习台需要 JavaScript 才能使用。</p></noscript>
+</main>
+</body>
+</html>
