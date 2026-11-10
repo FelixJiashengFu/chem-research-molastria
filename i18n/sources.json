@@ -307,7 +307,7 @@
  "资源目录（静态页）": [
   "index.html"
  ],
- "说明讲解手册 20 章": [
+ "说明讲解手册 25 章": [
   "index.html"
  ],
  "期刊发表": [
@@ -2043,7 +2043,7 @@
  "看它连着什么": [
   "hub/network.html"
  ],
- "目录里的全部条目、20 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
+ "目录里的全部条目、25 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。 查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。": [
   "hub/network.html"
  ],
  "点任何节点，网就换成以它为中心。": [
@@ -2100,6 +2100,35 @@
  "加载更多结果": [
   "hub/network.html"
  ],
+ "没找到的词": [
+  "hub/network.html"
+ ],
+ "记下术语表认不出的词": [
+  "hub/network.html"
+ ],
+ "术语表认不出、只能按全文检索的词会记在这里，帮我们补术语表。它们": [
+  "hub/network.html"
+ ],
+ "只存在这台设备的浏览器里": [
+  "hub/network.html"
+ ],
+ "，不会发到任何服务器。想帮忙的话，可以复制出来，或者到 GitHub 提一个 Issue：页面会预先填好这些词，你看过全文再决定提不提交。点一个词再查一次，点 × 删掉它。": [
+  "hub/network.html"
+ ],
+ "复制列表": [
+  "hub/network.html"
+ ],
+ "到 GitHub 提交": [
+  "hub/network.html"
+ ],
+ "清空": [
+  "hub/network.html",
+  "lab/index.html",
+  "qchem/index.html",
+  "shared-nav.js",
+  "radar/app/app.js",
+  "viewer/sketch.js"
+ ],
  "所有数据库与软件官网总表": [
   "hub/network.html"
  ],
@@ -2112,7 +2141,7 @@
  "节点从哪来": [
   "hub/network.html"
  ],
- "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 20 章也作为条目参与。": [
+ "五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 25 章也作为条目参与。": [
   "hub/network.html"
  ],
  "连线从哪来": [
@@ -2251,13 +2280,6 @@
  "导出项目": [
   "lab/index.html"
  ],
- "清空": [
-  "lab/index.html",
-  "qchem/index.html",
-  "shared-nav.js",
-  "radar/app/app.js",
-  "viewer/sketch.js"
- ],
  "当前是合成演示数据。": [
   "lab/index.html"
  ],
@@ -2318,6 +2340,7 @@
  "停止": [
   "lab/index.html",
   "meta/index.html",
+  "code/index.html",
   "ai/ai.js"
  ],
  "查看提示词": [
@@ -4822,6 +4845,9 @@
  "在线模型：MACE 系列（学术许可）": [
   "pro/index.html"
  ],
+ "云同步（学习记录、复习卡片、收藏在设备之间同步）": [
+  "pro/index.html"
+ ],
  "问题和需求优先处理": [
   "pro/index.html"
  ],
@@ -4910,7 +4936,7 @@
  "我以前买过 Pro，有什么变化？": [
   "pro/index.html"
  ],
- "你的权益只多不少：AI 托管额度、在线模型次数照旧，价格和续费日期不变。以前价格页上写着“开发中、上线后自动开通”的功能（云同步、深度工作流库），上线时照样给你，不另收费。": [
+ "你的权益只多不少：AI 托管额度、在线模型次数照旧，价格和续费日期不变。以前价格页上写着“开发中、上线后自动开通”的功能（云同步、深度工作流库），上线时照样给你，不另收费。云同步已经上线，在账号页打开。": [
   "pro/index.html"
  ],
  "付款安全吗？": [
@@ -5234,7 +5260,8 @@
   "pro/account.html"
  ],
  "生成": [
-  "pro/account.html"
+  "pro/account.html",
+  "code/index.html"
  ],
  "兑换 VIP 卡": [
   "pro/account.html"
@@ -5290,7 +5317,7 @@
  "服务条款 · MolAstria": [
   "pro/terms.html"
  ],
- "生效日期：2026-10-28 · 最后更新：2026-11-08 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
+ "生效日期：2026-10-28 · 最后更新：2026-11-10 · 适用于 molastria.com、MolAstria 桌面版及相关付费服务": [
   "pro/terms.html"
  ],
  "1. 服务内容": [
@@ -5311,7 +5338,7 @@
  "2. 早鸟预售期间付款的用户": [
   "pro/terms.html"
  ],
- "2026-11-08 之前，价格页把部分功能标为“开发中”并预售。在那之前付款的用户，这些功能（云同步、深度工作流库等）上线后照样自动开通，不另收费；这些功能目前没有确定的上线日期。如果你对进度不满意，可以按退款政策申请退款。": [
+ "2026-11-08 之前，价格页把部分功能标为“开发中”并预售。在那之前付款的用户，这些功能（云同步、深度工作流库等）上线后照样自动开通，不另收费。云同步已于 2026-11-10 上线（Pro 支持者 10 MB 云端空间，在账号页打开）；深度工作流库等其他功能目前没有确定的上线日期。如果你对进度不满意，可以按退款政策申请退款。": [
   "pro/terms.html"
  ],
  "3. 付款、续费与取消": [
@@ -5499,7 +5526,7 @@
  "下载 MolAstria 桌面版": [
   "download/index.html"
  ],
- "完整的资源目录、20 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
+ "完整的资源目录、25 章讲解、网状查询、AI 实验室和训练指南装进一个应用，断网也能查目录和读讲解。在应用里连接本机的 Ollama 或 vLLM 不受浏览器跨域限制，外部链接会在系统浏览器打开。免费下载，版本号见": [
   "download/index.html"
  ],
  "发布页": [
@@ -5820,7 +5847,7 @@
  "：27 个模型的能力与价格对比": [
   "about/index.html"
  ],
- "：20 章双语讲解与投稿指南": [
+ "：25 章双语讲解与投稿指南": [
   "about/index.html"
  ],
  "更大规模的高性能计算。目前的计算跑在单张 GPU 和按需租用的云端 GPU 上。": [
@@ -7250,7 +7277,16 @@
  "三重态氧气": [
   "code/index.html"
  ],
+ "从 SMILES 生成三维坐标": [
+  "code/index.html"
+ ],
+ "在你的浏览器里搭几个构象、补齐氢，用 MMFF94 力场各自优化，按力场能量排好，填进下面的坐标框。第一次要从 jsDelivr 下载约 2.5 MB 的 OpenChemLib。力场结构只是起点，正式计算前请先用 xTB 或 DFT 优化。": [
+  "code/index.html"
+ ],
  "XYZ 坐标（单位 Å；可以带原子数和注释两行，也可以只有“元素 x y z”）": [
+  "code/index.html"
+ ],
+ "用哪一帧（多帧的 XYZ：几个构象、几个自旋态或者反应里的几个分子）": [
   "code/index.html"
  ],
  "文件名": [
@@ -7286,7 +7322,7 @@
  "程序输出": [
   "code/index.html"
  ],
- "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian 和 PySCF；只在浏览器里读，不上传。": [
+ "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。": [
   "code/index.html"
  ],
  "选择文件": [
@@ -7297,6 +7333,9 @@
   "code/code.js"
  ],
  "自动识别": [
+  "code/index.html"
+ ],
+ "示例": [
   "code/index.html"
  ],
  "试一段示例": [
@@ -7315,7 +7354,7 @@
  "思路借鉴开源的": [
   "code/index.html"
  ],
- "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。": [
+ "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。": [
   "code/index.html"
  ],
  "查一个软件": [
@@ -7380,7 +7419,10 @@
  "从论文反查代码：论文的“代码可用性”一节、补充材料和作者主页。": [
   "code/index.html"
  ],
- "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、ORCA 的商用）要有授权。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
+ "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是": [
+  "code/index.html"
+ ],
+ "（BSD-3）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
  "数据库目录": [
@@ -7396,9 +7438,6 @@
   "code/index.html"
  ],
  "把 .out / .log 的内容粘贴到这里": [
-  "code/index.html"
- ],
- "示例": [
   "code/index.html"
  ],
  "发现": [
@@ -7453,7 +7492,7 @@
  "从讲解、视频到 AI 家教和小游戏": [
   "shared-nav.js"
  ],
- "20 章中英双语的计算化学讲解": [
+ "25 章中英双语的计算化学讲解": [
   "shared-nav.js"
  ],
  "handbook guide 手册": [
@@ -7564,7 +7603,7 @@
  "计算化学程序的输入生成、输出解读与软件体检": [
   "shared-nav.js"
  ],
- "pyscf orca gaussian xtb input 输入": [
+ "pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标": [
   "shared-nav.js"
  ],
  "期刊选择与投稿指导": [
@@ -8578,6 +8617,26 @@
   "tools/build-seo.ts"
  ],
  "11 · 社区与中文入口": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "12 · 量子化学程序与方法库": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "13 · 周期体系与凝聚态": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "14 · 波函数分析与动力学": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "15 · 量子力学与量子化学课程": [
+  "manual/app.js",
+  "tools/build-seo.ts"
+ ],
+ "16 · 量子计算与量子化学算法": [
   "manual/app.js",
   "tools/build-seo.ts"
  ],
@@ -10382,6 +10441,12 @@
  "没有找到。你是不是要找：{0}": [
   "hub/network.js"
  ],
+ "术语表里还没有这个词。": [
+  "hub/network.js"
+ ],
+ "已记进这台设备上的“没找到的词”": [
+  "hub/network.js"
+ ],
  "{0} 条条目": [
   "hub/network.js"
  ],
@@ -10416,6 +10481,37 @@
   "hub/network.js"
  ],
  "路径：": [
+  "hub/network.js"
+ ],
+ "已关闭，不再记录；以前记下的也已清空。": [
+  "hub/network.js"
+ ],
+ "还没有记下的词。": [
+  "hub/network.js"
+ ],
+ "{0} 次 · 全文 {1} 条": [
+  "hub/network.js"
+ ],
+ "删除这个词": [
+  "hub/network.js"
+ ],
+ "地址太长，只放了查得最多的 {0} 个词": [
+  "hub/network.js"
+ ],
+ "已开启记录。": [
+  "hub/network.js"
+ ],
+ "已关闭并清空。": [
+  "hub/network.js"
+ ],
+ "已清空。": [
+  "hub/network.js"
+ ],
+ "已复制到剪贴板。": [
+  "hub/network.js",
+  "pro/account-page.js"
+ ],
+ "浏览器不让复制，请手动选中上面的词。": [
   "hub/network.js"
  ],
  "以「{0}」为中心": [
@@ -10624,7 +10720,8 @@
   "lab/lab.js"
  ],
  "已停止。": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/code.js"
  ],
  "RDKit 未能载入，无法过滤": [
   "lab/lab.js"
@@ -12087,6 +12184,9 @@
  "下载结构（.xyz{0}）": [
   "models/models.js"
  ],
+ "送进代码台写输入": [
+  "models/models.js"
+ ],
  "· 直接受力型模型：力不是能量的导数，频率由受力差分得到": [
   "models/models.js"
  ],
@@ -12097,6 +12197,12 @@
   "models/models.js"
  ],
  "{0} 算出的结构": [
+  "models/models.js"
+ ],
+ "还在算，这一轮算完再送过去": [
+  "models/models.js"
+ ],
+ "浏览器存储不可用，请下载结构后在代码台粘贴": [
   "models/models.js"
  ],
  "输入的结构": [
@@ -12767,9 +12873,6 @@
   "pro/account-page.js"
  ],
  "读缓存": [
-  "pro/account-page.js"
- ],
- "已复制到剪贴板。": [
   "pro/account-page.js"
  ],
  "复制下面的 key：": [
@@ -14454,6 +14557,84 @@
  "复制失败": [
   "code/code.js"
  ],
+ "没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。": [
+  "code/code.js"
+ ],
+ "先写一个 SMILES。": [
+  "code/code.js"
+ ],
+ "SMILES 里不能有空格。": [
+  "code/code.js"
+ ],
+ "这个 SMILES 读不出来：{0}": [
+  "code/code.js"
+ ],
+ "重原子有 {0} 个，超过了浏览器里能算的 {1} 个；这么大的分子请在本机用 RDKit 或 CREST 搭构象。": [
+  "code/code.js"
+ ],
+ "搭出的构象和写的立体构型都对不上，换一种写法再试。": [
+  "code/code.js"
+ ],
+ "方括号里的 {0} 写明了 {1} 个氢，OpenChemLib 读成了 {2} 个，算出来会是另一个分子。自由基请换一种写法，比如二氧化氮写成 N(=O)[O]。": [
+  "code/code.js"
+ ],
+ "搭不出三维结构：检查一下价态，或者环是不是太紧张。": [
+  "code/code.js"
+ ],
+ "出错了：{0}": [
+  "code/code.js"
+ ],
+ "SMILES 里有 {0} 处立体构型没写，按第一个搭出的结构定成了 {1}；要另一个异构体，请在 SMILES 里用 @、@@、/、\\ 写明。": [
+  "code/code.js"
+ ],
+ "有的构象搭出来立体构型不对，已经去掉，只留和 SMILES 一致的。": [
+  "code/code.js"
+ ],
+ "MMFF94 力场算不了这个分子（不认识某些原子或价态，或者算不出能量），坐标没有优化，只是一个粗糙的起点，请先用 xTB 优化。": [
+  "code/code.js"
+ ],
+ "有的构象 MMFF94 算不出能量，坐标没有优化，排在最后；用前面优化过的那几个更好。": [
+  "code/code.js"
+ ],
+ "单个原子：多重度按洪特规则填成基态的 {0}；要算别的态请自己改。": [
+  "code/code.js"
+ ],
+ "单个原子：多重度只按电子数的奇偶填成了 {0}；过渡金属的原子和离子基态常是高自旋（比如 Fe²⁺ 是五重态），请查表核对。": [
+  "code/code.js"
+ ],
+ "SMILES 里有 {0} 个互不相连的部分，它们之间的相对位置是随手摆的。": [
+  "code/code.js"
+ ],
+ "有 {0} 个未成对电子，多重度按高自旋填成 {1}；MMFF94 是给闭壳层分子做的，自由基的结构只能作参考。": [
+  "code/code.js"
+ ],
+ "生成了一个结构，已用 MMFF94 优化。": [
+  "code/code.js"
+ ],
+ "生成了一个结构（没有优化）。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好，现在用的是能量最低的一个。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好；现在用的是第 {2} 个，比最低的高 {3} kcal/mol。": [
+  "code/code.js"
+ ],
+ "搭了 {0} 个构象，去掉重复的还剩 {1} 个，按 MMFF94 能量从低到高排好；现在用的是第 {2} 个，这一个没有优化。": [
+  "code/code.js"
+ ],
+ "正在载入 OpenChemLib，搭构象…": [
+  "code/code.js"
+ ],
+ "正在用 MMFF94 优化第 {0} 个构象（共 {1} 个）…": [
+  "code/code.js"
+ ],
+ "这个结构来自模型接口：": [
+  "code/code.js"
+ ],
+ "。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。": [
+  "code/code.js"
+ ],
  "最终能量": [
   "code/code.js"
  ],
@@ -14604,6 +14785,9 @@
  "第一行写的是 {0} 个原子，实际读到 {1} 个": [
   "code/code-core.js"
  ],
+ "第 {0} 帧写的是 {1} 个原子，实际读到 {2} 个": [
+  "code/code-core.js"
+ ],
  "没有读到原子": [
   "code/code-core.js"
  ],
@@ -14691,7 +14875,7 @@
  "CP2K 不做 GFN-FF；可以选 GFN1-xTB。": [
   "code/code-core.js"
  ],
- "CP2K 2024.1 起才支持 GFN2-xTB，旧版本只有 GFN1；不行就把 GFN_TYPE 改成 1。": [
+ "CP2K 自带的 xTB 只有 GFN0 和 GFN1；GFN2-xTB 要走 tblite 后端（GFN_TYPE TBLITE），CP2K 编译时要带上 tblite（conda-forge 的 2026.2 没带，会报 “Built without TBLITE”）。按 CP2K 2026.2 的输入手册写；跑不了就改选 GFN1-xTB。": [
   "code/code-core.js"
  ],
  "CP2K 这里固定用 PBE + DZVP-MOLOPT-SR-GTH（GPW 的标准搭配），没有按 {0} / {1} 写；杂化泛函和高斯基组要另外设置 HFX 段。": [
@@ -14730,13 +14914,22 @@
  "先给一个分子": [
   "code/code-core.js"
  ],
+ "开壳层：HOMO 取 α、β 里较高的一个，LUMO 取较低的一个": [
+  "code/code-core.js"
+ ],
  "GFN-xTB 总能量": [
   "code/code-core.js"
  ],
  "开壳层：能隙只按 alpha 轨道算。": [
   "code/code-core.js"
  ],
- "认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF）": [
+ "CP2K 的振动分析把各个位移点的能量写在 PROJECT-r-0.out 这类副本文件里，主输出里没有总能量。": [
+  "code/code-core.js"
+ ],
+ "Q-Chem 的这个任务是有限差分（一系列位移结构或外加电场下的能量），没有单独印出未扰动的能量；要能量请另算一次单点。": [
+  "code/code-core.js"
+ ],
+ "认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem）": [
   "code/code-core.js"
  ],
  "有 1 个虚频（{0} cm⁻¹）：如果找的是过渡态，这是对的；如果找的是极小点，结构还没到底。": [
@@ -14752,6 +14945,9 @@
   "code/code-core.js"
  ],
  "结构优化没有收敛。": [
+  "code/code-core.js"
+ ],
+ "程序没有正常结束，报错是：{0}": [
   "code/code-core.js"
  ],
  "程序没有正常结束。": [
@@ -15240,7 +15436,7 @@
  "MolAstria 开源代码台 · Code Desk": [
   "tools/build-seo.ts"
  ],
- "一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读 xTB、ORCA、Psi4、Gaussian、PySCF 的输出；查软件包的版本、许可证、已知漏洞和存档；跨引擎搜代码。": [
+ "从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查软件包的版本、许可证、已知漏洞和存档；跨引擎搜代码。": [
   "tools/build-seo.ts"
  ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
@@ -15834,6 +16030,7 @@
  ],
  "量子化学程序与方法库": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -15914,6 +16111,7 @@
  ],
  "周期体系与凝聚态第一性原理": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -15961,6 +16159,7 @@
  ],
  "波函数分析、可视化与动力学": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -16011,6 +16210,7 @@
  ],
  "量子计算与量子化学算法": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],
@@ -16034,6 +16234,7 @@
  ],
  "量子力学与量子化学课程教材": [
   "atlas data",
+  "guide titles",
   "tags",
   "categories"
  ],

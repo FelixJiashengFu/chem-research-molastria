@@ -46,6 +46,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .cd-status[data-bad=true]{color:var(--danger)}
 .cd-status:empty{display:none}
 .cd-preview{margin-top:14px}
+/* 从 SMILES 生成、从模型接口送来 */
+.cd-smiles{margin:0 0 14px;padding:12px 14px;border:1px dashed var(--line-strong);border-radius:12px;background:var(--paper)}
+.cd-smi-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cd-smi-row input{flex:1 1 200px;min-width:0;font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,Consolas,monospace)!important}
+.cd-smi-row .cd-btn,.cd-smi-row .sk-open{flex:0 0 auto}
+.cd-smi-row .sk-open{margin-top:0;min-height:36px;border-radius:8px;font-size:13.5px}
+.cd-smiles .cd-small{margin-top:8px}
+.cd-smiles .cd-notes{margin-top:8px;font-size:13px}
+.cd-import{margin:0 0 12px;padding:9px 12px;border-left:3px solid var(--accent);border-radius:8px;background:var(--paper);font-size:13.5px;color:var(--ink-2)}
+.cd-gapnote{display:block}
 
 .cd-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:5px 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;font:600 13.5px var(--font-sans);text-decoration:none}
 .cd-btn:hover{border-color:var(--accent)}

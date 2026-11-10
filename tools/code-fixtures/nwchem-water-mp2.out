@@ -1,0 +1,43 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+         Total SCF energy =    -76.026772056997
+
+
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    2  Occ=2.000000D+00  E=-1.336448D+00
+
+ Vector    3  Occ=2.000000D+00  E=-6.989513D-01
+
+ Vector    4  Occ=2.000000D+00  E=-5.665435D-01
+
+ Vector    5  Occ=2.000000D+00  E=-4.931206D-01
+
+ Vector    6  Occ=0.000000D+00  E= 1.854742D-01
+
+ Vector    7  Occ=0.000000D+00  E= 2.561795D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.888245D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.539857D-01
+
+ Vector   10  Occ=0.000000D+00  E= 1.163570D+00
+
+ Vector   11  Occ=0.000000D+00  E= 1.200372D+00
+
+ Vector   12  Occ=0.000000D+00  E= 1.253367D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.444377D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.476233D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.674393D+00
+
+ center of mass
+
+          Total MP2 energy           -76.230775616089
+
+ Total times  cpu:        0.2s     wall:        0.2s

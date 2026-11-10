@@ -1,0 +1,222 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+
+ Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
+
+    8     -75.3178467153      2.47e-12  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3178467153
+
+ **                       VIBRATIONAL ANALYSIS                       **
+
+ Frequency:      1860.10                3939.13                4272.66
+
+    6     -75.3202362426      1.90e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3202362426
+
+    6     -75.3210937967      2.02e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3210937967
+
+    6     -75.3196261844      1.26e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3196261844
+
+    6     -75.3164974488      6.99e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3164974488
+
+    7     -75.3140890362      6.42e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3140890362
+
+    7     -75.3026206398      2.67e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3026206398
+
+    7     -75.3140402686      5.09e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3140402686
+
+    6     -75.3089304898      1.82e-11  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3089304898
+
+    6     -75.3099001648      9.31e-11  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3099001648
+
+    6     -75.2941819290      1.36e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2941819290
+
+    7     -75.3140890362      6.30e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3140890362
+
+    7     -75.3026206398      2.67e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3026206398
+
+    8     -75.3226505208      6.29e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3226505208
+
+    7     -75.3175495616      6.68e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3175495616
+
+    7     -75.3219401665      3.57e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3219401665
+
+    6     -75.3187067860      6.80e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3187067860
+
+    7     -75.3140764539      3.90e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3140764539
+
+    7     -75.3165622642      2.28e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3165622642
+
+    7     -75.3053418806      4.13e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3053418806
+
+    7     -75.3166008576      5.60e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3166008576
+
+    7     -75.3073890671      2.72e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3073890671
+
+    7     -75.3133866161      1.88e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3133866161
+
+    7     -75.3175495616      8.57e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3175495616
+
+    7     -75.3157956587      9.96e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3157956587
+
+    6     -75.3127290121      7.31e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3127290121
+
+    7     -75.3140764539      3.94e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3140764539
+
+    8     -75.3102496266      7.34e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3102496266
+
+    7     -75.2986818624      1.68e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2986818624
+
+    7     -75.3052260777      3.56e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3052260777
+
+    7     -75.2909617066      2.47e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2909617066
+
+    7     -75.3105397035      8.49e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3105397035
+
+    7     -75.3051577852      9.80e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3051577852
+
+    7     -75.3123396998      2.62e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3123396998
+
+    6     -75.2966397787      1.99e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2966397787
+
+    7     -75.2883646958      1.62e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2883646958
+
+    8     -75.3165622642      2.41e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3165622642
+
+    7     -75.3053418806      4.13e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3053418806
+
+    7     -75.3166008576      5.60e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3166008576
+
+    7     -75.3073890671      2.72e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3073890671
+
+    7     -75.3014472371      5.16e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3014472371
+
+    7     -75.3051577852      2.45e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3051577852
+
+    7     -75.3062226881      5.10e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3062226881
+
+    6     -75.2907599206      1.20e-10  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2907599206
+
+    7     -75.2883646958      3.29e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2883646958
+
+    7     -75.3102496266      2.64e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3102496266
+
+    7     -75.2986818624      1.68e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2986818624
+
+    7     -75.3052260777      3.56e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.3052260777
+
+    7     -75.2909617066      2.47e-09  Convergence criterion met
+
+ Total energy in the final basis set =      -75.2909617066
+
+
+                    Orbital Energies (a.u.)
+ --------------------------------------------------------------
+
+ Alpha MOs
+ -- Occupied --
+-18.8336  -0.9450  -0.4462  -0.2260  -0.1450
+ -- Virtual --
+  0.3241   0.5275
+ --------------------------------------------------------------
+
+ **                       VIBRATIONAL ANALYSIS                       **
+
+ Frequency:      1860.10                3939.13                4272.66
+
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

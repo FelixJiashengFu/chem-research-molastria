@@ -1109,14 +1109,14 @@ check('handbook: its own page, Chinese and English chapters, the choice is remem
   await p.waitForSelector('#guide-article h1');
   assert.match(await text(p, '#view-guide .page-intro h1'), /^说明讲解手册/);
   assert.equal(await p.getAttribute('.cr-mega a[data-id=manual]', 'aria-current'), 'page');
-  assert.equal(await p.locator('#guide-toc button').count(), 20);
+  assert.equal(await p.locator('#guide-toc button').count(), 25);
   assert.equal(await p.locator('.sidebar, #view-resources, #view-agent').count(), 0, 'no database views on the handbook page');
   assert.equal(await p.locator('#view-guide .page-intro p').count(), 0);
   assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
   await p.click('[data-guide-lang=en]');
   assert.equal(await text(p, '#guide-article h1'), 'Drugs, bioactivity & chemical space');
   assert.equal(await p.getAttribute('#guide-article', 'lang'), 'en');
-  assert.equal(await text(p, '#reader-progress'), '09 / 20 · 05 · Drugs & chemical space');
+  assert.equal(await text(p, '#reader-progress'), '09 / 25 · 05 · Drugs & chemical space');
   await p.click('#guide-next');
   assert.equal(await text(p, '#guide-article h1'), 'Metabolites, natural products & reaction pathways');
   await p.reload({ waitUntil: 'networkidle' });
@@ -1141,7 +1141,7 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   await oldAddress(p, '/atlas/index.html#guide/p08-cat05', /\/manual\/index\.html#p08-cat05$/);
   assert.equal(await text(p, '#guide-article h1'), '药物、生物活性与化学空间');
   await oldAddress(p, '/atlas/index.html#guide', /\/manual\/index\.html$/);
-  assert.equal(await text(p, '#reader-progress'), '02 / 20 · 三分钟导读');
+  assert.equal(await text(p, '#reader-progress'), '02 / 25 · 三分钟导读');
   await finish(p);
   const en = await open();
   await oldAddress(en, '/atlas/index.html?lang=en#guide/p00-cover', /\/manual\/index\.html\?lang=en#p00-cover$/);
@@ -1424,7 +1424,10 @@ check('open model hall: eleven pavilions, task comparison, filters; a pavilion p
   assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page', 'Meta counts as part of the hall');
   await finish(p);
   const e = await open({ viewport: { width: 390, height: 844 } });
+  // GitHub refuses unauthenticated readers after 60 requests an hour; the fallback sentence must still fit a phone
+  await e.context().route('https://api.github.com/**', (r) => r.fulfill({ status: 403, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{"message":"API rate limit exceeded"}' }));
   await go(e, '/open-models/microsoft/index.html?lang=en');
+  assert.match(await text(e, '#om-rel'), /Could not read releases/);
   assert.match(await text(e, 'main h1'), /Microsoft/);
   assert.doesNotMatch(await e.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
@@ -1502,6 +1505,75 @@ check('network: the searched term is the centre, suggestions complete, clicking 
   await go(en, '/hub/network.html?lang=en&q=' + encodeURIComponent('静电势'));
   await en.waitForFunction(() => document.getElementById('resultTitle')?.textContent.trim() === 'Electrostatic potential');
   await finish(en);
+});
+
+check('network: a word the term table does not know is kept on this device only, can be removed, copied out and turned off', async () => {
+  const p = await open({ permissions: ['clipboard-read', 'clipboard-write'] });
+  const outside = [];
+  p.on('request', (r) => { if (!r.url().startsWith(SITE) && /qwertyzz/i.test(r.url() + (r.postData() || ''))) outside.push(r.url()); });
+  await go(p, '/hub/network.html');
+  assert.equal(await p.locator('#missActions').isVisible(), false);
+  assert.match(await p.innerText('#missList'), /还没有记下的词/);
+  await p.fill('#netQ', 'qwertyzz');
+  await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.match(await p.innerText('#netFocus'), /已记进这台设备上的“没找到的词”/);
+  assert.match(await p.innerText('#missList'), /qwertyzz\s*1 次 · 全文 0 条/);
+  // A known term, and the same word again in this visit, add nothing.
+  await p.fill('#netQ', 'Multiwfn'); await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().center?.name === 'Multiwfn');
+  await p.goBack();
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  let stored = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')));
+  assert.deepEqual(stored.items.map((x) => [x.q, x.n]), [['qwertyzz', 1]]);
+  // A ?q= link counts once per visit, and the list survives a reload.
+  await go(p, '/hub/network.html?q=' + encodeURIComponent('zzqq plasmonic gizmo'));
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo', 'qwertyzz'], 'same count: the latest first');
+  assert.equal(await p.getAttribute('#missList .net-miss-q', 'translate'), 'no');
+  const issue = new URL(await p.getAttribute('#missIssue', 'href'));
+  assert.equal(issue.pathname, '/FelixJiashengFu/chem-research-molastria/issues/new');
+  assert.match(issue.searchParams.get('body'), /- qwertyzz（1 次，全文命中 0 条）/);
+  await p.click('#missCopy');
+  await p.waitForFunction(() => /已复制/.test(document.getElementById('missMsg').textContent));
+  assert.match(await p.evaluate(() => navigator.clipboard.readText()), /^qwertyzz\t1 次\t0 条全文命中/m);
+  // Clicking a word searches it again without counting it; × removes it.
+  await p.click('#missList .net-miss-q >> text=qwertyzz');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().q === 'qwertyzz');
+  assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')).items.find((x) => x.q === 'qwertyzz').n), 1);
+  await p.click('[data-miss-x="qwertyzz"]');
+  assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo']);
+  // Turning recording off clears the list and stops it.
+  await p.uncheck('#missOn');
+  stored = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')));
+  assert.deepEqual(stored, { v: 1, off: true, items: [] });
+  await p.fill('#netQ', 'qwertyzz'); await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.doesNotMatch(await p.innerText('#netFocus'), /已记进/);
+  assert.match(await p.innerText('#missList'), /已关闭/);
+  assert.deepEqual(outside, [], 'the words never leave the page');
+  await finish(p);
+  const phone = await open({ viewport: { width: 390, height: 844 }, init: () => localStorage.setItem('molastria-net-misses', JSON.stringify({ v: 1, items: [{ q: 'a-very-long-unbroken-search-word-that-must-wrap-somewhere', n: 3, hits: 0, first: 1, last: 1 }] })) });
+  await go(phone, '/hub/network.html');
+  assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll with a long word');
+  await finish(phone);
+});
+
+check('handbook: the five chapters for categories 12–16 open in both languages and link to the site pages they name', async () => {
+  const p = await open();
+  await go(p, '/manual/index.html#p14f-cat16');
+  await p.waitForSelector('#guide-article h1');
+  assert.equal(await text(p, '#guide-article h1'), '量子计算与量子化学算法');
+  assert.match(await text(p, '#reader-progress'), /^22 \/ 25 · 16 · /);
+  assert.ok(await p.locator('#guide-article a[href="../quantum/algorithms/index.html"]').count() > 0);
+  await p.click('[data-guide-lang=en]');
+  assert.match(await text(p, '#guide-article h1'), /^Quantum computing/);
+  for (const [id, h1] of [['p14b-cat12', /^Quantum chemistry programs/], ['p14c-cat13', /^Periodic systems/], ['p14d-cat14', /^Wavefunction analysis/], ['p14e-cat15', /^Courses/]]) {
+    await go(p, `/manual/index.html#${id}`);
+    await p.waitForSelector('#guide-article h1');
+    assert.match(await text(p, '#guide-article h1'), h1, id);
+  }
+  await finish(p);
 });
 
 check('train page: the weekly Hugging Face check shows its date, link stats and new models', async () => {
@@ -2799,8 +2871,11 @@ check('vision: the operator\'s essay in full (28 paragraphs, 3 source links), bi
   await p.click('.vs-bi');
   assert.equal(await p.locator('.vs-en:visible').count(), 28, 'every paragraph gets its translation');
   assert.equal(await p.locator('.vo-card').count(), 4);
-  for (const st of ['live', 'next', 'idea']) assert.ok(await p.locator(`.vo-card .vo-${st}`).count() >= 4, `each card has ${st}`);
-  for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\//, `site link ${href} is relative to /vision/`);
+  // Every outlook item is drawn with its own status tag; "next" items move to "live" as the roadmap ships, so count against the data.
+  const want = await p.evaluate(() => { const n = { live: 0, next: 0, idea: 0 }; for (const c of window.MOLASTRIA_VISION.outlook.pledges) for (const [st] of c.items) n[st]++; return n; });
+  for (const st of ['live', 'next', 'idea']) assert.equal(await p.locator(`.vo-card .vo-${st}`).count(), want[st], `${st} items`);
+  assert.ok(want.live >= 4 && want.idea >= 4, `live ${want.live}, idea ${want.idea}`);
+  for (const href of await p.$$eval('.vo-card a[href]', (xs) => xs.map((x) => x.getAttribute('href')).filter((h) => !/^https?:/.test(h)))) assert.match(href, /^\.\.\/(?!\.\.\/)/, `site link ${href} is relative to /vision/ (one level up, the data gives paths from the site root)`);
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
   assert.equal(await p.locator('.cr-legal a[href$="vision/index.html"]').count(), 1);
   await go(p, '/about/index.html');
@@ -3272,6 +3347,162 @@ check('code desk: inputs for nine programs, spin check, output reader, software 
   await finish(e);
 });
 
+/** Serves OpenChemLib (the SMILES → 3D library the code desk loads from jsDelivr) from tools/e2e/node_modules. */
+const OCL_DIST = join(ROOT, 'tools/e2e/node_modules/openchemlib/dist/');
+async function localOCL(ctx, delay = 0) {
+  const served = { 'openchemlib.js': 0, 'resources.json': 0 };
+  await ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/openchemlib@[\d.]+\/dist\/(openchemlib\.js|resources\.json)$/, async (r) => {
+    const f = new URL(r.request().url()).pathname.split('/').pop();
+    served[f]++;
+    if (delay) await new Promise((ok) => setTimeout(ok, delay));
+    await r.fulfill({ status: 200, contentType: f.endsWith('.json') ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(join(OCL_DIST, f)) });
+  });
+  return served;
+}
+
+check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem demos, English', async () => {
+  const p = await open();
+  const served = await localOCL(p.context());
+  p.workerCount = 0;
+  p.on('worker', () => { p.workerCount++; });
+  await go(p, '/code/index.html');
+  const embed = async (page, smiles) => {
+    await page.fill('#in-smiles', smiles);
+    await page.click('#in-embed');
+    await page.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
+    return text(page, '#in-embed-status');
+  };
+  // L-alanine: several conformers, all the same enantiomer, sorted by MMFF94 energy
+  assert.match(await embed(p, 'C[C@H](N)C(=O)O'), /搭了 \d+ 个构象，去掉重复的还剩 \d+ 个/);
+  assert.equal(p.workerCount, 1, 'the force field runs in a Web Worker');
+  assert.match(await text(p, '#in-status'), /C3H7NO2 · 13 个原子 · 48 个电子/);
+  assert.match(await p.inputValue('#in-xyz'), /^13\nconformer 1\/\d+ from SMILES C\[C@H\]\(N\)C\(=O\)O \| MMFF94s\+ E = -?\d+\.\d{3} kcal\/mol\n/);
+  assert.equal(await p.isVisible('#in-frame-row'), true);
+  const n = await p.locator('#in-frame option').count();
+  assert.ok(n >= 2, `${n} conformers`);
+  const first = await text(p, '#in-code');
+  await p.selectOption('#in-frame', String(n - 1));
+  assert.notEqual(await text(p, '#in-code'), first, 'the input is written from the chosen frame');
+  assert.match(await text(p, '#in-status'), /C3H7NO2/);
+  assert.match(await text(p, '#in-embed-status'), new RegExp(`现在用的是第 ${n} 个，比最低的高 \\d+\\.\\d\\d kcal/mol`), 'the status follows the chosen frame');
+  // pasting another multi-frame file starts again from its first frame
+  await p.fill('#in-xyz', '3\nfirst\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n3\nsecond\nO 0 0 0.1\nH 0 0.76 0.69\nH 0 -0.76 0.69\n3\nthird\nO 0 0 0.2\nH 0 0.76 0.79\nH 0 -0.76 0.79\n');
+  assert.equal(await p.inputValue('#in-frame'), '0');
+  assert.equal(await text(p, '#in-embed-status'), '', 'the SMILES status went with the molecule it described');
+  await embed(p, 'C[C@H](N)C(=O)O');
+  // charge and multiplicity come from the SMILES
+  await embed(p, '[CH3]');
+  assert.equal(await p.inputValue('#in-mult'), '2');
+  assert.equal(await p.getAttribute('#in-status', 'data-bad'), 'false');
+  assert.match(await text(p, '#in-embed-notes'), /未成对电子/);
+  await embed(p, 'CC(=O)[O-]');
+  assert.equal(await p.inputValue('#in-charge'), '-1');
+  assert.equal(p.workerCount, 1, 'one worker for every run: the library stays loaded');
+  assert.deepEqual(served, { 'openchemlib.js': 1, 'resources.json': 1 }, 'OpenChemLib is fetched once');
+  // an odd electron count OpenChemLib does not flag still gets an even multiplicity; a bare atom follows Hund's rule
+  await embed(p, '[Cu+2]');
+  assert.deepEqual([await p.inputValue('#in-mult'), await p.getAttribute('#in-status', 'data-bad')], ['2', 'false']);
+  await embed(p, '[N]');
+  assert.equal(await p.inputValue('#in-mult'), '4');
+  assert.match(await text(p, '#in-embed-notes'), /洪特规则/);
+  // a bracket atom OpenChemLib would give a hydrogen is refused, not silently changed
+  assert.match(await embed(p, 'O=[N]=O'), /方括号里的 \[N\] 写明了 0 个氢，OpenChemLib 读成了 1 个/);
+  // unspecified stereo is fixed and said; a bad SMILES is said and the coordinates stay
+  await embed(p, 'CC(N)C(=O)O');
+  assert.match(await text(p, '#in-embed-notes'), /1 处立体构型没写，按第一个搭出的结构定成了 \S*@/);
+  const before = await p.inputValue('#in-xyz');
+  assert.match(await embed(p, 'C1CC'), /这个 SMILES 读不出来：.*ring closure/);
+  assert.equal(await p.getAttribute('#in-embed-status', 'data-bad'), 'true');
+  assert.equal(await p.inputValue('#in-xyz'), before);
+  // the sketcher button sits next to the SMILES box
+  assert.equal(await p.isVisible('.cd-smi-row .sk-open'), true);
+  // a sample clears the frames and the notes about the old molecule
+  await p.click('[data-sample=water]');
+  assert.equal(await p.isHidden('#in-frame-row'), true);
+  assert.deepEqual([await text(p, '#in-embed-status'), await text(p, '#in-embed-notes')], ['', '']);
+  // output demos for the three new readers
+  await p.click('#t-output');
+  await p.selectOption('#out-demo-prog', 'nwchem');
+  assert.match(await text(p, '#out-result'), /NWChem[\s\S]*-76\.40702414 Eh[\s\S]*结构优化收敛[\s\S]*9\.673 eV[\s\S]*1710\.8 3721\.1 3844\.9/);
+  await p.selectOption('#out-demo-prog', 'cp2k');
+  assert.match(await text(p, '#out-result'), /CP2K[\s\S]*结构优化没有收敛/);
+  await p.selectOption('#out-demo-prog', 'qchem');
+  assert.match(await text(p, '#out-result'), /Q-Chem[\s\S]*1\.823 eV开壳层：HOMO 取 α、β 里较高的一个/);
+  await p.selectOption('#out-demo-prog', 'orca');
+  assert.match(await text(p, '#out-result'), /ORCA[\s\S]*1 个虚频/);
+  // the library cannot load: the page says so and nothing breaks
+  await p.click('#t-input');
+  await p.context().unrouteAll();
+  await p.context().route(/cdn\.jsdelivr\.net\/npm\/openchemlib/, (r) => r.abort());
+  await p.evaluate(() => window.MolAstriaSmiles3D.stop(true)); // the idle worker holds the loaded copy; end it so a new one fetches again
+  assert.match(await embed(p, 'CCO'), /没载入 OpenChemLib/);
+  await finish(p);
+  const e = await open();
+  await localOCL(e.context());
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await embed(e, 'CC(N)C(=O)O'); // frames, a status line and a note showing
+  assert.equal(await e.isVisible('#in-frame-row'), true);
+  assert.doesNotMatch(await e.evaluate(() => document.querySelector('main').innerText), HAN, 'no Chinese left on the input tab with frames and notes');
+  await e.click('#t-output');
+  for (const k of ['nwchem', 'cp2k', 'qchem']) {
+    await e.selectOption('#out-demo-prog', k);
+    assert.doesNotMatch(await text(e, '#out-result'), HAN, `${k} result in English`);
+  }
+  await finish(e);
+});
+
+check('code desk: without module workers the SMILES runs in the page, and Stop still stops it', async () => {
+  const p = await open({ init: { content: 'window.Worker = function () { throw new Error(\'no module workers\'); };' } });
+  await localOCL(p.context(), 1500);
+  await go(p, '/code/index.html');
+  const before = await p.inputValue('#in-xyz');
+  await p.fill('#in-smiles', 'CCO');
+  await p.click('#in-embed');
+  await p.waitForTimeout(300);
+  await p.click('#in-embed-stop');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.waitForTimeout(2500); // the library arrives after the stop: nothing may change
+  assert.equal(await p.inputValue('#in-xyz'), before);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.fill('#in-smiles', 'CCN'); // and the next run works in the page
+  await p.click('#in-embed');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
+  assert.match(await p.inputValue('#in-xyz'), /from SMILES CCN/);
+  await finish(p);
+});
+
+check('models page: a result goes to the code desk with its frames, charges and multiplicities', async () => {
+  const p = await openModels();
+  await runJob(p, 'spin');
+  await p.click('#m-result [data-act=code]');
+  await p.waitForURL(/code\/index\.html#input/);
+  await p.waitForSelector('#in-import:not([hidden])');
+  assert.match(await text(p, '#in-import'), /这个结构来自模型接口：UMA-S 1\.2\.1 · 自旋态能隙/);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-code-import')), null, 'read once');
+  assert.equal(await p.locator('#in-frame option').count(), 2, 'one frame per spin state');
+  assert.deepEqual([await p.inputValue('#in-frame'), await p.inputValue('#in-mult')], ['0', '1'], 'starts on the lower state');
+  await p.selectOption('#in-frame', '1');
+  assert.equal(await p.inputValue('#in-mult'), '3', 'each state keeps its own multiplicity');
+  assert.equal(await p.getAttribute('#in-status', 'data-bad'), 'false');
+  assert.equal(await p.inputValue('#in-name'), 'uma-spin');
+  // a reload keeps the molecule but not the notice
+  await p.reload({ waitUntil: 'networkidle' });
+  assert.equal(await p.isHidden('#in-import'), true);
+  assert.equal(await p.inputValue('#in-mult'), '3');
+  await finish(p);
+  // a model name with Chinese in it is translated on the English page
+  const IMPORT = JSON.stringify({ xyz: '3\nw\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n', charge: 0, mult: 1, name: 'esen-opt', model: 'eSEN-sm 直接受力型', job: '结构优化' });
+  const e = await open({ init: { content: `try { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('molastria-code-import', ${JSON.stringify(IMPORT)}); sessionStorage.setItem('seeded', '1'); } } catch {}` } });
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForSelector('#in-import:not([hidden])');
+  assert.doesNotMatch(await text(e, '#in-import'), HAN, await text(e, '#in-import'));
+  assert.match(await text(e, '#in-import'), /eSEN-sm/);
+  await finish(e);
+});
+
 check('review cards: three decks, FSRS schedule, own cards, Anki export and backup, offline fallback, English', async () => {
   const LEARN = JSON.stringify({ sessions: [{ id: 's1', title: '谐振子' }], props: [{ id: 'p1', text: '谐振子的能级等间距', sessionIds: ['s1'] }, { id: 'p2', text: '升降算符满足 [a, a†] = 1', sessionIds: ['s1'] }, { id: 'p3', text: '基态能量是 ħω/2', sessionIds: ['s1'] }], chains: [{ id: 'c1', premises: ['p1', 'p2'], conclusion: 'p3' }] });
   const seed = (l) => { try { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('molastria-learn', l); sessionStorage.setItem('seeded', '1'); } } catch { /* private mode */ } };
@@ -3279,8 +3510,10 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   await go(p, '/review/index.html');
   await p.waitForFunction(() => document.body.dataset.scheduler, null, { timeout: 20000 });
   assert.equal(await p.evaluate(() => document.body.dataset.scheduler), 'fsrs', 'ts-fsrs loaded from jsDelivr');
-  assert.match(await text(p, '#rv-status'), /到期 0 张 · 新卡 15 张（共 113 张）/);
-  assert.match(await text(p, '#rv-decks'), /共 109 张[\s\S]*共 4 张/);
+  // One card per group of the term table (public/search-terms.js), plus the Study Desk's four.
+  const terms = (() => { const w = {}; new Function('window', readFileSync(join(ROOT, 'public/search-terms.js'), 'utf8'))(w); return w.MolAstriaTerms.groups.length; })();
+  assert.match(await text(p, '#rv-status'), new RegExp(`到期 0 张 · 新卡 15 张（共 ${terms + 4} 张）`));
+  assert.match(await text(p, '#rv-decks'), new RegExp(`共 ${terms} 张[\\s\\S]*共 4 张`));
   // The Study Desk's chain comes first: premises on the front, the conclusion on the back.
   assert.match(await text(p, '#rv-front'), /由这些推出什么？[\s\S]*升降算符/);
   await p.keyboard.press('Space');
@@ -3301,7 +3534,7 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   const dl = p.waitForEvent('download'); await p.click('#rv-anki');
   const anki = readFileSync(await (await dl).path(), 'utf8').trimEnd().split('\n');
   assert.deepEqual(anki.slice(0, 5), ['#separator:Tab', '#html:true', '#notetype:Basic', '#deck:MolAstria', '#tags column:3']);
-  assert.equal(anki.length, 5 + 114);
+  assert.equal(anki.length, 5 + terms + 5);
   assert.ok(anki.includes('相关能的定义？\tE_exact − E_HF\tMolAstria MolAstria::mine 量子化学'));
   // Backup and restore round-trip; clearing asks first.
   const bk = p.waitForEvent('download'); await p.click('#rv-backup');
@@ -3310,7 +3543,7 @@ check('review cards: three decks, FSRS schedule, own cards, Anki export and back
   assert.match(await text(p, '#rv-mine-sum'), /共 0 张/);
   await p.setInputFiles('#rv-restore', backup);
   await p.waitForFunction(() => /共 1 张/.test(document.getElementById('rv-mine-sum').textContent));
-  assert.match(await text(p, '#rv-status'), /新卡 14 张（共 114 张）/, 'the review done before the backup still counts today');
+  assert.match(await text(p, '#rv-status'), new RegExp(`新卡 14 张（共 ${terms + 5} 张）`), 'the review done before the backup still counts today');
   assert.equal(Object.keys(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-review'))).sched).length, 1);
   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await finish(p);

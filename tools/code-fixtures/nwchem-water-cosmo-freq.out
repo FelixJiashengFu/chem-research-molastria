@@ -1,0 +1,154 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                   NWChem Nuclear Hessian and Frequency Analysis
+                   ---------------------------------------------
+
+
+                         NWChem Finite-difference Hessian
+                         --------------------------------
+
+
+         Total DFT energy =      -75.232046178420
+      One electron energy =     -122.490886252380
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.843290D+01
+              MO Center=  3.9D-15, -9.1D-12,  1.2D-01, r^2= 1.5D-02
+
+
+ Vector    2  Occ=2.000000D+00  E=-8.361207D-01
+              MO Center= -1.8D-13,  1.6D-09, -1.3D-01, r^2= 5.4D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-3.819351D-01
+              MO Center= -1.3D-22, -2.6D-09, -1.4D-01, r^2= 8.2D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-1.621749D-01
+              MO Center= -4.0D-13,  5.1D-10,  2.1D-01, r^2= 5.9D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-6.494807D-02
+              MO Center=  5.6D-13, -6.7D-26,  1.2D-01, r^2= 4.2D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 3.232133D-01
+              MO Center=  1.8D-14,  1.3D-09, -3.9D-01, r^2= 1.1D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 4.303297D-01
+              MO Center= -8.2D-24, -7.5D-10, -2.4D-01, r^2= 1.0D+00
+
+
+ center of mass
+ --------------
+
+
+         Total DFT energy =      -75.232051429854
+      One electron energy =     -122.490633593374
+
+
+         Total DFT energy =      -75.232051429788
+      One electron energy =     -122.490633593373
+
+
+         Total DFT energy =      -75.232000690531
+      One electron energy =     -122.490980968706
+
+
+         Total DFT energy =      -75.232000690540
+      One electron energy =     -122.490980968713
+
+
+         Total DFT energy =      -75.233172404045
+      One electron energy =     -122.436222589890
+
+
+         Total DFT energy =      -75.230862403766
+      One electron energy =     -122.545535120337
+
+
+         Total DFT energy =      -75.232048374893
+      One electron energy =     -122.490762191442
+
+
+         Total DFT energy =      -75.232048374912
+      One electron energy =     -122.490762191454
+
+
+         Total DFT energy =      -75.232524205738
+      One electron energy =     -122.456693699620
+
+
+         Total DFT energy =      -75.231520149161
+      One electron energy =     -122.525180790058
+
+
+         Total DFT energy =      -75.231454761657
+      One electron energy =     -122.518202427758
+
+
+         Total DFT energy =      -75.232609780612
+      One electron energy =     -122.463545927650
+
+
+         Total DFT energy =      -75.232048374893
+      One electron energy =     -122.490762191442
+
+
+         Total DFT energy =      -75.232048374889
+      One electron energy =     -122.490762191438
+
+
+         Total DFT energy =      -75.231520148740
+      One electron energy =     -122.525180789735
+
+
+         Total DFT energy =      -75.232524206082
+      One electron energy =     -122.456693699888
+
+
+         Total DFT energy =      -75.231454761676
+      One electron energy =     -122.518202427771
+
+
+         Total DFT energy =      -75.232609780596
+      One electron energy =     -122.463545927638
+
+
+ center of mass
+ --------------
+
+          -------------------------------------------------
+             (Projected Frequencies expressed in cm-1)
+
+
+ 
+ P.Frequency       -0.00       -0.00       -0.00        0.00        0.00        0.00
+ 
+
+ 
+ P.Frequency     1734.01     4328.85     4608.44
+ 
+
+
+ Task  times  cpu:        5.1s     wall:        6.2s
+ Summary of allocated global arrays
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+ Total times  cpu:        5.1s     wall:        6.2s
+[0] ARMCI Warning: Freed 1 leaked allocations

@@ -111,6 +111,22 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 
 没有空项时它只写 `public/i18n/en.js`（输出 `nothing to translate`）；还有空项又没有 key 会直接退出，什么也不写。
 
+## 说明讲解手册（/manual/）
+
+正文在 `public/atlas/content.js`（中文，一行 JSON）和 `public/atlas/guides-en.js`（英文，一章一行），两边的章节 id 和顺序要一致；阅读器的中文标签是 `public/manual/app.js` 的 `guideLabels`，SEO 页的是 `tools/build-seo.ts` 的 `LABELS`（两份要相同），英文标签在 `guides-en.js` 的 `labels`。
+
+- **加一章：** 两个文件各插一项（`{id, title, label, html}`，`title` 和 `<h1>` 一致），三处标签各加一个，再把站内写着“25 章”的地方一起改（`grep -rn "25 章\|25-chapter"`，`i18n/en.json` 里对应的译文也要改；网状查询的“本站 N 章讲解”和 `llms.txt` 是按章数算的，不用改）。e2e 的“handbook: its own page”里有章数。
+- **第 12–16 类五章的数字：** 都来自 `tools/handbook-calcs.py`（PySCF 2.15.0）。改了章里的算例，先跑 `python3 tools/handbook-calcs.py <部分>`，把结果写进 `tools/handbook-test.mjs` 的 `REF`，再跑 `node --test tools/handbook-test.mjs`；它还核对每章说的“收录 N 个（编号 …）”和目录第 12–16 类是否一致，所以给这几类加条目时要同时改那一章的开头和表格。硅能带要 `HANDBOOK_SOLID=1`（约 20 分钟）；GitHub Actions 的 `Handbook calculations` 可以手动运行，勾 solid 就会算。
+- **文献：** DOI 在 OpenAlex 逐个查（`https://api.openalex.org/works/doi:<DOI>`，单个查询不受搜索额度限制）；中英两版引用同一组链接（测试会查）。
+
+## 网状查询没找到的词
+
+网状查询把术语表认不出、只能做全文检索的词记在用户自己的浏览器里（`molastria-net-misses`，逻辑在 `public/hub/net-misses.js`，页面上的“没找到的词”）。不会自动汇总到服务器。
+
+- **站长自己看：** 在常用的浏览器里打开网状查询，往下翻到“没找到的词”，查得多的在前。
+- **有人提交了 Issue：** 题目是“网状查询：术语表里没有的词”。挑出真正的术语（不是拼错的、不是整句话），在 `public/search-terms.js` 里加一组或加进已有的组：一组只放互为同义的写法，至少一个中文、一个英文（复习卡片要用），4 个字母以内的英文缩写会按整词匹配。加完跑 `node --test tools/net-test.mjs tools/review-test.mjs`，再 `node tools/build-api.mjs`（开放数据接口的术语表跟着变）。
+- **试一个词现在认不认得：** `node -e` 里照 `tools/net-test.mjs` 开头的写法建网，看 `net.query('词').mode` 是不是 `entity`。
+
 ## 基础科学栏目（/fundamental-science/）
 
 内容全部在 `public/fundamental-science/fs-data.js`，中英两版并排写（`T(中文, English)`），页面按站点语言取用，不经过 i18n 翻译。
@@ -167,6 +183,16 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 - **加一个站内演示：** 在 `learn-sources.js` 的 `DEMOS` 加一条（id、相对站点根的地址、中英文名称和一句话说明、关键词）。锚点必须是那个页面的代码真的会处理的（`#play-…`、`#d-…`、`id="demo-…"` 等），测试会查文件和锚点都在。模型只能返回白名单里的 id。
 - **界面文字** 在 `learn.js` 里用 `L(中文, English)` 成对写，不经过词典；只有 `index.html` 里的几句和 `learn-core.js` 校验报错（`bad('…')`）由 `i18n-extract` 抽取，要在 `i18n/en.json` 手写英文。
 - **测试：** `node --test tools/learn-test.mjs tools/learn-sources-test.mjs`；浏览器检查 `node tools/e2e/run.mjs "study desk"`（假的 DeepSeek，按 `TASK:` 返回固定 JSON：摸底、路线、一步一检带一次补讲、总结、练习、知识图删除、导出再导入、改提示词，最后英文页手机宽度不留中文）。真实服务商的效果只能手动试，见 ROADMAP。
+
+## 开源代码台（/code/）
+
+全部在浏览器里：`code-core.js` 是纯逻辑（输入生成、输出解读、多帧 XYZ、许可证、搜索链接），`code.js` 是界面，`code-demos.js` 是“试一段示例”的四段输出，从 SMILES 生成坐标在 `public/viewer/smiles3d.js`。决定见 `docs/DECISIONS.md` 2026-11-10 的两条。
+
+- **测试：** `node --test tools/code-test.mjs`。SMILES 那几项要 `npm ci --prefix tools/e2e`（装 openchemlib，没装就跳过）；本机有 PySCF、`nwchem`、`cp2k.psmp`（或设 `CP2K_EXE=` 指到可执行文件）时，生成的输入会真跑一遍、对照参考能量，`CODE_SKIP_PYTHON=1` 全部跳过。CI 只装 PySCF。浏览器检查 `node tools/e2e/run.mjs "code desk"`（OpenChemLib 从 `tools/e2e/node_modules` 送给页面，不连 jsDelivr）和 `"models page: a result goes"`（模型接口送结构过来）。
+- **加一个输出读法：** 在 `code-core.js` 的 `detect()` 加识别、`PARSE` 加同名函数（只填 `energy`、`energyLabel`、收敛、`gap` / `gapNote`、`freqs`、`normal`、`errorText`，别的不要），`PROGRAMS`、`index.html` 的 `#out-prog` 和 `code.js` 的 `NAMES` 各加一项；拿真实输出摘一段放进 `tools/code-fixtures/`（只留要读的行和前后几行，数字不改），在 `tools/code-test.mjs` 的 `OUTS` 表里加一行，并在那里的 README 写清来源。除了普通的单点和优化，还要拿**数值差分**（有限差分频率、数值梯度优化）和**一个文件里好几个任务**的输出试一次：这两种文件里最后印出的能量常常不是这个结构的（2026-11-10 审查出的错，见 DECISIONS）。
+- **代码台：重做输出样本（NWChem、CP2K）：** 云端会话里 `apt-get install -y nwchem`（Ubuntu 的包是 7.2.2）；CP2K 不在 apt 里，用 micromamba（2026-11-10 这样装成的）：`curl -L -o mm.tar.bz2 https://conda.anaconda.org/conda-forge/linux-64/micromamba-2.0.5-0.tar.bz2 && tar -xjf mm.tar.bz2 bin/micromamba`，再 `MAMBA_ROOT_PREFIX=$PWD/root ./bin/micromamba create -y -n cp2k -c conda-forge cp2k`，可执行文件在 `root/envs/cp2k/bin/cp2k.psmp`，基组和赝势是编译进去的路径，不用设 `CP2K_DATA_DIR`（注意这个环境自带的 python3 没有 PySCF，跑 `code-test.mjs` 时不要把它放在 PATH 前面，用 `CP2K_EXE`）。输入用代码台生成，`nwchem x.nw > x.out`、`cp2k.psmp -i x.inp -o x.out`；要失败的样本就把迭代或步数上限改小。conda-forge 的 CP2K 没有 tblite，GFN2-xTB 跑不了，会报 “Built without TBLITE”。
+- **模型接口送结构：** `public/models/models.js` 的 `codeImport()` 把 `{xyz, frame, meta:[{charge, mult}], charge, mult, name, model, job}` 写进 localStorage 的 `molastria-code-import`，代码台读一次就删。服务器（`tools/uma-server/chemjobs.py`）改了某个任务的多帧顺序（尤其 `run_rxn` 的“每种分子一帧、按出现顺序去重”），这里要跟着改。
+- **OpenChemLib 升级：** 改 `smiles3d.js` 的 `VERSION` 和 `tools/e2e/package.json` 里的版本（两处要一样），`npm install --prefix tools/e2e`，再跑上面两组测试；新版本至少要两周前发布的。
 
 ## 开放数据接口（/api/）
 

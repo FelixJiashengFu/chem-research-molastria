@@ -22,7 +22,7 @@
       ['hub', 'hub/index.html', '论文与社区', 'Papers & Community', '论文快照、论坛和社区讨论', 'Paper snapshots, forums and community threads', 0, 'forum community papers'],
     ] },
     { id: 'learn', zh: '学习', en: 'Learn', hint: ['从讲解、视频到 AI 家教和小游戏', 'From explainers and videos to an AI tutor and games'], items: [
-      ['manual', 'manual/index.html', '讲解手册', 'Handbook', '20 章中英双语的计算化学讲解', '20 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],
+      ['manual', 'manual/index.html', '讲解手册', 'Handbook', '25 章中英双语的计算化学讲解', '25 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],
       ['videos', 'videos/index.html', '教学视频', 'Videos', 'YouTube 和哔哩哔哩上的课程与教程', 'Courses and tutorials on YouTube and Bilibili', 1, 'video youtube bilibili course'],
       ['programming', 'programming/index.html', '编程语言', 'Programming', '计算物理与化学要用的编程语言，从入门到并行', 'The programming languages of computational physics and chemistry, from basics to parallel', 1, 'python fortran c++ julia code language 编程 语言'],
       ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],
@@ -44,7 +44,7 @@
       ['agent', 'atlas/index.html#agent', 'Agent 工程', 'Agent Engineering', '计算化学 MCP 服务器和 Agent 的做法', 'An MCP server for computational chemistry and agent patterns', 0, 'mcp agent chemdb'],
     ] },
     { id: 'make', zh: '工具', en: 'Tools', hint: ['写输入、投稿、接数据、装桌面版', 'Write inputs, publish, use the data, get the app'], items: [
-      ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb input 输入'],
+      ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标'],
       ['journals', 'journals/index.html', '期刊发表', 'Journals', '期刊选择与投稿指导', 'Choosing a journal and submitting', 0, 'journal submit 投稿'],
       ['api', 'api/index.html', '开放数据接口', 'Open Data API', '程序可读的数据集、JS / Python 库与计算接口', 'Machine-readable datasets, JS / Python clients and the compute API', 1, 'api json openapi python'],
       ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],

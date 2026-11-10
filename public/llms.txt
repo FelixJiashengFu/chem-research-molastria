@@ -11,7 +11,7 @@ Programs and AI agents should read the open data API instead of scraping pages. 
 - [Journal guide: computational-chemistry journals and preprint servers](https://molastria.com/api/v1/journals.json): 48 entries, checked 2026-11-06
 - [Science foundation models: model cards and official prices](https://molastria.com/api/v1/scimodels.json): 27 entries, checked 2026-11-06
 - [Teaching videos: courses and tutorials on YouTube and Bilibili](https://molastria.com/api/v1/videos.json): 189 entries, checked 2026-11-08
-- [Term table: computational-chemistry synonyms in Chinese and English](https://molastria.com/api/v1/terms.json): 109 entries, checked 2026-11-05
+- [Term table: computational-chemistry synonyms in Chinese and English](https://molastria.com/api/v1/terms.json): 156 entries, checked 2026-11-05
 - [OpenAPI description](https://molastria.com/api/v1/openapi.json): paths and JSON Schemas
 - [JavaScript client](https://molastria.com/api/v1/molastria.mjs): zero-dependency ES module with a bilingual search across the datasets
 - [Python client](https://molastria.com/api/v1/molastria.py): one file, no dependencies; loads the datasets and runs calculations on the compute API below
@@ -31,7 +31,7 @@ Programs and AI agents should read the open data API instead of scraping pages. 
 - [Journal guide: computational-chemistry journals and preprint servers](https://molastria.com/journals/)
 - [Science foundation models: model cards and official prices](https://molastria.com/scimodels/)
 - [Teaching videos: courses and tutorials on YouTube and Bilibili](https://molastria.com/videos/)
-- [Explainer handbook](https://molastria.com/manual/): 20 chapters on how to choose and use these resources
+- [Explainer handbook](https://molastria.com/manual/): 25 chapters on how to choose and use these resources
 - [Online models](https://molastria.com/models/): UMA, MACE and ANI-2x calculations in the browser
 
 ## Optional

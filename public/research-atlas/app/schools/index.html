@@ -55,7 +55,7 @@ body.glassy { background: radial-gradient(900px 600px at 90% -10%, color-mix(in 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const N = window.RA_NAV, grid = document.getElementById("grid");
-  const STATS = { uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], udem: [96, 17545, 22] };
+  const STATS = { uoft: [298, 52000, 12], stanford: [136, 40000, 18], waterloo: [167, 19000, 24], uiuc: [189, 33500, 25], udem: [96, 17545, 22], mcmaster: [87, 10047, 23], ualberta: [119, 20970, 23], umich: [151, 28101, 23], ucsb: [131, 24726, 21], mcgill: [117, 19258, 22], utaustin: [130, 24370, 23], upenn: [103, 23239, 20], northwestern: [135, 42410, 20], ubc: [218, 27207, 29] };
   const wan = n => n >= 10000 ? (n / 10000).toFixed(1) + " 万" : n.toLocaleString();
   let filt = "all";
   fetch("stats.json").then(r => r.ok ? r.json() : {}).then(j => { for (const k in j) STATS[k] = [j[k][0], j[k][1], j[k][2]]; paint(); }).catch(() => {});

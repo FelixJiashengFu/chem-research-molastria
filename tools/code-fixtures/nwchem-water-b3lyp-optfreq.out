@@ -1,0 +1,289 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+         Total DFT energy =      -76.406808936258
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912737D+01
+
+ Vector    2  Occ=2.000000D+00  E=-1.000961D+00
+
+ Vector    3  Occ=2.000000D+00  E=-5.219729D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.700071D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.908118D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.841886D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.528769D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.810295D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.704066D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.918135D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.328985D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.070128D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.384455D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.730457D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.743946D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.779872D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.301417D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.597978D+00
+
+ center of mass
+
+         Total DFT energy =      -76.406981036345
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.913021D+01
+
+ Vector    2  Occ=2.000000D+00  E=-9.944706D-01
+
+ Vector    3  Occ=2.000000D+00  E=-5.158228D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.693340D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.897290D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.405985D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.473889D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.734092D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.553782D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.918903D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.335438D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.066347D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.382327D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.733355D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.747559D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.782056D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.283161D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.571218D+00
+
+ center of mass
+
+         Total DFT energy =      -76.407018725799
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912935D+01
+
+ Vector    2  Occ=2.000000D+00  E=-9.964095D-01
+
+ Vector    3  Occ=2.000000D+00  E=-5.176674D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.695317D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.900499D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.538914D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.490650D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.756833D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.599239D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.918679D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.332723D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.067442D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.382970D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.732483D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.746475D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.781401D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.288663D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.579299D+00
+
+ center of mass
+
+         Total DFT energy =      -76.407024754733
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912965D+01
+
+ Vector    2  Occ=2.000000D+00  E=-9.967464D-01
+
+ Vector    3  Occ=2.000000D+00  E=-5.167771D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.705009D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.901964D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.526406D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.488691D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.737813D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.611382D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.917535D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.345282D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.066945D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.383757D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.731088D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.746888D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.780862D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.288296D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.578260D+00
+
+ center of mass
+
+         Total DFT energy =    -76.407024754733
+
+         Total DFT energy =      -76.407024756076
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912965D+01
+
+ Vector    2  Occ=2.000000D+00  E=-9.967425D-01
+
+ Vector    3  Occ=2.000000D+00  E=-5.167811D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.704948D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.901955D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.526347D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.488684D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.737909D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.611258D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.917540D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.345199D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.066946D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.383751D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.731098D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.746886D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.780866D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.288292D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.578258D+00
+
+ center of mass
+
+         Total DFT energy =    -76.407024756076
+
+      ----------------------
+      Optimization converged
+      ----------------------
+
+         Total DFT energy =      -76.407024141046
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912965D+01
+
+ Vector    2  Occ=2.000000D+00  E=-9.967419D-01
+
+ Vector    3  Occ=2.000000D+00  E=-5.167807D-01
+
+ Vector    4  Occ=2.000000D+00  E=-3.704945D-01
+
+ Vector    5  Occ=2.000000D+00  E=-2.901953D-01
+
+ Vector    6  Occ=0.000000D+00  E= 6.526347D-02
+
+ Vector    7  Occ=0.000000D+00  E= 1.488684D-01
+
+ Vector    8  Occ=0.000000D+00  E= 7.737910D-01
+
+ Vector    9  Occ=0.000000D+00  E= 8.611261D-01
+
+ Vector   10  Occ=0.000000D+00  E= 8.917541D-01
+
+ Vector   11  Occ=0.000000D+00  E= 9.345206D-01
+
+ Vector   12  Occ=0.000000D+00  E= 1.066947D+00
+
+ Vector   13  Occ=0.000000D+00  E= 1.383751D+00
+
+ Vector   14  Occ=0.000000D+00  E= 1.731098D+00
+
+ Vector   15  Occ=0.000000D+00  E= 1.746886D+00
+
+ Vector   16  Occ=0.000000D+00  E= 1.780867D+00
+
+ Vector   17  Occ=0.000000D+00  E= 2.288293D+00
+
+ Vector   18  Occ=0.000000D+00  E= 2.578258D+00
+
+ center of mass
+
+ center of mass
+
+             (Projected Frequencies expressed in cm-1)
+
+ 
+ P.Frequency       -0.00       -0.00       -0.00        0.00        0.00        0.00
+ 
+
+ 
+ P.Frequency     1710.83     3721.07     3844.86
+ 
+
+ Total times  cpu:        7.1s     wall:        7.8s

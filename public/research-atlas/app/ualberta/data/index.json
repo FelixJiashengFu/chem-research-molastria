@@ -1,0 +1,163 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 2131,
+  "edges": 5745
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 93,
+  "edges": 169
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 111,
+  "edges": 257
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 169,
+  "edges": 329
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 78,
+  "edges": 220
+ },
+ {
+  "id": "dept-physics",
+  "title": "物理系子网",
+  "description": "物理系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 128,
+  "edges": 451
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 158,
+  "edges": 484
+ },
+ {
+  "id": "area-nint",
+  "title": "方向子网：纳米技术（与国家纳米技术研究所联署）",
+  "description": "至少 3 篇论文同时署名 National Institute for Nanotechnology（NRC 纳米技术研究中心，位于校内）的教授，横跨物理与化学。",
+  "nodes": 34,
+  "edges": 76
+ },
+ {
+  "id": "area-glyco",
+  "title": "方向子网：糖科学（与 Alberta Glycomics Centre 联署）",
+  "description": "至少 3 篇论文同时署名 Alberta Glycomics Centre 的教授，或化学系官网标注糖化学/糖组学方向的教授。",
+  "nodes": 17,
+  "edges": 43
+ },
+ {
+  "id": "area-mathphys",
+  "title": "方向子网：数学物理 · 引力 · 量子场论（数学 × 物理）",
+  "description": "数学系与物理系中，官网研究方向含 mathematical physics / string / relativity / gravity / quantum field / conformal 的教授。",
+  "nodes": 28,
+  "edges": 55
+ },
+ {
+  "id": "area-particle",
+  "title": "方向子网：粒子物理 · 中微子 · 暗物质",
+  "description": "物理系官网研究方向含 particle / neutrino / dark matter / gauge 的教授（含 ATLAS、MoEDAL、SNO+、DEAP、IceCube 等大型合作）。",
+  "nodes": 23,
+  "edges": 88
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理 · 宇宙学 · 引力",
+  "description": "物理系官网研究方向含 astro / cosmology / neutron star / black hole / stellar / galaxy / gravity 的教授。",
+  "nodes": 29,
+  "edges": 100
+ },
+ {
+  "id": "area-cmp",
+  "title": "方向子网：凝聚态 · 量子物质 · 纳米与生物物理",
+  "description": "物理系官网研究方向含 condensed matter / superconductivity / quantum gases / nano / optomechanics / biophysics 的教授。",
+  "nodes": 37,
+  "edges": 105
+ },
+ {
+  "id": "area-geo-space",
+  "title": "方向子网：地球物理 · 空间物理 · 等离子体",
+  "description": "物理系官网研究方向含 geophysics / seismic / mantle / tectonics / planetary / space / plasma / magnetosphere 的教授（阿尔伯塔物理系包含地球物理与空间物理）。",
+  "nodes": 44,
+  "edges": 127
+ },
+ {
+  "id": "area-chem-org",
+  "title": "方向子网：有机化学 · 化学生物学",
+  "description": "化学系官网研究方向为有机合成、天然产物、化学生物学、糖化学的教授。",
+  "nodes": 95,
+  "edges": 293
+ },
+ {
+  "id": "area-chem-ana",
+  "title": "方向子网：分析化学 · 质谱 · 环境与大气",
+  "description": "化学系官网研究方向为分析化学、质谱、电化学分析、环境与大气化学的教授。",
+  "nodes": 22,
+  "edges": 34
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 理论计算 · 无机与材料",
+  "description": "化学系官网研究方向为物理化学、理论与计算化学、无机、催化与材料的教授。",
+  "nodes": 94,
+  "edges": 250
+ },
+ {
+  "id": "area-math-alg",
+  "title": "方向子网：数学：代数 · 数论 · 代数几何",
+  "description": "数学系官网研究方向含 algebra / number theory / algebraic geometry / Galois / Lie / representation / quadratic forms 的教授。",
+  "nodes": 17,
+  "edges": 59
+ },
+ {
+  "id": "area-math-ana",
+  "title": "方向子网：数学：分析 · 几何分析 · 最优传输 · 逼近",
+  "description": "数学系官网研究方向含 analysis / functional / operator / convex geometry / harmonic / approximation / wavelet / optimal transport 的教授。",
+  "nodes": 17,
+  "edges": 32
+ },
+ {
+  "id": "area-math-dyn",
+  "title": "方向子网：数学：微分方程 · 动力系统 · 数学生物 · 流体",
+  "description": "数学系官网研究方向含 differential equations / dynamical systems / mathematical biology / epidemiology / fluid 的教授。",
+  "nodes": 23,
+  "edges": 49
+ },
+ {
+  "id": "area-math-fin",
+  "title": "方向子网：数学：概率 · 随机分析 · 数理金融",
+  "description": "数学系官网研究方向含 probability / stochastic / mathematical finance / filtering 的教授。",
+  "nodes": 18,
+  "edges": 42
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 197,
+  "edges": 736
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 180,
+  "edges": 262
+ }
+]

@@ -4,10 +4,12 @@
 
 ## 现在
 
-- 云同步（2026-11-10，PR 待合并）：登录后在账号页打开，13 份本机存档（首页和数据库收藏、各栏目的自测和公式题、学习路线、游乐场成绩、复习卡片、研习台）在同一账号的设备之间三方合并同步，删掉的不会再冒出来；页面开着时被同步改了会提示刷新。免费账号 1 MB、Pro 支持者 10 MB（`SYNC_FREE_KB` / `SYNC_PRO_KB`）。**上线顺序：`schema.sql` 迁移（新表 `sync_items`）→ 部署账号服务 → 合并网站。** 只在无头 Chrome 里用两个浏览器测过（`tools/e2e/run.mjs "cloud sync"`），上线后在真的两台设备上（比如 Mac 和 iPhone）各打开一次、互相收藏和取消收藏，再在桌面版里试一次（桌面版要等下一个版本）。以后可以加：顶栏固定的入口（`molastria-nav-pins`）也同步；研习台“清空全部数据”时问一句要不要连云端一起删；Worker 里看一眼 `/sync` 的 CPU 时间（大的研习台存档）。
+- 云同步（2026-11-10 上线，和代码台扩充、讲解手册新章节一起）：登录后在账号页打开，13 份本机存档（首页和数据库收藏、各栏目的自测和公式题、学习路线、游乐场成绩、复习卡片、研习台）在同一账号的设备之间三方合并同步，删掉的不会再冒出来；页面开着时被同步改了会提示刷新。免费账号 1 MB、Pro 支持者 10 MB（`SYNC_FREE_KB` / `SYNC_PRO_KB`；站长要改成只给 Pro，把 `SYNC_FREE_KB` 设成 0 再部署账号服务）。表 `sync_items` 和账号服务已在 2026-11-10 上线。只在无头 Chrome 里用两个浏览器测过（`tools/e2e/run.mjs "cloud sync"`），上线后在真的两台设备上（比如 Mac 和 iPhone）各打开一次、互相收藏和取消收藏，再在桌面版里试一次（桌面版要等下一个版本）。以后可以加：顶栏固定的入口（`molastria-nav-pins`）也同步；研习台“清空全部数据”时问一句要不要连云端一起删；Worker 里看一眼 `/sync` 的 CPU 时间（大的研习台存档）。
+- 代码台扩充（2026-11-10，和讲解手册新章节、云同步一起上线）：输出解读加 NWChem、CP2K、Q-Chem（八个程序；NWChem 7.2.2 和 CP2K 2026.2 在云端真跑本页生成的输入核对，Q-Chem 用 cclib 收的 5.4 / 6.0 真实输出，样本在 `tools/code-fixtures/`）；从 SMILES 直接生成三维坐标（`public/viewer/smiles3d.js`，OpenChemLib 在 Web Worker 里搭构象、MMFF94 优化、按能量排序，立体构型照写的来，没写的定成一种并提示）；XYZ 可以多帧（选一帧写输入）；模型接口的结果多了“送进代码台写输入”（每一帧带自己的电荷和多重度）。顺手修了 CP2K 的 GFN2-xTB 输入（`GFN_TYPE 2` CP2K 不认，改成 tblite）和开放模型馆手机上的横向滚动。没测到的：Q-Chem 的报错只有照手册写的样本；桌面版里 Worker + jsDelivr 动态载入还没在真机上试过，下一个桌面版出来后打开代码台生成一次。
+- 讲解手册补到 25 章（12–16 类五章，2026-11-10）和网状查询的“没找到的词”：上线后看一次 GitHub Actions 里 `Handbook calculations`（第一次在 GitHub 的机器上用 PySCF 2.15.0 重算章里的数字，约 5 分钟；硅能带要手动勾 solid 再跑一次）；在英文站打开五章各看一眼；在网状查询搜一个乱写的词，点“到 GitHub 提交”确认 Issue 页面预先填好了（仓库的 Issues 要开着）。以后有人提交了词，挑出真正的术语补进 `public/search-terms.js`（做法见 `docs/RUNBOOK.md`“网状查询没找到的词”）。
 - 愿景页（`/vision/`，2026-11-10）：站长的文章《工业革命2.5》原文、手写英文译文和编者的展望（四项承诺 × 已上线 / 规划中 / 设想）。上线后在线上打开一次文章里的三个来源链接（云端会话打不开那三个网站）；以后路线图上的事做完，把展望里对应的“规划中”改成“已上线”（`vision/vision-data.js` 的 `outlook`）。
 - 新顶栏、开放模型馆、编程语言教学区（2026-11-10）：顶栏是五个分组的大菜单（搜索 Ctrl / ⌘ + K、可固定常用入口），Meta 归到新母栏目 `/open-models/`（11 家公司、50 个条目），新栏目 `/programming/`（20 种语言，同一道题 18 种实跑）。只在无头 Chrome 里测过（1024–1920 px、iPad 768 px、手机 390 px，深浅色、中英文）。上线后要在真机上看：iPad 横竖屏和 iPhone 上打开“栏目”表、在表里搜索和滚动（Safari 的 `position:sticky` 加 `backdrop-filter` 下的大菜单）、触屏按住拖动固定的入口；Mac / Windows 桌面版里 Ctrl / ⌘ + K；编程区的 Python 代码框（Pyodide 第一次约 9 MB，SymPy 再加几 MB）。展馆页的“最近的版本”直接问 GitHub API（未登录每小时 60 次，超了就只给链接）。以后可以加：开放模型馆加 Google Research、Mistral 的科学模型、Isomorphic 等新出的开放模型时照 `om-data.js` 的格式加一项；编程区加 Julia、CUDA 的实跑（要有机器）、一段 Fortran 和 Python 互调（f2py）的例子。
-- 开源代码台（`/code/`，2026-11-10，按站长整理的《全球公开代码仓库与科研代码资源目录》做，和 #103 一起上线）：输入生成（九个程序 + QCSchema）、输出解读、软件体检（PyPI / OSV / GitHub / Software Heritage）、搜代码；资源目录补到 251 条。下一步可以做：输出解读加 CP2K、NWChem、Q-Chem；从 SMILES 生成三维坐标（实验室已有 RDKit.js）；把模型接口算完的结构一键送进输入生成。
+- 开源代码台（`/code/`，2026-11-10，按站长整理的《全球公开代码仓库与科研代码资源目录》做，和 #103 一起上线）：输入生成（九个程序 + QCSchema）、输出解读、软件体检（PyPI / OSV / GitHub / Software Heritage）、搜代码；资源目录补到 251 条。
 - 学习功能大补充（2026-11-10，和研习台一起上线）：3D 分子查看器（`public/viewer/mol3d.js`，模型接口的结果、量子生物学的结构馆）、分子绘制器（`public/viewer/sketch.js`，模型接口和 Meta 页的 SMILES 旁“画结构”）、量子线路模拟器的旋转门 / 中途测量 / Bloch 球、复习卡片 `/review/`（FSRS 调度，导出到 Anki）、浏览器里运行 Python（`public/viewer/pyrun.js`，Pyodide；讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理的一维薛定谔求解器）、公式题（`public/viewer/formula-check.js`，数学子模块 10 门学科和量子物理 12 章共 45 道，MathLive 输入、Compute Engine 判分）、游乐场第 15 个游戏“二维波包画墙”、数学子模块的大数定律 / 中心极限定理演示和 Lean 4 书目、物理疆界图的双摆演示、资源目录 228 条、操作手册里用 Manim 和 Molecular Nodes 做视频。上线后：跑 `node tools/e2e/live.mjs`；在 Safari、iPad、iPhone 和 Mac / Windows 桌面版里各试一次 3D 查看器（WebGL）、绘制器、Python 代码框（module Web Worker，第一次下载约 9.2 MB）、公式题（MathLive 的屏幕数学键盘只在无头 Chrome 里截过图）、第 15 个游戏和双摆的帧率（4 倍 CPU 减速下约 43 帧，真机没试）；这些库都从 jsDelivr 载入，桌面版里也没实测；用真实的 Anki（2.1.54 以上）导入一次复习卡片导出的文件，看正面、背面、标签和卡组是否对上（只按 Anki 手册的文件头格式核对过）；结构馆的六个 PDB 结构从 files.rcsb.org 现场下载，大陆网络下可能慢。以后可以加：复习卡片的云同步（等 Pro 云同步）和顶栏入口（研习台合并后加）、讲解手册更多章节的“动手算”（按章节编号加在 `manual/app.js` 的 `TRY` 里）、更多公式题、Anki 的 .apkg 导出（带进度）、Lean 的 Linear Algebra Game 和 Real Analysis Game（这次没核对上，没收）。
 - 研习台（`/learn/`，2026-11-10）：AI 家教，五个标签——学习（摸底 → 路线图 → 一步一检，答错或靠猜答对就补一步，学完总结进知识图）、练习（从知识图里选题，跨主题穿插、先不说考什么，提示一级一级给）、知识图（命题和推理链的力导向图，可搜索、删除）、导入笔记（AI 从笔记里提取命题，预览后再加）、数据（导出导入 JSON、用量与费用、可编辑的提示词）。量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学的每一章都有“用研习台学”的入口，那一章的内容当作依据。走现有的 ChemAI（访客自己的 key，或登录后的托管额度），数据只存在本机浏览器。只对着假的 DeepSeek 测过（`tools/e2e/run.mjs "study desk"`）。上线后要做：用自己的 DeepSeek key 完整学一次（看真实模型能不能稳定按 JSON 格式回答、一步一检的节奏和补讲是否合适、费用多少），再用 Muse 和一个 OpenAI 兼容的服务各试一次摸底；登录免费账号用托管额度试一次（每天 5 次大约只够摸底加画路线，页面上写了建议用自己的 key）；在 iPad 和 iPhone 的 Safari 里试口述按钮（Web Speech API，只确认了不支持时会隐藏）、知识图的拖动和双指缩放。没有做：附带图片、按单轮附带文件；单文件离线版没有收录（栏目数据按需加载，单文件版里用不了）。
 
@@ -62,12 +64,11 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 
 增长：
 - 云端批量计算（2026-11-05 站长暂停）：`tools/cloud/` 代码和 MACE-OFF23 一段已在云端 L4 上验证过；L4 在美国各区普遍缺货，UMA 一段没跑成。要继续时：在虚拟机上登录 Hugging Face，跑 `tools/cloud/run.mjs`，再用真实 UMA 结果校准 MACE-OFF23 的两个阈值（0.3 Å / 0.2 eV）。云上的两台机器都关着，磁盘和快照还在计存储费。
-- 说明讲解手册：给 12–16 类（量子化学程序、凝聚态第一性原理、波函数分析、课程教材、量子计算）补写章节；现有 20 章，其中 19 章按原材料的 103 条写成（封面数字也还是 103），第 17 类一章是 2026-11-06 新写的。
-- 网状查询：记录没有命中的查询词，用来补 `public/search-terms.js` 的概念组。条目翻倍后网状查询页变慢（4 倍 CPU 减速下 1.5 → 1.8 s），可以懒加载或预先算好实体；“ESPRESSO”和目录里的“Quantum ESPRESSO”是两个节点，可以合并。
+- 网状查询：条目翻倍后网状查询页变慢（4 倍 CPU 减速下 1.5 → 1.8 s），可以懒加载或预先算好实体；“ESPRESSO”和目录里的“Quantum ESPRESSO”是两个节点，可以合并。
 - 目录数据：定时自动刷新；把 arXiv、Crossref 期刊等快照也改成不依赖 Python；补上缺失的日期和占位摘要。
 - 搜索引擎：生成英文静态页（`?lang=en` 和中文页 HTML 相同，没有 hreflang）；做主题合集页；到 Search Console 确认收录。
 - 用大陆网络实测访问速度和百度收录（GitHub Pages 在这两方面都有风险）。
-- 使用数据：Cloudflare Web Analytics（先更新隐私政策）、统计没有结果的搜索词（用来补 `public/search-terms.js`）。
+- 使用数据：Cloudflare Web Analytics（先更新隐私政策）。没有结果的搜索词现在只记在各人自己的浏览器里（网状查询的“没找到的词”，2026-11-10）；要在服务器上汇总所有人的，得先改隐私政策、在页面上明说并让用户能关，等站长决定（`docs/DECISIONS.md` 2026-11-10）。
 
 ## 以后再说
 
@@ -76,7 +77,7 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 - PWA 没处理的：iPhone 横屏时 AI 面板右边可能在刘海下面；实验室、Meta、模型接口、训练页的提示条（`bottom: 24px`）在 iPhone 上压住主屏幕指示条约 10 px；雷达和量子化学的 iframe 伸到指示条下面。
 - 390 px 下正文比容器宽 2 px：讲解手册第 17 类一章的 `#guide-article` scrollWidth 352、clientWidth 350，找不到超出右边界的元素，页面本身不横向滚动。
 - 目录数据小错：Alexandria（#74）的说明写成“百万级分子的 DFT 性质数据集”，它其实是无机晶体库；网状查询里几个中文资源名（Burcat 热化学库、IUPAC 气相动力学、USPTO 反应数据集）英文站仍显示中文。
-- 单文件版（`tools/bundle-single.ts`）没有打包模型接口页，手册第 17 类一章里指向 `../models/index.html` 的链接在单文件版里打不开。
+- 单文件版（`tools/bundle-single.ts`）没有打包模型接口页、开源代码台和量子算法 / 量子计算机两个展馆，手册第 17 类一章里指向 `../models/index.html`、第 12 类和第 16 类指向 `../code/`、`../quantum/algorithms/`、`../quantum/computing/` 的链接在单文件版里打不开。
 - 文字对比度：讲解与数据库页 148 处、训练 Agent 页 71 处、论文与社区页 63 处、Pro 页 13 处不达标（axe，2026-10-31）。
 - 代码整理：根目录遗留文件（`server.py`、`merge-report.json`、`verification.json`、`index.html`），`public/app.js` 的超长行，开 Dependabot。
 - 代码签名：Apple Developer Program（US$99/年）加 Windows 证书，去掉首次打开时的安全提示。
@@ -84,6 +85,8 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 - Resend 每天超过 100 封时升级 Pro；Workers 每天超过 10 万次请求时升级 Workers Paid。
 
 ## 已完成
+
+- 2026-11-10 讲解手册补写 12–16 类五章（量子化学程序与方法库、周期体系与凝聚态第一性原理、波函数分析与动力学、量子力学与量子化学课程教材、量子计算与量子化学算法），中英两版手写，共 25 章；章里的算例（水的方法阶梯、电荷随基组、Crawford 项目对照、两种 B3LYP、Jordan–Wigner 的项数与 1-范数、硅的 PBE 带隙）都由 `tools/handbook-calcs.py` 用 PySCF 2.15 重算，`tools/handbook-test.mjs` 核对条数、编号和数字；术语表从 109 组加到 156 组（平面波、准粒子、活性空间、面跳跃、泡利串等）；网状查询记下术语表认不出的词（只存本机，可复制、提交 GitHub Issue、删除、关闭）。
 
 - 2026-11-09 游乐场大更新：从六个小游戏扩到三个展区十四个。展区二“量子嘉年华分会场”（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图十道题、三比特纠错救援、Grover 寻宝、噪声助推能量传递），展区三“物理疆界”（普朗克单位工坊、ħ-c-G 立方体分拣），每个游戏链到对应展馆。数学在 `play-quantum-models.js`，`tools/play-test.mjs` 对照解析解，并和量子生物学展馆的求解器独立对拍；电路题的“最少门数”由测试穷举核对；英文全部手写。上线后在 iPad 上各玩一局（只在无头 Chrome 里测过）。
 - 2026-11-07 量子化学栏目改名“游乐场”（地址仍是 `/qchem/`）：总览 + 六个小游戏（盒中粒子调颜色、猜轨道、电子排布、量子隧穿闯关、芳香性判断、氢原子光谱），计算器 QChem Web 成为其中一个标签；物理在 `play-models.js`，`tools/play-test.mjs` 用已知结果检验并确认每个隧穿关卡都能过关；英文全部手写。修好预印本雷达和计算器在 iPad（WebKit）开缩放时被切掉、在 Chrome 里底部被裁掉的问题。

@@ -1,0 +1,163 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 1294,
+  "edges": 3038
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（≤100 作者的论文为深色边，大型合作论文为浅色边）。",
+  "nodes": 58,
+  "edges": 79
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 79,
+  "edges": 112
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理与天文×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 121,
+  "edges": 235
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学与统计系子网",
+  "description": "数学与统计系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 74,
+  "edges": 152
+ },
+ {
+  "id": "dept-physics-astronomy",
+  "title": "物理与天文系子网",
+  "description": "物理与天文系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 85,
+  "edges": 213
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学与化学生物系子网",
+  "description": "化学与化学生物系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 94,
+  "edges": 208
+ },
+ {
+  "id": "area-perimeter",
+  "title": "方向子网：理论物理（与 Perimeter 研究所联署）",
+  "description": "至少 5 篇论文同时署名 Perimeter Institute 的教授（OpenAlex 作者机构）；McMaster 多位理论物理教授是 Perimeter 的 associate faculty。",
+  "nodes": 12,
+  "edges": 21
+ },
+ {
+  "id": "area-astro",
+  "title": "方向子网：天体物理与宇宙学（Origins 研究所方向）",
+  "description": "主要研究子领域（OpenAlex）为 Astronomy and Astrophysics 的教授：星系、星团、系外行星、星际介质与数值模拟。",
+  "nodes": 16,
+  "edges": 44
+ },
+ {
+  "id": "area-hep-grav",
+  "title": "方向子网：高能理论 · 引力 · 核天体物理",
+  "description": "主要研究子领域为 Nuclear and High Energy Physics 的教授（数学系、物理系都有），含有效场论、宇宙学、黑洞与高维引力、核天体物理实验。",
+  "nodes": 9,
+  "edges": 14
+ },
+ {
+  "id": "area-cmp",
+  "title": "方向子网：凝聚态 · 量子材料 · 固体化学（Brockhouse 研究所方向）",
+  "description": "物理、化学两系中主要子领域为凝聚态、电子/光学/磁性材料或材料化学的教授：中子与 μSR 散射、NMR、量子磁性、热电与固态无机材料。",
+  "nodes": 30,
+  "edges": 87
+ },
+ {
+  "id": "area-soft-bio",
+  "title": "方向子网：软物质 · 高分子 · 生物物理",
+  "description": "软物质与生物物理方向（按研究主题人工归类）：高分子薄膜与流变、膜与蛋白生物物理、生命起源与进化理论、DNA 纳米技术与高分子化学。",
+  "nodes": 39,
+  "edges": 82
+ },
+ {
+  "id": "area-med-radio",
+  "title": "方向子网：医学物理 · 放射化学 · 核医学",
+  "description": "主要两个子领域中含 Radiation 或 Radiology/Nuclear Medicine 的教授：放射剂量与成像、PET 放射性药物、靶向放射治疗（McMaster 核反应堆与回旋加速器）。",
+  "nodes": 12,
+  "edges": 15
+ },
+ {
+  "id": "area-quantum-theory",
+  "title": "方向子网：量子理论 · 原子分子光学 · 理论与计算化学",
+  "description": "主要子领域为 Atomic and Molecular Physics, and Optics 或 Physical and Theoretical Chemistry 的教授：冷原子、强场物理、量子多体数值方法、电子结构理论与化学机器学习。",
+  "nodes": 16,
+  "edges": 25
+ },
+ {
+  "id": "area-chem-synth",
+  "title": "方向子网：合成化学：有机 · 无机 · 主族 · 金属有机",
+  "description": "化学系中主要子领域为 Organic Chemistry 或 Inorganic Chemistry 的教授。",
+  "nodes": 26,
+  "edges": 49
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：化学生物 · 生物分析 · 生物材料",
+  "description": "化学系中主要子领域属于分子生物学、生物医学工程、生物材料、结构生物学或临床生化的教授。",
+  "nodes": 19,
+  "edges": 34
+ },
+ {
+  "id": "area-chem-energy-env",
+  "title": "方向子网：能源材料 · 表界面 · 环境化学",
+  "description": "化学系中研究电池/能源材料（固体 NMR）、表面与低维材料、光子学材料、大气与环境化学、暴露科学的教授。",
+  "nodes": 11,
+  "edges": 11
+ },
+ {
+  "id": "area-math-pure",
+  "title": "方向子网：数学：代数 · 几何 · 拓扑 · 数理逻辑",
+  "description": "数学系中主要子领域为 Geometry and Topology 或 Algebra and Number Theory 的教授（含模型论与 o-极小结构）。",
+  "nodes": 19,
+  "edges": 32
+ },
+ {
+  "id": "area-math-analysis",
+  "title": "方向子网：数学：分析 · 偏微分方程 · 计算流体与变分",
+  "description": "数学系中主要子领域为 Applied Mathematics、Computational Mechanics、Mechanics of Materials 或 Statistical and Nonlinear Physics 的教授，排除数学生物方向。",
+  "nodes": 15,
+  "edges": 23
+ },
+ {
+  "id": "area-math-bio",
+  "title": "方向子网：数学生物 · 传染病建模 · 生态动力学",
+  "description": "数学系官网研究方向标注 Mathematical Biology 的教授，以及与他们研究主题最接近的物理系进化理论学者。",
+  "nodes": 15,
+  "edges": 27
+ },
+ {
+  "id": "area-math-prob-fin",
+  "title": "方向子网：概率 · 金融数学 · 机器学习理论",
+  "description": "数学系中研究概率论、金融数学与机器学习理论的教授（官网方向 Financial Mathematics，或主要子领域为数学物理/概率/金融/人工智能）。",
+  "nodes": 9,
+  "edges": 15
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 136,
+  "edges": 286
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 102,
+  "edges": 126
+ }
+]

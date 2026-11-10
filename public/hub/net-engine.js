@@ -49,7 +49,7 @@
 
   function build(data, guides = [], terms = null) {
     const sources = [...(data.sources || []).map((s) => ({ ...s }))];
-    if (guides.length) sources.push({ id: 'handbook', name: '说明讲解手册', color: '#b08a4f', role: '本站 20 章讲解', url: '../manual/index.html' });
+    if (guides.length) sources.push({ id: 'handbook', name: '说明讲解手册', color: '#b08a4f', role: `本站 ${guides.length} 章讲解`, url: '../manual/index.html' });
     const sourceById = new Map(sources.map((s) => [s.id, s]));
 
     // ---------- documents ----------

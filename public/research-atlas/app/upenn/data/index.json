@@ -1,0 +1,142 @@
+[
+ {
+  "id": "main",
+  "title": "主网：教授 · 主题 · 学科 · 论文 · 全部关系",
+  "description": "所有已匹配教授；每人主要研究主题及被多人共享的主题；主题→子领域→领域的学科层级；全部网内合作论文与每人被引最多的 5 篇论文；合写 ≥3 篇的企业与教授创办的公司；合写、大型合作、研究相似、产业合作、创办等全部关系。",
+  "nodes": 2069,
+  "edges": 6127
+ },
+ {
+  "id": "coauthor",
+  "title": "合作网",
+  "description": "只看教授之间真实合写的论文（不足 100 作者的论文为深色边，≥100 作者的大型合作论文为浅色边）。",
+  "nodes": 86,
+  "edges": 191
+ },
+ {
+  "id": "similarity",
+  "title": "研究相似网",
+  "description": "按研究主题分布（TF-IDF 余弦相似度）连接每位教授最相近的同行，不要求合写过论文。",
+  "nodes": 98,
+  "edges": 261
+ },
+ {
+  "id": "cross",
+  "title": "交叉学科网",
+  "description": "只保留跨系（数学×物理与天文×化学）的合作、相似关系，以及被至少两个系的教授共同研究的主题。",
+  "nodes": 205,
+  "edges": 624
+ },
+ {
+  "id": "dept-mathematics",
+  "title": "数学系子网",
+  "description": "数学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 63,
+  "edges": 187
+ },
+ {
+  "id": "dept-physics-astronomy",
+  "title": "物理与天文系子网",
+  "description": "物理与天文系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 138,
+  "edges": 500
+ },
+ {
+  "id": "dept-chemistry",
+  "title": "化学系子网",
+  "description": "化学系教授、他们共同的研究主题与内部合作/相似关系。",
+  "nodes": 223,
+  "edges": 739
+ },
+ {
+  "id": "area-strings",
+  "title": "方向子网：数学物理 · 弦论 · 高能理论",
+  "description": "数学系与物理系之间最强的桥：研究方向含 string theory / mathematical physics 的数学家，加上物理系高能理论组。",
+  "nodes": 21,
+  "edges": 59
+ },
+ {
+  "id": "area-cosmo",
+  "title": "方向子网：天体物理与宇宙学（含粒子宇宙学中心）",
+  "description": "物理与天文系天体物理与宇宙学组，包括宾大粒子宇宙学中心（Penn Center for Particle Cosmology）的成员。",
+  "nodes": 29,
+  "edges": 138
+ },
+ {
+  "id": "area-hep-exp",
+  "title": "方向子网：高能实验（ATLAS · 中微子）",
+  "description": "物理与天文系高能实验组：ATLAS 实验与中微子实验。他们的大型合作论文（≥100 作者）只记为浅色的大型合作边。",
+  "nodes": 13,
+  "edges": 42
+ },
+ {
+  "id": "area-cmp",
+  "title": "方向子网：凝聚态 · 光子学 · 纳米",
+  "description": "物理系凝聚态理论与实验组，加上化学系标注 Nanoscale Science 的教授。",
+  "nodes": 91,
+  "edges": 290
+ },
+ {
+  "id": "area-softbio",
+  "title": "方向子网：软物质与生物物理（软物质与生命物质中心）",
+  "description": "物理系软物质与生物物理组（Center for Soft and Living Matter 一带），加上化学系标注 Biophysical Chemistry 的教授。",
+  "nodes": 96,
+  "edges": 256
+ },
+ {
+  "id": "area-chem-bio",
+  "title": "方向子网：化学生物学 · 生物化学",
+  "description": "化学系官网 Focus Area 含 Chemical Biology / Biological 的教授。",
+  "nodes": 81,
+  "edges": 211
+ },
+ {
+  "id": "area-chem-cat",
+  "title": "方向子网：有机合成 · 催化 · 无机化学",
+  "description": "化学系官网 Focus Area 含 Organic / Chemical Catalysis / Inorganic 的教授。",
+  "nodes": 156,
+  "edges": 436
+ },
+ {
+  "id": "area-chem-phys",
+  "title": "方向子网：物理化学 · 理论与模拟 · 光谱",
+  "description": "化学系官网 Focus Area 含 Chemical Physics and Physical Chemistry / Theory Simulation and Modeling / Laser Chemistry and Spectroscopy 的教授。",
+  "nodes": 74,
+  "edges": 167
+ },
+ {
+  "id": "area-chem-mat",
+  "title": "方向子网：材料化学 · 能源 · 纳米",
+  "description": "化学系官网 Focus Area 含 Materials Chemistry / Energy Research / Nanoscale Science 的教授（与 LRSM、Vagelos 能源研究所相关）。",
+  "nodes": 96,
+  "edges": 254
+ },
+ {
+  "id": "area-math-alg",
+  "title": "方向子网：数学：代数 · 数论 · 代数几何 · 拓扑",
+  "description": "数学系官网研究方向含 algebra / number theory / Galois / geometry / topology / K-theory / combinatorics 的教授。",
+  "nodes": 48,
+  "edges": 149
+ },
+ {
+  "id": "area-math-ana",
+  "title": "方向子网：数学：分析 · 偏微分方程 · 概率 · 应用数学",
+  "description": "数学系官网研究方向含 analysis / PDE / probability / applied / differential geometry 的教授。",
+  "nodes": 33,
+  "edges": 65
+ },
+ {
+  "id": "topics",
+  "title": "研究主题地图",
+  "description": "研究主题之间的关联：两个主题被同一位教授（≥2 篇论文）研究时相连，按学科领域着色。",
+  "nodes": 237,
+  "edges": 1143
+ },
+ {
+  "id": "innovation",
+  "title": "创新创业网",
+  "description": "教授与企业的联系：① 与企业作者合写过 ≥2 篇论文的公司（OpenAlex 机构类型 = company）；② 教授创办/联合创办的公司（逐条附公开来源，见 data/manual/startups.csv）；③ 教授之间的合写关系。",
+  "nodes": 152,
+  "edges": 276
+ }
+]

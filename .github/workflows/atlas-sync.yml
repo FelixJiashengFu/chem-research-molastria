@@ -1,14 +1,16 @@
 name: Research atlas sync
 
 # Copies the newest build of 中美·研究图谱 into public/research-atlas/app/ whenever the atlas repository
-# (university-science-research-network) has a new commit on main: every 3 hours it compares the atlas head with
-# public/research-atlas/app/VERSION.txt and stops at once when they match. On a new commit it builds, copies, checks
+# (university-science-research-network) has a new commit on main. The atlas repo's sync-molastria.yml starts this
+# workflow right after each push to its main (when its secret MOLASTRIA_SYNC_TOKEN is set); as a fallback, every 30
+# minutes it compares the atlas head with public/research-atlas/app/VERSION.txt and stops at once when they match
+# (GitHub drops many scheduled runs, so the schedule alone can lag by hours). On a new commit it builds, copies, checks
 # the copied pages in a browser and redeploys the site. This also picks up the atlas's monthly OpenAlex refresh (1st-4th).
 # The desktop app frames the online copy, so desktop users see the new data without a new release.
 # A push made with GITHUB_TOKEN does not start other workflows, so the site deploy is dispatched explicitly.
 on:
   schedule:
-    - cron: '23 */3 * * *'
+    - cron: '23,53 * * * *'
   workflow_dispatch:
 
 permissions:

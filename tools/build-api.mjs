@@ -355,7 +355,7 @@ function llms(index) {
     '## Pages for people',
     '',
     ...index.endpoints.filter((e) => e.page !== `${SITE}/`).map((e) => `- [${e.title.en}](${e.page})`),
-    `- [Explainer handbook](${SITE}/manual/): 20 chapters on how to choose and use these resources`,
+    `- [Explainer handbook](${SITE}/manual/): ${load('public/atlas/content.js').CHEMDB_CONTENT.guides.length} chapters on how to choose and use these resources`,
     `- [Online models](${SITE}/models/): UMA, MACE and ANI-2x calculations in the browser`,
     '',
     '## Optional',
