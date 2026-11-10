@@ -227,6 +227,150 @@
   const fit = (instant) => { const g = fitGoal(); if (instant) { Object.assign(cam, g); applyCam(); } else animateTo(g); };
   const centerOn = (n) => { const k = Math.max(cam.k, 1.15); animateTo({ x: -n.x * k, y: -n.y * k, k }); };
 
+  // ── 双摆演示：只出现在“分析力学”和“混沌”两个节点的面板里 ──────────────
+  // 打开这两个节点之一时才加载 pr-models.js（RK4 与能量），面板换掉、标签页隐藏或演示滚出视野时停下动画。
+  const DP_NODES = new Set(['analytic', 'chaos']);
+  const dp = (() => {
+    const H = 1 / 600, START = 1e-6, TMAX = 120, TRAIL = 150;
+    let M = null, loading = null, st = null, raf = 0, io = null, playing = false, root = null;
+    const load = () => {
+      if (window.MOLASTRIA_REALMS_MODELS) return Promise.resolve(window.MOLASTRIA_REALMS_MODELS);
+      return loading || (loading = new Promise((ok, fail) => {
+        const s = document.createElement('script');
+        s.src = 'pr-models.js'; s.onload = () => (window.MOLASTRIA_REALMS_MODELS ? ok(window.MOLASTRIA_REALMS_MODELS) : fail(new Error('pr-models'))); s.onerror = () => { loading = null; fail(new Error('pr-models')); };
+        document.head.appendChild(s);
+      }));
+    };
+    const deg = Math.PI / 180;
+    const css = () => { const s = getComputedStyle(document.documentElement), g = (n) => s.getPropertyValue(n).trim(); return { ink: g('--ink'), ink2: g('--ink-2'), muted: g('--muted'), line: g('--line'), gold: g('--gold'), info: g('--info'), violet: g('--violet'), danger: g('--danger'), paper: g('--paper') }; };
+    const font = (px, w = 500) => `${w} ${px}px ${getComputedStyle(document.body).fontFamily}`;
+    const supx = (s) => String(s).replace(/[-0-9]/g, (c) => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
+    const sci = (v, d = 2) => (!Number.isFinite(v) ? '—' : v === 0 ? '0' : Math.abs(v) < 1e-2 || Math.abs(v) >= 1e4 ? v.toExponential(d - 1).replace(/e\+?(-?)(\d+)/, (_, s, x) => ` × 10${supx(`${s}${x}`)}`) : Number(v.toPrecision(d)).toString());
+    const fit = (cv) => {
+      const ratio = Number(cv.dataset.ratio || (cv.dataset.ratio = cv.height / cv.width));
+      const w = Math.max(200, cv.clientWidth || 0), h = Math.round(w * ratio), dpr = Math.min(2, window.devicePixelRatio || 1);
+      if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+      const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+      return { ctx, w, h };
+    };
+    const shell = () => `<section class="pr-dp" id="pr-dp" aria-labelledby="pr-dp-h" aria-live="off">
+        <h4 id="pr-dp-h">${L('演示：双摆与混沌', 'Demo: the double pendulum and chaos')}</h4>
+        <p>${L('两个一模一样的双摆，起始角度只差 10⁻⁶ rad（百万分之一弧度），用同样的方程、同样的步长积分。一开始完全重合，十几到二十秒后就各走各的：方程是确定的，长期却无法预测。', 'Two identical double pendulums start just 10⁻⁶ rad (a millionth of a radian) apart and are integrated with the same equations and the same step. At first they overlap exactly; after ten to twenty seconds they go their separate ways: the equations are deterministic, yet the long-term motion cannot be predicted.')}</p>
+        <div class="pr-dp-body" id="pr-dp-body"><p class="pr-hint">${L('正在加载……', 'Loading…')}</p></div>
+      </section>`;
+    const controls = () => `<canvas class="pr-dp-cv" id="pr-dp-cv" width="320" height="300" role="img"></canvas>
+        <div class="pr-dp-btns"><button type="button" class="button primary" id="pr-dp-play" aria-pressed="false">${L('播放', 'Play')}</button><button type="button" class="button" id="pr-dp-reset">${L('重来', 'Reset')}</button></div>
+        <div class="pr-dp-sliders">
+          <label>${L('θ₁ 初值', 'Initial θ₁')}<span><input type="range" id="pr-dp-a" min="-180" max="180" step="1" value="120"><output id="pr-dp-a-v" translate="no"></output></span></label>
+          <label>${L('θ₂ 初值', 'Initial θ₂')}<span><input type="range" id="pr-dp-b" min="-180" max="180" step="1" value="-30"><output id="pr-dp-b-v" translate="no"></output></span></label>
+        </div>
+        <canvas class="pr-dp-cv" id="pr-dp-sep" width="320" height="170" role="img"></canvas>
+        <dl class="pr-dp-read" id="pr-dp-read"></dl>
+        <details class="pr-dp-notes"><summary>${L('方程与积分器', 'Equations and integrator')}</summary>
+          <p>${L('两根无质量的刚性杆各长 1 m，两个质点各 1 kg，g = 9.81 m/s²，没有摩擦。角加速度由拉格朗日方程解出，用四阶 Runge–Kutta 法积分，步长 1/600 s，模拟时间和真实时间同步。第二个双摆的 θ₁ 比第一个大 10⁻⁶ rad。',
+            'Two massless rigid rods of 1 m each carry two 1 kg masses, with g = 9.81 m/s² and no friction. The angular accelerations come from Lagrange\'s equations and are integrated with fourth-order Runge–Kutta at a step of 1/600 s, with simulated time running at real time. The second pendulum starts with θ₁ larger by 10⁻⁶ rad.')}</p>
+          <p>${L('能量漂移一栏是诚实性检查：没有摩擦时总能量应该守恒，两个双摆里较大的 |E − E₀| 除以能量尺度 (m₁+m₂)gl₁ + m₂gl₂。它保持在 10⁻⁶ 以下，说明两条轨迹分开不是积分误差造成的，而是方程本身对初值的指数敏感（李雅普诺夫指数为正）。下方的分离曲线用对数坐标，指数增长在上面是一段斜直线，分离到约 1 rad 后饱和。小角度时（把两个初值都调到 10° 以内）运动是两个简正模的叠加，ω² = (g/l)(2 ∓ √2)，分离几乎不增长。',
+            'The energy-drift row is the honesty check: with no friction the total energy must be conserved, and the readout shows the larger |E − E₀| of the two pendulums divided by the energy scale (m₁+m₂)gl₁ + m₂gl₂. It stays below 10⁻⁶, so the trajectories part not because of integration error but because the equations themselves are exponentially sensitive to the initial state (a positive Lyapunov exponent). The separation plot below is logarithmic, so exponential growth is a sloping straight line; it saturates at about 1 rad. At small angles (set both starting angles within 10°) the motion is a superposition of two normal modes with ω² = (g/l)(2 ∓ √2), and the separation barely grows.')}</p>
+        </details>`;
+    const reset = () => {
+      const a = Number(root.querySelector('#pr-dp-a').value) * deg, b = Number(root.querySelector('#pr-dp-b').value) * deg, p = M.DEFAULTS;
+      const ya = [a, b, 0, 0], yb = [a + START, b, 0, 0];
+      st = { p, ya, yb, t: 0, acc: 0, E0: [M.energy(ya, p), M.energy(yb, p)], scale: M.energyScale(p), drift: 0, hist: [[0, M.separation(ya, yb)]], trail: [[], []], horizon: null, last: 0, shown: 0 };
+      root.querySelector('#pr-dp-a-v').textContent = `${Math.round(a / deg)}°`.replace('-', '−');
+      root.querySelector('#pr-dp-b-v').textContent = `${Math.round(b / deg)}°`.replace('-', '−');
+    };
+    const advance = (dt) => {
+      st.acc += Math.min(dt, 0.05);
+      let n = 0;
+      while (st.acc >= H && n < 40 && st.t < TMAX) {
+        st.ya = M.rk4(st.ya, H, st.p); st.yb = M.rk4(st.yb, H, st.p); st.t += H; st.acc -= H; n++;
+        if (n % 5 === 0) { const d = M.separation(st.ya, st.yb); if (st.t - st.hist[st.hist.length - 1][0] >= 0.05) st.hist.push([st.t, d]); if (st.horizon === null && d > 0.1) st.horizon = st.t; }
+      }
+      st.drift = Math.max(st.drift, Math.abs(M.energy(st.ya, st.p) - st.E0[0]) / st.scale, Math.abs(M.energy(st.yb, st.p) - st.E0[1]) / st.scale);
+      for (const [i, y] of [[0, st.ya], [1, st.yb]]) { const tr = st.trail[i]; const q = M.positions(y, st.p); tr.push([q[2], q[3]]); if (tr.length > TRAIL) tr.shift(); }
+    };
+    const drawStage = () => {
+      const cv = root.querySelector('#pr-dp-cv'), { ctx, w, h } = fit(cv), c = css(), s = Math.min(w, h) / 2 / 2.15, ox = w / 2, oy = h / 2;
+      const P = (x, y) => [ox + x * s, oy - y * s];
+      ctx.strokeStyle = c.line; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.arc(ox, oy, 2 * s, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]);
+      const cols = [c.gold, c.info];
+      st.trail.forEach((tr, i) => {
+        ctx.strokeStyle = cols[i]; ctx.lineWidth = 1.6;
+        for (let k = 1; k < tr.length; k++) { ctx.globalAlpha = 0.08 + 0.6 * k / tr.length; ctx.beginPath(); ctx.moveTo(...P(...tr[k - 1])); ctx.lineTo(...P(...tr[k])); ctx.stroke(); }
+      });
+      ctx.globalAlpha = 1;
+      [st.yb, st.ya].forEach((y, j) => {
+        const i = 1 - j, [x1, y1, x2, y2] = M.positions(y, st.p), o = P(0, 0), a = P(x1, y1), b = P(x2, y2);
+        ctx.strokeStyle = cols[i]; ctx.lineWidth = 2.4; ctx.globalAlpha = i ? 0.85 : 1; ctx.beginPath(); ctx.moveTo(...o); ctx.lineTo(...a); ctx.lineTo(...b); ctx.stroke();
+        ctx.fillStyle = cols[i]; for (const q of [a, b]) { ctx.beginPath(); ctx.arc(q[0], q[1], 6.5, 0, 2 * Math.PI); ctx.fill(); }
+      });
+      ctx.globalAlpha = 1; ctx.fillStyle = c.ink2; ctx.beginPath(); ctx.arc(ox, oy, 3.5, 0, 2 * Math.PI); ctx.fill();
+      ctx.font = font(11.5); ctx.textAlign = 'left'; ctx.fillStyle = c.ink; ctx.fillText(`t = ${st.t.toFixed(1)} s`, 8, 16);
+      const lab = en ? ['pendulum A', 'pendulum B (θ₁ + 10⁻⁶)'] : ['双摆 A', '双摆 B（θ₁ + 10⁻⁶）'];
+      lab.forEach((t, i) => { ctx.fillStyle = cols[i]; ctx.fillRect(8, h - 30 + i * 15, 12, 3); ctx.fillStyle = c.ink2; ctx.fillText(t, 26, h - 26 + i * 15); });
+      const cap = en ? `Two double pendulums at t = ${st.t.toFixed(1)} s; their angles differ by ${sci(M.separation(st.ya, st.yb))} rad.` : `t = ${st.t.toFixed(1)} s 时的两个双摆；角度相差 ${sci(M.separation(st.ya, st.yb))} rad。`;
+      cv.setAttribute('aria-label', cap);
+    };
+    const drawSep = () => {
+      const cv = root.querySelector('#pr-dp-sep'), { ctx, w, h } = fit(cv), c = css(), pad = { l: 40, r: 8, t: 10, b: 28 }, W = w - pad.l - pad.r, Hh = h - pad.t - pad.b;
+      const x1 = Math.max(30, Math.ceil(st.t / 10) * 10), lo = -7, hi = 1;
+      const X = (t) => pad.l + t / x1 * W, Y = (d) => pad.t + Hh - (Math.log10(Math.max(d, 1e-9)) - lo) / (hi - lo) * Hh;
+      ctx.font = font(10.5); ctx.strokeStyle = c.line; ctx.lineWidth = 1; ctx.fillStyle = c.muted;
+      for (let e = lo + 1; e <= hi; e += 2) { const y = Y(10 ** e); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + W, y); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(e === 0 ? '1' : `10${supx(e)}`, pad.l - 5, y + 4); }
+      for (let t = 0; t <= x1; t += x1 > 60 ? 20 : 10) { ctx.beginPath(); ctx.moveTo(X(t), pad.t); ctx.lineTo(X(t), pad.t + Hh); ctx.stroke(); ctx.textAlign = 'center'; ctx.fillText(String(t), X(t), pad.t + Hh + 13); }
+      ctx.strokeStyle = c.ink2; ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + Hh); ctx.lineTo(pad.l + W, pad.t + Hh); ctx.stroke();
+      ctx.fillStyle = c.ink2; ctx.textAlign = 'center'; ctx.fillText(en ? 'time t (s) · angle separation (rad, log scale)' : '时间 t（s）· 角度差（rad，对数坐标）', pad.l + W / 2, h - 3);
+      ctx.save(); ctx.beginPath(); ctx.rect(pad.l, pad.t, W, Hh); ctx.clip();
+      ctx.strokeStyle = c.danger; ctx.lineWidth = 1.8; ctx.beginPath(); st.hist.forEach(([t, d], i) => (i ? ctx.lineTo(X(t), Y(d)) : ctx.moveTo(X(t), Y(d)))); ctx.stroke();
+      ctx.restore();
+      cv.setAttribute('aria-label', en ? `Separation of the two pendulums on a log scale over ${st.t.toFixed(0)} s, from 10⁻⁶ rad.` : `两个双摆的角度差（对数坐标），${st.t.toFixed(0)} 秒，从 10⁻⁶ rad 开始。`);
+    };
+    const readout = () => {
+      const d = M.separation(st.ya, st.yb);
+      root.querySelector('#pr-dp-read').innerHTML = [
+        ['时间 t', 'Time t', `${st.t.toFixed(1)} s`, st.t], ['两者的角度差', 'Angle separation', `${sci(d)} rad`, d],
+        ['差到 0.1 rad 用时', 'Time to reach 0.1 rad', st.horizon === null ? '—' : `${st.horizon.toFixed(1)} s`, st.horizon ?? ''],
+        ['能量漂移 |ΔE| / E尺度', 'Energy drift |ΔE| / E-scale', sci(st.drift), st.drift], ['积分器', 'Integrator', 'RK4, h = 1/600 s', H],
+      ].map(([zh, e, v, raw]) => `<dt>${L(zh, e)}</dt><dd translate="no" data-v="${raw}">${v}</dd>`).join('');
+    };
+    const draw = () => { if (!root || !st) return; drawStage(); drawSep(); readout(); };
+    const visible = () => root && root.isConnected && !document.hidden && root.dataset.inview !== '0';
+    const loop = (now) => {
+      raf = 0;
+      if (!playing || !visible()) return;
+      const dt = st.last ? (now - st.last) / 1000 : 0; st.last = now;
+      advance(dt); drawStage(); drawSep();
+      if (now - st.shown > 250) { readout(); st.shown = now; }
+      if (st.t >= TMAX) { setPlaying(false); readout(); return; }
+      raf = requestAnimationFrame(loop);
+    };
+    const kick = () => { if (playing && !raf && visible()) { st.last = 0; raf = requestAnimationFrame(loop); } };
+    const setPlaying = (on) => {
+      playing = on;
+      const b = root?.querySelector('#pr-dp-play');
+      if (b) { b.setAttribute('aria-pressed', String(on)); b.innerHTML = on ? L('暂停', 'Pause') : L('播放', 'Play'); }
+      if (on) { if (st.t >= TMAX) { reset(); draw(); } kick(); } else { cancelAnimationFrame(raf); raf = 0; }
+    };
+    const stop = () => { setPlaying(false); io?.disconnect(); io = null; root = null; st = null; };
+    const mount = (el) => {
+      stop(); root = el;
+      load().then((m) => {
+        if (root !== el) return;
+        M = m;
+        el.querySelector('#pr-dp-body').innerHTML = controls();
+        reset(); draw();
+        el.querySelector('#pr-dp-play').addEventListener('click', () => setPlaying(!playing));
+        el.querySelector('#pr-dp-reset').addEventListener('click', () => { reset(); draw(); kick(); });
+        for (const id of ['#pr-dp-a', '#pr-dp-b']) el.querySelector(id).addEventListener('input', () => { reset(); draw(); });
+        if ('IntersectionObserver' in window) { io = new IntersectionObserver((es) => { for (const e of es) { el.dataset.inview = e.isIntersecting ? '1' : '0'; if (e.isIntersecting) kick(); } }); io.observe(el.querySelector('#pr-dp-cv')); }
+      }).catch(() => { if (root === el) el.querySelector('#pr-dp-body').innerHTML = `<p class="pr-hint">${L('演示没有加载成功，请检查网络后刷新页面。', 'The demo failed to load; check your connection and reload the page.')}</p>`; });
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+    let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!playing) draw(); }, 150); });
+    new MutationObserver(() => { if (!playing) draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return { shell, mount, stop };
+  })();
+
   // ── 侧栏 ──────────────────────────────────────────────────────────────
   const panel = $('#pr-panel');
   const chip = (id, note) => {
@@ -246,6 +390,7 @@
       <p class="pr-hint">${L('键盘：在搜索框里输入名称后按回车；Esc 取消选中。', 'Keyboard: type a name in the search box and press Enter; Esc clears the selection.')}</p>`;
   };
   const showPanel = (id) => {
+    dp.stop();
     if (!id) { panel.innerHTML = intro(); return; }
     const n = N.get(id), out = (type) => n.links.filter((e) => e.type === type && e.a === id), inc = (type) => n.links.filter((e) => e.type === type && e.b === id);
     const head = `<p class="pr-panel-k"><span class="pr-dot" data-b="${n.b}" aria-hidden="true"></span>${R(B.get(n.b).name)}${n.year ? ` · <span translate="no">${esc(n.year)}</span>` : ''}</p>
@@ -267,7 +412,9 @@
         ${group(L('解释不了', 'Cannot explain'), out('fails').map((e) => chip(e.b, e.note)))}
         ${group(L('作为候选解答', 'Offered as a candidate answer'), out('candidate').map((e) => chip(e.b, e.note)))}
         ${group(L('极限与传承', 'Limits & lineage'), lineage)}
-        ${n.link ? `<p><a class="button" href="${esc(n.link[0])}">${L(n.link[1], n.link[2])} ${ext}</a></p>` : ''}`;
+        ${n.link ? `<p><a class="button" href="${esc(n.link[0])}">${L(n.link[1], n.link[2])} ${ext}</a></p>` : ''}
+        ${DP_NODES.has(id) ? dp.shell() : ''}`;
+      if (DP_NODES.has(id)) dp.mount(panel.querySelector('#pr-dp'));
     } else {
       panel.innerHTML = head + `${R(n.desc, 'p')}
         ${group(L('能很好解释它的理论', 'Theories that explain it well'), inc('explains').map((e) => chip(e.a, e.note)))}

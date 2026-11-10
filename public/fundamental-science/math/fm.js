@@ -183,6 +183,173 @@
     setTimeout(() => { b.innerHTML = L('复制代码', 'Copy code'); }, 1600);
   });
 
+  // ── 概率论的交互演示：大数定律与中心极限定理 ──────────────────────────
+  // 只放在“概率论与随机过程”的详解里（插在教材与视频之前）；面板打开、滚到眼前时才开始计算。数学在 fm-prob.js。
+  (() => {
+    const PB = window.MOLASTRIA_FM_PROB, host = $('#m-pr');
+    if (!PB || !host) return;
+    const DISTS = [['coin', '硬币（正面记 1）', 'Coin (heads = 1)'], ['die', '公平骰子', 'Fair die'], ['loaded', '灌铅骰子（一半是 6）', 'Loaded die (6 half the time)'], ['exp', '指数分布（λ = 1）', 'Exponential (λ = 1)']];
+    const NS = [1, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50, 100];
+    const opts = (sel) => DISTS.map(([k, zh, e]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${esc(en ? e : zh)}</option>`).join('');
+    const slider = (id, zh, e, min, max, step, value) => `<label>${L(zh, e)}<span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}"><output id="${id}-v" translate="no"></output></span></label>`;
+    const demo = (n, id, zh, e, intro, controls, notes) => `<article class="fs-demo" id="${id}" aria-labelledby="${id}-h">
+        <header><p class="fs-demo-n">${L(`演示 ${n}`, `Demo ${n}`)}</p><h3 id="${id}-h">${L(zh, e)}</h3><p class="muted">${intro}</p></header>
+        <div class="fs-demo-body"><div class="fs-controls">${controls}</div><figure class="fs-figure"><canvas id="${id}-cv" width="720" height="360" role="img"></canvas><figcaption id="${id}-cap"></figcaption></figure></div>
+        <details class="fs-notes"><summary>${L('模型说明与局限', 'About the model and its limits')}</summary><p>${notes}</p></details>
+      </article>`;
+    const lab = document.createElement('section');
+    lab.className = 'fm-prob'; lab.id = 'fm-prob';
+    lab.setAttribute('aria-labelledby', 'fm-prob-h');
+    lab.innerHTML = `<h4 id="fm-prob-h">${L('交互演示：大数定律与中心极限定理', 'Interactive: the law of large numbers and the central limit theorem')}</h4>
+      <p class="fm-prob-note">${L('两个演示都在浏览器里现算，随机数带种子，同样的操作得到同样的图。', 'Both demos compute live in your browser with a seeded random generator, so the same steps give the same picture.')}</p>`
+      + demo(1, 'fm-lln', '大数定律：累计平均值收敛到期望', 'Law of large numbers: the running mean settles on the expectation',
+        L('每次抽一个数，记下到目前为止的平均值 x̄ₙ。大数定律说 x̄ₙ 几乎必然收敛到期望 μ；中心极限定理进一步说偏差约为 σ/√n，所以阴影带 μ ± 1.96σ/√n 按 1/√n 收窄。横轴是对数刻度。',
+          'Draw one value at a time and track the running mean x̄ₙ. The law of large numbers says x̄ₙ converges almost surely to the expectation μ; the central limit theorem adds that the deviation is about σ/√n, so the shaded band μ ± 1.96σ/√n narrows like 1/√n. The horizontal axis is logarithmic.'),
+        `<label>${L('分布', 'Distribution')}<select id="fm-lln-d" translate="no">${opts('die')}</select></label>
+         ${slider('fm-lln-n', '抽样次数 N', 'Number of draws N', 0, 4, 0.01, 3)}
+         <div class="fs-btns"><button type="button" class="button primary" id="fm-lln-play">${L('从头播放', 'Play from the start')}</button><button type="button" class="button" id="fm-lln-new">${L('换一串（新种子）', 'New sequence (new seed)')}</button></div>
+         <dl class="fs-readout" id="fm-lln-read" aria-live="polite"></dl>`,
+        L('随机数来自带种子的 mulberry32 生成器，读数里写着种子；拖动 N 时，较短的路径就是较长路径的开头。阴影带是逐点的 95% 区间：对每个固定的 n，x̄ₙ 落在带内的概率约为 95%（n 小时是近似），但整条路径迟早会越出带子。重对数律说偏差最大能到 σ√(2 ln ln n / n)，最终比任何固定倍数的 σ/√n 都宽。',
+          'The random numbers come from a seeded mulberry32 generator, and the seed is shown in the readout; as you drag N, a shorter path is the start of the longer one. The band is a pointwise 95% interval: for each fixed n, x̄ₙ lies inside with probability about 95% (approximately, for small n), yet the whole path leaves the band again and again. The law of the iterated logarithm says the deviation reaches σ√(2 ln ln n / n), which eventually exceeds any fixed multiple of σ/√n.'))
+      + demo(2, 'fm-clt', '中心极限定理：样本均值的分布', 'Central limit theorem: the distribution of sample means',
+        L('从一个偏斜的分布里抽 n 个数求平均，重复上千次，把这些样本均值画成直方图。只要方差有限，n 变大时直方图都趋向均值 μ、标准差 σ/√n 的正态分布（曲线），偏度按 γ/√n 消失。n = 1 时直方图就是原来的分布。',
+          'Draw n values from a skewed distribution and average them; repeat a thousand times and plot the sample means as a histogram. Whenever the variance is finite, the histogram approaches the normal curve with mean μ and standard deviation σ/√n as n grows, and the skewness fades like γ/√n. At n = 1 the histogram is the original distribution.'),
+        `<label>${L('分布', 'Distribution')}<select id="fm-clt-d" translate="no">${opts('exp')}</select></label>
+         ${slider('fm-clt-n', '每组的样本量 n', 'Sample size per group n', 0, NS.length - 1, 1, 0)}
+         <div class="fs-btns"><button type="button" class="button primary" id="fm-clt-go">${L('再抽 1000 组', 'Draw 1000 samples')}</button><button type="button" class="button" id="fm-clt-reset">${L('清空重来', 'Clear and restart')}</button></div>
+         <dl class="fs-readout" id="fm-clt-read" aria-live="polite"></dl>`,
+        L('直方图按密度归一（总面积为 1），离散分布的箱子对齐样本均值能取的格点 k/n，所以可以直接和正态曲线比较；落在画面范围之外的少数样本单独计数。换分布或 n 会用同一个种子从头抽，所以同样的点击顺序得到同样的直方图。收敛有多快由 Berry–Esseen 定理给出：分布函数的误差上界正比于 E|X − μ|³ / (σ³√n)，所以偏斜的指数分布比公平骰子收敛得慢。',
+          'The histogram is normalised as a density (total area 1), and for discrete distributions the bins line up with the lattice k/n of possible sample means, so it can be compared directly with the normal curve; the few samples outside the plotted range are counted separately. Changing the distribution or n restarts from the same seed, so the same clicks give the same histogram. How fast it converges is the Berry–Esseen theorem: the error in the distribution function is bounded by a constant times E|X − μ|³ / (σ³√n), which is why the skewed exponential converges more slowly than a fair die.'));
+    for (const el of lab.querySelectorAll('select')) el.setAttribute('translate', 'no');
+    host.insertBefore(lab, host.querySelector('.fm-res'));
+    const q = (s) => lab.querySelector(s);
+
+    // 画图工具：颜色每次从 CSS 变量读，深浅主题都对
+    const css = () => { const s = getComputedStyle(document.documentElement), g = (n) => s.getPropertyValue(n).trim(); return { ink: g('--ink'), ink2: g('--ink-2'), muted: g('--muted'), line: g('--line'), gold: g('--gold'), info: g('--info'), violet: g('--violet'), accent: g('--accent-text') }; };
+    const font = (px, w = 500) => `${w} ${px}px ${getComputedStyle(document.body).fontFamily}`;
+    const sup = (s) => String(s).replace(/[-0-9]/g, (c) => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
+    const fmt = (v, d = 3) => (!Number.isFinite(v) ? '—' : Math.abs(v) >= 1e5 || (Math.abs(v) < 1e-3 && v !== 0) ? v.toExponential(d - 1).replace(/e\+?(-?)(\d+)/, (_, s, x) => ` × 10${sup(`${s}${x}`)}`) : Number(v.toPrecision(d)).toString());
+    const fit = (cv) => {
+      const ratio = Number(cv.dataset.ratio || (cv.dataset.ratio = cv.height / cv.width));
+      const w = Math.max(240, cv.clientWidth || 0), h = Math.round(w * (w < 520 ? Math.max(ratio, 0.78) : ratio)), dpr = Math.min(2, window.devicePixelRatio || 1);
+      if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+      const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+      return { ctx, w, h };
+    };
+    const frame = (cv, o) => {
+      const { ctx, w, h } = fit(cv), c = css();
+      // 图例放在图的上方，窄屏上自动换行
+      ctx.font = font(11.5);
+      const rows = [[]]; let lx = 50;
+      for (const it of o.legend(c)) { const wd = 32 + ctx.measureText(it[0]).width; if (lx + wd > w - 6 && rows[rows.length - 1].length) { rows.push([]); lx = 50; } rows[rows.length - 1].push([it, lx]); lx += wd; }
+      const pad = { l: 46, r: 12, t: 12 + rows.length * 17, b: 34 }, W = w - pad.l - pad.r, H = h - pad.t - pad.b;
+      rows.forEach((r, i) => { for (const [[label, color, dash], x] of r) { const y = 13 + i * 17; ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 18, y); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = c.ink; ctx.textAlign = 'left'; ctx.fillText(label, x + 22, y + 4); } });
+      const X = (v) => pad.l + ((o.xs ? o.xs(v) : v) - o.x0) / (o.x1 - o.x0) * W, Y = (v) => pad.t + H - (v - o.y0) / (o.y1 - o.y0) * H;
+      ctx.strokeStyle = c.line; ctx.lineWidth = 1; ctx.fillStyle = c.muted; ctx.font = font(11);
+      for (const t of o.xt) { ctx.beginPath(); ctx.moveTo(X(t), pad.t); ctx.lineTo(X(t), pad.t + H); ctx.stroke(); ctx.textAlign = 'center'; ctx.fillText(o.xf ? o.xf(t) : fmt(t), X(t), pad.t + H + 15); }
+      for (const t of o.yt) { ctx.beginPath(); ctx.moveTo(pad.l, Y(t)); ctx.lineTo(pad.l + W, Y(t)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmt(t), pad.l - 6, Y(t) + 4); }
+      ctx.strokeStyle = c.ink2; ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + H); ctx.lineTo(pad.l + W, pad.t + H); ctx.stroke();
+      ctx.fillStyle = c.ink2; ctx.textAlign = 'center'; ctx.fillText(o.xl, pad.l + W / 2, h - 4);
+      const clip = (fn) => { ctx.save(); ctx.beginPath(); ctx.rect(pad.l, pad.t, W, H); ctx.clip(); fn(); ctx.restore(); };
+      return { ctx, c, X, Y, pad, W, H, clip };
+    };
+    const ticks = (a, b, n = 5) => { const step = 10 ** Math.floor(Math.log10((b - a) / n)), m = [1, 2, 5, 10].find((k) => (b - a) / (k * step) <= n) * step, out = []; for (let t = Math.ceil(a / m) * m; t <= b + 1e-9; t += m) out.push(Number(t.toPrecision(10))); return out; };
+    const readout = (el, rows) => { el.innerHTML = rows.map(([zh, e, v, big, raw]) => `<dt>${L(zh, e)}</dt><dd${big ? ' class="fs-big"' : ''} translate="no"${raw == null ? '' : ` data-v="${raw}"`}>${v}</dd>`).join(''); };
+    const label = (k) => { const d = DISTS.find((x) => x[0] === k); return en ? d[2] : d[1]; };
+
+    // 演示 1：大数定律
+    const lln = { seed: 2026, key: '', path: null, anim: 0 };
+    const llnN = () => Math.round(10 ** Number(q('#fm-lln-n').value));
+    const drawLln = (quiet = false) => {
+      const k = q('#fm-lln-d').value, d = PB.DISTS[k], { mean, sd } = PB.moments(d), [a, b] = PB.support(d), N = llnN();
+      if (lln.key !== `${k}|${lln.seed}`) { lln.path = PB.runningMean(d, 10000, lln.seed); lln.key = `${k}|${lln.seed}`; }
+      q('#fm-lln-n-v').textContent = `N = ${N}`;
+      const y0 = Math.max(a, mean - 2.4 * sd), y1 = Math.min(b, mean + 2.4 * sd), x1 = Math.max(1, Math.log10(N));
+      const cv = q('#fm-lln-cv'), f = frame(cv, { x0: 0, x1, xs: (v) => Math.log10(v), y0, y1, xt: [1, 10, 100, 1000, 10000].filter((t) => Math.log10(t) <= x1 + 1e-9), xf: (t) => (t >= 1000 ? `${t / 1000}k` : String(t)), yt: ticks(y0, y1, 5), xl: en ? 'number of draws n (log scale)' : '抽样次数 n（对数刻度）',
+        legend: (c) => [[en ? 'running mean x̄ₙ' : '累计平均 x̄ₙ', c.gold], [en ? 'μ' : '期望 μ', c.ink2, [5, 4]], ['μ ± 1.96σ/√n', c.info]] });
+      const { ctx, c, X, Y } = f;
+      f.clip(() => {
+        ctx.beginPath();
+        for (let n = 1; n <= N; n = n < 50 ? n + 1 : Math.ceil(n * 1.02)) ctx.lineTo(X(n), Y(Math.min(y1 + 1, mean + PB.band(d, n))));
+        for (let n = N; n >= 1; n = n > 50 ? Math.floor(n / 1.02) : n - 1) ctx.lineTo(X(n), Y(Math.max(y0 - 1, mean - PB.band(d, n))));
+        ctx.closePath(); ctx.fillStyle = c.info; ctx.globalAlpha = 0.16; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.setLineDash([5, 4]); ctx.strokeStyle = c.ink2; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(X(1), Y(mean)); ctx.lineTo(X(N), Y(mean)); ctx.stroke(); ctx.setLineDash([]);
+        ctx.strokeStyle = c.gold; ctx.lineWidth = 1.8; ctx.beginPath();
+        let last = -1;
+        for (let n = 1; n <= N; n++) { const px = X(n); if (px - last < 0.4 && n !== N) continue; last = px; ctx.lineTo(px, Y(lln.path[n - 1])); }
+        ctx.stroke();
+      });
+      if (quiet) return; // 播放途中只画图，读数和说明在停下时再写，免得读屏软件一直播报
+      const xN = lln.path[N - 1], half = PB.band(d, N), inside = Math.abs(xN - mean) <= half;
+      readout(q('#fm-lln-read'), [['种子', 'Seed', String(lln.seed)], ['N 次后的平均 x̄', 'Mean after N draws x̄', fmt(xN, 5), true, xN], ['期望 μ', 'Expectation μ', fmt(mean, 5)],
+        ['偏差 |x̄ − μ|', 'Deviation |x̄ − μ|', fmt(Math.abs(xN - mean), 3)], ['95% 带的半宽 1.96σ/√N', '95% half-width 1.96σ/√N', fmt(half, 3), false, half],
+        ['此刻在带内', 'Inside the band now', inside ? (en ? 'yes' : '是') : (en ? 'no' : '否')]]);
+      const cap = en ? `${label(k)}: running mean of the first ${N} draws (seed ${lln.seed}); after N draws it is ${fmt(xN, 4)} against μ = ${fmt(mean, 4)}.` : `${label(k)}：前 ${N} 次的累计平均（种子 ${lln.seed}）；N 次之后是 ${fmt(xN, 4)}，期望 μ = ${fmt(mean, 4)}。`;
+      q('#fm-lln-cap').innerHTML = C(esc(cap)); cv.setAttribute('aria-label', cap);
+    };
+    const stopLln = () => { cancelAnimationFrame(lln.anim); lln.anim = 0; };
+    const playLln = () => {
+      stopLln();
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, slider = q('#fm-lln-n');
+      if (reduce) { slider.value = 4; drawLln(); return; }
+      const t0 = performance.now();
+      const step = (t) => {
+        if (host.hidden || document.hidden) { stopLln(); drawLln(); return; }
+        const u = Math.min(1, (t - t0) / 4000); slider.value = (u * 4).toFixed(2); drawLln(u < 1);
+        lln.anim = u < 1 ? requestAnimationFrame(step) : 0;
+      };
+      slider.value = 0; lln.anim = requestAnimationFrame(step);
+    };
+    q('#fm-lln-d').addEventListener('change', () => { stopLln(); drawLln(); });
+    q('#fm-lln-n').addEventListener('input', () => { stopLln(); drawLln(); });
+    q('#fm-lln-play').addEventListener('click', playLln);
+    q('#fm-lln-new').addEventListener('click', () => { stopLln(); lln.seed++; drawLln(); });
+
+    // 演示 2：中心极限定理
+    const clt = { seed: 7, rand: null, means: [], key: '' };
+    const cltReset = () => { clt.rand = PB.rng(clt.seed); clt.means = []; clt.key = `${q('#fm-clt-d').value}|${q('#fm-clt-n').value}`; };
+    const cltDraw = (count) => { const d = PB.DISTS[q('#fm-clt-d').value], n = NS[Number(q('#fm-clt-n').value)]; if (clt.means.length < 200000) clt.means.push(...PB.sampleMeans(d, n, count, clt.rand)); };
+    const drawClt = () => {
+      const k = q('#fm-clt-d').value, n = NS[Number(q('#fm-clt-n').value)], d = PB.DISTS[k], { mean, sd, skew } = PB.moments(d), se = sd / Math.sqrt(n);
+      if (clt.key !== `${k}|${q('#fm-clt-n').value}` || !clt.rand) { cltReset(); cltDraw(1000); }
+      q('#fm-clt-n-v').textContent = `n = ${n}`;
+      const { lo, hi, bins } = PB.binsFor(d, n), hst = PB.histogram(clt.means, lo, hi, bins), total = clt.means.length;
+      const dens = hst.counts.map((c) => c / (total * hst.width)), peak = PB.normalPdf(mean, mean, se), y1 = Math.max(peak, ...dens) * 1.12;
+      const cv = q('#fm-clt-cv'), f = frame(cv, { x0: lo, x1: hi, y0: 0, y1, xt: ticks(lo, hi, 6), yt: ticks(0, y1, 4), xl: en ? 'sample mean x̄ (bars: density of the sample means)' : '样本均值 x̄（柱：样本均值的密度）',
+        legend: (c) => [[en ? `${total} sample means` : `${total} 个样本均值`, c.gold], [en ? 'normal N(μ, σ²/n)' : '正态 N(μ, σ²/n)', c.info], [en ? 'μ' : '期望 μ', c.ink2, [5, 4]]] });
+      const { ctx, c, X, Y } = f;
+      f.clip(() => {
+        ctx.fillStyle = c.gold; ctx.globalAlpha = 0.55;
+        dens.forEach((v, j) => { const xa = X(lo + j * hst.width), xb = X(lo + (j + 1) * hst.width); ctx.fillRect(xa + 0.5, Y(v), Math.max(1, xb - xa - 1), Y(0) - Y(v)); });
+        ctx.globalAlpha = 1; ctx.strokeStyle = c.info; ctx.lineWidth = 2.2; ctx.beginPath();
+        for (let i = 0; i <= 300; i++) { const x = lo + (hi - lo) * i / 300; ctx.lineTo(X(x), Y(PB.normalPdf(x, mean, se))); }
+        ctx.stroke();
+        ctx.setLineDash([5, 4]); ctx.strokeStyle = c.ink2; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(X(mean), Y(0)); ctx.lineTo(X(mean), Y(y1)); ctx.stroke(); ctx.setLineDash([]);
+      });
+      const s = PB.summary(clt.means), out = hst.under + hst.over;
+      readout(q('#fm-clt-read'), [['种子 · 已抽组数', 'Seed · groups drawn', `${clt.seed} · ${total}`, false, total], ['样本均值的平均', 'Mean of the means', `${fmt(s.mean, 4)}  (μ = ${fmt(mean, 4)})`],
+        ['样本均值的标准差', 'SD of the means', `${fmt(s.sd, 3)}  (σ/√n = ${fmt(se, 3)})`, true, s.sd / se], ['样本均值的偏度', 'Skewness of the means', `${fmt(s.skew, 2)}  (γ/√n = ${fmt(skew / Math.sqrt(n), 2)})`],
+        ...(out ? [['画面范围之外', 'Outside the plotted range', String(out)]] : [])]);
+      const cap = en ? `${label(k)}, n = ${n}: histogram of ${total} sample means against the normal density with mean ${fmt(mean, 3)} and standard deviation ${fmt(se, 3)}.` : `${label(k)}，n = ${n}：${total} 个样本均值的直方图，对照均值 ${fmt(mean, 3)}、标准差 ${fmt(se, 3)} 的正态密度。`;
+      q('#fm-clt-cap').innerHTML = C(esc(cap)); cv.setAttribute('aria-label', cap);
+    };
+    q('#fm-clt-d').addEventListener('change', drawClt);
+    q('#fm-clt-n').addEventListener('input', drawClt);
+    q('#fm-clt-go').addEventListener('click', () => { if (!clt.rand) drawClt(); cltDraw(1000); drawClt(); });
+    q('#fm-clt-reset').addEventListener('click', () => { cltReset(); cltDraw(1000); drawClt(); });
+
+    // 只在面板打开、演示进入视野时画；之后随窗口大小和主题重画
+    let started = false, pending = 0;
+    const redraw = () => { if (!started || host.hidden) return; cancelAnimationFrame(pending); pending = requestAnimationFrame(() => { drawLln(); drawClt(); }); };
+    const start = () => { if (started || host.hidden) return; started = true; drawLln(); drawClt(); };
+    if ('IntersectionObserver' in window) new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { if (started) redraw(); else start(); } }).observe(lab);
+    else start();
+    let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redraw, 150); });
+    new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', redraw);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopLln(); });
+  })();
+
   // ── Hall 导读 ─────────────────────────────────────────────────────────
   $('#fm-hall-h').innerHTML = L('Hall《Quantum Theory for Mathematicians》逐章导读', 'A chapter guide to Hall, Quantum Theory for Mathematicians');
   $('#fm-hall-note').innerHTML = L('这本书（Springer GTM 267，2013）把第一梯队的三门串在量子力学上，是这个方向最好的起点。下表把每一组章节对应到上面的学科：读到哪一章卡住，就回到对应学科补。', 'This book (Springer GTM 267, 2013) ties the three tier-1 subjects to quantum mechanics and is the best starting point for this direction. The table maps each group of chapters to the subjects above: when a chapter stalls you, go back to that subject.');

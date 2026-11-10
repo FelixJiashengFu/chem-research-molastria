@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import './fm-prob-test.mjs'; // 数学子模块概率论演示的数学，随这个文件一起在 CI 里跑
 
 const load = (file) => { const box = { window: {} }; vm.runInNewContext(readFileSync(new URL(`../public/fundamental-science/${file}`, import.meta.url), 'utf8'), box); return box.window; };
 const M = load('fs-models.js').MOLASTRIA_FS_MODELS;
