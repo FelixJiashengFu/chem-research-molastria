@@ -7002,7 +7002,8 @@
   "review/index.html"
  ],
  "复习卡片": [
-  "review/index.html"
+  "review/index.html",
+  "shared-nav.js"
  ],
  "读过的东西，快要忘的时候再出现一次。每张卡按你的回答安排下一次复习，用的是开源的 FSRS 间隔重复算法。卡片和进度只存在这台设备的浏览器里，不上传。": [
   "review/index.html"
