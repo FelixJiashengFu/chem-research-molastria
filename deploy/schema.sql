@@ -137,3 +137,17 @@ CREATE TABLE IF NOT EXISTS status (
   body TEXT NOT NULL,
   updated INTEGER NOT NULL
 );
+
+-- 云同步（2026-11-10）：每个账号的学习记录和收藏，一份 localStorage 存档一行，原文照存（账号服务不解析）。
+-- v 是这个账号里递增的版本号（每写一次取账号里最大的加一），设备凭它只拉改过的、并且不覆盖别的设备刚传的。
+-- size 是 body 的 UTF-8 字节数，用来算空间（SYNC_FREE_KB / SYNC_PRO_KB）。body 为空字符串表示那份存档在别的设备上被清空了。
+-- 删除云端副本就是删掉这个账号的所有行。
+CREATE TABLE IF NOT EXISTS sync_items (
+  email TEXT NOT NULL,
+  key TEXT NOT NULL,
+  v INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  updated INTEGER NOT NULL,
+  PRIMARY KEY (email, key)
+);

@@ -54,6 +54,8 @@ jobs:
         run: node --test tools/mol3d-test.mjs
       - name: Review cards (decks, queue, Anki export)
         run: node --test tools/review-test.mjs
+      - name: Cloud sync (three-way merge, devices against a fake account service)
+        run: node --test tools/sync-test.mjs
       # The two in-browser Python exercises are run here with the runner's Python + numpy and checked against PySCF and exact levels.
       - name: Python in the browser (runner helpers, H₂ Hartree–Fock, 1D Schrödinger solver)
         run: |

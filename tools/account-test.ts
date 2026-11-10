@@ -1031,5 +1031,53 @@ await test("compute API: the GPU's uptime, probed every 15 minutes and public", 
   eq((await call("GET", "/v1", undefined, undefined, elsewhere)).data.endpoints.map((e: string) => e.split(" ")[1]), root_endpoints(), "the entry lists every endpoint");
 });
 
+let syncPro = "";
+// ── cloud sync: one row per localStorage record, versions per account, no overwriting another device's change ──
+await test("sync: free accounts get a small space, Pro a larger one; changes since a version; deleting the cloud copy", async () => {
+  eq((await call("GET", "/sync")).status, 401, "needs a signed-in account");
+  const free = (await signIn("sync-free@example.com")).data.token;
+  syncPro = (await signIn("boss@molastria.com")).data.token; // the site admin: permanent Pro
+  const first = await call("GET", "/sync?since=0", undefined, free);
+  eq([first.status, first.data.items, first.data.versions, first.data.used, first.data.limit, first.data.pro], [200, [], {}, 0, 1024 * 1024, false]);
+  eq((await call("GET", "/sync", undefined, syncPro)).data.limit, 10240 * 1024, "Pro supporters get SYNC_PRO_KB");
+  // Two records from the laptop: versions 1 and 2, the space counted in UTF-8 bytes.
+  const put = await call("POST", "/sync", { items: [{ key: "chemresearch-saved", base: 0, body: '["a","b"]' }, { key: "molastria-learn", base: 0, body: '{"t":"量子"}' }] }, free);
+  eq([put.status, put.data.saved, put.data.conflicts, put.data.full, put.data.used, put.data.cursor], [200, { "chemresearch-saved": 1, "molastria-learn": 2 }, [], [], 9 + 14, 2]);
+  // The phone saw version 1 of the favourites; the laptop changes them first; the phone's write comes back as a conflict.
+  eq((await call("POST", "/sync", { items: [{ key: "chemresearch-saved", base: 1, body: '["a","b","c"]' }] }, free)).data.saved, { "chemresearch-saved": 3 });
+  const stale = await call("POST", "/sync", { items: [{ key: "chemresearch-saved", base: 1, body: '["a"]' }, { key: "molastria-play", base: 0, body: "{}" }] }, free);
+  eq([stale.data.saved, stale.data.conflicts], [{ "molastria-play": 4 }, [{ key: "chemresearch-saved", v: 3, body: '["a","b","c"]' }]], "the other record still goes through");
+  eq((sqlite.prepare("SELECT body FROM sync_items WHERE email = 'sync-free@example.com' AND key = 'chemresearch-saved'").get() as any).body, '["a","b","c"]', "not overwritten");
+  // A device that has seen up to version 2 gets only what changed after it.
+  const since = await call("GET", "/sync?since=2", undefined, free);
+  eq([since.data.items.map((i: any) => [i.key, i.v]).sort(), since.data.versions, since.data.reset], [[["chemresearch-saved", 3], ["molastria-play", 4]], { "chemresearch-saved": 3, "molastria-learn": 2, "molastria-play": 4 }, false]);
+  // Over the space: refused as "full", not as a conflict; nothing else changes.
+  const big = await call("POST", "/sync", { items: [{ key: "molastria-review", base: 0, body: "x".repeat(1024 * 1024) }] }, free);
+  eq([big.status, big.data.saved, big.data.conflicts, big.data.full], [200, {}, [], ["molastria-review"]]);
+  // Bad requests.
+  eq((await call("POST", "/sync", { items: [{ key: "Bad Key", base: 0, body: "1" }] }, free)).status, 400);
+  eq((await call("POST", "/sync", { items: [{ key: "a", base: 0, body: 1 }] }, free)).status, 400, "bodies are text");
+  eq((await call("POST", "/sync", { items: [{ key: "a", base: 0, body: "1" }, { key: "a", base: 0, body: "2" }] }, free)).status, 400, "one key once");
+  eq((await call("POST", "/sync", { items: [] }, free)).status, 400);
+  // Someone else's records are not visible.
+  eq((await call("GET", "/sync", undefined, syncPro)).data.versions, {});
+  // Deleting the cloud copy; a device whose cursor is now ahead is told to start over.
+  const gone = await call("DELETE", "/sync", undefined, free);
+  eq([gone.status, gone.data.versions, gone.data.used], [200, {}, 0]);
+  eq((await call("GET", "/sync?since=4", undefined, free)).data.reset, true);
+  // SYNC_FREE_KB = 0 makes it a Pro feature; Pro is unaffected.
+  env.SYNC_FREE_KB = "0";
+  const off = await call("GET", "/sync", undefined, free);
+  eq([off.status, off.data.error?.message], [403, "云同步是 Pro 支持者的功能"]);
+  eq((await call("GET", "/sync", undefined, syncPro)).status, 200);
+  delete env.SYNC_FREE_KB;
+});
+
+await test("sync: a record bigger than the limit for one record is refused before anything is written", async () => {
+  const r = await call("POST", "/sync", { items: [{ key: "molastria-learn", base: 0, body: "量".repeat(600000) }] }, syncPro);
+  eq(r.status, 413);
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM sync_items WHERE key = 'molastria-learn' AND email = 'boss@molastria.com'").get(), { n: 0 });
+});
+
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 if (failed) Deno.exit(1);

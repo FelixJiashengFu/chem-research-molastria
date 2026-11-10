@@ -206,3 +206,7 @@ tbody tr:last-child td{border-bottom:0}
 .pro-hero .lead a{color:inherit;text-decoration:underline;text-decoration-color:var(--line)}
 html[lang=en] .funds .feat b{margin-right:.3em}
 #tiers td:first-child{min-width:9em}
+
+/* 云同步：同步哪些记录 */
+.acct .acct-synclist{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px;padding:0;list-style:none}
+.acct .acct-synclist li{margin:0;padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-size:12.5px;color:var(--ink-2);background:color-mix(in srgb,var(--surface-2) 70%,transparent)}

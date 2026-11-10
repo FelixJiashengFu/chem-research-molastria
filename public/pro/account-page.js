@@ -1,4 +1,4 @@
-/* 账号页：邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、API key（给程序用的计算接口）、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
+/* 账号页：邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、API key（给程序用的计算接口）、云同步（../sync/sync.js）、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -342,6 +342,60 @@
     try { renderCards((await A.revokeCard(code)).cards); say(cmsg, T(`已收回 ${code}。`), 'ok'); } catch (err) { say(cmsg, err.message, 'err'); }
   });
 
+  // ── cloud sync (../sync/sync.js) ──────────────────────────────────────
+  const smsg = $('sync-msg');
+  const kb = (n) => (n >= 1024 * 1024 ? `${(n / 1048576).toFixed(n >= 10 * 1048576 ? 0 : 1)} MB` : `${Math.max(n ? 1 : 0, Math.round(n / 1024))} KB`);
+  function renderSync() {
+    const S = window.MolAstriaSync, C = window.MOLASTRIA_SYNC_CORE;
+    if (!S || !C) { $('sync-card').hidden = true; return; }
+    $('sync-list').innerHTML = C.KEYS.map((k) => `<li>${esc(en() ? k.en : k.zh)}</li>`).join('');
+    const st = S.status(), on = st.on;
+    $('sync-toggle').textContent = on ? T('关闭云同步') : T('打开云同步');
+    $('sync-toggle').classList.toggle('primary', !on);
+    $('sync-now').hidden = !on;
+    $('sync-wipe').hidden = !(st.used > 0);
+    const when = st.at ? new Date(st.at).toLocaleString(en() ? 'en-CA' : 'zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '';
+    const line = !on ? (st.used > 0 ? T(`这台设备没有打开同步。云端还存着 ${kb(st.used)}。`) : T('这台设备没有打开同步。'))
+      : st.state === 'syncing' ? T('正在同步……')
+      : st.state === 'pro-only' ? T('云同步现在只对 Pro 支持者开放。')
+      : st.state === 'error' ? T(`上次没同步成功：${st.error || ''}`)
+      : st.state === 'full' ? T(`云端空间已满，有 ${st.full?.length || 0} 份记录没传上去（本机的不受影响）。`)
+      : when ? T(`上次同步：${when}。`) : T('还没有同步过。');
+    $('sync-line').textContent = line;
+    const meter = $('sync-meter');
+    meter.hidden = !(st.limit > 0 && (on || st.used > 0));
+    if (!meter.hidden) {
+      $('sync-bar').style.width = `${Math.min(100, (st.used / st.limit) * 100)}%`;
+      meter.setAttribute('aria-valuemax', st.limit);
+      meter.setAttribute('aria-valuenow', st.used || 0);
+      meter.dataset.level = st.used >= st.limit ? 'out' : st.used > st.limit * 0.9 ? 'low' : '';
+      meter.title = T(`已用 ${kb(st.used || 0)} / ${kb(st.limit)}`);
+      $('sync-line').textContent = `${line} ${T(`已用 ${kb(st.used || 0)} / ${kb(st.limit)}。`)}`;
+    }
+  }
+  document.addEventListener('molastria:sync', renderSync);
+  $('sync-toggle').addEventListener('click', async () => {
+    const S = window.MolAstriaSync;
+    if (S.on()) { S.disable(); say(smsg, T('这台设备已关闭云同步。本机和云端的记录都还在。'), 'ok'); renderSync(); return; }
+    say(smsg, T('正在同步……'));
+    const r = await S.enable();
+    const st = S.status();
+    if (!r) { say(smsg, st.error || T('同步失败，请稍后再试。'), 'err'); if (st.state === 'pro-only') S.disable(); }
+    else say(smsg, r.pulled.length ? T(`已打开。从云端取回了 ${r.pulled.length} 份记录，打开相应页面时就能看到。`) : T('已打开。以后这台设备上的学习记录和收藏会自动同步。'), 'ok');
+    renderSync();
+  });
+  $('sync-now').addEventListener('click', async () => {
+    const r = await window.MolAstriaSync.now();
+    const st = window.MolAstriaSync.status();
+    say(smsg, r ? T(`同步好了：取回 ${r.pulled.length} 份，传上 ${r.pushed.length} 份。`) : st.error || T('同步失败，请稍后再试。'), r ? 'ok' : 'err');
+  });
+  $('sync-wipe').addEventListener('click', async () => {
+    if (!confirm(T('删除云端的全部同步数据？本机的记录不动，这台设备的同步会关掉。'))) return;
+    try { await window.MolAstriaSync.wipe(); say(smsg, T('云端副本已删除。'), 'ok'); }
+    catch (err) { say(smsg, err.message, 'err'); }
+    renderSync();
+  });
+
   // Links from the header's account panel: #keys-card, #digest-card, #admin-card, #manage open that part of the page; #vip opens
   // the VIP card field on the sign-in form. The cards are drawn after the account loads, so the jump waits for paint().
   let jumped = false;
@@ -353,7 +407,7 @@
     if (el && !el.hidden && el.offsetParent) { jumped = true; requestAnimationFrame(() => el.scrollIntoView({ block: 'start', behavior: 'smooth' })); }
   };
   const painted = paint;
-  paint = (a) => { painted(a); jump(); };
+  paint = (a) => { painted(a); renderSync(); jump(); };
   addEventListener('hashchange', () => { jumped = false; jump(); });
 
   function init() {
@@ -371,5 +425,5 @@
   }
   init();
   // Re-render dates and labels when the language switches without a reload.
-  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (keyRows) renderKeys({ keys: keyRows, ...(keyUse || {}) }); if (digestState) renderDigest(); if (!$('card-field').hidden) cardMode(true); });
+  document.addEventListener('chemhub:i18n', () => { if (account) paint(account); if (cardRows.length) renderCards(cardRows); if (keyRows) renderKeys({ keys: keyRows, ...(keyUse || {}) }); if (digestState) renderDigest(); renderSync(); if (!$('card-field').hidden) cardMode(true); });
 })();

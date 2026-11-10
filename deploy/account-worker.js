@@ -14,6 +14,9 @@
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
      GET  /keys                         自己的 API key（只有前缀，没有原文）、今天的用量和最近通过 key 提交的计算；POST {name} 生成一个，原文只在这次返回；DELETE {id} 撤销
+     GET  /sync?since=<版本>            云同步：每份存档的版本、云端的空间，以及版本比 since 新的存档原文
+     POST /sync {items:[{key, base, body}]}  传上改过的存档；base 是这台设备上次看到的版本，对不上的放进 conflicts 退回去合并
+     DELETE /sync                       删掉云端的全部存档
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
      GET  /digest/preview               每周精选的完整一期（概览、全部论文和点评），公开
@@ -664,6 +667,87 @@ async function v1(request, env, path, ip) {
 }
 
 // ── routes ──────────────────────────────────────────────────────────────
+// ── cloud sync ──────────────────────────────────────────────────────────
+// Each signed-in account keeps a few of the site's localStorage records (favourites, self-checks, the Study Desk, review cards;
+// the list is public/sync/sync-core.js) as opaque text, one row per record. Versions are counted per account, so "what changed
+// since version N" is one query. A device sends back the version it last saw (base); a row someone else changed in between is
+// not overwritten but returned, and the device merges and tries again. The Worker never parses the records (10 ms CPU).
+// Space: SYNC_FREE_KB for free accounts (0 = Pro only), SYNC_PRO_KB for Pro supporters.
+const SYNC_KEY = /^[a-z0-9-]{1,48}$/, SYNC_MAX_KEYS = 32, SYNC_MAX_ITEM = 1_500_000, SYNC_MAX_BODY = 3_200_000;
+const utf8 = (s) => new TextEncoder().encode(s).length;
+async function syncLimit(env, email) {
+  const pro = (await access(env, email)).pro;
+  return { pro, limit: 1024 * Math.max(0, Number(pro ? env.SYNC_PRO_KB ?? 10240 : env.SYNC_FREE_KB ?? 1024) || 0) };
+}
+async function syncState(env, email) {
+  const rows = (await env.DB.prepare('SELECT key, v, size, updated FROM sync_items WHERE email = ?1').bind(email).all()).results;
+  return {
+    versions: Object.fromEntries(rows.map((r) => [r.key, r.v])),
+    used: rows.reduce((n, r) => n + r.size, 0),
+    cursor: rows.reduce((n, r) => Math.max(n, r.v), 0),
+    updated: rows.reduce((n, r) => Math.max(n, r.updated), 0)
+  };
+}
+async function sync(request, env, cors, url) {
+  const me = await signedIn(env, request);
+  const { pro, limit } = await syncLimit(env, me);
+  if (request.method === 'DELETE') {
+    await env.DB.prepare('DELETE FROM sync_items WHERE email = ?1').bind(me).run();
+    return json({ ok: true, ...(await syncState(env, me)), limit, pro }, cors);
+  }
+  if (!limit) throw fail(403, '云同步是 Pro 支持者的功能');
+  if (request.method === 'GET') {
+    const since = Math.max(0, Math.floor(Number(url.searchParams.get('since')) || 0));
+    const state = await syncState(env, me);
+    // a version newer than anything stored means the cloud copy was deleted (or this is another account's cursor): send all
+    const from = since > state.cursor ? 0 : since;
+    const items = (await env.DB.prepare('SELECT key, v, body FROM sync_items WHERE email = ?1 AND v > ?2').bind(me, from).all()).results;
+    return json({ ...state, items, limit, pro, reset: since > state.cursor }, cors);
+  }
+  if (request.method !== 'POST') throw fail(405, '不支持这种请求');
+  const raw = await request.text();
+  if (raw.length > SYNC_MAX_BODY) throw fail(413, '一次传的内容过大');
+  let body;
+  try { body = JSON.parse(raw); } catch { throw fail(400, '请求不是合法的 JSON'); }
+  const items = Array.isArray(body?.items) ? body.items : [];
+  if (!items.length || items.length > SYNC_MAX_KEYS) throw fail(400, '没有要同步的内容');
+  if (!(await allow(env, `sync:${me}`, Number(env.SYNC_HOURLY || 360), 3600))) throw fail(429, '同步得太频繁，请过一会儿再试');
+  const seen = new Set();
+  const clean = items.map((it) => {
+    const key = String(it?.key || ''), text = typeof it?.body === 'string' ? it.body : null;
+    if (!SYNC_KEY.test(key) || seen.has(key) || text === null) throw fail(400, '同步的内容格式不对');
+    seen.add(key);
+    const size = utf8(text);
+    if (size > SYNC_MAX_ITEM) throw fail(413, '有一份存档太大，没法同步');
+    return { key, base: Math.max(0, Math.floor(Number(it.base) || 0)), body: text, size };
+  });
+  const t = now();
+  // One statement per record: it is written only if the stored version is still the one the device saw, the account stays
+  // under its space and its number of records; the new version is one more than the account's newest.
+  const stmt = 'INSERT INTO sync_items (email, key, v, body, size, updated) '
+    + 'SELECT ?1, ?2, (SELECT COALESCE(MAX(v), 0) + 1 FROM sync_items WHERE email = ?1), ?3, ?4, ?5 '
+    + 'WHERE ?6 = COALESCE((SELECT v FROM sync_items WHERE email = ?1 AND key = ?2), 0) '
+    + 'AND (SELECT COALESCE(SUM(size), 0) FROM sync_items WHERE email = ?1 AND key <> ?2) + ?4 <= ?7 '
+    + 'AND (SELECT COUNT(*) FROM sync_items WHERE email = ?1 AND key <> ?2) < ?8 '
+    + 'ON CONFLICT (email, key) DO UPDATE SET v = excluded.v, body = excluded.body, size = excluded.size, updated = excluded.updated RETURNING key, v';
+  const done = await env.DB.batch(clean.map((c) => env.DB.prepare(stmt).bind(me, c.key, c.body, c.size, t, c.base, limit, SYNC_MAX_KEYS)));
+  const saved = {};
+  done.forEach((r) => { const row = r.results?.[0]; if (row) saved[row.key] = row.v; });
+  const missed = clean.filter((c) => !(c.key in saved)).map((c) => c.key);
+  let conflicts = [], full = [];
+  if (missed.length) {
+    const rows = (await env.DB.prepare(`SELECT key, v, body FROM sync_items WHERE email = ?1 AND key IN (${missed.map((_, i) => `?${i + 2}`).join(', ')})`).bind(me, ...missed).all()).results;
+    const at = Object.fromEntries(rows.map((r) => [r.key, r]));
+    for (const c of clean) {
+      if (c.key in saved) continue;
+      const cur = at[c.key];
+      if ((cur?.v || 0) !== c.base) conflicts.push(cur ? { key: c.key, v: cur.v, body: cur.body } : { key: c.key, v: 0, body: null });
+      else full.push(c.key); // the version matched, so it was the space (or the number of records)
+    }
+  }
+  return json({ saved, conflicts, full, ...(await syncState(env, me)), limit, pro }, cors);
+}
+
 async function route(request, env, cors) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -671,6 +755,7 @@ async function route(request, env, cors) {
   if (request.method === 'GET' && path === '/') return json({ ok: true, service: 'molastria-account' }, cors);
   if (request.method === 'GET' && path === '/me') return json(await view(env, await access(env, await signedIn(env, request))), cors);
   if (path === '/uma' || path.startsWith('/uma/')) return uma(request, env, cors, path, ip);
+  if (path === '/sync') return sync(request, env, cors, url); // larger bodies than the rest, read there
 
   const raw = request.method === 'GET' ? '' : await request.text();
   if (raw.length > Number(env.MAX_BODY || 200000)) throw fail(413, '请求内容过大');
