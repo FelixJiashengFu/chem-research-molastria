@@ -1,5 +1,6 @@
 /* 量子算法 · 交互实验室的数学模型（纯函数，不碰 DOM；tools/quantum-algorithms-test.mjs 用已知结果检验）。
-   演示 1：态矢量模拟器（最多 5 个量子比特，Quirk 式的列：一列里的 • 控制同列所有门，两个 × 交换）。
+   演示 1：态矢量模拟器（最多 5 个量子比特，Quirk 式的列：一列里的 • 控制同列所有门，两个 × 交换；
+   旋转门 Rx/Ry/Rz 带角度，M 是中途测量，用分支系综精确算，每个比特的 Bloch 向量可以逐列查看）。
    演示 2：Grover 振幅放大（解析式与模拟对照）。  演示 3：量子相位估计的读数分布。
    演示 4：横场 Ising 链的 Trotter 误差（精确演化用 Jacobi 对角化）。  演示 5：两比特 VQE，参数平移法则求梯度。
    约定：量子比特 0 是最上面一根线，也是基矢标签 |q0 q1 …⟩ 的最高位。 */
@@ -68,18 +69,80 @@
 
   // ── 演示 1：网格线路 ───────────────────────────────────────────────────
   // grid[col][q] 是门名或 ''；'•' 是控制，'x' 是交换端点。一列里的 • 控制同列所有其他门。
-  M.GRID_GATES = ['H', 'X', 'Y', 'Z', 'S', 'Sdg', 'T', 'Tdg', '•', 'x'];
+  M.GRID_GATES = ['H', 'X', 'Y', 'Z', 'S', 'Sdg', 'T', 'Tdg', '•', 'x', 'M'];
+  // 旋转门写成 'Rx:0.5'、'Ry:-0.25'、'Rz:1'：冒号后是角度除以 π（−2 到 2，最多三位小数）。
+  M.ROT = ['Rx', 'Ry', 'Rz'];
+  M.parseGate = (g) => {
+    if (typeof g !== 'string' || !g) return null;
+    if (M.U[g] || g === '•' || g === 'x' || g === 'M') return { name: g };
+    const m = /^(R[xyz]):(-?\d+(?:\.\d{1,3})?)$/.exec(g);
+    if (!m) return null;
+    const t = Number(m[2]);
+    return Math.abs(t) <= 2 ? { name: m[1], turns: t } : null;
+  };
+  M.rotGate = (name, turns) => `${name}:${Math.round(Math.max(-2, Math.min(2, turns)) * 1000) / 1000}`;
+  M.matrixOf = (g) => { const p = M.parseGate(g); if (!p) return null; return p.turns === undefined ? M.U[p.name] || null : M[p.name](p.turns * Math.PI); };
   M.runColumn = (s, col) => {
     const controls = [], swaps = [], gates = [];
-    col.forEach((g, q) => { if (g === '•') controls.push(q); else if (g === 'x') swaps.push(q); else if (g) gates.push([g, q]); });
-    for (const [g, q] of gates) M.apply(s, M.U[g], q, controls);
+    col.forEach((g, q) => { if (g === '•') controls.push(q); else if (g === 'x') swaps.push(q); else if (g && g !== 'M') gates.push([g, q]); });
+    for (const [g, q] of gates) M.apply(s, M.matrixOf(g), q, controls);
     if (swaps.length === 2) M.swap(s, swaps[0], swaps[1], controls);
     return s;
+  };
+  // ── 中途测量：系综 [{ w: 概率, s: 态 }] ────────────────────────────────
+  // 'M' 在 Z 基上测这个比特：每个分支按结果劈成两支（各自归一化），之后控制在这个比特上就是经典控制。
+  // 同一列里的测量先于这一列的门。概率极小（< 1e-14）的分支丢掉。
+  M.measure = (ens, q) => {
+    const out = [];
+    for (const { w, s } of ens) {
+      const b = bit(s.n, q);
+      for (const v of [0, 1]) {
+        const t = M.clone(s);
+        let p = 0;
+        for (let i = 0; i < t.re.length; i++) { if (((i & b) ? 1 : 0) !== v) { t.re[i] = 0; t.im[i] = 0; } else p += t.re[i] * t.re[i] + t.im[i] * t.im[i]; }
+        if (p * w < 1e-14) continue;
+        const k = 1 / Math.sqrt(p);
+        for (let i = 0; i < t.re.length; i++) { t.re[i] *= k; t.im[i] *= k; }
+        out.push({ w: w * p, s: t });
+      }
+    }
+    return out;
+  };
+  M.runColumnEnsemble = (ens, col) => {
+    let e = ens;
+    col.forEach((g, q) => { if (g === 'M') e = M.measure(e, q); });
+    for (const b of e) M.runColumn(b.s, col);
+    return e;
+  };
+  /** 跑前 upto 列（默认全部），跳过 skip(i) 为真的列；返回系综。 */
+  M.runGridEnsemble = (n, grid, init = 0, upto = grid.length, skip = () => false) => {
+    let e = [{ w: 1, s: M.basis(n, init) }];
+    for (let i = 0; i < Math.min(upto, grid.length); i++) if (!skip(i)) e = M.runColumnEnsemble(e, grid[i]);
+    return e;
+  };
+  M.ensembleProbs = (ens) => { const out = new Array(ens[0].s.re.length).fill(0); for (const { w, s } of ens) M.probs(s).forEach((v, i) => { out[i] += w * v; }); return out; };
+  /** 比特 q 的 Bloch 向量 [x, y, z]：ρ_q = (I + xX + yY + zZ)/2，长度 < 1 表示混态（纠缠或测量过）。 */
+  M.bloch = (ens, q) => {
+    let r00 = 0, r11 = 0, cr = 0, ci = 0;
+    for (const { w, s } of ens) {
+      const b = bit(s.n, q);
+      for (let i = 0; i < s.re.length; i++) {
+        if (i & b) continue;
+        const j = i | b;
+        r00 += w * (s.re[i] * s.re[i] + s.im[i] * s.im[i]);
+        r11 += w * (s.re[j] * s.re[j] + s.im[j] * s.im[j]);
+        // ρ01 = Σ a_i · conj(a_j)
+        cr += w * (s.re[i] * s.re[j] + s.im[i] * s.im[j]);
+        ci += w * (s.im[i] * s.re[j] - s.re[i] * s.im[j]);
+      }
+    }
+    return [2 * cr, -2 * ci, r00 - r11];
   };
   M.runGrid = (n, grid, init = 0) => { const s = M.basis(n, init); for (const col of grid) M.runColumn(s, col); return s; };
   // 一列是否成立（给界面提示用）：控制要有作用对象，交换要成对
   M.columnIssue = (col) => {
-    const ctl = col.filter((g) => g === '•').length, sw = col.filter((g) => g === 'x').length, other = col.filter((g) => g && g !== '•' && g !== 'x').length;
+    const ctl = col.filter((g) => g === '•').length, sw = col.filter((g) => g === 'x').length, other = col.filter((g) => g && g !== '•' && g !== 'x' && g !== 'M').length;
+    if (ctl && col.includes('M')) return 'measure';
     if (sw && sw !== 2) return 'swap';
     if (ctl && !other && !sw) return 'control';
     return '';
@@ -99,6 +162,12 @@
     qft: { n: 3, init: 1, grid: cols(3, [{ 0: 'H' }, { 1: '•', 0: 'S' }, { 2: '•', 0: 'T' }, { 1: 'H' }, { 2: '•', 1: 'S' }, { 2: 'H' }, { 0: 'x', 2: 'x' }]) },
     // 相位回踢：控制 T 门把相位 π/4 留在控制比特上
     kickback: { n: 2, grid: cols(2, [{ 0: 'H', 1: 'X' }, { 0: '•', 1: 'T' }, { 0: 'H' }]) },
+    // 测量打断干涉：H·H = I，中间插一个测量就变成一半一半
+    measure: { n: 1, grid: cols(1, [{ 0: 'H' }, { 0: 'M' }, { 0: 'H' }]) },
+    // 量子隐形传态：比特 0 的态 Ry(0.35π)|0⟩ 传到比特 2；测量比特 0、1 后按结果做 X、Z 修正（经典控制）
+    teleport: { n: 3, grid: cols(3, [{ 0: 'Ry:0.35' }, { 1: 'H' }, { 1: '•', 2: 'X' }, { 0: '•', 1: 'X' }, { 0: 'H' }, { 0: 'M', 1: 'M' }, { 1: '•', 2: 'X' }, { 0: '•', 2: 'Z' }]) },
+    // 单比特旋转：Rx(π/2) 把 |0⟩ 转到 Bloch 球赤道的 −y 方向
+    rotation: { n: 1, grid: cols(1, [{ 0: 'Rx:0.5' }]) },
   };
 
   // ── 一般线路（演示 2、3 的模拟对照与测试用） ───────────────────────────
