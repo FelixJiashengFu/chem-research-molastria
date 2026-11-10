@@ -25,7 +25,10 @@ const CHAPTERS = [
   { id: 'p14f-cat16', cat: '16', zh: '16 · 量子计算与量子化学算法', en: '16 · Quantum computing & algorithms' },
 ];
 const html = (list, id) => list.find((g) => g.id === id).html;
-const plain = (s) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+// 只用来比对文字，不当 HTML 显示。标签和实体在同一遍里处理：解出来的 < 不会再被当成标签，&amp;lt; 只解一层（得到 &lt;）；
+// 没闭合的尖括号一直去到结尾
+const ENTITY = { amp: '&', lt: '<', gt: '>' };
+const plain = (s) => s.replace(/<[^>]*(?:>|$)|&(amp|lt|gt);/g, (m, e) => (e ? ENTITY[e] : ''));
 
 test('中英两版：25 章、顺序一致，五章接在第 11 类之后，阅读器和 SEO 页的标签齐全', () => {
   assert.equal(ZH.length, EN.length);
