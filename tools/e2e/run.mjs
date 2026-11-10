@@ -422,7 +422,10 @@ check('research atlas: the copied site loads in its frame, follows the theme, mi
   await p.waitForFunction(() => /^#\/cn-top20\/#A\d+$/.test(location.hash));
   await f.click('.ra-pill[data-key=schools]');
   await f.waitForSelector('.ra-pop:not([hidden]) .ra-sch li');
-  assert.equal(await f.$$eval('.ra-pop .ra-sch li', (l) => l.length), 20, 'the school list');
+  // The atlas adds schools over time: the list must show every school in its nav.js, and at least the first 20.
+  const nSchools = await f.evaluate(() => window.RA_NAV.SCHOOLS.length);
+  assert.ok(nSchools >= 20, 'the atlas lists at least 20 schools');
+  assert.equal(await f.$$eval('.ra-pop .ra-sch li', (l) => l.length), nSchools, 'the school list');
   await p.evaluate(() => { window.__opened = []; window.open = (u) => { window.__opened.push(u); return null; }; });
   await f.evaluate(() => { const a = document.createElement('a'); a.href = 'https://openalex.org/'; a.textContent = 'x'; document.body.append(a); a.click(); });
   assert.deepEqual(await p.evaluate(() => window.__opened), ['https://openalex.org/'], 'other sites open outside the frame');
