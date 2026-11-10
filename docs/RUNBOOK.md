@@ -163,6 +163,17 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
 
+## 云同步（学习记录和收藏）
+
+登录后在账号页 `#sync-card` 打开，只对打开的那台设备生效（本机 `molastria-sync = on`）。同步哪些存档写在 `public/sync/sync-core.js` 的 `KEYS`（键名、用到它的页面、中英文名字）；合并规则和一轮同步（`syncOnce`）也在那里，`public/sync/sync.js` 只管什么时候同步、提示刷新和状态。服务端是账号服务的 `GET / POST / DELETE /sync`，表 `sync_items`。
+
+- **加一份要同步的存档：** 在 `KEYS` 里加一行；`pages` 写所有一打开就把它读进内存的页面（地址前缀），同步在这些页面下面改了存档时会提示刷新，页面没刷新前写回的内容按它打开时读到的样子合并。不要加登录令牌、API key、AI 对话、显示设置。改完更新 `pro/privacy.html` 的“云同步”一段和账号页的说明（列表是自动画的），跑 `node --test tools/sync-test.mjs`。
+- **合并规则：** 三方合并（上次对上云端的样子 / 本机 / 云端）。对象按字段、带 `id` 的数组按 id、其他数组当集合；一边删了另一边没动就删，一边删了另一边改了就留下改过的；同一个值两边改得不一样，本机优先。存档的格式变了（比如 `v` 升级）也照样能合并，但两边版本不同时会按字段混在一起，页面自己的读取函数要能清洗。
+- **空间：** `wrangler.toml` 的 `SYNC_FREE_KB`（免费账号，0 表示只给 Pro）和 `SYNC_PRO_KB`。一份存档最大约 1.5 MB（D1 一行上限 2 MB），一次请求最多约 3 MB；Worker 不解析存档内容（10 ms CPU）。
+- **看用量：** `npx wrangler d1 execute molastria --remote --command "SELECT COUNT(DISTINCT email) AS people, SUM(size) AS bytes FROM sync_items"`。
+- **用户要删数据：** 账号页的“删除云端副本”就是 `DELETE /sync`；站长手动删：`DELETE FROM sync_items WHERE email = '…'`。其他还开着同步的设备下次会把本机的再传上来，要先在那些设备上关掉。
+- **测试：** `node --test tools/sync-test.mjs`（合并、两三台设备对着假服务）、`deno run --allow-read tools/account-test.ts`（真的 /sync 接口）、`node tools/e2e/run.mjs "cloud sync"`（两个浏览器同一个账号）。
+
 ## 研习台（/learn/）
 
 AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-sources.js` 是站内内容和演示白名单，`learn-graph.js` 画 SVG，`learn.js` 是界面。决定见 `docs/DECISIONS.md` 2026-11-10（只有那一条可以写出借鉴的开源项目的名字，别处不要写）。

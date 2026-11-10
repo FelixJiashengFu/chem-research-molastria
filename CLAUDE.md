@@ -27,6 +27,7 @@ public/               发布目录，推到 main 就上线
   manual/             讲解手册阅读器（25 章）；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来；第 12–16 类五章（id p14b-cat12 … p14f-cat16）的算例由 tools/handbook-calcs.py（PySCF）算出，tools/handbook-test.mjs 核对条数、编号和数字
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
   viewer/             3D 分子查看器 mol3d.js（3Dmol.js，XYZ 多帧、PDB 编号从 RCSB 下载）和分子绘制器 sketch.js（Kekule.js，画结构出 SMILES），库都从 jsDelivr 按需载入、版本写死；模型接口、Meta 页和量子生物学的结构馆在用；纯函数由 tools/mol3d-test.mjs 测。pyrun.js 是浏览器里运行 Python 的代码框（Pyodide 314.0.7，jsDelivr，第一次约 9.2 MB，跑在 Web Worker 里，“停止”直接结束它；界面文字自带中英两版，标 translate="no"），练习程序在 py-examples.js（讲解手册“计算引擎”一章的 H₂ Hartree–Fock、量子物理“薛定谔方程与一维问题”一章的一维薛定谔求解器），tools/pyrun-test.mjs 用本机 python3 + numpy 对照 PySCF 和解析解核对。smiles3d.js 是 SMILES → 三维坐标（OpenChemLib 9.25.1，jsDelivr 按需载入约 2.5 MB，在 Web Worker 里搭构象、MMFF94s+ 优化、按能量排序，立体构型逐个核对；embed() 是纯函数，tools/code-test.mjs 用 tools/e2e 装的 openchemlib 测），开源代码台在用。formula-check.js 是“写公式作答”的题块和判分（MathLive 0.111.1 输入、Compute Engine 0.69.1 判等价，都从 jsDelivr 按需载入；载不到时退回纯文本框和内置的小解析器），常见错误各有提示，错两次给方向、错三次给解答；界面文字自带中英两版，标 translate="no"；tools/formula-check-test.mjs 测
+  sync/               云同步：sync-core.js 是纯逻辑（同步哪些存档 KEYS、三方合并、一轮同步 syncOnce；tools/sync-test.mjs 测），sync.js 管什么时候同步、页面开着时提示刷新、状态（molastria-sync、molastria-sync-state、molastria-sync-status）；登录并在账号页打开后由 shared-nav.js 在每页载入；服务端是账号服务的 /sync（表 sync_items）
   review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
   code/               开源代码台：code-core.js 是纯逻辑（读 XYZ（可以多帧，选一帧写输入）、电荷与多重度核对、PySCF/Psi4/xTB/CREST/ORCA/Gaussian/NWChem/CP2K/ASE 的输入和 QCSchema、读 xTB/ORCA/Psi4/Gaussian/PySCF/NWChem/CP2K/Q-Chem 的输出、许可证判断、代码搜索链接、PyPI/OSV 返回值整理；tools/code-test.mjs 测，NWChem、CP2K、Q-Chem 的读法对照 tools/code-fixtures/ 里的真实输出，装了 PySCF / nwchem / cp2k.psmp 时真跑生成的输入），code.js 是界面（从 SMILES 生成坐标用 viewer/smiles3d.js；软件体检由浏览器直接问 PyPI、OSV、GitHub、Software Heritage，哪家没回答就只给链接），code-demos.js 是“试一段示例”的四段输出（NWChem、CP2K、Q-Chem 摘自真实输出，ORCA 一段照格式写）；生成的输入里的注释一律英文（<pre> 不翻译）；上次的分子和标签存 molastria-code；模型接口页的“送进代码台写输入”经 molastria-code-import 把结构（每一帧的电荷和多重度）送过来，读一次就删
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
@@ -50,11 +51,11 @@ public/               发布目录，推到 main 就上线
   radar/              预印本雷达外层页面（28 个来源，理工到人文）；app/ 是复制来的，不要手改
   research-atlas/     研究图谱外层页面（中美二十所大学数理化网络、量子化学地图、Top 20、中美对比、北美产业）；app/ 是 university-science-research-network 的整站构建，由 tools/vendor-atlas.mjs 复制，不要手改；英文、Tт 字体和主题由外层页面经网址参数和 postMessage（ra-host）传进去，译文在那个仓库的 i18n/en.json，用本站的 i18n.js；图谱仓库 main 有新提交时 atlas-sync.yml 自动重新复制并上线（图谱仓库的 sync-molastria.yml 合并后立刻派发它，需要那边的 MOLASTRIA_SYNC_TOKEN；另外每 30 分钟检查一次兜底）；同步卡在 e2e 时最常见的原因是 i18n/en.json 缺译文
   physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
-  learn/              研习台（AI 家教）：先摸底、画路线、一步一检，练习分开做，学到的命题和推理链存成跨会话的知识图；learn-core.js 是纯逻辑（状态、路线图、评分、知识图、练习选题、模型回答的校验、提示词，tools/learn-test.mjs 测），learn-sources.js 把六个讲解栏目改写成可当依据的章节、外加站内演示白名单（tools/learn-sources-test.mjs 查锚点），learn-graph.js 画路线图、知识图和示意图（SVG，不收模型的 HTML/SVG），learn.js 是界面；走 ai/ai.js 的 ChemAI（访客自己的 key 或托管额度），数据只存 localStorage（molastria-learn、molastria-learn-prompts）；#goal=qp:<章> 从站内一章开始，量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学各章都有入口
+  learn/              研习台（AI 家教）：先摸底、画路线、一步一检，练习分开做，学到的命题和推理链存成跨会话的知识图；learn-core.js 是纯逻辑（状态、路线图、评分、知识图、练习选题、模型回答的校验、提示词，tools/learn-test.mjs 测），learn-sources.js 把六个讲解栏目改写成可当依据的章节、外加站内演示白名单（tools/learn-sources-test.mjs 查锚点），learn-graph.js 画路线图、知识图和示意图（SVG，不收模型的 HTML/SVG），learn.js 是界面；走 ai/ai.js 的 ChemAI（访客自己的 key 或托管额度），数据存 localStorage（molastria-learn、molastria-learn-prompts），打开云同步时也同步到账号；#goal=qp:<章> 从站内一章开始，量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学各章都有入口
   qchem/              游乐场（地址仍是 /qchem/）：三个展区十五个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；15（二维波包画墙，展区二）在 play-wave2d.js，数学在 play-wave2d-models.js（分裂算符解二维薛定谔方程，自己写的 FFT），经 MOLASTRIA_PLAY_WAVE 拿到同样的工具；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
   hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）；net-misses.js 是“没找到的词”的纯逻辑（术语表认不出的查询只记在本机 molastria-net-misses，可复制、预填 GitHub Issue、删除、关闭，不发服务器）
   hub/data.*, merged-data.*   目录快照
-deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录和每 15 分钟一次的在线率探测）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
+deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录、每 15 分钟一次的在线率探测和云同步 /sync）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口；src/notify.rs 把页面的通知（预印本雷达）转成系统通知；Mac 上 window.print() 改走 print_page 命令（WKWebView 自己不打印）
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
@@ -88,6 +89,7 @@ NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：�
 node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示的数学对照解析解，内容完整
 node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
 node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
+node --test tools/sync-test.mjs                         # 云同步：三方合并的各种情形，两三台设备对着假的账号服务来回同步
 node --test tools/code-test.mjs                         # 开源代码台：输入生成、输出解读（八个程序，NWChem/CP2K/Q-Chem 对照 tools/code-fixtures/ 的真实输出）、多帧 XYZ、SMILES 生成坐标（要 npm ci --prefix tools/e2e）、许可证、搜索链接；本机有 PySCF / nwchem / cp2k.psmp（或 CP2K_EXE）时真跑生成的输入对照参考能量（CODE_SKIP_PYTHON=1 跳过）
 node --test tools/open-models-test.mjs tools/programming-test.mjs   # 开放模型馆的内容完整性；编程区的代码用本机有的编译器真跑（PROGRAMMING_SKIP_RUN=1 跳过）
 node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
@@ -96,7 +98,7 @@ npm ci --prefix tools/e2e                               # 浏览器测试的依�
 node tools/e2e/run.mjs                                  # 浏览器端到端（假 Stripe、假邮件、假 AI，免费）；可加关键词只跑部分，--net 含真实雷达搜索
 node tools/e2e/live.mjs                                 # 线上只读检查（不发邮件、不写数据）
 deno run --allow-read --allow-write tools/i18n-extract.ts                              # 抽取新的界面文字
-deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate.ts    # DeepSeek 补译并生成 public/i18n/en.js
+deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate.ts    # DeepSeek 补译并生成 public/i18n/en.js（--offline：不调 DeepSeek，只用 en.json 里已有的译文重新生成）
 ```
 
 `deploy/` 里部署前先 `npm ci`。Windows PowerShell 禁止运行 `npx.ps1`，给用户的命令要写 `npx.cmd`。

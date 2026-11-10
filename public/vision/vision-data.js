@@ -152,7 +152,7 @@ window.MOLASTRIA_VISION = {
         items: [
           ['live', '每个取舍都写进公开的决定记录，踩过的坑写进项目说明；问题和质疑走 GitHub Issues', 'Every trade-off goes into a public decision log and every pitfall into the project notes; questions and challenges go to GitHub Issues', 'https://github.com/FelixJiashengFu/chem-research-molastria'],
           ['live', '从入门到研究的学习路径：讲解手册、教学视频、编程语言区、研习台（AI 家教）、复习卡片和十五个量子小游戏，全部免费', 'A learning path from first steps to research: the handbook, videos, programming zone, Study Desk (AI tutor), flashcards and fifteen quantum games, all free', 'learn/index.html'],
-          ['next', '云同步：学习记录和收藏在不同设备之间同步（Pro 的下一个功能）', 'Cloud sync for study progress and saved items across devices (the next Pro feature)'],
+          ['live', '云同步：登录后在账号页打开，学习记录、复习卡片、游戏成绩和收藏在同一账号的设备之间同步（免费账号 1 MB，Pro 支持者 10 MB）', 'Cloud sync: switch it on from your account page and your study records, flashcards, game scores and saved items follow you across devices signed in to the same account (1 MB on a free account, 10 MB for Pro supporters)', 'pro/account.html#sync-card'],
           ['idea', '让别人按同样的格式给资源目录、开放模型馆提交条目，经过同样的核对再合并', 'Let others submit catalogue and Open Model Hall entries in the same format, merged after the same checks'],
         ],
       },

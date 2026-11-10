@@ -2,7 +2,7 @@
 // 研习台的页面：学习（摸底 → 路线 → 一步一检 → 总结进知识图）、练习、知识图、导入笔记、数据（导出导入、用量、提示词）。
 // 逻辑在 learn-core.js（纯函数），站内章节和演示白名单在 learn-sources.js，SVG 图在 learn-graph.js；这里只管界面和调用 AI。
 // 固定文字成对写在这里（L(中, 英)，标 translate="no"），英文页不依赖词典；AI 和学习者写的文字是数据，一律转义、标 translate="no"。
-// 模型只回 JSON，由 learn-core 校验；讲解用 ChemAI.markdown（先转义再排版）。数据只存在本机 localStorage（molastria-learn）。
+// 模型只回 JSON，由 learn-core 校验；讲解用 ChemAI.markdown（先转义再排版）。数据存在本机 localStorage（molastria-learn）；打开云同步时由 sync/sync.js 同步到账号。
 // 地址：#learn #practice #graph #import #data；#s-<会话> 打开一次学习或练习；#goal=qp:<章> 用站内一章预填目标。
 (() => {
   const C = window.MOLASTRIA_LEARN_CORE, S = window.MOLASTRIA_LEARN_SOURCES, G = window.MOLASTRIA_LEARN_GRAPH;
@@ -1033,7 +1033,7 @@
       </article>
       <article class="ln-card" aria-labelledby="ln-priv-h"><h2 id="ln-priv-h">${L('隐私', 'Privacy')}</h2>
         <ul class="ln-bullets">
-          <li>${L('保存在本机：所有会话、回答、知识图、提示词改动和用量记录只存在这个浏览器的 localStorage 里，MolAstria 不保存它们。', 'Stored only on this device: every session, answer, the knowledge graph, prompt edits and usage live in this browser’s localStorage; MolAstria does not store them.')}</li>
+          <li>${L('保存在本机：所有会话、回答、知识图、提示词改动和用量记录存在这个浏览器的 localStorage 里，MolAstria 不保存它们；只有你登录后在账号页打开了云同步，才会存到你自己的账号里，在你的设备之间同步（可以随时删除云端副本）。', 'Stored on this device: every session, answer, the knowledge graph, prompt edits and usage live in this browser’s localStorage and MolAstria does not store them, unless you sign in and switch on cloud sync on the account page; then they are kept in your own account to sync across your devices (you can delete the cloud copy at any time).')}</li>
           <li>${L('发给你选的 AI 服务商：学习目标、所选章节的文字、附带文件、相关命题、你的回答和想法、导入的笔记。用 MolAstria 托管额度时，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存内容。', 'Sent to the AI provider you chose: the goal, the chosen chapter’s text, attached files, related claims, your answers and thinking, imported notes. With the MolAstria hosted allowance, requests are relayed through MolAstria’s account service to DeepSeek; the service counts requests and does not store their content.')}${relayNote()}</li>
           <li>${L('口述用的是浏览器自带的语音识别；有些浏览器会把声音交给它自己的服务处理。', 'Dictation uses the browser’s own speech recognition; some browsers send the audio to their own service.')}</li>
         </ul>

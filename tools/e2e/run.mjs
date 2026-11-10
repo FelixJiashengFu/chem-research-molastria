@@ -3036,6 +3036,63 @@ check('API keys on the account page: made once and shown once, listed by prefix,
   await finish(p);
 });
 
+check('cloud sync: two devices on one account merge favourites and progress, an open page is told to reload, the panel shows it, English, wiping the cloud copy', async () => {
+  const email = 'sync-e2e@example.com';
+  const laptop = await open(), phone = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  // The laptop has favourites and a self-check from before signing in.
+  await go(laptop, '/pro/account.html');
+  await laptop.evaluate(() => { localStorage.setItem('chemresearch-saved', JSON.stringify(['pyscf', 'orca'])); localStorage.setItem('molastria-qp-progress', JSON.stringify({ c1: true })); });
+  await signIn(laptop, email);
+  await laptop.waitForSelector('#sync-card:not([hidden])');
+  assert.equal(await laptop.locator('#sync-list li').count(), 13, 'every synced record is listed');
+  assert.match(await text(laptop, '#sync-card'), /不同步/);
+  assert.equal(await text(laptop, '#sync-toggle'), '打开云同步');
+  await laptop.click('#sync-toggle');
+  await laptop.waitForFunction(() => /已打开/.test(document.getElementById('sync-msg').textContent));
+  assert.match(await text(laptop, '#sync-line'), /上次同步：.*已用 \d+ KB \/ 1\.0 MB/);
+  // The phone signs in with its own favourites, and gets the laptop's.
+  await go(phone, '/pro/account.html');
+  await phone.evaluate(() => localStorage.setItem('chemresearch-saved', JSON.stringify(['cp2k'])));
+  await signIn(phone, email);
+  await phone.click('#sync-toggle');
+  await phone.waitForFunction(() => /已打开/.test(document.getElementById('sync-msg').textContent));
+  assert.match(await text(phone, '#sync-msg'), /取回了 2 份记录/);
+  const saved = (p) => p.evaluate(() => JSON.parse(localStorage.getItem('chemresearch-saved')).sort());
+  assert.deepEqual(await saved(phone), ['cp2k', 'orca', 'pyscf']);
+  assert.deepEqual(await phone.evaluate(() => JSON.parse(localStorage.getItem('molastria-qp-progress'))), { c1: true });
+  // The laptop is on the home page (which holds the favourites in memory) when the phone removes one.
+  await go(laptop, '/index.html');
+  await laptop.waitForFunction(() => window.MolAstriaSync && window.MolAstriaSync.status().state === 'ok');
+  await laptop.evaluate(() => window.MolAstriaSync.now());
+  assert.deepEqual(await saved(laptop), ['cp2k', 'orca', 'pyscf']);
+  assert.equal(await laptop.locator('.cr-sync-bar').count(), 1, 'the open page is told to reload');
+  await phone.evaluate(() => { localStorage.setItem('chemresearch-saved', JSON.stringify(['cp2k', 'pyscf'])); return window.MolAstriaSync.now(); });
+  await laptop.evaluate(() => window.MolAstriaSync.now());
+  assert.deepEqual(await saved(laptop), ['cp2k', 'pyscf'], 'orca stays removed');
+  // The header's account panel shows that it is on.
+  await laptop.click('#cr-acct');
+  await laptop.waitForSelector('#cr-acct-pop:not([hidden])');
+  assert.match(await laptop.innerText('#cr-acct-pop'), /云同步\s*已打开 · 刚刚同步/);
+  // English, at phone width, in the dark.
+  await go(phone, '/pro/account.html?lang=en#sync-card');
+  await phone.waitForFunction(() => document.documentElement.lang === 'en' && !document.documentElement.dataset.i18n);
+  await phone.waitForSelector('#sync-list li');
+  assert.ok(!HAN.test(await phone.innerText('#sync-card')), 'the sync card is fully in English');
+  assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll at phone width');
+  // Wiping the cloud copy keeps the local records and switches this device off.
+  await go(laptop, '/pro/account.html?lang=zh#sync-card');
+  await laptop.waitForSelector('#sync-wipe:not([hidden])');
+  await laptop.click('#sync-wipe'); // the confirm dialog is accepted
+  await laptop.waitForFunction(() => /云端副本已删除/.test(document.getElementById('sync-msg').textContent));
+  assert.equal(await text(laptop, '#sync-toggle'), '打开云同步');
+  assert.deepEqual(await saved(laptop), ['cp2k', 'pyscf']);
+  const token = await laptop.evaluate(() => localStorage.getItem('molastria-session'));
+  const cloud = await (await laptop.request.get(`${API}/sync`, { headers: { Origin: SITE, Authorization: `Bearer ${token}` } })).json();
+  assert.deepEqual(cloud.versions, {});
+  await finish(laptop);
+  await finish(phone);
+});
+
 check('compute API on the docs page: is the computer on and how often it was, a job with a key, code that follows the choice (Python client first), MACE refused, English', async () => {
   const p = await open();
   // A key, made the way the account page makes one.

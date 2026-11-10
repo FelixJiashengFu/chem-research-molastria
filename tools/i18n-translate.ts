@@ -1,5 +1,6 @@
 // Fill the empty English values in i18n/en.json with DeepSeek, then write public/i18n/en.js.
 //   DEEPSEEK_API_KEY=... deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate.ts
+//   ... tools/i18n-translate.ts --offline   only rebuild public/i18n/en.js from what en.json has (hand-filled values), no DeepSeek
 // Only empty values are sent; hand edits in en.json are never overwritten. Every answer must keep the
 // same {0} {1} … slots as its key, or it is retried on its own.
 const repo = new URL("../", import.meta.url);
@@ -38,7 +39,8 @@ async function ask(items: { i: number; zh: string }[], attempt = 0): Promise<Map
   return out;
 }
 
-if (!todo.length) console.log("nothing to translate");
+if (Deno.args.includes("--offline")) console.log(`--offline: ${todo.length} strings stay untranslated`);
+else if (!todo.length) console.log("nothing to translate");
 else if (!key) { console.error("DEEPSEEK_API_KEY is not set"); Deno.exit(2); }
 else {
   const batches: string[][] = [];

@@ -14,5 +14,15 @@ export async function d1(path = ":memory:") {
       run: async () => { st().run(...(args as any[])); return { success: true }; },
     };
   }
-  return { sqlite, DB: { prepare: (sql: string) => statement(sql), batch: async (list: any[]) => Promise.all(list.map((s) => s.run())) } };
+  // Like D1, a batch runs in order inside one transaction and gives each statement's rows (RETURNING) back as results.
+  async function batch(list: any[]) {
+    sqlite.exec("BEGIN");
+    try {
+      const out = [];
+      for (const s of list) out.push({ success: true, ...(await s.all()) });
+      sqlite.exec("COMMIT");
+      return out;
+    } catch (e) { sqlite.exec("ROLLBACK"); throw e; }
+  }
+  return { sqlite, DB: { prepare: (sql: string) => statement(sql), batch } };
 }

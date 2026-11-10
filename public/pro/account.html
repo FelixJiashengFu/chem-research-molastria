@@ -14,6 +14,8 @@
   <script src="../shared-nav.js" defer></script>
   <script src="../pay/config.js" defer></script>
   <script src="../pay/account.js" defer></script>
+  <script src="../sync/sync-core.js" defer></script>
+  <script src="../sync/sync.js" defer></script>
   <script src="account-page.js" defer></script>
 </head>
 <body data-section="pro">
@@ -75,6 +77,17 @@
         <p class="acct-line" id="digest-overview"></p>
         <ol class="acct-digest" id="digest-list"></ol>
       </div>
+    </div>
+
+    <div class="acct-card" id="sync-card" aria-labelledby="sync-h">
+      <h2 id="sync-h">云同步</h2>
+      <p class="acct-sub">打开后，下面这些记录会在登录同一账号的设备之间同步：电脑上收藏的，手机上也看得到；平板上做的自测，回到电脑接着做。两台设备都改过同一份记录时逐条合并，删掉的不会再冒出来。登录状态、AI 的 key、显示设置和 AI 助手的对话不同步。</p>
+      <ul class="acct-synclist" id="sync-list"></ul>
+      <div class="acct-digest-actions"><button type="button" class="btn primary" id="sync-toggle">打开云同步</button><button type="button" class="btn" id="sync-now" hidden>立即同步</button><button type="button" class="btn" id="sync-wipe" hidden>删除云端副本</button></div>
+      <p class="acct-sub" id="sync-line"></p>
+      <div class="acct-meter" id="sync-meter" role="meter" aria-label="已用的云端空间" aria-valuemin="0" hidden><span id="sync-bar"></span></div>
+      <p class="co-msg" id="sync-msg" role="status" aria-live="polite"></p>
+      <p class="acct-sub">云端保存的是这些记录的原文（研习台里有你的回答和笔记），只用来在你的设备之间同步，不给别人看，也不拿去训练模型。“删除云端副本”会删掉服务器上这个账号的全部同步数据，本机的记录不动；其他还开着同步的设备下次同步时会把它们的记录再传上来，所以先在那些设备上关掉同步。</p>
     </div>
 
     <div class="acct-card" id="keys-card" aria-labelledby="keys-h">

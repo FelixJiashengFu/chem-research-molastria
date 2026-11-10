@@ -123,6 +123,7 @@ sequenceDiagram
 | `digests` | 每周精选的内容，每周一条 |
 | `digest_subs` | 订阅者：邮箱、退订令牌、语言 |
 | `digest_sends` | 哪一期发给了谁，用来分批和续发 |
+| `sync_items` | 云同步：每个账号的学习记录和收藏，一份 localStorage 存档一行（原文照存，带账号内递增的版本号） |
 
 ## 数据和密钥放在哪
 

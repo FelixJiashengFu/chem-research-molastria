@@ -677,6 +677,21 @@
     user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.9 4.1-5.8 7.5-5.8s6.3 1.9 7.5 5.8"/></svg>',
     card: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/></svg>',
     shield: '<svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>',
+    sync: '<svg viewBox="0 0 24 24"><path d="M7.5 18.5h9a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 6.6 9.2 4.7 4.7 0 0 0 7.5 18.5Z"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5M12 11v5"/></svg>',
+  };
+  // Cloud sync (sync/sync.js): on when molastria-sync is "on"; the last result is in molastria-sync-status.
+  const syncOn = () => { try { return localStorage.getItem('molastria-sync') === 'on'; } catch { return false; } };
+  const syncLine = () => {
+    if (!syncOn()) return L('未打开：学习记录和收藏在设备之间同步', 'Off: sync study progress and saved items across devices');
+    let st = {};
+    try { st = JSON.parse(localStorage.getItem('molastria-sync-status') || '{}') || {}; } catch {}
+    if (st.state === 'full') return L('已打开 · 云端空间已满', 'On · cloud space is full');
+    if (st.state === 'pro-only') return L('Pro 支持者可用', 'For Pro supporters');
+    if (st.state === 'error') return L('已打开 · 上次没同步成功', 'On · the last sync failed');
+    if (!st.at) return L('已打开', 'On');
+    const min = Math.round((Date.now() - st.at) / 60000);
+    return min < 1 ? L('已打开 · 刚刚同步', 'On · synced just now') : min < 60 ? L(`已打开 · ${min} 分钟前同步`, `On · synced ${min} min ago`)
+      : L(`已打开 · ${Math.round(min / 60)} 小时前同步`, `On · synced ${Math.round(min / 60)} h ago`);
   };
   function paintAcct() {
     const a = readAccount();
@@ -715,6 +730,7 @@
     acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar" data-plan="${p.kind}" aria-hidden="true">${esc((String(a.email || '?').trim()[0] || '?').toUpperCase())}</span><div><b class="cr-ap-mail">${esc(a.email)}</b><small><span class="cr-ap-plan" data-plan="${p.kind}">${esc(p.label)}</span>${a.status === 'past_due' ? ` <span class="cr-ap-warn">${L('付款未成功', 'Payment failed')}</span>` : ''}</small></div></div>`
       + meter
       + `<div class="cr-ap-list">${apRow('pro/account.html', IC.user, L('我的账号', 'My account'), L('套餐、额度、课题组成员', 'Plan, allowance, lab members'))}`
+      + apRow('pro/account.html#sync-card', IC.sync, L('云同步', 'Cloud sync'), syncLine())
       + apRow('pro/account.html#keys-card', IC.key, 'API key', L('给程序用的计算接口，今天的用量', 'For the compute API, with today’s usage'))
       + apRow('pro/account.html#digest-card', IC.mail, L('每周精选', 'Weekly Picks'), L('订阅邮件或发一份到邮箱', 'Subscribe, or send one to your inbox'))
       + (a.admin ? apRow('pro/account.html#admin-card', IC.shield, L('站长：VIP 卡', 'Admin: VIP cards'), L('发卡、收回、生成本期精选', 'Issue and revoke cards, build the digest')) : '')
@@ -786,6 +802,7 @@
   addEventListener('resize', () => { if (!acctPop.hidden) placeAcct(); });
   // another tab signing in or out
   addEventListener('storage', (e) => { if (e.key === 'molastria-account' || e.key === 'molastria-session') { paintAcct(); refreshDot(); } });
+  document.addEventListener('molastria:sync', () => { if (!acctPop.hidden) fillAcct(); });
   paintAcct();
 
   // 主题：未手动选择时跟随系统；点击后在浅色 / 深色之间切换并记住。
@@ -1030,6 +1047,10 @@
     s.onerror = () => reject(new Error('AI 模块加载失败'));
     document.head.append(s);
   });
+  // Cloud sync runs on every page once it is switched on (pro/account.html#sync-card) and someone is signed in.
+  if (readAccount() && syncOn() && location.protocol !== 'file:' && !window.MolAstriaSync) {
+    (window.MOLASTRIA_SYNC_CORE ? Promise.resolve() : addScript('sync/sync-core.js')).then(() => window.MolAstriaSync || addScript('sync/sync.js')).catch(() => {});
+  }
   const loadAI = () => {
     if (window.ChemAI) return Promise.resolve(window.ChemAI);
     if (!loading) loading = (window.CHEMHUB_AI_CONFIG ? Promise.resolve() : addScript('ai/config.js'))
