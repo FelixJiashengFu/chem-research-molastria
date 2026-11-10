@@ -715,6 +715,8 @@
     }
     if (b.dataset.act === 'xyz') save(`${stem}.xyz`, x.view.xyz, 'chemical/x-xyz');
     if (b.dataset.act === 'conf-xyz') save(`${stem}_${Number(b.dataset.k) + 1}.xyz`, x.r.conformers[Number(b.dataset.k)].xyz || '', 'chemical/x-xyz');
+    // results live only in memory: leaving mid-run abandons a job that is already paid for, so both hand-offs wait for the run to end
+    if ((b.dataset.act === 'code' || b.dataset.act === 'lab') && busy) { toast('还在算，这一轮算完再送过去'); return; }
     if (b.dataset.act === 'code') { // the Code Desk reads molastria-code-import once, then writes PySCF / ORCA / … input from it
       try { localStorage.setItem('molastria-code-import', JSON.stringify(codeImport(x))); } catch { toast('浏览器存储不可用，请下载结构后在代码台粘贴'); return; }
       location.href = '../code/index.html#input';

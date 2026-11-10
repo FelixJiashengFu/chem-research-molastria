@@ -1,0 +1,40 @@
+                  Welcome to Q-Chem
+     A Quantum Leap Into The Future Of Chemistry
+
+ SCF   energy in the final basis set =      -74.9643287668
+ Total energy in the final basis set =      -74.9643287668
+
+
+EHF                    =   -74.964328767
+EMP2                   =   -75.002378705
+EMP3                   =   -75.012879231
+EMP4SDQ                =   -75.016089019
+
+
+Doing only closed-shell triples contributions
+EMP4                   =   -75.016143404
+
+
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-20.244  -1.251  -0.445  -0.603  -0.388
+  1 A1    2 A1    3 A1    1 B1    1 B2                                         
+ -- Virtual --                   
+  0.571   0.709
+  4 A1    2 B1                                                                 
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-20.244  -1.251  -0.445  -0.603  -0.388
+  1 A1    2 A1    3 A1    1 B1    1 B2                                         
+ -- Virtual --                   
+  0.571   0.709
+  4 A1    2 B1                                                                 
+ --------------------------------------------------------------
+
+        *                                                           *
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *
+        *                                                           *

@@ -29,8 +29,9 @@
     return Z[one] ? one : '';
   }
 
-  /** 多帧 XYZ（构象、轨迹、扫描）拆成一帧一段；只有一帧、或者格式对不上时返回 null，交给单帧的读法报错。 */
-  function splitFrames(text) {
+  /** 多帧 XYZ（构象、轨迹、扫描）拆成一帧一段，带上每一帧在原文里从第几行开始（从 0 数）；
+      只有一帧、或者格式对不上时返回 null，交给单帧的读法报错。 */
+  function frameBlocks(text) {
     const lines = String(text || '').replace(/\r/g, '').split('\n');
     const frames = [];
     let i = 0;
@@ -41,31 +42,34 @@
       if (!m || +m[1] < 1) return null;
       const n = +m[1], block = lines.slice(i, i + n + 2);
       if (block.length < n + 2 || block.slice(2).some((l) => !l.trim() || /^\s*\d+\s*$/.test(l))) return null;
-      frames.push(block.join('\n'));
+      frames.push({ text: block.join('\n'), start: i });
       i += n + 2;
     }
     return frames.length > 1 ? frames : null;
   }
+  const splitFrames = (text) => frameBlocks(text)?.map((b) => b.text) ?? null;
 
   /** 读 XYZ：标准格式（原子数 + 注释行）或者只有“元素 x y z”的若干行；多帧的文件读第 frame 帧（从 0 数）。
-      返回 { atoms:[{el,x,y,z}], comment, errors, frames（共几帧）, frame, comments（每帧的注释） }。 */
+      返回 { atoms:[{el,x,y,z}], comment, errors, frames（共几帧）, frame, comments（每帧的注释） }。报错里的行号按整个文件数。 */
   function parseXYZ(text, frame = 0) {
-    const multi = splitFrames(text);
+    const multi = frameBlocks(text);
     if (multi) {
       const k = Math.min(Math.max(0, Math.floor(Number(frame) || 0)), multi.length - 1);
-      const r = parseOne(multi[k]);
-      return { ...r, frames: multi.length, frame: k, comments: multi.map((b) => (b.split('\n')[1] || '').trim()) };
+      const r = parseOne(multi[k].text, multi[k].start, k);
+      return { ...r, frames: multi.length, frame: k, comments: multi.map((b) => (b.text.split('\n')[1] || '').trim()) };
     }
     return { ...parseOne(text), frames: 1, frame: 0, comments: [] };
   }
-  function parseOne(text) {
+  /** 读一帧。off：这一帧前面还有几行（报错的行号加上它）；k：多帧文件里的第几帧（单帧是 -1）。 */
+  function parseOne(text, off = 0, k = -1) {
     const lines = String(text || '').replace(/\r/g, '').split('\n');
-    while (lines.length && !lines[0].trim()) lines.shift();
+    while (lines.length && !lines[0].trim()) { lines.shift(); off++; }
     let comment = '', declared = null;
     if (lines.length && /^\s*\d+\s*$/.test(lines[0])) {
       declared = Number(lines[0].trim());
       comment = (lines[1] || '').trim();
       lines.splice(0, 2);
+      off += 2;
     }
     const atoms = [], errors = [];
     lines.forEach((raw, i) => {
@@ -74,10 +78,12 @@
       const p = line.split(/[\s,]+/);
       const el = element(p[0]);
       const xyz = p.slice(1, 4).map(Number);
-      if (!el || p.length < 4 || xyz.some((v) => !Number.isFinite(v))) { errors.push(`第 ${i + 1 + (declared === null ? 0 : 2)} 行读不懂：${line.slice(0, 40)}`); return; }
+      if (!el || p.length < 4 || xyz.some((v) => !Number.isFinite(v))) { errors.push(`第 ${i + 1 + off} 行读不懂：${line.slice(0, 40)}`); return; }
       atoms.push({ el, x: xyz[0], y: xyz[1], z: xyz[2] });
     });
-    if (declared !== null && declared !== atoms.length && !errors.length) errors.push(`第一行写的是 ${declared} 个原子，实际读到 ${atoms.length} 个`);
+    if (declared !== null && declared !== atoms.length && !errors.length) {
+      errors.push(k < 0 ? `第一行写的是 ${declared} 个原子，实际读到 ${atoms.length} 个` : `第 ${k + 1} 帧写的是 ${declared} 个原子，实际读到 ${atoms.length} 个`);
+    }
     if (!atoms.length && !errors.length) errors.push('没有读到原子');
     return { atoms, comment, errors };
   }
@@ -378,6 +384,12 @@
   /** 带指数的数（CP2K 的 1.5771062461E+03、NWChem 的 -4.989594D-01）。 */
   const sci = (s) => (String(s).match(/-?\d+\.\d+(?:[ED][+-]?\d+)?/gi) || []).map(num);
   /** 由各自旋的占据和空轨道能量（hartree）算能隙（eV）：HOMO 取最高的占据轨道，LUMO 取最低的空轨道。 */
+  /** 两种标记（比如“收敛了”和“没收敛”）哪个在后面就按哪个：一个文件里有好几次优化时，看最后一次。都没有是 null。 */
+  function laterOf(t, yes, no) {
+    const y = last(all(yes, t)), n = last(all(no, t));
+    if (!y && !n) return null;
+    return !n || (!!y && y.index > n.index);
+  }
   function gapOf(spins, r) {
     const occ = spins.flatMap((x) => x.occ), vir = spins.flatMap((x) => x.vir);
     if (!occ.length || !vir.length) return;
@@ -475,20 +487,39 @@
 
   // NWChem（7.2.2 实跑核对）：SCF / DFT / MP2 / CCSD(T) / TCE 的能量，“Optimization converged”，
   // 投影后的频率（P.Frequency，虚频是负数，前 6 个平动转动约为 0），最后一次 “Molecular Orbital Analysis” 里的轨道能量。
+  // 能量只看最后一个算出能量的 task（先粗优化再精算、优化完再算单点）。数值差分会在一个个位移结构上各算一次能量，
+  // 最后一个不是这个结构的：优化取最后一行 “@ 步数 能量” 那一次，有限差分 Hessian 和数值梯度取头一次（参考结构）。
+  const NW_E = [
+    [/CCSD\(T\) total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, () => 'CCSD(T) total energy (TCE)'],
+    [/Total CCSD\(T\) energy:\s*(-?\d+\.\d+)/g, () => 'Total CCSD(T) energy'],
+    [/CCSD total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, () => 'CCSD total energy (TCE)'],
+    [/Total CCSD energy:\s*(-?\d+\.\d+)/g, () => 'Total CCSD energy'],
+    [/Total MP2 energy:?\s+(-?\d+\.\d+)/g, () => 'Total MP2 energy'],
+    [/Total (SCF|DFT) energy =\s+(-?\d+\.\d+)/g, (m) => `Total ${m[1]} energy`],
+  ];
+  function nwEnergy(t) {
+    // 每个 task 开始时 NWChem 都重新读一次输入，印一行 “NWChem Input Module”（“Task times” 在打印级别低时没有）
+    const seg = t.split(/^\s*NWChem Input Module\s*$/m).reverse().find((s) => NW_E.some(([re]) => all(re, s).length));
+    if (!seg) return null;
+    const [re, label] = NW_E.find(([x]) => all(x, seg).length);
+    const val = (m) => num(m[m.length - 1]);
+    const hits = all(re, seg);
+    let m = last(hits);
+    const steps = all(/^@\s+\d+\s+(-?\d+\.\d+)/gm, seg);
+    const fd = last(all(/NWChem (?:Finite-difference Hessian|Numerical Gradients Module)/g, seg));
+    if (steps.length) { // 优化：“@” 那一行只有 8 位小数，找和它对得上的那一次，取完整的位数
+      const at = num(last(steps)[1]);
+      m = [...hits].reverse().find((h) => Math.abs(val(h) - at) < 6e-9);
+      if (!m) return { energy: at, label: `${label(last(hits))} (@ ${last(steps)[0].trim().split(/\s+/)[1]})` };
+    } else if (fd) m = hits.find((h) => h.index > fd.index) || m;
+    return { energy: val(m), label: label(m) };
+  }
   PARSE.nwchem = (t, r) => {
-    const pick = [
-      [/CCSD\(T\) total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, 'CCSD(T) total energy (TCE)'],
-      [/Total CCSD\(T\) energy:\s*(-?\d+\.\d+)/g, 'Total CCSD(T) energy'],
-      [/CCSD total energy \/ hartree\s*=\s*(-?\d+\.\d+)/g, 'CCSD total energy (TCE)'],
-      [/Total CCSD energy:\s*(-?\d+\.\d+)/g, 'Total CCSD energy'],
-      [/Total MP2 energy:?\s+(-?\d+\.\d+)/g, 'Total MP2 energy'],
-    ].map(([re, label]) => [last(all(re, t)), label]).find(([m]) => m);
-    const scf = last(all(/Total (SCF|DFT) energy =\s+(-?\d+\.\d+)/g, t));
-    if (pick) { r.energy = num(pick[0][1]); r.energyLabel = pick[1]; } else if (scf) { r.energy = num(scf[2]); r.energyLabel = `Total ${scf[1]} energy`; }
+    const e = nwEnergy(t);
+    if (e) { r.energy = e.energy; r.energyLabel = e.label; }
     if (/Calculation failed to converge/.test(t)) r.scfConverged = false;
-    else if (scf) r.scfConverged = true;
-    if (/^\s*Optimization converged\s*$/m.test(t)) r.optConverged = true;
-    else if (/Failed to converge in maximum number of steps/.test(t)) r.optConverged = false;
+    else if (/Total (?:SCF|DFT) energy =/.test(t)) r.scfConverged = true;
+    r.optConverged = laterOf(t, /^\s*Optimization converged\s*$/gm, /Failed to converge in maximum number of steps/g);
     const fr = all(/^\s*P\.Frequency\s+([^\n]+)/gm, t.split(/\(Projected Frequencies expressed in cm-1\)/).slice(-1)[0]).flatMap((m) => sci(m[1]));
     if (fr.length) r.freqs = fr.filter((v) => Math.abs(v) > 1e-3);
     const heads = all(/(?:^|\n)\s*(?:\S+ )?Final (Alpha |Beta )?Molecular Orbital Analysis/g, t);
@@ -506,15 +537,14 @@
     const er = /-{20,}\n\s*(\S[^\n]*?)\s+-?\d+\s*\n\s*-{20,}\n\s*-{20,}\n\s*current input line/.exec(t);
     if (er) r.errorText = er[1].trim();
   };
-  // CP2K（2026.2 实跑核对）：每一步的 “ENERGY| Total FORCE_EVAL” 取最后一个；SCF 和几何优化的收敛；
+  // CP2K（2026.2 实跑核对；7.x 以前写的是 “energy (a.u.):”）：每一步的 “ENERGY| Total FORCE_EVAL” 取最后一个；SCF 和几何优化的收敛；
   // VIBRATIONAL_ANALYSIS 的 “VIB|Frequency”（科学计数法，虚频是负数）。默认输出里没有 HOMO–LUMO 能隙，不读。
   PARSE.cp2k = (t, r) => {
-    const e = last(all(/ENERGY\| Total FORCE_EVAL \( \w+ \) energy \[(?:a\.u\.|hartree)\]:?\s+(-?\d+\.\d+)/g, t));
+    const e = last(all(/ENERGY\| Total FORCE_EVAL \( \w+ \) energy [[(](?:a\.u\.|hartree)[\])]:?\s+(-?\d+\.\d+)/g, t));
     if (e) { r.energy = num(e[1]); r.energyLabel = 'ENERGY| Total FORCE_EVAL'; }
     if (/SCF run NOT converged/.test(t)) r.scfConverged = false;
     else if (/SCF run converged in/.test(t)) r.scfConverged = true;
-    if (/GEOMETRY OPTIMIZATION COMPLETED/.test(t)) r.optConverged = true;
-    else if (/MAXIMUM NUMBER OF OPTIMIZATION STEPS REACHED/.test(t)) r.optConverged = false;
+    r.optConverged = laterOf(t, /GEOMETRY OPTIMIZATION COMPLETED/g, /MAXIMUM NUMBER OF OPTIMIZATION STEPS REACHED/g);
     const fr = all(/VIB\|Frequency \(cm\^-1\)\s+([^\n]+)/g, t).flatMap((m) => sci(m[1]));
     if (fr.length) r.freqs = fr;
     if (!e && fr.length) r.energyHint = 'CP2K 的振动分析把各个位移点的能量写在 PROJECT-r-0.out 这类副本文件里，主输出里没有总能量。';
@@ -524,24 +554,32 @@
     if (ab) r.errorText = ab[1].split('\n').map((l) => l.replace(/^\s*\*\s?/, '').replace(/\*\s*$/, '').replace(/^\s*(?:\\___\/|\||O\/\||\/\| \||\/ \\)/, '').replace(/\S+\.F:\d+\s*$/, '').trim()).filter(Boolean).join(' ');
   };
   // Q-Chem（5.4 和 6.0 的真实输出，cclib 回归数据，BSD-3）：最后一个 “Total energy in the final basis set”，
-  // MP2 / CCSD / CCSD(T) 优先；“OPTIMIZATION CONVERGED”；“Frequency:” 行（虚频是负数）；
+  // MP2 / MP3 / MP4 / CCSD / CCSD(T) 优先；“OPTIMIZATION CONVERGED”；“Frequency:” 行（虚频是负数）；
   // 最后一组 “Orbital Energies” 里 Alpha 和 Beta 的 Occupied / Virtual（a.u.，只有三位小数）。
+  // 能量只看最后一个算出能量的 job（多个 job 的输入用 @@@ 隔开），有限差分（“Starting / Finishing finite difference”）里的位移结构不算。
+  const QC_E = [
+    [/CCSD\(T\) total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD(T) total energy'],
+    [/CCSD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD total energy'],
+    [/^\s*EMP4\s*=\s*(-?\d+\.\d+)/gm, 'EMP4'],
+    [/^\s*EMP4SDQ\s*=\s*(-?\d+\.\d+)/gm, 'EMP4SDQ'],
+    [/CCD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCD total energy'],
+    [/^\s*MP3 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP3 energy'],
+    [/^\s*EMP3\s*=\s*(-?\d+\.\d+)/gm, 'EMP3'],
+    [/RI-MP2 TOTAL ENERGY\s*=\s*(-?\d+\.\d+)/g, 'RI-MP2 TOTAL ENERGY'],
+    [/MP2\s+total energy\s*=\s*(-?\d+\.\d+)/g, 'MP2 total energy'],
+    [/^\s*MP2 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP2 energy'],
+    [/^\s*EMP2\s*=\s*(-?\d+\.\d+)/gm, 'EMP2'],
+    [/Total energy in the final basis set\s*=\s*(-?\d+\.\d+)/g, 'Total energy in the final basis set'],
+  ];
   PARSE.qchem = (t, r) => {
-    const pick = [
-      [/CCSD\(T\) total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD(T) total energy'],
-      [/CCSD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCSD total energy'],
-      [/CCD total energy\s*=\s*(-?\d+\.\d+)/g, 'CCD total energy'],
-      [/^\s*MP3 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP3 energy'],
-      [/RI-MP2 TOTAL ENERGY\s*=\s*(-?\d+\.\d+)/g, 'RI-MP2 TOTAL ENERGY'],
-      [/MP2\s+total energy\s*=\s*(-?\d+\.\d+)/g, 'MP2 total energy'],
-      [/^\s*MP2 energy\s*=\s*(-?\d+\.\d+)/gm, 'MP2 energy'],
-    ].map(([re, label]) => [last(all(re, t)), label]).find(([m]) => m);
-    const scf = last(all(/Total energy in the final basis set\s*=\s*(-?\d+\.\d+)/g, t));
-    if (pick) { r.energy = num(pick[0][1]); r.energyLabel = pick[1]; } else if (scf) { r.energy = num(scf[1]); r.energyLabel = 'Total energy in the final basis set'; }
+    const job = t.split(/\n[^\n]*Welcome to Q-Chem/).map((s) => s.replace(/# Starting finite difference calculation[\s\S]*?(?:# Finishing finite difference calculation|$)/g, ''))
+      .reverse().find((s) => QC_E.some(([re]) => all(re, s).length));
+    const pick = job && QC_E.map(([re, label]) => [last(all(re, job)), label]).find(([m]) => m);
+    if (pick) { r.energy = num(pick[0][1]); r.energyLabel = pick[1]; }
+    else if (/# Starting finite difference calculation/.test(t)) r.energyHint = 'Q-Chem 的这个任务是有限差分（一系列位移结构或外加电场下的能量），没有单独印出未扰动的能量；要能量请另算一次单点。';
     if (/SCF failed to converge|Convergence failure/.test(t)) r.scfConverged = false;
-    else if (scf) r.scfConverged = true;
-    if (/\*\*\s+OPTIMIZATION CONVERGED\s+\*\*/.test(t)) r.optConverged = true;
-    else if (/MAXIMUM OPTIMIZATION CYCLES REACHED/.test(t)) r.optConverged = false;
+    else if (/Total energy in the final basis set/.test(t)) r.scfConverged = true;
+    r.optConverged = laterOf(t, /\*\*\s+OPTIMIZATION CONVERGED\s+\*\*/g, /MAXIMUM OPTIMIZATION CYCLES REACHED/g);
     // 只看最后一段振动分析（VPT2 非谐计算会把谐振频率再印一遍）
     const fr = all(/^\s*Frequency:\s+([^\n]+)/gm, t.split(/\*\*\s+VIBRATIONAL ANALYSIS\s+\*\*/).slice(-1)[0]).flatMap((m) => floats(m[1]));
     if (fr.length) r.freqs = fr;

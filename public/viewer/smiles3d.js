@@ -25,21 +25,27 @@
     if (!heavy) return { error: 'empty' };
     if (heavy > o.maxHeavy) return { error: 'big', heavy, max: o.maxHeavy };
     mol.ensureHelperArrays(M.cHelperParities);
-    let charge = 0, unpaired = 0, hydrogens = 0, unspecified = 0;
+    const changed = bracketH(smi, mol);
+    if (changed) return { error: 'hcount', ...changed };
+    let charge = 0, unpaired = 0, hydrogens = 0, unspecified = 0, electrons = 0;
     for (let i = 0; i < heavy; i++) {
       charge += mol.getAtomCharge(i);
       const r = mol.getAtomRadical(i);
       if (r === M.cAtomRadicalStateD) unpaired += 1;
       else if (r === M.cAtomRadicalStateT) unpaired += 2;
       hydrogens += mol.getImplicitHydrogens(i);
+      electrons += mol.getAtomicNo(i) + mol.getImplicitHydrogens(i);
       if (mol.getAtomParity(i) === M.cAtomParityUnknown) unspecified++;
     }
     for (let b = 0; b < mol.getBonds(); b++) if (mol.getBondParity(b) === M.cBondParityUnknown) unspecified++;
+    electrons -= charge;
     const total = heavy + hydrogens;
     const fragments = mol.getFragments().length;
-    // 立体构型由三维坐标重新认一遍（去掉氢再比），用来确认每个构象都是同一个立体异构体
-    const noH = (c) => { const m = M.fromMolfile(c.toMolfile()); m.removeExplicitHydrogens(); return m; };
-    const stereoOf = (c) => noH(c).getIDCode(); // idcode 是规范的，带立体信息
+    // 立体构型由三维坐标重新认一遍（去掉氢再比），用来确认每个构象都是同一个立体异构体。
+    // 两边都转成 SMILES 再读回来，只比 SMILES 写得出的立体信息（联芳基的轴手性写不进 SMILES，比了就永远对不上）；
+    // 用 V3000 的 molfile，V2000 存不下 [I-] 这种没有氢的二配位原子，读回来会多一个氢。
+    const noH = (c) => { const m = M.fromMolfile(c.toMolfileV3()); m.removeExplicitHydrogens(); return m; };
+    const stereoOf = (c) => M.fromSmiles(noH(c).toIsomericSmiles()).getIDCode(); // idcode 是规范的，带立体信息
     const warnings = [];
     let source = smi, fixed = '';
     try {
@@ -50,7 +56,7 @@
         source = fixed;
         warnings.push('unspecified');
       }
-      const target = M.fromSmiles(source).getIDCode();
+      const target = M.fromSmiles(M.fromSmiles(source).toIsomericSmiles()).getIDCode();
       const stereoSmiles = fixed || smi; // 写进 XYZ 注释的：原样的 SMILES，或者补上构型的那一个
       // 力场在浏览器里算得慢（大约和原子数的平方成正比），大分子少搭几个构象、少迭代几步
       const want = Math.max(1, Math.min(o.conformers, total <= 40 ? 8 : total <= 80 ? 4 : total <= 150 ? 2 : 1));
@@ -74,21 +80,67 @@
         const c = raw[k];
         let energy = null;
         if (ff) {
-          try { const f = new OCL.ForceFieldMMFF94(c, 'MMFF94s+'); f.minimise({ maxIts }); energy = f.getTotalEnergy(); } catch { ff = ''; }
+          // 力场算不出数（个别构象给 NaN，比如重氮化合物）时坐标没动，当作没优化的起点
+          try { const f = new OCL.ForceFieldMMFF94(c, 'MMFF94s+'); f.minimise({ maxIts }); const e = f.getTotalEnergy(); energy = Number.isFinite(e) ? e : null; } catch { ff = ''; }
         }
         if (!ff) { frames.length = 0; frames.push({ atoms: atomsOf(c), energy: null }); break; } // 没有力场参数：只留第一个，顺序没意义
         frames.push({ atoms: atomsOf(c), energy });
       }
-      if (!ff) warnings.push('no-forcefield');
-      if (ff && frames.some((x) => !(Number.isFinite(x.energy)))) warnings.push('no-forcefield');
-      frames.sort((a, b) => (a.energy ?? 0) - (b.energy ?? 0));
+      const optimised = frames.filter((x) => x.energy !== null).length;
+      const bare = heavy === 1 && !hydrogens; // 单个原子：没什么可优化的，不提力场
+      if (!optimised) { ff = ''; if (!bare) warnings.push('no-forcefield'); } else if (optimised < frames.length) warnings.push('partly-optimised');
+      // 优化过的按能量从低到高，没优化的排在最后
+      frames.sort((a, b) => (a.energy === null) - (b.energy === null) || (a.energy ?? 0) - (b.energy ?? 0));
+      // 能量差不到 0.01 kcal/mol、重原子之间的距离也都一样（差不到 0.1 Å）才算同一个构象（或它的镜像）
       const kept = [];
-      for (const fr of frames) if (!kept.some((x) => x.energy !== null && fr.energy !== null && Math.abs(x.energy - fr.energy) < 0.01)) kept.push(fr); // 能量相同当作同一个构象（或它的镜像）
+      for (const fr of frames) {
+        fr.fp = fingerprint(fr.atoms);
+        if (!kept.some((x) => x.energy !== null && fr.energy !== null && Math.abs(x.energy - fr.energy) < 0.01 && sameShape(x.fp, fr.fp))) kept.push(fr);
+      }
+      kept.forEach((x) => delete x.fp);
       if (fragments > 1) warnings.push('fragments');
-      if (unpaired) warnings.push('radical');
-      return { smiles: smi, stereoSmiles, fixedSmiles: fixed, frames: kept, tried: raw.length, charge, unpaired, mult: unpaired + 1, heavy, total, fragments, unspecified, forcefield: ff, warnings };
+      // 电子数是奇数却没有标自由基（OpenChemLib 读 [N]、[Cu+2] 这类原子时不标）：至少有一个未成对电子
+      if ((electrons - unpaired) % 2) unpaired += 1;
+      if (bare && electrons <= 18) { // 单个原子（或离子），18 个电子以内：按洪特规则（C、O 是三重态，N 是四重态）
+        unpaired = hund(electrons);
+        if (unpaired > 1) warnings.push('atom');
+      } else if (bare && ![2, 10, 18, 36, 54, 86].includes(electrons)) warnings.push('atom-check'); // 过渡金属：只按奇偶，要查表
+      if (unpaired && !bare) warnings.push('radical');
+      return { smiles: smi, stereoSmiles, fixedSmiles: fixed, frames: kept, tried: raw.length, charge, electrons, unpaired, mult: unpaired + 1, heavy, total, fragments, unspecified, forcefield: ff, warnings };
     } catch (e) {
       return { error: 'embed', detail: String((e && e.message) || e).slice(0, 200) };
+    }
+    function hund(n) { // 1s 2s 2p 3s 3p 依次填，最后一个没填满的亚层里每个轨道先放一个
+      for (const [cap, orb] of [[2, 1], [2, 1], [6, 3], [2, 1], [6, 3]]) {
+        if (n < cap) return n <= orb ? n : 2 * orb - n;
+        n -= cap;
+      }
+      return 0;
+    }
+    function fingerprint(atoms) { // 重原子两两之间的距离，排好序（和原子编号、镜像都无关）
+      const h = atoms.filter((a) => a.el !== 'H'), p = h.length > 1 ? h : atoms, d = [];
+      for (let i = 0; i < p.length; i++) for (let j = i + 1; j < p.length; j++) d.push(Math.hypot(p[i].x - p[j].x, p[i].y - p[j].y, p[i].z - p[j].z));
+      return d.sort((a, b) => a - b);
+    }
+    function sameShape(a, b) { return a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) < 0.1); }
+    /** 方括号里的原子，氢数是写死的（[N] 就是没有氢）；OpenChemLib 读不通价态时会自己加氢、改电荷，
+        得到的是另一个分子（O=[N]=O 变成 HNO2）。对不上就返回 { detail: '[N]', want, got }。
+        SMILES 里有 [H] 这类氢原子时原子顺序会变，不查。 */
+    function bracketH(text, m) {
+      const toks = text.match(/\[[^\]]*\]|Br|Cl|[BCNOPSFI]|[bcnops]|\*/g) || [];
+      if (toks.length !== m.getAllAtoms()) return null;
+      for (let i = 0; i < toks.length; i++) {
+        const tk = toks[i];
+        if (tk[0] !== '[') continue;
+        const b = /^\[(\d*)([A-Z][a-z]?|[a-z][a-z]?|\*)(@(?:@|TH\d|AL\d|SP\d|TB\d\d?|OH\d\d?)?)?(H\d*)?([+-]\d*|[+-]+)?(?::\d+)?\]$/.exec(tk);
+        if (!b) return null;
+        const el = b[2][0].toUpperCase() + b[2].slice(1);
+        if (el === 'H') return null;
+        if (m.getAtomLabel(i) !== el) return null; // 顺序对不上，不查
+        const want = b[4] ? Number(b[4].slice(1) || 1) : 0, got = m.getAllHydrogens(i);
+        if (want !== got) return { detail: tk, want, got };
+      }
+      return null;
     }
     function atomsOf(c) { // 平移到几何中心
       const n = c.getAllAtoms(), out = [];
@@ -104,7 +156,7 @@
   function toXYZ(r) {
     const f = (v) => (v < 0 ? '' : ' ') + v.toFixed(6);
     return (r.frames || []).map((fr, k) => {
-      const e = fr.energy === null ? 'not optimised (no MMFF94 parameters)' : `MMFF94s+ E = ${fr.energy.toFixed(3)} kcal/mol`;
+      const e = Number.isFinite(fr.energy) ? `MMFF94s+ E = ${fr.energy.toFixed(3)} kcal/mol` : 'not optimised (MMFF94 gave no energy)';
       const head = `conformer ${k + 1}/${r.frames.length} from SMILES ${r.stereoSmiles || r.smiles} | ${e}`;
       return `${fr.atoms.length}\n${head}\n${fr.atoms.map((a) => `${a.el.padEnd(2)} ${f(a.x)} ${f(a.y)} ${f(a.z)}`).join('\n')}\n`;
     }).join('');
@@ -138,15 +190,22 @@
     return new Worker(workerUrl, { type: 'module', name: 'molastria-smiles3d' });
   }
 
-  /** 在 Worker 里算一个 SMILES。onProgress(k, n)：正在优化第 k 个构象（共 n 个）。 */
+  /** 在 Worker 里算一个 SMILES。onProgress(k, n)：正在优化第 k 个构象（共 n 个）。
+      上一个还没算完就先停掉它；算完了的 Worker 留着，库不用再载入。 */
   function run(smiles, { opts, onProgress } = {}) {
-    stop();
+    if (pending) stop();
     return new Promise((resolve, reject) => {
       const fail = (msg) => { stop(true); reject(new Error(msg)); };
       try { worker = worker || spawn(); } catch { worker = null; }
-      if (!worker) { // 退回在页面里算（会卡一下）
+      if (!worker) { // 退回在页面里算（会卡一下）；载入的时候按“停止”也算数
+        const job = { resolve, reject };
+        pending = job;
         if (!inPage) inPage = loadOCL(BASE).catch((e) => { inPage = null; throw e; });
-        inPage.then((OCL) => resolve(embed(OCL, smiles, opts, onProgress)), () => reject(new Error('load')));
+        inPage.then((OCL) => {
+          if (pending !== job) return;
+          pending = null;
+          resolve(embed(OCL, smiles, opts, onProgress));
+        }, () => { if (pending === job) { pending = null; reject(new Error('load')); } });
         return;
       }
       pending = { resolve, reject };
@@ -161,7 +220,7 @@
       worker.postMessage({ smiles, opts: opts || {}, base: BASE });
     });
   }
-  /** 结束正在算的那一个（Worker 直接关掉，下次重新开；库要重新载入，浏览器缓存里有就很快）。 */
+  /** 结束正在算的那一个（Worker 直接关掉，下次重新开；库要重新载入，浏览器缓存里有就很快）。在页面里算的那条路上，正在载入时也能停。 */
   function stop(silent) {
     if (pending && !silent) { const p = pending; pending = null; p.reject(new Error('stopped')); }
     pending = null;

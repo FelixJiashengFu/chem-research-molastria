@@ -3223,16 +3223,20 @@ check('code desk: inputs for nine programs, spin check, output reader, software 
 
 /** Serves OpenChemLib (the SMILES → 3D library the code desk loads from jsDelivr) from tools/e2e/node_modules. */
 const OCL_DIST = join(ROOT, 'tools/e2e/node_modules/openchemlib/dist/');
-async function localOCL(ctx) {
-  await ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/openchemlib@[\d.]+\/dist\/(openchemlib\.js|resources\.json)$/, (r) => {
+async function localOCL(ctx, delay = 0) {
+  const served = { 'openchemlib.js': 0, 'resources.json': 0 };
+  await ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/openchemlib@[\d.]+\/dist\/(openchemlib\.js|resources\.json)$/, async (r) => {
     const f = new URL(r.request().url()).pathname.split('/').pop();
-    r.fulfill({ status: 200, contentType: f.endsWith('.json') ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(join(OCL_DIST, f)) });
+    served[f]++;
+    if (delay) await new Promise((ok) => setTimeout(ok, delay));
+    await r.fulfill({ status: 200, contentType: f.endsWith('.json') ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(join(OCL_DIST, f)) });
   });
+  return served;
 }
 
 check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem demos, English', async () => {
   const p = await open();
-  await localOCL(p.context());
+  const served = await localOCL(p.context());
   p.workerCount = 0;
   p.on('worker', () => { p.workerCount++; });
   await go(p, '/code/index.html');
@@ -3254,6 +3258,12 @@ check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem
   await p.selectOption('#in-frame', String(n - 1));
   assert.notEqual(await text(p, '#in-code'), first, 'the input is written from the chosen frame');
   assert.match(await text(p, '#in-status'), /C3H7NO2/);
+  assert.match(await text(p, '#in-embed-status'), new RegExp(`现在用的是第 ${n} 个，比最低的高 \\d+\\.\\d\\d kcal/mol`), 'the status follows the chosen frame');
+  // pasting another multi-frame file starts again from its first frame
+  await p.fill('#in-xyz', '3\nfirst\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n3\nsecond\nO 0 0 0.1\nH 0 0.76 0.69\nH 0 -0.76 0.69\n3\nthird\nO 0 0 0.2\nH 0 0.76 0.79\nH 0 -0.76 0.79\n');
+  assert.equal(await p.inputValue('#in-frame'), '0');
+  assert.equal(await text(p, '#in-embed-status'), '', 'the SMILES status went with the molecule it described');
+  await embed(p, 'C[C@H](N)C(=O)O');
   // charge and multiplicity come from the SMILES
   await embed(p, '[CH3]');
   assert.equal(await p.inputValue('#in-mult'), '2');
@@ -3261,6 +3271,16 @@ check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem
   assert.match(await text(p, '#in-embed-notes'), /未成对电子/);
   await embed(p, 'CC(=O)[O-]');
   assert.equal(await p.inputValue('#in-charge'), '-1');
+  assert.equal(p.workerCount, 1, 'one worker for every run: the library stays loaded');
+  assert.deepEqual(served, { 'openchemlib.js': 1, 'resources.json': 1 }, 'OpenChemLib is fetched once');
+  // an odd electron count OpenChemLib does not flag still gets an even multiplicity; a bare atom follows Hund's rule
+  await embed(p, '[Cu+2]');
+  assert.deepEqual([await p.inputValue('#in-mult'), await p.getAttribute('#in-status', 'data-bad')], ['2', 'false']);
+  await embed(p, '[N]');
+  assert.equal(await p.inputValue('#in-mult'), '4');
+  assert.match(await text(p, '#in-embed-notes'), /洪特规则/);
+  // a bracket atom OpenChemLib would give a hydrogen is refused, not silently changed
+  assert.match(await embed(p, 'O=[N]=O'), /方括号里的 \[N\] 写明了 0 个氢，OpenChemLib 读成了 1 个/);
   // unspecified stereo is fixed and said; a bad SMILES is said and the coordinates stay
   await embed(p, 'CC(N)C(=O)O');
   assert.match(await text(p, '#in-embed-notes'), /1 处立体构型没写，按第一个搭出的结构定成了 \S*@/);
@@ -3270,9 +3290,10 @@ check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem
   assert.equal(await p.inputValue('#in-xyz'), before);
   // the sketcher button sits next to the SMILES box
   assert.equal(await p.isVisible('.cd-smi-row .sk-open'), true);
-  // a sample clears the frames
+  // a sample clears the frames and the notes about the old molecule
   await p.click('[data-sample=water]');
   assert.equal(await p.isHidden('#in-frame-row'), true);
+  assert.deepEqual([await text(p, '#in-embed-status'), await text(p, '#in-embed-notes')], ['', '']);
   // output demos for the three new readers
   await p.click('#t-output');
   await p.selectOption('#out-demo-prog', 'nwchem');
@@ -3287,7 +3308,7 @@ check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem
   await p.click('#t-input');
   await p.context().unrouteAll();
   await p.context().route(/cdn\.jsdelivr\.net\/npm\/openchemlib/, (r) => r.abort());
-  await p.evaluate(() => window.MolAstriaSmiles3D.stop(true)); // the worker held the loaded copy; a new one fetches again
+  await p.evaluate(() => window.MolAstriaSmiles3D.stop(true)); // the idle worker holds the loaded copy; end it so a new one fetches again
   assert.match(await embed(p, 'CCO'), /没载入 OpenChemLib/);
   await finish(p);
   const e = await open();
@@ -3303,6 +3324,27 @@ check('code desk: SMILES to 3D in a worker, frame picker, NWChem / CP2K / Q-Chem
     assert.doesNotMatch(await text(e, '#out-result'), HAN, `${k} result in English`);
   }
   await finish(e);
+});
+
+check('code desk: without module workers the SMILES runs in the page, and Stop still stops it', async () => {
+  const p = await open({ init: { content: 'window.Worker = function () { throw new Error(\'no module workers\'); };' } });
+  await localOCL(p.context(), 1500);
+  await go(p, '/code/index.html');
+  const before = await p.inputValue('#in-xyz');
+  await p.fill('#in-smiles', 'CCO');
+  await p.click('#in-embed');
+  await p.waitForTimeout(300);
+  await p.click('#in-embed-stop');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.waitForTimeout(2500); // the library arrives after the stop: nothing may change
+  assert.equal(await p.inputValue('#in-xyz'), before);
+  assert.equal(await text(p, '#in-embed-status'), '已停止。');
+  await p.fill('#in-smiles', 'CCN'); // and the next run works in the page
+  await p.click('#in-embed');
+  await p.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
+  assert.match(await p.inputValue('#in-xyz'), /from SMILES CCN/);
+  await finish(p);
 });
 
 check('models page: a result goes to the code desk with its frames, charges and multiplicities', async () => {
@@ -3324,6 +3366,15 @@ check('models page: a result goes to the code desk with its frames, charges and 
   assert.equal(await p.isHidden('#in-import'), true);
   assert.equal(await p.inputValue('#in-mult'), '3');
   await finish(p);
+  // a model name with Chinese in it is translated on the English page
+  const IMPORT = JSON.stringify({ xyz: '3\nw\nO 0 0 0\nH 0 0.76 0.59\nH 0 -0.76 0.59\n', charge: 0, mult: 1, name: 'esen-opt', model: 'eSEN-sm 直接受力型', job: '结构优化' });
+  const e = await open({ init: { content: `try { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('molastria-code-import', ${JSON.stringify(IMPORT)}); sessionStorage.setItem('seeded', '1'); } } catch {}` } });
+  await go(e, '/code/index.html?lang=en#input');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForSelector('#in-import:not([hidden])');
+  assert.doesNotMatch(await text(e, '#in-import'), HAN, await text(e, '#in-import'));
+  assert.match(await text(e, '#in-import'), /eSEN-sm/);
+  await finish(e);
 });
 
 check('review cards: three decks, FSRS schedule, own cards, Anki export and backup, offline fallback, English', async () => {

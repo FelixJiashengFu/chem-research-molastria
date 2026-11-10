@@ -1,90 +1,90 @@
                   Welcome to Q-Chem
      A Quantum Leap Into The Future Of Chemistry
 
-
- Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
-
-   11    -382.3003620945      8.88e-09  Convergence criterion met
-
+ SCF   energy in the final basis set =     -382.3003620945
  Total energy in the final basis set =     -382.3003620945
 
-   11    -382.3012685127      4.53e-09  Convergence criterion met
 
+ ######################################################
+ # Starting finite difference calculation for IDERIV  #
+ Finite diff step size:  1.88973e-03 a.u.
+
+ SCF   energy in the final basis set =     -382.3012685127
  Total energy in the final basis set =     -382.3012685127
 
-   11    -382.3003620946      4.46e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3003620946
  Total energy in the final basis set =     -382.3003620946
 
-   11    -382.3006811054      3.64e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006811054
  Total energy in the final basis set =     -382.3006811054
 
-   10    -382.3007393865      8.14e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3007393865
  Total energy in the final basis set =     -382.3007393865
 
-   10    -382.3006086185      4.59e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006086185
  Total energy in the final basis set =     -382.3006086185
 
-    7    -382.3006086186      8.16e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006086186
  Total energy in the final basis set =     -382.3006086186
 
-   11    -382.3012685127      6.87e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3012685127
  Total energy in the final basis set =     -382.3012685127
 
-   11    -382.3007393865      3.62e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3007393865
  Total energy in the final basis set =     -382.3007393865
 
-   11    -382.3006811054      1.82e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006811054
  Total energy in the final basis set =     -382.3006811054
 
-   10    -382.3006086182      4.57e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006086182
  Total energy in the final basis set =     -382.3006086182
 
-    7    -382.3006086185      8.12e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3006086185
  Total energy in the final basis set =     -382.3006086185
 
-   11    -382.3008489467      4.33e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3008489467
  Total energy in the final basis set =     -382.3008489467
 
-   10    -382.3005038874      3.13e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3005038874
  Total energy in the final basis set =     -382.3005038874
 
-    7    -382.3005038876      8.06e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3005038876
  Total energy in the final basis set =     -382.3005038876
 
-   11    -382.3008489468      3.10e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3008489468
  Total energy in the final basis set =     -382.3008489468
 
-   10    -382.3005038874      3.14e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3005038874
  Total energy in the final basis set =     -382.3005038874
 
-    7    -382.3005038876      8.06e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3005038876
  Total energy in the final basis set =     -382.3005038876
 
-   10    -382.3004424121      3.34e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3004424121
  Total energy in the final basis set =     -382.3004424121
 
-    8    -382.3004424119      5.97e-09  Convergence criterion met
 
+ SCF   energy in the final basis set =     -382.3004424119
  Total energy in the final basis set =     -382.3004424119
 
- --------------------------------------------------------------
+
              Orbital Energies (a.u.) and Symmetries
  --------------------------------------------------------------
 
@@ -133,42 +133,86 @@
  25 Bu                                                                         
  --------------------------------------------------------------
 
+
+ # Finishing finite difference calculation for IDERIV #
+ ######################################################
+
+ **                                                                  **
  **                       VIBRATIONAL ANALYSIS                       **
+ **                       --------------------                       **
 
+ Mode:                 1                      2                      3
  Frequency:      -106.88                -102.92                 161.77
+ Force Cnst:      0.0185                 0.0178                 0.0380
 
+ Mode:                 4                      5                      6
  Frequency:       199.03                 301.38                 301.71
+ Force Cnst:      0.0821                 0.1796                 0.1167
 
+ Mode:                 7                      8                      9
  Frequency:       402.14                 402.39                 447.23
+ Force Cnst:      0.4662                 0.2979                 0.2611
 
+ Mode:                10                     11                     12
  Frequency:       508.15                 580.32                 649.18
+ Force Cnst:      0.5009                 0.5618                 0.5399
 
+ Mode:                13                     14                     15
  Frequency:       680.27                 716.19                 716.46
+ Force Cnst:      1.9041                 1.0083                 0.4803
 
+ Mode:                16                     17                     18
  Frequency:       809.81                 869.09                 911.03
+ Force Cnst:      1.3034                 1.9561                 0.7683
 
+ Mode:                19                     20                     21
  Frequency:       920.92                1013.66                1013.73
+ Force Cnst:      0.6265                 0.8161                 0.8106
 
+ Mode:                22                     23                     24
  Frequency:      1038.84                1057.77                1089.98
+ Force Cnst:      0.7870                 0.8697                 1.4035
 
+ Mode:                25                     26                     27
  Frequency:      1102.04                1102.22                1106.66
+ Force Cnst:      0.7732                 0.7742                 1.3038
 
+ Mode:                28                     29                     30
  Frequency:      1107.76                1235.94                1271.17
+ Force Cnst:      1.0226                 1.1602                 2.2251
 
+ Mode:                31                     32                     33
  Frequency:      1272.21                1301.21                1391.34
+ Force Cnst:      1.8412                 1.4158                 1.6417
 
+ Mode:                34                     35                     36
  Frequency:      1391.90                1437.48                1458.95
+ Force Cnst:      1.5715                 1.5205                 7.8193
 
+ Mode:                37                     38                     39
  Frequency:      1544.34                1575.34                1591.42
+ Force Cnst:      3.2697                 1.8015                 2.0678
 
+ Mode:                40                     41                     42
  Frequency:      1673.99                1785.84                1793.60
+ Force Cnst:      4.1103                10.4516                11.9903
 
+ Mode:                43                     44                     45
  Frequency:      1871.80                1876.22                3388.61
+ Force Cnst:      8.6147                 9.3115                 7.2172
 
+ Mode:                46                     47                     48
  Frequency:      3389.07                3444.31                3448.27
+ Force Cnst:      7.2190                 7.6275                 7.6440
 
+ Mode:                49                     50                     51
  Frequency:      3461.37                3463.95                3467.17
+ Force Cnst:      7.7673                 7.7830                 7.8008
 
+ Mode:                52                     53                     54
  Frequency:      3467.34                3524.86                3524.89
+ Force Cnst:      7.8036                 8.1665                 8.1673
 
+        *                                                           *
         *  Thank you very much for using Q-Chem.  Have a nice day.  *
+        *                                                           *

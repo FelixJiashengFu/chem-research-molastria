@@ -18,7 +18,8 @@ const C = require('../public/code/code-core.js');
 const DEMOS = require('../public/code/code-demos.js');
 const S3 = require('../public/viewer/smiles3d.js');
 const HERE = dirname(fileURLToPath(import.meta.url));
-const fixture = (f) => readFileSync(join(HERE, 'code-fixtures', f), 'utf8');
+// Windows 上的 Git 默认把换行改成 CRLF；样本按 LF 比（示例的每一行要在样本里找到）
+const fixture = (f) => readFileSync(join(HERE, 'code-fixtures', f), 'utf8').replace(/\r/g, '');
 
 const WATER = '3\nwater\nO 0.000000 0.000000 0.117300\nH 0.000000 0.757200 -0.469200\nH 0.000000 -0.757200 -0.469200\n';
 const w = C.parseXYZ(WATER).atoms;
@@ -363,6 +364,12 @@ test('XYZ：多帧（构象、自旋态、轨迹）选一帧', () => {
   assert.equal(C.splitFrames(WATER), null);
   assert.match(C.parseXYZ('4\n\nO 0 0 0\nH 0 0 1').errors[0], /4 个原子，实际读到 2 个/);
   assert.equal(C.splitFrames('O 0 0 0\nH 0 0 1'), null);
+  // 报错的行号按整个文件数，多帧时说是第几帧
+  const bad = '3\nf1\nO 0 0 0\nH 0 0 1\nH 0 1 0\n3\nf2\nO 0 0 0\nXx 0 0 1\nH 0 1 0\n';
+  assert.deepEqual(C.parseXYZ(bad, 1).errors, ['第 9 行读不懂：Xx 0 0 1']);
+  assert.deepEqual(C.parseXYZ(bad, 0).errors, []);
+  assert.deepEqual(C.parseXYZ('\n\nO 0 0 0\nH 0 0\n').errors, ['第 4 行读不懂：H 0 0'], '前面的空行也算行号');
+  assert.deepEqual(C.parseXYZ('3\nw\nO 0 0 0\nH 0 0 1\nH 0 1 0\n3\nw2\nO 0 0 0\n# 注释\nH 0 1 0\n', 1).errors, ['第 2 帧写的是 3 个原子，实际读到 2 个']);
 });
 
 // ── NWChem、CP2K、Q-Chem：真实输出 ──
@@ -377,6 +384,11 @@ const OUTS = [
   ['nwchem-scf-fail.out', 'nwchem', undefined, { normal: false, scf: false, error: 'dft energy failed' }],
   ['nwchem-opt-fail.out', 'nwchem', undefined, { normal: false, opt: false, error: 'dft optimize failed' }],
   ['nwchem-input-error.out', 'nwchem', null, { normal: false, error: 'scf_input: unrecognized directive' }],
+  // 数值差分：最后一个能量是某个位移结构的，要取参考结构的那一次
+  ['nwchem-water-cosmo-freq.out', 'nwchem', -75.23204617842, { normal: true, freqs: [1734.01, 4328.85, 4608.44] }], // COSMO 没有解析 Hessian，走有限差分
+  ['nwchem-water-mp2-freq.out', 'nwchem', -74.998568775084, { normal: true, label: /MP2/, freqs: [1896.98, 4414.78, 4715.02] }],
+  ['nwchem-water-ccsdt-opt.out', 'nwchem', -75.02321343686762, { normal: true, opt: true, label: /CCSD\(T\)/ }], // 数值梯度；“@ 3 -75.02321344”
+  ['nwchem-water-two-opt.out', 'nwchem', -76.407024389851, { normal: false, opt: false, error: 'dft optimize failed' }], // 先 SCF 优化收敛，再 DFT 优化没收敛
   ['cp2k-water-pbe-opt.out', 'cp2k', -17.219621443226934, { normal: true, scf: true, opt: true, gap: null }],
   ['cp2k-water-pbe-freq.out', 'cp2k', null, { normal: true, freqs: [1577.11, 3878.43, 3986.16], warn: /PROJECT-r-0\.out/ }],
   ['cp2k-o2-uks.out', 'cp2k', -31.927136079422276, { normal: true, scf: true }],
@@ -385,7 +397,8 @@ const OUTS = [
   ['cp2k-opt-fail.out', 'cp2k', -17.219605246001397, { normal: true, opt: false }],
   ['cp2k-input-abort.out', 'cp2k', null, { normal: false, error: 'invalid value for enumeration:2' }],
   ['qchem-dvb-gopt.out', 'qchem', -382.3082955186, { normal: true, opt: true, gap: 5.170 }],
-  ['qchem-dvb-raman.out', 'qchem', -382.3004424119, { normal: true, imaginary: [-106.88, -102.92], nfreqs: 54 }],
+  ['qchem-dvb-raman.out', 'qchem', -382.3003620945, { normal: true, imaginary: [-106.88, -102.92], nfreqs: 54 }], // 有限差分前的参考结构
+  ['qchem-water-mp4.out', 'qchem', -75.016143404, { normal: true, label: /^EMP4$/ }],
   ['qchem-dvb-cation-uhf.out', 'qchem', -382.0653088345, { normal: true, gap: 1.823, gapNote: true }],
   ['qchem-water-ccsdt.out', 'qchem', -75.0177603, { label: /CCSD\(T\)/ }],
   ['qchem-water-mp2.out', 'qchem', -75.00228214, { label: /MP2/ }],
@@ -414,10 +427,20 @@ for (const [file, prog, energy, x] of OUTS) {
     else if (x.error) assert.equal(r.errorText, x.error);
     if (x.error) assert.ok(r.warnings.some((w) => w.includes(r.errorText)), '报错写进提示');
     if (x.warn) assert.ok(r.warnings.some((w) => x.warn.test(w)), r.warnings.join(' / '));
-    // 程序选错了也不该读出别家的东西；自动识别和指定程序结果一样
-    assert.deepEqual(C.parseOutput(fixture(file), prog), r);
+    assert.deepEqual(C.parseOutput(fixture(file), prog), r, '自动识别和指定程序，结果一样');
   });
 }
+
+test('输出解读：程序选错了不该从别家的输出里读出能量', () => {
+  // 唯一的例外：Psi4 和 Q-Chem 印 CCSD(T) 能量的那一行一字不差（“CCSD(T) total energy = …”），分不出来
+  const SAME_LINE = new Set(['psi4 qchem-water-ccsdt.out']);
+  for (const [file, prog] of OUTS) {
+    for (const other of ['xtb', 'orca', 'psi4', 'gaussian', 'pyscf', 'nwchem', 'cp2k', 'qchem']) {
+      if (other === prog || SAME_LINE.has(`${other} ${file}`)) continue;
+      assert.equal(C.parseOutput(fixture(file), other).energy, null, `${file} 当成 ${other} 读`);
+    }
+  }
+});
 
 test('输出解读：NWChem 里正常的 CCSD 也会印 “IO error message >End of File”，不算出错', () => {
   const t = fixture('nwchem-water-ccsdt.out');
@@ -433,6 +456,33 @@ test('输出解读：Q-Chem 的报错（照手册格式写的一段，没有真�
   assert.equal(r.program, 'qchem');
   assert.equal(r.normal, false);
   assert.equal(r.errorText, 'Wrong number of electrons for given multiplicity');
+});
+
+test('输出解读：样本里确实有数值差分（不然上面几条测不到要测的东西）', () => {
+  const after = (file, marker, re) => { const t = fixture(file); const i = t.lastIndexOf(marker); assert.ok(i > 0, `${file} 里有 ${marker}`); return [...t.slice(i).matchAll(re)].length; };
+  assert.ok(after('nwchem-water-cosmo-freq.out', 'Finite-difference Hessian', /Total DFT energy =/g) > 10);
+  assert.ok(after('nwchem-water-mp2-freq.out', 'Finite-difference Hessian', /Total MP2 energy/g) > 10);
+  assert.ok(after('nwchem-water-ccsdt-opt.out', 'Numerical Gradients Module', /Total CCSD\(T\) energy:/g) > 3);
+  assert.ok(after('qchem-dvb-raman.out', '# Starting finite difference', /Total energy in the final basis set/g) > 10);
+  assert.match(fixture('nwchem-water-two-opt.out'), /Optimization converged[\s\S]*Failed to converge in maximum number of steps/);
+});
+
+test('输出解读：CP2K 7.x 以前的写法 “energy (a.u.):”', () => {
+  const t = fixture('cp2k-water-pbe-opt.out').replace(/energy \[hartree\]/g, 'energy (a.u.):');
+  assert.match(t, /ENERGY\| Total FORCE_EVAL \( QS \) energy \(a\.u\.\):/);
+  near(C.parseOutput(t).energy, -17.219621443226934, 1e-9, 'E');
+});
+
+test('输出解读：多个 task / job 只看最后一个，Q-Chem 只有有限差分的能量时不硬给一个', () => {
+  // NWChem：先 MP2 单点，再 DFT 单点：最终能量是 DFT 的（以前会挑“级别最高”的 MP2）
+  const nw = (body) => `Northwest Computational Chemistry Package (NWChem) 7.2.2\n${body}\n Total times  cpu:        1.0s\n`;
+  let r = C.parseOutput(nw('                                NWChem Input Module\n         Total SCF energy =    -74.963023129097\n          Total MP2 energy           -74.998568775084\n Task  times  cpu:        0.1s\n                                NWChem Input Module\n         Total DFT energy =      -75.312345678901\n Task  times  cpu:        0.1s'));
+  near(r.energy, -75.312345678901, 1e-12, 'E');
+  assert.equal(r.energyLabel, 'Total DFT energy');
+  // Q-Chem：极化率用外加电场的有限差分算，没有不加电场的能量
+  r = C.parseOutput(' Welcome to Q-Chem\n # Starting finite difference calculation for IDERIV  #\n Total energy in the final basis set = -7.2328981140\n Total energy in the final basis set = -7.2328624033\n');
+  assert.equal(r.energy, null);
+  assert.ok(r.warnings.some((w) => /有限差分/.test(w)), r.warnings.join(' / '));
 });
 
 test('读输出的示例：每一段都能读对', () => {
@@ -511,6 +561,8 @@ test('SMILES → 坐标：立体构型照写的来（L / D 丙氨酸、顺反二
   const L = sign('C[C@H](N)C(=O)O'), D = sign('C[C@@H](N)C(=O)O');
   assert.ok(L.every((s) => s === L[0]) && D.every((s) => s === D[0]), '每个构象都是同一个对映体');
   assert.equal(L[0], -D[0], 'L 和 D 符号相反');
+  // 绝对构型：C[C@H](N)C(=O)O 的 @ 是从 C0 看过去，H、N2、C3 逆时针，混合积 (C0−C1)·((N2−C1)×(C3−C1)) 为正
+  assert.equal(L[0], 1, '镜像了');
   const ff = (smi) => { const a = pos(S3.embed(OCL, smi)); const f = a.map((x, i) => [x, i]).filter(([x]) => x.el === 'F'); return dist(f[0][0], f[1][0]); };
   const trans = ff('F/C=C/F'), cis = ff('F/C=C\\F');
   assert.ok(trans > 3.3 && cis < 3.0, `反式 F–F ${trans.toFixed(2)} Å，顺式 ${cis.toFixed(2)} Å`);
@@ -522,6 +574,17 @@ test('SMILES → 坐标：没写的构型定成一种并提示，坏 SMILES 和�
   assert.ok(r.warnings.includes('unspecified'));
   assert.match(r.fixedSmiles, /@/);
   assert.equal(r.stereoSmiles, r.fixedSmiles);
+  // 定下的是哪一个，每个构象就都是哪一个：原子顺序跟着补了构型的 SMILES 走，所以按几何找 α 碳和它的三个重原子邻居
+  const signs = r.frames.map(({ atoms: a }) => {
+    const ca = a.findIndex((x, i) => x.el === 'C' && neighbours(a, i).some((j) => a[j].el === 'N'));
+    const nb = neighbours(a, ca).filter((j) => a[j].el !== 'H');
+    const me = nb.find((j) => a[j].el === 'C' && !neighbours(a, j).some((k) => a[k].el === 'O'));
+    const co = nb.find((j) => a[j].el === 'C' && j !== me), n = nb.find((j) => a[j].el === 'N');
+    return Math.sign(chiralVolume(a, ca, [me, n, co])); // 和上面 L 丙氨酸同样的顺序：L 是 +1
+  });
+  assert.ok(signs.every((x) => x === signs[0]), String(signs));
+  const isL = OCL.Molecule.fromSmiles(r.fixedSmiles).getIDCode() === OCL.Molecule.fromSmiles('C[C@H](N)C(=O)O').getIDCode();
+  assert.equal(signs[0], isL ? 1 : -1, `${r.fixedSmiles} 和坐标对得上`);
   r = S3.embed(OCL, 'O=O');
   assert.ok(r.warnings.includes('no-forcefield'));
   assert.equal(r.frames.length, 1);
@@ -534,6 +597,61 @@ test('SMILES → 坐标：没写的构型定成一种并提示，坏 SMILES 和�
   assert.match(r.detail, /ring closure/);
   r = S3.embed(OCL, 'C'.repeat(101));
   assert.deepEqual([r.error, r.heavy, r.max], ['big', 101, 100]);
+});
+
+test('SMILES → 坐标：多重度的奇偶总是对的，孤立原子按洪特规则', { skip: noOCL }, () => {
+  // OpenChemLib 读这些方括号原子时不标自由基；电子数是奇数，多重度至少是 2
+  for (const [smi, mult] of [['[H]', 2], ['[Li]', 2], ['[Na]', 2], ['[CH]', 2], ['[NH4]', 2], ['[Cu+2]', 2], ['[Cu]', 2], ['[N]', 4], ['[P]', 4], ['[C]', 3], ['[O]', 3], ['[C-]', 4], ['[Ar]', 1], ['[Na+]', 1], ['[Cl-]', 1], ['[Fe+2]', 1]]) {
+    const r = S3.embed(OCL, smi);
+    assert.equal(r.mult, mult, smi);
+    assert.equal(C.checkSpin(pos(r), r.charge, r.mult).ok, true, smi);
+  }
+  assert.ok(S3.embed(OCL, '[C]').warnings.includes('atom'));
+  assert.ok(S3.embed(OCL, '[Fe+2]').warnings.includes('atom-check'), '过渡金属只按奇偶，提示查表');
+  assert.deepEqual(S3.embed(OCL, '[Ar]').warnings, [], '闭壳层的单个原子不用提示');
+});
+
+test('SMILES → 坐标：方括号原子的氢数被改了就报错（O=[N]=O 不能变成 HNO2）', { skip: noOCL }, () => {
+  assert.deepEqual(S3.embed(OCL, 'O=[N]=O'), { error: 'hcount', detail: '[N]', want: 0, got: 1 });
+  assert.equal(S3.embed(OCL, '[N](=O)=O').error, 'hcount');
+  const r = S3.embed(OCL, 'N(=O)[O]');
+  assert.deepEqual([C.formula(pos(r)), r.mult], ['NO2', 2]);
+  // 这些都是照写的读，不能误报
+  for (const smi of ['[nH]1cccc1', '[NH4+]', '[C@@H](N)(C)C(=O)O', 'C[N+](C)(C)C', '[O-]S(=O)(=O)[O-]', '[B-](F)(F)(F)F', '[PH4+]', 'c1cc[n+]([O-])cc1', '[13CH4]', '[2H]C([2H])([2H])O', '[H]C([H])([H])O', '[Cu+2]', '[O-][N+]=O', 'C[Si](C)(C)C', '[OH-]', '[se]1cccc1', '[C-]#[O+]', '[NH3+]CC([O-])=O']) {
+    assert.notEqual(S3.embed(OCL, smi).error, 'hcount', smi);
+  }
+});
+
+test('SMILES → 坐标：阻转异构体、I₃⁻ 不再误报立体构型；力场给 NaN 的构象排在最后', { skip: noOCL }, () => {
+  let r = S3.embed(OCL, 'Oc1ccc2ccccc2c1-c1c(O)ccc2ccccc12'); // 联萘酚：轴手性写不进 SMILES
+  assert.equal(r.error, undefined);
+  assert.equal(C.formula(pos(r)), 'C20H14O2');
+  for (const smi of ['I[I-]I', 'Cl[I-]Cl']) assert.equal(S3.embed(OCL, smi).error, undefined, smi);
+  r = S3.embed(OCL, 'CCCCC=[N+]=[N-]'); // 重氮化合物：MMFF94 对一部分构象给 NaN
+  const E = r.frames.map((f) => f.energy);
+  assert.ok(E.some((e) => e === null) && E.some((e) => e !== null), String(E));
+  const firstNull = E.indexOf(null);
+  assert.ok(E.slice(firstNull).every((e) => e === null), '没优化的排在最后');
+  for (let k = 1; k < firstNull; k++) assert.ok(E[k] >= E[k - 1], '优化过的按能量排好');
+  assert.ok(r.warnings.includes('partly-optimised'));
+  assert.doesNotMatch(S3.toXYZ(r), /NaN/);
+  r = S3.embed(OCL, 'C=[N+]=[N-]');
+  assert.deepEqual([r.forcefield, r.frames[0].energy], ['', null]);
+  assert.ok(r.warnings.includes('no-forcefield'));
+});
+
+test('SMILES → 坐标：去重要能量和几何都一样（布洛芬的几个构象能量很接近，不能当成同一个）', { skip: noOCL }, () => {
+  const r = S3.embed(OCL, 'CC(C)Cc1ccc(cc1)[C@@H](C)C(=O)O');
+  assert.ok(r.frames.length >= 5, `留下 ${r.frames.length} 个`);
+  const fp = (atoms) => { const h = atoms.filter((a) => a.el !== 'H'), d = []; for (let i = 0; i < h.length; i++) for (let j = i + 1; j < h.length; j++) d.push(dist(h[i], h[j])); return d.sort((a, b) => a - b); };
+  for (let i = 0; i < r.frames.length; i++) for (let j = i + 1; j < r.frames.length; j++) {
+    const a = fp(r.frames[i].atoms), b = fp(r.frames[j].atoms);
+    const same = Math.abs(r.frames[i].energy - r.frames[j].energy) < 0.01 && a.every((v, k) => Math.abs(v - b[k]) < 0.1);
+    assert.ok(!same, `第 ${i + 1} 和第 ${j + 1} 个是同一个构象`);
+  }
+  // 真正重复的（直链烷烃的镜像）照样合并
+  const hex = S3.embed(OCL, 'CCCCCC');
+  assert.ok(hex.frames.length < hex.tried, `${hex.frames.length} / ${hex.tried}`);
 });
 
 // ── 真的跑 PySCF ──

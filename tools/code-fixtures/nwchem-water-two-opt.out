@@ -1,0 +1,352 @@
+
+             Northwest Computational Chemistry Package (NWChem) 7.2.2
+             --------------------------------------------------------
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                           NWChem Geometry Optimization
+                           ----------------------------
+
+
+         Total SCF energy =    -74.906148104725
+      One-electron energy =   -119.096241042634
+
+
+ center of mass
+ --------------
+
+
+@ Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+@ ---- ---------------- -------- -------- -------- -------- -------- --------
+@    0     -74.90614810  0.0D+00  0.13715  0.11204  0.00000  0.00000      0.1
+                                                                    
+
+
+         Total SCF energy =    -74.962285414141
+      One-electron energy =   -121.270691851947
+
+
+ center of mass
+ --------------
+
+
+         Total SCF energy =    -74.955812463269
+      One-electron energy =   -122.638128043918
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    1     -74.95581246 -5.0D-02  0.07365  0.06230  0.20620  0.41732      0.2
+                                                                    
+
+
+         Total SCF energy =    -74.964543773406
+      One-electron energy =   -121.457286029159
+
+
+ center of mass
+ --------------
+
+
+         Total SCF energy =    -74.965792349940
+      One-electron energy =   -121.777928521286
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2     -74.96579235 -1.0D-02  0.00376  0.00326  0.06902  0.14591      0.3
+                                                                    
+
+
+         Total SCF energy =    -74.965822424465
+      One-electron energy =   -121.888508503315
+
+
+ center of mass
+ --------------
+
+
+         Total SCF energy =    -74.965901073301
+      One-electron energy =   -121.837328115418
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    3     -74.96590107 -1.1D-04  0.00026  0.00021  0.00756  0.01486      0.4
+                                     ok       ok                    
+
+
+         Total SCF energy =    -74.965901190544
+      One-electron energy =   -121.834493701272
+
+
+ center of mass
+ --------------
+
+
+         Total SCF energy =    -74.965901192327
+      One-electron energy =   -121.834125670299
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    4     -74.96590119 -1.2D-07  0.00000  0.00000  0.00023  0.00048      0.5
+                                     ok       ok       ok       ok  
+
+      ----------------------
+      Optimization converged
+      ----------------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    4     -74.96590119 -1.2D-07  0.00000  0.00000  0.00023  0.00048      0.5
+                                     ok       ok       ok       ok  
+
+
+ Task  times  cpu:        0.2s     wall:        0.5s
+
+
+                                NWChem Input Module
+                                -------------------
+
+
+                           NWChem Geometry Optimization
+                           ----------------------------
+
+
+         Total DFT energy =      -76.406043656521
+      One electron energy =     -122.613368288931
+
+
+ center of mass
+ --------------
+
+
+@ Step       Energy      Delta E   Gmax     Grms     Xrms     Xmax   Walltime
+@ ---- ---------------- -------- -------- -------- -------- -------- --------
+@    0     -76.40604366  0.0D+00  0.01635  0.01367  0.00000  0.00000      1.1
+                                                                    
+
+
+         Total DFT energy =      -76.406910804318
+      One electron energy =     -122.852688718466
+
+
+ center of mass
+ --------------
+
+
+         Total DFT energy =      -76.407013998277
+      One electron energy =     -122.980700346185
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    1     -76.40701400 -9.7D-04  0.00182  0.00155  0.01897  0.04642      2.0
+                                                                    
+
+
+         Total DFT energy =      -76.407023738308
+      One electron energy =     -122.956144214154
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912971D+01
+              MO Center=  1.4D-15, -7.5D-08,  4.0D-02, r^2= 1.5D-02
+
+
+ Vector    2  Occ=2.000000D+00  E=-9.969913D-01
+              MO Center= -5.0D-13, -1.5D-07, -1.7D-01, r^2= 5.1D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-5.165572D-01
+              MO Center= -1.0D-13,  6.0D-08, -1.9D-01, r^2= 7.9D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-3.708734D-01
+              MO Center= -2.0D-13, -4.3D-08,  1.2D-01, r^2= 6.9D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-2.902704D-01
+              MO Center=  8.6D-13, -7.8D-08,  1.9D-02, r^2= 6.0D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 6.529645D-02
+              MO Center=  5.8D-15,  6.7D-07, -6.8D-01, r^2= 2.4D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 1.488985D-01
+              MO Center= -4.5D-15, -8.1D-07, -6.5D-01, r^2= 2.5D+00
+
+
+ Vector    8  Occ=0.000000D+00  E= 7.732188D-01
+              MO Center=  1.1D-13,  1.3D-06, -2.3D-01, r^2= 1.6D+00
+
+
+ Vector    9  Occ=0.000000D+00  E= 8.618480D-01
+              MO Center= -1.8D-12, -1.0D-06, -3.3D-01, r^2= 1.3D+00
+
+
+ Vector   10  Occ=0.000000D+00  E= 8.917097D-01
+              MO Center=  2.1D-12, -7.4D-08,  3.6D-02, r^2= 1.1D+00
+
+
+ Vector   11  Occ=0.000000D+00  E= 9.349945D-01
+              MO Center= -2.7D-13,  1.3D-07,  1.7D-01, r^2= 1.3D+00
+
+
+ Vector   12  Occ=0.000000D+00  E= 1.066831D+00
+              MO Center= -4.0D-14, -2.8D-07,  2.1D-02, r^2= 1.5D+00
+
+
+ Vector   13  Occ=0.000000D+00  E= 1.384090D+00
+              MO Center= -1.8D-13, -1.5D-07, -2.6D-01, r^2= 1.2D+00
+
+
+ Vector   14  Occ=0.000000D+00  E= 1.730518D+00
+              MO Center= -5.6D-14, -7.2D-08,  9.0D-02, r^2= 6.2D-01
+
+
+ Vector   15  Occ=0.000000D+00  E= 1.746976D+00
+              MO Center= -7.2D-15, -6.3D-08,  4.0D-02, r^2= 6.1D-01
+
+
+ Vector   16  Occ=0.000000D+00  E= 1.780622D+00
+              MO Center= -3.5D-15, -8.3D-08,  6.5D-02, r^2= 6.1D-01
+
+
+ Vector   17  Occ=0.000000D+00  E= 2.288520D+00
+              MO Center=  4.6D-14,  9.2D-08, -7.8D-02, r^2= 8.3D-01
+
+
+ Vector   18  Occ=0.000000D+00  E= 2.578339D+00
+              MO Center=  4.4D-14, -1.7D-07, -1.6D-02, r^2= 8.6D-01
+
+
+ center of mass
+ --------------
+
+
+         Total DFT energy =      -76.407024389851
+      One electron energy =     -122.948170942454
+
+
+                       DFT Final Molecular Orbital Analysis
+                       ------------------------------------
+
+ Vector    1  Occ=2.000000D+00  E=-1.912976D+01
+              MO Center=  1.3D-15, -1.2D-07,  4.0D-02, r^2= 1.5D-02
+
+
+ Vector    2  Occ=2.000000D+00  E=-9.967188D-01
+              MO Center= -4.9D-13, -2.3D-07, -1.7D-01, r^2= 5.1D-01
+
+
+ Vector    3  Occ=2.000000D+00  E=-5.165023D-01
+              MO Center= -9.9D-14,  9.5D-08, -1.9D-01, r^2= 7.9D-01
+
+
+ Vector    4  Occ=2.000000D+00  E=-3.706899D-01
+              MO Center= -1.9D-13, -6.7D-08,  1.2D-01, r^2= 6.9D-01
+
+
+ Vector    5  Occ=2.000000D+00  E=-2.902106D-01
+              MO Center=  8.4D-13, -1.2D-07,  1.9D-02, r^2= 6.0D-01
+
+
+ Vector    6  Occ=0.000000D+00  E= 6.517226D-02
+              MO Center=  5.8D-15,  1.1D-06, -6.8D-01, r^2= 2.4D+00
+
+
+ Vector    7  Occ=0.000000D+00  E= 1.487456D-01
+              MO Center= -4.4D-15, -1.3D-06, -6.5D-01, r^2= 2.5D+00
+
+
+ Vector    8  Occ=0.000000D+00  E= 7.732827D-01
+              MO Center=  1.1D-13,  2.1D-06, -2.3D-01, r^2= 1.6D+00
+
+
+ Vector    9  Occ=0.000000D+00  E= 8.611548D-01
+              MO Center= -1.7D-12, -1.7D-06, -3.3D-01, r^2= 1.3D+00
+
+
+ Vector   10  Occ=0.000000D+00  E= 8.917310D-01
+              MO Center=  2.0D-12, -1.2D-07,  3.6D-02, r^2= 1.1D+00
+
+
+ Vector   11  Occ=0.000000D+00  E= 9.347989D-01
+              MO Center= -2.7D-13,  2.0D-07,  1.7D-01, r^2= 1.3D+00
+
+
+ Vector   12  Occ=0.000000D+00  E= 1.066788D+00
+              MO Center= -3.9D-14, -4.3D-07,  2.1D-02, r^2= 1.5D+00
+
+
+ Vector   13  Occ=0.000000D+00  E= 1.383889D+00
+              MO Center= -1.8D-13, -2.4D-07, -2.6D-01, r^2= 1.2D+00
+
+
+ Vector   14  Occ=0.000000D+00  E= 1.730847D+00
+              MO Center= -5.4D-14, -1.1D-07,  9.0D-02, r^2= 6.2D-01
+
+
+ Vector   15  Occ=0.000000D+00  E= 1.747027D+00
+              MO Center= -6.9D-15, -9.9D-08,  4.0D-02, r^2= 6.1D-01
+
+
+ Vector   16  Occ=0.000000D+00  E= 1.780784D+00
+              MO Center= -3.5D-15, -1.3D-07,  6.4D-02, r^2= 6.1D-01
+
+
+ Vector   17  Occ=0.000000D+00  E= 2.287959D+00
+              MO Center=  4.5D-14,  1.5D-07, -7.8D-02, r^2= 8.3D-01
+
+
+ Vector   18  Occ=0.000000D+00  E= 2.577631D+00
+              MO Center=  4.3D-14, -2.7D-07, -1.7D-02, r^2= 8.6D-01
+
+
+ center of mass
+ --------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2     -76.40702439 -1.0D-05  0.00020  0.00018  0.00276  0.00579      2.8
+                                     ok       ok                    
+
+ ---------------------------------------------------------------
+ Failed to converge in maximum number of steps or available time
+ ---------------------------------------------------------------
+
+  ---- ---------------- -------- -------- -------- -------- -------- --------
+@    2     -76.40702439 -1.0D-05  0.00020  0.00018  0.00276  0.00579      2.8
+                                     ok       ok                    
+
+ ------------------------------------------------------------------------
+ dft optimize failed                                                                                0
+ ------------------------------------------------------------------------
+ ------------------------------------------------------------------------
+  current input line : 
+    24: task dft optimize
+
+ For further details see manual section:                                                                                                                                                                                                                                                                
+[0] ARMCI Error: 0:dft optimize failed:
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI COMMUNICATOR 3 DUP FROM 0
+with errorcode -1.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on

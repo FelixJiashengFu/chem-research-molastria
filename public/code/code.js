@@ -112,6 +112,7 @@
     const m = frameMeta?.[frame];
     if (m) { $('in-charge').value = m.charge; $('in-mult').value = m.mult; }
     render();
+    embedSummary();
   });
   // 3D 预览：点了才载入 3Dmol.js
   let lastXyz = '';
@@ -123,14 +124,26 @@
     lastXyz = xyz;
     window.MolAstriaMol3D.button(box, { xyz, name: $('in-name').value || 'mol', label: '输入的结构' }, '预览 3D 结构');
   }
+  // 换了分子以后，描述上一个分子的那几句（SMILES 生成的说明、“来自模型接口”）都要收起来
+  function forget() {
+    lastEmbed = null;
+    $('in-embed-status').textContent = ''; $('in-embed-notes').innerHTML = '';
+    $('in-import').hidden = true;
+  }
   function setSample(k) {
     const s = SAMPLES[k];
     $('in-xyz').value = s.xyz; $('in-charge').value = s.charge; $('in-mult').value = s.mult; $('in-name').value = s.name;
-    frame = 0; frameMeta = null; $('in-import').hidden = true;
+    frame = 0; frameMeta = null; forget();
     render();
   }
   document.querySelectorAll('[data-sample]').forEach((b) => b.addEventListener('click', () => setSample(b.dataset.sample)));
-  $('in-xyz').addEventListener('input', () => { frameMeta = null; render(); }); // 改过坐标，原来每一帧的电荷和多重度不一定还对
+  $('in-xyz').addEventListener('input', () => {
+    frameMeta = null; // 改过坐标，原来每一帧的电荷和多重度不一定还对
+    // 贴进来的是另一个多帧文件（各帧的注释变了）：从第一帧开始，不沿用上一个文件选的那一帧
+    if (C.parseXYZ($('in-xyz').value).comments.join('\n') !== ($('in-frame').dataset.key || '')) frame = 0;
+    forget();
+    render();
+  });
   ['in-charge', 'in-mult', 'in-name'].forEach((id) => $(id).addEventListener('input', render));
   ['in-method', 'in-basis', 'in-task', 'in-water', 'in-d3'].forEach((id) => $(id).addEventListener('change', render));
   $('in-copy').addEventListener('click', async () => {
@@ -158,6 +171,7 @@
     if (m === 'parse') return r.detail === 'whitespace' ? tr('SMILES 里不能有空格。') : `这个 SMILES 读不出来：${r.detail || ''}`;
     if (m === 'big') return `重原子有 ${r.heavy} 个，超过了浏览器里能算的 ${r.max} 个；这么大的分子请在本机用 RDKit 或 CREST 搭构象。`;
     if (m === 'stereo') return tr('搭出的构象和写的立体构型都对不上，换一种写法再试。');
+    if (m === 'hcount') return `方括号里的 ${r.detail} 写明了 ${r.want} 个氢，OpenChemLib 读成了 ${r.got} 个，算出来会是另一个分子。自由基请换一种写法，比如二氧化氮写成 N(=O)[O]。`;
     if (m === 'embed') return tr('搭不出三维结构：检查一下价态，或者环是不是太紧张。');
     return `出错了：${m}`;
   }
@@ -165,13 +179,29 @@
     const W = {
       unspecified: () => `SMILES 里有 ${r.unspecified} 处立体构型没写，按第一个搭出的结构定成了 ${r.fixedSmiles}；要另一个异构体，请在 SMILES 里用 @、@@、/、\\ 写明。`,
       'stereo-dropped': () => tr('有的构象搭出来立体构型不对，已经去掉，只留和 SMILES 一致的。'),
-      'no-forcefield': () => tr('MMFF94 力场不认识这个分子里的某些原子或价态，坐标没有优化，只是一个粗糙的起点，请先用 xTB 优化。'),
+      'no-forcefield': () => tr('MMFF94 力场算不了这个分子（不认识某些原子或价态，或者算不出能量），坐标没有优化，只是一个粗糙的起点，请先用 xTB 优化。'),
+      'partly-optimised': () => tr('有的构象 MMFF94 算不出能量，坐标没有优化，排在最后；用前面优化过的那几个更好。'),
+      atom: () => `单个原子：多重度按洪特规则填成基态的 ${r.mult}；要算别的态请自己改。`,
+      'atom-check': () => `单个原子：多重度只按电子数的奇偶填成了 ${r.mult}；过渡金属的原子和离子基态常是高自旋（比如 Fe²⁺ 是五重态），请查表核对。`,
       fragments: () => `SMILES 里有 ${r.fragments} 个互不相连的部分，它们之间的相对位置是随手摆的。`,
       radical: () => `有 ${r.unpaired} 个未成对电子，多重度按高自旋填成 ${r.mult}；MMFF94 是给闭壳层分子做的，自由基的结构只能作参考。`,
     };
     $('in-embed-notes').innerHTML = r.warnings.map((w) => (W[w] ? `<li>${esc(W[w]())}</li>` : '')).join('');
   }
-  let embedding = false;
+  // SMILES 生成的那一句：用的是第几个构象跟着选的帧变
+  function embedSummary() {
+    const r = lastEmbed;
+    if (!r) return;
+    const fr = r.frames[frame] || r.frames[0];
+    const done = Number.isFinite(fr.energy);
+    if (r.frames.length < 2) { embedStatus(done ? tr('生成了一个结构，已用 MMFF94 优化。') : tr('生成了一个结构（没有优化）。')); return; }
+    const k = frame + 1, dE = done ? (fr.energy - r.frames[0].energy).toFixed(2) : '';
+    // 整句写全（不拼接），界面翻译按整句认
+    if (!frame) embedStatus(`搭了 ${r.tried} 个构象，去掉重复的还剩 ${r.frames.length} 个，按 MMFF94 能量从低到高排好，现在用的是能量最低的一个。`);
+    else if (done) embedStatus(`搭了 ${r.tried} 个构象，去掉重复的还剩 ${r.frames.length} 个，按 MMFF94 能量从低到高排好；现在用的是第 ${k} 个，比最低的高 ${dE} kcal/mol。`);
+    else embedStatus(`搭了 ${r.tried} 个构象，去掉重复的还剩 ${r.frames.length} 个，按 MMFF94 能量从低到高排好；现在用的是第 ${k} 个，这一个没有优化。`);
+  }
+  let embedding = false, lastEmbed = null;
   async function embedSmiles() {
     if (embedding || !S3) return;
     const text = smi.value.trim();
@@ -189,9 +219,8 @@
       if (Object.values(SAMPLES).some((s) => s.name === $('in-name').value)) $('in-name').value = 'mol';
       frame = 0; frameMeta = null; $('in-import').hidden = true;
       render();
-      embedStatus(r.forcefield
-        ? (r.frames.length > 1 ? `搭了 ${r.tried} 个构象，去掉重复的还剩 ${r.frames.length} 个，按 MMFF94 能量从低到高排好，现在用的是能量最低的一个。` : tr('生成了一个结构，已用 MMFF94 优化。'))
-        : tr('生成了一个结构（没有优化）。'));
+      lastEmbed = r;
+      embedSummary();
       embedNotes(r);
     } catch (e) {
       embedStatus(embedErr(e), true);
@@ -223,7 +252,7 @@
     note.textContent = '';
     const part = (tag, text, raw) => { const el = document.createElement(tag); el.textContent = text; if (raw) el.setAttribute('translate', 'no'); note.append(el); };
     part('span', tr('这个结构来自模型接口：'));
-    if (typeof d.model === 'string') part('b', d.model.slice(0, 60), true);
+    if (typeof d.model === 'string') part('b', d.model.slice(0, 60)); // 有的模型名带中文（“eSEN-sm 直接受力型”），要跟着翻译
     if (typeof d.job === 'string') { note.append(' · '); part('span', d.job.slice(0, 40)); }
     part('span', tr('。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。'));
     note.hidden = false;
