@@ -290,6 +290,7 @@ const mains = [
   await injectHead("qchem/index.html", "qchem/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "MolAstria 游乐场", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "qchem/", isAccessibleForFree: true, description: "用真实的物理公式玩量子世界的十五个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），以及在浏览器里运行的量子化学计算器 QChem Web。" }] }),
   await injectHead("meta/index.html", "meta/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebPage", name: "Meta × 化学：Muse 识图、UMA 脚本与开放数据集", inLanguage: "zh-CN", url: SITE + "meta/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "fairchem", "Meta Muse"] }] }),
   await injectHead("models/index.html", "models/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "量子化学模型接口：15 个机器学习势在线计算", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "models/", isAccessibleForFree: true, about: ["Universal Model for Atoms (UMA)", "Open Molecules 2025 (OMol25)", "MACE-OFF23", "ANI-2x", "machine learning interatomic potentials"] }] }),
+  await injectHead("learn/index.html", "learn/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "研习台 · Study Desk", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: ["zh-CN", "en"], url: SITE + "learn/", isAccessibleForFree: true, provider: { "@type": "Organization", name: NAME, url: SITE }, description: "AI 家教：先用诊断题摸底，再画出从已会到目标的依赖路线，一步一讲、每步一道检查题；练习跨主题穿插，学到的命题和推理链积累成跨会话的知识图。可以从站内量子物理、数学基础等章节开始，用自己的 AI key，数据只存在本机。", about: ["quantum physics", "mathematics", "quantum computing", "computational chemistry", "tutoring"] }] }),
   await injectHead("lab/index.html", "lab/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "闭环电解液分子发现 · AI 实验室", applicationCategory: "ScientificApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "lab/", isAccessibleForFree: true, description: "用 Muse 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层分配 DFT 验证。" }] }),
 ];
 
@@ -325,6 +326,7 @@ const urls = [
   ["quantum/computing/", "0.8", "monthly"],
   ...guidePages.map((p) => [p, "0.7", "monthly"]), ...resourcePages.map((p) => [p, "0.5", "weekly"]),
   ["physics-realms/", "0.8", "monthly"],
+  ["learn/", "0.8", "monthly"],
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

@@ -148,6 +148,7 @@
       <header class="fm-sub-h"><span class="fm-big-glyph" aria-hidden="true">${esc(s.glyph)}</span><div>
         <p class="fm-panel-k" data-tier="${s.tier}">${R(tierOf(s.id).name)} · ${R(tierOf(s.id).tag)} · ${L(`约 ${s.weeks} 周`, `about ${s.weeks} weeks`)}</p>
         <h3>${R(s.name)}</h3>${R(s.tagline, 'p', 'fm-tagline')}</div></header>
+      <p class="fm-study"><a class="button" href="../../learn/index.html#goal=fm:${s.id}">${L('用研习台学这门学科', 'Study this in the Study Desk')} <i class="ico-ext ico-right" aria-hidden="true"></i></a></p>
       <div class="fm-cols"><div class="fm-col-main">
         <h4>${L('讲解', 'Explanation')}</h4><div class="fs-prose">${s.explain.map((p) => R(p, 'p')).join('')}</div>
         <h4>${L('关键公式', 'Key formulas')}</h4>${s.formulas.map(formula).join('')}

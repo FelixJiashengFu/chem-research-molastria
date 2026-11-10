@@ -7002,7 +7002,8 @@
   "review/index.html"
  ],
  "复习卡片": [
-  "review/index.html"
+  "review/index.html",
+  "shared-nav.js"
  ],
  "读过的东西，快要忘的时候再出现一次。每张卡按你的回答安排下一次复习，用的是开源的 FSRS 间隔重复算法。卡片和进度只存在这台设备的浏览器里，不上传。": [
   "review/index.html"
@@ -7107,6 +7108,20 @@
  ],
  "例如：量子化学 电子相关": [
   "review/index.html"
+ ],
+ "研习台 · Study Desk · MolAstria": [
+  "learn/index.html"
+ ],
+ "跳到研习台": [
+  "learn/index.html"
+ ],
+ "研习台": [
+  "learn/index.html",
+  "shared-nav.js",
+  "review/review.js"
+ ],
+ "研习台需要 JavaScript 才能使用。": [
+  "learn/index.html"
  ],
  "统一搜索": [
   "shared-nav.js",
@@ -8202,6 +8217,11 @@
   "videos/videos.js"
  ],
  "阅读详解": [
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js"
+ ],
+ "用研习台学这一部分": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
   "quantum/computing/qc.js"
@@ -13540,9 +13560,6 @@
  "中英术语": [
   "review/review.js"
  ],
- "研习台": [
-  "review/review.js"
- ],
  "站内搜索用的中英术语表，每组一张：看中文想英文，或者反过来。": [
   "review/review.js"
  ],
@@ -14238,6 +14255,12 @@
  "量子化学模型接口：15 个机器学习势在线计算": [
   "tools/build-seo.ts"
  ],
+ "研习台 · Study Desk": [
+  "tools/build-seo.ts"
+ ],
+ "AI 家教：先用诊断题摸底，再画出从已会到目标的依赖路线，一步一讲、每步一道检查题；练习跨主题穿插，学到的命题和推理链积累成跨会话的知识图。可以从站内量子物理、数学基础等章节开始，用自己的 AI key，数据只存在本机。": [
+  "tools/build-seo.ts"
+ ],
  "闭环电解液分子发现 · AI 实验室": [
   "tools/build-seo.ts"
  ],
@@ -14258,6 +14281,60 @@
  ],
  "跳到网状图": [
   "physics-realms/index.html"
+ ],
+ "图示格式不对": [
+  "learn/learn-core.js"
+ ],
+ "图示里没有节点": [
+  "learn/learn-core.js"
+ ],
+ "摸底题的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给出摸底题": [
+  "learn/learn-core.js"
+ ],
+ "路线图的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给出路线图": [
+  "learn/learn-core.js"
+ ],
+ "讲解步骤的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给上一道检查题评分": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给出下一步讲解": [
+  "learn/learn-core.js"
+ ],
+ "这一步没有讲解内容": [
+  "learn/learn-core.js"
+ ],
+ "这一步缺少检查题": [
+  "learn/learn-core.js"
+ ],
+ "评分结果的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "练习题的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给出题目": [
+  "learn/learn-core.js"
+ ],
+ "练习题缺少解答": [
+  "learn/learn-core.js"
+ ],
+ "提取结果的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "总结的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "模型没有给出目标总结": [
+  "learn/learn-core.js"
  ],
  "综合化合物与化学信息": [
   "atlas data",

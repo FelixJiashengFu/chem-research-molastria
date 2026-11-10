@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -436,6 +436,8 @@ check('research atlas: the copied site loads in its frame, follows the theme, mi
   await Promise.all([p.waitForEvent('framenavigated', { predicate: (fr) => /schools\/mit\/$/.test(fr.url()) }), f.evaluate(() => { location.href = '../schools/mit/'; })]);
   const mit = p.frame({ url: /research-atlas\/app\/schools\/mit\// });
   await mit.waitForSelector('h1');
+  // The host sends the typeface again once the new page has loaded (postMessage), so wait for it rather than read it at once: under load it lands after the h1.
+  await mit.waitForFunction(() => document.documentElement.dataset.raFont === 'serif', null, { timeout: 5000 }).catch(() => {});
   assert.equal(await mit.evaluate(() => document.documentElement.dataset.raFont), 'serif', 'the typeface survives a link inside the frame');
   await finish(p);
   // In English the atlas is translated by the site's own i18n.js with the atlas dictionary.
@@ -1260,8 +1262,9 @@ check('top bar: one row at every desktop width in both languages, the rest goes 
   await p.click('.cr-more-btn');
   await p.click('#breadcrumb');
   assert.ok(await p.locator('.cr-more-menu').isHidden(), 'a click outside closes the menu');
-  // With 15 links (进一步基础科学发现 added 2026-11-07) every link fits from about 2000 px; at 1920 px Agent 工程 sits in 更多.
-  await p.setViewportSize({ width: 2560, height: 800 });
+  // With 16 links (研习台 added 2026-11-10) every link fits only from somewhere between 2560 and 3000 px; at 1920 px
+  // Agent 工程 sits in 更多.
+  await p.setViewportSize({ width: 3200, height: 800 });
   await p.waitForFunction(() => !document.querySelector('.cr-more-btn').offsetWidth);
   await p.setViewportSize({ width: 900, height: 800 });
   await p.waitForFunction((n) => document.querySelectorAll('.cr-more-menu a').length > n, tucked.length);
@@ -2035,6 +2038,214 @@ check('quantum algorithms: ledger, map, circuit simulator, four demos, Shor calc
   assert.equal(await e.title(), 'Quantum Algorithms · MolAstria');
   const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,[lang="zh-CN"],.fm-au') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
   assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
+// A stand-in DeepSeek for the Study Desk: reads the TASK: marker learn-core puts on the first line of each system
+// message and answers with fixed JSON (the non-streaming shape ChemAI.chat accepts).
+function studyDeskAI() {
+  let teach = 0, practice = 0;
+  const calls = [];
+  const P1 = '一个能量子的大小等于 hν。', P2 = '高频模式在 hν ≫ kT 时被冻结。', P3 = '量子化消除了紫外灾难。';
+  const reply = (task, user) => {
+    calls.push(task);
+    switch (task) {
+      case 'probe': return { goalRestated: '说清楚能量为什么是量子化的', questions: [
+        { id: 'q1', kind: 'choice', prompt: '黑体辐射在紫外区的经典预言是什么？<b>粗体</b>', options: ['发散', '趋于零', '常数'], answer: 0 },
+        { id: 'q2', kind: 'choice', prompt: '光子能量和频率的关系？', options: ['E ∝ 1/ν', 'E ∝ ν²', 'E = hν'], answer: 2 },
+        { id: 'q3', kind: 'short', prompt: '为什么光电效应有截止频率？', answer: 'hν 要大于逸出功' },
+      ] };
+      case 'plan': return { goalId: 'n3', startNote: '你熟悉经典图像，从能量子开始。', nodes: [
+        { id: 'n1', label: '经典波动图像', deps: [], status: 'held' },
+        { id: 'n2', label: '能量子 E = hν', deps: ['n1'], status: 'todo' },
+        { id: 'n3', label: '为什么能量量子化', deps: ['n2'], status: 'todo' },
+      ], grades: [{ id: 'q3', correct: true, feedback: '对' }] };
+      case 'teach':
+        teach++;
+        if (teach === 1) return { step: { node: 'n2', kind: 'teach', predict: '频率翻倍，能量子怎么变？', explain: '普朗克假设振子的能量只能是 **hν** 的整数倍 [1]。<script>alert(1)</script> [9]', diagram: { nodes: [{ id: 'a', label: 'ν' }, { id: 'b', label: 'E = hν' }], edges: [{ from: 'a', to: 'b', label: '×h' }] }, demo: (/DEMOS \(on-site, use the id\):\n([\w-]+)/.exec(user) || [])[1] || 'none', refs: [1], check: { kind: 'choice', prompt: '频率加倍时，一个能量子的大小？', options: ['减半', '加倍', '不变'], answer: 1 }, props: [P1] } };
+        if (teach === 2) return { grade: { correct: false, feedback: '方向反了。', misconception: '把频率和波长弄混了' }, step: { node: 'n2', kind: 'repair', explain: '换个角度：E = hν，ν 在分子上。', check: { kind: 'choice', prompt: 'ν 变成 3 倍，E 变成？', options: ['3 倍', '1/3', '不变'], answer: 0 } } };
+        if (teach === 3) return { grade: { correct: true, feedback: '对。' }, nodeDone: true, step: { node: 'n3', kind: 'teach', explain: '把能量子放回黑体：高频模式激发不起来。', check: { kind: 'short', prompt: '为什么紫外发散消失了？', answer: 'hν ≫ kT' }, props: [P2] } };
+        // The goal is done; a step sent anyway (as the prompt's example shape suggests) must not keep the session going.
+        return { grade: { correct: true, feedback: '很好。' }, nodeDone: true, step: { node: 'n3', kind: 'teach', explain: '多余的一步。', check: { kind: 'choice', prompt: '多余？', options: ['是', '否'], answer: 0 } } };
+      case 'summary': return { goalSentence: '能量只能一份一份地交换，每份 hν，所以高频模式冻结。', props: [P1, P2, P3], chains: [{ premises: [P1, P2], conclusion: P3 }] };
+      case 'practice':
+        practice++;
+        return { topic: `能量子 ${practice}`, problem: `绿光和红光，哪个的光子能量大？（第 ${practice} 题）`, kind: 'choice', options: ['红光', '一样', '绿光'], answer: 2, hints: ['想想频率', 'E = hν', '绿光频率更高'], solution: '绿光频率更高，所以 E 更大。' };
+      case 'practiceGrade': return { correct: true, feedback: '对。' };
+      default: return {};
+    }
+  };
+  const route = async (r) => {
+    const body = JSON.parse(r.request().postData());
+    const task = /^TASK: (\w+)/.exec(body.messages[0].content)?.[1];
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: 'deepseek-v4-flash', choices: [{ message: { content: JSON.stringify(reply(task, body.messages.at(-1).content)) } }], usage: { prompt_tokens: 100, completion_tokens: 23, total_tokens: 123 } }) });
+  };
+  return { route, calls };
+}
+const studyKey = () => { try { localStorage.setItem('chemhub-ai', JSON.stringify({ provider: 'deepseek', remember: true, keys: { deepseek: 'sk-test' } })); } catch {} };
+
+check('study desk: probe, plan, one step with a check and a repair, practice, knowledge graph, export', async () => {
+  const p = await open({ init: studyKey, reducedMotion: 'reduce' });
+  const ai = studyDeskAI();
+  await p.route('https://api.deepseek.com/**', ai.route);
+  // The chapter link on the quantum physics page opens the Study Desk with that chapter as grounding.
+  await go(p, '/quantum/physics/index.html#c-birth');
+  assert.equal(await p.getAttribute('#c-birth a[href$="learn/index.html#goal=qp:birth"]', 'href'), '../../learn/index.html#goal=qp:birth');
+  await p.click('#c-birth a[href$="#goal=qp:birth"]');
+  await p.waitForFunction(() => document.querySelector('#ln-goal')?.value.length > 0);
+  assert.equal(await p.getAttribute('.cr-links a[data-id=learn]', 'aria-current'), 'page', 'nav marks the Study Desk');
+  assert.equal(await p.locator('.ln-chip-src').count(), 1, 'chapter chosen as grounding');
+  // Probe: three questions, the model's HTML is shown as text, confidence is required.
+  await p.click('[data-act=new]');
+  await p.waitForSelector('.ln-q');
+  const qs = p.locator('.ln-q');
+  assert.equal(await qs.count(), 3);
+  assert.equal(await p.locator('.ln-q b').count(), 0, 'no model HTML');
+  await qs.nth(0).locator('.ln-opt').nth(0).click(); await qs.nth(0).locator('.ln-seg label').nth(0).click();
+  await qs.nth(1).locator('.ln-opt').nth(0).click();
+  await p.click('[data-act=probe-submit]');
+  assert.ok((await qs.nth(1).locator('.ln-hint-msg').textContent()).length > 0, 'asks how sure');
+  await qs.nth(1).locator('.ln-seg label').nth(0).click();
+  await qs.nth(2).locator('textarea').first().fill('光子能量要大于逸出功');
+  await qs.nth(2).locator('.ln-seg label').nth(2).click();
+  await p.click('[data-act=probe-submit]');
+  // Plan: three nodes, the held one marked, a note on calibration (one answer was wrong while "sure").
+  await p.waitForSelector('.ln-plan .lg-pnode');
+  assert.equal(await p.locator('.lg-pnode').count(), 3);
+  assert.ok(await p.locator('.ln-calib').count() >= 1, 'calibration note');
+  // Teach: predict first, explanation without the script tag or the invented [9], a diagram and a demo card.
+  await p.click('[data-act=teach-start]');
+  await p.waitForSelector('.ln-step .ln-predict');
+  await p.fill('.ln-predict textarea', '变大');
+  await p.click('[data-act=reveal]:not([data-skip])');
+  await p.waitForSelector('.ln-step .ln-prose');
+  const prose = await p.locator('.ln-step .ln-prose').first().innerHTML();
+  assert.doesNotMatch(prose, /<script|\[9\]/);
+  assert.ok(await p.locator('.ln-step svg').count() >= 1, 'diagram drawn');
+  assert.equal(await p.locator('.ln-step .ln-demo').count(), 1, 'demo card');
+  // A wrong answer brings a repair step on the same point.
+  const s1 = p.locator('.ln-step').nth(0);
+  await s1.locator('.ln-opt').nth(0).click(); await s1.locator('.ln-seg label').nth(1).click();
+  await s1.locator('[data-act=check-submit]').click();
+  await p.waitForSelector('.ln-step.is-repair');
+  assert.equal(await s1.locator('.ln-answered.is-wrong').count(), 1);
+  assert.equal(await p.locator('.ln-miscon').count(), 1, 'misconception shown');
+  const s2 = p.locator('.ln-step').nth(1);
+  await s2.locator('.ln-opt').nth(0).click(); await s2.locator('.ln-seg label').nth(0).click();
+  await s2.locator('[data-act=check-submit]').click();
+  await p.waitForFunction(() => document.querySelectorAll('.ln-step').length === 3);
+  const s3 = p.locator('.ln-step').nth(2);
+  await s3.locator('textarea').first().fill('hν ≫ kT'); await s3.locator('.ln-seg label').nth(0).click();
+  await s3.locator('[data-act=check-submit]').click();
+  // Summary: the goal sentence, then the ticked claims and the chain go into the knowledge graph.
+  await p.waitForSelector('#ln-summary .ln-goalsent');
+  await p.click('[data-act=summary-add]');
+  await p.waitForSelector('#ln-summary .ln-picks[disabled]');
+  let st = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-learn')));
+  assert.equal(st.props.length, 3); assert.equal(st.chains.length, 1);
+  // The fourth teach call only grades the last check and closes the goal (the extra step in its reply is dropped).
+  assert.equal(await p.locator('#ln-summary').count(), 1);
+  assert.deepEqual(ai.calls, ['probe', 'plan', 'teach', 'teach', 'teach', 'teach', 'summary']);
+  assert.equal(st.usage.calls, 7); assert.equal(st.usage.tokens, 7 * 123);
+  // Practice: the topic stays hidden until the answer, hints come one at a time.
+  await p.click('.ln-tab[data-tab=practice]');
+  await p.selectOption('#pr-k', '3');
+  await p.click('[data-act=practice-start]');
+  await p.waitForSelector('.ln-item');
+  const it = p.locator('.ln-item').nth(0);
+  assert.doesNotMatch(await it.innerText(), /能量子 1/, 'topic not named before answering');
+  await p.click('[data-act=hint]'); await p.click('[data-act=hint]');
+  assert.equal(await p.locator('.ln-hints li').count(), 2);
+  await it.locator('.ln-opt').nth(2).click(); await it.locator('.ln-seg label').nth(0).click();
+  await it.locator('[data-act=practice-submit]').click();
+  await p.waitForSelector('.ln-item .ln-answered.is-right');
+  assert.match(await it.innerText(), /能量子 1/, 'topic revealed');
+  for (let n = 2; n <= 3; n++) {
+    await p.click('[data-act=practice-next]');
+    await p.waitForFunction((k) => document.querySelectorAll('.ln-item').length === k, n);
+    const x = p.locator('.ln-item').nth(n - 1);
+    await x.locator('.ln-opt').nth(2).click(); await x.locator('.ln-seg label').nth(1).click();
+    await x.locator('[data-act=practice-submit]').click();
+    await p.waitForFunction((k) => document.querySelectorAll('.ln-item .ln-answered.is-right').length === k, n);
+  }
+  await p.click('[data-act=practice-next]');
+  await p.waitForSelector('#pr-done');
+  assert.match(await text(p, '#pr-done .ln-big'), /3\s*\/\s*3/);
+  st = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-learn')));
+  assert.ok(st.props.some((x) => x.practiced?.n > 0), 'practice recorded on the claims');
+  // Knowledge graph: three nodes; selecting one opens its card; deleting it removes the node and its chain.
+  await p.click('.ln-tab[data-tab=graph]');
+  await p.waitForSelector('.lg-kn');
+  assert.equal(await p.locator('.lg-kn').count(), 3);
+  await p.locator('#ln-kg').scrollIntoViewIfNeeded();
+  await p.waitForTimeout(800);
+  const box = await p.locator('.lg-kn circle').first().boundingBox();
+  await p.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await p.waitForSelector('#ln-kg-card [data-act=kg-del]');
+  await p.$eval('#ln-kg-card [data-act=kg-del]', (b) => b.click());
+  await p.waitForFunction(() => document.querySelectorAll('.lg-kn').length === 2);
+  st = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-learn')));
+  assert.equal(st.props.length, 2); assert.equal(st.chains.length, 0);
+  // Data: export, then merging the export back changes nothing; a prompt edit is saved and reset.
+  await p.click('.ln-tab[data-tab=data]');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-act=export]')]);
+  const exported = JSON.parse(readFileSync(await dl.path(), 'utf8'));
+  assert.equal(exported.state.props.length, 2);
+  await p.setInputFiles('#data-file', await dl.path());
+  await p.waitForSelector('#data-pi');
+  await p.click('[data-act=import-merge]');
+  await p.waitForTimeout(200);
+  const merged = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-learn')));
+  assert.equal(merged.props.length, 2); assert.equal(merged.usage.calls, exported.state.usage.calls, 'usage not counted twice');
+  await p.locator('.ln-prompt[data-key=teach] summary').click();
+  await p.fill('#pr-teach', 'CUSTOM {lang} prompt');
+  await p.click('[data-act=prompt-save][data-key=teach]');
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-learn-prompts'))).teach, 'CUSTOM {lang} prompt');
+  await p.click('[data-act=prompt-reset][data-key=teach]');
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-learn-prompts')) || '{}').teach, undefined);
+  await finish(p);
+
+  // English at phone width: the math page's subject link fills the goal, the probe, the map and a step appear, and no
+  // Chinese is left in the page chrome on any tab. The page's own fixed text is in L() spans (translate="no" lang="en"),
+  // so those are checked; only data containers (translate="no" without lang: what the model or the learner wrote) are skipped.
+  const e = await open({ init: studyKey, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
+  await e.route('https://api.deepseek.com/**', studyDeskAI().route);
+  await go(e, '/fundamental-science/math/index.html?lang=en');
+  const href = await e.getAttribute('.fm-panel:not([hidden]) a[href*="learn/index.html#goal=fm:"]', 'href');
+  assert.match(href, /^\.\.\/\.\.\/learn\/index\.html#goal=fm:[\w-]+$/);
+  await go(e, `/learn/index.html?lang=en${href.slice(href.indexOf('#'))}`);
+  await e.waitForFunction(() => /^Understand/.test(document.querySelector('#ln-goal')?.value || ''));
+  await e.click('[data-act=new]');
+  await e.waitForSelector('.ln-q');
+  const hanLeft = async (where) => {
+    await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await e.waitForTimeout(300);
+    const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,noscript,textarea,[translate=no]:not([lang])')) out.push(n.nodeValue.trim()); return out; });
+    assert.deepEqual(han, [], `no Chinese left on the English page (${where})`);
+    assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `no sideways scroll on a phone (${where})`);
+  };
+  await hanLeft('probe');
+  // Focus moves to the questions when they arrive.
+  assert.equal(await e.evaluate(() => document.activeElement?.id), 'ln-probe-h');
+  const eq = e.locator('.ln-q');
+  await eq.nth(0).locator('.ln-opt').nth(0).click(); await eq.nth(0).locator('.ln-seg label').nth(0).click();
+  await eq.nth(1).locator('.ln-opt').nth(2).click(); await eq.nth(1).locator('.ln-seg label').nth(1).click();
+  await e.click('[data-act=probe-submit]');
+  await e.waitForSelector('.ln-plan .lg-pnode');
+  assert.equal(await e.evaluate(() => document.activeElement?.id), 'ln-plan-h');
+  await hanLeft('map');
+  await e.click('[data-act=teach-start]');
+  await e.waitForSelector('.ln-step .ln-predict');
+  await e.click('[data-act=reveal][data-skip]');
+  await e.waitForSelector('.ln-step .ln-prose');
+  await hanLeft('step');
+  const refSources = await e.evaluate(() => [...document.querySelectorAll('.ln-refs small')].map((x) => x.textContent));
+  assert.ok(refSources.every((x) => !/[㐀-鿿]/.test(x)), `reference sources in English: ${refSources}`);
+  for (const tab of ['practice', 'graph', 'import', 'data', 'learn']) {
+    await e.click(`.ln-tab[data-tab=${tab}]`);
+    await e.waitForFunction((t) => document.getElementById('ln-panel').dataset.tab === t, tab);
+    await hanLeft(`#${tab}`);
+  }
   await finish(e);
 });
 
@@ -3017,7 +3228,7 @@ check('formula questions: MathLive answers graded with targeted hints, nudge, wo
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
