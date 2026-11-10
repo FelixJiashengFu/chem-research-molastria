@@ -571,7 +571,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "214 条 · 已实现": [
+ "228 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -619,7 +619,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 214 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 228 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -1431,6 +1431,9 @@
  "研究方向详解": [
   "quantum/biology/index.html"
  ],
+ "结构馆：看得见的分子": [
+  "quantum/biology/index.html"
+ ],
  "三个演示都在浏览器里直接求解对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画。每个演示下方写明模型的假设和适用范围。": [
   "quantum/biology/index.html"
  ],
@@ -1543,6 +1546,9 @@
   "quantum/biology/index.html"
  ],
  "按证据强度筛选": [
+  "quantum/biology/index.html"
+ ],
+ "选择结构": [
   "quantum/biology/index.html"
  ],
  "传递效率随退相干率变化": [
@@ -2237,7 +2243,8 @@
  "清空": [
   "lab/index.html",
   "qchem/index.html",
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "viewer/sketch.js"
  ],
  "当前是合成演示数据。": [
   "lab/index.html"
@@ -4957,7 +4964,8 @@
  ],
  "取消": [
   "pro/index.html",
-  "ai/ai.js"
+  "ai/ai.js",
+  "viewer/sketch.js"
  ],
  "前往安全支付": [
   "pro/index.html"
@@ -4978,7 +4986,8 @@
   "pro/index.html",
   "shared-nav.js",
   "ai/ai.js",
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "viewer/sketch.js"
  ],
  "支付方式": [
   "pro/index.html"
@@ -6921,6 +6930,116 @@
  ],
  "ħ-c-G 立方体的八个角": [
   "qchem/index.html"
+ ],
+ "复习卡片 · 按遗忘曲线复习计算化学与量子知识 · MolAstria": [
+  "review/index.html"
+ ],
+ "复习卡片": [
+  "review/index.html"
+ ],
+ "读过的东西，快要忘的时候再出现一次。每张卡按你的回答安排下一次复习，用的是开源的 FSRS 间隔重复算法。卡片和进度只存在这台设备的浏览器里，不上传。": [
+  "review/index.html"
+ ],
+ "今天的复习": [
+  "review/index.html"
+ ],
+ "显示答案": [
+  "review/index.html"
+ ],
+ "空格": [
+  "review/index.html"
+ ],
+ "重来": [
+  "review/index.html"
+ ],
+ "困难": [
+  "review/index.html"
+ ],
+ "良好": [
+  "review/index.html"
+ ],
+ "简单": [
+  "review/index.html"
+ ],
+ "今天的复习做完了": [
+  "review/index.html",
+  "review/review.js"
+ ],
+ "卡组": [
+  "review/index.html"
+ ],
+ "术语卡的方向": [
+  "review/index.html"
+ ],
+ "跟随界面语言": [
+  "review/index.html"
+ ],
+ "中文 → 英文": [
+  "review/index.html"
+ ],
+ "英文 → 中文": [
+  "review/index.html"
+ ],
+ "每天最多学几张新卡": [
+  "review/index.html"
+ ],
+ "写一张自己的卡": [
+  "review/index.html"
+ ],
+ "正面（问题）": [
+  "review/index.html"
+ ],
+ "背面（答案）": [
+  "review/index.html"
+ ],
+ "标签（可选，用空格分开）": [
+  "review/index.html"
+ ],
+ "加入卡组": [
+  "review/index.html"
+ ],
+ "我的卡片": [
+  "review/index.html",
+  "review/review.js"
+ ],
+ "导出与备份": [
+  "review/index.html"
+ ],
+ "导出到 Anki：在 Anki 里选“文件 → 导入”，选下载的文件即可，正面、背面和标签会自动对上（需要 Anki 2.1.54 或更新的版本）。只导出勾选的卡组。备份文件包含你的卡片和复习进度，可以在另一台设备上恢复。": [
+  "review/index.html"
+ ],
+ "导出到 Anki": [
+  "review/index.html"
+ ],
+ "下载备份": [
+  "review/index.html"
+ ],
+ "从备份恢复": [
+  "review/index.html"
+ ],
+ "清除全部进度": [
+  "review/index.html"
+ ],
+ "调度用": [
+  "review/index.html"
+ ],
+ "（FSRS 算法的 TypeScript 实现，MIT 许可），第一次打开时从 jsDelivr 载入；载不到时改用简化的间隔（每次乘一个固定倍数），联网后接着用 FSRS。“把复习嵌进阅读”的想法来自 Andy Matuschak 和 Michael Nielsen 的": [
+  "review/index.html"
+ ],
+ "。研习台的卡片只读取研习台的知识图，不会改动研习台里的任何记录。": [
+  "review/index.html"
+ ],
+ "这张卡记得怎么样": [
+  "review/index.html"
+ ],
+ "例如：精确的非相对论能量减去 Hartree–Fock 能量，叫什么？": [
+  "review/index.html"
+ ],
+ "例如：相关能（Löwdin 的定义，同一个哈密顿量下比较）。": [
+  "review/index.html"
+ ],
+ "例如：量子化学 电子相关": [
+  "review/index.html"
  ],
  "统一搜索": [
   "shared-nav.js",
@@ -11128,6 +11247,9 @@
  "计算完成 · {0} · {1}{2}": [
   "models/models.js"
  ],
+ "3D 结构": [
+  "models/models.js"
+ ],
  "，多帧": [
   "models/models.js"
  ],
@@ -11141,6 +11263,15 @@
   "models/models.js"
  ],
  "完整结果": [
+  "models/models.js"
+ ],
+ "{0} 算出的结构": [
+  "models/models.js"
+ ],
+ "输入的结构": [
+  "models/models.js"
+ ],
+ "预览 3D 结构": [
   "models/models.js"
  ],
  "文件太大：在线计算的 XYZ 最多 12000 个字符": [
@@ -11915,16 +12046,19 @@
   "radar/app/app.js"
  ],
  "{0} 分钟后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "{0} 小时 {1} 分钟后": [
   "radar/app/app.js"
  ],
  "{0} 小时后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "{0} 天后": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "分钟": [
   "radar/app/app.js"
@@ -12839,7 +12973,8 @@
   "radar/app/app.js"
  ],
  "删除": [
-  "radar/app/app.js"
+  "radar/app/app.js",
+  "review/review.js"
  ],
  "从模板添加": [
   "radar/app/app.js"
@@ -13192,6 +13327,236 @@
  ],
  "设置已保存": [
   "radar/app/app.js"
+ ],
+ "中英术语": [
+  "review/review.js"
+ ],
+ "研习台": [
+  "review/review.js"
+ ],
+ "站内搜索用的中英术语表，每组一张：看中文想英文，或者反过来。": [
+  "review/review.js"
+ ],
+ "研习台知识图里的推理链（由前提推结论）和知识点（讲清楚来龙去脉）。只读，不会改动研习台。": [
+  "review/review.js"
+ ],
+ "你自己写的卡片，写在下面。": [
+  "review/review.js"
+ ],
+ "{0} 个月后": [
+  "review/review.js"
+ ],
+ "{0} 年后": [
+  "review/review.js"
+ ],
+ "由这些推出什么？": [
+  "review/review.js",
+  "review/review-core.js"
+ ],
+ "讲清楚这一条，并说出它从哪里来：": [
+  "review/review.js",
+  "review/review-core.js"
+ ],
+ "来自研习台：": [
+  "review/review.js"
+ ],
+ "对照研习台里的原始讲解，讲不清的地方去那里再练一次。": [
+  "review/review.js"
+ ],
+ "去研习台练习": [
+  "review/review.js"
+ ],
+ "也写作：": [
+  "review/review.js"
+ ],
+ "到期 {0} 张 · 新卡 {1} 张（共 {2} 张）": [
+  "review/review.js"
+ ],
+ "复习": [
+  "review/review.js"
+ ],
+ "新卡": [
+  "review/review.js"
+ ],
+ "还没有可以复习的卡片": [
+  "review/review.js"
+ ],
+ "在下面勾选一个卡组，或者写一张自己的卡。": [
+  "review/review.js"
+ ],
+ "下一张 {0}到期。": [
+  "review/review.js"
+ ],
+ "还有 {0} 张新卡，明天接着学。": [
+  "review/review.js"
+ ],
+ "所有卡片都学过了。": [
+  "review/review.js"
+ ],
+ "这台设备的浏览器不让保存（可能是隐私模式），关掉页面后进度会丢失。": [
+  "review/review.js"
+ ],
+ "研习台还没有知识点。在研习台学完一节，这里会自动出现卡片。": [
+  "review/review.js"
+ ],
+ "共 {0} 张": [
+  "review/review.js"
+ ],
+ "新卡 {0} 张": [
+  "review/review.js"
+ ],
+ "到期 {0} 张": [
+  "review/review.js"
+ ],
+ "我的卡片（共 {0} 张）": [
+  "review/review.js"
+ ],
+ "还没有自己的卡片。": [
+  "review/review.js"
+ ],
+ "最多 {0} 张，先删掉一些。": [
+  "review/review.js"
+ ],
+ "正面和背面都要写。": [
+  "review/review.js"
+ ],
+ "已加入，会作为新卡出现在今天的复习里。": [
+  "review/review.js"
+ ],
+ "没有勾选的卡组可以导出。": [
+  "review/review.js"
+ ],
+ "已导出 {0} 张卡片。": [
+  "review/review.js"
+ ],
+ "备份已下载。": [
+  "review/review.js"
+ ],
+ "这个文件太大，不像是复习卡片的备份。": [
+  "review/review.js"
+ ],
+ "这不是复习卡片的备份文件。": [
+  "review/review.js"
+ ],
+ "已从备份恢复。": [
+  "review/review.js"
+ ],
+ "清除全部复习进度和自己的卡片？这一步不能撤销，建议先下载备份。": [
+  "review/review.js"
+ ],
+ "已清除。": [
+  "review/review.js"
+ ],
+ "正在载入 FSRS 调度算法…": [
+  "review/review.js"
+ ],
+ "没能载入 FSRS（需要联网访问 cdn.jsdelivr.net），先用简化的间隔安排复习，联网后会接着用 FSRS。": [
+  "review/review.js"
+ ],
+ "来自研习台：{0}": [
+  "review/review-core.js"
+ ],
+ "对照研习台里的原始讲解。": [
+  "review/review-core.js"
+ ],
+ "也写作：{0}": [
+  "review/review-core.js"
+ ],
+ "3Dmol.js 载入后不可用": [
+  "viewer/mol3d.js"
+ ],
+ "3Dmol.js 载入失败（需要联网访问 cdn.jsdelivr.net）": [
+  "viewer/mol3d.js"
+ ],
+ "球棍": [
+  "viewer/mol3d.js"
+ ],
+ "棍": [
+  "viewer/mol3d.js"
+ ],
+ "空间填充": [
+  "viewer/mol3d.js"
+ ],
+ "线": [
+  "viewer/mol3d.js"
+ ],
+ "卡通": [
+  "viewer/mol3d.js"
+ ],
+ "mount: 没有容器": [
+  "viewer/mol3d.js"
+ ],
+ "3D 分子结构": [
+  "viewer/mol3d.js"
+ ],
+ "正在载入 3D 查看器…": [
+  "viewer/mol3d.js"
+ ],
+ "样式": [
+  "viewer/mol3d.js"
+ ],
+ "自动旋转": [
+  "viewer/mol3d.js"
+ ],
+ "复位": [
+  "viewer/mol3d.js"
+ ],
+ "保存图片": [
+  "viewer/mol3d.js"
+ ],
+ "帧": [
+  "viewer/mol3d.js"
+ ],
+ "这段 XYZ 读不出原子。": [
+  "viewer/mol3d.js"
+ ],
+ "{0} · {1} 个原子": [
+  "viewer/mol3d.js"
+ ],
+ "PDB 编号不对。": [
+  "viewer/mol3d.js"
+ ],
+ "正在从 RCSB PDB 下载 {0}…": [
+  "viewer/mol3d.js"
+ ],
+ "{0} 下载失败（需要联网访问 files.rcsb.org）。": [
+  "viewer/mol3d.js"
+ ],
+ "第 {0} / {1} 帧": [
+  "viewer/mol3d.js"
+ ],
+ "查看 3D 结构": [
+  "viewer/mol3d.js"
+ ],
+ "Kekule.js 载入后不可用": [
+  "viewer/sketch.js"
+ ],
+ "分子绘制器载入失败（需要联网访问 cdn.jsdelivr.net）": [
+  "viewer/sketch.js"
+ ],
+ "画一个分子": [
+  "viewer/sketch.js"
+ ],
+ "左边工具栏选原子、键和环，点画布放上去；拖动可以连键。画好后点“用这个分子”。": [
+  "viewer/sketch.js"
+ ],
+ "正在载入绘制器…": [
+  "viewer/sketch.js"
+ ],
+ "用这个分子": [
+  "viewer/sketch.js"
+ ],
+ "画板上还没有分子。": [
+  "viewer/sketch.js"
+ ],
+ "画板上有好几个分子，请只留一个（或把它们连起来）。": [
+  "viewer/sketch.js"
+ ],
+ "这个结构转不成 SMILES，检查一下有没有悬空的键。": [
+  "viewer/sketch.js"
+ ],
+ "画结构": [
+  "viewer/sketch.js"
  ],
  "账号服务还没有配置 Stripe 密钥": [
   "deploy/account-worker.js"
@@ -13572,6 +13937,12 @@
   "tools/build-seo.ts"
  ],
  "每周一从 ChemRxiv、arXiv 化学物理和计算化学期刊的新论文里挑出值得读的十篇左右，每篇一句解读；前五篇和点评公开。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 复习卡片 · Review cards": [
+  "tools/build-seo.ts"
+ ],
+ "中英术语、研习台的知识点和自己写的卡片，按 FSRS 间隔重复算法安排复习，可导出到 Anki。": [
   "tools/build-seo.ts"
  ],
  "进一步基础科学发现 · Advancing Fundamental Science": [
@@ -14516,6 +14887,48 @@
   "atlas data"
  ],
  "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。": [
+  "atlas data"
+ ],
+ "用 Psi4 的积分加 NumPy，一步步写出 Hartree–Fock、MP2、耦合簇等方法：交互教程（Jupyter 笔记本）加参考实现，BSD-3 许可。": [
+  "atlas data"
+ ],
+ "适合化学各门课程的计算化学实验活动，可在 WebMO 演示服务器或 JupyterHub 上在线完成；教师材料需申请，BSD-3 许可。": [
+  "atlas data"
+ ],
+ "Andrew D. White 的在线教材，讲分子与材料的深度学习，从基础一直讲到图神经网络和等变神经网络；CC BY-NC 3.0（非商业）许可。": [
+  "atlas data"
+ ],
+ "科罗拉多大学 PhET 的交互模拟，面向学原子结构的本科生：比较玻尔、德布罗意和薛定谔等氢原子模型。": [
+  "atlas data"
+ ],
+ "浏览器里拖拽搭量子线路，每一步实时显示振幅、Bloch 球和密度矩阵；开源，Apache-2.0。本站量子算法展馆的线路模拟器借了它的思路。": [
+  "atlas data"
+ ],
+ "开放量子系统与量子光学的 Python 工具箱：Lindblad 主方程、蒙特卡洛轨迹等求解器，官网附教程笔记本；BSD-3 许可。": [
+  "atlas data"
+ ],
+ "网页用的 WebGL 分子查看器 JavaScript 库，读 PDB、SDF、MOL2、XYZ 和 cube 等格式；BSD-3 许可。本站的 3D 分子查看器用的就是它。": [
+  "atlas data"
+ ],
+ "RCSB PDB 和 PDBe 官网集成的开源大分子查看与分析工具包，在浏览器里看蛋白、核酸、配体，以及冷冻电镜密度等体积数据。": [
+  "atlas data"
+ ],
+ "结构–性质交互探索器：一边是性质或描述符的散点图，点一个点另一边显示对应的分子或材料结构（反过来也行），适合看机器学习描述符和大批计算结果；BSD 许可。": [
+  "atlas data"
+ ],
+ "网页里画分子、看 3D 结构、按名称和编号搜化合物；基础功能免费、不用注册，另有付费的高级功能。": [
+  "atlas data"
+ ],
+ "纯 JavaScript 化学信息学库，带分子绘制器和 2D/3D 显示；MIT 许可。本站的“画结构”绘制器用的就是它。": [
+  "atlas data"
+ ],
+ "EPAM 的开源网页化学结构编辑器，读写 Molfile（V2000/V3000）、扩展 SMILES、RXN、InChI 等格式；Apache-2.0 许可，有在线演示。": [
+  "atlas data"
+ ],
+ "生物信息学 Python 库：序列与比对、PDB 结构模块、访问 NCBI 的 Entrez 数据库，自带详尽教程；宽松的 Biopython 许可。": [
+  "atlas data"
+ ],
+ "在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。": [
   "atlas data"
  ],
  "一百零三个入口，先分清去哪一层": [
