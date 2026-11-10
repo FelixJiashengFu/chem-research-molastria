@@ -6,7 +6,7 @@
  "docs": "https://molastria.com/api/",
  "dataset": "resources",
  "updated": "2026-11-05",
- "count": 214,
+ "count": 228,
  "categories": [
   {
    "code": "01",
@@ -30,7 +30,7 @@
    "code": "04",
    "zh": "生物大分子与结构",
    "en": "Biomacromolecules & structure",
-   "count": 8
+   "count": 9
   },
   {
    "code": "05",
@@ -66,7 +66,7 @@
    "code": "10",
    "zh": "软件、平台与计算入口",
    "en": "Software, platforms & compute entry points",
-   "count": 20
+   "count": 24
   },
   {
    "code": "11",
@@ -90,19 +90,19 @@
    "code": "14",
    "zh": "波函数分析、可视化与动力学",
    "en": "Wavefunction analysis, visualization, and dynamics",
-   "count": 15
+   "count": 18
   },
   {
    "code": "15",
    "zh": "量子力学与量子化学课程教材",
    "en": "Courses and textbooks: quantum mechanics and quantum chemistry",
-   "count": 18
+   "count": 22
   },
   {
    "code": "16",
    "zh": "量子计算与量子化学算法",
    "en": "Quantum computing for chemistry",
-   "count": 6
+   "count": 8
   },
   {
    "code": "17",
@@ -3529,6 +3529,230 @@
    "description": {
     "zh": "在 UniChem 的 1.78 亿个分子上预训练的 3B 化学基础模型，用于分子性质预测、条件分子生成和反应预测，2025 年发表于 Communications Chemistry。",
     "en": "A 3B chemistry foundation model pre-trained on 178 million molecules from UniChem, for molecular property prediction, conditional molecule generation, and reaction prediction, published in Communications Chemistry in 2025."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 215,
+   "name": "psi4numpy",
+   "url": "https://github.com/psi4/psi4numpy",
+   "page": "https://molastria.com/atlas/#resources/215",
+   "category_code": "15",
+   "description": {
+    "zh": "用 Psi4 的积分加 NumPy，一步步写出 Hartree–Fock、MP2、耦合簇等方法：交互教程（Jupyter 笔记本）加参考实现，BSD-3 许可。",
+    "en": "Build Hartree–Fock, MP2, coupled cluster and other methods step by step from Psi4 integrals and NumPy: interactive tutorials (Jupyter notebooks) plus reference implementations; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 216,
+   "name": "Psi4Education",
+   "url": "https://github.com/Psi4Education/psi4education",
+   "page": "https://molastria.com/atlas/#resources/216",
+   "category_code": "15",
+   "description": {
+    "zh": "适合化学各门课程的计算化学实验活动，可在 WebMO 演示服务器或 JupyterHub 上在线完成；教师材料需申请，BSD-3 许可。",
+    "en": "Computational chemistry lab activities for courses across the chemistry curriculum, done online on the WebMO demo server or JupyterHub; instructor materials on request; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 217,
+   "name": "Deep Learning for Molecules & Materials",
+   "url": "https://dmol.pub/",
+   "page": "https://molastria.com/atlas/#resources/217",
+   "category_code": "15",
+   "description": {
+    "zh": "Andrew D. White 的在线教材，讲分子与材料的深度学习，从基础一直讲到图神经网络和等变神经网络；CC BY-NC 3.0（非商业）许可。",
+    "en": "Andrew D. White's online textbook on deep learning for molecules and materials, from the basics to graph and equivariant neural networks; CC BY-NC 3.0 (non-commercial) licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 218,
+   "name": "PhET: Models of the Hydrogen Atom",
+   "url": "https://phet.colorado.edu/en/simulations/models-of-the-hydrogen-atom",
+   "page": "https://molastria.com/atlas/#resources/218",
+   "category_code": "15",
+   "description": {
+    "zh": "科罗拉多大学 PhET 的交互模拟，面向学原子结构的本科生：比较玻尔、德布罗意和薛定谔等氢原子模型。",
+    "en": "A University of Colorado PhET simulation for undergraduates studying atomic structure: compare the Bohr, de Broglie, Schrödinger and other models of the hydrogen atom."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 219,
+   "name": "Quirk",
+   "url": "https://algassert.com/quirk",
+   "page": "https://molastria.com/atlas/#resources/219",
+   "category_code": "16",
+   "description": {
+    "zh": "浏览器里拖拽搭量子线路，每一步实时显示振幅、Bloch 球和密度矩阵；开源，Apache-2.0。本站量子算法展馆的线路模拟器借了它的思路。",
+    "en": "Drag-and-drop quantum circuits in the browser with live amplitudes, Bloch spheres and density matrices at every step; open source, Apache-2.0. The circuit simulator in MolAstria's quantum algorithms pavilion borrows its ideas."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 220,
+   "name": "QuTiP",
+   "url": "https://qutip.org/",
+   "page": "https://molastria.com/atlas/#resources/220",
+   "category_code": "16",
+   "description": {
+    "zh": "开放量子系统与量子光学的 Python 工具箱：Lindblad 主方程、蒙特卡洛轨迹等求解器，官网附教程笔记本；BSD-3 许可。",
+    "en": "Python toolbox for open quantum systems and quantum optics: Lindblad master-equation and Monte Carlo trajectory solvers, with tutorial notebooks on the website; BSD-3 licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 221,
+   "name": "3Dmol.js",
+   "url": "https://3dmol.csb.pitt.edu/",
+   "page": "https://molastria.com/atlas/#resources/221",
+   "category_code": "14",
+   "description": {
+    "zh": "网页用的 WebGL 分子查看器 JavaScript 库，读 PDB、SDF、MOL2、XYZ 和 cube 等格式；BSD-3 许可。本站的 3D 分子查看器用的就是它。",
+    "en": "WebGL molecule viewer library for web pages; reads PDB, SDF, MOL2, XYZ, cube and other formats; BSD-3 licence. MolAstria's 3D molecule viewer is built on it."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 222,
+   "name": "Mol*",
+   "url": "https://molstar.org/",
+   "page": "https://molastria.com/atlas/#resources/222",
+   "category_code": "14",
+   "description": {
+    "zh": "RCSB PDB 和 PDBe 官网集成的开源大分子查看与分析工具包，在浏览器里看蛋白、核酸、配体，以及冷冻电镜密度等体积数据。",
+    "en": "Open-source macromolecular viewer and analysis toolkit integrated into the RCSB PDB and PDBe websites; view proteins, nucleic acids, ligands and volume data such as cryo-EM density in the browser."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 223,
+   "name": "Chemiscope",
+   "url": "https://chemiscope.org/",
+   "page": "https://molastria.com/atlas/#resources/223",
+   "category_code": "14",
+   "description": {
+    "zh": "结构–性质交互探索器：一边是性质或描述符的散点图，点一个点另一边显示对应的分子或材料结构（反过来也行），适合看机器学习描述符和大批计算结果；BSD 许可。",
+    "en": "Interactive structure–property explorer: a scatter map of properties or descriptors on one side; select a point to see that molecule or material in the viewer, and vice versa. Handy for ML descriptors and large batches of results; BSD licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 224,
+   "name": "MolView",
+   "url": "https://molview.com/",
+   "page": "https://molastria.com/atlas/#resources/224",
+   "category_code": "10",
+   "description": {
+    "zh": "网页里画分子、看 3D 结构、按名称和编号搜化合物；基础功能免费、不用注册，另有付费的高级功能。",
+    "en": "Draw molecules, view them in 3D and search compounds by name or identifier in the browser; the basic features are free with no sign-up, and premium features are paid."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 225,
+   "name": "Kekule.js",
+   "url": "https://partridgejiang.github.io/Kekule.js/",
+   "page": "https://molastria.com/atlas/#resources/225",
+   "category_code": "10",
+   "description": {
+    "zh": "纯 JavaScript 化学信息学库，带分子绘制器和 2D/3D 显示；MIT 许可。本站的“画结构”绘制器用的就是它。",
+    "en": "Pure JavaScript cheminformatics library with a molecule editor and 2D/3D display; MIT licence. MolAstria's \"draw a structure\" editor uses it."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 226,
+   "name": "Ketcher",
+   "url": "https://lifescience.opensource.epam.com/ketcher/",
+   "page": "https://molastria.com/atlas/#resources/226",
+   "category_code": "10",
+   "description": {
+    "zh": "EPAM 的开源网页化学结构编辑器，读写 Molfile（V2000/V3000）、扩展 SMILES、RXN、InChI 等格式；Apache-2.0 许可，有在线演示。",
+    "en": "EPAM's open-source web chemical structure editor; reads and writes Molfile (V2000/V3000), extended SMILES, RXN, InChI and other formats; Apache-2.0, with an online demo."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 227,
+   "name": "Biopython",
+   "url": "https://biopython.org/",
+   "page": "https://molastria.com/atlas/#resources/227",
+   "category_code": "10",
+   "description": {
+    "zh": "生物信息学 Python 库：序列与比对、PDB 结构模块、访问 NCBI 的 Entrez 数据库，自带详尽教程；宽松的 Biopython 许可。",
+    "en": "Python library for bioinformatics: sequences and alignments, a PDB structure module and access to NCBI's Entrez databases, with a thorough tutorial; permissive Biopython licence."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 228,
+   "name": "ColabFold",
+   "url": "https://github.com/sokrypton/ColabFold",
+   "page": "https://molastria.com/atlas/#resources/228",
+   "category_code": "04",
+   "description": {
+    "zh": "在 Google Colab 上用 AlphaFold2 等模型（还有 RoseTTAFold2、ESMFold 等）预测蛋白结构和复合物，用 MMseqs2 快速生成多序列比对；MIT 许可。",
+    "en": "Predict protein structures and complexes on Google Colab with AlphaFold2 and other models (RoseTTAFold2, ESMFold and more), with fast multiple sequence alignments from MMseqs2; MIT licence."
    },
    "access": {
     "zh": "免费",

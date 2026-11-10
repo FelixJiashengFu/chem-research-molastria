@@ -1,5 +1,9 @@
 # 更新记录
 
+## 未发版
+
+- **资源目录与网站同步：** 从 214 条增加到 228 条（2026-11-10 新收录 psi4numpy、Psi4Education、Quirk、QuTiP、3Dmol.js、Mol*、ColabFold 等 14 条），仍是 17 类。
+
 ## 0.3.0（2026-11-09）
 
 - **三个计算工具：** `run_calculation` 把一个分子（SMILES 或 XYZ）交给 MolAstria 计算接口，用机器学习势做
