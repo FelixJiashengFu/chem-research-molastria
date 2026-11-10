@@ -20,7 +20,8 @@
 
   const T = (zh, en) => ({ zh, en });
   const pick = (t, lang) => (t == null ? '' : typeof t === 'string' ? t : (lang === 'en' ? t.en : t.zh) || t.zh || t.en || '');
-  const clean = (s) => String(s || '').replace(/<[^>]*>/g, '').replace(/[ \t]+/g, ' ').trim();
+  // 站内数据里的少量标签去掉；反复去到不再变化，最后剩下的尖括号一律删掉（这里只是我们自己的数据，不进 innerHTML）
+  const clean = (s) => { let t = String(s || ''), prev; do { prev = t; t = t.replace(/<[^<>]*>/g, ''); } while (t !== prev); return t.replace(/[<>]/g, '').replace(/[ \t]+/g, ' ').trim(); };
 
   // ── 来源 ──────────────────────────────────────────────────────────────
   // page：栏目页（相对站点根）；script：数据文件；global：数据文件定义的全局变量；anchor：章节锚点的前缀
@@ -32,7 +33,8 @@
     { id: 'qb', label: T('量子生物学（7 个方向）', 'Quantum biology (7 directions)'), page: 'quantum/biology/index.html', script: 'quantum/biology/qb-data.js', global: 'MOLASTRIA_QB', anchor: 's-' },
     { id: 'fs', label: T('基础科学（6 个专题）', 'Fundamental science (6 topics)'), page: 'fundamental-science/index.html', script: 'fundamental-science/fs-data.js', global: 'MOLASTRIA_FS', anchor: 's-' },
   ];
-  const SRC = Object.fromEntries(SOURCES.map((s) => [s.id, s]));
+  // 用没有原型的对象，'constructor' 之类的键名查不到东西
+  const SRC = Object.assign(Object.create(null), Object.fromEntries(SOURCES.map((s) => [s.id, s])));
 
   // ── 演示白名单 ────────────────────────────────────────────────────────
   // path 相对站点根。锚点：游乐场 #play-<游戏>（play.js 的 route），#lab 是计算器；量子物理 #d-<演示>（qp.js 生成的 id）；
@@ -259,7 +261,9 @@
     const D = data || (src && root[src.global]);
     if (!src || !D) return [];
     if (cache.has(D) && cache.get(D).src === sourceId) return cache.get(D).list;
-    const list = ADAPT[sourceId](src, D).filter((c) => c.id && c.name);
+    const adapt = Object.prototype.hasOwnProperty.call(ADAPT, sourceId) ? ADAPT[sourceId] : null;
+    if (typeof adapt !== 'function') return [];
+    const list = adapt(src, D).filter((c) => c.id && c.name);
     cache.set(D, { src: sourceId, list });
     return list;
   }

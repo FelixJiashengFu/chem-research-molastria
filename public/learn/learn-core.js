@@ -31,11 +31,12 @@
   /** Remove HTML from model text. Plain “a < b” and “x<y, y>z” survive: only real-looking tags go. */
   function stripTags(s) {
     let t = String(s ?? ''), prev;
-    // Repeat until stable, so “<scr<script>ipt>” cannot reassemble into a tag.
-    for (let i = 0; i < 6 && t !== prev; i++) {
+    // Repeat until nothing changes, so “<scr<script>ipt>” cannot reassemble into a tag at any depth.
+    // Every pass only removes text, so this ends. Model text is also escaped when shown; this is a second guard.
+    do {
       prev = t;
-      t = t.replace(/<!--[\s\S]*?-->/g, '').replace(/<!doctype[^>]*>/gi, '').replace(RX_BLOCK, '').replace(RX_TAG, '').replace(RX_ATTR_TAG, '');
-    }
+      t = t.replace(/<!--[\s\S]*?-->/g, '').replace(/<!--/g, '').replace(/<!doctype[^>]*>/gi, '').replace(RX_BLOCK, '').replace(RX_TAG, '').replace(RX_ATTR_TAG, '').replace(/<(script|style|iframe)\b/gi, '');
+    } while (t !== prev);
     // eslint-disable-next-line no-control-regex
     return t.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '');
   }
@@ -88,7 +89,9 @@
   function newId(prefix = 'x', existingIds = [], o = {}) {
     const taken = existingIds instanceof Set ? existingIds : new Set(existingIds || []);
     const now = typeof o.now === 'function' ? o.now() : (o.now ?? Date.now());
-    const random = o.random || Math.random;
+    // Ids only need to be unique on this device, but use the platform's crypto source when there is one.
+    const cryptoRandom = () => { const c = typeof globalThis !== 'undefined' && globalThis.crypto; if (!c || !c.getRandomValues) return Math.random(); const a = new Uint32Array(1); c.getRandomValues(a); return a[0] / 4294967296; };
+    const random = o.random || cryptoRandom;
     const r = Math.floor(random() * 36 ** 4).toString(36).padStart(4, '0').slice(-4);
     const base = `${cleanId(prefix) || 'x'}${Math.max(0, Math.floor(now)).toString(36)}${r}`;
     let id = base;
