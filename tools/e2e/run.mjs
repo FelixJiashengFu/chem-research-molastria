@@ -2966,6 +2966,53 @@ check('playground 15: a mirror steers the wave packet into the box; the demo is 
   await finish(p);
 });
 
+check('formula questions: MathLive answers graded with targeted hints, nudge, worked answer, stored progress, text fallback, English', async () => {
+  const quiz = async (p, path, sel, kind = 'math-field') => {
+    await go(p, path);
+    await p.waitForTimeout(300); // the page scrolls to the chapter list 60 ms after the hash is read
+    await p.evaluate((s) => document.querySelector(s).scrollIntoView({ block: 'start' }), sel);
+    await p.waitForSelector(`${sel} ${kind}`, { timeout: 40000 }); // MathLive loads from jsDelivr once the block is in view
+  };
+  const grade = async (p, li, value) => {
+    await p.evaluate(([s, v]) => { document.querySelector(`${s} math-field, ${s} .fq-text`).value = v; document.querySelector(`${s} .fq-check`).click(); }, [li, value]);
+    await p.waitForFunction((s) => { const f = document.querySelector(`${s} .fq-fb`); return f.textContent && !/判分|Checking/.test(f.textContent); }, li, { timeout: 40000 }); // Compute Engine loads on first check
+    return text(p, `${li} .fq-fb`);
+  };
+  const p = await open();
+  await quiz(p, '/quantum/physics/index.html#c-wave', '#c-wave .fq');
+  const li = '#c-wave #fq-wave-1';
+  assert.match(await grade(p, li, String.raw`\frac{n^2\pi^2\hbar^2}{8mL^2}`), /^提示：.*换成 ħ/, 'the h-versus-ħ mistake gets its own hint');
+  assert.ok(await p.isHidden(`${li} .fq-hint`) && await p.isHidden(`${li} .fq-sol`));
+  assert.match(await grade(p, li, String.raw`\frac{n^2\pi^2\hbar^2}{mL^2}`), /^提示：.*p²\/\(2m\)/);
+  assert.match(await text(p, `${li} .fq-hint`), /^再想想：/, 'a general nudge after two tries');
+  assert.match(await grade(p, li, String.raw`\frac{\hbar^2}{2mL^2}`), /答案里应该出现：n/);
+  assert.ok(await p.isVisible(`${li} .fq-sol`), 'the worked answer opens after three tries');
+  assert.match(await grade(p, li, String.raw`\frac{n^2h^2}{8mL^2}`), /^答对了/, 'written with h instead of ħ is still right');
+  assert.match(await grade(p, '#c-wave #fq-wave-2', String.raw`\sqrt{\frac{2}{L}}`), /^答对了/);
+  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-qp-quiz'))).sort(), ['wave-1', 'wave-2']);
+  await p.reload();
+  await p.waitForSelector('#c-wave #fq-wave-1 .fq-done');
+  await finish(p);
+  // jsDelivr unreachable: plain text boxes with ASCII maths and a note; still graded.
+  const t = await open();
+  await t.context().route(/cdn\.jsdelivr\.net/, (r) => r.abort());
+  await quiz(t, '/fundamental-science/math/index.html#m-la', '#m-la .fq', '.fq-text');
+  assert.match(await text(t, '#m-la .fq-note'), /普通文本框/);
+  await t.fill('#m-la #fq-la-1 .fq-text', 'alpha+-beta');
+  await t.press('#m-la #fq-la-1 .fq-text', 'Enter');
+  await t.waitForFunction(() => /答对了/.test(document.querySelector('#m-la #fq-la-1 .fq-fb').textContent));
+  assert.match(await grade(t, '#m-la #fq-la-2', '8^4'), /^提示：.*8⁴/);
+  await finish(t);
+  // English, phone width: the block is English and fits.
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await quiz(e, '/quantum/physics/index.html?lang=en#c-ent', '#c-ent .fq');
+  assert.match(await text(e, '#c-ent .fq-h'), /Work it out/);
+  assert.match(await grade(e, '#c-ent #fq-ent-1', '2'), /^Hint: 2 is the bound for local hidden variables/);
+  assert.match(await grade(e, '#c-ent #fq-ent-1', String.raw`2\sqrt{2}`), /^Correct/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await finish(e);
+});
+
 check('phone width: no sideways scrolling', async () => {
   for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });

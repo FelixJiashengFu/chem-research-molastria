@@ -38,6 +38,8 @@ jobs:
         run: node --test tools/fundamental-test.mjs
       - name: Math foundations · probability demos
         run: node --test tools/fm-prob-test.mjs
+      - name: Formula questions (grader, parser, every answer checked numerically)
+        run: node --test tools/formula-check-test.mjs
       - name: Quantum Biology models and content
         run: node --test tools/quantum-bio-test.mjs
       - name: Quantum Carnival · physics models and content
