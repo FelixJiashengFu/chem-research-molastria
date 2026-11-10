@@ -5,42 +5,61 @@
   const base = window.__CHEM_LINK__ ? new URL(window.__CHEM_LINK__('')) : new URL('.', script.src);
   const link = (path) => String(new URL(path, base));
   const section = document.body.dataset.section || 'search';
-  const links = [
-    ['search', 'index.html', '统一搜索'],
-    ['network', 'hub/network.html', '网状查询'],
-    ['manual', 'manual/index.html', '讲解手册'],
-    ['videos', 'videos/index.html', '教学视频', true],
-    ['atlas', 'atlas/index.html#resources', '数据库'],
-    ['hub', 'hub/index.html', '论文与社区'],
-    ['radar', 'radar/index.html', '预印本雷达'],
-    ['research', 'research-atlas/index.html', '研究图谱', true],
-    ['realms', 'physics-realms/index.html', '物理疆界图', true],
-    ['digest', 'digest/index.html', '每周精选', true],
-    ['journals', 'journals/index.html', '期刊发表'],
-    ['scimodels', 'scimodels/index.html', '科学大模型', true],
-    ['lab', 'lab/index.html', 'AI 实验室'],
-    ['learn', 'learn/index.html', '研习台', true],
-    ['review', 'review/index.html', '复习卡片', true],
-    ['code', 'code/index.html', '开源代码台', true],
-    ['meta', 'meta/index.html', 'Meta', true],
-    ['models', 'models/index.html', '模型接口', true],
-    ['qchem', 'qchem/index.html', '游乐场', true],
-    ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', true],
-    ['quantum', 'quantum/index.html', '量子嘉年华', true],
-    ['train', 'train/index.html', '训练 Agent', true],
-    ['agent', 'atlas/index.html#agent', 'Agent 工程']
+  // ── 全站导航（2026-11-10 改版）：二十多个栏目分成五组，每组一个按钮，点开是一块大菜单（每个栏目一句说明，大的栏目带子展馆）；
+  //    窄屏（iPad 竖屏、手机）只留一个“栏目”按钮，打开后五组从上到下排开。菜单顶部能搜索栏目，Ctrl / ⌘ + K 在任何页面直接打开。
+  //    常用的栏目可以“固定到顶栏”：固定的入口直接显示在分组按钮后面（放不下就只留在菜单里），能在顶栏上拖动换位，存 molastria-nav-pins。
+  //    文字自带中英两版（translate="no"），不经过 i18n.js。
+  const en = document.documentElement.lang === 'en';
+  const L = (zh, e) => (en ? e : zh);
+  const GROUPS = [
+    { id: 'find', zh: '发现', en: 'Discover', hint: ['找资源、读新论文、看研究版图', 'Find resources, new papers and the research landscape'], items: [
+      ['search', 'index.html', '统一搜索', 'Search', '一次搜遍目录、讲解手册和收藏夹', 'One search across the catalogue, handbook and saved items', 0, 'search 搜索 home 首页 收藏'],
+      ['atlas', 'atlas/index.html#resources', '数据库', 'Databases', '按类别浏览数据库与研究资源', 'Browse databases and research resources by category', 0, 'database catalogue 目录'],
+      ['network', 'hub/network.html', '网状查询', 'Network', '资源、方法和概念之间的关系网', 'How resources, methods and concepts connect', 0, 'graph 关系 network'],
+      ['research', 'research-atlas/index.html', '研究图谱', 'Research Atlas', '中美大学的数理化研究网络与产业地图', 'Maths, physics and chemistry research networks of US and Chinese universities', 1, 'university 大学 map'],
+      ['radar', 'radar/index.html', '预印本雷达', 'Preprint Radar', '28 个预印本来源的新论文', 'New papers from 28 preprint servers', 0, 'arxiv chemrxiv preprint'],
+      ['digest', 'digest/index.html', '每周精选', 'Weekly Picks', '每周值得读的计算化学论文和点评', 'Computational chemistry papers worth reading each week, with notes', 1, 'weekly digest newsletter'],
+      ['hub', 'hub/index.html', '论文与社区', 'Papers & Community', '论文快照、论坛和社区讨论', 'Paper snapshots, forums and community threads', 0, 'forum community papers'],
+    ] },
+    { id: 'learn', zh: '学习', en: 'Learn', hint: ['从讲解、视频到 AI 家教和小游戏', 'From explainers and videos to an AI tutor and games'], items: [
+      ['manual', 'manual/index.html', '讲解手册', 'Handbook', '20 章中英双语的计算化学讲解', '20 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],
+      ['videos', 'videos/index.html', '教学视频', 'Videos', 'YouTube 和哔哩哔哩上的课程与教程', 'Courses and tutorials on YouTube and Bilibili', 1, 'video youtube bilibili course'],
+      ['programming', 'programming/index.html', '编程语言', 'Programming', '计算物理与化学要用的编程语言，从入门到并行', 'The programming languages of computational physics and chemistry, from basics to parallel', 1, 'python fortran c++ julia code language 编程 语言'],
+      ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],
+      ['review', 'review/index.html', '复习卡片', 'Flashcards', '间隔重复复习术语和学过的知识点', 'Spaced repetition for terms and what you learned', 1, 'anki flashcard fsrs'],
+      ['qchem', 'qchem/index.html', '游乐场', 'Playground', '十五个量子小游戏和浏览器里的量子化学计算器', 'Fifteen quantum games and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator'],
+    ] },
+    { id: 'explore', zh: '探索', en: 'Explore', hint: ['量子世界与基础科学的前沿', 'Quantum science and the frontiers of fundamental science'], items: [
+      ['quantum', 'quantum/index.html', '量子嘉年华', 'Quantum Carnival', '四个展馆：量子物理、计算机、算法、生物学', 'Four pavilions: quantum physics, computers, algorithms and biology', 1, 'quantum 量子', [['量子物理', 'Quantum physics', 'quantum/physics/index.html'], ['量子计算机', 'Quantum computers', 'quantum/computing/index.html'], ['量子算法', 'Quantum algorithms', 'quantum/algorithms/index.html'], ['量子生物学', 'Quantum biology', 'quantum/biology/index.html']]],
+      ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', 'Fundamental Science', '尚未解决的基础问题，每条标明研究状态', 'Open fundamental questions, each with its research status', 1, 'fundamental science physics', [['数学基础与探索', 'Mathematical foundations', 'fundamental-science/math/index.html']]],
+      ['realms', 'physics-realms/index.html', '物理疆界图', 'Physics Realms', '42 个物理理论和它们之间的关系图', '42 physical theories and how they connect', 1, 'physics map theory'],
+    ] },
+    { id: 'models', zh: '模型与 AI', en: 'Models & AI', hint: ['科学模型、在线计算和 AI 研究流程', 'Science models, online computing and AI research workflows'], items: [
+      ['openmodels', 'open-models/index.html', '开放模型馆', 'Open Model Hall', 'Meta、DeepMind、微软、英伟达等 11 家公司的开放科学模型', 'Open science models from Meta, DeepMind, Microsoft, NVIDIA and 7 more', 1, 'meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 open models', [['Meta', 'Meta', 'meta/index.html'], ['Google DeepMind', 'Google DeepMind', 'open-models/deepmind/index.html'], ['微软', 'Microsoft', 'open-models/microsoft/index.html'], ['英伟达', 'NVIDIA', 'open-models/nvidia/index.html'], ['深势科技', 'DP Technology', 'open-models/dp/index.html'], ['全部 11 家', 'All 11 labs', 'open-models/index.html#om-orgs']]],
+      ['scimodels', 'scimodels/index.html', '科学大模型', 'Science LLMs', '27 个科学语言模型和价格对比', '27 science language models and a price comparison', 1, 'llm language model price 价格'],
+      ['models', 'models/index.html', '模型接口', 'Model API', '在线跑 15 个机器学习势：优化、频率、光谱', 'Run 15 machine-learning potentials online: optimisation, frequencies, spectra', 1, 'uma mace ani api compute 计算'],
+      ['lab', 'lab/index.html', 'AI 实验室', 'AI Lab', 'AI 化学家提出分子、计算来验证的闭环演示', 'An AI chemist proposes molecules and computation checks them', 0, 'lab muse electrolyte'],
+      ['train', 'train/index.html', '训练 Agent', 'Train an Agent', '用开放模型当老师训练自己的小模型', 'Train your own small model with open teachers', 1, 'train finetune distill'],
+      ['agent', 'atlas/index.html#agent', 'Agent 工程', 'Agent Engineering', '计算化学 MCP 服务器和 Agent 的做法', 'An MCP server for computational chemistry and agent patterns', 0, 'mcp agent chemdb'],
+    ] },
+    { id: 'make', zh: '工具', en: 'Tools', hint: ['写输入、投稿、接数据、装桌面版', 'Write inputs, publish, use the data, get the app'], items: [
+      ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb input 输入'],
+      ['journals', 'journals/index.html', '期刊发表', 'Journals', '期刊选择与投稿指导', 'Choosing a journal and submitting', 0, 'journal submit 投稿'],
+      ['api', 'api/index.html', '开放数据接口', 'Open Data API', '程序可读的数据集、JS / Python 库与计算接口', 'Machine-readable datasets, JS / Python clients and the compute API', 1, 'api json openapi python'],
+      ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],
+    ] },
   ];
-  // Each person's order of the modules (see arrange below); modules added later keep their place after the one before them.
-  const ORDER = 'molastria-nav-order';
-  const ordered = (() => {
-    let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(ORDER) || 'null'); } catch { /* private mode */ }
-    if (!Array.isArray(saved) || !saved.length) return links;
-    const rank = new Map(saved.map((id, i) => [id, i]));
-    const out = links.filter(([id]) => rank.has(id)).sort((a, b) => rank.get(a[0]) - rank.get(b[0]));
-    links.forEach((l, i) => { if (!rank.has(l[0])) out.splice(i ? out.indexOf(links[i - 1]) + 1 : 0, 0, l); });
-    return out;
-  })();
+  const ITEMS = GROUPS.flatMap((g) => g.items.map(([id, path, zh, e, dz, de, fresh, kw, subs]) => ({ id, path, zh, en: e, dz, de, fresh, kw, subs: subs || [], group: g.id })));
+  const byId = new Map(ITEMS.map((x) => [x.id, x]));
+  const name = (x) => (en ? x.en : x.zh);
+  // the item a page belongs to: its data-section, with a few pages that share one
+  const sectionItem = { meta: 'openmodels', pro: section === 'pro' && /\/download\//.test(location.pathname) ? 'download' : '' };
+  // Pinned modules (each person's own, saved per browser). Old saved orders (molastria-nav-order) do not carry over: the bar is new.
+  const PINS = 'molastria-nav-pins';
+  const readPins = () => { try { const v = JSON.parse(localStorage.getItem(PINS) || '[]'); return Array.isArray(v) ? v.filter((id) => byId.has(id)) : []; } catch { return []; } };
+  let pins = readPins();
+  const savePins = (ids) => { pins = ids.filter((id, i) => byId.has(id) && ids.indexOf(id) === i); try { if (pins.length) localStorage.setItem(PINS, JSON.stringify(pins)); else localStorage.removeItem(PINS); } catch { /* private mode */ } };
+
   // MolAstria mark: a benzene ring on an electron orbit, with a four-point star. Monochrome, inverts with the theme.
   const mark = '<svg class="cr-mark" viewBox="0 0 40 40" aria-hidden="true"><rect class="m-tile" width="40" height="40" rx="9"/><ellipse class="m-hair" cx="19" cy="21" rx="15" ry="5.6" transform="rotate(-28 19 21)"/><path class="m-line" d="M19 11.2 27.5 16.1v9.8L19 30.8l-8.5-4.9v-9.8Z"/><circle class="m-thin" cx="19" cy="21" r="4.9"/><circle class="m-dot" cx="5.7" cy="26" r="1.3"/><path class="m-star" d="M30.6 5.2c.45 2.9 1.5 3.95 4.4 4.4-2.9.45-3.95 1.5-4.4 4.4-.45-2.9-1.5-3.95-4.4-4.4 2.9-.45 3.95-1.5 4.4-4.4Z"/><circle class="m-dot" cx="35" cy="17.5" r=".7"/></svg>';
   const palette = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.9 1.2-1.8-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4C21 7 17 3 12 3Z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10.5" cy="7" r="1.1"/><circle cx="15" cy="7.5" r="1.1"/></svg>';
@@ -49,6 +68,17 @@
   const spark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.4 2.6 6.4 7 7-4.4.6-6.4 2.6-7 7-.6-4.4-2.6-6.4-7-7 4.4-.6 6.4-2.6 7-7Z"/><path d="M19 15.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z"/></svg>';
   const textSize = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5h10M8 5.5v13M13.5 11h7.5M17.25 11v7.5"/></svg>';
   const chevron = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
+  const lens = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
+  const grid4 = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>';
+  const pinIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3-1-6Z"/><path d="M12 16v4.5"/></svg>';
+  // one small line drawing per group, shown in the menu rail and on the narrow-screen sections
+  const GLYPH = {
+    find: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M8 10.5h5"/></svg>',
+    learn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5c3-1.5 5.8-1.5 8.5.5 2.7-2 5.5-2 8.5-.5v11c-3-1.5-5.8-1.5-8.5.5-2.7-2-5.5-2-8.5-.5Z"/><path d="M12 7v11"/></svg>',
+    explore: '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.2"/></svg>',
+    models: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M8 7h8M7 8.8l4 6.4M17 8.8l-4 6.4"/></svg>',
+    make: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5l-3 14"/></svg>',
+  };
 
   // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
   const readAccount = () => { try { return localStorage.getItem('molastria-session') ? JSON.parse(localStorage.getItem('molastria-account') || 'null') : null; } catch { return null; } };
@@ -56,98 +86,233 @@
 
   const nav = document.createElement('header');
   nav.className = 'cr-header';
-  const en = document.documentElement.lang === 'en';
+  const fresh = (x) => (x.fresh ? `<span class="cr-new">${L('新', 'New')}</span>` : '');
+  const pinA = (x) => `<a class="cr-pin" href="${link(x.path)}" data-id="${x.id}" draggable="false">${name(x)}</a>`;
+  const cell = (x) => `<div class="cr-cell" data-id="${x.id}"><a class="cr-item" href="${link(x.path)}" data-id="${x.id}"><span class="cr-item-t">${name(x)}${fresh(x)}</span><span class="cr-item-d">${en ? x.de : x.dz}</span></a>`
+    + `<button type="button" class="cr-pin-t" data-pin="${x.id}" aria-pressed="false" aria-label="${L(`固定“${x.zh}”到顶栏`, `Pin ${x.en} to the header`)}" title="${L('固定到顶栏', 'Pin to the header')}">${pinIcon}</button>`
+    + (x.subs.length ? `<div class="cr-subs">${x.subs.map(([zh, e, p]) => `<a href="${link(p)}" data-sub="${x.id}">${en ? e : zh}</a>`).join('')}</div>` : '') + '</div>';
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
-    + `<nav class="cr-links" aria-label="全站导航">${ordered.map(([id, path, label, fresh]) => `<a href="${link(path)}" data-id="${id}" draggable="false">${label}${fresh ? '<span class="cr-new">新</span>' : ''}</a>`).join('')}`
-    + `<div class="cr-more" hidden><button class="cr-more-btn" type="button" aria-expanded="false" aria-controls="cr-more-menu">更多${chevron}</button><div class="cr-more-menu" id="cr-more-menu" hidden></div></div>`
+    + `<nav class="cr-links" aria-label="${L('全站导航', 'Site navigation')}" translate="no">`
+    + `<button class="cr-menu-btn" type="button" aria-expanded="false" aria-controls="cr-mega" hidden>${grid4}<span>${L('栏目', 'Sections')}</span><b class="cr-where"></b></button>`
+    + GROUPS.map((g) => `<button class="cr-grp-btn" type="button" data-group="${g.id}" aria-expanded="false" aria-controls="cr-mega">${en ? g.en : g.zh}${chevron}</button>`).join('')
+    + `<span class="cr-pins">${pins.map((id) => pinA(byId.get(id))).join('')}</span>`
     + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
-    + `<div class="cr-tools"><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
+    + `<div class="cr-mega" id="cr-mega" hidden translate="no" role="dialog" aria-label="${L('全部栏目', 'All sections')}">`
+    + `<div class="cr-mega-head"><label class="cr-find">${lens}<span class="cr-sr">${L('搜索栏目', 'Search sections')}</span><input type="text" role="searchbox" inputmode="search" placeholder="${L('搜索栏目，比如“量子”“AlphaFold”“Python”', 'Search sections, e.g. “quantum”, “AlphaFold”, “Python”')}" autocomplete="off" spellcheck="false" enterkeyhint="go"></label><kbd class="cr-kbd"${['search', 'atlas'].includes(section) ? ' hidden' : ''}>${/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'} K</kbd><button type="button" class="cr-mega-x" aria-label="${L('关闭', 'Close')}">×</button></div>`
+    + `<div class="cr-mega-pins" hidden><b>${L('常用', 'Pinned')}</b><span></span><button type="button" class="cr-pins-edit">${L('整理', 'Arrange')}</button></div>`
+    + `<div class="cr-mega-body"><div class="cr-rail" role="tablist" aria-label="${L('分组', 'Groups')}">${GROUPS.map((g) => `<button type="button" role="tab" data-rail="${g.id}" aria-selected="false"><i class="cr-glyph">${GLYPH[g.id]}</i><span><b>${en ? g.en : g.zh}</b><small>${L(...g.hint)}</small></span></button>`).join('')}</div>`
+    + `<div class="cr-sections">${GROUPS.map((g) => `<section class="cr-sec" data-group="${g.id}" aria-label="${en ? g.en : g.zh}"><h3><i class="cr-glyph">${GLYPH[g.id]}</i>${en ? g.en : g.zh}<small>${L(...g.hint)}</small></h3><div class="cr-cells">${ITEMS.filter((x) => x.group === g.id).map(cell).join('')}</div></section>`).join('')}`
+    + `<p class="cr-none" hidden>${L('没有找到这个栏目。可以换个说法，或者到“统一搜索”里搜资源。', 'No section matches. Try other words, or search resources in Search.')}</p></div></div>`
+    + `<div class="cr-mega-foot"><small>${L('点栏目旁边的图钉把它固定到顶栏；方向键选择，回车打开，Esc 关闭', 'Pin a section to the header with its pin; arrows to move, Enter to open, Esc to close')}</small><a class="cr-mega-pro" href="${proHref()}">Pro</a></div></div>`
+    + `<div class="cr-tools"><button class="cr-icon-btn cr-jump" type="button" id="cr-jump" aria-label="${L('搜索栏目', 'Search sections')}" title="${L('搜索栏目（Ctrl / ⌘ + K）', 'Search sections (Ctrl / ⌘ + K)')}" aria-haspopup="dialog" aria-controls="cr-mega">${lens}</button><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-disp" aria-label="${en ? 'Display: scale, text size and typeface' : '显示设置：缩放、字号与字体'}" title="${en ? 'Display' : '显示设置'}" aria-haspopup="dialog" aria-expanded="false" translate="no">${textSize}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-bg" aria-label="更换背景" title="更换背景" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`
     + `<button class="cr-icon-btn" type="button" id="cr-theme" aria-label="切换浅色 / 深色">${moon}${sun}</button>`
     + `<button class="cr-ai-btn" type="button" id="cr-ai" aria-haspopup="dialog">${spark}<span class="cr-label">AI 助手</span><span class="cr-dot" aria-hidden="true"></span></button></div>`;
   document.body.prepend(nav);
 
-  const row = nav.querySelector('.cr-links'), more = row.querySelector('.cr-more'), moreBtn = more.firstElementChild, menu = more.lastElementChild;
-  const items = [...row.querySelectorAll(':scope > a:not(.cr-pro-link)')];
-  const markCurrent = () => {
+  const row = nav.querySelector('.cr-links'), pinBox = row.querySelector('.cr-pins'), menuBtn = row.querySelector('.cr-menu-btn');
+  const grpBtns = [...row.querySelectorAll('.cr-grp-btn')];
+  const mega = nav.querySelector('.cr-mega'), findIn = mega.querySelector('.cr-find input'), sections = mega.querySelector('.cr-sections');
+  const jumpBtn = nav.querySelector('#cr-jump');
+  let items = [...pinBox.children]; // the pinned links in the bar
+  const currentId = () => {
     const hash = (window.__CHEM_LOCATION__ || location).hash || '';
-    const active = section === 'atlas' && hash.startsWith('#agent') ? 'agent' : section;
-    nav.querySelectorAll('.cr-links a').forEach((a) => {
-      if (a.dataset.id === active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-    });
-    moreBtn.toggleAttribute('data-current', !!menu.querySelector('[aria-current]'));
+    if (section === 'atlas' && hash.startsWith('#agent')) return 'agent';
+    return sectionItem[section] || section;
   };
-  // One row at every desktop width: links that do not fit move, in their order, into the "更多" menu.
-  // Phones keep every link in the row and scroll it sideways.
+  const markCurrent = () => {
+    const id = currentId(), x = byId.get(id);
+    nav.querySelectorAll('a[data-id]').forEach((a) => { if (a.dataset.id === id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    grpBtns.forEach((b) => b.toggleAttribute('data-current', !!x && x.group === b.dataset.group));
+    mega.querySelectorAll('[data-rail]').forEach((b) => b.toggleAttribute('data-current', !!x && x.group === b.dataset.rail));
+    const g = x && GROUPS.find((y) => y.id === x.group);
+    menuBtn.querySelector('.cr-where').textContent = x ? `${en ? g.en : g.zh} · ${name(x)}` : '';
+  };
+  const markPins = () => {
+    mega.querySelectorAll('.cr-pin-t').forEach((b) => { const on = pins.includes(b.dataset.pin); b.setAttribute('aria-pressed', String(on)); b.title = on ? L('从顶栏取下', 'Unpin from the header') : L('固定到顶栏', 'Pin to the header'); });
+    const box = mega.querySelector('.cr-mega-pins');
+    box.hidden = !pins.length;
+    box.querySelector('span').innerHTML = pins.map((id) => pinA(byId.get(id))).join('');
+  };
+  const renderPins = () => {
+    pinBox.innerHTML = pins.map((id) => pinA(byId.get(id))).join('');
+    items = [...pinBox.children];
+    markPins();
+    fit();
+  };
+  const saveOrder = (ids) => { savePins(ids); renderPins(); };
+
+  // ── Bar or compact. The bar shows the five group buttons and as many pinned links as fit; when even the groups do not fit
+  //    (iPad portrait, phones, large interface scale) a single "栏目" button opens every group at once.
   const phone = matchMedia('(max-width:760px)');
-  const setMenu = (open) => { menu.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open)); };
-  const fits = () => {
-    const shown = [...row.children].filter((el) => el.offsetWidth);
-    const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
-    return shown.reduce((w, el) => w + el.getBoundingClientRect().width, gap * (shown.length - 1)) <= row.clientWidth + 0.5;
-  };
-  let navDragging = false; // while a module is lifted the row keeps its layout
+  let compact = false;
+  const fits = () => row.scrollWidth <= row.clientWidth + 0.5;
+  let navDragging = false; // while a pinned link is lifted the row keeps its layout
   const fit = () => {
     if (navDragging) return;
-    const open = !menu.hidden, focused = document.activeElement;
-    items.forEach((a) => row.insertBefore(a, more));
-    more.hidden = true;
-    if (!phone.matches && !fits()) {
-      more.hidden = false;
-      for (let i = items.length - 1; i >= 0 && !fits(); i--) menu.prepend(items[i]);
+    const was = compact;
+    items.forEach((a) => { a.hidden = false; });
+    menuBtn.hidden = true;
+    grpBtns.forEach((b) => { b.hidden = false; });
+    compact = phone.matches;
+    if (!compact) {
+      for (let i = items.length - 1; i >= 0 && !fits(); i--) items[i].hidden = true;
+      compact = !fits();
     }
-    setMenu(open && !more.hidden);
-    // Moving a focused link drops its focus; give it back (or to the button when the link went into the closed menu).
-    if (focused !== document.activeElement && row.contains(focused)) (focused.offsetWidth ? focused : moreBtn).focus({ preventScroll: true });
+    if (compact) {
+      grpBtns.forEach((b) => { b.hidden = true; });
+      menuBtn.hidden = false;
+      items.forEach((a) => { a.hidden = !phone.matches; });
+    }
+    nav.classList.toggle('cr-compact', compact);
+    if (was !== compact && !mega.hidden) openMenu(compact ? null : activeGroup());
     markCurrent();
   };
-  moreBtn.addEventListener('click', () => setMenu(menu.hidden));
-  more.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { e.stopPropagation(); setMenu(false); moreBtn.focus(); } });
-  more.addEventListener('focusout', (e) => { if (e.relatedTarget && !more.contains(e.relatedTarget)) setMenu(false); });
-  menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-  document.addEventListener('click', (e) => { if (!more.contains(e.target)) setMenu(false); });
+
+  // ── The menu
+  let active = '', opener = null, hoverTimer = 0;
+  const activeGroup = () => active || byId.get(currentId())?.group || GROUPS[0].id;
+  const showGroup = (g) => {
+    active = g;
+    mega.querySelectorAll('[data-rail]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.rail === g)));
+    mega.querySelectorAll('.cr-sec').forEach((s) => s.toggleAttribute('data-active', s.dataset.group === g));
+    grpBtns.forEach((b) => b.setAttribute('aria-expanded', String(!mega.hidden && !compact && b.dataset.group === g)));
+  };
+  function place() {
+    const z = parseFloat(root.style.zoom) || 1, r = nav.getBoundingClientRect();
+    // what is left of the window under the header, in the header's own CSS pixels (CSS zoom scales the rect, not the box)
+    mega.style.maxHeight = `${Math.max(240, Math.floor((innerHeight - r.bottom) / z) - (phone.matches ? 0 : 16))}px`;
+  }
+  function openMenu(g, opts = {}) {
+    mega.hidden = false;
+    mega.classList.toggle('cr-all', compact || !!findIn.value.trim());
+    nav.classList.add('cr-menu-open');
+    showGroup(g || activeGroup());
+    menuBtn.setAttribute('aria-expanded', String(compact));
+    jumpBtn.setAttribute('aria-expanded', 'true');
+    markPins();
+    place();
+    requestAnimationFrame(() => mega.classList.add('open'));
+    if (opts.search) findIn.focus({ preventScroll: true });
+    else if (opts.focus) (mega.querySelector(`.cr-sec[data-group="${active}"] .cr-item`) || findIn).focus({ preventScroll: true });
+    if (compact && !opts.search) { const cur = mega.querySelector('.cr-item[aria-current]'); cur?.scrollIntoView({ block: 'center' }); }
+  }
+  function closeMenu(focusBack) {
+    if (mega.hidden) return;
+    mega.classList.remove('open');
+    mega.hidden = true;
+    nav.classList.remove('cr-menu-open');
+    grpBtns.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    menuBtn.setAttribute('aria-expanded', 'false');
+    jumpBtn.setAttribute('aria-expanded', 'false');
+    if (findIn.value) { findIn.value = ''; filter(); }
+    if (focusBack && opener && document.contains(opener)) opener.focus({ preventScroll: true });
+  }
+  const isOpen = () => !mega.hidden;
+  grpBtns.forEach((b) => {
+    b.addEventListener('click', () => {
+      opener = b;
+      if (isOpen() && active === b.dataset.group && !findIn.value) closeMenu(); else { findIn.value = ''; filter(); openMenu(b.dataset.group); }
+    });
+    b.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); opener = b; openMenu(b.dataset.group, { focus: true }); } });
+    // with a mouse, moving across the group buttons while the menu is open switches the group (a short delay keeps diagonal moves from flickering)
+    b.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse' || !isOpen() || compact || findIn.value) return;
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => { opener = b; showGroup(b.dataset.group); }, 90);
+    });
+    b.addEventListener('pointerleave', () => clearTimeout(hoverTimer));
+  });
+  mega.querySelectorAll('[data-rail]').forEach((b) => {
+    b.addEventListener('click', () => showGroup(b.dataset.rail));
+    b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') showGroup(b.dataset.rail); });
+  });
+  menuBtn.addEventListener('click', () => { opener = menuBtn; if (isOpen()) closeMenu(); else openMenu(null); });
+  jumpBtn.addEventListener('click', () => { opener = jumpBtn; if (isOpen() && document.activeElement === findIn) closeMenu(); else openMenu(compact ? null : activeGroup(), { search: true }); });
+  mega.querySelector('.cr-mega-x').addEventListener('click', () => closeMenu(true));
+  mega.addEventListener('click', (e) => {
+    const t = e.target.closest('.cr-pin-t');
+    if (t) {
+      e.preventDefault();
+      const id = t.dataset.pin;
+      saveOrder(pins.includes(id) ? pins.filter((x) => x !== id) : [...pins, id]);
+      return;
+    }
+    if (e.target.closest('.cr-pins-edit')) { closeMenu(); arrange.open(); return; }
+    if (e.target.closest('a[href]')) closeMenu();
+  });
+  document.addEventListener('pointerdown', (e) => { if (isOpen() && !nav.contains(e.target)) closeMenu(); });
+  nav.addEventListener('focusout', (e) => { if (isOpen() && e.relatedTarget && !nav.contains(e.relatedTarget)) closeMenu(); });
+  // Ctrl / ⌘ + K opens the menu with the search field focused. Pages with a search of their own (统一搜索, 数据库) already use
+  // the shortcut for it; their handlers sit on document and run first, so here (on window) a handled key is left alone.
+  window.addEventListener('keydown', (e) => {
+    // Escape closes the menu wherever focus is (hovering another group can hide the link that had focus)
+    if (e.key === 'Escape' && isOpen() && !e.defaultPrevented) { closeMenu(true); return; }
+    if (e.defaultPrevented && !isOpen()) return;
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); opener = document.activeElement; if (isOpen() && document.activeElement === findIn) closeMenu(true); else openMenu(compact ? null : activeGroup(), { search: true }); }
+  });
+  // Search: every section, its description, keywords and sub-pages; letters and pinyin-free Chinese both work by substring.
+  const norm = (s) => String(s).toLowerCase().replace(/\s+/g, ' ').trim();
+  const hay = new Map(ITEMS.map((x) => [x.id, norm([x.zh, x.en, x.dz, x.de, x.kw, ...x.subs.flat()].join(' '))]));
+  function filter() {
+    const q = norm(findIn.value), words = q ? q.split(' ') : [];
+    let n = 0;
+    mega.querySelectorAll('.cr-cell').forEach((c) => { const ok = !words.length || words.every((w) => hay.get(c.dataset.id).includes(w)); c.hidden = !ok; if (ok) n++; });
+    mega.querySelectorAll('.cr-sec').forEach((s) => { s.hidden = !!words.length && !s.querySelector('.cr-cell:not([hidden])'); });
+    mega.querySelector('.cr-none').hidden = n > 0;
+    mega.classList.toggle('cr-all', compact || !!words.length);
+    mega.classList.toggle('cr-searching', !!words.length);
+    mega.querySelectorAll('.cr-item.cr-hit').forEach((a) => a.classList.remove('cr-hit'));
+    if (words.length) mega.querySelector('.cr-cell:not([hidden]) .cr-item')?.classList.add('cr-hit');
+  }
+  findIn.addEventListener('input', filter);
+  const visibleLinks = () => [...mega.querySelectorAll('.cr-item, .cr-subs a, .cr-mega-pins a')].filter((a) => a.offsetParent);
+  mega.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeMenu(true); return; }
+    if (e.target === findIn && e.key === 'Enter') { const hit = mega.querySelector('.cr-item.cr-hit') || visibleLinks()[0]; if (hit) { e.preventDefault(); hit.click(); } return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const list = visibleLinks(), i = list.indexOf(document.activeElement);
+    if (!list.length) return;
+    e.preventDefault();
+    const j = e.target === findIn ? (e.key === 'ArrowDown' ? 0 : list.length - 1) : Math.max(-1, Math.min(list.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)));
+    (j < 0 ? findIn : list[j]).focus({ preventScroll: false });
+  });
+  addEventListener('resize', () => { if (isOpen()) place(); });
+
   fit();
-  // Re-fit when the row's width changes, when English labels arrive and when web fonts finish loading.
+  markPins();
+  // Re-fit when the row's width changes and when web fonts finish loading.
   new ResizeObserver(fit).observe(row);
   document.addEventListener('chemhub:i18n', fit);
   document.fonts?.ready.then(fit);
   window.addEventListener('hashchange', markCurrent);
-  // On phones the link row scrolls sideways: bring the current section into view.
-  const current = row.querySelector('[aria-current]');
-  if (current && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, current.offsetLeft - (row.clientWidth - current.offsetWidth) / 2);
+  // On phones the pinned links scroll sideways: bring the current one into view.
+  const current = pinBox.querySelector('[aria-current]');
+  if (current && pinBox.scrollWidth > pinBox.clientWidth) pinBox.scrollLeft = Math.max(0, current.offsetLeft - (pinBox.clientWidth - current.offsetWidth) / 2);
 
   // ── Brand notice (TRADEMARKS.md): one line under the page's footer, or after its content. Full-screen app pages skip it.
   {
     const legal = document.createElement('p');
     legal.className = 'cr-legal';
     legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">阿斯特赖亚科技（Morning Glory）旗下项目</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a> · <a href="${link('api/index.html')}">开放数据接口</a>`;
-    const place = () => {
-      if (document.body.matches('.radar-page, .atlas-page')) return;
+    const placeLegal = () => {
+      if (document.body.classList.contains('radar-page')) return;
       const foot = [...document.querySelectorAll('footer')].filter((f) => !f.closest('.cr-header, dialog, aside')).pop();
       // below the footer, not inside it: footers here are rows and grids of their own
       if (foot) foot.after(legal); else (document.querySelector('main') || document.body).append(legal);
     };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place, { once: true }); else place();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', placeLegal, { once: true }); else placeLegal();
   }
 
-  const saveOrder = (ids) => {
-    const defaults = links.map(([id]) => id);
-    try { if (ids.join() === defaults.join()) localStorage.removeItem(ORDER); else localStorage.setItem(ORDER, JSON.stringify(ids)); } catch { /* private mode */ }
-    items.sort((a, b) => ids.indexOf(a.dataset.id) - ids.indexOf(b.dataset.id));
-    fit();
-  };
-
-  // ── Arranging the modules: a long press on any of them without moving (or 显示 → 调整导航顺序) opens a glass panel where they are
-  //    dragged, or moved with the arrow keys, into each person's order. Saved per browser; "恢复默认" goes back.
+  // ── Arranging the pinned links: a glass panel (from the menu's "整理", 显示 → 常用入口, or a long press on a pinned link)
+  //    where the pinned ones are dragged, or moved with the arrow keys, into each person's order, and any section can be pinned
+  //    or unpinned. Saved per browser; "清空" unpins everything.
   const arrange = (() => {
-    const t = (zh, e) => (en ? e : zh);
-    const defaults = links.map(([id]) => id);
+    const t = L;
     const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const label = (id) => { const l = links.find(([x]) => x === id)?.[2] ?? id; return en && window.ChemI18n?.t ? window.ChemI18n.t(l) : l; };
-    let layer = null, grid = null, live = null, back = null, drag = null;
+    let layer = null, grid = null, pool = null, live = null, back = null, drag = null;
     const order = () => [...grid.children].map((el) => el.dataset.id);
-    const save = saveOrder;
     // The other tiles glide to their new places (FLIP). Rect differences are turned into the tiles' own CSS pixels,
     // because page zoom scales getBoundingClientRect differently from transforms in Chrome and in WebKit.
     const flip = (mutate) => {
@@ -155,7 +320,8 @@
       mutate();
       if (reduced()) return;
       for (const el of grid.children) {
-        const a = before.get(el), b = el.getBoundingClientRect(), k = el.offsetWidth ? b.width / el.offsetWidth || 1 : 1;
+        const a = before.get(el); if (!a) continue;
+        const b = el.getBoundingClientRect(), k = el.offsetWidth ? b.width / el.offsetWidth || 1 : 1;
         const dx = (a.left - b.left) / k, dy = (a.top - b.top) / k;
         if (Math.abs(dx) + Math.abs(dy) < 0.5) continue;
         el.animate([{ translate: `${dx}px ${dy}px` }, { translate: '0 0' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
@@ -163,7 +329,7 @@
     };
     const say = (id) => {
       const ids = order(), n = ids.indexOf(id) + 1;
-      live.textContent = t(`${label(id)}：第 ${n} 位，共 ${ids.length} 个`, `${label(id)}: position ${n} of ${ids.length}`);
+      live.textContent = t(`${byId.get(id).zh}：第 ${n} 位，共 ${ids.length} 个`, `${byId.get(id).en}: position ${n} of ${ids.length}`);
     };
     const tile = (id, current) => {
       const b = document.createElement('button');
@@ -171,26 +337,43 @@
       b.className = 'cr-arr-tile';
       b.dataset.id = id;
       b.setAttribute('role', 'listitem');
-      b.textContent = label(id);
+      b.innerHTML = `${name(byId.get(id))}<span class="cr-arr-x" aria-hidden="true">×</span>`;
+      b.setAttribute('aria-label', t(`${byId.get(id).zh}（按 Delete 取下）`, `${byId.get(id).en} (Delete to unpin)`));
       if (id === current) b.setAttribute('aria-current', 'page');
       return b;
     };
+    const fillPool = () => {
+      pool.innerHTML = GROUPS.map((g) => `<div class="cr-arr-group"><b>${en ? g.en : g.zh}</b>${g.items.map(([id]) => `<button type="button" class="cr-arr-chip" data-add="${id}" aria-pressed="${pins.includes(id)}">${name(byId.get(id))}</button>`).join('')}</div>`).join('');
+    };
+    const sync = () => { saveOrder(order()); fillPool(); };
     function build() {
       layer = document.createElement('div');
       layer.className = 'cr-arrange';
       layer.hidden = true;
       layer.setAttribute('translate', 'no');
       layer.innerHTML = `<div class="cr-arr-glass" role="dialog" aria-modal="true" aria-labelledby="cr-arr-h">
-        <div class="cr-arr-head"><b id="cr-arr-h">${t('调整导航顺序', 'Arrange the navigation')}</b><small>${t('拖动入口，排成你习惯的顺序；也可以用方向键。只保存在这台设备上。', 'Drag the modules into the order you like, or use the arrow keys. Saved on this device only.')}</small></div>
-        <div class="cr-arr-grid" role="list" aria-label="${t('导航入口', 'Modules')}"></div>
+        <div class="cr-arr-head"><b id="cr-arr-h">${t('顶栏上的常用入口', 'Pinned in the header')}</b><small>${t('固定的栏目直接显示在顶栏上。拖动排成你习惯的顺序，也可以用方向键；点 × 或按 Delete 取下。只保存在这台设备上。', 'Pinned sections show right in the header. Drag them into your order, or use the arrow keys; × or Delete unpins. Saved on this device only.')}</small></div>
+        <div class="cr-arr-grid" role="list" aria-label="${t('已固定', 'Pinned')}"></div>
+        <p class="cr-arr-empty">${t('还没有固定任何栏目。从下面选几个常用的：', 'Nothing pinned yet. Pick a few you use often:')}</p>
+        <div class="cr-arr-pool"></div>
         <p class="cr-arr-live" aria-live="polite"></p>
-        <div class="cr-arr-foot"><small>${t('在顶栏上也能直接拖动入口换位置；按住一个入口不动再松开，会回到这里', 'You can also drag the modules right in the header; press and hold one, then let go, to come back here')}</small><button type="button" class="cr-arr-reset">${t('恢复默认', 'Reset')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
+        <div class="cr-arr-foot"><small>${t('在顶栏上也能直接拖动固定的入口', 'You can also drag pinned links right in the header')}</small><button type="button" class="cr-arr-reset">${t('清空', 'Clear')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
       document.body.append(layer);
       grid = layer.querySelector('.cr-arr-grid');
+      pool = layer.querySelector('.cr-arr-pool');
       live = layer.querySelector('.cr-arr-live');
       layer.addEventListener('click', (e) => {
-        if (e.target === layer || e.target.closest('.cr-arr-done')) close();
-        else if (e.target.closest('.cr-arr-reset')) { flip(() => grid.append(...defaults.map((id) => grid.querySelector(`[data-id="${id}"]`)).filter(Boolean))); save(order()); live.textContent = t('已恢复默认顺序', 'Default order restored'); }
+        if (e.target === layer || e.target.closest('.cr-arr-done')) { close(); return; }
+        if (e.target.closest('.cr-arr-reset')) { grid.replaceChildren(); sync(); live.textContent = t('已全部取下', 'Everything unpinned'); return; }
+        const add = e.target.closest('[data-add]');
+        if (add) {
+          const id = add.dataset.add, el = grid.querySelector(`[data-id="${id}"]`);
+          flip(() => { if (el) el.remove(); else grid.append(tile(id)); });
+          sync();
+          return;
+        }
+        const x = e.target.closest('.cr-arr-x');
+        if (x) { const el = x.closest('.cr-arr-tile'); flip(() => el.remove()); sync(); }
       });
       layer.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
@@ -199,21 +382,23 @@
           if (e.shiftKey ? i <= 0 : i === f.length - 1) { e.preventDefault(); f[e.shiftKey ? f.length - 1 : 0].focus(); }
           return;
         }
-        const el = e.target.closest?.('.cr-arr-tile'), k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1, Home: -999, End: 999 }[e.key];
+        const el = e.target.closest?.('.cr-arr-tile');
+        if (el && (e.key === 'Delete' || e.key === 'Backspace')) { e.preventDefault(); const next = el.nextElementSibling || el.previousElementSibling; flip(() => el.remove()); sync(); (next || pool.querySelector('button')).focus(); return; }
+        const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1, Home: -999, End: 999 }[e.key];
         if (!el || !k) return;
         e.preventDefault();
         const kids = [...grid.children], i = kids.indexOf(el), j = Math.max(0, Math.min(kids.length - 1, i + k));
         if (i === j) return;
         flip(() => grid.insertBefore(el, j > i ? kids[j].nextSibling : kids[j]));
         el.focus();
-        save(order());
+        sync();
         say(el.dataset.id);
       });
       // Dragging: the list holds the pointer; the tile under it says where the lifted one goes. After a swap that
       // tile is left alone until the pointer moves on, so tiles of different widths do not flip back and forth.
       grid.addEventListener('pointerdown', (e) => {
         const el = e.target.closest('.cr-arr-tile');
-        if (!el || e.button > 0) return;
+        if (!el || e.button > 0 || e.target.closest('.cr-arr-x')) return;
         e.preventDefault();
         grid.setPointerCapture(e.pointerId);
         drag = { tile: el, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, last: null };
@@ -239,7 +424,7 @@
         drag = null;
         el.classList.remove('lifted');
         layer.classList.remove('dragging');
-        if (moved) { save(order()); say(el.dataset.id); }
+        if (moved) { sync(); say(el.dataset.id); }
         el.focus({ preventScroll: true });
       };
       grid.addEventListener('pointerup', drop);
@@ -247,13 +432,14 @@
     }
     function open(id) {
       if (!layer) build();
-      const current = nav.querySelector('.cr-links [aria-current]')?.dataset.id;
-      grid.replaceChildren(...items.map((a) => tile(a.dataset.id, current)));
+      const cur = currentId();
+      grid.replaceChildren(...pins.map((p) => tile(p, cur)));
+      fillPool();
       back = document.activeElement;
-      setMenu(false);
+      closeMenu();
       layer.hidden = false;
       requestAnimationFrame(() => layer.classList.add('open'));
-      (grid.querySelector(`[data-id="${id}"]`) || grid.firstElementChild).focus({ preventScroll: true });
+      (grid.querySelector(`[data-id="${id}"]`) || grid.firstElementChild || pool.querySelector('button')).focus({ preventScroll: true });
     }
     function close() {
       layer.classList.remove('open');
@@ -263,24 +449,24 @@
     return { open };
   })();
 
-  // ── Dragging the modules right in the header. A mouse picks a module up as soon as it moves sideways; a finger (and a
-  //    held mouse) lifts it after a short press, so the row and the page still scroll under a quick swipe. The lifted module
+  // ── Dragging the pinned links right in the header. A mouse picks one up as soon as it moves sideways; a finger (and a
+  //    held mouse) lifts it after a short press, so the row and the page still scroll under a quick swipe. The lifted link
   //    turns to glass and follows the pointer, the others slide aside, and the new order is saved like the panel's.
-  //    Releasing a lifted module without moving it opens the arrange panel (which also reaches modules in "更多").
+  //    Releasing a lifted link without moving it opens the arrange panel.
   const HOLD = 420;
   let press = null, pressed = false;
   const cancelPress = () => { if (press) clearTimeout(press.timer); press = null; };
   const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const rowLinks = () => [...row.children].filter((el) => el.matches('a[data-id]:not(.cr-pro-link)') && el.offsetWidth);
+  const rowLinks = () => [...pinBox.children].filter((el) => el.matches('a[data-id]') && el.offsetWidth);
   function lift(p) {
     const els = rowLinks(), i = els.indexOf(p.a);
     if (i < 0) return false;
-    const rr = row.getBoundingClientRect(), k = row.offsetWidth ? rr.width / row.offsetWidth || 1 : 1;
+    const rr = pinBox.getBoundingClientRect(), k = pinBox.offsetWidth ? rr.width / pinBox.offsetWidth || 1 : 1;
     // Layout positions in the row's own CSS pixels (scroll included), taken once: transforms during the drag do not move them.
-    const at = (x) => (x - rr.left) / k + row.scrollLeft;
+    const at = (x) => (x - rr.left) / k + pinBox.scrollLeft;
     const slots = els.map((el) => { const r = el.getBoundingClientRect(); return { el, mid: (at(r.left) + at(r.right)) / 2 }; });
-    const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
-    p.drag = { els, i, j: i, k, at, slots, start: p.x, scroll0: row.scrollLeft, shift: p.a.offsetWidth + gap, moved: false, x: p.x, raf: 0 };
+    const gap = parseFloat(getComputedStyle(pinBox).columnGap) || 0;
+    p.drag = { els, i, j: i, k, at, slots, start: p.x, scroll0: pinBox.scrollLeft, shift: p.a.offsetWidth + gap, moved: false, x: p.x, raf: 0 };
     navDragging = true;
     pressed = true;
     nav.classList.add('cr-nav-sorting');
@@ -292,7 +478,7 @@
   function follow(p, x) {
     const d = p.drag;
     d.x = x;
-    const dx = (x - d.start) / d.k + (row.scrollLeft - d.scroll0);
+    const dx = (x - d.start) / d.k + (pinBox.scrollLeft - d.scroll0);
     if (Math.abs(dx) > 3) d.moved = true;
     p.a.style.translate = `${dx}px 0`;
     const mid = d.slots[d.i].mid + dx;
@@ -305,37 +491,38 @@
       s.el.style.translate = off ? `${off}px 0` : '';
     });
   }
-  // Phones: the row scrolls sideways, so a module held near either edge scrolls it along.
+  // Phones: the pinned row scrolls sideways, so a link held near either edge scrolls it along.
   function edgeScroll(p) {
     const d = p.drag;
-    if (!d || row.scrollWidth <= row.clientWidth) return;
-    const r = row.getBoundingClientRect(), edge = 36 * d.k;
+    if (!d || pinBox.scrollWidth <= pinBox.clientWidth) return;
+    const r = pinBox.getBoundingClientRect(), edge = 36 * d.k;
     const v = d.x < r.left + edge ? -7 : d.x > r.right - edge ? 7 : 0;
-    if (v) { row.scrollLeft += v; follow(p, d.x); }
+    if (v) { pinBox.scrollLeft += v; follow(p, d.x); }
     d.raf = requestAnimationFrame(() => edgeScroll(p));
   }
   function settle(p, keep) {
     const d = p.drag;
     cancelAnimationFrame(d.raf);
     navDragging = false;
-    const before = new Map(d.els.map((el) => [el, el.getBoundingClientRect()]));
+    const before = new Map(d.els.map((el) => [el.dataset.id, el.getBoundingClientRect()]));
     for (const el of d.els) { el.style.transition = 'none'; el.style.translate = ''; }
     p.a.classList.remove('cr-lifted');
     nav.classList.remove('cr-nav-sorting');
     if (keep && d.j !== d.i) {
-      const ids = items.map((a) => a.dataset.id), moved = ids.splice(ids.indexOf(p.a.dataset.id), 1)[0];
+      const ids = pins.slice(), moved = ids.splice(ids.indexOf(p.a.dataset.id), 1)[0];
       const order = d.els.map((el) => el.dataset.id);
       order.splice(d.i, 1);
-      // after the j modules now left of it: before the next one in the row, or right after the row's last
+      // after the j links now left of it: before the next one in the row, or right after the row's last
       ids.splice(d.j < order.length ? ids.indexOf(order[d.j]) : ids.indexOf(order[order.length - 1]) + 1, 0, moved);
       saveOrder(ids);
     }
     // Everything glides from where it was shown to its new place.
-    for (const el of d.els) {
+    for (const el of rowLinks()) {
       void el.offsetWidth;
       el.style.transition = '';
       if (reducedMotion()) continue;
-      const a = before.get(el), b = el.getBoundingClientRect(), dx = (a.left - b.left) / d.k;
+      const a = before.get(el.dataset.id); if (!a) continue;
+      const b = el.getBoundingClientRect(), dx = (a.left - b.left) / d.k;
       if (Math.abs(dx) > 0.5) el.animate([{ translate: `${dx}px 0` }, { translate: '0 0' }], { duration: 320, easing: 'cubic-bezier(.2,.9,.25,1.1)' });
     }
   }
@@ -343,12 +530,11 @@
     pressed = false;
     if (press?.drag) return;
     cancelPress();
-    const a = e.target.closest('.cr-links a[data-id]:not(.cr-pro-link)');
+    const a = e.target.closest('.cr-pins a[data-id]');
     if (!a || e.button > 0) return;
-    const p = { a, id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse', inMenu: !!a.closest('.cr-more-menu') };
+    const p = { a, id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse' };
     p.timer = setTimeout(() => {
-      // modules inside "更多" have no row to slide along: holding one opens the panel
-      if (p.inMenu || !lift(p)) { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }
+      if (!lift(p)) { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }
       else edgeScroll(p);
     }, HOLD);
     press = p;
@@ -359,8 +545,8 @@
     if (p.drag) { e.preventDefault(); follow(p, e.clientX); return; }
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
     if (Math.hypot(dx, dy) < 6) return;
-    // a mouse dragging sideways picks the module up at once; anything else before the hold ends is a scroll or a slip
-    if (!p.touch && !p.inMenu && Math.abs(dx) > Math.abs(dy) && lift(p)) { clearTimeout(p.timer); follow(p, e.clientX); edgeScroll(p); }
+    // a mouse dragging sideways picks the link up at once; anything else before the hold ends is a scroll or a slip
+    if (!p.touch && Math.abs(dx) > Math.abs(dy) && lift(p)) { clearTimeout(p.timer); follow(p, e.clientX); edgeScroll(p); }
     else cancelPress();
   });
   const release = (e) => {
@@ -376,13 +562,14 @@
   nav.addEventListener('pointerup', release);
   nav.addEventListener('pointercancel', release);
   nav.addEventListener('lostpointercapture', (e) => { if (press?.drag && e.pointerId === press.id) release({ type: 'pointerup', pointerId: e.pointerId }); });
-  // Links are not dragged out as URLs (that is what made a drag do nothing), and a lifted module keeps the page from scrolling.
-  nav.addEventListener('dragstart', (e) => { if (e.target.closest?.('.cr-links a[data-id]')) e.preventDefault(); });
+  // Links are not dragged out as URLs (that is what made a drag do nothing), and a lifted link keeps the page from scrolling.
+  nav.addEventListener('dragstart', (e) => { if (e.target.closest?.('.cr-pins a[data-id]')) e.preventDefault(); });
   nav.addEventListener('touchmove', (e) => { if (press?.drag) e.preventDefault(); }, { passive: false });
   // the click that ends a press or a drag must not also open the page
   nav.addEventListener('click', (e) => { if (pressed) { pressed = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // touch screens open their own link menu on a long press
-  nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest('a[data-id]')) e.preventDefault(); });
+  nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest('.cr-pins a[data-id]')) e.preventDefault(); });
+
 
   // 主题：未手动选择时跟随系统；点击后在浅色 / 深色之间切换并记住。
   const root = document.documentElement;
@@ -495,7 +682,7 @@
       <p class="cr-disp-note" role="status" hidden></p>
       <div class="cr-disp-fonts" role="group" aria-label="${t('字体', 'Typeface')}"><b>${t('字体', 'Typeface')}</b>
         ${DISPLAY.fonts.map(([id, zh, e, stack]) => `<button type="button" data-font-id="${id}" aria-pressed="false"><span style='font-family:${stack}'>${t(zh, e)}</span><i style='font-family:${stack}'>Aa 计算化学</i></button>`).join('')}</div>
-      <div class="cr-disp-row cr-disp-arr-row"><div><b>${t('导航顺序', 'Navigation order')}</b><small>${t('把顶栏的入口排成你习惯的顺序；也可以长按任一入口', 'Put the header modules in your order; or press and hold any module')}</small></div><button type="button" class="cr-disp-arr">${t('调整', 'Arrange')}</button></div>
+      <div class="cr-disp-row cr-disp-arr-row"><div><b>${t('常用入口', 'Pinned sections')}</b><small>${t('把常用的栏目固定到顶栏，并排好顺序', 'Pin the sections you use to the header and order them')}</small></div><button type="button" class="cr-disp-arr">${t('调整', 'Arrange')}</button></div>
       <div class="cr-disp-foot">${desktopApp || homeScreenApp ? `<small>${t('快捷键：Ctrl / ⌘ 加 = − 0 调整界面缩放', 'Shortcuts: Ctrl / ⌘ with = − 0 change the interface scale')}</small>` : `<small>${t('设置保存在这台设备上，所有页面通用', 'Saved on this device for every page')}</small>`}<button type="button" class="cr-disp-reset">${t('恢复默认', 'Reset')}</button></div>`;
     document.body.append(dispPanel);
     dispPanel.addEventListener('click', (e) => {

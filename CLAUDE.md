@@ -16,7 +16,7 @@ MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 
 ```text
 public/               发布目录，推到 main 就上线
   index.html, app.js  统一搜索与收藏夹（?collection=saved，合并首页和数据库页两个收藏库）；search-terms.js 是中英术语表
-  shared-nav.*        顶栏（所有页面共用）：导航、主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗；新栏目在这里加导航。入口可以在顶栏上直接拖动换位（鼠标一拖就起，触屏先按住约 0.4 秒），按住不动再松开（或 显示 → 调整导航顺序）打开玻璃面板排序，存 molastria-nav-order；切换语言时把地址、滚动位置、标签页和筛选存进 sessionStorage 的 molastria-lang-restore，刷新后复原，新加的入口排在它前一个入口后面
+  shared-nav.*        顶栏（所有页面共用）：五个分组（发现、学习、探索、模型与 AI、工具）的大菜单，栏目清单是 shared-nav.js 的 GROUPS（新栏目在那里加一行：id、地址、中英名字、中英一句说明、关键词、子页面），页面用 body[data-section] 标出自己是哪一栏；Ctrl / ⌘ + K 打开菜单里的搜索（首页和数据库页自己的 Ctrl+K 优先）；放不下五个按钮时只剩一个“栏目”按钮，打开是全部分组的一张表。用户可以把栏目固定到顶栏（菜单里的图钉，或 显示 → 常用入口），存 molastria-nav-pins，固定的入口能在顶栏上直接拖动换位（鼠标一拖就起，触屏先按住约 0.4 秒）；主题、语言、Pro 按钮、AI 入口、左下角“下载桌面版”浮窗也在这里；切换语言时把地址、滚动位置、标签页和筛选存进 sessionStorage 的 molastria-lang-restore，刷新后复原
   backdrop.js         10 种背景和背景面板，含“徽标动画”开关（关时 html[data-logo-motion=off]，切换时派发 window 事件 molastria:logo-motion）
   assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}（以徽章为中心裁切的 256 px 正方形）；片头 intro.mp4 + intro-end.webp，只有下载页用（AI 面板改成了吉祥物进场动画）（ffmpeg 转码的小文件，原片不进仓库）
   sw.js, offline.html, manifest.webmanifest   可添加到主屏幕（PWA）：sw.js 离线保存看过的页面，由 shared-nav.js 注册（桌面版、单文件版、本地文件和 localhost 不注册）；各页的 PWA 头部标签和 sw.js 版本号由 build-seo.ts 在发布时写入，仓库里的 sw.js 保持 VERSION = 'dev'
@@ -39,6 +39,8 @@ public/               发布目录，推到 main 就上线
   quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-quiz.js 是每章的公式题（做对的存 molastria-qp-quiz），qp-math.js 和 qp-quiz-math.js 是生成的 MathML；地址 #c-<章> 打开一章
   quantum/algorithms/  量子嘉年华的“量子算法”展馆：qa-data.js 是全部内容（14 个算法，中英双语，每个带加速的证据等级；化学资源估算；65 篇文献在 OpenAlex / arXiv 核对过），qa-models.js 是演示的数学（态矢量模拟器等，纯函数），qa.js 渲染，qa-math.js 是生成的 MathML
   quantum/computing/  量子嘉年华 · 量子计算机：qc-data.js 是全部内容（中英两版，每条带确定程度，文献在 OpenAlex 核对过），qc-models.js 是演示的数学（纯函数，tools/quantum-computing-test.mjs 测），qc-math.js 是生成的 MathML；只讲硬件与纠错，算法在 quantum/algorithms/
+  open-models/        开放模型馆（Meta 归在这里）：om-data.js 是全部内容（11 家公司、50 个模型 / 数据集 / 工具，中英两版，每条带使用条件和许可证，按任务比较的 tasks；许可证按 GitHub 仓库、文献在 OpenAlex / arXiv 核对过），om.js 画母栏目页和每家的展馆页 open-models/<id>/（Meta 的展馆就是 meta/ 页，只用 om.js 的位置和展馆切换），om.css 在 meta/meta.css 上加；tools/open-models-test.mjs 查完整性
+  programming/        编程语言教学区：pl-data.js 是全部内容（20 种语言和工具链，中英两版；每种一段代码，大多是同一道 LJ 势能题，tested 标明是否真跑过），pl.js 渲染（地址 #lang-<id>、#code-<id>，Python 用 viewer/pyrun.js 在浏览器里跑），tools/programming-test.mjs 用本机有的编译器重跑标了 tested 的代码
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
   api/                开放数据接口：v1/ 是给程序读的静态 JSON（资源目录、期刊、科学大模型与价格、教学视频，中英双语，CC BY 4.0），外加中英术语表、openapi.json，由 tools/build-api.mjs 从各栏目的数据文件生成（同时生成站点根的 llms.txt）；v1/molastria.mjs 是手写的零依赖 JS 库（跨数据集搜索，中英同义词互通，没有 DOM，tools/api-test.mjs 测）；v1/molastria.py 是手写的零依赖 Python 客户端（读数据集、提交计算并等结果，tools/molastria-py-test.py 测）；embed.js 是给别人网页用的嵌入卡片（shadow DOM，自带中英文字，不走 i18n）；index.html + api.js 是说明页：搜索台、跟着搜索变的代码、嵌入卡片生成器，只用公开的接口；compute.js 是说明页里“计算接口”一段（在线状态和 7 天在线率、带 key 试一次、示例代码），接口本身在账号服务的 /v1。v1 只加字段，删改字段要出 v2
   about/              关于页：阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）与 MolAstria 的关系；只有 MolAstria 标“已上线”，其他方向都是规划，不要写成现状
@@ -85,6 +87,7 @@ node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示�
 node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
 node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
 node --test tools/code-test.mjs                         # 开源代码台：输入生成、输出解读（五个程序的真实格式片段）、许可证、搜索链接；本机有 PySCF 时真跑生成的脚本对照参考能量（CODE_SKIP_PYTHON=1 跳过）
+node --test tools/open-models-test.mjs tools/programming-test.mjs   # 开放模型馆的内容完整性；编程区的代码用本机有的编译器真跑（PROGRAMMING_SKIP_RUN=1 跳过）
 node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
 node tools/quantum-algorithms-refs.mjs                  # 量子算法：文献在 OpenAlex / arXiv 核对
 npm ci --prefix tools/e2e                               # 浏览器测试的依赖，首次运行前装一次

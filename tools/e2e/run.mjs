@@ -77,7 +77,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -390,7 +390,7 @@ check('AI drawer: drag to resize, width kept, double-click restores', async () =
 check('PreprintRadar: loads in its frame and follows the site theme', async () => {
   const p = await open();
   await go(p, '/radar/index.html');
-  assert.equal(await p.getAttribute('.cr-links a[data-id=radar]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=radar]', 'aria-current'), 'page');
   const f = p.frame({ url: /radar\/app\/index\.html/ });
   await f.waitForSelector('#nav a');
   assert.deepEqual(await f.$$eval('#nav a', (a) => a.map((x) => x.textContent.trim())), ['推荐', '搜索', '兴趣主题', '我的收藏', '设置']);
@@ -410,7 +410,7 @@ check('PreprintRadar: loads in its frame and follows the site theme', async () =
 check('research atlas: the copied site loads in its frame, follows the theme, mirrors its page in the address and opens other sites outside', async () => {
   const p = await open();
   await go(p, '/research-atlas/index.html#/cn-top20/');
-  assert.equal(await p.getAttribute('.cr-links a[data-id=research]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=research]', 'aria-current'), 'page');
   const f = p.frame({ url: /research-atlas\/app\/cn-top20\// });
   await f.waitForSelector('.rank-tbl tbody tr');
   assert.equal(await f.$$eval('.rank-tbl tbody tr', (r) => r.length), 20);
@@ -501,7 +501,7 @@ check('desktop app on macOS: the handbook\'s print button opens the system print
 check('playground calculator (QChem Web): loads in its frame, computes a quantum dot, and follows the site language', async () => {
   const p = await open();
   await go(p, '/qchem/index.html#qd'); // a hash the playground does not know goes to the calculator
-  assert.equal(await p.getAttribute('.cr-links a[data-id=qchem]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=qchem]', 'aria-current'), 'page');
   assert.equal(await p.getAttribute('#play-tabs a[data-view=lab]', 'aria-current'), 'page');
   const f = p.frame({ url: /qchem\/app\/index\.html/ });
   await f.waitForSelector('#tabs button');
@@ -520,7 +520,7 @@ check('playground calculator (QChem Web): loads in its frame, computes a quantum
 check('playground: overview, then each game plays by its rules (configuration, spectrum, tunnelling, orbitals, rings, box)', async () => {
   const p = await open();
   await go(p, '/qchem/index.html');
-  assert.equal((await text(p, '.cr-links a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
+  assert.equal((await text(p, '.cr-mega a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
   assert.equal(await p.locator('.play-card').count(), 16, 'calculator + 15 games in three zones');
   assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
   // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
@@ -684,7 +684,7 @@ check('Meta page: Muse reads a sample image, RDKit checks it, and the UMA script
   await p.context().route('https://api.github.com/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{ name: 'fairchem-core-9.9.9', html_url: 'https://github.com/facebookresearch/fairchem/releases/tag/x', published_at: '2026-10-27T00:00:00Z' }]) }));
   await p.context().route('https://huggingface.co/api/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ lastModified: '2026-10-27T14:58:57.000Z' }) }));
   await go(p, '/meta/index.html');
-  assert.equal(await p.getAttribute('.cr-links a[data-id=meta]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page');
   // The generator fills in once RDKit has loaded: FEC, IP / EA with the UMA-M single points.
   await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('u-check').textContent), null, { timeout: 30000 });
   let code = await text(p, '#u-code');
@@ -845,7 +845,7 @@ async function runJob(p, job, setup) {
 
 check('models page: each window lists only its own models and jobs, and the button shows the cost', async () => {
   const p = await openModels();
-  assert.equal(await p.getAttribute('.cr-links a[data-id=models]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=models]', 'aria-current'), 'page');
   assert.match(await text(p, '.md-disclaim'), /不是 DFT 计算/);
   for (const [win, want] of Object.entries(MODEL_WINDOWS)) {
     await p.click(`#m-tabs [data-win=${win}]`);
@@ -1106,7 +1106,7 @@ check('handbook: its own page, Chinese and English chapters, the choice is remem
   await go(p, '/manual/index.html#p08-cat05');
   await p.waitForSelector('#guide-article h1');
   assert.match(await text(p, '#view-guide .page-intro h1'), /^说明讲解手册/);
-  assert.equal(await p.getAttribute('.cr-links a[data-id=manual]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=manual]', 'aria-current'), 'page');
   assert.equal(await p.locator('#guide-toc button').count(), 20);
   assert.equal(await p.locator('.sidebar, #view-resources, #view-agent').count(), 0, 'no database views on the handbook page');
   assert.equal(await p.locator('#view-guide .page-intro p').count(), 0);
@@ -1151,9 +1151,9 @@ check('handbook: old atlas #guide addresses open the same chapter in manual/, th
   assert.deepEqual(await db.$$eval('.main-nav [data-view]', (b) => b.map((x) => x.dataset.view)), ['resources', 'agent']);
   assert.ok(await db.locator('#category-nav .category-button').count() > 10);
   assert.equal(await db.locator('#view-guide, [data-view=guide], [data-open-guide], .reading-banner, script[src*="guides-en"]').count(), 0);
-  assert.equal(await db.getAttribute('.cr-links a[data-id=atlas]', 'aria-current'), 'page');
+  assert.equal(await db.getAttribute('.cr-mega a[data-id=atlas]', 'aria-current'), 'page');
   await db.evaluate(() => { location.hash = '#agent'; });
-  await db.waitForFunction(() => document.querySelector('.cr-links a[data-id=agent]').getAttribute('aria-current') === 'page' && !document.getElementById('view-agent').hidden);
+  await db.waitForFunction(() => document.querySelector('.cr-mega a[data-id=agent]').getAttribute('aria-current') === 'page' && !document.getElementById('view-agent').hidden);
   await finish(db);
   // Entry points elsewhere on the site lead to the new address: the home page and a handbook card in the network view.
   const home = await open();
@@ -1209,66 +1209,184 @@ check('agent: the Agent section shows chemdb-agent 0.3.0 as implemented, the int
   await finish(p);
 });
 
-check('top bar: one row at every desktop width in both languages, the rest goes into 更多 in order, phones scroll', async () => {
+check('top bar: five groups in one row at desktop widths in both languages, a single 栏目 sheet when they do not fit, the menu opens, switches and closes', async () => {
   for (const lang of ['zh', 'en']) {
-    // Phones keep every link in the scrolling row, so they give the full list in its order.
-    const phone = await open({ viewport: { width: 390, height: 844 } });
-    await go(phone, `/manual/index.html${lang === 'en' ? '?lang=en' : ''}`);
-    const order = await phone.$$eval('.cr-links > a[data-id]:not(.cr-pro-link)', (a) => a.map((x) => x.dataset.id));
-    assert.ok(order.length >= 12 && ['manual', 'atlas', 'agent'].every((id) => order.includes(id)), `links: ${order}`);
-    assert.ok(await phone.locator('.cr-more-btn').isHidden());
-    assert.ok(await phone.evaluate(() => { const r = document.querySelector('.cr-links'); return r.scrollWidth > r.clientWidth && getComputedStyle(r).overflowX === 'auto'; }), 'phone row scrolls');
-    await finish(phone);
-    for (const width of [761, 1024, 1181, 1250, 1366, 1536, 1920]) {
+    for (const width of [390, 768, 1024, 1181, 1366, 1920]) {
       const p = await open({ viewport: { width, height: 800 } });
       await go(p, `/atlas/index.html${lang === 'en' ? '?lang=en' : ''}#agent`);
       await p.waitForFunction(() => !document.documentElement.dataset.i18n);
       const bar = await p.evaluate(() => {
-        const row = document.querySelector('.cr-links'), btn = document.querySelector('.cr-more-btn');
+        const row = document.querySelector('.cr-links');
         const shown = [...row.children].filter((el) => el.offsetWidth);
         return {
           tops: [...new Set(shown.map((el) => Math.round(el.getBoundingClientRect().top)))],
-          inRow: [...row.querySelectorAll(':scope > a[data-id]')].filter((a) => a.offsetWidth).map((a) => a.dataset.id),
-          inMenu: [...document.querySelectorAll('.cr-more-menu a')].map((a) => a.dataset.id),
-          moreShown: !!btn.offsetWidth, moreCurrent: btn.hasAttribute('data-current'),
-          header: document.querySelector('.cr-header').offsetHeight, wide: row.scrollWidth > row.clientWidth + 1,
+          groups: [...row.querySelectorAll('.cr-grp-btn')].filter((b) => b.offsetWidth).map((b) => b.dataset.group),
+          menu: !!row.querySelector('.cr-menu-btn').offsetWidth,
+          where: row.querySelector('.cr-where').textContent,
+          current: document.querySelector('.cr-grp-btn[data-group=models]').hasAttribute('data-current'),
+          header: document.querySelector('.cr-header').offsetHeight, wide: document.documentElement.scrollWidth > innerWidth + 1,
         };
       });
       const where = `${lang} ${width}px`;
-      assert.equal(bar.tops.length, 1, `${where}: links on ${bar.tops.length} rows`);
-      assert.ok(bar.header <= 70 && !bar.wide, `${where}: header ${bar.header}px, row overflows ${bar.wide}`);
-      assert.deepEqual([...bar.inRow, ...bar.inMenu], order, `${where}: order`);
-      assert.equal(bar.moreShown, bar.inMenu.length > 0, `${where}: 更多 shown only when needed`);
-      assert.equal(bar.moreCurrent, bar.inMenu.includes('agent'), `${where}: 更多 marked current when Agent 工程 is inside`);
+      assert.ok(!bar.wide, `${where}: the page scrolls sideways`);
+      if (width >= 1024) {
+        assert.deepEqual(bar.groups, ['find', 'learn', 'explore', 'models', 'make'], `${where}: groups`);
+        assert.equal(bar.tops.length, 1, `${where}: on ${bar.tops.length} rows`);
+        assert.ok(bar.header <= 70 && !bar.menu, `${where}: header ${bar.header}px, 栏目 button ${bar.menu}`);
+        assert.ok(bar.current, `${where}: 模型与 AI marked current for Agent 工程`);
+      } else {
+        assert.ok(bar.menu && !bar.groups.length, `${where}: one 栏目 button`);
+        assert.match(bar.where, lang === 'en' ? /Agent/ : /Agent 工程/, `${where}: the button says where you are`);
+      }
       await p.context().close();
     }
   }
-  // Keyboard: Enter opens, Tab reaches the first tucked-away link, Escape closes and returns focus. Resizing moves links back.
-  const p = await open({ viewport: { width: 1024, height: 800 } });
-  await go(p, '/atlas/index.html#agent');
-  const tucked = await p.$$eval('.cr-more-menu a', (a) => a.map((x) => x.dataset.id));
-  assert.ok(tucked.length >= 2 && tucked.includes('agent'), `tucked at 1024px: ${tucked}`);
-  assert.ok(await p.evaluate(() => document.querySelector('.cr-more-btn').hasAttribute('data-current')));
-  await p.focus('.cr-more-btn');
-  await p.keyboard.press('Enter');
-  assert.equal(await p.getAttribute('.cr-more-btn', 'aria-expanded'), 'true');
-  assert.ok(await p.locator('.cr-more-menu').isVisible());
-  await p.keyboard.press('Tab');
-  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), tucked[0]);
+  // Every section of the old flat list is still one click away, and every link in the menu resolves to a page.
+  const p = await open({ viewport: { width: 1366, height: 800 } });
+  await go(p, '/manual/index.html');
+  const ids = await p.$$eval('.cr-mega a.cr-item[data-id]', (a) => a.map((x) => x.dataset.id));
+  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'manual', 'videos', 'programming', 'learn', 'review', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
+  assert.ok(!ids.includes('meta'), 'Meta is no longer its own section; it sits under 开放模型馆');
+  const hrefs = await p.$$eval('.cr-mega a[href]', (a) => [...new Set(a.map((x) => x.href.split('#')[0]))]);
+  for (const h of hrefs) assert.equal((await p.request.get(h)).status(), 200, h);
+  // Keyboard: ArrowDown on a group opens it with focus on its first link; Escape closes and returns focus. Hover switches groups.
+  await p.focus('.cr-grp-btn[data-group=learn]');
+  await p.keyboard.press('ArrowDown');
+  assert.equal(await p.getAttribute('.cr-grp-btn[data-group=learn]', 'aria-expanded'), 'true');
+  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), 'manual');
+  assert.ok(await p.locator('.cr-sec[data-group=learn][data-active]').isVisible());
+  await p.hover('.cr-grp-btn[data-group=models]');
+  await p.waitForSelector('.cr-sec[data-group=models][data-active]');
+  assert.ok(await p.locator('.cr-mega a[data-id=openmodels] ~ .cr-subs a[href*="open-models/deepmind"]').count() || await p.locator('.cr-cell[data-id=openmodels] .cr-subs a[href*="open-models/deepmind"]').count(), 'pavilions under 开放模型馆');
   await p.keyboard.press('Escape');
-  assert.equal(await p.getAttribute('.cr-more-btn', 'aria-expanded'), 'false');
-  assert.ok(await p.locator('.cr-more-menu').isHidden());
-  assert.ok(await p.evaluate(() => document.activeElement.classList.contains('cr-more-btn')));
-  await p.click('.cr-more-btn');
-  await p.click('#breadcrumb');
-  assert.ok(await p.locator('.cr-more-menu').isHidden(), 'a click outside closes the menu');
-  // With 16 links (研习台 added 2026-11-10) every link fits only from somewhere between 2560 and 3000 px; at 1920 px
-  // Agent 工程 sits in 更多.
-  await p.setViewportSize({ width: 3200, height: 800 });
-  await p.waitForFunction(() => !document.querySelector('.cr-more-btn').offsetWidth);
-  await p.setViewportSize({ width: 900, height: 800 });
-  await p.waitForFunction((n) => document.querySelectorAll('.cr-more-menu a').length > n, tucked.length);
+  assert.ok(await p.locator('#cr-mega').isHidden());
+  assert.equal(await p.evaluate(() => document.activeElement.dataset.group), 'models', 'focus back on the group that was open');
+  await p.click('.cr-grp-btn[data-group=find]');
+  await p.click('main', { position: { x: 5, y: 400 } });
+  assert.ok(await p.locator('#cr-mega').isHidden(), 'a click outside closes the menu');
+  // The menu stays inside the window at a short height.
+  await p.setViewportSize({ width: 1366, height: 520 });
+  await p.click('.cr-grp-btn[data-group=find]');
+  assert.ok(await p.evaluate(() => document.getElementById('cr-mega').getBoundingClientRect().bottom <= innerHeight + 1), 'menu fits the window');
   await finish(p);
+});
+
+check('top bar search: Ctrl+K opens it, words in either language find sections and sub-pages, Enter opens the first hit; page searches keep their own Ctrl+K', async () => {
+  const p = await open({ viewport: { width: 1366, height: 800 } });
+  await go(p, '/manual/index.html');
+  await p.keyboard.press('Control+k');
+  assert.ok(await p.locator('#cr-mega').isVisible());
+  assert.ok(await p.evaluate(() => document.activeElement.matches('.cr-find input')));
+  await p.keyboard.type('fortran');
+  assert.deepEqual(await p.$$eval('.cr-cell:not([hidden])', (c) => c.map((x) => x.dataset.id)), ['programming']);
+  await p.fill('.cr-find input', 'DeepMind');
+  assert.ok((await p.$$eval('.cr-cell:not([hidden])', (c) => c.map((x) => x.dataset.id))).includes('openmodels'));
+  await p.fill('.cr-find input', '没有这样的栏目zzz');
+  assert.ok(await p.locator('.cr-none').isVisible());
+  await p.fill('.cr-find input', '期刊');
+  await p.keyboard.press('Enter');
+  await p.waitForURL(/\/journals\/index\.html/);
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=journals]', 'aria-current'), 'page');
+  // the home page search keeps Ctrl+K for itself
+  await go(p, '/index.html');
+  await p.keyboard.press('Control+k');
+  assert.ok(await p.locator('#cr-mega').isHidden(), 'home search keeps the shortcut');
+  // phones: the 栏目 sheet lists every group at once and the search narrows it
+  const m = await open({ viewport: { width: 390, height: 844 } });
+  await go(m, '/manual/index.html');
+  await m.click('.cr-menu-btn');
+  assert.ok(await m.evaluate(() => document.getElementById('cr-mega').classList.contains('cr-all')));
+  assert.equal(await m.$$eval('.cr-sec', (s) => s.filter((x) => x.offsetHeight).length), 5);
+  const box = await m.$eval('#cr-mega', (el) => { const r = el.getBoundingClientRect(); return { l: r.left, r: r.right }; });
+  assert.ok(box.l >= -1 && box.r <= 391, `sheet inside the screen: ${box.l}–${box.r}`);
+  await m.fill('.cr-find input', 'python');
+  assert.ok((await m.$$eval('.cr-cell:not([hidden])', (c) => c.map((x) => x.dataset.id))).includes('programming'));
+  await finish(m);
+  await finish(p);
+});
+
+check('open model hall: eleven pavilions, task comparison, filters; a pavilion page with crumbs, releases and the switcher; Meta joins in; English', async () => {
+  const p = await open({ viewport: { width: 1366, height: 900 } });
+  await p.context().route(/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/releases/, (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify([{ tag_name: 'v9.9.9', name: 'Stand-in release', html_url: 'https://github.com/example/example/releases/tag/v9.9.9', published_at: '2026-11-01T00:00:00Z' }]) }));
+  await go(p, '/open-models/index.html');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page');
+  assert.equal(await p.locator('.om-org-card').count(), 11);
+  assert.match(await p.getAttribute('.om-org-card[data-org=meta]', 'href'), /^\.\.\/meta\/index\.html$/);
+  const all = await p.locator('#om-all .om-item').count();
+  assert.ok(all >= 50, `${all} entries`);
+  assert.ok(await p.locator('#om-tasks .om-task').count() >= 6);
+  await p.click('#om-all .mx-filter button[data-kind=bio]');
+  const bio = await p.locator('#om-all .om-item:not([hidden])').count();
+  assert.ok(bio > 0 && bio < all, `bio filter: ${bio}`);
+  assert.equal(await p.locator('#om-all .om-item:not([hidden]):not([data-kind=bio])').count(), 0);
+  await p.click('#om-all .mx-filter button[data-kind=""]');
+  await p.fill('#om-all .mx-search input', 'alphafold');
+  const hits = await p.$$eval('#om-all .om-item:not([hidden])', (a) => a.map((x) => x.dataset.key));
+  assert.ok(hits.includes('deepmind:alphafold2') && hits.includes('deepmind:alphafold3') && hits.length < 12, `search: ${hits}`);
+  // a pavilion
+  await p.click('.om-org-card[data-org=deepmind]');
+  await p.waitForURL(/open-models\/deepmind\/index\.html/);
+  assert.match(await text(p, '#om-crumbs'), /开放模型馆/);
+  assert.equal(await p.locator('#om-grid .om-item').count(), 7);
+  await p.waitForFunction(() => /Stand-in release/.test(document.getElementById('om-rel').textContent));
+  assert.equal(await p.getAttribute('#om-switch a[aria-current=page]', 'href'), '../../open-models/deepmind/index.html');
+  await p.click('#om-switch a[href$="meta/index.html"]');
+  await p.waitForURL(/\/meta\/index\.html/);
+  assert.match(await text(p, '#om-crumbs'), /开放模型馆/);
+  assert.equal(await p.locator('#om-switch a').count(), 12);
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page', 'Meta counts as part of the hall');
+  await finish(p);
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await go(e, '/open-models/microsoft/index.html?lang=en');
+  assert.match(await text(e, 'main h1'), /Microsoft/);
+  assert.doesNotMatch(await e.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(e);
+});
+
+check('programming: twenty languages, filters and search, the same task in every language by address, copy, untested marked, Python runs in the browser (stand-in Pyodide)', async () => {
+  const p = await open({ viewport: { width: 1366, height: 900 } });
+  if (!NET) await p.context().route(/^https:\/\/cdn\.jsdelivr\.net\/pyodide\/v[\d.]+\/full\/pyodide\.mjs$/, (r) => r.fulfill({ contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: FAKE_PYODIDE }));
+  await go(p, '/programming/index.html');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=programming]', 'aria-current'), 'page');
+  assert.equal(await p.locator('.pl-card').count(), 20);
+  await p.click('.pl-filter button[data-tier=parallel]');
+  assert.deepEqual(await p.$$eval('.pl-card:not([hidden])', (c) => c.map((x) => x.id)), ['lang-openmp', 'lang-mpi', 'lang-cuda']);
+  await p.click('.pl-filter button[data-tier=""]');
+  await p.fill('.pl-search input', 'VASP');
+  assert.deepEqual(await p.$$eval('.pl-card:not([hidden])', (c) => c.map((x) => x.id)), ['lang-fortran', 'lang-mpi']);
+  await p.fill('.pl-search input', 'zzzz');
+  assert.ok(await p.locator('.pl-empty').isVisible());
+  // by address: the Fortran tab with its tested code and command
+  await go(p, '/programming/index.html#code-fortran');
+  assert.equal(await p.getAttribute('#tab-fortran', 'aria-selected'), 'true');
+  assert.match(await text(p, '#pl-panel pre'), /program lj/);
+  assert.match(await text(p, '#pl-panel .pl-cmd'), /gfortran/);
+  assert.ok(await p.locator('#pl-panel .pl-badge.ok').count());
+  await p.focus('#tab-fortran');
+  await p.keyboard.press('ArrowRight');
+  assert.equal(await p.getAttribute('#tab-cpp', 'aria-selected'), 'true', 'arrow keys move between tabs');
+  await p.click('#tab-julia');
+  assert.ok(await p.locator('#pl-panel .pl-badge.warn').count(), 'Julia is marked as not run');
+  await p.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await p.click('#pl-panel .pl-copy');
+  assert.match(await p.evaluate(() => navigator.clipboard.readText()), /println/);
+  // #lang- scrolls to the card even when a filter hid it
+  await p.click('.pl-filter button[data-tier=quantum]');
+  await p.evaluate(() => { location.hash = '#lang-rust'; });
+  await p.waitForFunction(() => !document.getElementById('lang-rust').hidden);
+  // Python runs in place
+  await p.click('#tab-python-0');
+  await p.click('#pl-panel .pl-run');
+  await p.waitForFunction(() => /stand-in run|E = -3\.000000/.test(document.querySelector('#pl-panel .py-out')?.textContent || ''), null, { timeout: NET ? 120000 : 15000 });
+  await finish(p);
+  for (const [w, lang, theme] of [[390, 'en', 'dark'], [768, 'zh', 'light']]) {
+    const q = await open({ viewport: { width: w, height: 844 }, colorScheme: theme });
+    await go(q, `/programming/index.html${lang === 'en' ? '?lang=en' : ''}`);
+    assert.ok(await q.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${w}px: no sideways scroll`);
+    if (lang === 'en') assert.doesNotMatch(await q.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English');
+    await finish(q);
+  }
 });
 
 check('network: the searched term is the centre, suggestions complete, clicking a node recentres, Back returns', async () => {
@@ -1441,24 +1559,18 @@ check('journals: the guide has a table of contents that jumps to each chapter, i
   await finish(en);
 });
 
-check('journals: the top bar marks 期刊发表 current, also when it sits in 更多', async () => {
-  let tucked = 0;
-  for (const width of [900, 1024, 1181, 1366, 1920]) {
-    const p = await open({ viewport: { width, height: 800 } });
-    await go(p, '/journals/index.html');
-    const bar = await p.evaluate(() => ({ inMenu: !!document.querySelector('.cr-more-menu a[data-id=journals]'), current: document.querySelector('.cr-links a[data-id=journals]').getAttribute('aria-current'), more: document.querySelector('.cr-more-btn').hasAttribute('data-current') }));
-    assert.equal(bar.current, 'page', `${width}px`);
-    assert.equal(bar.more, bar.inMenu, `${width}px: 更多 marked current exactly when 期刊发表 is inside`);
-    if (bar.inMenu) tucked++;
-    await p.context().close();
-  }
-  assert.ok(tucked > 0, 'some tested width puts 期刊发表 into 更多');
+check('journals: the top bar marks 期刊发表 current under 工具', async () => {
+  const p = await open({ viewport: { width: 1366, height: 800 } });
+  await go(p, '/journals/index.html');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=journals]', 'aria-current'), 'page');
+  assert.ok(await p.evaluate(() => document.querySelector('.cr-grp-btn[data-group=make]').hasAttribute('data-current')));
+  await finish(p);
 });
 
 check('scimodels: 27 model cards by subcategory with official links, filters and search, details by address, price chart with its table', async () => {
   const p = await open();
   await go(p, '/scimodels/index.html');
-  assert.equal(await p.getAttribute('.cr-links a[data-id=scimodels]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=scimodels]', 'aria-current'), 'page');
   const visible = () => p.$$eval('.sm-card:not([hidden])', (c) => c.map((x) => x.dataset.slug).sort());
   const all = await visible();
   assert.equal(all.length, 27);
@@ -1530,7 +1642,7 @@ check('teaching videos: cards by topic with original links, covers with fallback
   const p = await open();
   await stub(p, true);
   await go(p, '/videos/index.html');
-  assert.equal(await p.getAttribute('.cr-links a[data-id=videos]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=videos]', 'aria-current'), 'page');
   const data = await p.evaluate(() => window.MOLASTRIA_VIDEOS);
   const n = data.items.length;
   assert.ok(n >= 100, `${n} videos`);
@@ -1913,12 +2025,12 @@ check('realms of physics: nav entry, graph selects from the hash, panel, filters
 check('quantum carnival: the hub links its live pavilions, the physics page computes its demos, opens chapters and is English in English', async () => {
   const h = await open();
   await go(h, '/quantum/index.html');
-  assert.equal(await h.getAttribute('.cr-links a[data-id=quantum]', 'aria-current'), 'page', 'nav marks the carnival');
+  assert.equal(await h.getAttribute('.cr-mega a[data-id=quantum]', 'aria-current'), 'page', 'nav marks the carnival');
   assert.equal(await h.locator('#qc-hall-grid .qc-hall').count(), 4, 'four pavilions');
   await h.click('#qc-hall-grid a[href="physics/index.html"]');
   await h.waitForSelector('#qp-panels .fm-panel');
   assert.match(h.url(), /\/quantum\/physics\/index\.html$/);
-  assert.equal(await h.getAttribute('.cr-links a[data-id=quantum]', 'aria-current'), 'page', 'nav still marks the carnival');
+  assert.equal(await h.getAttribute('.cr-mega a[data-id=quantum]', 'aria-current'), 'page', 'nav still marks the carnival');
   assert.match(await text(h, '#qp-crumbs'), /量子嘉年华/);
   await finish(h);
   const p = await open();
@@ -2093,7 +2205,7 @@ check('study desk: probe, plan, one step with a check and a repair, practice, kn
   assert.equal(await p.getAttribute('#c-birth a[href$="learn/index.html#goal=qp:birth"]', 'href'), '../../learn/index.html#goal=qp:birth');
   await p.click('#c-birth a[href$="#goal=qp:birth"]');
   await p.waitForFunction(() => document.querySelector('#ln-goal')?.value.length > 0);
-  assert.equal(await p.getAttribute('.cr-links a[data-id=learn]', 'aria-current'), 'page', 'nav marks the Study Desk');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=learn]', 'aria-current'), 'page', 'nav marks the Study Desk');
   assert.equal(await p.locator('.ln-chip-src').count(), 1, 'chapter chosen as grounding');
   // Probe: three questions, the model's HTML is shown as text, confidence is required.
   await p.click('[data-act=new]');
@@ -2297,7 +2409,7 @@ check('weekly picks: the page, the homepage card and the pricing page show the f
   assert.match(await text(p, '#dg-overview'), /机器学习势/);
   assert.match(await text(p, '#dg-more'), /还有 5 篇/);
   assert.match(await text(p, '#dg-issue'), /下一期/);
-  assert.equal(await p.getAttribute('.cr-links a[data-id=digest]', 'aria-current'), 'page');
+  assert.equal(await p.getAttribute('.cr-mega a[data-id=digest]', 'aria-current'), 'page');
   await go(p, '/digest/index.html?lang=en');
   await p.waitForFunction(() => /English comment 1/.test(document.querySelector('.dg-pick .dg-why')?.textContent || ''));
   await p.evaluate(() => localStorage.setItem('chemhub-lang', 'zh')); // ?lang=en is remembered; back to Chinese
@@ -2330,85 +2442,60 @@ check('brand notice: every page carries one copyright line linking to TRADEMARKS
   await finish(p);
 });
 
-check('nav order: a long press opens the glass panel without leaving the page; drag and arrow keys reorder; kept after reload; reset', async () => {
-  const p = await open();
+check('pinned sections: pin from the menu, they show in the header in order, the glass panel reorders and clears, kept after reload', async () => {
+  const p = await open({ viewport: { width: 1440, height: 900 } });
   await go(p, '/manual/index.html');
-  const order = () => p.$$eval('.cr-links > a[data-id]:not(.cr-pro-link), .cr-more-menu a[data-id]', (a) => a.map((x) => x.dataset.id));
-  const url = p.url();
-  const box = await (await p.$('.cr-links > a[data-id="atlas"]')).boundingBox();
-  await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await p.mouse.down();
-  await p.waitForTimeout(700);
-  await p.mouse.up();
-  await p.waitForSelector('.cr-arrange.open');
-  assert.equal(p.url(), url, 'the long press did not open the page');
-  assert.equal(await p.evaluate(() => document.activeElement.dataset.id), 'atlas', 'the pressed module has focus');
-  // drag atlas (always in the visible row, wherever new modules push the rest into 更多) onto the first tile
-  const from = await (await p.$('.cr-arr-tile[data-id="atlas"]')).boundingBox(), to = await (await p.$('.cr-arr-tile[data-id="search"]')).boundingBox();
-  await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
-  await p.mouse.down();
-  for (let i = 1; i <= 10; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + 8 - from.x - from.width / 2) * i) / 10, from.y + from.height / 2 + ((to.y + to.height / 2 - from.y - from.height / 2) * i) / 10);
-  await p.mouse.up();
-  assert.deepEqual((await order()).slice(0, 2), ['atlas', 'search'], 'dragged to the front');
-  await p.keyboard.press('ArrowRight');
-  assert.deepEqual((await order()).slice(0, 2), ['search', 'atlas'], 'moved one step with the keyboard');
+  const pinned = () => p.$$eval('.cr-pins a[data-id]', (a) => a.filter((x) => x.offsetWidth).map((x) => x.dataset.id));
+  assert.deepEqual(await pinned(), [], 'nothing pinned by default');
+  await p.click('.cr-grp-btn[data-group=learn]');
+  await p.hover('.cr-cell[data-id=videos]');
+  await p.click('.cr-pin-t[data-pin=videos]');
+  await p.click('.cr-grp-btn[data-group=find]');
+  await p.hover('.cr-cell[data-id=atlas]');
+  await p.click('.cr-pin-t[data-pin=atlas]');
+  assert.equal(await p.getAttribute('.cr-pin-t[data-pin=atlas]', 'aria-pressed'), 'true');
+  assert.deepEqual(await pinned(), ['videos', 'atlas']);
+  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-nav-pins'))), ['videos', 'atlas']);
   await p.keyboard.press('Escape');
+  // the panel: arrow keys move a tile, the pool adds one, Delete removes one
+  await p.click('#cr-disp');
+  await p.click('.cr-disp-arr');
+  await p.waitForSelector('.cr-arrange.open');
+  await p.focus('.cr-arr-tile[data-id=atlas]');
+  await p.keyboard.press('ArrowLeft');
+  assert.deepEqual(await pinned(), ['atlas', 'videos'], 'moved with the keyboard');
+  await p.click('.cr-arr-chip[data-add=code]');
+  assert.deepEqual(await pinned(), ['atlas', 'videos', 'code']);
+  await p.focus('.cr-arr-tile[data-id=videos]');
+  await p.keyboard.press('Delete');
+  assert.deepEqual(await pinned(), ['atlas', 'code']);
+  await p.click('.cr-arr-done');
   await p.waitForSelector('.cr-arrange', { state: 'hidden' });
   await go(p, '/index.html');
-  assert.deepEqual((await order()).slice(0, 3), ['search', 'atlas', 'network'], 'kept on the next page');
-  // the display panel leads here too; reset brings back the default order
+  assert.deepEqual(await pinned(), ['atlas', 'code'], 'kept on the next page');
+  // a pinned link is a plain link; the current page is marked
+  await p.click('.cr-pins a[data-id=atlas]');
+  await p.waitForURL(/\/atlas\/index\.html/);
+  assert.equal(await p.getAttribute('.cr-pins a[data-id=atlas]', 'aria-current'), 'page');
+  // dragging a pinned link along the header reorders it without opening it
+  const url = p.url();
+  const from = await (await p.$('.cr-pins a[data-id=code]')).boundingBox(), to = await (await p.$('.cr-pins a[data-id=atlas]')).boundingBox();
+  await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await p.mouse.down();
+  for (let i = 1; i <= 12; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + 4 - from.x - from.width / 2) * i) / 12, from.y + from.height / 2 + 1);
+  await p.mouse.up();
+  assert.equal(p.url(), url, 'the drag did not open the page');
+  assert.deepEqual(await pinned(), ['code', 'atlas'], 'dragged to the front');
+  // clear
   await p.click('#cr-disp');
   await p.click('.cr-disp-arr');
   await p.waitForSelector('.cr-arrange.open');
   await p.click('.cr-arr-reset');
   await p.click('.cr-arr-done');
-  assert.deepEqual((await order()).slice(0, 3), ['search', 'network', 'manual']);
-  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-nav-order')), null);
+  assert.deepEqual(await pinned(), []);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-nav-pins')), null);
   await finish(p);
 });
-
-check('nav order: modules are dragged straight along the header (mouse at once, touch after a hold); a plain click still opens the page', async () => {
-  const p = await open();
-  await go(p, '/manual/index.html');
-  const row = () => p.$$eval('.cr-links > a[data-id]:not(.cr-pro-link)', (a) => a.filter((x) => x.offsetWidth).map((x) => x.dataset.id));
-  const url = p.url();
-  const from = await (await p.$('.cr-links > a[data-id="search"]')).boundingBox(), to = await (await p.$('.cr-links > a[data-id="atlas"]')).boundingBox();
-  await p.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
-  await p.mouse.down();
-  for (let i = 1; i <= 12; i++) await p.mouse.move(from.x + from.width / 2 + ((to.x + to.width / 2 + 4 - from.x - from.width / 2) * i) / 12, from.y + from.height / 2 + 1);
-  assert.ok(await p.locator('.cr-links a.cr-lifted[data-id="search"]').count(), 'the module is lifted as glass');
-  await p.mouse.up();
-  assert.deepEqual((await row()).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search'], 'dropped after 数据库');
-  assert.equal(p.url(), url, 'the drag did not open the page');
-  assert.equal(await p.locator('.cr-arrange.open').count(), 0, 'no panel after a drag');
-  assert.deepEqual(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-nav-order'))).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search']);
-  await p.click('.cr-links > a[data-id="search"]');
-  await p.waitForURL(/\/index\.html/);
-  assert.deepEqual((await row()).slice(0, 5), ['network', 'manual', 'videos', 'atlas', 'search'], 'kept on the next page');
-  await p.evaluate(() => localStorage.removeItem('molastria-nav-order'));
-  await finish(p);
-  // touch: a quick swipe leaves the order alone, a hold then a slide moves the module
-  const t = await open({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
-  await go(t, '/index.html');
-  const cdp = await t.context().newCDPSession(t);
-  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
-  const ids = () => t.$$eval('.cr-links > a[data-id]', (a) => a.map((x) => x.dataset.id).slice(0, 3));
-  const b = await (await t.$('.cr-links > a[data-id="search"]')).boundingBox();
-  let x = b.x + b.width / 2;
-  await touch('touchStart', x, b.y + b.height / 2);
-  for (let i = 0; i < 6; i++) await touch('touchMove', (x += 12), b.y + b.height / 2);
-  await touch('touchEnd');
-  assert.deepEqual(await ids(), ['search', 'network', 'manual'], 'a swipe does not reorder');
-  await t.waitForTimeout(800); // let the swipe's fling end: a touch during it cannot hold the page still
-  x = b.x + b.width / 2;
-  await touch('touchStart', x, b.y + b.height / 2);
-  await t.waitForTimeout(600);
-  for (let i = 0; i < 15; i++) { await touch('touchMove', (x += 10), b.y + b.height / 2); await t.waitForTimeout(16); }
-  await touch('touchEnd');
-  assert.deepEqual(await ids(), ['network', 'manual', 'search'], 'hold and slide reorders');
-  await finish(t);
-});
-
 check('language switch: every page stays where it was (radar view, calculator tab, tabs, filters, scroll)', async () => {
   const p = await open();
   const flip = async () => { await Promise.all([p.waitForEvent('load'), p.$eval('#cr-lang', (b) => b.click())]); await p.waitForTimeout(900); }; // a DOM click: Playwright's own would scroll the page first
@@ -3283,7 +3370,7 @@ check('formula questions: MathLive answers graded with targeted hints, nudge, wo
 });
 
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
