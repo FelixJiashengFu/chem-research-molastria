@@ -142,7 +142,7 @@ window.MOLASTRIA_VISION = {
           ['live', '预印本雷达跟踪 28 个来源的新论文；每周精选给值得读的计算化学论文写点评', 'Preprint Radar follows 28 preprint servers; Weekly Picks adds notes to the computational chemistry papers worth reading', 'radar/index.html'],
           ['live', '科学大模型 27 个的能力与价格对比；开放模型馆收 11 家公司的开放模型，每条写明许可证和使用条件', 'Capabilities and prices of 27 science LLMs; the Open Model Hall covers open models from 11 companies, each with its licence and terms of use', 'open-models/index.html'],
           ['live', '资源目录和网状查询：数据库、方法和概念之间的关系现算现画', 'The resource catalogue and Network view, which compute how databases, methods and concepts connect', 'hub/network.html'],
-          ['next', '讲解手册补写量子化学程序、凝聚态第一性原理、波函数分析等章节；网状查询记下没有命中的搜索词，用来补术语表', 'Add handbook chapters on quantum chemistry programs, first-principles condensed matter and wavefunction analysis; log searches that find nothing to grow the glossary'],
+          ['live', '讲解手册补到 25 章：量子化学程序、凝聚态第一性原理、波函数分析、课程教材和量子计算各一章，章里的算例都能复现；网状查询记下术语表认不出的词（只存在你自己的浏览器里），用来补术语表', 'The handbook now has 25 chapters, with new ones on quantum chemistry programs, first-principles condensed matter, wavefunction analysis, courses and textbooks, and quantum computing, each with worked examples anyone can rerun; the Network view keeps the words the glossary does not know (in your own browser only) so the glossary can grow', 'manual/index.html#p14b-cat12'],
           ['idea', '面向一个具体问题的“证据台”：比如“这个体系该用哪个泛函或机器学习势”，把文献、基准数据和站内能直接跑的计算放在同一页上比较', 'An evidence desk for one concrete question, such as “which functional or machine-learning potential suits this system”, putting the literature, benchmark data and calculations you can run on the site side by side'],
         ],
       },

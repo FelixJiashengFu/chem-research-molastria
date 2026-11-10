@@ -141,7 +141,7 @@
   "/terms.json": {
    "get": {
     "operationId": "get_terms",
-    "summary": "Term table: computational-chemistry synonyms in Chinese and English (109 entries, whole file)",
+    "summary": "Term table: computational-chemistry synonyms in Chinese and English (156 entries, whole file)",
     "responses": {
      "200": {
       "description": "OK",

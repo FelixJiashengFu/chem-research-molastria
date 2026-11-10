@@ -45,7 +45,7 @@
   <section class="net-hero">
     <p class="eyebrow">MESH QUERY · ALL DATABASES</p>
     <h1>输入一个词，<span class="grad">看它连着什么</span></h1>
-    <p class="lead">目录里的全部条目、20 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。
+    <p class="lead">目录里的全部条目、25 章说明讲解手册和中英术语表织成一张网：软件、数据库、程序与方法、概念和主题是节点，在同一条目里一起出现就连线。
     查询时，你查的词放在网的中心，第一圈是和它关系最紧的概念，第二圈是它们各自的近邻，再往外是相关条目和来源。<strong>点任何节点，网就换成以它为中心。</strong></p>
     <div id="netStats" class="net-stats" aria-label="网状查询统计"></div>
   </section>
@@ -100,6 +100,21 @@
     </aside>
   </section>
 
+  <section id="misses" class="section panel net-misses" aria-labelledby="missesTitle">
+    <div class="net-misses-head">
+      <h2 id="missesTitle">没找到的词</h2>
+      <label class="net-misses-toggle"><input id="missOn" type="checkbox" checked> 记下术语表认不出的词</label>
+    </div>
+    <p class="small muted">术语表认不出、只能按全文检索的词会记在这里，帮我们补术语表。它们<strong>只存在这台设备的浏览器里</strong>，不会发到任何服务器。想帮忙的话，可以复制出来，或者到 GitHub 提一个 Issue：页面会预先填好这些词，你看过全文再决定提不提交。点一个词再查一次，点 × 删掉它。</p>
+    <div id="missList" class="net-misses-list"></div>
+    <div id="missActions" class="net-misses-actions">
+      <button id="missCopy" class="btn ghost small-btn" type="button">复制列表</button>
+      <a id="missIssue" class="btn primary small-btn" href="https://github.com/FelixJiashengFu/chem-research-molastria/issues" target="_blank" rel="noopener">到 GitHub 提交 <i class="ico-ext" aria-hidden="true"></i></a>
+      <button id="missClear" class="btn ghost small-btn" type="button">清空</button>
+    </div>
+    <p id="missMsg" class="small muted" role="status"></p>
+  </section>
+
   <section id="directory" class="section">
     <div class="section-head"><h2>所有数据库与软件官网总表</h2>
     <p>下表汇总 Atlas 资源目录、Hub 官方软件与数据库，以及各数据源入口。点「在网中查看」，网就以它为中心展开；点「访问」直达原站。</p></div>
@@ -109,7 +124,7 @@
   <section class="section panel method">
     <h2>这张网是怎么算出来的（不藏算法）</h2>
     <div class="method-grid">
-      <div><h3>节点从哪来</h3><p>五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 20 章也作为条目参与。</p></div>
+      <div><h3>节点从哪来</h3><p>五类节点全部从数据里算出：目录里的软件与数据库；标题里反复出现的程序、方法和体系名（如 Shermo、IGMH、sobEDA，至少出现在两个条目里）；中英术语表里的概念（静电势 = electrostatic potential）；主题标签；资源分类。说明讲解手册的 25 章也作为条目参与。</p></div>
       <div><h3>连线从哪来</h3><p>两个节点在同一条目里一起出现就连线。标题和标签里出现算 3 分，摘要和正文里算 1 分，按余弦相似度归一化，所以不会因为某个词到处都有就和谁都连。太宽泛的词（如“教程”“软件”）权重打折；同一个东西的不同写法（DFT 与 密度泛函）不算关系。</p></div>
       <div><h3>查询怎么做</h3><p>先把输入解析成节点：精确名称、别名、中英同义词、前缀补全，拼错一两个字母也能认出（Gaussain → Gaussian）。认不出就做全文检索，按标题 &gt; 标签 &gt; 摘要打分，再用命中条目里的节点织网。同一篇文章的博客原文与论坛镜像合并成一条。</p></div>
       <div><h3>边界照旧</h3><p>结果只展示标题、短摘要与原文链接，全文回原站。连线表示“在同一条目里一起出现”或目录归属，不代表科学因果关系；关联延伸是按关系强度推荐的阅读，不保证每条都提到你查的词。</p></div>
@@ -126,6 +141,7 @@
 <script src="../merged-data.js"></script>
 <script src="../atlas/content.js"></script>
 <script src="net-engine.js"></script>
+<script src="net-misses.js"></script>
 <script src="network.js"></script>
 </body>
 </html>
