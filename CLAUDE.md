@@ -133,6 +133,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 ## 已知的坑
 
 - **`wrangler.toml`：** `routes`、`workers_dev` 这类顶层设置必须写在 `[[d1_databases]]`、`[vars]` 之前，否则会被算进那些段里。
+- **`wrangler deploy` 之后线上可能还是旧代码：** 2026-11-09 部署成功、`wrangler deployments status` 也显示新版本 100%，但 `api.molastria.com` 有五到十分钟仍由旧版本回应（响应是 `no-store`，不是缓存）。先等几分钟再测，不要急着重新部署或回滚；`wrangler deployments list` 可以确认没有别人在之后部署过。
 - **D1 偶发 403（code 7403）：** 一段时间没用后的第一个请求常失败，重试就好，不是权限问题。
 - **D1 迁移：** `schema.sql` 只有 `CREATE TABLE IF NOT EXISTS`，加列要另外跑 `ALTER TABLE`，并在 `schema.sql` 留注释。
 - **Worker 免费版：** 每次调用限 10 ms CPU，本地测不出来；生成一期实测 8 ms（2026-10-31）。定时任务里解析的响应要小（每个来源 20 条），改动后在线上跑一次（`docs/RUNBOOK.md`）。
