@@ -222,6 +222,7 @@ body[data-section=pro] .cr-acct{box-shadow:inset 0 1px 0 var(--glass-hi),0 0 0 1
 .cr-ap-row:focus-visible{outline:3px solid var(--gold);outline-offset:0}
 @media(max-width:760px){
   .cr-links>.cr-acct{flex:none;margin-left:6px;height:34px}
+  .cr-tools>.cr-acct{display:none} /* until the script moves it to the second row (a window resized straight to phone width) */
   .cr-links>.cr-acct[data-state=out]{padding:0 12px 0 9px}
   .cr-avatar{width:26px;height:26px;font-size:12px}
   .cr-acct-pop{left:10px!important;right:10px!important;width:auto;max-width:none;top:calc(100% + 6px);transform-origin:calc(100% - 40px) -10px}
