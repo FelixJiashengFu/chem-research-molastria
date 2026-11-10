@@ -1,6 +1,6 @@
 {
  "generatedAt": "2026-11-06T15:26:37-05:00",
- "packagedAt": "2026-11-06",
+ "packagedAt": "2026-11-10",
  "sources": [
   {
    "id": "keinsci",
@@ -310,7 +310,7 @@
    "status": "snapshot",
    "statusLabel": "人工整理目录",
    "fetchedAt": "2026-11-05",
-   "itemCount": 228
+   "itemCount": 251
   }
  ],
  "items": [
@@ -87540,16 +87540,19 @@
    "date": "2026-11-06",
    "category": "Python",
    "tags": [
-    "AI与机器学习"
+    "AI与机器学习",
+    "机器学习数据集与势函数"
    ],
    "metric": "Star 973",
    "stars": 973,
    "authors": "mir-group",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "github"
+    "github",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -87568,6 +87571,19 @@
      "stars": 973,
      "authors": "mir-group"
     }
+   ],
+   "atlasRecords": [
+    {
+     "number": 240,
+     "name": "NequIP",
+     "description": "E(3) 等变图神经网络原子势，用较少的训练数据就能达到高精度；MIT 许可。",
+     "url": "https://github.com/mir-group/nequip",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
    ]
   },
   {
@@ -87580,16 +87596,19 @@
    "date": "2026-11-06",
    "category": "Python",
    "tags": [
-    "AI与机器学习"
+    "AI与机器学习",
+    "机器学习数据集与势函数"
    ],
    "metric": "Star 944",
    "stars": 944,
    "authors": "atomistic-machine-learning",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "github"
+    "github",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -87608,6 +87627,19 @@
      "stars": 944,
      "authors": "atomistic-machine-learning"
     }
+   ],
+   "atlasRecords": [
+    {
+     "number": 242,
+     "name": "SchNetPack",
+     "description": "基于 PyTorch 的原子尺度神经网络工具箱，内置 SchNet、PaiNN 等模型，能训练能量、力、偶极等性质并跑分子动力学；MIT 许可。",
+     "url": "https://github.com/atomistic-machine-learning/schnetpack",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
    ]
   },
   {
@@ -87620,16 +87652,19 @@
    "date": "2026-11-06",
    "category": "Fortran",
    "tags": [
-    "量子化学"
+    "量子化学",
+    "量子化学程序与方法库"
    ],
    "metric": "Star 879",
    "stars": 879,
    "authors": "grimme-lab",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "github"
+    "github",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -87647,6 +87682,19 @@
      "metric": "Star 879",
      "stars": 879,
      "authors": "grimme-lab"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 230,
+     "name": "xTB",
+     "description": "Grimme 组的 GFN-xTB 半经验紧束缚程序：几百个原子的结构优化、频率和分子动力学在普通电脑上也很快，常用来给 DFT 做预筛；LGPL-3.0 许可。",
+     "url": "https://github.com/grimme-lab/xtb",
+     "category_code": "12",
+     "category": "量子化学程序与方法库",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -87744,16 +87792,19 @@
    "date": "2026-11-05",
    "category": "Python",
    "tags": [
-    "分子动力学"
+    "分子动力学",
+    "波函数分析、可视化与动力学"
    ],
    "metric": "Star 744",
    "stars": 744,
    "authors": "mdtraj",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "github"
+    "github",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -87771,6 +87822,19 @@
      "metric": "Star 744",
      "stars": 744,
      "authors": "mdtraj"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 236,
+     "name": "MDTraj",
+     "description": "轻量快速的分子动力学轨迹读写与分析库，常用于 RMSD、二级结构（DSSP）和接触图，和 NumPy 无缝衔接；LGPL-2.1 许可。",
+     "url": "https://github.com/mdtraj/mdtraj",
+     "category_code": "14",
+     "category": "波函数分析、可视化与动力学",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -88224,16 +88288,19 @@
    "date": "2026-11-06",
    "category": "Python",
    "tags": [
-    "AI与机器学习"
+    "AI与机器学习",
+    "机器学习数据集与势函数"
    ],
    "metric": "Star 507",
    "stars": 507,
    "authors": "mir-group",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "github"
+    "github",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -88251,6 +88318,19 @@
      "metric": "Star 507",
      "stars": 507,
      "authors": "mir-group"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 241,
+     "name": "Allegro",
+     "description": "NequIP 团队的严格局域等变原子势，便于并行扩展到超大体系的分子动力学；MIT 许可。",
+     "url": "https://github.com/mir-group/allegro",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -91246,14 +91326,17 @@
    "date": "",
    "category": "量子化学软件",
    "tags": [
-    "量子化学软件"
+    "量子化学软件",
+    "量子化学程序与方法库"
    ],
    "metric": "Quantum chemistry with Python — PySCF",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -91269,6 +91352,19 @@
       "量子化学软件"
      ],
      "metric": "Quantum chemistry with Python — PySCF"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 229,
+     "name": "PySCF",
+     "description": "基于 Python 的量子化学框架：HF、DFT、MP2、耦合簇、CASSCF 和周期性体系都能用几行脚本调用，适合方法开发和自动化工作流；Apache-2.0 许可。本站开源代码台能生成 PySCF 脚本。",
+     "url": "https://pyscf.org",
+     "category_code": "12",
+     "category": "量子化学程序与方法库",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -91422,14 +91518,17 @@
    "date": "",
    "category": "量子化学软件",
    "tags": [
-    "量子化学软件"
+    "量子化学软件",
+    "量子化学程序与方法库"
    ],
    "metric": "DFTB+ simulation package — DFTB+",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -91445,6 +91544,19 @@
       "量子化学软件"
      ],
      "metric": "DFTB+ simulation package — DFTB+"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 231,
+     "name": "DFTB+",
+     "description": "密度泛函紧束缚（DFTB）程序，支持 SCC-DFTB、xTB 哈密顿量、激发态和非平衡格林函数电子输运；LGPL-3.0 许可。",
+     "url": "https://dftbplus.org",
+     "category_code": "12",
+     "category": "量子化学程序与方法库",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -91614,14 +91726,17 @@
    "date": "",
    "category": "周期与第一性原理",
    "tags": [
-    "周期与第一性原理"
+    "周期与第一性原理",
+    "周期体系与凝聚态第一性原理"
    ],
    "metric": "ABINIT",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -91637,6 +91752,19 @@
       "周期与第一性原理"
      ],
      "metric": "ABINIT"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 232,
+     "name": "ABINIT",
+     "description": "平面波（赝势 / PAW）第一性原理程序，擅长密度泛函微扰理论（声子、介电、弹性）和 GW、Bethe–Salpeter 激发态；主体为 GPL-3.0 许可。",
+     "url": "https://www.abinit.org",
+     "category_code": "13",
+     "category": "周期体系与凝聚态第一性原理",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -91930,14 +92058,17 @@
    "date": "",
    "category": "化学信息与建模",
    "tags": [
-    "化学信息与建模"
+    "化学信息与建模",
+    "软件、平台与计算入口"
    ],
    "metric": "Open Babel - the chemistry toolbox — Open Babel openbabel-3-2-0 documentation",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -91953,6 +92084,19 @@
       "化学信息与建模"
      ],
      "metric": "Open Babel - the chemistry toolbox — Open Babel openbabel-3-2-0 documentation"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 233,
+     "name": "Open Babel",
+     "description": "化学文件格式转换工具箱：在一百多种分子格式之间互转，还能加氢、生成三维坐标、算指纹，命令行和 Python 都能用；GPL-2.0 许可。",
+     "url": "https://openbabel.org",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -93726,14 +93870,17 @@
    "date": "",
    "category": "分子动力学",
    "tags": [
-    "分子动力学"
+    "分子动力学",
+    "波函数分析、可视化与动力学"
    ],
    "metric": "MDAnalysis · MDAnalysis",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -93749,6 +93896,19 @@
       "分子动力学"
      ],
      "metric": "MDAnalysis · MDAnalysis"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 235,
+     "name": "MDAnalysis",
+     "description": "分子动力学轨迹分析的 Python 库，读 GROMACS、AMBER、NAMD、LAMMPS 等几十种格式，做 RMSD、氢键、径向分布函数等分析；库整体按 LGPL-3.0+ 发布。",
+     "url": "https://www.mdanalysis.org",
+     "category_code": "14",
+     "category": "波函数分析、可视化与动力学",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -93906,14 +94066,17 @@
    "date": "",
    "category": "分子动力学",
    "tags": [
-    "分子动力学"
+    "分子动力学",
+    "机器学习数据集与势函数"
    ],
    "metric": "DeePMD-kit — DeePMD-kit documentation",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -93929,6 +94092,19 @@
       "分子动力学"
      ],
      "metric": "DeePMD-kit — DeePMD-kit documentation"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 238,
+     "name": "DeePMD-kit",
+     "description": "深度势能（Deep Potential）模型的训练和推理工具，可接 LAMMPS、GROMACS 等做大规模分子动力学，常和 DP-GEN 主动学习一起用；LGPL-3.0 许可。",
+     "url": "https://docs.deepmodeling.com/projects/deepmd/",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -94154,14 +94330,17 @@
    "date": "",
    "category": "化学信息与建模",
    "tags": [
-    "化学信息与建模"
+    "化学信息与建模",
+    "波函数分析、可视化与动力学"
    ],
    "metric": "Overview — cclib 1.8.1 documentation",
    "origins": [
-    "hub"
+    "hub",
+    "atlas"
    ],
    "sourceIds": [
-    "resdir"
+    "resdir",
+    "atlas"
    ],
    "sourceRecords": [
     {
@@ -94177,6 +94356,19 @@
       "化学信息与建模"
      ],
      "metric": "Overview — cclib 1.8.1 documentation"
+    }
+   ],
+   "atlasRecords": [
+    {
+     "number": 234,
+     "name": "cclib",
+     "description": "解析计算化学程序输出的 Python 库：从 Gaussian、ORCA、Psi4、Q-Chem 等十几种程序的输出里读出能量、几何、轨道和振动频率，统一成同一套数据结构；BSD-3 许可。本站开源代码台的输出解读借了它的思路。",
+     "url": "https://cclib.github.io",
+     "category_code": "14",
+     "category": "波函数分析、可视化与动力学",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
     }
    ]
   },
@@ -100500,6 +100692,369 @@
    ]
   },
   {
+   "id": "2d986525808badc1",
+   "source": "atlas",
+   "type": "database",
+   "title": "HOOMD-blue",
+   "url": "https://hoomd-blue.readthedocs.io",
+   "excerpt": "GPU 加速的通用粒子模拟 Python 包，擅长软物质、胶体和硬粒子蒙特卡洛；BSD-3 许可。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 237,
+     "name": "HOOMD-blue",
+     "description": "GPU 加速的通用粒子模拟 Python 包，擅长软物质、胶体和硬粒子蒙特卡洛；BSD-3 许可。",
+     "url": "https://hoomd-blue.readthedocs.io",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "412e8809c2a9c3d1",
+   "source": "atlas",
+   "type": "database",
+   "title": "MACE",
+   "url": "https://github.com/ACEsuit/mace",
+   "excerpt": "高阶等变消息传递的机器学习原子势，提供 MACE-MP-0、MACE-OFF 等现成的基础模型，可接 ASE 和 LAMMPS；MIT 许可。本站模型接口的 MACE-OMOL-0 就来自它。",
+   "date": "",
+   "category": "机器学习数据集与势函数",
+   "tags": [
+    "机器学习数据集与势函数"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 239,
+     "name": "MACE",
+     "description": "高阶等变消息传递的机器学习原子势，提供 MACE-MP-0、MACE-OFF 等现成的基础模型，可接 ASE 和 LAMMPS；MIT 许可。本站模型接口的 MACE-OMOL-0 就来自它。",
+     "url": "https://github.com/ACEsuit/mace",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "88094c4e8e7170f9",
+   "source": "atlas",
+   "type": "database",
+   "title": "TorchMD-Net",
+   "url": "https://github.com/torchmd/torchmd-net",
+   "excerpt": "PyTorch 实现的神经网络势框架，包含等变 Transformer、TensorNet 等架构；MIT 许可。",
+   "date": "",
+   "category": "机器学习数据集与势函数",
+   "tags": [
+    "机器学习数据集与势函数"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 243,
+     "name": "TorchMD-Net",
+     "description": "PyTorch 实现的神经网络势框架，包含等变 Transformer、TensorNet 等架构；MIT 许可。",
+     "url": "https://github.com/torchmd/torchmd-net",
+     "category_code": "09",
+     "category": "机器学习数据集与势函数",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "d54e38aefd85f46c",
+   "source": "atlas",
+   "type": "database",
+   "title": "QCSchema",
+   "url": "https://github.com/MolSSI/QCSchema",
+   "excerpt": "MolSSI 制定的量子化学计算 JSON 交换格式：分子、方法和结果用同一套字段描述，QCEngine、Psi4、QCArchive 都用它；BSD-3 许可。本站开源代码台能把分子导出成 QCSchema。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 244,
+     "name": "QCSchema",
+     "description": "MolSSI 制定的量子化学计算 JSON 交换格式：分子、方法和结果用同一套字段描述，QCEngine、Psi4、QCArchive 都用它；BSD-3 许可。本站开源代码台能把分子导出成 QCSchema。",
+     "url": "https://github.com/MolSSI/QCSchema",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "061c0d0af3f3b50f",
+   "source": "atlas",
+   "type": "database",
+   "title": "QCElemental",
+   "url": "https://github.com/MolSSI/QCElemental",
+   "excerpt": "MolSSI 的基础数据与模型库：元素周期表、CODATA 物理常数、单位换算和 QCSchema 分子模型的校验；BSD-3 许可。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 245,
+     "name": "QCElemental",
+     "description": "MolSSI 的基础数据与模型库：元素周期表、CODATA 物理常数、单位换算和 QCSchema 分子模型的校验；BSD-3 许可。",
+     "url": "https://github.com/MolSSI/QCElemental",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "b165ae01bd9dc50e",
+   "source": "atlas",
+   "type": "database",
+   "title": "QCFractal",
+   "url": "https://github.com/MolSSI/QCFractal",
+   "excerpt": "QCArchive 背后的服务器软件：批量提交、调度和存储量子化学计算，也可以自己部署一套；BSD-3 许可。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 246,
+     "name": "QCFractal",
+     "description": "QCArchive 背后的服务器软件：批量提交、调度和存储量子化学计算，也可以自己部署一套；BSD-3 许可。",
+     "url": "https://github.com/MolSSI/QCFractal",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "137efd136780877c",
+   "source": "atlas",
+   "type": "database",
+   "title": "Software Heritage",
+   "url": "https://www.softwareheritage.org",
+   "excerpt": "联合国教科文组织支持的源代码永久档案，收录 GitHub、GitLab、PyPI 等平台的公开代码及完整历史；用 SWHID 标识符引用某一版本，复现论文时比 main 分支的链接可靠。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 247,
+     "name": "Software Heritage",
+     "description": "联合国教科文组织支持的源代码永久档案，收录 GitHub、GitLab、PyPI 等平台的公开代码及完整历史；用 SWHID 标识符引用某一版本，复现论文时比 main 分支的链接可靠。",
+     "url": "https://www.softwareheritage.org",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "5e4a033e3cc8d917",
+   "source": "atlas",
+   "type": "database",
+   "title": "Zenodo",
+   "url": "https://zenodo.org",
+   "excerpt": "CERN 运营的开放科研仓库：上传数据、代码和论文附件即得 DOI；和 GitHub 联动后，每发布一个版本就自动存档并分配 DOI。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 248,
+     "name": "Zenodo",
+     "description": "CERN 运营的开放科研仓库：上传数据、代码和论文附件即得 DOI；和 GitHub 联动后，每发布一个版本就自动存档并分配 DOI。",
+     "url": "https://zenodo.org",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "84237498cb9f201b",
+   "source": "atlas",
+   "type": "database",
+   "title": "conda-forge",
+   "url": "https://conda-forge.org",
+   "excerpt": "社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 249,
+     "name": "conda-forge",
+     "description": "社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。",
+     "url": "https://conda-forge.org",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "453cb49f45b2d3e3",
+   "source": "atlas",
+   "type": "database",
+   "title": "Hugging Face Hub",
+   "url": "https://huggingface.co",
+   "excerpt": "机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 250,
+     "name": "Hugging Face Hub",
+     "description": "机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。",
+     "url": "https://huggingface.co",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "ed0f312eed4a66a5",
+   "source": "atlas",
+   "type": "database",
+   "title": "OSV",
+   "url": "https://osv.dev",
+   "excerpt": "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。",
+   "date": "",
+   "category": "软件、平台与计算入口",
+   "tags": [
+    "软件、平台与计算入口"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 251,
+     "name": "OSV",
+     "description": "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。",
+     "url": "https://osv.dev",
+     "category_code": "10",
+     "category": "软件、平台与计算入口",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
    "id": "d3ad0b5d8836bc8f",
    "source": "chemrxiv",
    "type": "preprint",
@@ -102474,12 +103029,12 @@
  ],
  "stats": {
   "hubEntries": 2483,
-  "atlasEntries": 228,
-  "uniqueEntries": 2652,
-  "duplicates": 59,
+  "atlasEntries": 251,
+  "uniqueEntries": 2663,
+  "duplicates": 71,
   "guideChapters": 20,
   "sources": 24,
-  "directoryEntries": 252
+  "directoryEntries": 268
  },
  "note": "数据为原项目保存的快照，合并未重新核验外部网站；全文与使用许可请查看原站。"
 }

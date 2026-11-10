@@ -7,7 +7,7 @@ Programs and AI agents should read the open data API instead of scraping pages. 
 ## Open data API
 
 - [Index](https://molastria.com/api/v1/index.json): every dataset with its entry count and check date
-- [Resource catalogue: databases, software, datasets and courses](https://molastria.com/api/v1/resources.json): 228 entries, checked 2026-11-05
+- [Resource catalogue: databases, software, datasets and courses](https://molastria.com/api/v1/resources.json): 251 entries, checked 2026-11-05
 - [Journal guide: computational-chemistry journals and preprint servers](https://molastria.com/api/v1/journals.json): 48 entries, checked 2026-11-06
 - [Science foundation models: model cards and official prices](https://molastria.com/api/v1/scimodels.json): 27 entries, checked 2026-11-06
 - [Teaching videos: courses and tutorials on YouTube and Bilibili](https://molastria.com/api/v1/videos.json): 189 entries, checked 2026-11-08
