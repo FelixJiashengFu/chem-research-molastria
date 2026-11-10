@@ -128,7 +128,9 @@ check('paying signs the buyer in', async () => {
   const p = await open();
   await go(p, '/pro/success.html?session_id=cs_test_localpro&plan=pro_year');
   await p.waitForSelector('#activate.ok');
-  assert.match(await p.getAttribute('.cr-pro', 'href'), /pro\/account\.html$/);
+  await p.waitForSelector('#cr-acct[data-state=pro]');
+  await p.click('#cr-acct');
+  assert.match(await p.getAttribute('.cr-acct-pop .cr-ap-row', 'href'), /pro\/account\.html$/);
   await go(p, '/pro/account.html');
   await p.waitForSelector('#acct-main:not([hidden])');
   assert.equal(await text(p, '#plan-badge'), 'Pro');
@@ -1301,6 +1303,91 @@ check('top bar search: Ctrl+K opens it, words in either language find sections a
   assert.ok(box.l >= -1 && box.r <= 391, `sheet inside the screen: ${box.l}–${box.r}`);
   await m.fill('.cr-find input', 'python');
   assert.ok((await m.$$eval('.cr-cell:not([hidden])', (c) => c.map((x) => x.dataset.id))).includes('programming'));
+  await finish(m);
+  await finish(p);
+});
+
+check('header order and account: groups and buttons drag into a new order that is kept; Sign in panel; signed-in avatar, plan, allowance, sign out', async () => {
+  const p = await open({ viewport: { width: 1440, height: 900 } });
+  await go(p, '/manual/index.html');
+  const order = () => p.evaluate(() => ({ g: [...document.querySelectorAll('.cr-grps .cr-grp-btn')].map((b) => b.dataset.group), rail: [...document.querySelectorAll('.cr-rail [data-rail]')].map((b) => b.dataset.rail), t: [...document.querySelectorAll('.cr-tools > [data-tool]')].map((b) => b.dataset.tool) }));
+  const drag = async (from, to) => {
+    const a = await p.locator(from).boundingBox(), b = await p.locator(to).boundingBox();
+    await p.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await p.mouse.down();
+    for (let i = 1; i <= 12; i++) { await p.mouse.move(a.x + a.width / 2 + (b.x - 10 - a.x) * i / 12, a.y + a.height / 2); await p.waitForTimeout(16); }
+    assert.ok(await p.locator('.cr-header .cr-lifted').count() === 1, 'the dragged item is lifted');
+    await p.mouse.up();
+    await p.waitForTimeout(500);
+  };
+  await drag('.cr-grp-btn[data-group=explore]', '.cr-grp-btn[data-group=find]');
+  let o = await order();
+  assert.deepEqual(o.g, ['explore', 'find', 'learn', 'models', 'make']);
+  assert.deepEqual(o.rail, o.g, 'the menu rail follows');
+  assert.ok(await p.locator('#cr-mega').isHidden(), 'a drag does not open the menu');
+  await drag('#cr-theme', '#cr-jump');
+  o = await order();
+  assert.equal(o.t[0], 'theme');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.theme || ''), '', 'a drag does not press the button');
+  // keyboard: Alt + Shift + arrow
+  await p.focus('#cr-theme');
+  await p.keyboard.press('Alt+Shift+ArrowRight');
+  assert.equal((await order()).t[1], 'theme');
+  await p.reload();
+  o = await order();
+  assert.deepEqual(o.g, ['explore', 'find', 'learn', 'models', 'make'], 'kept after reload');
+  assert.equal(o.t[1], 'theme');
+  // a plain click still opens the group
+  await p.click('.cr-grp-btn[data-group=learn]');
+  assert.ok(await p.locator('#cr-mega').isVisible());
+  await p.keyboard.press('Escape');
+  // the arrange panel puts the default order back
+  await p.evaluate(() => document.querySelector('.cr-pins-edit').click());
+  await p.click('.cr-arr-order');
+  await p.click('.cr-arr-done');
+  o = await order();
+  assert.deepEqual(o.g, ['find', 'learn', 'explore', 'models', 'make']);
+  assert.equal(o.t.join(), 'jump,acct,lang,disp,bg,theme,ai');
+  assert.deepEqual(await p.evaluate(() => [localStorage.getItem('molastria-nav-groups'), localStorage.getItem('molastria-nav-tools')]), [null, null]);
+
+  // signed out: "登录" opens a panel that leads to sign-in, Pro, the API, the weekly picks and the desktop app
+  assert.equal(await text(p, '#cr-acct'), '登录');
+  await p.click('#cr-acct');
+  assert.ok(await p.locator('#cr-acct-pop').isVisible());
+  const hrefs = await p.$$eval('#cr-acct-pop a', (a) => a.map((x) => new URL(x.href).pathname + new URL(x.href).hash));
+  for (const h of ['/pro/account.html', '/pro/index.html', '/api/index.html', '/digest/index.html', '/download/index.html', '/pro/account.html#vip']) assert.ok(hrefs.includes(h), `panel links ${h}: ${hrefs}`);
+  await p.keyboard.press('Escape');
+  assert.ok(await p.locator('#cr-acct-pop').isHidden());
+  // #vip on the account page opens the card field
+  await go(p, '/pro/account.html#vip');
+  await p.waitForSelector('#card-field:not([hidden])');
+
+  // signed in (Pro): the initial, the plan, this month's allowance, the account page's parts, and signing out from the header
+  await p.evaluate(() => { localStorage.setItem('molastria-session', 'tok'); localStorage.setItem('molastria-account', JSON.stringify({ email: 'ada@example.edu', pro: true, role: 'pro', plan: 'pro_year', cycle: 'year', usage: { period: 'month', asks: 42, limit: 300 } })); sessionStorage.setItem('molastria-account-checked', '1'); });
+  await go(p, '/manual/index.html');
+  assert.equal(await p.getAttribute('#cr-acct', 'data-state'), 'pro');
+  assert.equal(await text(p, '#cr-acct .cr-avatar'), 'A');
+  await p.click('#cr-acct');
+  assert.equal(await text(p, '.cr-ap-mail'), 'ada@example.edu');
+  assert.equal(await text(p, '.cr-ap-plan'), 'Pro');
+  assert.match(await text(p, '.cr-ap-meter'), /42 \/ 300/);
+  const inHrefs = await p.$$eval('#cr-acct-pop a', (a) => a.map((x) => new URL(x.href).pathname + new URL(x.href).hash));
+  for (const h of ['/pro/account.html', '/pro/account.html#keys-card', '/pro/account.html#digest-card', '/pro/account.html#manage', '/download/index.html']) assert.ok(inHrefs.includes(h), `signed-in panel links ${h}`);
+  await p.click('.cr-ap-out');
+  await p.waitForSelector('#cr-acct[data-state=out]');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-session')), null);
+
+  // English and phones: the panel speaks English; on a phone the button sits in the second row and the panel fits the screen
+  await go(p, '/manual/index.html?lang=en');
+  assert.equal(await text(p, '#cr-acct'), 'Sign in');
+  assert.equal(await text(p, '#cr-lang'), '中', 'the language button is not run through the dictionary');
+  const m = await open({ viewport: { width: 390, height: 844 } });
+  await go(m, '/manual/index.html');
+  assert.ok(await m.evaluate(() => document.getElementById('cr-acct').parentElement.matches('.cr-links')));
+  assert.ok(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
+  await m.click('#cr-acct');
+  const box = await m.$eval('#cr-acct-pop', (el) => { const r = el.getBoundingClientRect(); return { l: r.left, r: r.right }; });
+  assert.ok(box.l >= 0 && box.r <= 390, `panel inside the screen: ${box.l}–${box.r}`);
   await finish(m);
   await finish(p);
 });
