@@ -22,7 +22,7 @@ flowchart TB
   PB["Porkbun 域名"] --> DNS["Cloudflare DNS"]
 ```
 
-- **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。关系网的实体与连线在打开页面时由目录快照现算（`hub/net-engine.js`，约 0.1–0.3 秒）；术语表认不出的查询只记在访客浏览器的 `molastria-net-misses`（`hub/net-misses.js`），不发到任何服务器，访客自己决定要不要复制出来或提交 GitHub Issue。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。几个较大的第三方库（RDKit.js、3Dmol.js、Kekule.js、ts-fsrs）不进仓库，第一次用到时从 jsDelivr 按固定版本载入，载不到时页面照常能用；复习卡片的进度只存在浏览器的 `molastria-review`，研习台的 `molastria-learn` 它只读不写。
+- **网站**是静态文件：搜索、关系网、讲解、实验室、Meta 页、雷达、量子化学计算都在访客浏览器里运行。关系网的实体与连线在打开页面时由目录快照现算（`hub/net-engine.js`，约 0.1–0.3 秒）；术语表认不出的查询记在访客浏览器的 `molastria-net-misses`（`hub/net-misses.js`），访客可以复制出来或提交 GitHub Issue；第一次记下一个词时还把这个词匿名报给账号服务一次（`POST /net/miss`，表 `net_misses` 只存词和次数，不存 IP 和账号；访客可以关掉），站长在账号页看全站排行。Meta 页的识图把图片直接发给 Meta（访客自己的 Muse key），UMA 只生成脚本，在访客自己的机器上运行。几个较大的第三方库（RDKit.js、3Dmol.js、Kekule.js、ts-fsrs）不进仓库，第一次用到时从 jsDelivr 按固定版本载入，载不到时页面照常能用；复习卡片的进度只存在浏览器的 `molastria-review`，研习台的 `molastria-learn` 它只读不写。
 - **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选；还把 `/uma/*` 经 Cloudflare Tunnel 转给站长电脑上的在线模型服务（15 个模型：UMA、OMol25 的 eSEN / AllScAIP、MACE、ANI-2x；决定谁能用哪个、限次、地区限制、共享暗号）。同一个队列也开给程序：`/v1/*` 用账号页生成的 API key（D1 的 `api_keys` 表只存哈希），不查来源网站，次数算在 key 的主人头上，MACE 系列不提供。
 - **桌面版**（Tauri）内置同一套网页，多了检查更新和“在本机运行 UMA”：`desktop/src-tauri/src/uma.rs` 找到访客的 Python，用编译进应用的 `uma/runner.py` 计算；页面只传经过校验的参数（SMILES、任务、模型等），日志靠轮询 `uma_poll` 取回。
 - **研习台**（`/learn/`）也完全在浏览器里：页面直接调用访客选的 AI（自己的 key 发往 DeepSeek / Muse / OpenAI 兼容服务，或经账号服务的托管额度），模型只回 JSON，校验后由页面自己画；会话、知识图和改过的提示词只存在 `localStorage`，不经过账号服务。作为依据的栏目数据文件（如 `quantum/physics/qp-data.js`）用到时才加载。
@@ -124,6 +124,7 @@ sequenceDiagram
 | `digest_subs` | 订阅者：邮箱、退订令牌、语言 |
 | `digest_sends` | 哪一期发给了谁，用来分批和续发 |
 | `sync_items` | 云同步：每个账号的学习记录和收藏，一份 localStorage 存档一行（原文照存，带账号内递增的版本号） |
+| `net_misses` | 网状查询里术语表认不出的词：词、报过几次、最近的全文命中数、第一次和最近一次的时间；没有 IP 和账号，最多 3000 行 |
 
 ## 数据和密钥放在哪
 

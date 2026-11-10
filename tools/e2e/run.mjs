@@ -825,7 +825,10 @@ async function openModels(win = '', { health, ...options } = {}) {
   const p = await open(options);
   p.posts = [];
   p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) p.posts.push(JSON.parse(r.postData() || '{}')); });
-  if (health) await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: health(await res.json()) }); });
+  // the page keeps polling the health check; a poll still in flight when the check closes the page is not a failure
+  if (health) await p.route(`${API}/uma/health`, async (route) => {
+    try { const res = await route.fetch(); await route.fulfill({ response: res, json: health(await res.json()) }); } catch (err) { if (!p.isClosed()) throw err; }
+  });
   await go(p, `/models/index.html${win ? `#${win}` : ''}`);
   await p.waitForFunction((re) => new RegExp(re).test(document.getElementById('m-status').textContent), V('在线 · \\d+ 个模型 · Test GPU', '在线 · \\d+ 个模型'), { timeout: 30000 });
   await p.waitForFunction(() => /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
@@ -1507,19 +1510,28 @@ check('network: the searched term is the centre, suggestions complete, clicking 
   await finish(en);
 });
 
-check('network: a word the term table does not know is kept on this device only, can be removed, copied out and turned off', async () => {
+check('network: a word the term table does not know is kept on this device, reported once anonymously, can be removed, copied out and turned off; the admin sees the site-wide list', async () => {
   const p = await open({ permissions: ['clipboard-read', 'clipboard-write'] });
-  const outside = [];
-  p.on('request', (r) => { if (!r.url().startsWith(SITE) && /qwertyzz/i.test(r.url() + (r.postData() || ''))) outside.push(r.url()); });
+  const reports = [], outside = [];
+  const WORDS = /qwertyzz|zzqq|unsharedzz/i;
+  p.on('request', (r) => {
+    if (r.url() === `${API}/net/miss` && r.method() === 'POST') { reports.push({ body: JSON.parse(r.postData()), auth: r.headers().authorization || null }); return; }
+    if (!r.url().startsWith(SITE) && WORDS.test(r.url() + (r.postData() || ''))) outside.push(r.url());
+  });
+  const reported = async (n) => { for (let i = 0; i < 50 && reports.length < n; i++) await p.waitForTimeout(100); return reports.length; };
   await go(p, '/hub/network.html');
   assert.equal(await p.locator('#missActions').isVisible(), false);
   assert.match(await p.innerText('#missList'), /还没有记下的词/);
+  assert.equal(await p.isChecked('#missShare'), true, 'reporting is on by default and says so');
+  assert.match(await p.innerText('#missShareNote'), /匿名报给站长一次/);
   await p.fill('#netQ', 'qwertyzz');
   await p.press('#netQ', 'Enter');
   await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
-  assert.match(await p.innerText('#netFocus'), /已记进这台设备上的“没找到的词”/);
+  assert.equal(await reported(1), 1);
+  assert.deepEqual(reports[0], { body: { q: 'qwertyzz', hits: 0 }, auth: null }, 'only the word and its hit count, no token');
+  assert.match(await p.innerText('#netFocus'), /已记进这台设备上的“没找到的词”，这个词也匿名报给了站长/);
   assert.match(await p.innerText('#missList'), /qwertyzz\s*1 次 · 全文 0 条/);
-  // A known term, and the same word again in this visit, add nothing.
+  // A known term, and the same word again in this visit, add nothing and report nothing.
   await p.fill('#netQ', 'Multiwfn'); await p.press('#netQ', 'Enter');
   await p.waitForFunction(() => window.MolAstriaNetView.current().center?.name === 'Multiwfn');
   await p.goBack();
@@ -1529,6 +1541,7 @@ check('network: a word the term table does not know is kept on this device only,
   // A ?q= link counts once per visit, and the list survives a reload.
   await go(p, '/hub/network.html?q=' + encodeURIComponent('zzqq plasmonic gizmo'));
   await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.equal(await reported(2), 2);
   assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo', 'qwertyzz'], 'same count: the latest first');
   assert.equal(await p.getAttribute('#missList .net-miss-q', 'translate'), 'no');
   const issue = new URL(await p.getAttribute('#missIssue', 'href'));
@@ -1537,26 +1550,53 @@ check('network: a word the term table does not know is kept on this device only,
   await p.click('#missCopy');
   await p.waitForFunction(() => /已复制/.test(document.getElementById('missMsg').textContent));
   assert.match(await p.evaluate(() => navigator.clipboard.readText()), /^qwertyzz\t1 次\t0 条全文命中/m);
-  // Clicking a word searches it again without counting it; × removes it.
+  // Clicking a word searches it again without counting or reporting it; × removes it.
   await p.click('#missList .net-miss-q >> text=qwertyzz');
   await p.waitForFunction(() => window.MolAstriaNetView.current().q === 'qwertyzz');
   assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')).items.find((x) => x.q === 'qwertyzz').n), 1);
   await p.click('[data-miss-x="qwertyzz"]');
   assert.deepEqual(await p.$$eval('#missList .net-miss-q', (b) => b.map((x) => x.textContent)), ['zzqq plasmonic gizmo']);
-  // Turning recording off clears the list and stops it.
+  // Unticking "report" keeps new words on this device only.
+  await p.uncheck('#missShare');
+  await p.fill('#netQ', 'unsharedzz'); await p.press('#netQ', 'Enter');
+  await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
+  assert.match(await p.innerText('#missList'), /unsharedzz/);
+  assert.doesNotMatch(await p.innerText('#netFocus'), /报给了站长/);
+  // Turning recording off clears the list, stops it, and keeps the reporting choice.
   await p.uncheck('#missOn');
   stored = await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-net-misses')));
-  assert.deepEqual(stored, { v: 1, off: true, items: [] });
+  assert.deepEqual(stored, { v: 1, off: true, share: false, items: [] });
+  assert.equal(await p.isDisabled('#missShare'), true);
   await p.fill('#netQ', 'qwertyzz'); await p.press('#netQ', 'Enter');
   await p.waitForFunction(() => window.MolAstriaNetView.current().mode === 'text');
   assert.doesNotMatch(await p.innerText('#netFocus'), /已记进/);
   assert.match(await p.innerText('#missList'), /已关闭/);
-  assert.deepEqual(outside, [], 'the words never leave the page');
+  await p.waitForTimeout(300);
+  assert.deepEqual(reports.map((r) => r.body.q), ['qwertyzz', 'zzqq plasmonic gizmo'], 'one report per new word, none after unticking');
+  assert.deepEqual(outside, [], 'the words go nowhere else');
   await finish(p);
   const phone = await open({ viewport: { width: 390, height: 844 }, init: () => localStorage.setItem('molastria-net-misses', JSON.stringify({ v: 1, items: [{ q: 'a-very-long-unbroken-search-word-that-must-wrap-somewhere', n: 3, hits: 0, first: 1, last: 1 }] })) });
   await go(phone, '/hub/network.html');
   assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll with a long word');
   await finish(phone);
+  // The site owner sees the reported words on the account page and deletes them; other accounts do not see the card.
+  const admin = await open();
+  await go(admin, '/pro/account.html');
+  await signIn(admin, 'owner@example.com');   // admin@example.com's five codes an hour are spent by the other checks
+  await admin.waitForSelector('#misses-list li code');
+  assert.equal(await admin.isVisible('#misses-card'), true);
+  const words = await admin.$$eval('#misses-list li code', (els) => els.map((e) => e.textContent));
+  assert.ok(words.includes('qwertyzz') && words.includes('zzqq plasmonic gizmo') && !words.includes('unsharedzz'), String(words));
+  assert.match(await admin.innerText('#misses-list'), /报过 1 次 · 全文 0 条 · 最近/);
+  await admin.click('[data-miss="qwertyzz"]');
+  await admin.waitForFunction(() => ![...document.querySelectorAll('#misses-list li code')].some((e) => e.textContent === 'qwertyzz'));
+  assert.match(await admin.innerText('#misses-msg'), /已删掉 qwertyzz/);
+  await finish(admin);
+  const reader = await open();
+  await go(reader, '/pro/account.html');
+  await signIn(reader, 'reader@uni.edu');
+  assert.equal(await reader.isVisible('#misses-card'), false);
+  await finish(reader);
 });
 
 check('handbook: the five chapters for categories 12–16 open in both languages and link to the site pages they name', async () => {

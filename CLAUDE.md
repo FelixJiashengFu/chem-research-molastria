@@ -53,9 +53,9 @@ public/               发布目录，推到 main 就上线
   physics-realms/      物理疆界图：pr-data.js 是全部内容（理论、问题、关系与 ħ-c-G 立方体，中英两版），pr.js 手写力导向图（SVG，可拖动缩放、局部图、筛选，#n-<id> 选中节点），tools/realms-test.mjs 查内容完整性；pr-models.js 是双摆演示的数学（RK4、能量、简正模；打开“分析力学”或“混沌”节点时才加载，realms-test 也测它）
   learn/              研习台（AI 家教）：先摸底、画路线、一步一检，练习分开做，学到的命题和推理链存成跨会话的知识图；learn-core.js 是纯逻辑（状态、路线图、评分、知识图、练习选题、模型回答的校验、提示词，tools/learn-test.mjs 测），learn-sources.js 把六个讲解栏目改写成可当依据的章节、外加站内演示白名单（tools/learn-sources-test.mjs 查锚点），learn-graph.js 画路线图、知识图和示意图（SVG，不收模型的 HTML/SVG），learn.js 是界面；走 ai/ai.js 的 ChemAI（访客自己的 key 或托管额度），数据存 localStorage（molastria-learn、molastria-learn-prompts），打开云同步时也同步到账号；#goal=qp:<章> 从站内一章开始，量子物理、数学基础、量子算法、量子计算机、量子生物学、基础科学各章都有入口
   qchem/              游乐场（地址仍是 /qchem/）：三个展区十五个小游戏。01–06（量子化学）在 play.js，物理是纯函数 play-models.js；07–14（量子嘉年华分会场、物理疆界）在 play-quantum.js，数学在 play-quantum-models.js，play.js 把画图和成绩工具经 MOLASTRIA_PLAY_MORE 交给它；15（二维波包画墙，展区二）在 play-wave2d.js，数学在 play-wave2d-models.js（分裂算符解二维薛定谔方程，自己写的 FFT），经 MOLASTRIA_PLAY_WAVE 拿到同样的工具；“量子化学计算器”标签是 iframe 里的 app/（从 qchem-web 复制来的，不要手改）。#play-… 打开游戏，#lab 打开计算器，其他 #… 原样交给计算器
-  hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）；net-misses.js 是“没找到的词”的纯逻辑（术语表认不出的查询只记在本机 molastria-net-misses，可复制、预填 GitHub Issue、删除、关闭，不发服务器）
+  hub/network.*, net-engine.js   网状查询：net-engine.js 由目录、讲解手册和 search-terms.js 现算实体与关系（无 DOM，tools/net-test.mjs 测）；net-misses.js 是“没找到的词”的纯逻辑（术语表认不出的查询记在本机 molastria-net-misses，可复制、预填 GitHub Issue、删除、关闭；第一次记下一个词时匿名报给账号服务 /net/miss 一次，可以关掉，站长在账号页看排行；判断哪些词不记的规则在 deploy/account-worker.js 的 missWorth 里有一份一样的，tools/net-test.mjs 核对两边一致）
   hub/data.*, merged-data.*   目录快照
-deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录、每 15 分钟一次的在线率探测和云同步 /sync）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
+deploy/               账号服务：account-worker.js（含给程序用的计算接口 /v1、API key、用量记录、每 15 分钟一次的在线率探测、云同步 /sync 和网状查询没找到的词 /net/miss）、digest.js（每周精选）、schema.sql、wrangler.toml（Cloudflare Worker + D1）
 desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 在每次构建前把 public/ 复制到 desktop/web/（不进 git），去掉 App 里用不到的 watch/ 视频；src/uma.rs + uma/runner.py 是“在本机运行 UMA”；src/save.rs 让页面里的下载走系统保存窗口；src/notify.rs 把页面的通知（预印本雷达）转成系统通知；Mac 上 window.print() 改走 print_page 命令（WKWebView 自己不打印）
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
@@ -167,6 +167,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **MathLive 的输入框：** 点一下之后约 60 ms 才把焦点移进去，浏览器测试里点完要等一下再打字（或者直接给 `math-field` 的 `value` 赋值再点“检查”）；数学子模块和量子物理页读到地址里的 `#…` 后也要过 60 ms 才滚动，测试先等 300 ms 再自己滚到题块。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。
+- **只发不读的 fetch：** 页面发出请求后不读响应体的话，Chromium 一直把这个请求挂着，Playwright 的 `networkidle` 永远等不到（网状查询上报没找到的词时遇到过）。就算用不到结果，也要 `.then((r) => r.text())` 读掉。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。
 - **云端会话连不上 YouTube 和哔哩哔哩：** 教学视频的搜索和核对（`tools/video-search.mjs`）要在站长电脑或 GitHub Actions 上跑，做法见 RUNBOOK“教学视频”。哔哩哔哩对 GitHub 的服务器可以用（搜索要 wbi 签名和 buvid3 cookie），频繁请求会返回 -412，脚本遇到连续限流就停。
 - **桌面版不能用 `panic = "abort"`：** wry 在 Mac 上靠 `objc2::exception::catch` 接住 WKURLSchemeTask 的 Objective-C 异常（请求已被 WebKit 停掉时会抛），abort 模式下接不住，整个应用 SIGABRT 闪退（0.1.19 的崩溃，`docs/DECISIONS.md` 2026-11-08）。

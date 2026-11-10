@@ -8,7 +8,7 @@
   const PAY = window.MOLASTRIA_PAY || {};
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const date = (s) => new Date(s * 1000).toLocaleDateString(en() ? 'en-CA' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null, keyUse = null;
+  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, missesLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null, keyUse = null;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
   // Pro that comes from a VIP card or the admin grant rather than a Stripe subscription
@@ -77,6 +77,8 @@
     if (!digestAsked) { digestAsked = true; loadDigest(); }
     if (!keysAsked) { keysAsked = true; loadKeys(); }
     if (a.admin && !cardsLoaded) { cardsLoaded = true; loadCards(); }
+    $('misses-card').hidden = !a.admin;
+    if (a.admin && !missesLoaded) { missesLoaded = true; loadMisses(); }
 
     $('team-card').hidden = a.role !== 'owner';
     if (a.role === 'owner') {
@@ -340,6 +342,35 @@
     const c = cardRows.find((x) => x.code === code);
     if (!confirm(c?.redeemed_by ? T(`收回 ${code}？${c.redeemed_by} 会立即失去这张卡带来的 Pro 时长。`) : T(`收回 ${code}？收回后这张卡不能再兑换。`))) return;
     try { renderCards((await A.revokeCard(code)).cards); say(cmsg, T(`已收回 ${code}。`), 'ok'); } catch (err) { say(cmsg, err.message, 'err'); }
+  });
+
+  // ── words the Network view did not know, across the site (admin) ──────
+  const missMsg = $('misses-msg');
+  let missRows = [];
+  function renderMisses(r) {
+    missRows = r.words;
+    $('misses-total').textContent = r.total ? T(`共 ${r.total} 个词`) + (r.total > r.words.length ? T(`，这里列出报得最多的 ${r.words.length} 个`) : '') : '';
+    $('misses-copy').disabled = $('misses-clear').disabled = !r.words.length;
+    $('misses-list').innerHTML = r.words.length ? r.words.map((w) =>
+      `<li><code translate="no">${esc(w.q)}</code><span class="acct-cardbtns"><button type="button" class="acct-remove" data-miss="${esc(w.q)}">${T('删掉')}</button></span>` +
+      `<small>${T(`报过 ${w.n} 次 · 全文 ${w.hits} 条 · 最近 ${date(w.last)}`)}</small></li>`).join('')
+      : `<li class="acct-empty">${T('还没有访客报上来的词。')}</li>`;
+  }
+  // Before the account service with /admin/net-misses is deployed the page already ships, so a 404 is not an error.
+  function loadMisses() { A.netMisses().then(renderMisses).catch((err) => say(missMsg, err.status === 404 ? T('账号服务还没更新，部署之后这里会列出全站没找到的词。') : err.message, err.status === 404 ? '' : 'err')); }
+  $('misses-list').addEventListener('click', async (e) => {
+    const q = e.target.closest('[data-miss]')?.dataset.miss;
+    if (!q) return;
+    try { renderMisses(await A.dropNetMiss(q)); say(missMsg, T(`已删掉 ${q}。`), 'ok'); } catch (err) { say(missMsg, err.message, 'err'); }
+  });
+  $('misses-copy').addEventListener('click', async () => {
+    const text = missRows.map((w) => `${w.q}\t${w.n}\t${w.hits}`).join('\n');
+    try { await navigator.clipboard.writeText(text); say(missMsg, T('已复制：每行是词、报过的次数、全文命中数。'), 'ok'); }
+    catch { prompt(T('复制下面的列表：'), text); }
+  });
+  $('misses-clear').addEventListener('click', async () => {
+    if (!confirm(T('删掉全部报上来的词？删掉后不能恢复。'))) return;
+    try { renderMisses(await A.clearNetMisses()); say(missMsg, T('已全部删掉。'), 'ok'); } catch (err) { say(missMsg, err.message, 'err'); }
   });
 
   // ── cloud sync (../sync/sync.js) ──────────────────────────────────────

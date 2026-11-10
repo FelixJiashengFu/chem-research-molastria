@@ -109,7 +109,7 @@ test('没找到的词：讲解手册新章节的术语现在都能认出来', ()
 
 test('没找到的词：记录、计数、排序、上限和删除', () => {
   let s = M.parse(null);
-  assert.deepEqual(s, { v: 1, off: false, items: [] });
+  assert.deepEqual(s, { v: 1, off: false, share: true, items: [] });
   const miss = net.query('qwertyzz');
   s = M.record(s, '  qwertyzz ', miss, 1000);
   s = M.record(s, 'QWERTYZZ', miss, 2000);
@@ -136,7 +136,7 @@ test('没找到的词：网址、邮箱、长串数字、太短太长的输入�
   assert.equal(M.record(M.parse(null), 'ωB97X-D3', miss).items.length, 1, '带数字的方法名照常记');
   let s = M.record(M.parse(null), 'qwertyzz', miss);
   s = M.setOff(s, true);
-  assert.deepEqual(s, { v: 1, off: true, items: [] });
+  assert.deepEqual(s, { v: 1, off: true, share: true, items: [] });
   assert.deepEqual(M.record(s, 'qwertyzz', miss).items, [], '关着时不记');
   assert.equal(M.setOff(s, false).off, false);
 });
@@ -145,6 +145,7 @@ test('没找到的词：坏数据当成空的；复制文本和 GitHub Issue 地
   for (const raw of ['{', 'null', '[]', '"x"', JSON.stringify({ items: [{ q: 3 }, null, { q: '  ' }] })]) assert.deepEqual(M.parse(raw).items, [], raw);
   const s = M.parse(JSON.stringify({ off: 'yes', items: [{ q: 'qwertyzz', n: '3', hits: -2, first: 5 }, { q: 'QWERTYZZ', n: 9 }, { q: 'Jensen', n: 1, hits: 90, last: 9 }] }));
   assert.equal(s.off, false, '只有 true 才算关掉');
+  assert.equal(s.share, true, '只有 false 才算不报');
   assert.deepEqual(s.items, [{ q: 'qwertyzz', n: 3, hits: 0, first: 5, last: 5 }, { q: 'Jensen', n: 1, hits: 90, first: 0, last: 9 }], '重复的词只留第一个');
   assert.equal(M.toText(s), 'qwertyzz\t3 次\t0 条全文命中\nJensen\t1 次\t90 条全文命中');
   const { url, included, total } = M.issueUrl(s);
@@ -157,4 +158,31 @@ test('没找到的词：坏数据当成空的；复制文本和 GitHub Issue 地
   for (let i = 0; i < 100; i++) many = M.record(many, `长长的没有命中的查询词第${i}个`, net.query('qwertyzz'), i);
   const cut = M.issueUrl(many, { limit: 2000 });
   assert.ok(cut.url.length <= 2000 && cut.included < cut.total && cut.included > 0, '地址太长时只放一部分');
+});
+
+test('没找到的词：每个浏览器每个词只匿名报一次，只发这个词；关掉上报或记录就不报', () => {
+  const miss = net.query('Jensen');
+  let s = M.parse(null);
+  assert.deepEqual(M.reportOf(s, '  Jensen ', miss), { q: 'Jensen', hits: miss.primary.length }, '只有词和全文命中数');
+  s = M.record(s, 'Jensen', miss);
+  assert.equal(M.reportOf(s, 'JENSEN', miss), null, '列表里已经有了，不再报');
+  assert.equal(M.reportOf(M.parse(null), 'Multiwfn', net.query('Multiwfn')), null, '术语表认得的不报');
+  for (const q of ['x', 'someone@example.org', '13912345678', 'https://example.org']) assert.equal(M.reportOf(M.parse(null), q, net.query('qwertyzz')), null, q);
+  const quiet = M.setShare(M.parse(null), false);
+  assert.deepEqual(quiet, { v: 1, off: false, share: false, items: [] });
+  assert.equal(M.reportOf(quiet, 'qwertyzz', net.query('qwertyzz')), null, '取消了“匿名报给站长”');
+  assert.equal(M.record(quiet, 'qwertyzz', net.query('qwertyzz')).items.length, 1, '本机照样记');
+  assert.equal(M.setOff(quiet, true).share, false, '关掉记录时保留上报的选择');
+  assert.equal(M.reportOf(M.setOff(M.parse(null), true), 'qwertyzz', net.query('qwertyzz')), null, '记录关着时也不报');
+  assert.equal(M.parse(JSON.stringify({ v: 1, share: false, items: [] })).share, false);
+  assert.equal(M.parse(JSON.stringify({ v: 1, off: false, items: [] })).share, true, '旧存档默认上报');
+});
+
+test('没找到的词：浏览器和账号服务用同一套规则判断哪些词不记', () => {
+  const src = readFileSync(new URL('../deploy/account-worker.js', import.meta.url), 'utf8');
+  const body = src.slice(src.indexOf('function missWorth('), src.indexOf('async function missList('));
+  const worth = new Function(`const MISS_LEN = 60; const missText = (q) => String(q ?? '').replace(/\\s+/g, ' ').trim(); ${body}; return missWorth;`)();
+  for (const q of ['x', 'ab', 'qwertyzz', 'ωB97X-D3', 'https://example.org/a', 'www.example.org', 'someone@example.org', '10.1021/acs', 'a\\b', '7732-18-5', '13912345678', '1391 2345 678', 'a'.repeat(60), 'a'.repeat(61), '平面', '平']) {
+    assert.equal(worth(q), M.worthKeeping(q), q);
+  }
 });

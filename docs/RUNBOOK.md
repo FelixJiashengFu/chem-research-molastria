@@ -121,9 +121,13 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 
 ## 网状查询没找到的词
 
-网状查询把术语表认不出、只能做全文检索的词记在用户自己的浏览器里（`molastria-net-misses`，逻辑在 `public/hub/net-misses.js`，页面上的“没找到的词”）。不会自动汇总到服务器。
+网状查询把术语表认不出、只能做全文检索的词记在用户自己的浏览器里（`molastria-net-misses`，逻辑在 `public/hub/net-misses.js`，页面上的“没找到的词”）。第一次记下一个词时，浏览器把这个词和全文命中数匿名报给账号服务一次（`POST /net/miss`，表 `net_misses`；访客取消“匿名报给站长”就不报）。服务端只存词、次数和时间，不存 IP 和账号；全站共用一个每小时上限 `NET_MISS_HOURLY`（默认 300，设成 `"0"` 就停收），最多留 3000 个词。
 
-- **站长自己看：** 在常用的浏览器里打开网状查询，往下翻到“没找到的词”，查得多的在前。
+- **第一次上线（站长在自己电脑上）：** 拉下最新的 main，在 `deploy` 文件夹里依次运行 `npm.cmd ci`、`npx.cmd wrangler d1 execute molastria --remote --file schema.sql`（建 `net_misses` 表，可重复执行）、`npx.cmd wrangler deploy`。之前网站已经上线也没关系：账号服务没更新时访客报的词会被丢掉，页面不报错，账号页那一栏会说“账号服务还没更新”。
+- **站长看全站排行：** 用站长的邮箱登录账号页，“全站没找到的词”一栏按报过的次数排（大致是多少个浏览器查过），可以复制、删一个或全部删掉。命令行：`npx.cmd wrangler d1 execute molastria --remote --command "SELECT shown, n, hits FROM net_misses ORDER BY n DESC LIMIT 50"`（没有邮箱，可以贴出来）。
+- **补进术语表之后：** 在账号页把那些词删掉；还留着也不要紧，访客那边认出来了就不会再报。
+- **改“哪些词不记”的规则：** 浏览器 `net-misses.js` 的 `worthKeeping` 和账号服务的 `missWorth` 要一起改（`tools/net-test.mjs` 会对照两边），再改隐私页“网状查询里没找到的词”一节。
+- **站长自己这台设备：** 网状查询往下翻到“没找到的词”，查得多的在前。
 - **有人提交了 Issue：** 题目是“网状查询：术语表里没有的词”。挑出真正的术语（不是拼错的、不是整句话），在 `public/search-terms.js` 里加一组或加进已有的组：一组只放互为同义的写法，至少一个中文、一个英文（复习卡片要用），4 个字母以内的英文缩写会按整词匹配。加完跑 `node --test tools/net-test.mjs tools/review-test.mjs`，再 `node tools/build-api.mjs`（开放数据接口的术语表跟着变）。
 - **试一个词现在认不认得：** `node -e` 里照 `tools/net-test.mjs` 开头的写法建网，看 `net.query('词').mode` 是不是 `entity`。
 

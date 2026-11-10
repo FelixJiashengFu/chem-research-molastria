@@ -1,7 +1,9 @@
 /* 网状查询的“没找到的词”：术语表（search-terms.js）认不出、只能做全文检索的查询，记在这台设备的 localStorage
-   （molastria-net-misses），用来补术语表。不发到任何服务器；用户自己决定是否复制出来或提交到 GitHub Issues。
-   这里只有纯函数（没有 DOM，tools/net-test.mjs 测），读写和面板在 network.js。
-   存的格式：{ v: 1, off: false, items: [{ q, n, hits, first, last }] }，n 是查过几次，hits 是全文检索命中几条。 */
+   （molastria-net-misses），用来补术语表。列表只在本机；用户自己决定是否复制出来或提交到 GitHub Issues。
+   第一次记下一个词时，network.js 还会把这个词（和全文命中数）匿名报给账号服务一次（POST /net/miss），站长在账号页看全站排行；
+   share 为 false 时不报。服务端用同一套 worthKeeping 规则（deploy/account-worker.js 的 missWorth），两边改要一起改。
+   这里只有纯函数（没有 DOM，tools/net-test.mjs 测），读写、上报和面板在 network.js。
+   存的格式：{ v: 1, off: false, share: true, items: [{ q, n, hits, first, last }] }，n 是查过几次，hits 是全文检索命中几条。 */
 (() => {
   'use strict';
   const KEY = 'molastria-net-misses';
@@ -11,7 +13,7 @@
 
   const clean = (q) => String(q ?? '').replace(/\s+/g, ' ').trim();
   const keyOf = (q) => clean(q).normalize('NFKC').toLowerCase();
-  const empty = (off = false) => ({ v: 1, off, items: [] });
+  const empty = (off = false, share = true) => ({ v: 1, off, share, items: [] });
 
   // 读回存着的值；坏数据、旧格式一律当成空的，不报错
   function parse(raw) {
@@ -21,7 +23,7 @@
     const items = (Array.isArray(o.items) ? o.items : []).filter((x) => x && typeof x.q === 'string' && clean(x.q))
       .map((x) => ({ q: clean(x.q).slice(0, MAXLEN), n: Math.max(1, Math.floor(+x.n) || 1), hits: Math.max(0, Math.floor(+x.hits) || 0), first: +x.first || 0, last: +x.last || +x.first || 0 }));
     const seen = new Set();
-    return { v: 1, off: o.off === true, items: items.filter((x) => !seen.has(keyOf(x.q)) && seen.add(keyOf(x.q))).slice(0, MAX) };
+    return { v: 1, off: o.off === true, share: o.share !== false, items: items.filter((x) => !seen.has(keyOf(x.q)) && seen.add(keyOf(x.q))).slice(0, MAX) };
   }
 
   // 这个查询算不算“没找到”：术语表认不出（全文检索模式）。返回 null 表示不算，否则返回命中条数。
@@ -54,8 +56,19 @@
 
   const remove = (store, q) => { const s = parse(store); return { ...s, items: s.items.filter((x) => keyOf(x.q) !== keyOf(q)) }; };
   const clear = (store) => ({ ...parse(store), items: [] });
-  // 关掉记录时把已有的也清掉；再打开从空的开始
-  const setOff = (store, off) => empty(!!off);
+  // 关掉记录时把已有的也清掉；再打开从空的开始。“匿名报给站长”的选择保留
+  const setOff = (store, off) => empty(!!off, parse(store).share);
+  const setShare = (store, share) => ({ ...parse(store), share: !!share });
+
+  // 这次要不要报给站长：在记录之前调用。记录开着、上报开着、这个词值得记、而且列表里还没有它（每个浏览器每个词只报一次），
+  // 返回要发的内容 { q, hits }，否则 null。只发这个词本身，不带别的搜索。
+  function reportOf(store, q, result) {
+    const s = parse(store);
+    const miss = missOf(result);
+    if (s.off || !s.share || !miss || !worthKeeping(q)) return null;
+    if (s.items.some((x) => keyOf(x.q) === keyOf(q))) return null;
+    return { q: clean(q), hits: miss.hits };
+  }
 
   // 列表的排序：查得多的在前，次数一样时最近查的在前
   const ranked = (store) => [...parse(store).items].sort((a, b) => b.n - a.n || b.last - a.last);
@@ -82,5 +95,5 @@
     return { url: build(n), included: Math.min(n, list.length), total: list.length };
   }
 
-  window.MolAstriaNetMisses = { KEY, MAX, MAXLEN, parse, missOf, worthKeeping, record, remove, clear, setOff, ranked, toText, issueUrl, keyOf };
+  window.MolAstriaNetMisses = { KEY, MAX, MAXLEN, parse, missOf, worthKeeping, record, remove, clear, setOff, setShare, reportOf, ranked, toText, issueUrl, keyOf };
 })();

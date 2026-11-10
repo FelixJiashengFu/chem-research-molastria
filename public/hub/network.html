@@ -103,9 +103,13 @@
   <section id="misses" class="section panel net-misses" aria-labelledby="missesTitle">
     <div class="net-misses-head">
       <h2 id="missesTitle">没找到的词</h2>
-      <label class="net-misses-toggle"><input id="missOn" type="checkbox" checked> 记下术语表认不出的词</label>
+      <span class="net-misses-toggles">
+        <label class="net-misses-toggle"><input id="missOn" type="checkbox" checked> 记下术语表认不出的词</label>
+        <label class="net-misses-toggle"><input id="missShare" type="checkbox" checked> 匿名报给站长</label>
+      </span>
     </div>
-    <p class="small muted">术语表认不出、只能按全文检索的词会记在这里，帮我们补术语表。它们<strong>只存在这台设备的浏览器里</strong>，不会发到任何服务器。想帮忙的话，可以复制出来，或者到 GitHub 提一个 Issue：页面会预先填好这些词，你看过全文再决定提不提交。点一个词再查一次，点 × 删掉它。</p>
+    <p class="small muted">术语表认不出、只能按全文检索的词会记在这里，帮我们补术语表。列表只存在这台设备的浏览器里。点一个词再查一次，点 × 删掉它；也可以复制列表，或者到 GitHub 提一个 Issue（页面会预先填好这些词，你看过全文再决定提不提交）。</p>
+    <p class="small muted" id="missShareNote">新记下一个词时，会把这个词匿名报给站长一次，用来看全站哪些词最常搜不到。只发这个词和全文命中数，不带账号和你的其他搜索，服务器也不存 IP。不想报就取消上面的“匿名报给站长”。 <a href="../pro/privacy.html#net-misses">隐私政策里的说明</a></p>
     <div id="missList" class="net-misses-list"></div>
     <div id="missActions" class="net-misses-actions">
       <button id="missCopy" class="btn ghost small-btn" type="button">复制列表</button>
@@ -141,6 +145,7 @@
 <script src="../merged-data.js"></script>
 <script src="../atlas/content.js"></script>
 <script src="net-engine.js"></script>
+<script src="../pay/config.js"></script>
 <script src="net-misses.js"></script>
 <script src="network.js"></script>
 </body>
