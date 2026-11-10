@@ -667,10 +667,10 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}</div>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}</div>`;
       const foot = `<p class="muted small">${x.r.seconds ?? '?'} 秒 · 机器学习势的预测，不是 DFT 计算${x.r.direct_forces ? ' · 直接受力型模型：力不是能量的导数，频率由受力差分得到' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
-      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}${foot}</div>`;
+      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
     });
     box.innerHTML = html;
   }
@@ -685,6 +685,11 @@
     }
     if (!x?.view) return;
     if (b.dataset.act === 'csv') copy(x.view.csv);
+    if (b.dataset.act === '3d') { // the structure the job returned, every frame of it (conformers, spin states)
+      const box = b.closest('.md-res').querySelector('.md-3d'), open = box.hidden;
+      box.hidden = !open; b.setAttribute('aria-expanded', String(open));
+      if (open && !box.dataset.ready && window.MolAstriaMol3D) window.MolAstriaMol3D.mount(box, { xyz: x.view.xyz, name: stem, label: `${MODELS[x.model]?.name || ''} 算出的结构` }).catch(() => { /* the box says why */ });
+    }
     if (b.dataset.act === 'xyz') save(`${stem}.xyz`, x.view.xyz, 'chemical/x-xyz');
     if (b.dataset.act === 'conf-xyz') save(`${stem}_${Number(b.dataset.k) + 1}.xyz`, x.r.conformers[Number(b.dataset.k)].xyz || '', 'chemical/x-xyz');
     if (b.dataset.act === 'lab') { // the AI Lab reads UMA-S adiabatic IP / EA columns, the same hand-off as the Meta page used
@@ -726,9 +731,19 @@
     for (const j of ['scan', 'bde', 'pa']) if (S.values[j]) delete S.values[j][j === 'scan' ? 'atoms' : j === 'bde' ? 'bond' : 'site'];
     sync();
   }
-  let typing = 0;
+  let typing = 0, shownXyz = '';
+  /** A "preview in 3D" button under the XYZ box, reset whenever the structure changes. */
+  function xyz3d() {
+    const el = $('m-xyz-3d');
+    if (!el || !window.MolAstriaMol3D) return;
+    const ok = S.mode === 'xyz' && xyz && !xyz.error;
+    if (!ok) { el.innerHTML = ''; shownXyz = ''; delete el.dataset.ready; return; }
+    if (xyz.text === shownXyz) return;
+    shownXyz = xyz.text; delete el.dataset.ready;
+    window.MolAstriaMol3D.button(el, { xyz: xyz.text, name: 'input', label: '输入的结构' }, '预览 3D 结构');
+  }
   $('m-smiles').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(onSmiles, 250); });
-  $('m-xyz').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(() => { xyz = parseXyz($('m-xyz').value); sync(); }, 250); });
+  $('m-xyz').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(() => { xyz = parseXyz($('m-xyz').value); sync(); xyz3d(); }, 250); });
   $('m-xyz-file').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     e.target.value = '';
@@ -737,9 +752,10 @@
     $('m-xyz').value = await file.text();
     xyz = parseXyz($('m-xyz').value);
     sync();
+    xyz3d();
   });
-  $('m-xyz-sample').addEventListener('click', () => { $('m-xyz').value = '3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n'; xyz = parseXyz($('m-xyz').value); sync(); });
-  for (const r of document.querySelectorAll('input[name=m-mode]')) r.addEventListener('change', () => { S.mode = r.value; if (S.mode === 'xyz') xyz = parseXyz($('m-xyz').value); sync(); });
+  $('m-xyz-sample').addEventListener('click', () => { $('m-xyz').value = '3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n'; xyz = parseXyz($('m-xyz').value); sync(); xyz3d(); });
+  for (const r of document.querySelectorAll('input[name=m-mode]')) r.addEventListener('change', () => { S.mode = r.value; if (S.mode === 'xyz') xyz = parseXyz($('m-xyz').value); sync(); xyz3d(); });
   $('m-charge').addEventListener('input', () => { if (mol) $('m-spin').value = Math.min(4, defaultSpin(mol, charge())); sync(); });
   $('m-spin').addEventListener('input', sync);
   $('m-model').addEventListener('change', sync);

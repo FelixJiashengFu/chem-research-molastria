@@ -35,3 +35,15 @@
 /* 面包屑：量子嘉年华 / 量子生物学 */
 .qb-crumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px;color:var(--muted);margin:0 0 14px}
 .qb-crumbs a{color:var(--accent-text)}
+
+/* 结构馆 */
+.qb-struct-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 14px 0; }
+.qb-struct-btn { display: grid; gap: 3px; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; font-size: 13px; line-height: 1.45; }
+.qb-struct-btn b { font-family: var(--font-mono); font-size: 12px; color: var(--accent-text); }
+.qb-struct-btn:hover { border-color: var(--line-strong); }
+.qb-struct-btn[aria-pressed=true] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.qb-struct-sec { font-size: 11.5px; color: var(--muted); }
+.qb-struct-body { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.qb-struct-3d { --m3-h: 400px; min-height: 120px; margin: 0; }
+.qb-struct-text h3 { margin: 0 0 8px; font-size: 17px; }
+@media (max-width: 760px) { .qb-struct-body { grid-template-columns: 1fr; } .qb-struct-3d { --m3-h: 300px; } }
