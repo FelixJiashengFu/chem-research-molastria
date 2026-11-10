@@ -50,6 +50,14 @@
       ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],
     ] },
   ];
+  // Each person's own order of the five groups and of the buttons on the right (dragged in the header, saved per browser).
+  // Unknown or missing ids fall back to the default order, so a new group or button simply appears at its usual place.
+  const GORDER = 'molastria-nav-groups', TORDER = 'molastria-nav-tools';
+  const readOrder = (k) => { try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return Array.isArray(v) ? v.map(String) : []; } catch { return []; } };
+  const ordered = (ids, saved) => [...saved.filter((id, i) => ids.includes(id) && saved.indexOf(id) === i), ...ids.filter((id) => !saved.includes(id))];
+  const writeOrder = (k, ids, def) => { try { if (ids.join() === def.join()) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(ids)); } catch { /* private mode */ } };
+  const GROUP_IDS = GROUPS.map((g) => g.id);
+  { const o = ordered(GROUP_IDS, readOrder(GORDER)); GROUPS.sort((a, b) => o.indexOf(a.id) - o.indexOf(b.id)); }
   const ITEMS = GROUPS.flatMap((g) => g.items.map(([id, path, zh, e, dz, de, fresh, kw, subs]) => ({ id, path, zh, en: e, dz, de, fresh, kw, subs: subs || [], group: g.id })));
   const byId = new Map(ITEMS.map((x) => [x.id, x]));
   const name = (x) => (en ? x.en : x.zh);
@@ -71,6 +79,7 @@
   const chevron = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
   const lens = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
   const grid4 = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>';
+  const person = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.9 4.1-5.8 7.5-5.8s6.3 1.9 7.5 5.8"/></svg>';
   const pinIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3-1-6Z"/><path d="M12 16v4.5"/></svg>';
   // one small line drawing per group, shown in the menu rail and on the narrow-screen sections
   const GLYPH = {
@@ -83,7 +92,20 @@
 
   // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
   const readAccount = () => { try { return localStorage.getItem('molastria-session') ? JSON.parse(localStorage.getItem('molastria-account') || 'null') : null; } catch { return null; } };
-  const proHref = () => link(readAccount()?.pro ? 'pro/account.html' : 'pro/index.html');
+
+  // The buttons on the right, by id; drawn in each person's saved order. The account button replaces the old "Pro" pill: it
+  // reads "登录 / Sign in" until someone signs in, then shows their initial; it opens a small glass panel (see "Account" below).
+  const TOOLS = {
+    jump: `<button class="cr-icon-btn cr-jump" type="button" id="cr-jump" data-tool="jump" aria-label="${L('搜索栏目', 'Search sections')}" title="${L('搜索栏目（Ctrl / ⌘ + K）', 'Search sections (Ctrl / ⌘ + K)')}" aria-haspopup="dialog" aria-controls="cr-mega">${lens}</button>`,
+    acct: `<button class="cr-acct" type="button" id="cr-acct" data-tool="acct" aria-haspopup="dialog" aria-expanded="false" aria-controls="cr-acct-pop"></button>`,
+    lang: `<button class="cr-icon-btn cr-lang" type="button" id="cr-lang" data-tool="lang" translate="no" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}">${en ? '中' : 'EN'}</button>`,
+    disp: `<button class="cr-icon-btn" type="button" id="cr-disp" data-tool="disp" translate="no" aria-label="${en ? 'Display: scale, text size and typeface' : '显示设置：缩放、字号与字体'}" title="${en ? 'Display' : '显示设置'}" aria-haspopup="dialog" aria-expanded="false">${textSize}</button>`,
+    bg: `<button class="cr-icon-btn" type="button" id="cr-bg" data-tool="bg" aria-label="${L('更换背景', 'Change background')}" title="${L('更换背景', 'Change background')}" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`,
+    theme: `<button class="cr-icon-btn" type="button" id="cr-theme" data-tool="theme" aria-label="${L('切换浅色 / 深色', 'Toggle light / dark')}" title="${L('切换浅色 / 深色', 'Toggle light / dark')}">${moon}${sun}</button>`,
+    ai: `<button class="cr-ai-btn" type="button" id="cr-ai" data-tool="ai" aria-haspopup="dialog">${spark}<span class="cr-label">${L('AI 助手', 'AI assistant')}</span><span class="cr-dot" aria-hidden="true"></span></button>`,
+  };
+  const TOOL_IDS = Object.keys(TOOLS);
+  const toolOrder = ordered(TOOL_IDS, readOrder(TORDER));
 
   const nav = document.createElement('header');
   nav.className = 'cr-header';
@@ -95,24 +117,21 @@
   nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
     + `<nav class="cr-links" aria-label="${L('全站导航', 'Site navigation')}" translate="no">`
     + `<button class="cr-menu-btn" type="button" aria-expanded="false" aria-controls="cr-mega" hidden>${grid4}<span>${L('栏目', 'Sections')}</span><b class="cr-where"></b></button>`
-    + GROUPS.map((g) => `<button class="cr-grp-btn" type="button" data-group="${g.id}" aria-expanded="false" aria-controls="cr-mega">${en ? g.en : g.zh}${chevron}</button>`).join('')
-    + `<span class="cr-pins">${pins.map((id) => pinA(byId.get(id))).join('')}</span>`
-    + `<a class="cr-pro-link" href="${proHref()}" data-id="pro">Pro</a></nav>`
+    + `<span class="cr-grps">${GROUPS.map((g) => `<button class="cr-grp-btn" type="button" data-group="${g.id}" aria-expanded="false" aria-controls="cr-mega">${en ? g.en : g.zh}${chevron}</button>`).join('')}</span>`
+    + `<span class="cr-pins">${pins.map((id) => pinA(byId.get(id))).join('')}</span></nav>`
     + `<div class="cr-mega" id="cr-mega" hidden translate="no" role="dialog" aria-label="${L('全部栏目', 'All sections')}">`
     + `<div class="cr-mega-head"><label class="cr-find">${lens}<span class="cr-sr">${L('搜索栏目', 'Search sections')}</span><input type="text" role="searchbox" inputmode="search" placeholder="${L('搜索栏目，比如“量子”“AlphaFold”“Python”', 'Search sections, e.g. “quantum”, “AlphaFold”, “Python”')}" autocomplete="off" spellcheck="false" enterkeyhint="go"></label><kbd class="cr-kbd"${['search', 'atlas'].includes(section) ? ' hidden' : ''}>${/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'} K</kbd><button type="button" class="cr-mega-x" aria-label="${L('关闭', 'Close')}">×</button></div>`
     + `<div class="cr-mega-pins" hidden><b>${L('常用', 'Pinned')}</b><span></span><button type="button" class="cr-pins-edit">${L('整理', 'Arrange')}</button></div>`
     + `<div class="cr-mega-body"><div class="cr-rail" role="tablist" aria-label="${L('分组', 'Groups')}">${GROUPS.map((g) => `<button type="button" role="tab" data-rail="${g.id}" aria-selected="false"><i class="cr-glyph">${GLYPH[g.id]}</i><span><b>${en ? g.en : g.zh}</b><small>${L(...g.hint)}</small></span></button>`).join('')}</div>`
     + `<div class="cr-sections">${GROUPS.map((g) => `<section class="cr-sec" data-group="${g.id}" aria-label="${en ? g.en : g.zh}"><h3><i class="cr-glyph">${GLYPH[g.id]}</i>${en ? g.en : g.zh}<small>${L(...g.hint)}</small></h3><div class="cr-cells">${ITEMS.filter((x) => x.group === g.id).map(cell).join('')}</div></section>`).join('')}`
     + `<p class="cr-none" hidden>${L('没有找到这个栏目。可以换个说法，或者到“统一搜索”里搜资源。', 'No section matches. Try other words, or search resources in Search.')}</p></div></div>`
-    + `<div class="cr-mega-foot"><small>${L('点栏目旁边的图钉把它固定到顶栏；方向键选择，回车打开，Esc 关闭', 'Pin a section to the header with its pin; arrows to move, Enter to open, Esc to close')}</small><a class="cr-mega-pro" href="${proHref()}">Pro</a></div></div>`
-    + `<div class="cr-tools"><button class="cr-icon-btn cr-jump" type="button" id="cr-jump" aria-label="${L('搜索栏目', 'Search sections')}" title="${L('搜索栏目（Ctrl / ⌘ + K）', 'Search sections (Ctrl / ⌘ + K)')}" aria-haspopup="dialog" aria-controls="cr-mega">${lens}</button><a class="cr-pro" href="${proHref()}" title="${readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载'}"><span>Pro</span></a><button class="cr-icon-btn cr-lang" type="button" id="cr-lang" lang="${en ? 'zh-CN' : 'en'}" aria-label="${en ? '切换到中文' : 'Switch to English'}" title="${en ? '切换到中文' : 'Switch to English'}" translate="no">${en ? '中' : 'EN'}</button>`
-    + `<button class="cr-icon-btn" type="button" id="cr-disp" aria-label="${en ? 'Display: scale, text size and typeface' : '显示设置：缩放、字号与字体'}" title="${en ? 'Display' : '显示设置'}" aria-haspopup="dialog" aria-expanded="false" translate="no">${textSize}</button>`
-    + `<button class="cr-icon-btn" type="button" id="cr-bg" aria-label="更换背景" title="更换背景" aria-haspopup="dialog" aria-expanded="false">${palette}</button>`
-    + `<button class="cr-icon-btn" type="button" id="cr-theme" aria-label="切换浅色 / 深色">${moon}${sun}</button>`
-    + `<button class="cr-ai-btn" type="button" id="cr-ai" aria-haspopup="dialog">${spark}<span class="cr-label">AI 助手</span><span class="cr-dot" aria-hidden="true"></span></button></div>`;
+    + `<div class="cr-mega-foot"><small>${L('点栏目旁边的图钉把它固定到顶栏；顶栏上的分组和按钮按住就能拖动换位；方向键选择，回车打开，Esc 关闭', 'Pin a section to the header with its pin; hold and drag the groups and buttons in the header to reorder them; arrows to move, Enter to open, Esc to close')}</small></div></div>`
+    + `<div class="cr-tools">${toolOrder.map((k) => TOOLS[k]).join('')}</div>`
+    + `<div class="cr-acct-pop" id="cr-acct-pop" hidden translate="no" role="dialog" aria-label="${L('账号', 'Account')}"></div>`;
   document.body.prepend(nav);
 
   const row = nav.querySelector('.cr-links'), pinBox = row.querySelector('.cr-pins'), menuBtn = row.querySelector('.cr-menu-btn');
+  const grpBox = row.querySelector('.cr-grps'), toolBox = nav.querySelector('.cr-tools');
   const grpBtns = [...row.querySelectorAll('.cr-grp-btn')];
   const mega = nav.querySelector('.cr-mega'), findIn = mega.querySelector('.cr-find input'), sections = mega.querySelector('.cr-sections');
   const jumpBtn = nav.querySelector('#cr-jump');
@@ -186,6 +205,7 @@
     mega.style.maxHeight = `${Math.max(240, Math.floor((innerHeight - r.bottom) / z) - (phone.matches ? 0 : 16))}px`;
   }
   function openMenu(g, opts = {}) {
+    closeAcct();
     mega.hidden = false;
     mega.classList.toggle('cr-all', compact || !!findIn.value.trim());
     nav.classList.add('cr-menu-open');
@@ -250,6 +270,7 @@
   window.addEventListener('keydown', (e) => {
     // Escape closes the menu wherever focus is (hovering another group can hide the link that had focus)
     if (e.key === 'Escape' && isOpen() && !e.defaultPrevented) { closeMenu(true); return; }
+    if (e.key === 'Escape' && !acctPop.hidden && !e.defaultPrevented) { closeAcct(true); return; }
     if (e.defaultPrevented && !isOpen()) return;
     if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); opener = document.activeElement; if (isOpen() && document.activeElement === findIn) closeMenu(true); else openMenu(compact ? null : activeGroup(), { search: true }); }
   });
@@ -358,13 +379,14 @@
         <p class="cr-arr-empty">${t('还没有固定任何栏目。从下面选几个常用的：', 'Nothing pinned yet. Pick a few you use often:')}</p>
         <div class="cr-arr-pool"></div>
         <p class="cr-arr-live" aria-live="polite"></p>
-        <div class="cr-arr-foot"><small>${t('在顶栏上也能直接拖动固定的入口', 'You can also drag pinned links right in the header')}</small><button type="button" class="cr-arr-reset">${t('清空', 'Clear')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
+        <div class="cr-arr-foot"><small>${t('顶栏上的入口、五个分组和右边的按钮都能按住直接拖动换位', 'Pinned links, the five groups and the buttons on the right can all be held and dragged right in the header')}</small><button type="button" class="cr-arr-order">${t('分组和按钮恢复默认顺序', 'Default order for groups and buttons')}</button><button type="button" class="cr-arr-reset">${t('清空', 'Clear')}</button><button type="button" class="cr-arr-done">${t('完成', 'Done')}</button></div></div>`;
       document.body.append(layer);
       grid = layer.querySelector('.cr-arr-grid');
       pool = layer.querySelector('.cr-arr-pool');
       live = layer.querySelector('.cr-arr-live');
       layer.addEventListener('click', (e) => {
         if (e.target === layer || e.target.closest('.cr-arr-done')) { close(); return; }
+        if (e.target.closest('.cr-arr-order')) { applyGroups([]); applyTools([]); fit(); live.textContent = t('分组和按钮已恢复默认顺序', 'Groups and buttons are back in the default order'); return; }
         if (e.target.closest('.cr-arr-reset')) { grid.replaceChildren(); sync(); live.textContent = t('已全部取下', 'Everything unpinned'); return; }
         const add = e.target.closest('[data-add]');
         if (add) {
@@ -450,24 +472,51 @@
     return { open };
   })();
 
-  // ── Dragging the pinned links right in the header. A mouse picks one up as soon as it moves sideways; a finger (and a
-  //    held mouse) lifts it after a short press, so the row and the page still scroll under a quick swipe. The lifted link
-  //    turns to glass and follows the pointer, the others slide aside, and the new order is saved like the panel's.
-  //    Releasing a lifted link without moving it opens the arrange panel.
+  // ── Dragging in the header: the pinned links, the five group buttons and the buttons on the right each reorder within their
+  //    own row. A mouse picks an item up as soon as it moves sideways; a finger (and a held mouse) lifts it after a short press,
+  //    so the row and the page still scroll under a quick swipe. The lifted item turns into a drop of liquid glass that follows
+  //    the pointer and stretches with its speed, the others slide aside, and on release it settles with a small wobble.
+  //    Orders are saved per browser (molastria-nav-pins, molastria-nav-groups, molastria-nav-tools). Alt + Shift + ←/→ moves a
+  //    focused group or button from the keyboard. Releasing a lifted pinned link without moving it opens the arrange panel.
   const HOLD = 420;
+  const applyGroups = (ids) => {
+    const o = ordered(GROUP_IDS, ids);
+    GROUPS.sort((x, y) => o.indexOf(x.id) - o.indexOf(y.id));
+    const by = (box, sel, key) => { const els = [...box.querySelectorAll(sel)]; o.forEach((id) => { const el = els.find((e) => e.dataset[key] === id); if (el) box.append(el); }); };
+    by(grpBox, ':scope > .cr-grp-btn', 'group');
+    by(mega.querySelector('.cr-rail'), ':scope > [data-rail]', 'rail');
+    const secs = mega.querySelector('.cr-sections'), none = secs.querySelector('.cr-none');
+    by(secs, ':scope > .cr-sec', 'group');
+    secs.append(none);
+    writeOrder(GORDER, o, GROUP_IDS);
+  };
+  const applyTools = (ids) => {
+    const o = ordered(TOOL_IDS, ids);
+    o.forEach((id) => { const el = toolBox.querySelector(`:scope > [data-tool="${id}"]`); if (el) toolBox.append(el); });
+    writeOrder(TORDER, o, TOOL_IDS);
+  };
+  const SORTS = {
+    pins: { box: pinBox, sel: 'a[data-id]', key: 'id', save: (ids) => saveOrder(ids) },
+    groups: { box: grpBox, sel: '.cr-grp-btn', key: 'group', save: applyGroups },
+    tools: { box: toolBox, sel: '[data-tool]', key: 'tool', save: applyTools },
+  };
+  const sortOf = (el) => (el.closest('.cr-pins') ? 'pins' : el.closest('.cr-grps') ? 'groups' : 'tools');
+  const SORTABLE = '.cr-pins a[data-id], .cr-grps .cr-grp-btn, .cr-tools > [data-tool]';
   let press = null, pressed = false;
   const cancelPress = () => { if (press) clearTimeout(press.timer); press = null; };
   const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const rowLinks = () => [...pinBox.children].filter((el) => el.matches('a[data-id]') && el.offsetWidth);
+  const rowItems = (S) => [...S.box.children].filter((el) => el.matches(S.sel) && el.offsetWidth);
   function lift(p) {
-    const els = rowLinks(), i = els.indexOf(p.a);
+    const S = SORTS[p.kind], box = S.box, els = rowItems(S), i = els.indexOf(p.a);
     if (i < 0) return false;
-    const rr = pinBox.getBoundingClientRect(), k = pinBox.offsetWidth ? rr.width / pinBox.offsetWidth || 1 : 1;
+    closeMenu();
+    closeAcct();
+    const rr = box.getBoundingClientRect(), k = box.offsetWidth ? rr.width / box.offsetWidth || 1 : 1;
     // Layout positions in the row's own CSS pixels (scroll included), taken once: transforms during the drag do not move them.
-    const at = (x) => (x - rr.left) / k + pinBox.scrollLeft;
+    const at = (x) => (x - rr.left) / k + box.scrollLeft;
     const slots = els.map((el) => { const r = el.getBoundingClientRect(); return { el, mid: (at(r.left) + at(r.right)) / 2 }; });
-    const gap = parseFloat(getComputedStyle(pinBox).columnGap) || 0;
-    p.drag = { els, i, j: i, k, at, slots, start: p.x, scroll0: pinBox.scrollLeft, shift: p.a.offsetWidth + gap, moved: false, x: p.x, raf: 0 };
+    const gap = parseFloat(getComputedStyle(box).columnGap) || 0;
+    p.drag = { S, box, els, i, j: i, k, slots, start: p.x, scroll0: box.scrollLeft, shift: p.a.offsetWidth + gap, moved: false, x: p.x, raf: 0, v: 0, t: performance.now() };
     navDragging = true;
     pressed = true;
     nav.classList.add('cr-nav-sorting');
@@ -477,11 +526,16 @@
     return true;
   }
   function follow(p, x) {
-    const d = p.drag;
+    const d = p.drag, now = performance.now();
+    // speed in px per ms, smoothed: the glass stretches along the motion and squeezes across it, like a drop being pulled
+    const v = (x - d.x) / Math.max(8, now - d.t);
+    d.v = d.v * 0.6 + v * 0.4;
     d.x = x;
-    const dx = (x - d.start) / d.k + (pinBox.scrollLeft - d.scroll0);
+    d.t = now;
+    const dx = (x - d.start) / d.k + (d.box.scrollLeft - d.scroll0);
     if (Math.abs(dx) > 3) d.moved = true;
     p.a.style.translate = `${dx}px 0`;
+    stretch(p);
     const mid = d.slots[d.i].mid + dx;
     let j = 0;
     d.slots.forEach((s, m) => { if (m !== d.i && s.mid < mid) j++; });
@@ -492,51 +546,67 @@
       s.el.style.translate = off ? `${off}px 0` : '';
     });
   }
-  // Phones: the pinned row scrolls sideways, so a link held near either edge scrolls it along.
-  function edgeScroll(p) {
+  function stretch(p) {
+    if (reducedMotion()) return;
+    const s = Math.min(0.16, Math.abs(p.drag.v) * 0.09);
+    p.a.style.scale = `${(1.1 + s).toFixed(3)} ${(1.1 - s * 0.55).toFixed(3)}`;
+  }
+  // While lifted: the stretch relaxes when the pointer rests, and on phones a link held near either edge of the pinned row
+  // scrolls it along.
+  function tick(p) {
     const d = p.drag;
-    if (!d || pinBox.scrollWidth <= pinBox.clientWidth) return;
-    const r = pinBox.getBoundingClientRect(), edge = 36 * d.k;
-    const v = d.x < r.left + edge ? -7 : d.x > r.right - edge ? 7 : 0;
-    if (v) { pinBox.scrollLeft += v; follow(p, d.x); }
-    d.raf = requestAnimationFrame(() => edgeScroll(p));
+    if (!d) return;
+    if (performance.now() - d.t > 40) { d.v *= 0.8; stretch(p); }
+    const box = d.box;
+    if (box.scrollWidth > box.clientWidth) {
+      const r = box.getBoundingClientRect(), edge = 36 * d.k;
+      const v = d.x < r.left + edge ? -7 : d.x > r.right - edge ? 7 : 0;
+      if (v) { box.scrollLeft += v; const t = d.t; follow(p, d.x); d.t = t; }
+    }
+    d.raf = requestAnimationFrame(() => tick(p));
   }
   function settle(p, keep) {
-    const d = p.drag;
+    const d = p.drag, S = d.S;
     cancelAnimationFrame(d.raf);
     navDragging = false;
-    const before = new Map(d.els.map((el) => [el.dataset.id, el.getBoundingClientRect()]));
+    const before = new Map(d.els.map((el) => [el.dataset[S.key], el.getBoundingClientRect()]));
     for (const el of d.els) { el.style.transition = 'none'; el.style.translate = ''; }
+    p.a.style.scale = '';
     p.a.classList.remove('cr-lifted');
     nav.classList.remove('cr-nav-sorting');
     if (keep && d.j !== d.i) {
-      const ids = pins.slice(), moved = ids.splice(ids.indexOf(p.a.dataset.id), 1)[0];
-      const order = d.els.map((el) => el.dataset.id);
+      const ids = [...d.box.children].filter((el) => el.matches(S.sel)).map((el) => el.dataset[S.key]);
+      const id = p.a.dataset[S.key];
+      ids.splice(ids.indexOf(id), 1);
+      const order = d.els.map((el) => el.dataset[S.key]);
       order.splice(d.i, 1);
-      // after the j links now left of it: before the next one in the row, or right after the row's last
-      ids.splice(d.j < order.length ? ids.indexOf(order[d.j]) : ids.indexOf(order[order.length - 1]) + 1, 0, moved);
-      saveOrder(ids);
+      // after the j items now left of it: before the next one in the row, or right after the row's last
+      ids.splice(d.j < order.length ? ids.indexOf(order[d.j]) : ids.indexOf(order[order.length - 1]) + 1, 0, id);
+      S.save(ids);
+      if (S !== SORTS.pins) fit();
     }
-    // Everything glides from where it was shown to its new place.
-    for (const el of rowLinks()) {
+    // Everything glides from where it was shown to its new place; the dropped one lands with a small wobble.
+    for (const el of rowItems(S)) {
       void el.offsetWidth;
       el.style.transition = '';
       if (reducedMotion()) continue;
-      const a = before.get(el.dataset.id); if (!a) continue;
+      const a = before.get(el.dataset[S.key]); if (!a) continue;
       const b = el.getBoundingClientRect(), dx = (a.left - b.left) / d.k;
-      if (Math.abs(dx) > 0.5) el.animate([{ translate: `${dx}px 0` }, { translate: '0 0' }], { duration: 320, easing: 'cubic-bezier(.2,.9,.25,1.1)' });
+      if (el === p.a) el.animate([{ translate: `${dx}px 0`, scale: '1.1' }, { translate: '0 0', scale: '.95 1.04', offset: 0.55 }, { scale: '1.02 .99', offset: 0.8 }, { translate: '0 0', scale: '1' }], { duration: 460, easing: 'cubic-bezier(.2,.8,.25,1)' });
+      else if (Math.abs(dx) > 0.5) el.animate([{ translate: `${dx}px 0` }, { translate: '0 0' }], { duration: 320, easing: 'cubic-bezier(.2,.9,.25,1.1)' });
     }
   }
   nav.addEventListener('pointerdown', (e) => {
     pressed = false;
     if (press?.drag) return;
     cancelPress();
-    const a = e.target.closest('.cr-pins a[data-id]');
+    const a = e.target.closest(SORTABLE);
     if (!a || e.button > 0) return;
-    const p = { a, id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse' };
+    const p = { a, kind: sortOf(a), id: e.pointerId, x: e.clientX, y: e.clientY, touch: e.pointerType !== 'mouse' };
     p.timer = setTimeout(() => {
-      if (!lift(p)) { press = null; pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }
-      else edgeScroll(p);
+      if (lift(p)) { tick(p); return; }
+      press = null;
+      if (p.kind === 'pins') { pressed = true; navigator.vibrate?.(8); arrange.open(a.dataset.id); }
     }, HOLD);
     press = p;
   });
@@ -546,8 +616,8 @@
     if (p.drag) { e.preventDefault(); follow(p, e.clientX); return; }
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
     if (Math.hypot(dx, dy) < 6) return;
-    // a mouse dragging sideways picks the link up at once; anything else before the hold ends is a scroll or a slip
-    if (!p.touch && Math.abs(dx) > Math.abs(dy) && lift(p)) { clearTimeout(p.timer); follow(p, e.clientX); edgeScroll(p); }
+    // a mouse dragging sideways picks the item up at once; anything else before the hold ends is a scroll or a slip
+    if (!p.touch && Math.abs(dx) > Math.abs(dy) && lift(p)) { clearTimeout(p.timer); follow(p, e.clientX); tick(p); }
     else cancelPress();
   });
   const release = (e) => {
@@ -558,19 +628,165 @@
     if (!p.drag) return;
     const moved = p.drag.moved;
     settle(p, e.type === 'pointerup');
-    if (!moved && e.type === 'pointerup') arrange.open(p.a.dataset.id);
+    if (!moved && e.type === 'pointerup' && p.kind === 'pins') arrange.open(p.a.dataset.id);
   };
   nav.addEventListener('pointerup', release);
   nav.addEventListener('pointercancel', release);
   nav.addEventListener('lostpointercapture', (e) => { if (press?.drag && e.pointerId === press.id) release({ type: 'pointerup', pointerId: e.pointerId }); });
-  // Links are not dragged out as URLs (that is what made a drag do nothing), and a lifted link keeps the page from scrolling.
-  nav.addEventListener('dragstart', (e) => { if (e.target.closest?.('.cr-pins a[data-id]')) e.preventDefault(); });
+  // Links are not dragged out as URLs (that is what made a drag do nothing), and a lifted item keeps the page from scrolling.
+  nav.addEventListener('dragstart', (e) => { if (e.target.closest?.(SORTABLE)) e.preventDefault(); });
   nav.addEventListener('touchmove', (e) => { if (press?.drag) e.preventDefault(); }, { passive: false });
-  // the click that ends a press or a drag must not also open the page
+  // the click that ends a press or a drag must not also open the page or the button
   nav.addEventListener('click', (e) => { if (pressed) { pressed = false; e.preventDefault(); e.stopPropagation(); } }, true);
   // touch screens open their own link menu on a long press
-  nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest('.cr-pins a[data-id]')) e.preventDefault(); });
+  nav.addEventListener('contextmenu', (e) => { if ((press?.touch || pressed) && e.target.closest(SORTABLE)) e.preventDefault(); });
+  // keyboard: Alt + Shift + ← / → moves a focused group or right-hand button one place
+  nav.addEventListener('keydown', (e) => {
+    if (!e.altKey || !e.shiftKey || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    const a = e.target.closest?.('.cr-grps .cr-grp-btn, .cr-tools > [data-tool]');
+    if (!a) return;
+    e.preventDefault();
+    const S = SORTS[sortOf(a)], ids = [...S.box.children].filter((el) => el.matches(S.sel)).map((el) => el.dataset[S.key]);
+    const id = a.dataset[S.key], i = ids.indexOf(id), j = Math.max(0, Math.min(ids.length - 1, i + (e.key === 'ArrowLeft' ? -1 : 1)));
+    if (i === j) return;
+    ids.splice(i, 1); ids.splice(j, 0, id);
+    S.save(ids);
+    fit();
+    a.focus();
+  });
 
+
+  // ── Account. One button in place of the old "Pro" pill: "登录 / Sign in" until someone signs in, then their initial (a gold
+  //    ring for Pro, VIP and lab plans). It opens a small glass panel with everything the Pro pill and the account page lead
+  //    to: signing in, the plan and this period's AI allowance, API keys, the weekly picks, Pro, the desktop app, and signing out.
+  //    Everything comes from the cached summary (molastria-account); nothing is fetched to draw it.
+  const acctBtn = nav.querySelector('#cr-acct'), acctPop = nav.querySelector('#cr-acct-pop');
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const planOf = (a) => {
+    // the same reading as the account page: a grant without a billing cycle is a VIP card or the site admin's own access
+    const gifted = !!a.grant && a.role === 'pro' && !a.cycle;
+    const kind = gifted ? (a.grant.source === 'admin' ? 'admin' : 'vip') : ['pro', 'owner', 'member'].includes(a.role) && a.pro ? a.role : 'free';
+    return { kind, label: { pro: 'Pro', owner: L('课题组', 'Lab'), member: L('课题组成员', 'Lab member'), free: L('免费账号', 'Free account'), vip: 'VIP', admin: L('站长', 'Admin') }[kind] };
+  };
+  const apRow = (href, icon, title, sub, attrs = '') => `<a class="cr-ap-row" href="${link(href)}"${attrs}><i aria-hidden="true">${icon}</i><span><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span></a>`;
+  const IC = {
+    key: '<svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l2.5 2.5M14 9l2 2"/></svg>',
+    star: '<svg viewBox="0 0 24 24"><path d="M12 3.5c.7 4.6 2.9 6.8 7.5 7.5-4.6.7-6.8 2.9-7.5 7.5-.7-4.6-2.9-6.8-7.5-7.5 4.6-.7 6.8-2.9 7.5-7.5Z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>',
+    app: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="12" rx="2"/><path d="M9 20h6M12 16.5V20"/></svg>',
+    user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.9 4.1-5.8 7.5-5.8s6.3 1.9 7.5 5.8"/></svg>',
+    card: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/></svg>',
+    shield: '<svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>',
+  };
+  function paintAcct() {
+    const a = readAccount();
+    const p = a && planOf(a);
+    acctBtn.dataset.state = !a ? 'out' : p.kind === 'free' ? 'free' : 'pro';
+    if (!a) {
+      acctBtn.innerHTML = `${person}<span class="cr-acct-t">${L('登录', 'Sign in')}</span>`;
+      acctBtn.setAttribute('aria-label', L('登录、Pro 与桌面版', 'Sign in, Pro and the desktop app'));
+      acctBtn.title = L('登录、Pro 与桌面版', 'Sign in, Pro and the desktop app');
+    } else {
+      const initial = (String(a.email || '?').trim()[0] || '?').toUpperCase();
+      acctBtn.innerHTML = `<span class="cr-avatar" aria-hidden="true">${esc(initial)}</span>${p.kind === 'free' ? '' : `<span class="cr-acct-tag">${esc(p.kind === 'owner' || p.kind === 'member' ? 'Pro' : p.label)}</span>`}`;
+      acctBtn.setAttribute('aria-label', L(`我的账号：${a.email}（${p.label}）`, `My account: ${a.email} (${p.label})`));
+      acctBtn.title = `${a.email} · ${p.label}`;
+    }
+    if (!acctPop.hidden) fillAcct();
+  }
+  function fillAcct() {
+    const a = readAccount();
+    if (!a) {
+      acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar cr-ghost" aria-hidden="true">${person}</span><div><b>${L('登录 MolAstria', 'Sign in to MolAstria')}</b><small>${L('邮箱收一个 6 位验证码就能登录，不需要密码。所有内容不登录也能看。', 'A 6-digit code by email, no password. Everything on the site works without an account too.')}</small></div></div>`
+        + `<a class="cr-ap-go" href="${link('pro/account.html')}">${L('用邮箱登录', 'Sign in with email')}</a>`
+        + `<div class="cr-ap-list">${apRow('pro/index.html', IC.star, L('Pro 支持者', 'Pro supporter'), L('支持 MolAstria，AI 托管额度和在线模型次数更多', 'Support MolAstria and get more hosted AI and online-model runs'))}`
+        + apRow('api/index.html', IC.key, L('开放数据接口与计算接口', 'Open data and compute API'), L('登录后可以生成自己的 API key', 'Sign in to create your own API keys'))
+        + apRow('digest/index.html', IC.mail, L('每周精选', 'Weekly Picks'), L('登录后可以订阅邮件', 'Sign in to get it by email'))
+        + apRow('download/index.html', IC.app, L('桌面版', 'Desktop app'), L('Windows 和 macOS，可在本机跑 UMA', 'Windows and macOS, runs UMA locally'))
+        + `</div><div class="cr-ap-foot"><a href="${link('pro/account.html#vip')}">${L('我有 VIP 卡', 'I have a VIP card')}</a><a href="${link('pro/terms.html')}">${L('条款', 'Terms')}</a><a href="${link('pro/privacy.html')}">${L('隐私', 'Privacy')}</a></div>`;
+      return;
+    }
+    const p = planOf(a), u = a.usage;
+    const meter = u && u.limit > 0 ? (() => {
+      const pct = Math.max(0, Math.min(100, Math.round((u.asks / u.limit) * 100)));
+      return `<div class="cr-ap-meter"><span>${L('AI 托管额度', 'Hosted AI')}<b>${u.asks} / ${u.limit}</b><small>${u.period === 'day' ? L('24 小时内', 'last 24 h') : L('本月', 'this month')}</small></span><i role="meter" aria-label="${L('已用 AI 托管额度', 'Hosted AI used')}" aria-valuemin="0" aria-valuemax="${u.limit}" aria-valuenow="${u.asks}"><em style="width:${pct}%"></em></i></div>`;
+    })() : '';
+    const gifted = p.kind === 'vip' || p.kind === 'admin';
+    acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar" data-plan="${p.kind}" aria-hidden="true">${esc((String(a.email || '?').trim()[0] || '?').toUpperCase())}</span><div><b class="cr-ap-mail">${esc(a.email)}</b><small><span class="cr-ap-plan" data-plan="${p.kind}">${esc(p.label)}</span>${a.status === 'past_due' ? ` <span class="cr-ap-warn">${L('付款未成功', 'Payment failed')}</span>` : ''}</small></div></div>`
+      + meter
+      + `<div class="cr-ap-list">${apRow('pro/account.html', IC.user, L('我的账号', 'My account'), L('套餐、额度、课题组成员', 'Plan, allowance, lab members'))}`
+      + apRow('pro/account.html#keys-card', IC.key, 'API key', L('给程序用的计算接口，今天的用量', 'For the compute API, with today’s usage'))
+      + apRow('pro/account.html#digest-card', IC.mail, L('每周精选', 'Weekly Picks'), L('订阅邮件或发一份到邮箱', 'Subscribe, or send one to your inbox'))
+      + (a.admin ? apRow('pro/account.html#admin-card', IC.shield, L('站长：VIP 卡', 'Admin: VIP cards'), L('发卡、收回、生成本期精选', 'Issue and revoke cards, build the digest')) : '')
+      + (a.pro && !gifted && a.role !== 'member' ? apRow('pro/account.html#manage', IC.card, L('订阅与付款', 'Subscription and billing'), L('管理订阅、付款方式与发票', 'Manage the plan, card and invoices'))
+        : a.pro ? '' : apRow('pro/index.html', IC.star, L('成为 Pro 支持者', 'Become a Pro supporter'), L('AI 托管额度和在线模型次数更多', 'More hosted AI and online-model runs')))
+      + apRow('download/index.html', IC.app, L('桌面版', 'Desktop app'), L('Windows 和 macOS', 'Windows and macOS'))
+      + `</div><div class="cr-ap-foot"><button type="button" class="cr-ap-out">${L('退出登录', 'Sign out')}</button><a href="${link('pro/index.html')}">${L('价格与条款', 'Pricing and terms')}</a></div>`;
+  }
+  function placeAcct() {
+    if (phone.matches) { acctPop.style.left = ''; acctPop.style.right = ''; return; }
+    // under the button, right edges aligned, kept inside the header (CSS zoom scales the rects, not the box)
+    const z = nav.offsetWidth ? nav.getBoundingClientRect().width / nav.offsetWidth || 1 : 1;
+    const nr = nav.getBoundingClientRect(), br = acctBtn.getBoundingClientRect();
+    acctPop.style.right = `${Math.max(10, (nr.right - br.right) / z)}px`;
+    acctPop.style.left = 'auto';
+  }
+  function openAcct() {
+    if (!acctPop.hidden) return;
+    closeMenu();
+    fillAcct();
+    acctPop.hidden = false;
+    placeAcct();
+    acctBtn.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => acctPop.classList.add('open'));
+    acctPop.querySelector('a, button')?.focus({ preventScroll: true });
+  }
+  function closeAcct(focusBack) {
+    if (!acctPop || acctPop.hidden) return;
+    acctPop.classList.remove('open');
+    acctPop.hidden = true;
+    acctBtn.setAttribute('aria-expanded', 'false');
+    if (focusBack) acctBtn.focus({ preventScroll: true });
+  }
+  // Phones have no room for one more button in the first row: there the account button sits at the end of the second row,
+  // opposite 栏目 (where the Pro link used to be), and goes back to its saved place among the buttons on wider screens.
+  const homeAcct = () => {
+    if (phone.matches) { if (acctBtn.parentNode !== row) row.append(acctBtn); return; }
+    if (acctBtn.parentNode === toolBox) return;
+    const o = ordered(TOOL_IDS, readOrder(TORDER)), after = o.slice(o.indexOf('acct') + 1);
+    toolBox.insertBefore(acctBtn, after.map((id) => toolBox.querySelector(`:scope > [data-tool="${id}"]`)).find(Boolean) || null);
+  };
+  homeAcct();
+  phone.addEventListener?.('change', () => { closeAcct(); homeAcct(); });
+  acctBtn.addEventListener('click', () => { if (acctPop.hidden) openAcct(); else closeAcct(); });
+  acctPop.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeAcct(true); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const list = [...acctPop.querySelectorAll('a, button')], i = list.indexOf(document.activeElement);
+    e.preventDefault();
+    list[(i + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length]?.focus();
+  });
+  acctPop.addEventListener('click', (e) => {
+    if (e.target.closest('.cr-ap-out')) {
+      e.preventDefault();
+      closeAcct(true);
+      // the account page has its own sign-out, which also clears what it shows
+      const own = document.getElementById('signout');
+      if (own && !own.closest('[hidden]')) { own.click(); return; }
+      (window.MOLASTRIA_PAY ? Promise.resolve() : addScript('pay/config.js'))
+        .then(() => window.MolAstriaAccount || addScript('pay/account.js'))
+        .then(() => window.MolAstriaAccount.signOut())
+        .catch(() => { try { localStorage.removeItem('molastria-session'); localStorage.removeItem('molastria-account'); } catch {} document.dispatchEvent(new CustomEvent('molastria:account', { detail: null })); });
+      return;
+    }
+    if (e.target.closest('a[href]')) closeAcct();
+  });
+  document.addEventListener('pointerdown', (e) => { if (!acctPop.hidden && !acctPop.contains(e.target) && !acctBtn.contains(e.target)) closeAcct(); });
+  nav.addEventListener('focusout', (e) => { if (!acctPop.hidden && e.relatedTarget && !acctPop.contains(e.relatedTarget) && e.relatedTarget !== acctBtn) closeAcct(); });
+  addEventListener('resize', () => { if (!acctPop.hidden) placeAcct(); });
+  // another tab signing in or out
+  addEventListener('storage', (e) => { if (e.key === 'molastria-account' || e.key === 'molastria-session') { paintAcct(); refreshDot(); } });
+  paintAcct();
 
   // 主题：未手动选择时跟随系统；点击后在浅色 / 深色之间切换并记住。
   const root = document.documentElement;
@@ -833,12 +1049,7 @@
   };
   refreshDot();
   document.addEventListener('chemhub:ai-config', refreshDot);
-  const paintPro = () => {
-    nav.querySelectorAll('.cr-pro, .cr-pro-link').forEach((a) => { a.href = proHref(); });
-    nav.querySelector('.cr-pro').title = readAccount()?.pro ? '我的 Pro 账号' : 'MolAstria Pro 与桌面版下载';
-    refreshDot();
-  };
-  document.addEventListener('molastria:account', paintPro);
+  document.addEventListener('molastria:account', () => { paintAcct(); refreshDot(); });
   // Re-check the subscription once per browser session, so lapsed plans and this month's quota stay current.
   try {
     if (readAccount() && !sessionStorage.getItem('molastria-account-checked') && !window.__CHEM_LOCATION__) {

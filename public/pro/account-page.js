@@ -342,12 +342,26 @@
     try { renderCards((await A.revokeCard(code)).cards); say(cmsg, T(`已收回 ${code}。`), 'ok'); } catch (err) { say(cmsg, err.message, 'err'); }
   });
 
+  // Links from the header's account panel: #keys-card, #digest-card, #admin-card, #manage open that part of the page; #vip opens
+  // the VIP card field on the sign-in form. The cards are drawn after the account loads, so the jump waits for paint().
+  let jumped = false;
+  const jump = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (jumped || !id) return;
+    if (id === 'vip') { if (!$('acct-login').hidden) { jumped = true; cardMode(true); $('login-card').focus(); } return; }
+    const el = document.getElementById(id);
+    if (el && !el.hidden && el.offsetParent) { jumped = true; requestAnimationFrame(() => el.scrollIntoView({ block: 'start', behavior: 'smooth' })); }
+  };
+  const painted = paint;
+  paint = (a) => { painted(a); jump(); };
+  addEventListener('hashchange', () => { jumped = false; jump(); });
+
   function init() {
     // An invitation link: ?card=VIP-…
     const card = new URLSearchParams(location.search).get('card');
     if (card) { $('login-card').value = card; $('redeem-code').value = card; cardMode(true); }
     if (!A?.enabled) { show('acct-off'); return; }
-    if (!A.token()) { show('acct-login'); return; }
+    if (!A.token()) { show('acct-login'); jump(); return; }
     if (A.cached()) paint(A.cached()); else show('acct-main');
     A.refresh().then((a) => { $('synced').textContent = ''; paint(a); }).catch((err) => {
       if (err.status === 401) { show('acct-login'); say(msg, T('登录已过期，请重新登录。'), 'err'); }
