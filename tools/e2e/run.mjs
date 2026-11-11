@@ -184,7 +184,18 @@ check('pricing page: content free, three allowances, everything marked available
   assert.equal(row('在线模型：UMA'), `每天 ${v('UMA_DAILY')} 次|每天 ${v('UMA_DAILY_ACCOUNT')} 次|每天 ${v('UMA_DAILY_PRO')} 次`);
   assert.equal(row('在线模型：MACE'), Array(3).fill(`每天 ${v('ASL_DAILY')} 次`).join('|'));
   assert.equal(await p.getAttribute('.plan[data-plan=free] a.btn', 'href'), 'account.html');
+  // Pro is monthly only, ¥9.9 (2026-11-11): no year/month switch, the checkout sells pro_month.
+  assert.equal(await text(p, '[data-plan=pro] .price'), '¥9.9/ 月');
+  assert.equal(await p.locator('[data-billing]').count(), 0);
+  await p.click('[data-checkout=pro]');
+  assert.match(await text(p, '#co-title'), /月付/);
+  assert.equal(await text(p, '#co-price'), '¥9.9');
   await finish(p);
+  const english = await open();
+  await go(english, '/pro/index.html?lang=en');
+  await english.waitForFunction(() => /CN¥9\.9/.test(document.querySelector('[data-price=pro]').textContent));
+  assert.equal(await text(english, '[data-fx=pro]'), '≈ US$1.49');
+  await finish(english);
 });
 
 check('paying signs the buyer in', async () => {
