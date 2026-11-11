@@ -1113,6 +1113,188 @@ await test("sync: a record bigger than the limit for one record is refused befor
   eq(sqlite.prepare("SELECT COUNT(*) AS n FROM sync_items WHERE key = 'molastria-learn' AND email = 'boss@molastria.com'").get(), { n: 0 });
 });
 
+// ── discussion rooms (deploy/chat.js): the Worker's side ─────────────────
+// The rooms themselves (class Hub) are tested in tools/chat-test.mjs, and under workerd in tools/chat-workerd-test.mjs.
+// Here a stand-in for the Durable Object records what the Worker hands it.
+const chatSeen: { path: string; who: any; proto: string | null; names: string[] }[] = [];
+let chatReports = 0;
+const fakeChat = {
+  idFromName: (name: string) => name,
+  get: (_id: unknown) => ({
+    fetch: async (req: Request) => {
+      const path = new URL(req.url).pathname;
+      let who = null;
+      try { who = JSON.parse(req.headers.get("X-Chat-Who") || "null"); } catch { /* none */ }
+      chatSeen.push({ path, who, proto: req.headers.get("Sec-WebSocket-Protocol"), names: [...req.headers.keys()].sort() });
+      if (path === "/summary") return Response.json({ state: "on", online: 3, rooms: 7, top: [], latest: [{ room: "lobby", title: "大厅", title_en: "Lobby", name: "阿澈", text: "你好", t: 1 }] });
+      if (path === "/pending") return Response.json({ reports: chatReports });
+      return Response.json({ upgraded: true }); // a real one answers 101; Deno cannot build that response
+    },
+  }),
+};
+async function chatWs(protocols: string[], ip = "203.0.113.7", extra: Record<string, string> = {}) {
+  const headers: Record<string, string> = { Origin: "https://molastria.com", Upgrade: "websocket", Connection: "Upgrade", "Sec-WebSocket-Key": "dGhlIHNhbXBsZSBub25jZQ==", "Sec-WebSocket-Version": "13", "CF-Connecting-IP": ip, ...extra };
+  if (protocols.length) headers["Sec-WebSocket-Protocol"] = protocols.join(", ");
+  const res = await worker.fetch(new Request("https://api.test/chat/ws", { headers }), env);
+  let data: any = null;
+  try { data = await res.json(); } catch { /* not JSON */ }
+  return { status: res.status, data };
+}
+let chatUser = "", chatUid = "";
+
+await test("chat: without the Durable Object binding the rooms are closed, and the home card is told so", async () => {
+  const r = await chatWs(["molastria-chat"]);
+  eq([r.status, r.data.error.code], [503, "off"]);
+  const s = await call("GET", "/chat/summary");
+  eq([s.status, s.data], [200, { state: "off" }]);
+});
+
+await test("chat: a guest connects without a token; the rooms get a hash of the address, never the address", async () => {
+  env.CHAT = fakeChat;
+  chatSeen.length = 0;
+  const r = await chatWs(["molastria-chat"]);
+  eq([r.status, r.data], [200, { upgraded: true }]);
+  const seen = chatSeen[0];
+  eq([seen.path, seen.proto, seen.who.uid, seen.who.admin, seen.who.auth], ["/ws", "molastria-chat", null, false, "none"]);
+  if (!/^[0-9a-f]{16}$/.test(seen.who.iph) || JSON.stringify(seen.who).includes("203.0.113.7")) throw new Error(`the address must only arrive as a hash: ${JSON.stringify(seen.who)}`);
+  eq((await call("GET", "/chat/ws")).status, 426, "a plain GET is not a WebSocket");
+});
+
+await test("chat: a signed-in account gets a random id once, the same on every connection; the token and the email stop at the Worker", async () => {
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'start%'").run();
+  chatUser = (await signIn("talker@uni.edu")).data.token;
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat", `t.${chatUser}`]);
+  await chatWs(["molastria-chat", `t.${chatUser}`], "198.51.100.9");
+  const [a, b] = chatSeen;
+  chatUid = a.who.uid;
+  if (!/^[a-z0-9]{12}$/.test(chatUid)) throw new Error(`uid: ${chatUid}`);
+  eq([a.who.auth, a.who.admin, b.who.uid, a.proto], ["ok", false, chatUid, "molastria-chat"]);
+  if (a.who.iph === b.who.iph) throw new Error("two addresses must give two hashes");
+  eq(sqlite.prepare("SELECT email, uid FROM chat_users").all(), [{ email: "talker@uni.edu", uid: chatUid }]);
+  const sent = JSON.stringify(chatSeen);
+  if (sent.includes(chatUser) || sent.includes("talker@uni.edu")) throw new Error("the token or the email reached the rooms");
+});
+
+await test("chat: only the site admin is passed on as admin", async () => {
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat", `t.${syncPro}`]);
+  eq([chatSeen[0].who.admin, chatSeen[0].who.auth], [true, "ok"]);
+  if (chatSeen[0].who.uid === chatUid) throw new Error("every account has its own id");
+});
+
+await test("chat: an unknown, malformed or signed-out token still connects, as a guest who is told the sign-in ran out", async () => {
+  const gone = (await signIn("leaver@uni.edu")).data.token;
+  eq((await call("POST", "/auth/signout", {}, gone)).status, 200);
+  chatSeen.length = 0;
+  for (const t of ["t.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "t.<script>", `t.${gone}`]) eq((await chatWs(["molastria-chat", t])).status, 200);
+  eq(chatSeen.map((s) => [s.who.uid, s.who.admin, s.who.auth]), [[null, false, "expired"], [null, false, "expired"], [null, false, "expired"]]);
+  // whatever the browser sends under the Worker's own header is replaced
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat"], "203.0.113.7", { "X-Chat-Who": JSON.stringify({ uid: chatUid, admin: true, auth: "ok", iph: "x" }) });
+  eq([chatSeen[0].who.uid, chatSeen[0].who.admin], [null, false]);
+});
+
+await test("chat: one address may open 120 connections in ten minutes, then waits", async () => {
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat"], "192.0.2.44");
+  const key = `chat-ws:${chatSeen[0].who.iph}`;
+  eq((sqlite.prepare("SELECT n FROM throttle WHERE key = ?").get(key) as { n: number }).n, 1);
+  sqlite.prepare("UPDATE throttle SET n = 120 WHERE key = ?").run(key);
+  eq((await chatWs(["molastria-chat"], "192.0.2.44")).status, 429);
+  eq((await chatWs(["molastria-chat"], "192.0.2.45")).status, 200, "another address is not affected");
+});
+
+await test("chat: the rooms get the handshake and who it is, and no other header the browser or Cloudflare sent", async () => {
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat", `t.${chatUser}`], "192.0.2.50", { Cookie: "a=b", Authorization: `Bearer ${chatUser}`, "X-Forwarded-For": "192.0.2.50", "X-Real-IP": "192.0.2.50" });
+  eq(chatSeen[0].names, ["connection", "sec-websocket-key", "sec-websocket-protocol", "sec-websocket-version", "upgrade", "x-chat-who"]);
+  eq([chatSeen[0].proto, chatSeen[0].who.uid], ["molastria-chat", chatUid]);
+});
+
+await test("chat: an IPv6 address counts by its /64; the hash cannot be worked out without the secret; a failing counter lets people in", async () => {
+  chatSeen.length = 0;
+  await chatWs(["molastria-chat"], "2001:db8:1:2::1");
+  await chatWs(["molastria-chat"], "2001:db8:1:2:ffff:eeee:dddd:cccc");
+  await chatWs(["molastria-chat"], "2001:db8:1:3::1");
+  const [a, b, c] = chatSeen.map((x) => x.who.iph);
+  eq([a === b, a === c], [true, false], "one /64 is one address, the next /64 another");
+  // No UMA_SERVER_SECRET: the hash is keyed with a random key of this isolate, not with "undefined".
+  const guess = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("undefined|chat|192.0.2.61")))].slice(0, 8).map((x) => x.toString(16).padStart(2, "0")).join("");
+  const secret = env.UMA_SERVER_SECRET;
+  delete env.UMA_SERVER_SECRET;
+  try {
+    chatSeen.length = 0;
+    await chatWs(["molastria-chat"], "192.0.2.61");
+    await chatWs(["molastria-chat"], "192.0.2.61");
+    if (chatSeen[0].who.iph === guess) throw new Error("the hash must not be computable from the address alone");
+    eq(chatSeen[0].who.iph, chatSeen[1].who.iph, "the same key all along in one isolate");
+  } finally { env.UMA_SERVER_SECRET = secret; }
+  // D1 fails: the counter cannot be read, and a guest still gets in to read along
+  const db = env.DB;
+  env.DB = { prepare: () => { throw new Error("D1 is down"); } };
+  try {
+    chatSeen.length = 0;
+    eq((await chatWs(["molastria-chat"], "192.0.2.62")).status, 200);
+    eq([chatSeen.length, chatSeen[0].who.auth], [1, "none"]);
+  } finally { env.DB = db; }
+});
+
+await test("chat: the summary for the home card is passed on and may be cached for half a minute", async () => {
+  const s = await call("GET", "/chat/summary");
+  eq([s.status, s.data.online, s.data.latest[0].name, s.headers.get("Cache-Control")], [200, 3, "阿澈", "public, max-age=30"]);
+  eq((await call("GET", "/chat/nothing")).status, 404);
+  eq((await call("POST", "/chat/summary", { a: 1 })).status, 404);
+});
+
+await test("chat: CHAT_STATE = off closes the door at the Worker and nothing is asked of the rooms", async () => {
+  env.CHAT_STATE = "off";
+  chatSeen.length = 0;
+  eq((await chatWs(["molastria-chat", `t.${chatUser}`])).status, 503);
+  eq((await call("GET", "/chat/summary")).data, { state: "off" });
+  chatReports = 2;
+  mails.length = 0;
+  await tick("send");
+  eq([chatSeen.length, mails.filter((m) => m.subject.includes("讨论室")).length], [0, 0]);
+  delete env.CHAT_STATE;
+});
+
+await test("chat: connection counters (keyed by a hash of the address) are forgotten once their window is over", async () => {
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'chat-ws%'").run();
+  const put = sqlite.prepare("INSERT INTO throttle (key, n, reset) VALUES (?, 3, ?)");
+  put.run("chat-ws:0011223344556677", nowS() - 5); // over
+  put.run("chat-ws:8899aabbccddeeff", nowS() + 300); // still counting
+  put.run("chat-wsx:not-ours", nowS() - 5);
+  put.run("chat-report-mail-test", nowS() - 5);
+  env.CHAT_STATE = "off"; // the clean-up does not depend on the rooms being open
+  await tick("send");
+  delete env.CHAT_STATE;
+  eq((sqlite.prepare("SELECT key FROM throttle WHERE key LIKE 'chat-%test' OR key LIKE 'chat-ws%' ORDER BY key").all() as { key: string }[]).map((r) => r.key),
+    ["chat-report-mail-test", "chat-ws:8899aabbccddeeff", "chat-wsx:not-ours"]);
+  sqlite.prepare("DELETE FROM throttle WHERE key IN ('chat-report-mail-test', 'chat-ws:8899aabbccddeeff', 'chat-wsx:not-ours')").run();
+});
+
+await test("chat: open reports mail the site admins, at most once in twelve hours, and not at all when switched off", async () => {
+  sqlite.prepare("DELETE FROM throttle WHERE key = 'chat-report-mail'").run();
+  const admins = (sqlite.prepare("SELECT email FROM grants WHERE source = 'admin' AND (expires IS NULL OR expires > ?) ORDER BY email").all(nowS()) as { email: string }[]).map((r) => r.email);
+  const about = () => mails.filter((m) => m.subject.includes("讨论室"));
+  mails.length = 0;
+  chatReports = 0;
+  await tick("send");
+  eq(about().length, 0, "nothing waits:");
+  chatReports = 2;
+  env.CHAT_REPORT_MAIL = "0";
+  await tick("send");
+  eq(about().length, 0, "switched off:");
+  delete env.CHAT_REPORT_MAIL;
+  await tick("send");
+  eq(about().map((m) => m.to).sort(), admins, "one mail to each admin:");
+  if (!admins.includes("boss@molastria.com") || about().some((m) => m.subject !== "讨论室有 2 条举报待处理" || !m.text.includes("https://molastria.com/chat/#mod"))) throw new Error(JSON.stringify(about()));
+  await tick("send");
+  eq(about().length, admins.length, "not again within twelve hours:");
+  delete env.CHAT;
+});
+
 // ── words the Network view did not know ─────────────────────────────────
 await test("network misses: anyone reports a word anonymously; repeats count; nothing about the sender is kept", async () => {
   const r = await call("POST", "/net/miss", { q: "  Plasmonic   Gizmo ", hits: 3 });

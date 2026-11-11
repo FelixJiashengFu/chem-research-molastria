@@ -46,7 +46,7 @@ async function ready(url) {
 
 // ── browser helpers ─────────────────────────────────────────────────────
 let browser;
-async function open({ init, ...options } = {}) {
+async function open({ init, initArg, ...options } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'light', ...options });
   await ctx.route('**/pay/config.js', async (route) => {
     const res = await route.fetch();
@@ -54,7 +54,7 @@ async function open({ init, ...options } = {}) {
   });
   // 联网搜索 (websearch/web.js) asks these from the browser: answer with small fakes so checks stay offline and free.
   await ctx.route(/^https:\/\/(api\.openalex\.org|api\.crossref\.org|(en|zh)\.wikipedia\.org\/w\/api\.php|pubchem\.ncbi\.nlm\.nih\.gov\/rest|api\.github\.com\/search)/, (route) => route.fulfill(fakeWeb(route.request().url())));
-  if (init) await ctx.addInitScript(init);
+  if (init) await ctx.addInitScript(init, initArg);
   const page = await ctx.newPage();
   page.errors = [];
   page.on('pageerror', (e) => page.errors.push(e.message));
@@ -93,7 +93,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1414,7 +1414,7 @@ check('top bar: five groups in one row at desktop widths in both languages, a si
   const p = await open({ viewport: { width: 1366, height: 800 } });
   await go(p, '/manual/index.html');
   const ids = await p.$$eval('.cr-mega a.cr-item[data-id]', (a) => a.map((x) => x.dataset.id));
-  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'manual', 'videos', 'programming', 'learn', 'review', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
+  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
   assert.ok(!ids.includes('meta'), 'Meta is no longer its own section; it sits under 开放模型馆');
   const hrefs = await p.$$eval('.cr-mega a[href]', (a) => [...new Set(a.map((x) => x.href.split('#')[0]))]);
   for (const h of hrefs) assert.equal((await p.request.get(h)).status(), 200, h);
@@ -4316,9 +4316,18 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   // Count AudioContexts the page creates: none may exist before a press (no autoplay).
   const countAudio = () => { const A = window.AudioContext; window.__acN = 0; if (A) window.AudioContext = class extends A { constructor(...a) { super(...a); window.__acN++; } }; };
   let p = await open({ init: countAudio });
+  // The discussion-room card above grows when the latest messages arrive (earlier checks leave some): an empty summary keeps
+  // the distance to this block what the first layout says.
+  await p.route('**/chat/summary', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"state":"on","online":0,"rooms":7,"top":[],"latest":[]}' }));
+  // The loader starts 400 px before the block scrolls in. Where the block is when the script is asked for is what counts: a
+  // look after the page settles races cards above it that grow or shrink while the home page fills in.
+  let askedAt = null;
+  await p.route('**/viewer/glass-switch.js', async (r) => {
+    askedAt = await p.evaluate(() => document.getElementById('glass-duo').getBoundingClientRect().top - innerHeight).catch(() => null);
+    await r.continue();
+  });
   await go(p, '/index.html');
-  // The loader starts 400 px before the block scrolls in; on a tall first screen that can already be the case.
-  if (await p.evaluate(() => document.getElementById('glass-duo').getBoundingClientRect().top > innerHeight + 450)) assert.equal(await p.evaluate(() => !!window.MolAstriaGlassSwitch), false, 'not loaded before scrolling near it');
+  if (askedAt !== null) assert.ok(askedAt < 400 + 60, `not loaded before scrolling near it (asked for ${Math.round(askedAt)} px below the screen)`);
   await p.locator('#glass-duo').scrollIntoViewIfNeeded();
   await p.waitForSelector('#glass-duo .gsw-hydrogen .gsw-switch');
   await p.waitForSelector('#glass-duo .gsw-blackhole .gsw-switch');
@@ -4352,11 +4361,285 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
     await p.context().close();
+  }
+});
+
+// ── discussion rooms (/chat/, deploy/chat.js behind tools/chat-local.ts) ─
+/** A signed-in person on a bare WebSocket (no browser), to put something in the rooms that a page should then show. */
+// Sign-in codes are limited to 20 an hour per address, and the whole suite signs in from one: the chat checks sign in
+// over the API, each from an address of its own (TEST-NET-2), so they neither hit that limit nor use it up for others.
+let chatAddr = 0;
+async function chatToken(email) {
+  const headers = { 'Content-Type': 'application/json', Origin: SITE, 'CF-Connecting-IP': `198.51.100.${(++chatAddr % 250) + 1}` };
+  const post = async (path, body) => (await fetch(API + path, { method: 'POST', headers, body: JSON.stringify(body) })).json();
+  const { devCode } = await post('/auth/start', { email });
+  const { token } = await post('/auth/verify', { email, code: devCode });
+  assert.ok(token, `no session for ${email}`);
+  return token;
+}
+async function chatPerson(email, name) {
+  const token = await chatToken(email);
+  const ws = new WebSocket(`${API.replace('http', 'ws')}/chat/ws`, ['molastria-chat', `t.${token}`]);
+  const frames = [], waiting = [];
+  ws.addEventListener('message', (e) => {
+    if (!String(e.data).startsWith('{')) return;
+    const f = JSON.parse(e.data);
+    frames.push(f);
+    for (const w of [...waiting]) if (w.test(f)) { waiting.splice(waiting.indexOf(w), 1); w.resolve(f); }
+  });
+  await new Promise((ok, no) => { ws.addEventListener('open', ok, { once: true }); ws.addEventListener('error', () => no(new Error('the chat WebSocket did not open')), { once: true }); });
+  const until = (test, what) => frames.find(test) ? Promise.resolve(frames.find(test)) : new Promise((resolve, reject) => {
+    waiting.push({ test, resolve });
+    setTimeout(() => reject(new Error(`chat: no ${what} for ${email}; last frames ${JSON.stringify(frames.slice(-3))}`)), 8000);
+  });
+  let n = 0, last = 0;
+  const ask = async (f) => { const cid = `e2e${++n}${randomBytes(3).toString('hex')}`; ws.send(JSON.stringify({ ...f, cid })); const r = await until((x) => x.cid === cid, f.t); assert.notEqual(r.t, 'err', `chat ${f.t}: ${r.code}`); return r; };
+  await until((f) => f.t === 'hello', 'hello');
+  await ask({ t: 'name', name });
+  return {
+    frames, until, ask, close: () => ws.close(),
+    async say(room, text) { // the rooms take one message every 1.5 s from a person
+      await new Promise((r) => setTimeout(r, Math.max(0, last + 1650 - Date.now())));
+      const r = await ask({ t: 'say', room, text });
+      last = Date.now();
+      return r.m;
+    }
+  };
+}
+const chatSaid = (p, s) => p.waitForFunction((x) => [...document.querySelectorAll('.ch-rows .ch-msg .ch-text')].some((el) => el.textContent.includes(x)), s);
+const chatRow = (p, s) => p.locator('.ch-rows .ch-msg').filter({ has: p.locator('.ch-text', { hasText: s }) }).last(); // by its own text, not by a line it quotes
+async function chatSignedIn(email, hash) {
+  const token = await chatToken(email);
+  const p = await open({ init: (tk) => { try { localStorage.setItem('molastria-session', tk); } catch {} }, initArg: token });
+  await go(p, `/chat/index.html${hash}`);
+  return p;
+}
+async function chatNickname(p, name) {
+  await p.waitForSelector('#ch-name');
+  await p.fill('#ch-name', name);
+  await p.click('dialog.ch-dlg button[type=submit]');
+  await p.waitForSelector('#ch-name', { state: 'detached' });
+}
+
+check('chat: a guest reads every room, cannot post, and is offered the sign-in page', async () => {
+  const p = await open();
+  await go(p, '/chat/index.html#r-qc');
+  await p.waitForSelector('a.ch-room[data-room="qc"][aria-current="true"]');
+  assert.deepEqual(await p.$$eval('a.ch-room[data-kind="official"]', (a) => a.map((x) => x.dataset.room)), ['lobby', 'qc', 'mlip', 'software', 'papers', 'study', 'site']);
+  assert.match(await text(p, '.ch-status'), /\d+ 人在线/);
+  assert.equal(await p.$('#ch-input'), null, 'no message box for a guest');
+  assert.match(await p.getAttribute('.ch-compose .ch-cta a.ch-btn', 'href'), /pro\/account\.html/);
+  // Opening a room needs an account too: the dialog says so instead of failing quietly.
+  await p.click('#ch-new-room');
+  assert.match(await p.getAttribute('dialog.ch-dlg a.ch-btn.primary', 'href'), /pro\/account\.html/);
+  await p.keyboard.press('Escape');
+  // The two links under the room list lead to sections that exist.
+  const foot = await p.$$eval('#ch-foot a', (a) => a.map((x) => x.href));
+  assert.equal(foot.length, 2);
+  for (const href of foot) {
+    const [page, id] = href.split('#');
+    assert.ok(id && (await (await p.request.get(page)).text()).includes(`id="${id}"`), `${href} has its section`);
+  }
+  await finish(p);
+});
+
+check('chat: two people talk live: nickname, message, unread, reply, markup stays text, delete, a room of their own', async () => {
+  const a = await chatSignedIn('chat-ada@example.com', '#r-study');
+  await a.waitForSelector('#ch-input');
+  // The first message asks for a nickname and is sent once the name is taken.
+  await a.fill('#ch-input', 'e2e 第一问：B3LYP 还是 TPSSh？');
+  await a.press('#ch-input', 'Enter');
+  await chatNickname(a, 'Ada_e2e');
+  await chatSaid(a, 'e2e 第一问');
+  assert.equal(await a.inputValue('#ch-input'), '');
+
+  const b = await chatSignedIn('chat-ben@example.com', '#r-study');
+  await chatSaid(b, 'e2e 第一问'); // history for someone who arrives later
+  await b.click('#ch-name-btn');
+  await chatNickname(b, 'Ben_e2e');
+  await b.click('a.ch-room[data-room="lobby"]');
+  await b.waitForSelector('a.ch-room[data-room="lobby"][aria-current="true"]');
+
+  // A message in a room that is not open shows as unread; opening the room clears it.
+  await a.fill('#ch-input', 'e2e 第二问：def2-TZVP 够吗');
+  await a.press('#ch-input', 'Enter');
+  await chatSaid(a, 'e2e 第二问');
+  await b.waitForSelector('a.ch-room[data-room="study"][data-unread]');
+  await b.click('a.ch-room[data-room="study"]');
+  await chatSaid(b, 'e2e 第二问');
+  await b.waitForSelector('a.ch-room[data-room="study"]:not([data-unread])');
+
+  // A reply carries the line it answers.
+  const second = chatRow(b, 'e2e 第二问');
+  await second.hover();
+  await second.locator('.ch-act-reply').click();
+  assert.match(await text(b, '#ch-replying'), /Ada_e2e/);
+  await b.fill('#ch-input', 'e2e 回答：单点够了');
+  await b.press('#ch-input', 'Enter');
+  await chatSaid(a, 'e2e 回答');
+  assert.match(await chatRow(a, 'e2e 回答').locator('.ch-quote').textContent(), /Ada_e2e.*e2e 第二问/s);
+
+  // What people type is text: no element comes out of it, a web address becomes a link that says it is user content.
+  await a.fill('#ch-input', '<img src=x onerror="window.__chatXss=1"> <b>e2e-bold</b> 见 https://example.org/a?b=1 和 javascript:alert(1)');
+  await a.press('#ch-input', 'Enter');
+  await chatSaid(b, 'e2e-bold');
+  const markup = chatRow(b, 'e2e-bold').locator('.ch-text');
+  assert.equal(await markup.locator('img, b').count(), 0);
+  assert.equal(await b.evaluate(() => window.__chatXss), undefined);
+  assert.deepEqual(await markup.locator('a').evaluateAll((l) => l.map((x) => [x.getAttribute('href'), x.target, x.rel])), [['https://example.org/a?b=1', '_blank', 'noopener noreferrer nofollow ugc']]);
+
+  // Deleting your own message blanks it for everybody.
+  const mine = chatRow(a, 'e2e 第二问：def2');
+  await mine.hover();
+  await mine.locator('.ch-act-more').click();
+  await a.click('dialog.ch-menu button.danger');
+  await a.click('dialog.ch-dlg .ch-btn.danger.solid');
+  await b.waitForFunction(() => [...document.querySelectorAll('.ch-rows .ch-msg.gone .ch-text')].some((x) => x.textContent === '这条消息已删除'));
+  assert.equal(await b.locator('.ch-rows .ch-msg .ch-text', { hasText: 'e2e 第二问：def2' }).count(), 0);
+
+  // A room of one's own: it opens at once, has its address, and a guest can walk in by that address.
+  await a.click('#ch-new-room');
+  await a.fill('#ch-room-title', 'E2E reading group');
+  await a.fill('#ch-room-topic', 'One paper a week');
+  await a.click('dialog.ch-dlg button[type=submit]');
+  await a.waitForFunction(() => /^#r-[a-z0-9]+$/.test(location.hash) && document.querySelector('#ch-pane h2')?.textContent.includes('E2E reading group'));
+  const room = await a.evaluate(() => location.hash);
+  await b.waitForSelector(`a.ch-room[data-room="${room.slice(3)}"]`); // the list of everyone who is connected gets it
+  const g = await open();
+  await go(g, `/chat/index.html${room}`);
+  await g.waitForFunction(() => document.querySelector('#ch-pane h2')?.textContent.includes('E2E reading group'));
+  await g.context().close();
+  // …and the next one has to wait: one new room in ten minutes.
+  await a.click('#ch-new-room');
+  await a.fill('#ch-room-title', 'E2E second room');
+  await a.click('dialog.ch-dlg button[type=submit]');
+  await a.waitForSelector('#ch-room-say[data-bad]');
+  assert.ok((await text(a, '#ch-room-say')).length > 4);
+  await finish(a);
+  await finish(b);
+});
+
+check('chat: a report reaches the owner\'s panel; delete and mute take effect at once; unmute gives the voice back', async () => {
+  const dave = await chatPerson('chat-dave@example.com', 'Dave_e2e');
+  await dave.say('site', 'e2e 广告：便宜的机时，加我');
+  const e = await chatSignedIn('chat-erin@example.com', '#r-site');
+  await chatSaid(e, 'e2e 广告');
+  const row = chatRow(e, 'e2e 广告');
+  await row.hover();
+  await row.locator('.ch-act-more').click();
+  await e.locator('dialog.ch-menu button', { hasText: '举报' }).click();
+  await chatNickname(e, 'Erin_e2e'); // reporting needs a nickname as well; the report dialog follows
+  await e.fill('#ch-report-why', 'e2e 广告刷屏');
+  await e.click('dialog.ch-dlg button[type=submit]');
+  await e.waitForFunction(() => document.querySelector('.ch-toast')?.textContent.includes('已举报'));
+
+  const o = await chatSignedIn('chat-owner@example.com', '#mod'); // a third admin: the other checks spend admin@example.com's five codes an hour
+  const report = o.locator('.ch-report', { hasText: 'e2e 广告：便宜的机时' });
+  await report.waitFor();
+  assert.match(await report.textContent(), /Dave_e2e/);
+  assert.match(await report.locator('.ch-reasons').textContent(), /e2e 广告刷屏/);
+  await report.locator('button', { hasText: '删除并禁言 1 天' }).click();
+  await report.waitFor({ state: 'detached' });
+  const held = o.locator('.ch-users li', { hasText: 'Dave_e2e' });
+  await held.waitFor();
+  // The author is told at once, and everybody sees the message go.
+  const muted = await dave.until((f) => f.t === 'me' && f.me.muted > Date.now(), 'mute');
+  assert.ok(muted.me.muted - Date.now() > 23 * 3600e3);
+  await e.waitForFunction(() => [...document.querySelectorAll('.ch-rows .ch-msg.gone .ch-text')].some((x) => x.textContent === '这条消息已被站长删除'));
+  await assert.rejects(dave.ask({ t: 'say', room: 'site', text: 'e2e 还能说话吗' }), /muted/); // refused by the server, whatever a page shows
+  await held.locator('button', { hasText: '解除禁言' }).click();
+  await dave.until((f) => f.t === 'me' && f.me.muted === 0 && dave.frames.indexOf(f) > dave.frames.indexOf(muted), 'unmute');
+  // A guest who types the panel's address gets the rooms, and is told why.
+  const g = await open();
+  await go(g, '/chat/index.html#mod');
+  await g.waitForFunction(() => document.querySelector('.ch-toast')?.textContent.includes('只有站长'));
+  assert.equal(await g.$('.ch-report'), null);
+  await g.context().close();
+  dave.close();
+  await finish(e);
+  await finish(o);
+});
+
+check('chat: English and a phone: the page speaks English by itself, list first, one column, no sideways scroll', async () => {
+  const p = await open({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true, init: () => { try { localStorage.setItem('chemhub-lang', 'en'); } catch (e) {} } });
+  await go(p, '/chat/index.html?lang=en');
+  await p.waitForSelector('a.ch-room[data-room="mlip"]');
+  assert.equal(await p.getAttribute('#ch-app', 'data-view'), 'list');
+  assert.match(await text(p, '.ch-h1'), /Discussion rooms/);
+  assert.equal(await text(p, 'a.ch-room[data-room="mlip"] .ch-room-t'), 'ML potentials & models');
+  // Official rooms, the status line, the buttons: nothing of the page's own is left in Chinese (community rooms are named by people).
+  assert.deepEqual(await p.evaluate(() => {
+    const out = [], w = document.createTreeWalker(document.getElementById('ch-app'), NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('a.ch-room:not([data-kind="official"]), .ch-text, .ch-quote, .ch-name')) out.push(n.nodeValue.trim());
+    return out;
+  }), []);
+  await p.tap('a.ch-room[data-room="mlip"]');
+  await p.waitForFunction(() => document.getElementById('ch-app').dataset.view === 'pane' && location.hash === '#r-mlip');
+  assert.match(await text(p, '.ch-compose'), /Sign in/);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll in a room');
+  await p.tap('#ch-back');
+  await p.waitForFunction(() => document.getElementById('ch-app').dataset.view === 'list');
+  await finish(p);
+});
+
+check('home: the chat card and the pill on the first screen show who is online and the latest messages, and step aside when the rooms are closed', async () => {
+  const mia = await chatPerson('chat-mia@example.com', 'Mia_e2e');
+  const said = `e2e home ${randomBytes(3).toString('hex')} <b>not bold</b> & co`;
+  await mia.say('papers', said);
+  let p = await open();
+  await go(p, '/index.html');
+  assert.equal(await p.getAttribute('#chat-pill', 'href'), 'chat/index.html');
+  await p.waitForFunction(() => /现在 \d+ 人在线/.test(document.getElementById('cc-online').textContent) && /讨论室现在 \d+ 人在线/.test(document.getElementById('chat-pill-text').textContent));
+  assert.ok(await p.isVisible('#chat-pill'), 'the pill is on the first screen');
+  assert.ok((await p.locator('#chat-pill').boundingBox()).y < 900, 'the pill is above the fold');
+  assert.deepEqual((await p.$$eval('#cc-rooms a', (a) => a.map((x) => x.getAttribute('href')))).slice(0, 7), ['lobby', 'qc', 'mlip', 'software', 'papers', 'study', 'site'].map((id) => `chat/index.html#r-${id}`));
+  assert.equal(await text(p, '#cc-label'), '最新发言');
+  const feed = p.locator('#cc-feed a.cc-msg');
+  assert.ok((await feed.count()) >= 1 && (await feed.count()) <= 3);
+  const newest = feed.last(); // the newest is at the bottom, as in a room
+  assert.equal(await newest.getAttribute('href'), 'chat/index.html#r-papers');
+  assert.equal(await newest.locator('.cc-say').textContent(), said);
+  assert.equal(await newest.locator('.cc-say b').count(), 0, 'markup in a message stays text');
+  assert.match(await newest.locator('.cc-meta').textContent(), /Mia_e2e.*论文与预印本 · 刚刚/s);
+  // The button leads into the rooms.
+  await p.click('#chat-card .cc-go');
+  await p.waitForURL(/\/chat\/index\.html$/);
+  await p.waitForSelector('a.ch-room[data-room="lobby"]');
+  await finish(p);
+
+  // English: the card's own words come from the dictionary and from chat-card.js; only what people wrote stays as written.
+  p = await open({ init: () => { try { localStorage.setItem('chemhub-lang', 'en'); } catch (e) {} } });
+  await go(p, '/index.html?lang=en');
+  await p.waitForFunction(() => /\d+ online now/.test(document.getElementById('cc-online').textContent) && document.querySelector('#cc-feed a.cc-msg'));
+  await p.waitForFunction(() => {
+    for (const root of [document.getElementById('chat-card'), document.getElementById('chat-pill')]) {
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let n; (n = w.nextNode());) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('.cc-say, .cc-meta b')) return false;
+    }
+    return true;
+  });
+  assert.match(await p.locator('#cc-feed a.cc-msg').last().locator('.cc-meta').textContent(), /Papers & preprints · just now/);
+  await finish(p);
+  mia.close();
+
+  // Closed by the owner, or an account service that has no rooms yet: both entries go away. A network failure leaves the card as written.
+  const cors = { 'Access-Control-Allow-Origin': '*' };
+  for (const [how, gone] of [[{ status: 200, headers: cors, json: { state: 'off' } }, true], [{ status: 404, headers: cors, json: { error: { message: '没有这个接口' } } }, true], [null, false]]) {
+    p = await open();
+    await p.route('**/chat/summary', (route) => (how ? route.fulfill(how) : route.abort()));
+    await go(p, '/index.html');
+    await p.waitForFunction((g) => document.getElementById('chat-card').hidden === g && document.getElementById('chat-pill').hidden === g, gone);
+    if (!gone) {
+      assert.equal(await p.locator('#cc-feed .cc-msg').count(), 2, 'the card as it is written in the page');
+      assert.ok(await p.isHidden('#cc-online'));
+      assert.equal(await text(p, '#chat-pill-text'), '讨论室开张了，进来聊聊');
+    }
+    await finish(p);
   }
 });
 

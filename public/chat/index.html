@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 讨论室：和做计算化学、量子化学与分子模拟的人实时聊天。有量子化学与 DFT、机器学习势、软件报错求助、论文与预印本等官方房间，也可以自己开一个房间。不用登录就能看，登录后取一个昵称就能发言；只有文字，没有广告。">
+  <meta name="theme-color" content="#173f34">
+  <title>讨论室 · 和做计算化学的人实时聊天 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="chat.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="../pay/account.js" defer></script>
+  <script src="chat-core.js" defer></script>
+  <script src="chat.js" defer></script>
+</head>
+<body data-section="chat" class="js-render">
+<!-- Everything a visitor reads here is drawn by chat.js in both languages (translate="no"), so the page does not wait for
+     the site dictionary. The brand line that shared-nav.js adds lands after the footer inside the room list. -->
+<main class="ch" id="ch">
+  <div class="ch-app" id="ch-app" data-view="list">
+    <div class="ch-side" id="ch-side">
+      <div class="ch-side-top" id="ch-top" translate="no"></div>
+      <div class="ch-side-scroll" id="ch-scroll">
+        <nav class="ch-rooms" id="ch-rooms" translate="no"></nav>
+        <footer class="ch-foot" id="ch-foot" translate="no"></footer>
+      </div>
+      <div class="ch-me" id="ch-me" translate="no"></div>
+    </div>
+    <section class="ch-pane" id="ch-pane" translate="no"></section>
+  </div>
+  <div id="ch-layer" translate="no"></div>
+  <noscript><p class="ch-noscript">讨论室需要 JavaScript 才能使用。</p></noscript>
+</main>
+</body>
+</html>
