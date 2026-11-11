@@ -551,6 +551,9 @@ def _job_view(job: dict[str, Any]) -> dict[str, Any]:
     for k in ("id", "model", "job", "position", "progress", "cached", "cost", "usage", "result", "error"):
         if k in job:
             out["job_id" if k == "id" else k] = job[k]
+    res = out.get("result")
+    if isinstance(res, dict) and "trajectory_pdb" in res:  # protein MD: the PDB texts are long; say how big instead
+        out["result"] = {k: (f"<{len(v)} characters of PDB text, left out>" if k in ("trajectory_pdb", "final_pdb") else v) for k, v in res.items()}
     if out["status"] == "pending":
         out["next"] = f"还没算完（任务继续在排队或计算）。稍后用 get_calculation(job_id=\"{job.get('id')}\") 取结果；完成后保留一小时。"
     return out
@@ -560,12 +563,12 @@ def _job_view(job: dict[str, Any]) -> dict[str, Any]:
 @_tool_errors
 def run_calculation(
     smiles: Annotated[str | None, Field(description="分子的 SMILES，如 CCO；与 xyz 二选一。反应能（job=rxn）不填这里，把反应 SMILES 写进 params.reaction")] = None,
-    job: Annotated[Literal["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"], Field(description="计算种类：sp 单点能与受力，opt 几何优化，freq 振动频率与热化学，conf 构象搜索，scan 二面角扫描，md 分子动力学，rxn 反应能，ipea 电离能与电子亲和能，spin 自旋态能隙，bde 键解离能，pa 质子亲和能。花费（次）：sp/opt/ipea 1，spin/bde/pa 2，freq/rxn 3，conf/scan/md 5")] = "opt",
-    model: Annotated[Literal["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "uma-s-1p1", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "ani-2x", "gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb", "gfn-ff"], Field(description="模型，默认 UMA-S 1.2.1。ipea、spin、bde、pa 只有能处理电荷和自旋的模型做（uma-s-1p2p1、uma-s-1p2、uma-s-1p2p1-ft-d4rev 和两个 allscaip；三个 xTB 做 spin、bde、pa，不做 ipea；gfn-ff 只算中性闭壳层）；compute_status 列出每个模型现在能做什么")] = "uma-s-1p2p1",
+    job: Annotated[Literal["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa", "pmd"], Field(description="计算种类：sp 单点能与受力，opt 几何优化，freq 振动频率与热化学，conf 构象搜索，scan 二面角扫描，md 分子动力学，rxn 反应能，ipea 电离能与电子亲和能，spin 自旋态能隙，bde 键解离能，pa 质子亲和能，pmd 蛋白质分子动力学（只有 openmm-amber14 做，不给 smiles 和 xyz，PDB 编号写进 params.pdb_id）。花费（次）：sp/opt/ipea 1，spin/bde/pa 2，freq/rxn 3，conf/scan/md/pmd 5（pmd 超过 20 ps 是 10）")] = "opt",
+    model: Annotated[Literal["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "uma-s-1p1", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "ani-2x", "gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb", "gfn-ff", "openmm-amber14"], Field(description="模型，默认 UMA-S 1.2.1。openmm-amber14 只做 pmd（Amber ff14SB + 隐式水）。ipea、spin、bde、pa 只有能处理电荷和自旋的模型做（uma-s-1p2p1、uma-s-1p2、uma-s-1p2p1-ft-d4rev 和两个 allscaip；三个 xTB 做 spin、bde、pa，不做 ipea；gfn-ff 只算中性闭壳层）；compute_status 列出每个模型现在能做什么")] = "uma-s-1p2p1",
     xyz: Annotated[str | None, Field(description="标准 XYZ 文本（第一行原子数，第二行注释，之后每行“元素 x y z”，单位 Å），最多 120 个原子；与 smiles 二选一")] = None,
     charge: Annotated[int | None, Field(ge=-2, le=2, description="总电荷，默认 0")] = None,
     spin: Annotated[int | None, Field(ge=1, le=4, description="自旋多重度，默认 1")] = None,
-    params: Annotated[dict[str, Any] | None, Field(description="这种计算的参数，都可省略，除非标了必填：opt {fmax}；freq {temperature, symmetry}；conf {n, temperature, window_kcal}；scan {atoms 必填（四个原子序号）, start, end, points}；md {temperature, timestep_fs, steps, friction}；rxn {reaction 必填, thermo, temperature}；ipea {mode}；spin {spins}；bde {bond 必填（两个原子序号）, thermo, temperature}；pa {site 必填, mode, thermo, temperature}")] = None,
+    params: Annotated[dict[str, Any] | None, Field(description="这种计算的参数，都可省略，除非标了必填：opt {fmax}；freq {temperature, symmetry}；conf {n, temperature, window_kcal}；scan {atoms 必填（四个原子序号）, start, end, points}；md {temperature, timestep_fs, steps, friction}；rxn {reaction 必填, thermo, temperature}；ipea {mode}；spin {spins}；bde {bond 必填（两个原子序号）, thermo, temperature}；pa {site 必填, mode, thermo, temperature}；pmd {pdb_id 必填（如 1L2Y）, chains（如 A，空为全部蛋白链）, ps（1–100，默认 20）, temperature（250–400 K）}")] = None,
     wait_s: Annotated[float, Field(ge=0, le=600, description="最多等多少秒；到时间还没算完就返回任务号，之后用 get_calculation 取。0 表示提交后立刻返回")] = 120,
 ) -> dict[str, Any]:
     """用 MolAstria 的在线机器学习势算一个分子（单点、优化、频率、构象、扫描、动力学、反应能、电离能等），等到算完并返回结果。
@@ -576,7 +579,7 @@ def run_calculation(
     """
     from chemdb_agent.adapters import molastria_compute as mc
 
-    if job != "rxn" and (smiles is None) == (xyz is None):
+    if job not in ("rxn", "pmd") and (smiles is None) == (xyz is None):
         raise ValueError("smiles 和 xyz 要给一个，且只能给一个")
     submitted = mc.submit(job=job, model=model, smiles=smiles.strip() if smiles else None, xyz=xyz, charge=charge, spin=spin, params=params)
     return _job_view(mc.wait(submitted, wait_s))

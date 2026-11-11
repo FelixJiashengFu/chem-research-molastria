@@ -28,7 +28,7 @@
   <section class="md-hero">
     <p class="eyebrow">MOLASTRIA · ONLINE MODEL API</p>
     <h1>量子化学模型接口</h1>
-    <p class="lead">站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x；CPU 上还有开源半经验程序 xTB 的四种方法（GFN2-xTB、加水溶剂的 GFN2-xTB、GFN1-xTB、GFN-FF）。这里按模型类别分成五个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。</p>
+    <p class="lead">站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x；CPU 上还有开源半经验程序 xTB 的四种方法（GFN2-xTB、加水溶剂的 GFN2-xTB、GFN1-xTB、GFN-FF），以及跑蛋白质分子动力学的开源引擎 OpenMM。这里按模型类别分成六个窗口，不用安装任何东西，输入 SMILES、XYZ 结构或 PDB 编号就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。</p>
     <p class="md-disclaim"><b>注意：</b>结果是机器学习势的预测，不是 DFT 计算。模型的误差随体系变化，重要的结论请用 DFT 或实验核对。</p>
     <p class="muted small">这里的模型预测原子体系的能量和力；处理科学文本和科学数据的语言模型（如 Hydrogen-1.0、Intern-S1）见<a href="../scimodels/index.html">科学大模型栏目</a>和<a href="../manual/index.html#p11c-cat17">讲解手册的科学语言模型一章</a>。</p>
     <div class="md-status" id="m-status" role="status"><span class="muted">正在查询在线状态…</span></div>
@@ -41,6 +41,7 @@
       <button type="button" role="tab" data-win="organic" aria-selected="false" aria-controls="m-panel"><b>③</b><span>有机分子力场</span><small>MACE-OFF23 · ANI-2x · GFN-FF</small></button>
       <button type="button" role="tab" data-win="props" aria-selected="false" aria-controls="m-panel"><b>④</b><span>分子性质模型</span><small>MACE-MDP · 极化率与光谱</small></button>
       <button type="button" role="tab" data-win="xtb" aria-selected="false" aria-controls="m-panel"><b>⑤</b><span>半经验量子化学</span><small>xTB · GFN2 / GFN1 · 隐式溶剂</small></button>
+      <button type="button" role="tab" data-win="protein" aria-selected="false" aria-controls="m-panel"><b>⑥</b><span>蛋白质分子动力学</span><small>OpenMM · Amber ff14SB · PDB 编号</small></button>
     </div>
     <div class="md-panel" id="m-panel" role="tabpanel">
       <p class="md-win-about" id="m-win-about"></p>
@@ -53,7 +54,8 @@
           <label class="md-checkbox"><input type="checkbox" id="m-compare-on"> 多模型对比：选几个模型依次跑同一个计算，结果放进一张表</label>
           <div class="md-compare" id="m-compare" hidden></div>
 
-          <h2 class="md-step">2 · 结构</h2>
+          <h2 class="md-step" id="m-struct-h">2 · 结构</h2>
+          <p class="muted small" id="m-pmd-note" hidden>蛋白质的结构由站长电脑按右边的 PDB 编号从 RCSB 下载，不用另给。</p>
           <div id="m-struct">
             <div class="md-seg" role="radiogroup" aria-label="结构输入方式">
               <label><input type="radio" name="m-mode" value="smiles" checked> SMILES</label>
@@ -107,7 +109,7 @@
       <div class="md-table"><table>
         <thead><tr><th>模型</th><th>每天</th></tr></thead>
         <tbody>
-          <tr><td>Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）与 ANI-2x</td><td>共用：不登录 40 次，<a href="../pro/account.html">免费账号</a> 100 次，Pro 支持者 200 次</td></tr>
+          <tr><td>Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）、ANI-2x、xTB 与 OpenMM</td><td>共用：不登录 40 次，<a href="../pro/account.html">免费账号</a> 100 次，Pro 支持者 200 次</td></tr>
           <tr><td>MACE 系列（学术许可）</td><td>每位访客 40 次，对所有人相同</td></tr>
         </tbody>
       </table></div>
@@ -118,6 +120,7 @@
           <tr><td>自旋态能隙、键解离能、质子亲和能</td><td>2 次（加热校正 5 次）</td></tr>
           <tr><td>振动频率与热化学、红外与拉曼光谱、反应能</td><td>3 次（反应能加热校正 5 次）</td></tr>
           <tr><td>构象搜索、二面角扫描、分子动力学、构象平均的极化率</td><td>5 次</td></tr>
+          <tr><td>蛋白质分子动力学</td><td>5 次（超过 20 ps 10 次）</td></tr>
         </tbody>
       </table></div>
     </div>

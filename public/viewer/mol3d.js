@@ -90,7 +90,9 @@
     if (!el) throw new Error('mount: 没有容器');
     el.classList.add('m3-box');
     const protein = !!(opts.pdb || opts.pdbId || opts.cif);
-    const styles = protein ? PROTEIN_STYLES : STYLES;
+    // A Cα-only PDB (the models page's protein MD trajectory) has no bonds and no backbone for a cartoon: draw a trace.
+    const caOnly = !!opts.pdb && !/^ATOM.{8}(?! CA )/m.test(opts.pdb);
+    const styles = caOnly ? PROTEIN_STYLES.slice(0, 1) : protein ? PROTEIN_STYLES : STYLES;
     let style = styles.some(([k]) => k === opts.style) ? opts.style : styles[0][0];
     el.innerHTML = `<div class="m3-stage" role="img" aria-label="${esc(opts.label || '3D 分子结构')}"><p class="m3-state">正在载入 3D 查看器…</p></div>`
       + `<div class="m3-bar"><label class="m3-style">样式 <select>${styles.map(([k, n]) => `<option value="${k}"${k === style ? ' selected' : ''}>${n}</option>`).join('')}</select></label>`
@@ -107,7 +109,11 @@
       data = joinXyz(fr); frames = fr.length;
       info.textContent = `${formula(fr[0].atoms)} · ${fr[0].atoms.length} 个原子`;
     } else if (opts.sdf) { data = opts.sdf; format = 'sdf'; }
-    else if (opts.pdb) { data = opts.pdb; format = 'pdb'; }
+    else if (opts.pdb) { // several MODEL records are the frames of a trajectory (the models page's protein MD)
+      data = opts.pdb; format = 'pdb';
+      const models = (data.match(/^MODEL /gm) || []).length;
+      if (models > 1) frames = models;
+    }
     else if (opts.cif) { data = opts.cif; format = 'cif'; }
     else if (opts.pdbId) {
       const id = cleanPdbId(opts.pdbId);
@@ -127,7 +133,7 @@
     const viewer = $3D.createViewer(stage, { backgroundColor: dark() ? '#10141c' : '#ffffff', backgroundAlpha: 0, antialias: true });
     if (frames > 1) viewer.addModelsAsFrames(data, format); else viewer.addModel(data, format);
     const paint = () => {
-      viewer.setStyle({}, styleOf(style));
+      viewer.setStyle({}, caOnly ? { cartoon: { color: 'spectrum', style: 'trace', thickness: 0.5 } } : styleOf(style));
       if (protein && style === 'cartoon') viewer.setStyle({ hetflag: true, not: { resn: ['HOH', 'WAT'] } }, { stick: { radius: 0.2, colorscheme: 'Jmol' }, sphere: { scale: 0.3, colorscheme: 'Jmol' } });
       for (const h of opts.highlight || []) viewer.setStyle(h.sel, { stick: { radius: 0.28, color: h.color || 'orange' }, sphere: { scale: 0.45, color: h.color || 'orange' } }); // 单个金属离子没有键，要靠球才看得见
       viewer.render();

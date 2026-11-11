@@ -241,8 +241,8 @@ function schemaOf(samples, depth = 0) {
 // tools/account-test.ts checks these lists against what the service itself offers.
 const COMPUTE_MODELS = ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'uma-s-1p1', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
   'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'ani-2x',
-  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'gfn-ff'];
-const COMPUTE_JOBS = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'];
+  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'gfn-ff', 'openmm-amber14'];
+const COMPUTE_JOBS = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa', 'pmd'];
 const COMPUTE_NOTE = "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.";
 function computePaths() {
   const server = [{ url: COMPUTE.replace(/\/v1$/, ''), description: 'Account service (the compute API)' }];
@@ -271,12 +271,12 @@ function computePaths() {
     ComputeError: { type: 'object', properties: { error: { type: 'object', properties: {
       code: { type: 'string', description: 'For programs.', examples: ['unauthorized', 'invalid_request', 'quota_exceeded', 'job_in_progress', 'offline', 'api_busy', 'licence', 'not_found', 'too_many_requests', 'region', 'unavailable'] },
       message: { type: 'string', description: 'English' }, message_zh: { type: 'string', description: 'Chinese' } }, required: ['code', 'message', 'message_zh'] } }, required: ['error'] },
-    ComputeJobRequest: { type: 'object', description: 'Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead). At most 30 heavy atoms and 120 atoms.', properties: {
-      job: { type: 'string', enum: COMPUTE_JOBS, default: 'ipea', description: 'sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity. GET /v1/models says which model does which.' },
+    ComputeJobRequest: { type: 'object', description: 'Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead; protein MD its PDB ID in params.pdb_id). At most 30 heavy atoms and 120 atoms.', properties: {
+      job: { type: 'string', enum: COMPUTE_JOBS, default: 'ipea', description: 'sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity, pmd protein molecular dynamics (model openmm-amber14 only: Amber ff14SB + implicit water on a PDB entry). GET /v1/models says which model does which.' },
       model: { type: 'string', enum: COMPUTE_MODELS, default: 'uma-s-1p2p1' },
       smiles: { type: 'string', maxLength: 200 }, xyz: { type: 'string', maxLength: 12000, description: 'Standard XYZ text: atom count, a comment line, then "symbol x y z" lines.' },
       charge: { type: 'integer', minimum: -2, maximum: 2, default: 0 }, spin: { type: 'integer', minimum: 1, maximum: 4, default: 1, description: 'Spin multiplicity. Models that are not "charged" take 0 and 1 only.' },
-      params: { type: 'object', description: 'Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}.' },
+      params: { type: 'object', description: 'Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}; pmd {pdb_id (required, e.g. 1L2Y), chains (e.g. A; empty for every protein chain), ps (1-100, default 20; over 20 costs 10 uses), temperature (250-400 K)}.' },
     }, required: ['job'] },
     ComputeJob: { type: 'object', properties: {
       id: { type: 'string', description: 'Absent when a cached result comes straight back.' }, status: { type: 'string', enum: ['queued', 'running', 'done', 'error'] },

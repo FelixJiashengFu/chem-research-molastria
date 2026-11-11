@@ -52,6 +52,9 @@
     fine: `${name} 由开源程序 xtb（grimme-lab/xtb，LGPL-3.0）计算；论文里请引用 ${cite}。` });
   const UMA_CITE = 'UMA（Meta FAIR Chemistry）', ALLSCAIP = 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）', ESEN = 'eSEN 和 OMol25 数据集（Levine et al., 2025）';
   const MODELS = {
+    'openmm-amber14': { name: 'OpenMM · Amber ff14SB + 隐式水', tier: 'open', elements: null, kind: 'ff', dft: 'Amber ff14SB 蛋白质力场 + GBSA-OBC2 隐式溶剂（经典力场，不是量子化学）', license: 'MIT（OpenMM、PDBFixer）',
+      about: '开源分子模拟引擎 OpenMM 在站长电脑的显卡上跑蛋白质分子动力学：按 PDB 编号从 RCSB 取结构，PDBFixer 补齐缺失的原子和链内短缺口、加氢（pH 7），去掉配体和水，用 Amber ff14SB 力场和隐式水先能量最小化，再跑一段 Langevin 动力学。',
+      fine: '论文里请引用 OpenMM 8（Eastman et al., J. Phys. Chem. B 2024）、Amber ff14SB（Maier et al., J. Chem. Theory Comput. 2015）和所用的 PDB 条目。' },
     'uma-s-1p2p1': fair('UMA-S 1.2.1', `Meta FAIR Chemistry 的通用原子模型，${OMOL}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。`, UMA_CITE),
     'uma-s-1p2': fair('UMA-S 1.2', `UMA-S 1.2.1 的上一版，${OMOL}，支持电荷和自旋。实测苯、乙醇、水的垂直电离能都接近实验值，可以用来对照 1.2.1 的 IP / EA；比 1.2.1 慢。`, UMA_CITE),
     'uma-s-1p2p1-ft-d4rev': fair('UMA-S 1.2.1 D4rev', 'UMA-S 1.2.1 按 ωB97M-D4rev 色散校正微调的分子专用版本，能量里含 D4 色散。和 1.2.1 一样，水这类极小分子的电离能偏低。', UMA_CITE, { dft: 'OMol25 结构按 ωB97M-D4rev 重算' }),
@@ -89,6 +92,8 @@
       intro: '③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。GFN-FF 是 xTB 一系的通用力场，几乎认识所有元素。' },
     props: { name: '分子性质模型', charged: false, models: ['mace-mdp'], jobs: ['polar', 'ir'],
       intro: '④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。' },
+    protein: { name: '蛋白质分子动力学', charged: false, models: ['openmm-amber14'], jobs: ['pmd'],
+      intro: '⑥ 输入一个 PDB 编号，在站长的显卡上跑一段蛋白质分子动力学（OpenMM，Amber ff14SB + 隐式水），看折叠稳不稳、哪段 loop 在动：Cα RMSD、回转半径、每个残基的涨落和整条轨迹的 3D 播放。最多 300 个残基、100 ps。隐式水加几十皮秒只是快速的稳定性检查，不能代替显式水、平衡充分的生产模拟。' },
     xtb: { name: '半经验量子化学（xTB）', charged: true, models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: [...GEOM, 'spin', 'bde', 'pa'],
       intro: '⑤ 开源程序 xtb 的半经验方法，不是机器学习势，而是简化的量子化学：可以算离子、自由基和开壳层分子，可以加隐式溶剂（水），单点和优化还给出 HOMO–LUMO 能隙、偶极矩和部分电荷。实测它的电离能和电子亲和能比实验高好几 eV（水约 18 eV，实验 12.6 eV），所以这里不提供 IP / EA，请用窗口 ①。跑在站长电脑的 CPU 上，和 GPU 上的模型互不排队。' }
   };
@@ -120,6 +125,9 @@
       fields: [{ k: 'site', label: '位点（重原子编号）', type: 'site' }, { k: 'mode', label: '方式', type: 'select', def: 'protonate', options: [['protonate', '加质子：质子亲和能'], ['deprotonate', '去质子：去质子化能']] }, THERMO, T()] },
     polar: { name: '偶极矩与极化率', cost: (p) => (p.average ? 5 : 1), smiles: (p) => !!p.average, about: '偶极矩和完整的极化率张量；可以对多个构象按 Boltzmann 权重平均。',
       fields: [{ k: 'average', label: '按构象的 Boltzmann 权重平均（要用 SMILES）', type: 'bool', def: false }, { k: 'n', label: '平均用的构象数', type: 'int', lo: 2, hi: 20, def: 8 }] },
+    pmd: { name: '蛋白质分子动力学', cost: (p) => (p.ps > 20 ? 10 : 5), about: '从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。',
+      fields: [{ k: 'pdb_id', label: 'PDB 编号（四位，如 1L2Y、1VII、1UBQ）', type: 'pdb', def: '1L2Y' }, { k: 'chains', label: '链（如 A 或 AB；空着就是全部蛋白链）', type: 'chains', def: '' },
+        { k: 'ps', label: '模拟时长（ps）', type: 'int', lo: 1, hi: 100, def: 20 }, { k: 'temperature', label: '温度（K）', type: 'num', lo: 250, hi: 400, def: 300, step: 1 }] },
     ir: { name: '红外与拉曼光谱', cost: () => 3, about: 'MACE-OFF23 medium 优化并求振动模式，MACE-MDP 给出偶极矩和极化率对振动的导数，得到红外强度和拉曼活性。', fields: [] }
   };
 
@@ -254,7 +262,7 @@
     const out = {};
     for (const f of JOBS[j].fields) {
       const v = param(f);
-      out[f.k] = f.type === 'bond' ? String(v).split('-').map(Number) : f.type === 'reaction' ? String(v).trim() : v;
+      out[f.k] = f.type === 'bond' ? String(v).split('-').map(Number) : f.type === 'reaction' || f.type === 'chains' ? String(v).trim() : f.type === 'pdb' ? String(v).trim().toUpperCase() : v;
     }
     return out;
   }
@@ -265,6 +273,8 @@
       const v = param(f);
       if (f.type === 'bool') return `<label class="md-checkbox md-full"><input type="checkbox" data-k="${f.k}"${v ? ' checked' : ''}> ${esc(f.label)}</label>`;
       if (f.type === 'select') return `<label>${esc(f.label)}<select data-k="${f.k}">${opts(f.options, v)}</select></label>`;
+      if (f.type === 'pdb') return `<label>${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="4" spellcheck="false" autocomplete="off" translate="no"></label>`;
+      if (f.type === 'chains') return `<label>${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="8" spellcheck="false" autocomplete="off" translate="no"></label>`;
       if (f.type === 'reaction') return `<label class="md-full">${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="400" spellcheck="false" autocomplete="off"></label>`;
       if (f.type === 'atoms') return `<div class="md-full"><span class="small muted">${esc(f.label)}</span><div class="md-atoms">${[0, 1, 2, 3].map((n) => `<select data-k="atoms" data-n="${n}" aria-label="第 ${n + 1} 个原子">${opts(atomOpts(), v[n])}</select>`).join('')}</div></div>`;
       if (f.type === 'spins') return `<div class="md-full"><span class="small muted">${esc(f.label)}</span><div class="md-pair">${[0, 1].map((n) => `<select data-k="spins" data-n="${n}" aria-label="第 ${n + 1} 个自旋多重度">${opts([1, 2, 3, 4].map((m) => [m, `${m}（${['单重态', '二重态', '三重态', '四重态'][m - 1]}）`]), v[n])}</select>`).join('')}</div></div>`;
@@ -296,7 +306,10 @@
       if (!can(id, j)) return `${MODELS[id].name} 现在不做“${JOBS[j].name}”。`;
     }
     let symbols = null, electronCount = null, ionCharge = 0;
-    if (j === 'rxn') {
+    if (j === 'pmd') {
+      if (!/^[1-9][A-Z0-9]{3}$/.test(p.pdb_id)) return 'PDB 编号是四位：数字 1–9 开头，后面三位字母或数字（如 1L2Y）。';
+      if (p.chains && !/^[A-Za-z0-9]{1,8}$/.test(p.chains)) return '链只写链的字母，如 A 或 AB，不要空格和逗号。';
+    } else if (j === 'rxn') {
       const r = p.reaction, sides = r.split('>>');
       if (sides.length !== 2 || sides.some((s) => !s.trim())) return `反应 SMILES 要写成“反应物${RXN}产物”。`;
       if (r.length > 400) return '反应 SMILES 最多 400 个字符。';
@@ -327,7 +340,7 @@
       const out = MODELS[id].elements && symbols ? symbols.filter((x) => !MODELS[id].elements.includes(x)) : [];
       if (out.length) return `${MODELS[id].name} 不认识 ${out.join('、')}。`;
     }
-    if (j !== 'rxn') {
+    if (j !== 'rxn' && j !== 'pmd') {
       if (!G().charged && (ionCharge !== 0 || electronCount % 2)) return `${G().name}只算中性闭壳层分子：这个结构带电荷或有未成对电子，请换到窗口 ① 计算。`;
       if (G().charged && electronCount !== null && (electronCount % 2 === 1) !== (spin() % 2 === 0)) return `电荷 ${charge()} 时有 ${electronCount} 个电子，和自旋多重度 ${spin()} 不相容。`;
     }
@@ -380,8 +393,9 @@
     $('m-direct').hidden = !models.some((id) => MODELS[id].direct);
     $('m-job-about').textContent = JOBS[j].about;
     $('m-cs').hidden = !grp.charged || j === 'rxn';
-    $('m-struct').hidden = j === 'rxn';
+    $('m-struct').hidden = j === 'rxn' || j === 'pmd';
     $('m-rxn-note').hidden = j !== 'rxn';
+    $('m-pmd-note').hidden = j !== 'pmd';
     $('m-smiles-box').hidden = S.mode !== 'smiles';
     $('m-xyz-box').hidden = S.mode !== 'xyz';
     // Structure check line and the numbered drawing (highlights follow the chosen atoms or bond).
@@ -439,7 +453,7 @@
   // ── 运行 ────────────────────────────────────────────────────────────────
   function body(model) {
     const j = job(), b = { model, job: j };
-    if (j !== 'rxn') {
+    if (j !== 'rxn' && j !== 'pmd') {
       if (S.mode === 'xyz') b.xyz = xyz.text; else b.smiles = $('m-smiles').value.trim();
       if (G().charged) { b.charge = charge(); b.spin = spin(); }
     }
@@ -546,6 +560,30 @@
       + (q.length ? `<details><summary>每个原子的部分电荷（e）</summary>${table(['原子', '电荷'], q.map((v, i) => `<tr><td>${i}</td>${td(v, 4)}</tr>`))}</details>` : '')
       + `<p class="muted small">xtb ${esc(x.xtb_version || '')} 在最终结构上的单点结果；能隙和轨道能量是半经验方法的数值，适合比较趋势，不等于实验的光学能隙。</p>`;
   }
+  /** Protein MD (OpenMM): the run, the curves, per-residue fluctuation; the trajectory goes to the 3D viewer as PDB. */
+  function proteinView(r) {
+    const s = r.series || [], fl = r.rmsf || [], fx = r.fixes || {};
+    const pts = (k) => s.map((p) => [p.t_ps, p[k]]).filter(([, y]) => Number.isFinite(y));
+    const fixes = [];
+    if (fx.built_residues) fixes.push(`补建了链内缺失的 ${fx.built_residues} 个残基`);
+    if (fx.built_atoms) fixes.push(`补齐了 ${fx.built_atoms} 个缺失的重原子`);
+    if (fx.replaced?.length) fixes.push(`把非标准残基换成了标准残基（${esc(fx.replaced.join('、'))}）`);
+    if (fx.removed_heterogens) fixes.push(`去掉了 ${fx.removed_heterogens} 个配体、离子或水`);
+    const top = [...fl].sort((a, b) => b.a - a.a).slice(0, 5);
+    const html = `<p><b translate="no">${esc(r.pdb_id)}</b> · 所选的链 <span translate="no">${esc(r.chains)}</span> · ${r.residues} 个残基 · ${r.atoms} 个原子（含氢）· 在 ${esc(r.platform)} 上以 ${f(r.temperature_k, 0)} K 跑了 ${r.ps} ps${Number.isFinite(r.ns_per_day) ? `（${f(r.ns_per_day, 1)} ns/天）` : ''}。</p>`
+      + `<p>最终 Cα RMSD <b>${f(r.final_rmsd_a, 2)} Å</b>（相对能量最小化后的结构），后一半时间的平均温度 ${f(r.mean_temperature_k, 1)} K；能量最小化把势能从 ${f(r.energy_start_kj, 0)} 降到 ${f(r.energy_minimised_kj, 0)} kJ/mol。</p>`
+      + (fixes.length ? `<p class="muted small">PDBFixer：${fixes.join('；')}。</p>` : '')
+      + plot({ series: [{ pts: pts('rmsd_a'), dots: true }], xlabel: '时间（ps）', ylabel: 'Cα RMSD（Å）' })
+      + plot({ series: [{ pts: pts('rg_a'), dots: true }], xlabel: '时间（ps）', ylabel: '回转半径 Rg（Å）' })
+      + (fl.length ? plot({ series: [{ pts: fl.map((x, i) => [i + 1, x.a]) }], xlabel: '残基（按序号）', ylabel: 'Cα 涨落 RMSF（Å）' }) : '')
+      + (top.length ? `<p><span>动得最多的残基：</span><span translate="no">${top.map((x) => `${esc(x.chain)}:${esc(x.res)} ${f(x.a, 2)} Å`).join(', ')}</span><span>。链的两端和 loop 常常最活跃。</span></p>` : '')
+      + `<details><summary>温度与势能随时间</summary>${plot({ series: [{ pts: pts('temperature_k') }], xlabel: '时间（ps）', ylabel: '温度（K）' })}${plot({ series: [{ pts: pts('epot_kj') }], xlabel: '时间（ps）', ylabel: '势能（kJ/mol）' })}</details>`
+      + `<details><summary>序列（${(r.sequence || '').length} 个残基）</summary><p class="md-seq" translate="no">${esc(r.sequence || '')}</p></details>`
+      + `<p class="muted small">${esc(r.force_field || '')} · OpenMM ${esc(r.openmm_version || '')} · 步长 ${f(r.timestep_fs, 1)} fs。隐式水、几十皮秒的模拟只能粗看折叠稳不稳和哪些片段柔软，开始时 RMSD 的上升有一部分来自加热和换成溶剂模型；要定量的结论请用显式水、充分平衡、更长时间的模拟（比如在自己的电脑上用 OpenMM 跑）。</p>`;
+    const csv = [csvOf(['t_ps', 'epot_kj', 'temperature_k', 'rmsd_a', 'rg_a'], s.map((p) => [p.t_ps, p.epot_kj, p.temperature_k, p.rmsd_a, p.rg_a])),
+      csvOf(['chain', 'residue', 'rmsf_a'], fl.map((x) => [x.chain, x.res, x.a]))].join('\n');
+    return { html, csv, xyz: '', pdb: r.trajectory_pdb || '', finalPdb: r.final_pdb || '' };
+  }
   /** One result: what it shows, plus the CSV and XYZ its buttons hand out. */
   function view(r) {
     const csv = [], c = (head, rows) => csv.push(csvOf(head, rows));
@@ -649,6 +687,7 @@
         c(['frequency_cm1', 'ir_intensity_km_mol', 'raman_activity_a4_amu'], fr.map((x, i) => [x, r.ir_intensity_km_mol?.[i], r.raman_activity_a4_amu?.[i]]));
         break;
       }
+      case 'pmd': return proteinView(r);
       default: html = `<p>能量 <b>${e4} eV</b></p>`;
     }
     if (r.xtb && typeof r.xtb === 'object') html += xtbView(r.xtb, c);
@@ -694,6 +733,7 @@
       case 'pa': return [[r.mode === 'deprotonate' ? '去质子化能（kcal/mol）' : '质子亲和能（kcal/mol）', f(r.value_kcal, 1)]];
       case 'polar': return [['偶极矩（D）', f(r.dipole_debye, 2)], ['极化率（Å³）', f(r.polarizability_a3, 2)]];
       case 'ir': return [['振动模式', (r.frequencies_cm1 || []).length]];
+      case 'pmd': return [['最终 Cα RMSD（Å）', f(r.final_rmsd_a, 2)], ['平均温度（K）', f(r.mean_temperature_k, 1)]];
       default: return [['能量（eV）', f(r.energy_ev, 4)]];
     }
   }
@@ -713,8 +753,9 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}</div>`;
-      const foot = `<p class="muted small">${x.r.seconds ?? '?'} 秒 · 机器学习势的预测，不是 DFT 计算${x.r.direct_forces ? ' · 直接受力型模型：力不是能量的导数，频率由受力差分得到' : ''}。</p>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`;
+      const what = M.kind === 'ff' ? '经典力场的模拟，不是量子化学计算' : M.tier === 'open' ? '半经验量子化学（xTB）的结果，不是 DFT 计算' : '机器学习势的预测，不是 DFT 计算';
+      const foot = `<p class="muted small">用时 ${x.r.seconds ?? '?'} 秒 · <span>${what}</span>${x.r.direct_forces ? '<span> · 直接受力型模型：力不是能量的导数，频率由受力差分得到</span>' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
       html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
     });
@@ -724,7 +765,7 @@
     const b = e.target.closest('[data-act]');
     if (!b || b.dataset.act === 'spec') return;
     const x = shown[Number(b.closest('[data-i]')?.dataset.i ?? b.dataset.i)];
-    const stem = `${(x?.r?.smiles || 'molecule').replace(/[^\w.-]+/g, '_').slice(0, 40)}_${x?.model || ''}_${x?.r?.job || ''}`;
+    const stem = `${(x?.r?.smiles || x?.r?.pdb_id || 'molecule').replace(/[^\w.-]+/g, '_').slice(0, 40)}_${x?.model || ''}_${x?.r?.job || ''}`;
     if (b.dataset.act === 'cmp-csv') {
       const first = shown.find((y) => y.r), cols = first ? summary(first.r).map(([k]) => k) : [];
       copy(csvOf(['model', ...cols], shown.map((y) => [y.model, ...(y.r ? summary(y.r).map(([, v]) => v) : [y.error])])));
@@ -734,8 +775,11 @@
     if (b.dataset.act === '3d') { // the structure the job returned, every frame of it (conformers, spin states)
       const box = b.closest('.md-res').querySelector('.md-3d'), open = box.hidden;
       box.hidden = !open; b.setAttribute('aria-expanded', String(open));
-      if (open && !box.dataset.ready && window.MolAstriaMol3D) window.MolAstriaMol3D.mount(box, { xyz: x.view.xyz, name: stem, label: `${MODELS[x.model]?.name || ''} 算出的结构` }).catch(() => { /* the box says why */ });
+      const src = x.view.pdb ? { pdb: x.view.pdb, label: `${x.r.pdb_id} 的 Cα 轨迹` } : { xyz: x.view.xyz, label: `${MODELS[x.model]?.name || ''} 算出的结构` };
+      if (open && !box.dataset.ready && window.MolAstriaMol3D) window.MolAstriaMol3D.mount(box, { ...src, name: stem }).catch(() => { /* the box says why */ });
     }
+    if (b.dataset.act === 'pdb-traj') save(`${stem}_trajectory_ca.pdb`, x.view.pdb, 'chemical/x-pdb');
+    if (b.dataset.act === 'pdb-final') save(`${stem}_final.pdb`, x.view.finalPdb, 'chemical/x-pdb');
     if (b.dataset.act === 'xyz') save(`${stem}.xyz`, x.view.xyz, 'chemical/x-xyz');
     if (b.dataset.act === 'conf-xyz') save(`${stem}_${Number(b.dataset.k) + 1}.xyz`, x.r.conformers[Number(b.dataset.k)].xyz || '', 'chemical/x-xyz');
     // results live only in memory: leaving mid-run abandons a job that is already paid for, so both hand-offs wait for the run to end

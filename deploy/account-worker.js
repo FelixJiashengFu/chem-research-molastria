@@ -371,7 +371,8 @@ const inviteMail = (owner) => [
 // The computer may be off; health then answers { online: false } instead of an error.
 //   fair: the Meta FAIR Chemistry models (UMA, eSEN, AllScAIP) and ANI-2x (MIT), free for everyone, sharing one daily
 //         allowance: anonymous visitors by address, free accounts and Pro supporters by email, each a larger one.
-//   open: xTB (GFN2-xTB, GFN1-xTB, GFN-FF; LGPL-3.0 program run on the owner's CPU), counted exactly like fair.
+//   open: xTB (GFN2-xTB, GFN1-xTB, GFN-FF; LGPL-3.0 program run on the owner's CPU) and OpenMM protein MD (MIT, a PDB
+//         entry by its ID, Amber ff14SB + implicit water), counted exactly like fair.
 //   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
 //        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
@@ -381,17 +382,18 @@ const UMA_MODELS = {
   'esen-sm-conserving-all-omol': 'fair', 'esen-sm-direct-all-omol': 'fair', 'esen-md-direct-all-omol': 'fair',
   'ani-2x': 'fair',
   'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl',
-  'gfn2-xtb': 'open', 'gfn2-xtb-alpb-water': 'open', 'gfn1-xtb': 'open', 'gfn-ff': 'open'
+  'gfn2-xtb': 'open', 'gfn2-xtb-alpb-water': 'open', 'gfn1-xtb': 'open', 'gfn-ff': 'open',
+  'openmm-amber14': 'open'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
-const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5 };
+const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, pmd: 5 };
 const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
 const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
   'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 // xTB takes ions and radicals but its IP / EA are several eV off (tools/uma-server/server.py X_JOBS), so no ipea.
 const UMA_NO_IPEA = new Set(['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 // Which jobs each kind of model does: charge-and-spin molecular models, neutral models, and MACE-MDP's properties.
-const umaJobsOf = (model) => (model === 'mace-mdp' ? ['polar', 'ir']
+const umaJobsOf = (model) => (model === 'mace-mdp' ? ['polar', 'ir'] : model === 'openmm-amber14' ? ['pmd']
   : UMA_CHARGED.has(model) ? [...UMA_GEOM, ...(UMA_NO_IPEA.has(model) ? [] : ['ipea']), 'spin', 'bde', 'pa'] : UMA_GEOM);
 const SMILES_RE = /^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/;
 const UMA_SMILES_ONLY = new Set(['conf', 'rxn', 'bde', 'pa']);
@@ -421,10 +423,13 @@ const UMA_PARAMS = {
   spin: { spins: plist(2, pnum(1, 4, true)) },
   bde: { bond: plist(2, pidx), thermo: pbool, temperature: TEMP },
   pa: { site: pidx, mode: pone('protonate', 'deprotonate'), thermo: pbool, temperature: TEMP },
-  polar: { average: pbool, n: pnum(2, 20, true) }
+  polar: { average: pbool, n: pnum(2, 20, true) },
+  // protein MD: the computer downloads the entry from RCSB by this ID (tools/uma-server/openmm_backend.py)
+  pmd: { pdb_id: (v) => (typeof v === 'string' && /^[1-9][A-Za-z0-9]{3}$/.test(v) ? v.toUpperCase() : undefined),
+    chains: (v) => (typeof v === 'string' && /^[A-Za-z0-9]{0,8}$/.test(v) ? v : undefined), ps: pnum(1, 100, true), temperature: pnum(250, 400) }
 };
 // No default for these; spins and pa's mode have one on the computer (the two lowest multiplicities, protonate).
-const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'] };
+const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'], pmd: ['pdb_id'] };
 function umaParams(job, raw) {
   if (raw !== undefined && raw !== null && (typeof raw !== 'object' || Array.isArray(raw))) throw fail(400, '参数（params）必须是一个对象', 'params must be an object');
   const out = {};
@@ -511,6 +516,8 @@ async function uma(request, env, cors, path, ip, api = null) {
     const out = {};
     if (job === 'rxn') {
       if (given(body.smiles) || given(body.xyz)) throw fail(400, '反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ', "A reaction's species go in the reaction SMILES; do not also give SMILES or XYZ");
+    } else if (job === 'pmd') {
+      if (given(body.smiles) || given(body.xyz)) throw fail(400, '蛋白质动力学按 PDB 编号取结构，不要另给 SMILES 或 XYZ', 'Protein MD takes its structure by PDB ID; do not also give SMILES or XYZ');
     } else if (given(body.smiles) === given(body.xyz)) {
       throw fail(400, given(body.smiles) ? 'SMILES 和 XYZ 只能给一个' : '请给出分子的 SMILES 或 XYZ 结构', given(body.smiles) ? 'Give either SMILES or XYZ, not both' : "Give the molecule's SMILES or XYZ structure");
     } else if (given(body.smiles)) {
@@ -532,7 +539,8 @@ async function uma(request, env, cors, path, ip, api = null) {
     const params = umaParams(job, body.params);
     if (Object.keys(params).length) out.params = params;
     // Conformer-averaged polarisability and the thermochemistry options need frequency runs: 5 uses each.
-    const cost = (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
+    // Protein MD longer than the default 20 ps holds the GPU longer: 10 uses.
+    const cost = job === 'pmd' && (params.ps ?? 20) > 20 ? 10 : (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
     const email = api ? api.email : await signedIn(env, request).catch(() => null);
     const pro = api ? api.pro : email ? (await access(env, email)).pro : false;
     let counter, limit, used, more = '', moreEn = '';

@@ -63,7 +63,7 @@ desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-tools/uma-server/     在线模型：站长电脑上的服务 server.py（19 个模型，四个 xTB 由 xtb_backend.py 调 xtb 程序，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；start.ps1 启动服务和隧道（-KeepAlive 崩溃后重启），autostart.ps1 装成登录后自动启动；secret.local、cache*.json 不进 git
+tools/uma-server/     在线模型：站长电脑上的服务 server.py（20 个模型，四个 xTB 由 xtb_backend.py 调 xtb 程序，蛋白质分子动力学由 openmm_backend.py 调 OpenMM（按 PDB 编号从 RCSB 下载），经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；start.ps1 启动服务和隧道（-KeepAlive 崩溃后重启），autostart.ps1 装成登录后自动启动；secret.local、cache*.json 不进 git
 tools/cloud/          站长的云端 GPU 批量计算：run.mjs（本机，经 gcloud）+ batch_uma.py / batch_mace.py / remote.sh（虚拟机上）；cloud.local.json 不进 git
 agent/chemdb-agent/   chemdb-agent 源码（计算化学 MCP 服务器，Python；十二个工具，其中三个经计算接口 /v1 提交计算；测试与 venv 说明见其 README）。下载包由 python tools/pack-chemdb-agent.py 生成
 maintenance/          Python 爬虫与合并脚本，单元测试是 test_*.py（离线）；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）

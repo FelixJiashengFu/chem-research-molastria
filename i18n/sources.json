@@ -3441,7 +3441,7 @@
  "跳到计算": [
   "models/index.html"
  ],
- "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x；CPU 上还有开源半经验程序 xTB 的四种方法（GFN2-xTB、加水溶剂的 GFN2-xTB、GFN1-xTB、GFN-FF）。这里按模型类别分成五个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
+ "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x；CPU 上还有开源半经验程序 xTB 的四种方法（GFN2-xTB、加水溶剂的 GFN2-xTB、GFN1-xTB、GFN-FF），以及跑蛋白质分子动力学的开源引擎 OpenMM。这里按模型类别分成六个窗口，不用安装任何东西，输入 SMILES、XYZ 结构或 PDB 编号就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
   "models/index.html"
  ],
  "注意：": [
@@ -3498,6 +3498,14 @@
  "xTB · GFN2 / GFN1 · 隐式溶剂": [
   "models/index.html"
  ],
+ "蛋白质分子动力学": [
+  "models/index.html",
+  "api/compute.js",
+  "models/models.js"
+ ],
+ "OpenMM · Amber ff14SB · PDB 编号": [
+  "models/index.html"
+ ],
  "1 · 模型": [
   "models/index.html"
  ],
@@ -3508,6 +3516,9 @@
   "models/index.html"
  ],
  "2 · 结构": [
+  "models/index.html"
+ ],
+ "蛋白质的结构由站长电脑按右边的 PDB 编号从 RCSB 下载，不用另给。": [
   "models/index.html"
  ],
  "XYZ 坐标": [
@@ -3558,7 +3569,7 @@
   "models/index.html",
   "radar/app/app.js"
  ],
- "Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）与 ANI-2x": [
+ "Meta 的 UMA 和 OMol25 模型（UMA、AllScAIP、eSEN）、ANI-2x、xTB 与 OpenMM": [
   "models/index.html"
  ],
  "共用：不登录 40 次，": [
@@ -3605,6 +3616,9 @@
   "models/index.html"
  ],
  "5 次": [
+  "models/index.html"
+ ],
+ "5 次（超过 20 ps 10 次）": [
   "models/index.html"
  ],
  "在线计算经 MolAstria 账号服务转发，按照模型许可要求遵守的出口管制规定，部分地区不能使用。提交的结构会缓存在站长电脑上以便复用结果，不记录你的其他信息。想在自己的电脑上算，用": [
@@ -9634,7 +9648,8 @@
   "quantum/biology/qb.js"
  ],
  "时间（ps）": [
-  "quantum/biology/qb.js"
+  "quantum/biology/qb.js",
+  "models/models.js"
  ],
  "布居": [
   "quantum/biology/qb.js"
@@ -12150,6 +12165,18 @@
  "eSEN 和 OMol25 数据集（Levine et al., 2025）": [
   "models/models.js"
  ],
+ "OpenMM · Amber ff14SB + 隐式水": [
+  "models/models.js"
+ ],
+ "Amber ff14SB 蛋白质力场 + GBSA-OBC2 隐式溶剂（经典力场，不是量子化学）": [
+  "models/models.js"
+ ],
+ "开源分子模拟引擎 OpenMM 在站长电脑的显卡上跑蛋白质分子动力学：按 PDB 编号从 RCSB 取结构，PDBFixer 补齐缺失的原子和链内短缺口、加氢（pH 7），去掉配体和水，用 Amber ff14SB 力场和隐式水先能量最小化，再跑一段 Langevin 动力学。": [
+  "models/models.js"
+ ],
+ "论文里请引用 OpenMM 8（Eastman et al., J. Phys. Chem. B 2024）、Amber ff14SB（Maier et al., J. Chem. Theory Comput. 2015）和所用的 PDB 条目。": [
+  "models/models.js"
+ ],
  "Meta FAIR Chemistry 的通用原子模型，{0}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。": [
   "models/models.js"
  ],
@@ -12247,6 +12274,9 @@
   "models/models.js"
  ],
  "④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "⑥ 输入一个 PDB 编号，在站长的显卡上跑一段蛋白质分子动力学（OpenMM，Amber ff14SB + 隐式水），看折叠稳不稳、哪段 loop 在动：Cα RMSD、回转半径、每个残基的涨落和整条轨迹的 3D 播放。最多 300 个残基、100 ps。隐式水加几十皮秒只是快速的稳定性检查，不能代替显式水、平衡充分的生产模拟。": [
   "models/models.js"
  ],
  "半经验量子化学（xTB）": [
@@ -12366,6 +12396,18 @@
  "平均用的构象数": [
   "models/models.js"
  ],
+ "从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。": [
+  "models/models.js"
+ ],
+ "PDB 编号（四位，如 1L2Y、1VII、1UBQ）": [
+  "models/models.js"
+ ],
+ "链（如 A 或 AB；空着就是全部蛋白链）": [
+  "models/models.js"
+ ],
+ "模拟时长（ps）": [
+  "models/models.js"
+ ],
  "红外与拉曼光谱": [
   "models/models.js"
  ],
@@ -12427,6 +12469,12 @@
   "models/models.js"
  ],
  "{0} 现在不做“{1}”。": [
+  "models/models.js"
+ ],
+ "PDB 编号是四位：数字 1–9 开头，后面三位字母或数字（如 1L2Y）。": [
+  "models/models.js"
+ ],
+ "链只写链的字母，如 A 或 AB，不要空格和逗号。": [
   "models/models.js"
  ],
  "反应 SMILES 要写成“反应物{0}产物”。": [
@@ -12606,6 +12654,57 @@
   "models/models.js"
  ],
  "xtb {0} 在最终结构上的单点结果；能隙和轨道能量是半经验方法的数值，适合比较趋势，不等于实验的光学能隙。": [
+  "models/models.js"
+ ],
+ "补建了链内缺失的 {0} 个残基": [
+  "models/models.js"
+ ],
+ "补齐了 {0} 个缺失的重原子": [
+  "models/models.js"
+ ],
+ "把非标准残基换成了标准残基（{0}）": [
+  "models/models.js"
+ ],
+ "去掉了 {0} 个配体、离子或水": [
+  "models/models.js"
+ ],
+ "· 所选的链": [
+  "models/models.js"
+ ],
+ "· {0} 个残基 · {1} 个原子（含氢）· 在 {2} 上以 {3} K 跑了 {4} ps{5}。": [
+  "models/models.js"
+ ],
+ "最终 Cα RMSD": [
+  "models/models.js"
+ ],
+ "（相对能量最小化后的结构），后一半时间的平均温度 {0} K；能量最小化把势能从 {1} 降到 {2} kJ/mol。": [
+  "models/models.js"
+ ],
+ "回转半径 Rg（Å）": [
+  "models/models.js"
+ ],
+ "残基（按序号）": [
+  "models/models.js"
+ ],
+ "Cα 涨落 RMSF（Å）": [
+  "models/models.js"
+ ],
+ "动得最多的残基：": [
+  "models/models.js"
+ ],
+ "。链的两端和 loop 常常最活跃。": [
+  "models/models.js"
+ ],
+ "势能（kJ/mol）": [
+  "models/models.js"
+ ],
+ "温度与势能随时间": [
+  "models/models.js"
+ ],
+ "序列（{0} 个残基）": [
+  "models/models.js"
+ ],
+ "{0} · OpenMM {1} · 步长 {2} fs。隐式水、几十皮秒的模拟只能粗看折叠稳不稳和哪些片段柔软，开始时 RMSD 的上升有一部分来自加热和换成溶剂模型；要定量的结论请用显式水、充分平衡、更长时间的模拟（比如在自己的电脑上用 OpenMM 跑）。": [
   "models/models.js"
  ],
  "，最大受力 {0} eV/Å。": [
@@ -12875,6 +12974,9 @@
  "振动模式": [
   "models/models.js"
  ],
+ "最终 Cα RMSD（Å）": [
+  "models/models.js"
+ ],
  "多模型对比 · {0}": [
   "models/models.js"
  ],
@@ -12899,13 +13001,34 @@
  "送进代码台写输入": [
   "models/models.js"
  ],
+ "3D 轨迹（Cα）": [
+  "models/models.js"
+ ],
+ "下载轨迹（.pdb，多帧）": [
+  "models/models.js"
+ ],
+ "下载最终结构（.pdb）": [
+  "models/models.js"
+ ],
+ "经典力场的模拟，不是量子化学计算": [
+  "models/models.js"
+ ],
+ "半经验量子化学（xTB）的结果，不是 DFT 计算": [
+  "models/models.js"
+ ],
+ "机器学习势的预测，不是 DFT 计算": [
+  "models/models.js"
+ ],
  "· 直接受力型模型：力不是能量的导数，频率由受力差分得到": [
   "models/models.js"
  ],
- "{0} 秒 · 机器学习势的预测，不是 DFT 计算{1}。": [
+ "用时 {0} 秒 ·": [
   "models/models.js"
  ],
  "完整结果": [
+  "models/models.js"
+ ],
+ "{0} 的 Cα 轨迹": [
   "models/models.js"
  ],
  "{0} 算出的结构": [
@@ -16247,6 +16370,9 @@
   "deploy/account-worker.js"
  ],
  "反应计算的物种写在反应 SMILES 里，不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "蛋白质动力学按 PDB 编号取结构，不要另给 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
  "SMILES 和 XYZ 只能给一个": [

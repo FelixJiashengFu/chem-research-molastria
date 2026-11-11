@@ -2051,7 +2051,7 @@
    },
    "ComputeJobRequest": {
     "type": "object",
-    "description": "Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead). At most 30 heavy atoms and 120 atoms.",
+    "description": "Exactly one of smiles and xyz (a reaction brings its species in params.reaction instead; protein MD its PDB ID in params.pdb_id). At most 30 heavy atoms and 120 atoms.",
     "properties": {
      "job": {
       "type": "string",
@@ -2066,10 +2066,11 @@
        "ipea",
        "spin",
        "bde",
-       "pa"
+       "pa",
+       "pmd"
       ],
       "default": "ipea",
-      "description": "sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity. GET /v1/models says which model does which."
+      "description": "sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity, pmd protein molecular dynamics (model openmm-amber14 only: Amber ff14SB + implicit water on a PDB entry). GET /v1/models says which model does which."
      },
      "model": {
       "type": "string",
@@ -2087,7 +2088,8 @@
        "gfn2-xtb",
        "gfn2-xtb-alpb-water",
        "gfn1-xtb",
-       "gfn-ff"
+       "gfn-ff",
+       "openmm-amber14"
       ],
       "default": "uma-s-1p2p1"
      },
@@ -2115,7 +2117,7 @@
      },
      "params": {
       "type": "object",
-      "description": "Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}."
+      "description": "Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}; pmd {pdb_id (required, e.g. 1L2Y), chains (e.g. A; empty for every protein chain), ps (1-100, default 20; over 20 costs 10 uses), temperature (250-400 K)}."
      }
     },
     "required": [
@@ -2223,7 +2225,8 @@
           "gfn2-xtb",
           "gfn2-xtb-alpb-water",
           "gfn1-xtb",
-          "gfn-ff"
+          "gfn-ff",
+          "openmm-amber14"
          ]
         },
         "ready": {
@@ -2251,7 +2254,8 @@
            "ipea",
            "spin",
            "bde",
-           "pa"
+           "pa",
+           "pmd"
           ]
          }
         }

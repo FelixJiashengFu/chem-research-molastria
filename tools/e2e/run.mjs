@@ -984,6 +984,7 @@ const MODEL_WINDOWS = {
   organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
   xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'spin', 'bde', 'pa'] },
+  protein: { models: ['openmm-amber14'], jobs: ['pmd'] },
 };
 /** Opens the models page once the fake computer is online and RDKit has checked the sample SMILES; records each job sent. */
 async function openModels(win = '', { health, ...options } = {}) {
@@ -1109,6 +1110,37 @@ check('models page: window 5 runs xTB on an ion and shows the gap, dipole and ch
   await finish(p);
 });
 
+check('models page: window 6 runs protein MD from a PDB ID: curves, fluctuation, 3D trajectory, downloads', async () => {
+  const p = await openModels('protein');
+  assert.equal(await p.isVisible('#m-struct'), false, 'no SMILES or XYZ box');
+  assert.equal(await p.isVisible('#m-cs'), false);
+  assert.match(await text(p, '#m-fine'), /OpenMM 8/);
+  await p.selectOption('#m-job', 'pmd');
+  await p.fill('#m-params input[data-k=pdb_id]', '1l2');
+  assert.match(await text(p, '#m-why'), /PDB 编号是四位/);
+  assert.equal(await runOff(p), true);
+  await p.fill('#m-params input[data-k=pdb_id]', '1l2y');
+  await p.fill('#m-params input[data-k=chains]', 'A B');
+  assert.match(await text(p, '#m-why'), /链只写链的字母/);
+  await p.fill('#m-params input[data-k=chains]', '');
+  await p.fill('#m-params input[data-k=ps]', '50');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 10 次', 'longer than 20 ps costs 10');
+  await p.fill('#m-params input[data-k=ps]', '20');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次');
+  const r = await runJob(p, 'pmd');
+  assert.deepEqual(p.posts.at(-1), { model: 'openmm-amber14', job: 'pmd', params: { pdb_id: '1L2Y', chains: '', ps: 20, temperature: 300 } }, 'a PDB ID, no structure, no charge');
+  assert.match(r, /1L2Y · 所选的链 A · 20 个残基 · 304 个原子/); assert.match(r, /OpenCL/); assert.match(r, /最终 Cα RMSD 1\.\d\d Å/);
+  assert.match(r, /动得最多的残基：A:ASN1 /); assert.match(r, /经典力场的模拟/);
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), 5, 'RMSD, Rg, RMSF, then temperature and energy');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#m-result [data-act=pdb-traj]')]);
+  assert.equal(dl.suggestedFilename(), '1L2Y_openmm-amber14_pmd_trajectory_ca.pdb');
+  assert.equal(readFileSync(await dl.path(), 'utf8').match(/^MODEL /gm).length, 25);
+  await p.click('#m-result [data-act="3d"]');
+  await p.waitForSelector('#m-result .md-3d[data-ready]', { timeout: 30000 });
+  assert.equal(await text(p, '#m-result .m3-fnum'), '第 1 / 25 帧');
+  await finish(p);
+});
+
 check('models page: MACE academic box, ANI-2x free, ions kept to window 1, XYZ input, parameter limits', async () => {
   const p = await openModels('organic');
   await p.selectOption('#m-model', 'mace-off23-small');
@@ -1218,12 +1250,13 @@ check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and p
 check('English: the models page has no Chinese left in its windows and a result', async () => {
   const p = await openModels('', {});
   await go(p, '/models/index.html?lang=en#charged');
-  await p.waitForFunction(() => /19/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /20/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
   await runJob(p, 'freq');
   const left = new Set();
-  for (const win of ['charged', 'neutral', 'organic', 'props', 'xtb']) {
+  for (const win of ['charged', 'neutral', 'organic', 'props', 'xtb', 'protein']) {
     await p.click(`#m-tabs [data-win=${win}]`);
     if (win === 'xtb') await runJob(p, 'opt'); // the gap, dipole and charges of an xTB result
+    if (win === 'protein') await runJob(p, 'pmd'); // curves, fluctuation, fixes
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     await p.waitForTimeout(400);
     for (const t of await p.evaluate(() => {

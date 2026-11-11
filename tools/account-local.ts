@@ -29,11 +29,31 @@ const realFetch = globalThis.fetch;
 let umaLast: any = {}; // the last job sent to the pretend owner computer
 let umaPolls = 0;
 
+/** Protein MD as tools/uma-server/openmm_backend.py returns it: Trp-cage's sequence on a made-up Cα helix, 25 frames. */
+function fakeProtein(p: any) {
+  const three = ["ASN", "LEU", "TYR", "ILE", "GLN", "TRP", "LEU", "LYS", "ASP", "GLY", "GLY", "PRO", "SER", "SER", "GLY", "ARG", "PRO", "PRO", "PRO", "SER"];
+  const ps = p.ps ?? 20, T = p.temperature ?? 300, n = three.length;
+  const ca = (k: number) => three.map((_, i) => [2.3 * Math.cos(i * 1.75) + 0.2 * Math.sin(k + i), 2.3 * Math.sin(i * 1.75), 1.5 * i + 0.1 * Math.cos(k * i)]);
+  const line = (i: number, x: number[], ch = "A") => `ATOM  ${String(i + 1).padStart(5)}  CA  ${three[i]} ${ch}${String(i + 1).padStart(4)}    ${x.map((v) => v.toFixed(3).padStart(8)).join("")}  1.00  0.00           C\n`;
+  const frames = Array.from({ length: 25 }, (_, k) => ca(k + 1));
+  const series = frames.map((_, k) => ({ t_ps: +(((k + 1) * ps) / 25).toFixed(3), epot_kj: -5300 + 900 * (1 - Math.exp(-k / 4)) + 30 * Math.sin(k), temperature_k: T * (1 - 0.3 * Math.exp(-k / 3)), rmsd_a: +(0.4 + 1.1 * (1 - Math.exp(-k / 6))).toFixed(3), rg_a: +(7.1 + 0.15 * Math.sin(k)).toFixed(3) }));
+  return {
+    pdb_id: String(p.pdb_id || "1L2Y").toUpperCase(), chains: p.chains || "A", residues: n, atoms: 304, sequence: "NLYIQWLKDGGPSSGRPPPS",
+    fixes: { built_residues: 0, built_atoms: 0, replaced: [], removed_heterogens: 0 }, force_field: "Amber ff14SB + GBSA-OBC2 (implicit water)",
+    platform: "OpenCL", openmm_version: "8.3.1", ps, temperature_k: T, timestep_fs: 2, energy_start_kj: -3120.4, energy_minimised_kj: -5301.2, ns_per_day: 812.5,
+    series, mean_temperature_k: T - 1.4, final_rmsd_a: series.at(-1)!.rmsd_a,
+    rmsf: three.map((r, i) => ({ res: `${r}${i + 1}`, chain: "A", a: +(0.4 + 1.6 * Math.exp(-i / 2) + 1.4 * Math.exp((i - n + 1) / 2)).toFixed(3) })),
+    trajectory_pdb: frames.map((f, k) => `MODEL     ${String(k + 1).padStart(4)}\nREMARK   t = ${series[k].t_ps.toFixed(1)} ps\n${f.map((x, i) => line(i, x)).join("")}ENDMDL\n`).join("") + "END\n",
+    final_pdb: frames.at(-1)!.map((x, i) => line(i, x)).join("") + "END\n", seconds_total: 4.2,
+  };
+}
+
 /** A result with the fields of API v3 for each job; the numbers are made up (fake: true). */
 function fakeResult(b: any) {
   const p = b.params || {}, job = b.job || "ipea", model = b.model || "uma-s-1p2p1";
   const xyz = "3\nfake\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
   const E = -2079.62, T = p.temperature ?? 298.15, kcal = 23.0605;
+  if (job === "pmd") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 4.2, fake: true, ...fakeProtein(p) };
   const base: any = { model, job, smiles: b.smiles ?? null, charge: b.charge ?? 0, spin: b.spin ?? 1, params: p, seconds: 1, fake: true, xyz };
   if (/direct/.test(model)) base.direct_forces = true;
   // server.py adds what the xtb run prints to xTB single points and optimisations
@@ -88,7 +108,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
     const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"], xtb = charged.filter((j) => j !== "ipea");
     const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x", "gfn-ff"] };
-    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb };
+    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb, "openmm-amber14": ["pmd"] };
     if (url.pathname === "/health") return reply({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
     if (url.pathname === "/jobs") {
       umaLast = JSON.parse(String(init?.body ?? (input instanceof Request ? await input.clone().text() : "{}")));

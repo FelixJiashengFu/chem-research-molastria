@@ -29,11 +29,13 @@ C = ["mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"]
 D = ["mace-mdp"]
 X = ["gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb"]  # xTB with charges and spins, no ipea
 XN = ["gfn-ff"]
+P = ["openmm-amber14"]  # protein MD from a PDB ID
 A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"]
 BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"]
 D_JOBS = ["polar", "ir"]
+P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
-GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS))
+GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS))
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
 FIELDS = {
@@ -51,12 +53,17 @@ FIELDS = {
     "polar": {"geometry_model", "energy_ev", "steps", "dipole_debye", "dipole_vector", "polarizability_a3",
               "polarizability_tensor_a3"},
     "ir": {"geometry_model", "frequencies_cm1", "ir_intensity_km_mol", "raman_activity_a4_amu", "n_imag"},
+    "pmd": {"pdb_id", "chains", "residues", "atoms", "sequence", "fixes", "force_field", "platform", "openmm_version",
+            "ps", "temperature_k", "timestep_fs", "energy_start_kj", "energy_minimised_kj", "ns_per_day", "series",
+            "mean_temperature_k", "final_rmsd_a", "rmsf", "trajectory_pdb", "final_pdb", "seconds_total"},
 }
 ITEMS = {
     ("freq", "thermo"): {"temperature_k", "h_corr_ev", "s_ev_k", "g_corr_ev", "h_ev", "g_ev"},
     ("conf", "conformers"): {"rank", "energy_ev", "rel_kcal", "weight", "xyz"},
     ("scan", "points"): {"angle_deg", "energy_ev", "rel_kcal", "converged"},
     ("md", "series"): {"t_fs", "epot_ev", "ekin_ev", "temperature_k"},
+    ("pmd", "series"): {"t_ps", "epot_kj", "temperature_k", "rmsd_a", "rg_a"},
+    ("pmd", "rmsf"): {"res", "chain", "a"},
     ("rxn", "species"): {"smiles", "side", "count", "charge", "spin", "energy_ev"},
     ("spin", "states"): {"spin", "energy_ev", "xyz"},
     ("bde", "fragments"): {"smiles", "spin", "energy_ev"},
@@ -78,11 +85,12 @@ REQUESTS = {
     "rxn": {"params": {"reaction": "C=C.O>>CCO"}},
     "ipea": {"smiles": "CCO"}, "spin": {"smiles": "O=O"}, "bde": {"smiles": "CCO", "params": {"bond": [1, 2]}},
     "pa": {"smiles": "CCO", "params": {"site": 2}}, "polar": {"smiles": "CCO"}, "ir": {"smiles": "CCO"},
+    "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
 }
 
 
 def expected_keys(model, job, params):
-    keys = COMMON | FIELDS[job]
+    keys = (COMMON - {"xyz"} if job == "pmd" else COMMON) | FIELDS[job]  # a protein comes back as PDB text
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -187,6 +195,9 @@ class FakeServer(unittest.TestCase):
         if job == "md":
             self.assertLessEqual(len(r["series"]), 200)
             self.assertLessEqual(r["xyz"].count(" t = "), 100)
+        if job == "pmd":
+            self.assertEqual(r["trajectory_pdb"].count("MODEL "), len(r["series"]))
+            self.assertEqual(len(r["rmsf"]), r["residues"])
         if job in ("ir",):
             self.assertEqual(len(r["frequencies_cm1"]), len(r["ir_intensity_km_mol"]))
             self.assertEqual(len(r["frequencies_cm1"]), len(r["raman_activity_a4_amu"]))
@@ -200,7 +211,7 @@ class FakeServer(unittest.TestCase):
             for model in group:
                 self.assertEqual(h["models"][model]["jobs"], jobs, model)
                 self.assertTrue(h["models"][model]["ready"])
-        self.assertEqual(set(h["models"]), set(A + B + C + D + X + XN))
+        self.assertEqual(set(h["models"]), set(A + B + C + D + X + XN + P))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -215,7 +226,7 @@ class FakeServer(unittest.TestCase):
                     params.update(self.full_params(job, body.get("params", {})))
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7)
+        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1)
 
     @staticmethod
     def full_params(job, given):
@@ -226,6 +237,8 @@ class FakeServer(unittest.TestCase):
             out = {"thermo": False, "temperature": 298.15, **given}
         if job == "spin":
             out = {"spins": [1, 3], **given}
+        if job == "pmd":
+            out = {"chains": "", "temperature": 300.0, **given}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -315,6 +328,15 @@ class FakeServer(unittest.TestCase):
             self.refused({"model": UMA, "job": "opt", "smiles": "C", "params": params}, text=text)
         self.refused({"model": UMA, "job": "opt", "smiles": "C", "params": [1]}, text="params must be an object")
         self.refused({"model": UMA, "job": "md", "smiles": "C", "params": {"steps": 5000}}, text="params.steps")
+        # protein MD: a PDB ID in params, nothing else
+        self.refused({"model": "openmm-amber14", "job": "pmd", "smiles": "C", "params": {"pdb_id": "1VII"}}, text="in params")
+        self.refused({"model": "openmm-amber14", "job": "pmd"}, text="params.pdb_id")
+        for params, text in (({"pdb_id": "1VI"}, "params.pdb_id"), ({"pdb_id": "0VII"}, "params.pdb_id"),
+                             ({"pdb_id": "1VII; rm"}, "params.pdb_id"), ({"pdb_id": "1VII", "chains": "A B"}, "params.chains"),
+                             ({"pdb_id": "1VII", "ps": 500}, "params.ps"), ({"pdb_id": "1VII", "temperature": 600}, "params.temperature")):
+            self.refused({"model": "openmm-amber14", "job": "pmd", "params": params}, text=text)
+        self.refused({"model": "openmm-amber14", "job": "opt", "smiles": "C"}, text="supports only")
+        self.refused({"model": UMA, "job": "pmd", "params": {"pdb_id": "1VII"}}, text="supports only")
         self.refused({"model": UMA, "job": "md", "smiles": "C", "params": {"steps": 150.5}}, text="params.steps")
         self.refused({"model": UMA, "job": "md", "smiles": "C", "params": {"temperature": 1600}}, text="params.temperature")
         self.refused({"model": UMA, "job": "freq", "smiles": "C", "params": {"symmetry": 25}}, text="params.symmetry")
@@ -406,8 +428,8 @@ class Contract(unittest.TestCase):
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
                 self.assertEqual(server.MODELS[model]["charged"], group is A or group is X, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 19)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120})
+        self.assertEqual(len(server.MODELS), 20)
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
 
     def test_mace_proxy(self):

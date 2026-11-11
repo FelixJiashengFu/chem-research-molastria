@@ -21,18 +21,20 @@
     ['ipea', '电离能与电子亲和能', 1, 'mode'],
     ['spin', '自旋态能隙', 2, 'spins'],
     ['bde', '键解离能', 2, 'bond*, thermo, temperature'],
-    ['pa', '质子亲和能与去质子化能', 2, 'site*, mode, thermo, temperature']
+    ['pa', '质子亲和能与去质子化能', 2, 'site*, mode, thermo, temperature'],
+    ['pmd', '蛋白质分子动力学', 5, 'pdb_id*, chains, ps, temperature']
   ];
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
   // Until the service answers: the models the API offers and whether each handles charge and spin (GET /v1/models says the same).
   const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
   const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
+  const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   let models = [
     ['uma-s-1p2p1', CHARGED], ['uma-s-1p2', CHARGED], ['uma-s-1p2p1-ft-d4rev', CHARGED], ['uma-s-1p1', GEOM],
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
     ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
-    ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM]
+    ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM], ['openmm-amber14', PROTEIN]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {
@@ -45,7 +47,7 @@
   const pick = () => ({ smiles: $('run-smiles').value.trim() || 'CCO', model: $('run-model').value || models[0].id, job: $('run-job').value || 'opt' });
   function drawModels() {
     const keep = $('run-model').value;
-    $('run-model').innerHTML = models.map((m) => `<option value="${esc(m.id)}">${esc(m.id)}${m.ready === false ? ` · ${esc(T('没有加载'))}` : ''}</option>`).join('');
+    $('run-model').innerHTML = models.filter((m) => TRY.some((j) => m.jobs.includes(j))).map((m) => `<option value="${esc(m.id)}">${esc(m.id)}${m.ready === false ? ` · ${esc(T('没有加载'))}` : ''}</option>`).join('');
     if (models.some((m) => m.id === keep)) $('run-model').value = keep;
     drawJobOptions();
   }
