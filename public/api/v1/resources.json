@@ -1287,8 +1287,8 @@
    "page": "https://molastria.com/atlas/#resources/74",
    "category_code": "09",
    "description": {
-    "zh": "百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。",
-    "en": "A DFT property dataset of millions of molecules, suitable for training general molecular representations and property prediction models."
+    "zh": "数百万个无机晶体的 DFT 计算数据库（PBE、PBEsol、SCAN），带能量、力和应力，可用 OPTIMADE 查询，常用来训练材料的机器学习势和稳定性预测模型。",
+    "en": "A DFT database of millions of inorganic crystals (PBE, PBEsol, SCAN) with energies, forces and stresses, queryable over OPTIMADE and widely used to train machine-learned potentials and stability models for materials."
    },
    "access": {
     "zh": "免费",

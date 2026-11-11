@@ -435,6 +435,10 @@
  "关闭详情": [
   "index.html"
  ],
+ "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。": [
+  "index.html",
+  "tools/build-seo.ts"
+ ],
  "数据库地图 · MolAstria": [
   "atlas/index.html"
  ],
@@ -821,6 +825,9 @@
  "关闭资源详情": [
   "atlas/index.html"
  ],
+ "251 条计算化学资源，17 个研究主题。按问题和研究主题搜索数据库，了解 chemdb-agent 的接入进展。": [
+  "atlas/index.html"
+ ],
  "说明讲解手册 · MolAstria": [
   "manual/index.html"
  ],
@@ -851,6 +858,9 @@
   "tools/build-seo.ts"
  ],
  "讲解语言": [
+  "manual/index.html"
+ ],
+ "25 章中英双语说明讲解手册：从化合物、量子化学基准、晶体材料、生物大分子、药物、光谱到机器学习数据与计算软件，讲清每一层数据去哪里找、能拿到什么、边界在哪里。": [
   "manual/index.html"
  ],
  "期刊发表 · 计算化学期刊投稿与发表指南 · MolAstria": [
@@ -965,6 +975,9 @@
  "指导目录": [
   "journals/index.html"
  ],
+ "量子化学与计算化学期刊投稿指南：JCTC、J. Chem. Phys.、JPC、PCCP、JCIM、npj Comput. Mater.、物理化学学报等 46 种期刊和 2 个预印本平台的收稿范围、文章类型与篇幅、开放获取、预印本与数据政策，每条附官网出处；另有从选题、方法基准、可复现性到投稿、回复审稿意见和发表的完整指导。": [
+  "journals/index.html"
+ ],
  "科学领域语言模型与多模态基础模型 · 科学大模型 · MolAstria": [
   "scimodels/index.html"
  ],
@@ -1051,6 +1064,9 @@
   "train/index.html"
  ],
  "模型名、机构、能力或关键词": [
+  "scimodels/index.html"
+ ],
+ "科学领域语言模型与多模态基础模型：Hydrogen-1.0、Intern-S1 / S2、S1-Base、ether0、ChemDFM-R、MOFReasoner、OpenScholar、NatureLM 等 27 个模型，逐个介绍能做什么、输入输出、规模与许可、已知限制、官方体验入口与发布原文、访问方式和费用，并按官方价格与主流大模型做价格对比。": [
   "scimodels/index.html"
  ],
  "计算化学教学视频 · MolAstria": [
@@ -1142,6 +1158,9 @@
   "videos/index.html"
  ],
  "软件名、方法、课程或频道": [
+  "videos/index.html"
+ ],
+ "计算化学教学视频与课程：从 YouTube 和哔哩哔哩收集的量子化学、DFT、Gaussian、ORCA、VASP、Quantum ESPRESSO、GROMACS、LAMMPS、Multiwfn、机器学习势、RDKit 与分子对接等公开课程和软件教程，按主题分组，每条都核对过链接、标题和频道，可以在页面里直接播放。": [
   "videos/index.html"
  ],
  "进一步基础科学发现 · Advancing Fundamental Science · MolAstria": [
@@ -1377,6 +1396,9 @@
   "quantum/biology/index.html",
   "quantum/computing/index.html"
  ],
+ "MolAstria 的基础理论研究方向：量子力学的基础与局限、量子化学的数学重构、分子量子动力学的几何基础（Berry 相位、圆锥交叉）、GRW 与 CSL 等修正动力学及其分子检验。每一条内容都标明是已确立的科学、活跃研究、理论假说还是计划方向，附可交互的数学演示与经过核对的参考文献。": [
+  "fundamental-science/index.html"
+ ],
  "数学基础与探索 · Mathematical Foundations & Exploration · MolAstria": [
   "fundamental-science/math/index.html"
  ],
@@ -1399,10 +1421,16 @@
   "meta/index.html",
   "tools/build-seo.ts"
  ],
+ "数学基础与探索：为量子力学基础与量子化学准备的数学地图。线性代数、泛函分析与谱理论、群论与表示论、微分几何与拓扑、概率与随机过程、数值分析、变分法、算子代数、张量网络、测度论，每门有讲解、大纲、公式、练习、逐条核对过的教材与公开课视频，以及学科之间的关系图和学习路线。": [
+  "fundamental-science/math/index.html"
+ ],
  "量子嘉年华 · Quantum Carnival · MolAstria": [
   "quantum/index.html"
  ],
  "跳到四个展馆": [
+  "quantum/index.html"
+ ],
+ "量子嘉年华（Quantum Carnival）：MolAstria 的量子母栏目，四个展馆一张门票：量子物理、量子计算机、量子算法、量子生物学。每个展馆都有中英双语讲解、可交互的演示和核对过的文献与课程，全部免费。": [
   "quantum/index.html"
  ],
  "量子物理 · Quantum Physics · 量子嘉年华 · MolAstria": [
@@ -1418,6 +1446,9 @@
   "shared-nav.js",
   "radar/app/app.js",
   "tools/build-seo.ts"
+ ],
+ "量子物理（Quantum Physics）：量子嘉年华的第一个展馆。十二章分三幕，从黑体辐射、薛定谔方程、测量与自旋，到全同粒子、纠缠与 Bell 不等式、退相干、散射，再到相对论与量子场、凝聚态和量子光学。中英双语讲解、关键公式、Python 练习、四个交互演示，原始论文在 Crossref 逐条核对。": [
+  "quantum/physics/index.html"
  ],
  "量子生物学 · Quantum Biology · MolAstria": [
   "quantum/biology/index.html"
@@ -1598,6 +1629,9 @@
  "同位素效应随温度变化": [
   "quantum/biology/index.html"
  ],
+ "量子生物学：光合作用中的激发能传递与量子相干之争、鸟类磁感应的自由基对机制、酶中的电子与氢隧穿、DNA 的质子转移与突变、嗅觉的振动理论、关于意识的推测性提议，以及模拟这些体系的计算方法。每条结论标明证据强度，附可交互的模型演示和在 Crossref 核对过的文献。": [
+  "quantum/biology/index.html"
+ ],
  "量子算法 · Quantum Algorithms · MolAstria": [
   "quantum/algorithms/index.html"
  ],
@@ -1610,6 +1644,9 @@
   "qchem/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
+ ],
+ "量子算法（Quantum Algorithms）：从线路模型、量子傅里叶变换、相位估计、振幅放大和块编码讲到 Shor、Grover、哈密顿量模拟、HHL、量子行走，再到化学家关心的费米子映射、基态能量的资源估算、VQE、QAOA 和误差缓解。每个算法标明加速的证据等级，配浏览器里可运行的量子电路模拟器和四个交互演示，文献逐条核对，全部免费。": [
+  "quantum/algorithms/index.html"
  ],
  "量子计算机 · Quantum Computers · MolAstria": [
   "quantum/computing/index.html"
@@ -1780,6 +1817,9 @@
  "按状态筛选": [
   "quantum/computing/index.html"
  ],
+ "量子计算机：量子比特的物理与噪声，超导、离子阱、中性原子、光子、半导体自旋和拓扑六条硬件路线，量子纠错与容错（表面码、阈值、低于阈值的实验），以及量子优势实验与争议。每条结论标明状态，附可交互的演示和逐条核对过的文献。": [
+  "quantum/computing/index.html"
+ ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
  ],
@@ -1823,6 +1863,9 @@
   "digest/index.html"
  ],
  "免费订阅邮件": [
+  "digest/index.html"
+ ],
+ "MolAstria 每周精选：每周一从 ChemRxiv、arXiv 化学物理和 JCTC、JCP、PCCP、JPCL 的新论文里，挑出值得计算化学与分子模拟研究者读的十篇左右，每篇一句解读。完整一期和点评对所有人公开，登录免费账号即可订阅邮件。": [
   "digest/index.html"
  ],
  "论文与社区 · MolAstria": [
@@ -2048,6 +2091,9 @@
  "如：Multiwfn 报错 / 静电势 / ORCA / 招聘…": [
   "hub/index.html"
  ],
+ "聚合计算化学公社、Sobereva、X-MOL、CCL、Stack Exchange、matsci.org 等国际论坛与博客、arXiv、ChemRxiv、Crossref 期刊、GitHub 与官方软件数据库目录的真实标题与链接": [
+  "hub/index.html"
+ ],
  "网状查询 · MolAstria 计算化学研究导航": [
   "hub/network.html"
  ],
@@ -2222,6 +2268,9 @@
  "按类型筛选": [
   "hub/network.html",
   "meta/index.html"
+ ],
+ "输入一个词，看它连着什么：把计算化学资源目录、讲解手册与中英术语表织成以查询为中心的关系网，支持同义词、拼写纠错与离线浏览。": [
+  "hub/network.html"
  ],
  "AI 实验室 · 闭环电解液分子发现 · MolAstria": [
   "lab/index.html"
@@ -2871,6 +2920,9 @@
  "筛选卡片": [
   "lab/index.html"
  ],
+ "闭环 AI 科学家：用 Muse Wonder 或 DeepSeek 提出电解液溶剂分子，RDKit 过滤，UMA 三级精度筛选，可靠性层决定 DFT 验证预算，PubChem 新颖性检查。": [
+  "lab/index.html"
+ ],
  "Meta × 化学 · Muse 识图、UMA 脚本与开放数据集 · MolAstria": [
   "meta/index.html"
  ],
@@ -3364,6 +3416,9 @@
  "开放模型馆的其他展馆": [
   "meta/index.html"
  ],
+ "MolAstria 里的 Meta 技术：用 Muse Spark 从图片识别分子结构并经 RDKit 校验，生成在自己电脑上运行 UMA 的 fairchem 脚本，以及 FAIR Chemistry 开放的 UMA、OMol25、OMat24、OC25、OPoly26 等模型与数据集。": [
+  "meta/index.html"
+ ],
  "量子化学模型接口 · 15 个机器学习势在线计算 · MolAstria": [
   "models/index.html"
  ],
@@ -3565,6 +3620,9 @@
   "models/index.html"
  ],
  "带原子编号的二维结构": [
+  "models/index.html"
+ ],
+ "MolAstria 量子化学模型接口：用站长 GPU 上的 15 个机器学习势（Meta UMA、OMol25 系列、MACE、ANI-2x）在线做单点、优化、频率与热化学、构象搜索、二面角扫描、分子动力学、反应能、IP/EA、自旋态能隙、键解离能、质子亲和能、极化率和红外/拉曼光谱。": [
   "models/index.html"
  ],
  "训练你自己的化学研究 Agent · 开源小模型指南 · MolAstria": [
@@ -4667,6 +4725,9 @@
  "按显存筛选": [
   "train/index.html"
  ],
+ "用开源小模型训练自己的化学研究 Agent：2026 年 10 月最新开源小模型（LFM3、Qwen3.5、Gemma 4、Nemotron 3.5、Granite 4.2、MiniCPM5 等）与化学专用模型的对比与链接，数据构造、LoRA 微调、GRPO 强化学习、评测与本地部署的完整步骤和代码。": [
+  "train/index.html"
+ ],
  "MolAstria · 免费账号与 Pro 支持者": [
   "pro/index.html"
  ],
@@ -5064,6 +5125,9 @@
  "支付方式": [
   "pro/index.html"
  ],
+ "MolAstria 的价格：内容对所有人免费，免费账号额度更多；Pro 支持者拿最多的 AI 托管额度和在线模型次数，用来支付服务器、GPU 和 AI 的费用。课题组版按席位购买。": [
+  "pro/index.html"
+ ],
  "付款成功 · MolAstria": [
   "pro/success.html"
  ],
@@ -5246,6 +5310,18 @@
  "只记录模型、计算种类、花费和时间，不记录你算的分子。记录保留 30 天，这里显示最近 10 条。": [
   "pro/account.html"
  ],
+ "增长": [
+  "pro/account.html"
+ ],
+ "注册就是第一次用邮箱登录成功。这一栏上线之前就有的账号没有记下注册时间，算在“上线前”里，不进每天的柱子。": [
+  "pro/account.html"
+ ],
+ "最近 30 天每天的新注册": [
+  "pro/account.html"
+ ],
+ "最近的注册（邮箱已打码）": [
+  "pro/account.html"
+ ],
  "发 VIP 卡": [
   "pro/account.html"
  ],
@@ -5419,6 +5495,9 @@
  "或收据邮件联系我们。相关文件：": [
   "pro/terms.html"
  ],
+ "MolAstria 服务条款：免费功能、Pro 与课题组订阅、付款与续费、AI 与计算结果的使用限制、知识产权与责任限制。": [
+  "pro/terms.html"
+ ],
  "退款政策 · MolAstria": [
   "pro/refund.html"
  ],
@@ -5476,16 +5555,28 @@
  "相关文件：": [
   "pro/refund.html"
  ],
+ "MolAstria 退款政策：付款后 14 天内无理由全额退款；早鸟预售期间可退还未使用部分；赞助款项的处理方式。": [
+  "pro/refund.html"
+ ],
  "隐私政策 · MolAstria": [
   "pro/privacy.html"
  ],
- "生效日期：2026-10-28 · 更新：2026-11-10（加入云同步、网状查询里没找到的词）": [
+ "生效日期：2026-10-28 · 更新：2026-11-11（加入访问统计）": [
   "pro/privacy.html"
  ],
  "我们不收集什么": [
   "pro/privacy.html"
  ],
- "MolAstria 网站是静态页面，免费功能不需要账号，不使用广告或跨站追踪。你的搜索、收藏、AI 实验室项目、界面偏好（语言、主题、背景）都只保存在你自己的浏览器（localStorage / sessionStorage）里，我们看不到；只有你登录后自己打开了云同步，学习记录和收藏才会存到你的账号里（见下面“云同步”）。另一个例外是网状查询里术语表认不出的词，见下面“网状查询里没找到的词”。": [
+ "MolAstria 网站是静态页面，免费功能不需要账号，不使用广告或跨站追踪。你的搜索、收藏、AI 实验室项目、界面偏好（语言、主题、背景）都只保存在你自己的浏览器（localStorage / sessionStorage）里，我们看不到；只有你登录后自己打开了云同步，学习记录和收藏才会存到你的账号里（见下面“云同步”）。另一个例外是网状查询里术语表认不出的词，见下面“网状查询里没找到的词”。为了知道有多少人来、看了哪些页面，网站会做不认人的访问统计，见下面“访问统计”。": [
+  "pro/privacy.html"
+ ],
+ "访问统计": [
+  "pro/privacy.html"
+ ],
+ "molastria.com 用 Cloudflare Web Analytics 统计访问量：打开一个页面时，浏览器会把页面地址、来源网站、浏览器和系统的类型、大致的国家或地区和页面加载时间发给 Cloudflare。它不设 cookie，也不往你的浏览器里存任何东西，不给你编号，不能把几次访问连到同一个人，也不跨网站追踪；我们只能在 Cloudflare 后台看到汇总的数字（多少次访问、哪些页面、从哪里来）。浏览器开着“全局隐私控制”（GPC）或“请勿追踪”（DNT）时不统计；桌面版不统计。Cloudflare 按其": [
+  "pro/privacy.html"
+ ],
+ "处理这些数据。": [
   "pro/privacy.html"
  ],
  "网状查询里没找到的词": [
@@ -5551,6 +5642,9 @@
   "pro/privacy.html"
  ],
  "或回复收据邮件联系我们。相关文件：": [
+  "pro/privacy.html"
+ ],
+ "MolAstria 隐私政策：免费使用不需要账号，不放广告追踪；偏好与 API key 只存在你的浏览器；付款信息由 Stripe 处理；账号只保存邮箱、订阅状态和用量。": [
   "pro/privacy.html"
  ],
  "下载 MolAstria 桌面版 · Windows 与 macOS": [
@@ -5696,6 +5790,9 @@
   "download/index.html"
  ],
  "目录。每次发布由 GitHub Actions 在 Windows 与 macOS 机器上自动构建，构建日志公开可查。": [
+  "download/index.html"
+ ],
+ "下载 MolAstria 桌面版：Windows 10/11 与 macOS（Apple 芯片和 Intel 通用）。离线浏览计算化学资源目录、讲解与 AI 实验室，方便连接本机 Ollama / vLLM。": [
   "download/index.html"
  ],
  "关于 · Morning Glory 阿斯特赖亚科技与 MolAstria": [
@@ -5926,6 +6023,9 @@
   "about/index.html"
  ],
  "品牌架构：16513778 Canada Inc. 之下是 Morning Glory 阿斯特赖亚科技，再下面是 MolAstria 与三个规划中的方向": [
+  "about/index.html"
+ ],
+ "MolAstria 是阿斯特赖亚科技（Morning Glory）旗下的 AI 与科学计算项目。Morning Glory 是 16513778 Canada Inc. 在多伦多发展的科技品牌，关注 AI 应用、智能自动化、数据科学与科学计算。": [
   "about/index.html"
  ],
  "开放数据接口 · MolAstria": [
@@ -6309,6 +6409,9 @@
  "计算示例的语言": [
   "api/index.html"
  ],
+ "MolAstria 开放数据接口：资源目录、期刊投稿指南、科学大模型与价格、教学视频，中英双语的静态 JSON，免费、不用注册、不用 key，CC BY 4.0。": [
+  "api/index.html"
+ ],
  "预印本雷达 · 28 个预印本平台搜索与定时推荐 · MolAstria": [
   "radar/index.html"
  ],
@@ -6316,6 +6419,9 @@
   "radar/index.html"
  ],
  "预印本雷达需要启用 JavaScript。": [
+  "radar/index.html"
+ ],
+ "预印本雷达：同时检索 arXiv、ChemRxiv、bioRxiv、medRxiv、Research Square、Preprints.org、SSRN、SocArXiv、Knowledge Commons 等 28 个预印本平台与开放仓库的最新论文（理工、医学、社科到人文），按兴趣主题定时推荐，一键导出 PDF 合集。数据只保存在你的浏览器里。": [
   "radar/index.html"
  ],
  "预印本雷达 · MolAstria": [
@@ -7384,6 +7490,9 @@
  "三维的 Bloch 球：拖动或用方向键转动": [
   "qchem/index.html"
  ],
+ "MolAstria 游乐场：用真实的物理公式玩量子世界。二十个小游戏分四个展区：量子化学（盒中粒子、氢原子轨道、电子排布、隧穿、芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），3D 立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球导航、量子世界）；以及在浏览器里运行的量子化学计算器 QChem Web。": [
+  "qchem/index.html"
+ ],
  "复习卡片 · 按遗忘曲线复习计算化学与量子知识 · MolAstria": [
   "review/index.html"
  ],
@@ -7495,6 +7604,9 @@
  "例如：量子化学 电子相关": [
   "review/index.html"
  ],
+ "MolAstria 复习卡片：中英术语、研习台的知识点和你自己写的卡片，按遗忘曲线安排复习（开源的 FSRS 算法），可以导出到 Anki。卡片和进度只存在这台设备的浏览器里。": [
+  "review/index.html"
+ ],
  "研习台 · Study Desk · MolAstria": [
   "learn/index.html"
  ],
@@ -7507,6 +7619,9 @@
   "review/review.js"
  ],
  "研习台需要 JavaScript 才能使用。": [
+  "learn/index.html"
+ ],
+ "研习台：AI 家教先摸底、再画路线、一步一检，练习分开进行，学到的命题和推理链积累成跨会话的知识图。可以从站内的量子物理、数学基础等章节开始；用你自己的 AI key，数据只存在这台设备。": [
   "learn/index.html"
  ],
  "开源代码台 · 计算化学输入生成、输出解读与软件体检 · MolAstria": [
@@ -7719,6 +7834,9 @@
   "code/index.html"
  ],
  "把 .out / .log 的内容粘贴到这里": [
+  "code/index.html"
+ ],
+ "MolAstria 开源代码台：从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。": [
   "code/index.html"
  ],
  "发现": [
@@ -13438,6 +13556,51 @@
  "已收回 {0}。": [
   "pro/account-page.js"
  ],
+ "账号总数": [
+  "pro/account-page.js"
+ ],
+ "其中上线前 {0} 个": [
+  "pro/account-page.js"
+ ],
+ "近 7 天新注册": [
+  "pro/account-page.js"
+ ],
+ "近 30 天新注册": [
+  "pro/account-page.js"
+ ],
+ "近 30 天登录过": [
+  "pro/account-page.js"
+ ],
+ "一个人多台设备算一次": [
+  "pro/account-page.js"
+ ],
+ "付费支持者": [
+  "pro/account-page.js"
+ ],
+ "VIP 卡在用": [
+  "pro/account-page.js"
+ ],
+ "订阅每周精选": [
+  "pro/account-page.js"
+ ],
+ "有 API key": [
+  "pro/account-page.js"
+ ],
+ "最近 30 天每天的新注册，共 {0} 个，最多的一天 {1} 个": [
+  "pro/account-page.js"
+ ],
+ "最近 30 天每天的新注册（{0} 至 {1}）": [
+  "pro/account-page.js"
+ ],
+ "上线前（不晚于 {0}）": [
+  "pro/account-page.js"
+ ],
+ "还没有注册的账号。": [
+  "pro/account-page.js"
+ ],
+ "账号服务还没更新，部署之后这里会显示注册和使用的人数。": [
+  "pro/account-page.js"
+ ],
  "共 {0} 个词": [
   "pro/account-page.js"
  ],
@@ -15851,6 +16014,9 @@
  "要删哪个词？": [
   "deploy/account-worker.js"
  ],
+ "只有站长可以看增长数据": [
+  "deploy/account-worker.js"
+ ],
  "今天发得太多了，明天再试": [
   "deploy/account-worker.js"
  ],
@@ -15886,9 +16052,6 @@
  ],
  "这个网站没有使用账号服务的权限": [
   "deploy/account-worker.js"
- ],
- "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。": [
-  "tools/build-seo.ts"
  ],
  "说明讲解手册 · {0} 章": [
   "tools/build-seo.ts"
@@ -16131,6 +16294,9 @@
   "physics-realms/index.html"
  ],
  "跳到网状图": [
+  "physics-realms/index.html"
+ ],
+ "物理疆界图：经典力学、电磁学、热力学与统计物理、相对论、量子力学、量子场论、凝聚态、宇宙学和量子引力前沿的四十多个理论，连同它们能解释和解释不了的六十多个问题，画成一张可以拖动缩放的网状图；每个理论都写明适用范围、在哪里失效、被哪个理论接替。": [
   "physics-realms/index.html"
  ],
  "图示格式不对": [
@@ -16489,7 +16655,7 @@
  "基于 PubChem 的大规模电子结构数据库，含 2.2 亿分子的 PM6 与 8600 万分子的 B3LYP 数据。": [
   "atlas data"
  ],
- "百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。": [
+ "数百万个无机晶体的 DFT 计算数据库（PBE、PBEsol、SCAN），带能量、力和应力，可用 OPTIMADE 查询，常用来训练材料的机器学习势和稳定性预测模型。": [
   "atlas data"
  ],
  "provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）": [

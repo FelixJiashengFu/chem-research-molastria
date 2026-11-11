@@ -168,6 +168,18 @@ tbody tr:last-child td{border-bottom:0}
 .acct-cardlist .acct-empty{display:block;color:var(--muted)}
 .doc .acct-misses-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 0}
 .acct-misses-actions .acct-sub{margin:0}
+.doc .acct-growth{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:12px 0 0}
+.acct-growth div{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+.acct-growth dt{font-size:12px;color:var(--muted)}
+.acct-growth dd{margin:2px 0 0;font:600 22px/1.2 var(--font-serif);color:var(--ink);font-variant-numeric:tabular-nums}
+.acct-growth dd small{display:block;font:400 11.5px/1.5 var(--font-sans);color:var(--muted)}
+.doc .acct-growth-chart{margin:14px 0 0}
+.acct-bars{display:flex;align-items:flex-end;gap:2px;height:72px;padding:0 2px;border-bottom:1px solid var(--line)}
+.acct-bars span{flex:1;min-width:0;height:max(3px,var(--h));border-radius:3px 3px 0 0;background:var(--gold)}
+.acct-bars span.zero{height:2px;background:var(--line)}
+.acct-growth-chart figcaption{margin-top:4px}
+.doc .acct-growth-recent{margin-top:10px;font-size:13px}
+.acct-growth-recent summary{cursor:pointer;color:var(--muted)}
 .acct-newkey{margin:14px 0 0;padding:12px 14px;border:1px solid color-mix(in srgb,var(--gold) 60%,var(--line));border-radius:9px;background:color-mix(in srgb,var(--gold) 7%,var(--paper));box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 14%,transparent)}
 .doc .acct-newkey p{margin:0 0 10px;font-size:13px;line-height:1.6;color:var(--ink-2,var(--ink))}
 .acct-keyrow{display:flex;align-items:center;gap:8px}

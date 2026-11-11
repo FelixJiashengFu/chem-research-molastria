@@ -31,6 +31,9 @@ function fromHTML(html: string, from: string) {
   for (const m of body.matchAll(/\s(?:placeholder|title|aria-label|alt)=(?:"([^"]*)"|'([^']*)')/g)) add(m[1] ?? m[2], from);
   const t = html.match(/<title>([\s\S]*?)<\/title>/);
   if (t) add(t[1], from);
+  // The page summary: i18n.js translates it at ?lang=en, the English address search engines index.
+  const d = html.match(/<meta name="description" content="([^"]*)"/);
+  if (d) add(d[1], from);
 }
 
 // ── JS ──────────────────────────────────────────────────────────────────

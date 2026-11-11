@@ -163,3 +163,15 @@ CREATE TABLE IF NOT EXISTS net_misses (
   first INTEGER NOT NULL,
   last INTEGER NOT NULL
 );
+
+-- 注册时间（2026-11-11）：每个邮箱第一次登录成功时写一行（createSession 里 INSERT OR IGNORE），站长账号页的“增长”一栏读它。
+-- exact = 1 是真实的第一次登录时间；exact = 0 是这张表上线前就有的账号（登录时已经有会话），
+-- created 取能找到的最早记录（会话、API key、精选订阅、VIP 卡兑换），只表示“不晚于”，账号页显示为“上线前”。
+-- GET /admin/growth 每次先把还没登记的旧账号以 exact = 0 补进来（INSERT OR IGNORE，只加不改）。部署后站长马上打开一次
+-- 账号页，旧账号就都登记好了；在那之前，会话全都过期了的老用户再登录会被当成新注册（上线时只有几个账号，影响很小）。
+CREATE TABLE IF NOT EXISTS signups (
+  email TEXT PRIMARY KEY,
+  created INTEGER NOT NULL,
+  exact INTEGER NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS signups_created ON signups (created);

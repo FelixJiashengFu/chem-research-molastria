@@ -5,7 +5,7 @@
   --ink:#1c3a2f;--ink-2:#30493e;--muted:#5f6f63;--faint:#8a978c;
   --line:#d8dfd2;--line-strong:#b9c7b4;
   --accent:#204f3d;--accent-hover:#2e6550;--accent-ink:#ffffff;--accent-text:#2e6550;--accent-2:#4b704f;--accent-soft:#e3ebdc;
-  --gold:#a67d42;--gold-soft:#f3ead9;--ok:#2f7a4a;--warn:#9a6512;--danger:#a5402d;--info:#3d6fa8;--violet:#6e5aa8;
+  --gold:#a67d42;--gold-soft:#f3ead9;--gold-ink:#86622f;--ok:#2f7a4a;--warn:#9a6512;--danger:#a5402d;--info:#3d6fa8;--violet:#6e5aa8;
   --graph-edge:rgba(52,86,66,.16);
   --shadow:0 1px 2px rgb(28 58 47/.05),0 10px 28px rgb(28 58 47/.07);
   --font-sans:Inter,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
@@ -22,7 +22,7 @@
   --ink:#e3e9df;--ink-2:#c9d3c8;--muted:#9aa99e;--faint:#748378;
   --line:#2a3731;--line-strong:#3c4d45;
   --accent:#3f7d60;--accent-hover:#356f55;--accent-ink:#ffffff;--accent-text:#9fd0aa;--accent-2:#8cbf8f;--accent-soft:#1f3329;
-  --gold:#d5a85d;--gold-soft:#2c2618;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
+  --gold:#d5a85d;--gold-soft:#2c2618;--gold-ink:#d5a85d;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
   --graph-edge:rgba(170,200,180,.16);
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 28px rgb(0 0 0/.35);
   --glass-tint:rgb(52 66 58/.55);--glass-tint-2:rgb(20 28 24/.32);--glass-rim:rgb(255 255 255/.14);--glass-hi:rgb(255 255 255/.22);--glass-shade:rgb(0 0 0/.6);
@@ -34,7 +34,7 @@
   --ink:#e3e9df;--ink-2:#c9d3c8;--muted:#9aa99e;--faint:#748378;
   --line:#2a3731;--line-strong:#3c4d45;
   --accent:#3f7d60;--accent-hover:#356f55;--accent-ink:#ffffff;--accent-text:#9fd0aa;--accent-2:#8cbf8f;--accent-soft:#1f3329;
-  --gold:#d5a85d;--gold-soft:#2c2618;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
+  --gold:#d5a85d;--gold-soft:#2c2618;--gold-ink:#d5a85d;--ok:#7cc493;--warn:#e0b154;--danger:#ef8a74;--info:#86aee0;--violet:#b3a3e3;
   --graph-edge:rgba(170,200,180,.16);
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 28px rgb(0 0 0/.35);
   --glass-tint:rgb(52 66 58/.55);--glass-tint-2:rgb(20 28 24/.32);--glass-rim:rgb(255 255 255/.14);--glass-hi:rgb(255 255 255/.22);--glass-shade:rgb(0 0 0/.6);
@@ -232,6 +232,10 @@ body[data-section=pro] .cr-acct{box-shadow:inset 0 1px 0 var(--glass-hi),0 0 0 1
 /* 中等宽度：导航保持一行 */
 @media(max-width:1440px){.cr-header{gap:14px;padding:10px 20px}.cr-tools{gap:5px}}
 @media(max-width:1300px){.cr-brand small{display:none!important}.cr-word{font-size:19px}.cr-ai-btn span.cr-label{display:none}}
+/* Phones: the 1440 px rule above would put back the desktop padding and gap, which pushed the first row (brand + five
+   buttons) past the screen at 360 px and below. On the narrowest phones the buttons sit closer and the wordmark is smaller. */
+@media(max-width:760px){.cr-header{gap:8px 10px;padding:10px 16px 0}.cr-tools{gap:4px}}
+@media(max-width:374px){.cr-header{column-gap:8px;padding-left:12px;padding-right:12px}.cr-header .cr-links{margin:0 -12px;padding:0 8px 7px}.cr-header .cr-tools{gap:2px}.cr-header .cr-ai-btn{padding:0 7px;gap:4px}.cr-brand{gap:6px}.cr-word{font-size:16px}}
 /* Desktop app: update prompt (shared-nav.js) */
 .cr-update{position:fixed;right:18px;bottom:18px;z-index:80;box-sizing:border-box;width:min(330px,calc(100vw - 32px));padding:14px 16px 12px;border:1px solid var(--line-strong);border-radius:12px;background:color-mix(in srgb,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:var(--shadow);color:var(--ink);font:13px/1.55 var(--font-sans);animation:cr-update-in .25s ease-out}
 .cr-update b{display:block;margin-bottom:2px;font-size:14px}

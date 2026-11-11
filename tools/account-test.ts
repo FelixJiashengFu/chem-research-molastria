@@ -1158,5 +1158,29 @@ await test("network misses: only the admin sees the ranking and deletes words", 
   eq([all.status, all.data], [200, { words: [], total: 0 }]);
 });
 
+await test("growth: first sign-in is recorded, older accounts are back-filled, only the admin reads it", async () => {
+  eq((await call("GET", "/admin/growth")).status, 401);
+  const reader = (await signIn("reader@example.com")).data.token;
+  const no = await call("GET", "/admin/growth", undefined, reader);
+  eq([no.status, no.data.error?.message], [403, "只有站长可以看增长数据"]);
+  // An account from before the signups table: it has an accounts row but no signups row.
+  sqlite.prepare("INSERT INTO accounts (email, checked) VALUES ('legacy@example.com', 1)").run();
+  sqlite.prepare("DELETE FROM signups WHERE email = 'legacy@example.com'").run();
+  await signIn("newbie@example.com");
+  const g = await call("GET", "/admin/growth", undefined, adminToken);
+  eq(g.status, 200);
+  const row = (e: string) => sqlite.prepare("SELECT exact FROM signups WHERE email = ?").get(e);
+  eq([row("newbie@example.com"), row("legacy@example.com")], [{ exact: 1 }, { exact: 0 }]);
+  await signIn("legacy@example.com"); // signing in later does not make it look new
+  eq(row("legacy@example.com"), { exact: 0 });
+  eq(g.data.total, sqlite.prepare("SELECT COUNT(*) AS n FROM signups").get().n);
+  eq(g.data.days.length, 30);
+  eq(g.data.days.at(-1).day, new Date().toISOString().slice(0, 10));
+  eq(g.data.days.reduce((a: number, d: any) => a + d.n, 0), g.data.last30);
+  eq(g.data.last7 >= 1 && g.data.before >= 1, true);
+  eq(g.data.recent.every((r: any) => !/@example\.com$/.test(r.who) || /^[a-z]\*+@example\.com$/.test(r.who)), true, "emails are masked");
+  eq(Object.keys(g.data).sort(), ["active30", "before", "days", "digest", "keys", "last30", "last7", "paid", "recent", "sync", "total", "vip"]);
+});
+
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 if (failed) Deno.exit(1);

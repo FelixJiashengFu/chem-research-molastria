@@ -47,7 +47,7 @@ main{max-width:1280px;margin:0 auto;padding:0 40px}
 .sm-sub-line{margin:0 0 8px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 14px}
 .sm-tags{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .sm-tags li{font-size:11.5px;padding:1px 8px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2)}
-.sm-tags [data-a=paid]{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold)}
+.sm-tags [data-a=paid]{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold-ink)}
 .sm-tags [data-a=register],.sm-tags [data-a=free]{border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)}
 .sm-tags [data-a=weights]{border-color:color-mix(in srgb,var(--info) 45%,transparent);color:var(--info)}
 .sm-tags [data-a=paper]{border-style:dashed;color:var(--muted)}

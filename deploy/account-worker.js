@@ -280,12 +280,49 @@ async function signedInAdmin(env, request, refusal = '只有站长可以管理 V
   return me;
 }
 
+// ── growth (the owner's account page) ─────────────────────────────────
+const DAY = 86400;
+/** Accounts that predate the signups table are registered here first, with the earliest time any table knows of. */
+const BACKFILL = 'INSERT OR IGNORE INTO signups (email, created, exact) SELECT email, MIN(t), 0 FROM (' +
+  'SELECT email, created AS t FROM sessions UNION ALL SELECT email, created FROM api_keys UNION ALL SELECT email, created FROM digest_subs ' +
+  'UNION ALL SELECT redeemed_by, redeemed_at FROM cards WHERE redeemed_by IS NOT NULL AND redeemed_at IS NOT NULL ' +
+  'UNION ALL SELECT email, ?1 FROM accounts) WHERE email IS NOT NULL AND email <> \'\' GROUP BY email';
+const maskEmail = (e) => { const [u, d = ''] = String(e).split('@'); return `${u.slice(0, 1)}${'*'.repeat(Math.max(1, Math.min(4, u.length - 1)))}@${d}`; };
+async function growth(env) {
+  const t = now();
+  await env.DB.prepare(BACKFILL).bind(t).run();
+  const one = async (sql, ...args) => Number(Object.values((await env.DB.prepare(sql).bind(...args).first()) || { n: 0 })[0] || 0);
+  const today = Math.floor(t / DAY) * DAY;
+  const daily = (await env.DB.prepare('SELECT (created / 86400) * 86400 AS day, COUNT(*) AS n FROM signups WHERE exact = 1 AND created >= ?1 GROUP BY day').bind(today - 29 * DAY).all()).results;
+  const byDay = new Map(daily.map((r) => [Number(r.day), Number(r.n)]));
+  const days = Array.from({ length: 30 }, (_, i) => { const d = today - (29 - i) * DAY; return { day: new Date(d * 1000).toISOString().slice(0, 10), n: byDay.get(d) || 0 }; });
+  const recent = (await env.DB.prepare('SELECT email, created, exact FROM signups ORDER BY exact DESC, created DESC LIMIT 20').all()).results
+    .map((r) => ({ who: maskEmail(r.email), created: Number(r.created), exact: !!r.exact }));
+  return {
+    total: await one('SELECT COUNT(*) AS n FROM signups'),
+    before: await one('SELECT COUNT(*) AS n FROM signups WHERE exact = 0'),
+    last7: await one('SELECT COUNT(*) AS n FROM signups WHERE exact = 1 AND created >= ?1', t - 7 * DAY),
+    last30: await one('SELECT COUNT(*) AS n FROM signups WHERE exact = 1 AND created >= ?1', t - 30 * DAY),
+    active30: await one('SELECT COUNT(DISTINCT email) AS n FROM sessions WHERE created >= ?1', t - 30 * DAY),
+    paid: await one("SELECT COUNT(*) AS n FROM accounts WHERE plan <> 'free' AND status IN ('active', 'trialing', 'canceling')"),
+    vip: await one('SELECT COUNT(DISTINCT redeemed_by) AS n FROM cards WHERE redeemed_by IS NOT NULL AND revoked = 0'),
+    digest: await one('SELECT COUNT(*) AS n FROM digest_subs'),
+    keys: await one('SELECT COUNT(DISTINCT email) AS n FROM api_keys'),
+    sync: await one('SELECT COUNT(DISTINCT email) AS n FROM sync_items'),
+    days, recent
+  };
+}
+
 // ── sessions ────────────────────────────────────────────────────────────
 async function createSession(env, email) {
   const token = randomToken();
   const t = now();
   await env.DB.batch([
     env.DB.prepare('DELETE FROM sessions WHERE expires < ?1').bind(t),
+    // First sign-in of this email (the owner's growth card). An email that already has a session predates the signups
+    // table: its time is only an upper bound (exact = 0). (Not accounts: /auth/verify writes that row just before this.)
+    env.DB.prepare('INSERT OR IGNORE INTO signups (email, created, exact) SELECT ?1, COALESCE((SELECT MIN(created) FROM sessions WHERE email = ?1), ?2), ' +
+      'CASE WHEN EXISTS (SELECT 1 FROM sessions WHERE email = ?1) THEN 0 ELSE 1 END').bind(email, t),
     env.DB.prepare('INSERT INTO sessions (hash, email, created, expires) VALUES (?1, ?2, ?3, ?4)').bind(await sha256(token), email, t, t + SESSION_DAYS * 86400),
     env.DB.prepare('DELETE FROM sessions WHERE email = ?1 AND hash NOT IN (SELECT hash FROM sessions WHERE email = ?1 ORDER BY created DESC, rowid DESC LIMIT ?2)').bind(email, MAX_SESSIONS)
   ]);
@@ -983,6 +1020,11 @@ async function route(request, env, cors) {
       else throw fail(400, '要删哪个词？');
     }
     return json(await missList(env), cors);
+  }
+
+  if (key === 'GET /admin/growth') {
+    await signedInAdmin(env, request, '只有站长可以看增长数据');
+    return json(await growth(env), cors);
   }
 
   if (key === 'GET /digest/preview') {

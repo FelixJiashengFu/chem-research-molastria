@@ -8,7 +8,7 @@
   const PAY = window.MOLASTRIA_PAY || {};
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const date = (s) => new Date(s * 1000).toLocaleDateString(en() ? 'en-CA' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, missesLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null, keyUse = null;
+  let account = null, pendingEmail = '', pendingCard = '', cardsLoaded = false, missesLoaded = false, growthLoaded = false, fresh = new Set(), digestState = null, digestAsked = false, keysAsked = false, keyRows = null, keyUse = null;
 
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
   // Pro that comes from a VIP card or the admin grant rather than a Stripe subscription
@@ -79,6 +79,8 @@
     if (a.admin && !cardsLoaded) { cardsLoaded = true; loadCards(); }
     $('misses-card').hidden = !a.admin;
     if (a.admin && !missesLoaded) { missesLoaded = true; loadMisses(); }
+    $('growth-card').hidden = !a.admin;
+    if (a.admin && !growthLoaded) { growthLoaded = true; loadGrowth(); }
 
     $('team-card').hidden = a.role !== 'owner';
     if (a.role === 'owner') {
@@ -343,6 +345,27 @@
     if (!confirm(c?.redeemed_by ? T(`收回 ${code}？${c.redeemed_by} 会立即失去这张卡带来的 Pro 时长。`) : T(`收回 ${code}？收回后这张卡不能再兑换。`))) return;
     try { renderCards((await A.revokeCard(code)).cards); say(cmsg, T(`已收回 ${code}。`), 'ok'); } catch (err) { say(cmsg, err.message, 'err'); }
   });
+
+  // ── growth: sign-ups and what accounts use (admin) ───────────────────
+  function renderGrowth(g) {
+    const stat = (label, n, hint) => `<div><dt>${label}</dt><dd>${n}${hint ? `<small>${hint}</small>` : ''}</dd></div>`;
+    $('growth-stats').innerHTML = [
+      stat(T('账号总数'), g.total, g.before ? T(`其中上线前 ${g.before} 个`) : ''),
+      stat(T('近 7 天新注册'), g.last7), stat(T('近 30 天新注册'), g.last30),
+      stat(T('近 30 天登录过'), g.active30, T('一个人多台设备算一次')),
+      stat(T('付费支持者'), g.paid), stat(T('VIP 卡在用'), g.vip),
+      stat(T('订阅每周精选'), g.digest), stat(T('有 API key'), g.keys), stat(T('打开云同步'), g.sync)
+    ].join('');
+    const top = Math.max(0, ...g.days.map((d) => d.n)), max = Math.max(1, top);
+    $('growth-bars').innerHTML = g.days.map((d) => `<span style="--h:${(d.n / max) * 100}%" title="${esc(d.day)}: ${d.n}"${d.n ? '' : ' class="zero"'}></span>`).join('');
+    $('growth-bars').setAttribute('aria-label', T(`最近 30 天每天的新注册，共 ${g.last30} 个，最多的一天 ${top} 个`));
+    $('growth-cap').textContent = T(`最近 30 天每天的新注册（${g.days[0].day} 至 ${g.days.at(-1).day}）`);
+    $('growth-recent').innerHTML = g.recent.length ? g.recent.map((r) =>
+      `<li><code translate="no">${esc(r.who)}</code><small>${r.exact ? esc(date(r.created)) : T(`上线前（不晚于 ${date(r.created)}）`)}</small></li>`).join('')
+      : `<li class="acct-empty">${T('还没有注册的账号。')}</li>`;
+  }
+  // Before the account service with /admin/growth is deployed the page already ships, so a 404 is not an error.
+  function loadGrowth() { A.growth().then(renderGrowth).catch((err) => say($('growth-msg'), err.status === 404 ? T('账号服务还没更新，部署之后这里会显示注册和使用的人数。') : err.message, err.status === 404 ? '' : 'err')); }
 
   // ── words the Network view did not know, across the site (admin) ──────
   const missMsg = $('misses-msg');

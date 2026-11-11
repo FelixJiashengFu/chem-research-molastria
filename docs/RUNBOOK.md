@@ -119,6 +119,19 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 - **第 12–16 类五章的数字：** 都来自 `tools/handbook-calcs.py`（PySCF 2.15.0）。改了章里的算例，先跑 `python3 tools/handbook-calcs.py <部分>`，把结果写进 `tools/handbook-test.mjs` 的 `REF`，再跑 `node --test tools/handbook-test.mjs`；它还核对每章说的“收录 N 个（编号 …）”和目录第 12–16 类是否一致，所以给这几类加条目时要同时改那一章的开头和表格。硅能带要 `HANDBOOK_SOLID=1`（约 20 分钟）；GitHub Actions 的 `Handbook calculations` 可以手动运行，勾 solid 就会算。
 - **文献：** DOI 在 OpenAlex 逐个查（`https://api.openalex.org/works/doi:<DOI>`，单个查询不受搜索额度限制）；中英两版引用同一组链接（测试会查）。
 
+## 增长（站长账号页）
+
+- **第一次上线（站长在自己电脑上）：** 拉下最新的 main，在 `deploy` 文件夹里依次运行 `npm.cmd ci`、`npx.cmd wrangler d1 execute molastria --remote --file schema.sql`（只会新建 `signups` 表和索引，别的表已存在不受影响）、`npx.cmd wrangler deploy`。然后**马上**用站长邮箱打开账号页一次：“增长”一栏每次打开都会把还没登记的旧账号补进 `signups`（exact = 0，时间是能找到的最早记录，显示为“上线前”）。在这之前，会话全都过期了的老用户再登录会被当成新注册。
+- **看数字：** 账号页“增长”一栏。“近 30 天登录过”按 `sessions` 里 30 天内新建会话的邮箱数算，一个人多台设备只算一次。
+- **直接查库：** `npx.cmd wrangler d1 execute molastria --remote --command "SELECT date(created, 'unixepoch') AS day, COUNT(*) FROM signups WHERE exact = 1 GROUP BY day ORDER BY day DESC LIMIT 30"`。
+
+## 访问统计（Cloudflare Web Analytics）
+
+- **打开：** Cloudflare 控制台 → Analytics & Logs → Web Analytics → Add a site → 填 `molastria.com`，选“手动加 JS 片段”（网站在 GitHub Pages 上，不走 Cloudflare 代理时不能自动注入）。复制片段里 `"token": "..."` 的那串，填进 `public/shared-nav.js` 的 `const ANALYTICS = ''`，推到 main。token 写在每个页面里，本来就是公开的，不是密钥。
+- **关掉：** 把 `ANALYTICS` 改回 `''` 再推；隐私政策里“访问统计”一节也要跟着改。
+- **不统计的：** 桌面版、本地预览、自动化浏览器（测试）、开着 GPC 或 DNT 的浏览器。
+- **看数据：** Cloudflare 控制台 → Web Analytics → molastria.com。和账号页的“增长”对照：多少人来、多少人注册。
+
 ## 网状查询没找到的词
 
 网状查询把术语表认不出、只能做全文检索的词记在用户自己的浏览器里（`molastria-net-misses`，逻辑在 `public/hub/net-misses.js`，页面上的“没找到的词”）。第一次记下一个词时，浏览器把这个词和全文命中数匿名报给账号服务一次（`POST /net/miss`，表 `net_misses`；访客取消“匿名报给站长”就不报）。服务端只存词、次数和时间，不存 IP 和账号；全站共用一个每小时上限 `NET_MISS_HOURLY`（默认 300，设成 `"0"` 就停收），最多留 3000 个词。

@@ -228,6 +228,7 @@ textarea{width:100%;resize:vertical;line-height:1.6}
 .method h2{font-size:26px;margin:0 0 10px;letter-spacing:-.5px}
 .method h3{font-size:15px;margin:0 0 8px}
 .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:6px 0 26px}
+.method-grid>*{min-width:0;overflow-x:auto}
 .method-grid p,.method-grid li{font-size:13.5px;line-height:1.85;color:var(--ink-2)}
 .method-grid ul{padding-left:18px;margin:0}
 .sources ul{padding-left:18px;font-size:13px;line-height:1.9;color:var(--ink-2)}
@@ -256,6 +257,6 @@ textarea{width:100%;resize:vertical;line-height:1.6}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 @media print{.cr-header,.bench-actions,.steps,.actions,.tip,.toast{display:none!important}.tab{display:block!important}}
 /* RDKit 结构图：黑色键与标签跟随正文颜色，深色模式下仍然清楚。 */
-.molsvg path[style*="stroke:#000000"]{stroke:var(--ink)!important}
-.molsvg path[style*="fill:#000000"],.molsvg text[style*="fill:#000000"]{fill:var(--ink)!important}
-.molsvg rect[style*="fill:#FFFFFF"],.molsvg rect[style*="fill:#ffffff"]{fill:transparent!important}
+.molsvg path[style*="stroke:var(--t-000000)"]{stroke:var(--ink)!important}
+.molsvg path[style*="fill:var(--t-000000)"],.molsvg text[style*="fill:var(--t-000000)"]{fill:var(--ink)!important}
+.molsvg rect[style*="fill:var(--t-ffffff)"],.molsvg rect[style*="fill:var(--t-ffffff)"]{fill:transparent!important}

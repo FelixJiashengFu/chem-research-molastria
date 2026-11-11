@@ -115,6 +115,15 @@
       </div>
     </div>
 
+    <div class="acct-card" id="growth-card" hidden aria-labelledby="growth-h">
+      <h2 id="growth-h">增长</h2>
+      <p class="acct-sub">注册就是第一次用邮箱登录成功。这一栏上线之前就有的账号没有记下注册时间，算在“上线前”里，不进每天的柱子。</p>
+      <dl class="acct-growth" id="growth-stats"></dl>
+      <figure class="acct-growth-chart"><div class="acct-bars" id="growth-bars" role="img" aria-label="最近 30 天每天的新注册"></div><figcaption class="acct-sub" id="growth-cap">最近 30 天每天的新注册</figcaption></figure>
+      <p class="co-msg" id="growth-msg" role="status" aria-live="polite"></p>
+      <details class="acct-growth-recent"><summary>最近的注册（邮箱已打码）</summary><ul class="acct-cardlist" id="growth-recent"></ul></details>
+    </div>
+
     <div class="acct-card" id="admin-card" hidden aria-labelledby="admin-h">
       <h2 id="admin-h">发 VIP 卡</h2>
       <p class="acct-sub">生成卡号送给朋友。朋友在本页填邮箱和卡号、收到验证码后即开通 Pro。一张卡只能用一次；收回后，这张卡带来的 Pro 时长立即作废。</p>

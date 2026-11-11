@@ -372,7 +372,7 @@
   function card(x, mark) {
     const d = x.doc, all = [d, ...(x.also || [])];
     const sources = [...new Set(all.flatMap((y) => y.sources))].map((sid) => sourceOf(sid));
-    const badges = sources.map((s) => `<span class="src-badge" style="--sc:${esc(s.color)};background:${esc(s.color)}">${esc(s.name)}</span>`).join('');
+    const badges = sources.map((s) => `<span class="src-badge" style="--sc:${esc(s.color)}">${esc(s.name)}</span>`).join('');
     const ents = [...d.ents.entries()].filter(([k]) => k !== R.center?.idx).sort((a, b) => b[1] - a[1]).map(([k]) => NET.entities.find((e) => e.idx === k)).filter((e) => e && !e.broad).slice(0, 4);
     const meta = [d.date, d.metric, d.authors ? '✎ ' + d.authors : ''].filter(Boolean).map(esc).join(' · ');
     const excerpt = d.excerpt && !/^该文在计算化学公社的讨论帖|^X-MOL /.test(d.excerpt) ? d.excerpt : '';

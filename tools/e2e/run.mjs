@@ -1675,6 +1675,70 @@ check('network: a word the term table does not know is kept on this device, repo
   await finish(reader);
 });
 
+check('growth card: the site owner sees sign-ups and usage on the account page, other accounts do not', async () => {
+  const admin = await open();
+  await go(admin, '/pro/account.html');
+  await signIn(admin, 'owner@example.com');
+  await admin.waitForSelector('#growth-stats dd');
+  assert.equal(await admin.isVisible('#growth-card'), true);
+  const stats = await admin.$$eval('#growth-stats > div', (els) => els.map((e) => [e.querySelector('dt').textContent, Number(e.querySelector('dd').firstChild.textContent)]));
+  assert.equal(stats[0][0], '账号总数');
+  assert.ok(stats[0][1] >= 1, String(stats));
+  assert.equal(await admin.$$eval('#growth-bars span', (els) => els.length), 30);
+  assert.match(await admin.getAttribute('#growth-bars', 'aria-label'), /最近 30 天每天的新注册，共 \d+ 个/);
+  await admin.click('.acct-growth-recent summary');
+  assert.ok((await admin.$$eval('#growth-recent code', (els) => els.map((e) => e.textContent))).every((t) => /^.\*+@/.test(t)), 'emails are masked');
+  await finish(admin);
+  const reader = await open();
+  await go(reader, '/pro/account.html');
+  await signIn(reader, 'reader@uni.edu');
+  assert.equal(await reader.isVisible('#growth-card'), false);
+  await finish(reader);
+});
+
+check('narrow phones: no sideways scroll at 320–390 px on the main pages; the video tour downloads nothing until asked', async () => {
+  for (const width of [320, 360, 375]) {
+    const p = await open({ viewport: { width, height: 760 } });
+    for (const path of ['/index.html', '/lab/index.html', '/vision/index.html', '/manual/index.html', '/code/index.html']) {
+      await go(p, path);
+      assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} at ${width} px scrolls sideways`);
+    }
+    await finish(p);
+  }
+  const v = await open();
+  const parts = [];
+  v.on('request', (r) => { if (r.url().endsWith('.bin')) parts.push(r.url()); });
+  await v.route('**/watch/video-0*.bin', (route) => route.fulfill({ status: 200, body: Buffer.alloc(8) }));
+  await go(v, '/watch/index.html');
+  await v.waitForTimeout(500);
+  assert.deepEqual(parts, [], 'nothing downloaded before the button');
+  await v.click('#load');
+  await v.waitForFunction(() => document.getElementById('load').hidden);
+  await v.waitForTimeout(500);
+  assert.ok(parts.length >= 1, 'the button starts the download');
+  v.errors.length = 0; // the 8-byte stand-in is not a playable video
+  await v.context().close();
+});
+
+check('English address: hreflang alternates come from the build; at ?lang=en the summary and stray Chinese full stops turn English', async () => {
+  const p = await open();
+  await p.route(/\/scimodels\/index\.html/, async (route) => {
+    const res = await route.fetch();
+    const html = (await res.text()).replace('</title>', '</title><link rel="canonical" href="https://molastria.com/scimodels/"><meta property="og:url" content="https://molastria.com/scimodels/">' +
+      '<script>if(/[?&]lang=en(&|$)/.test(location.search))document.querySelectorAll(\'link[rel=canonical],meta[property="og:url"]\').forEach(function(e){var a=e.tagName==="LINK"?"href":"content",u=e.getAttribute(a);e.setAttribute(a,u+(u.indexOf("?")<0?"?":"&")+"lang=en")})</script>');
+    await route.fulfill({ response: res, body: html });
+  });
+  await go(p, '/scimodels/index.html?lang=en');
+  await p.waitForFunction(() => document.documentElement.lang === 'en' && !document.documentElement.dataset.i18n);
+  assert.equal(await p.getAttribute('link[rel=canonical]', 'href'), 'https://molastria.com/scimodels/?lang=en');
+  const desc = await p.getAttribute('meta[name=description]', 'content');
+  assert.doesNotMatch(desc, HAN, desc);
+  assert.match(desc, /^Science language and multimodal foundation models/);
+  const stray = await p.evaluate(() => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const out = []; for (let n = w.nextNode(); n; n = w.nextNode()) if (/^\s*。\s*$/.test(n.nodeValue) && n.parentElement.offsetParent) out.push(n.parentElement.outerHTML.slice(0, 80)); return out; });
+  assert.deepEqual(stray, []);
+  await finish(p);
+});
+
 check('handbook: the five chapters for categories 12–16 open in both languages and link to the site pages they name', async () => {
   const p = await open();
   await go(p, '/manual/index.html#p14f-cat16');

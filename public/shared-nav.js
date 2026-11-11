@@ -1177,6 +1177,23 @@
     });
   }
 
+  // Visit counts: Cloudflare Web Analytics (no cookies, no localStorage, nothing tied to a person; privacy policy
+  // "访问统计"). Off while ANALYTICS is empty: the site token comes from the Cloudflare dashboard (Web Analytics → Add a
+  // site → molastria.com); it is public by design (it sits in every page), not a secret. Only on molastria.com itself,
+  // never in the desktop app, a disk copy, a local preview or the browser tests; a browser sending Global Privacy
+  // Control or Do Not Track is not counted.
+  const ANALYTICS = '';
+  if (ANALYTICS && /(^|\.)molastria\.com$/.test(location.hostname) && !window.__MOLASTRIA_DESKTOP__ && !window.__TAURI_INTERNALS__
+    && !navigator.globalPrivacyControl && navigator.doNotTrack !== '1' && !navigator.webdriver) {
+    addEventListener('load', () => {
+      const b = document.createElement('script');
+      b.defer = true;
+      b.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+      b.setAttribute('data-cf-beacon', JSON.stringify({ token: ANALYTICS, spa: false }));
+      document.head.appendChild(b);
+    }, { once: true });
+  }
+
   // Desktop app only: offer the newer version published on GitHub Releases. The app checks the signed feed
   // once per launch (cached for the session); "稍后" hides the prompt for that version for three days.
   const ipc = window.__TAURI_INTERNALS__;

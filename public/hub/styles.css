@@ -68,7 +68,7 @@ main{max-width:1320px;margin:0 auto;padding:0 32px 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:17px;display:flex;flex-direction:column;gap:9px;transition:border-color .15s,box-shadow .15s}
 .card:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
 .card-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.src-badge{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:3px;color:#fff;background:var(--sc,var(--muted))}
+.src-badge{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:3px;color:#fff;background:color-mix(in srgb,var(--sc,var(--muted)) 78%,#000)} /* darkened so white text keeps 4.5:1 on the lighter source colours */
 .type-badge{font-size:11.5px;color:var(--muted);border:1px solid var(--line);padding:2px 9px;border-radius:3px}
 .card h3{margin:0;font-size:15.5px;line-height:1.55}
 .card h3 a{color:var(--ink);text-decoration:none}
