@@ -187,6 +187,8 @@ check('pricing page: content free, three allowances, everything marked available
   // Pro is monthly only, ¥9.9 (2026-11-11): no year/month switch, the checkout sells pro_month.
   assert.equal(await text(p, '[data-plan=pro] .price'), '¥9.9/ 月');
   assert.equal(await p.locator('[data-billing]').count(), 0);
+  assert.equal(await text(p, '[data-price=team]'), '¥500'); // ¥100 a seat a year, five seats at least
+  assert.match(await text(p, '[data-seats=team]'), /每加 1 席 ¥100 \/ 年/);
   await p.click('[data-checkout=pro]');
   assert.match(await text(p, '#co-title'), /月付/);
   assert.equal(await text(p, '#co-price'), '¥9.9');

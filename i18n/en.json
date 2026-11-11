@@ -5523,7 +5523,7 @@
  "，模拟时长 {0} fs。": ", {0} fs simulated.",
  "，每个角都连着图上的理论节点。": ": every corner links to a theory on the map.",
  "，每加 1 席 {0} / 年": ", {0} / year per extra seat",
- "，每加 1 席 ¥298 / 年": ", CN¥298 / year per extra seat",
+ "，每加 1 席 ¥100 / 年": ", CN¥100 / year per extra seat",
  "，每行一个问题，例如“给出 3 个含两个 F、不超过 12 个重原子的碳酸酯溶剂并核对分子式”），让老师模型在真实工具环境里作答，把完整的对话和工具调用记下来。": ", one question per line, e.g. “Give 3 carbonate solvents containing two F and no more than 12 heavy atoms, and check the molecular formula”), have the teacher model answer in a real tool environment, and record the full conversation and tool calls.",
  "，没有任务编号。": ", and there is no job id.",
  "，用付款邮箱收 6 位验证码登录即可。登录后 AI 助手的设置里会出现“MolAstria 托管”，不用自备 key。": "and sign in with a 6-digit code sent to your payment email. Once signed in, \"MolAstria hosted\" appears in the AI assistant settings; no key needed.",
