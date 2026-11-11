@@ -370,3 +370,143 @@ test('2D wave packet levels: each reference solution fits the budget and earns t
   const tun = W2.levels.find((L) => L.id === 'tunnel'), cells = W2.paint(W2.layout(tun), [[0, 0, W2.N, W2.N, W2.EMPTY]]);
   assert.ok(cells.every((v) => v === W2.EMPTY || v === W2.BARRIER_LOCK) && cells.some((v) => v === W2.BARRIER_LOCK));
 });
+
+// ── 16–19：立体馆（play-3d-models.js）──────────────────────────────────────
+const tbox = { window: {} };
+vm.runInNewContext(readFileSync(new URL('../public/qchem/play-3d-models.js', import.meta.url), 'utf8'), tbox);
+const T3 = tbox.window.MOLASTRIA_PLAY3D;
+const seeded = (s) => () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648); // reproducible random starts
+const vclose = (a, b, tol, msg) => assert.ok(T3.len(T3.sub(a, b)) <= tol, `${msg}: ${plain(a)} vs ${plain(b)}`);
+
+test('3D view maths: rotations are orthonormal, the transpose undoes them, slerp stays on the sphere', () => {
+  const R = T3.mul(T3.axisAngle([1, 2, 3], 0.7), T3.randomRotation(seeded(7)));
+  for (const v of [[1, 0, 0], [0.3, -2, 5]]) { vclose(T3.applyT(R, T3.apply(R, v)), v, 1e-12, 'Rᵀ R v = v'); close(T3.len(T3.apply(R, v)), T3.len(v), 1e-12, 'length kept'); }
+  vclose(T3.rotate([1, 0, 0], [0, 0, 1], Math.PI / 2), [0, 1, 0], 1e-12, 'right-hand rule: x about z by 90° is y');
+  vclose(T3.apply(T3.between([1, 2, 2], [0, 0, 1]), T3.unit([1, 2, 2])), [0, 0, 1], 1e-12, 'between() turns a onto b');
+  vclose(T3.apply(T3.between([0, 0, 1], [0, 0, -1]), [0, 0, 1]), [0, 0, -1], 1e-12, 'and the antiparallel case');
+  let drift = T3.ID;
+  for (let i = 0; i < 2000; i++) drift = T3.mul(T3.axisAngle([0, 1, 0], 0.011), T3.mul(T3.axisAngle([1, 0, 0], 0.007), drift));
+  const O = T3.orthonormalize(drift), rows = [O.slice(0, 3), O.slice(3, 6), O.slice(6)];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) close(T3.dot(rows[i], rows[j]), i === j ? 1 : 0, 1e-12, 'orthonormal rows');
+  for (let i = 0; i <= 10; i++) close(T3.len(T3.slerp([1, 0, 0], [0, 0.6, 0.8], i / 10)), 1, 1e-12, 'slerp on the sphere');
+});
+
+test('VSEPR model: with equal pairs the minima are the Thomson-problem energies and shapes', () => {
+  // Known minimum energies of N unit charges on a unit sphere (Thomson problem, E = Σ 1/r)
+  const thomson = { 2: 0.5, 3: Math.sqrt(3), 4: 3.674234614, 5: 6.474691495, 6: 9.985281374 };
+  const rnd = seeded(11);
+  for (const m of T3.molecules.filter((x) => !x.L)) {
+    const K = T3.kinds(m);
+    let lo = Infinity;
+    for (let s = 0; s < 8; s++) lo = Math.min(lo, T3.energy(T3.relax(T3.scatter(m, rnd), K, 1500), K));
+    close(lo, thomson[K.length], 1e-6, `${m.f}: Thomson N = ${K.length}`);
+    close(m.emin, thomson[K.length], 1e-4, `${m.f}: stored minimum`);
+  }
+  // the analytic forces are the gradient (finite differences)
+  const P = T3.scatter(T3.molecules.find((x) => x.id === 'sf4'), rnd), K = ['B', 'B', 'B', 'B', 'L'], h = 1e-6;
+  for (let d = 0; d < 3; d++) {
+    const up = P.map((p) => p.slice()), dn = P.map((p) => p.slice()); up[4][d] += h; dn[4][d] -= h;
+    close(-(T3.energy(up, K) - T3.energy(dn, K)) / (2 * h), T3.force(P, K, 4)[d], 1e-5, `force component ${d}`);
+  }
+});
+
+test('VSEPR model: every molecule’s global minimum is the textbook shape, with lone pairs where VSEPR puts them', () => {
+  const rnd = seeded(23);
+  for (const m of T3.molecules) {
+    const K = T3.kinds(m);
+    let bestP = null, lo = Infinity;
+    for (let s = 0; s < 40; s++) { const Q = T3.relax(T3.scatter(m, rnd), K, 1500), e = T3.energy(Q, K); if (e < lo) { lo = e; bestP = Q; } }
+    close(lo, m.emin, 2e-4, `${m.f}: lowest energy found vs stored`);
+    assert.equal(T3.shapeOf(bestP, K), m.shape, `${m.f}: shape at the minimum`);
+    assert.ok(T3.solved(m, bestP, K), `${m.f}: the minimum counts as solved`);
+    const L = bestP.filter((_, i) => K[i] === 'L');
+    if (m.id === 'xef4') close(T3.angle(L[0], L[1]), 180, 1, 'XeF₄: lone pairs opposite');
+    if (m.id === 'clf3') close(T3.angle(L[0], L[1]), 120, 2, 'ClF₃: both lone pairs equatorial');
+  }
+  // lone pairs squeeze the bond angle below the tetrahedral 109.5°, as in water (104.5°) and ammonia (106.7°)
+  for (const id of ['h2o', 'nh3']) {
+    const m = T3.molecules.find((x) => x.id === id), K = T3.kinds(m), Q = T3.relax(T3.scatter(m, rnd), K, 3000), B = Q.filter((_, i) => K[i] === 'B');
+    const a = T3.angle(B[0], B[1]);
+    assert.ok(a > 100 && a < 109.4, `${m.f}: bond angle ${a.toFixed(1)}°`);
+  }
+  // the wrong basins exist (that is the game): XeF₄ with cis lone pairs relaxes to a local minimum, not the square
+  const m = T3.molecules.find((x) => x.id === 'xef4'), K = T3.kinds(m), s2 = Math.SQRT1_2;
+  const startCis = [[1, 0, 0], [-1, 0, 0], [0, 0, -1], [0, -1, 0], [0, s2, s2], [0.05, 1, 0]].map(T3.unit); // B B B B L L, lone pairs at 90°
+  const Q = T3.relax(startCis, K, 4000);
+  assert.ok(!T3.solved(m, Q, K) && T3.energy(Q, K) > m.emin * 1.0005, `XeF₄ cis basin stays above the minimum (${T3.energy(Q, K)})`);
+  // a scattered start is never already solved
+  for (const x of T3.molecules) for (let i = 0; i < 5; i++) { const P = T3.scatter(x, rnd); assert.ok(!T3.solved(x, P, T3.kinds(x)), `${x.f}: scatter is not a solution`); }
+});
+
+test('chirality: the triple-product rule calls L-alanine S and its mirror image R', () => {
+  // Fischer projection of L-alanine: COOH up, CH₃ down (both away from the viewer), NH₂ left, H right (toward the viewer).
+  const NH2 = [-1, 0, 1], COOH = [0, 1, -1], CH3 = [0, -1, -1];
+  assert.equal(T3.handedness([0, 0, 0], NH2, COOH, CH3), 'S');
+  const mirror = (v) => [-v[0], v[1], v[2]];
+  assert.equal(T3.handedness([0, 0, 0], mirror(NH2), mirror(COOH), mirror(CH3)), 'R');
+  // the definition: group 4 straight away from the viewer at +z, 1 → 2 → 3 clockwise as seen from +z is R
+  const at = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180), 0.33];
+  assert.equal(T3.handedness([0, 0, 0], at(90), at(-30), at(210)), 'R');
+  assert.equal(T3.handedness([0, 0, 0], at(90), at(210), at(-30)), 'S');
+  // placeChiral gives what is asked, on a tetrahedron, and any rotation keeps it
+  const rnd = seeded(5);
+  for (let i = 0; i < 40; i++) {
+    const want = i % 2 ? 'R' : 'S', P = T3.placeChiral(want, rnd), Rm = T3.randomRotation(rnd);
+    for (let a = 0; a < 4; a++) for (let b = a + 1; b < 4; b++) close(T3.angle(P[a], P[b]), 109.47, 0.01, 'tetrahedral angle');
+    const Q = P.map((p) => T3.apply(Rm, p));
+    assert.equal(T3.handedness([0, 0, 0], Q[0], Q[1], Q[2]), want);
+  }
+  for (const c of T3.chirals) {
+    assert.equal(c.groups.length, 4, c.id);
+    assert.ok(c.note.R && c.note.S && c.why[0] && c.why[1], `${c.id}: notes in both languages`);
+  }
+});
+
+test('Miller planes: intercepts, sections of the unit cube and their areas', () => {
+  const sec = (h, k, l) => { const p = T3.millerPlane(h, k, l); return T3.cubeSection(p.n, p.d); };
+  const area = (h, k, l) => T3.polygonArea(sec(h, k, l));
+  close(area(1, 0, 0), 1, 1e-12, '(100) is a face'); assert.equal(sec(1, 0, 0).length, 4);
+  close(area(1, 1, 0), Math.SQRT2, 1e-12, '(110) is the diagonal rectangle');
+  close(area(1, 1, 1), Math.sqrt(3) / 2, 1e-12, '(111) cuts off a corner triangle'); assert.equal(sec(1, 1, 1).length, 3);
+  for (const p of sec(2, 0, 0)) close(p[0], 0.5, 1e-12, '(200) sits at x = ½');
+  for (const p of sec(1, 1, 1)) close(p[0] + p[1] + p[2], 1, 1e-12, '(111): intercepts 1, 1, 1');
+  for (const p of sec(1, -1, 0)) close(p[0] - p[1], 0, 1e-12, '(1 −1 0): the origin moves to b = 1, plane x = y');
+  // every plane the game can ask is inside the cell and its points satisfy the equation
+  for (const tier of T3.millerTiers) for (const m of tier) {
+    const pl = T3.millerPlane(...m), poly = T3.cubeSection(pl.n, pl.d);
+    assert.ok(poly.length >= 3, `${m}: a real section`);
+    for (const p of poly) { close(T3.dot(pl.n, p), pl.d, 1e-9, `${m}: on the plane`); assert.ok(p.every((x) => x >= -1e-9 && x <= 1 + 1e-9)); }
+    assert.ok(T3.millerSame(m, m.map((x) => -x)), 'hkl and its negative are one family');
+  }
+  assert.ok(!T3.millerSame([1, 1, 0], [1, -1, 0]));
+  close(T3.dSpacing(1, 1, 1), 1 / Math.sqrt(3), 1e-12, 'd(111) = a/√3');
+  assert.deepEqual(plain(T3.millerTiers.map((x) => x.length)), [7, 18, 33]);
+});
+
+test('Bloch sphere: each gate’s rotation equals its 2×2 matrix acting on the state, and the levels’ minimum gate counts are right', () => {
+  // complex helpers on [re, im]
+  const cm = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], ca = (a, b) => [a[0] + b[0], a[1] + b[1]], conj = (a) => [a[0], -a[1]];
+  const act = (U, s) => [ca(cm(U[0][0], s[0]), cm(U[0][1], s[1])), ca(cm(U[1][0], s[0]), cm(U[1][1], s[1]))];
+  const bloch = (s) => { const r = cm(conj(s[0]), s[1]); return [2 * r[0], 2 * r[1], s[0][0] ** 2 + s[0][1] ** 2 - s[1][0] ** 2 - s[1][1] ** 2]; };
+  const rnd = seeded(3);
+  for (const g of Object.keys(T3.gates)) {
+    const U = T3.matrices[g];
+    // unitary
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { const s = ca(cm(conj(U[0][i]), U[0][j]), cm(conj(U[1][i]), U[1][j])); close(s[0], i === j ? 1 : 0, 1e-12, `${g} unitary`); close(s[1], 0, 1e-12, `${g} unitary`); }
+    for (let n = 0; n < 6; n++) {
+      const th = Math.acos(2 * rnd() - 1), ph = 2 * Math.PI * rnd(), s = [[Math.cos(th / 2), 0], [Math.sin(th / 2) * Math.cos(ph), Math.sin(th / 2) * Math.sin(ph)]];
+      vclose(T3.applyGate(bloch(s), g), bloch(act(U, s)), 1e-12, `${g} on a random state`);
+    }
+  }
+  vclose(T3.applyGate([0, 0, 1], 'H'), [1, 0, 0], 1e-12, 'H|0⟩ = |+⟩');
+  vclose(T3.applyGate([1, 0, 0], 'S'), [0, 1, 0], 1e-12, 'S|+⟩ = |+i⟩');
+  vclose(T3.applyGate([0, 0, 1], 'SX'), [0, -1, 0], 1e-12, '√X|0⟩ = |−i⟩');
+  assert.equal(new Set(T3.blochLevels.map((L) => L.id)).size, T3.blochLevels.length);
+  for (const L of T3.blochLevels) {
+    assert.equal(T3.minGates(L.start, L.target, L.gates), L.min, `${L.id}: fewest gates`);
+    close(T3.len(L.target), 1, 1e-12, `${L.id}: a pure state`);
+    assert.ok(!T3.near(L.start, L.target), `${L.id}: not already there`);
+    assert.deepEqual([T3.blochStars(L, L.min), T3.blochStars(L, L.min + 1), T3.blochStars(L, L.min + 5)], [3, 2, 1]);
+    if (L.id === 'one') assert.ok(!L.gates.includes('X'), 'the |1⟩ level really has no X');
+  }
+});

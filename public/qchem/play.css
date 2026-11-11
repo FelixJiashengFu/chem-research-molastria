@@ -202,3 +202,17 @@ main.play-main{max-width:1200px;margin:0 auto;padding:0 32px 56px}
 .wv-cv{touch-action:none;cursor:crosshair}
 .wv-cv:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #wv-phase[aria-pressed=true]{border-color:var(--gold);background:var(--gold-soft)}
+
+/* 16–19：立体馆（play-3d.js）。画布上拖动是转视角或拖电子对，所以不让它滚动页面 */
+.play-card-3d .play-card-n{color:var(--violet,var(--accent-text))}
+.p3-cv{touch-action:none;cursor:move;user-select:none;-webkit-user-select:none}
+.p3-cv[data-dragging=handle]{cursor:grabbing}
+.p3-cv:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.play-ask{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--ink)}
+#vs-choices{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
+#vs-choices .play-choice{font:500 13px/1.3 var(--font-sans)}
+#ch-case span{font-size:13px;line-height:1.7;color:var(--ink-2)}
+#ch-case span.muted{font-size:12.5px;color:var(--muted)}
+#ch-rank[aria-pressed=true]{border-color:var(--gold);background:var(--gold-soft)}
+#mi-steps .pl-step{grid-template-columns:22px 1fr 40px 54px 40px}
+#mi-steps .pl-step span{font-size:12.5px;color:var(--muted)}
