@@ -16,7 +16,14 @@
   const STOP = new Set(['the', 'a', 'an', 'of', 'and', 'or', 'for', 'in', 'on', 'to', 'with', 'how', 'what', 'which', 'is', 'are', 'do', 'does', 'use', 'using']);
   // Question words only: single characters such as 中 or 的 are left alone, since they are also parts of terms (中子, 目的).
   const QSTOP = /怎么样|怎么|如何|什么|哪些|哪个|有没有|请问|一下|[吗呢呀][？?]?$/g;
-  const strip = (s) => String(s ?? '').replace(/<[^>]*>/g, '').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+  // Source text to plain text (it is HTML-escaped again when drawn): entities decoded in one pass, so &amp;lt; stays the
+  // text "&lt;", then tags removed until none are left and any stray angle bracket dropped.
+  const ENT = { '&quot;': '"', '&#39;': "'", '&#039;': "'", '&amp;': '&', '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' };
+  const strip = (s) => {
+    let t = String(s ?? '').replace(/&(?:quot|#0?39|amp|lt|gt|nbsp);/g, (m) => ENT[m]);
+    for (let prev = ''; prev !== t;) { prev = t; t = t.replace(/<[^<>]*>/g, ''); }
+    return t.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+  };
   const words = (s) => (String(s || '').toLowerCase().match(/[a-z0-9][a-z0-9+#.\-]*/g) || []).filter((w) => !STOP.has(w));
 
   /** Turns the visitor's query into what each source can use. Chinese terms the glossary knows become their English

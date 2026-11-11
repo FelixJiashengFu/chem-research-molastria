@@ -63,6 +63,8 @@ test('parse: each source becomes the same shape; bad JSON gives nothing', () => 
   const gh = W.parse('github', { items: [{ full_name: 'pyscf/pyscf', html_url: 'https://github.com/pyscf/pyscf', description: 'Python SCF', stargazers_count: 1500, language: 'Python' }, { full_name: 'evil', html_url: 'javascript:alert(1)' }] });
   assert.equal(gh.length, 1, 'only github.com addresses');
   assert.equal(gh[0].meta, '★ 1500 · Python');
+  const tricky = W.parse('github', { items: [{ full_name: 'a/b', html_url: 'https://github.com/a/b', description: '<scr<script>ipt>x &amp;lt;b&amp;gt; <b>bold</b> 1 &lt; 2' }] });
+  assert.equal(tricky[0].snippet, 'x &lt;b&gt; bold 1 2', 'no tags or angle brackets survive; &amp;lt; decodes once');
   for (const s of ['openalex', 'crossref', 'wikipedia', 'pubchem', 'github', 'nope']) { assert.deepEqual(W.parse(s, null), []); assert.deepEqual(W.parse(s, { results: 'x', items: 3 }), []); }
 });
 
