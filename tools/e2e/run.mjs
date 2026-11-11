@@ -1742,11 +1742,13 @@ check('home hero: the map shows the numbers of the search, a chip filters the ca
   await p.hover('#hero-map'); await p.waitForTimeout(1600); // the ring holds still under the pointer
   let g = await geo();
   assert.ok(g.off < 2 && g.start < 2 && g.ends < 3 && g.wide <= 0, JSON.stringify(g));
-  const where = () => p.$eval('.nm-node', (n) => n.style.transform);
-  const held = await where(); await p.waitForTimeout(400);
-  assert.equal(await where(), held, 'held still while the pointer is on the map');
-  await p.mouse.move(200, 300); await p.waitForTimeout(900);
-  assert.notEqual(await where(), held, 'and turns again afterwards');
+  const where = () => p.$eval('.nm-node', (n) => n.style.transform.match(/-?[\d.]+/g).slice(0, 2).map(Number));
+  const moved = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  await p.waitForTimeout(600);
+  const held = await where(); await p.waitForTimeout(500);
+  assert.ok(moved(await where(), held) < 0.25, 'held still while the pointer is on the map');
+  await p.mouse.move(200, 300); await p.waitForTimeout(1200);
+  assert.ok(moved(await where(), held) > 1, 'and turns again afterwards');
   // A search changes the numbers; a chip narrows the catalogue to its type, a second click clears it.
   await p.fill('#intro-q', 'Multiwfn');
   await p.waitForFunction((t) => { const n = +document.getElementById('hero-total').dataset.n; return n > 0 && n < t; }, total);

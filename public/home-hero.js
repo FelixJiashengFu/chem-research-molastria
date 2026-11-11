@@ -81,7 +81,9 @@
   }
   function frame(now) {
     const dt = Math.min(64, now - (last || now)) / 1000; last = now;
-    omega += (want - omega) * Math.min(1, dt * 3.5); theta += (omega + boost) * dt; boost *= Math.exp(-dt * 2.4);
+    omega += (want - omega) * Math.min(1, dt * 3.5); boost *= Math.exp(-dt * (want ? 2.4 : 9));
+    if (!want && Math.abs(omega) + Math.abs(boost) < 2e-3) omega = boost = 0; // held under the pointer: really still, not creeping
+    theta += (omega + boost) * dt;
     px += (mx - px) * Math.min(1, dt * 5); py += (my - py) * Math.min(1, dt * 5);
     place(now);
     raf = requestAnimationFrame(frame);
