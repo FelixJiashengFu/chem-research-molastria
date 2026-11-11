@@ -2,6 +2,13 @@
  "跳到统一搜索": [
   "index.html"
  ],
+ "计算化学研究导航": [
+  "index.html",
+  "shared-nav.js"
+ ],
+ "点按任意处进入": [
+  "index.html"
+ ],
  "找数据，读方法。": [
   "index.html"
  ],
@@ -378,6 +385,9 @@
   "radar/app/app.js"
  ],
  "品牌故事": [
+  "index.html"
+ ],
+ "重播进入动画": [
   "index.html"
  ],
  "站点地图": [
@@ -7927,9 +7937,6 @@
   "shared-nav.js"
  ],
  "固定到顶栏": [
-  "shared-nav.js"
- ],
- "计算化学研究导航": [
   "shared-nav.js"
  ],
  "全站导航": [
