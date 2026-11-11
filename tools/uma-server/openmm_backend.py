@@ -25,6 +25,28 @@ import urllib.request
 
 import numpy as np
 
+
+def _cuda_dll_dirs():
+    """On Windows, `pip install openmm[cuda12]` puts cudart, nvrtc and cufft in site-packages/nvidia/*/bin, which
+    OpenMM's CUDA plugin does not search (it fails to load with error 126 and only OpenCL is offered). Put them on
+    the DLL path before openmm is first imported; plugins are loaded at import."""
+    import glob
+    import os
+    import sys
+
+    if os.name != "nt":
+        return
+    for site in sys.path:
+        for d in glob.glob(os.path.join(site, "nvidia", "*", "bin")):
+            try:
+                os.add_dll_directory(d)
+            except OSError:
+                continue
+            os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
+
+
+_cuda_dll_dirs()
+
 PDB_ID = re.compile(r"^[1-9][A-Za-z0-9]{3}$")
 CHAINS = re.compile(r"^[A-Za-z0-9]{1,8}$")
 MAX_RESIDUES = 300  # after the chains are chosen; about 5000 atoms with hydrogens
