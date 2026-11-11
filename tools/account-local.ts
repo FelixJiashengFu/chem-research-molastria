@@ -5,9 +5,12 @@
 // Sign-in codes are returned to the page instead of mailed.
 // Hosted AI calls go to the real DeepSeek with DEEPSEEK_API_KEY from this process's environment,
 // or get a fixed answer when FAKE_AI is set (tools/e2e/run.mjs).
+// The discussion rooms (/chat/ws, /chat/summary) run in this process too: tools/chat-local.ts stands in for the Durable Object,
+// with the real room logic of deploy/chat.js; messages are gone when the server stops.
 // Point the site at it by setting accountApi in public/pay/config.js to http://127.0.0.1:<port> (do not commit that).
 import worker from "../deploy/account-worker.js";
 import { d1 } from "./d1-sqlite.ts";
+import { chatLocal } from "./chat-local.ts";
 
 const port = Number(Deno.args[0] ?? 8832);
 const { DB } = await d1();
@@ -132,4 +135,7 @@ const env = {
 };
 // What Cloudflare's quarter-hourly cron does: one probe of the (pretend) owner computer, so /v1/status has a sample.
 if (env.UMA_ORIGIN) await worker.scheduled({ cron: "*/15 * * * *" }, env);
-Deno.serve({ port, hostname: "127.0.0.1" }, (req) => worker.fetch(req, env));
+// The binding wrangler.toml calls CHAT. Added after the cron above, which would otherwise ask the rooms for open reports.
+const chat = chatLocal(env);
+Object.assign(env, { CHAT: chat.CHAT });
+Deno.serve({ port, hostname: "127.0.0.1" }, (req) => chat.serve(req, (r) => worker.fetch(r, env)));

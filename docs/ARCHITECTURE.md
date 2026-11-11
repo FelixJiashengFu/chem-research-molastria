@@ -15,6 +15,8 @@ flowchart TB
   V -->|结构馆、3D 查看器| PDB["RCSB PDB（files.rcsb.org）"]
   V -->|Meta 页：fairchem 版本| GH["GitHub API · Hugging Face API"]
   W --> D1["Cloudflare D1"]
+  V -->|讨论室：WebSocket| W
+  W -->|讨论室| DO["Durable Object ChatHub<br>房间、消息、昵称（自带 SQLite）"]
   W -->|只读查订阅| SA["Stripe API"]
   W -->|验证码、每周精选邮件| RS["Resend"]
   W -->|每周精选取论文| CR
@@ -26,6 +28,7 @@ flowchart TB
 - **账号服务**只有一个 Worker，负责登录、查订阅、计次数、转发托管 AI，并按时生成和发送每周精选；还把 `/uma/*` 经 Cloudflare Tunnel 转给站长电脑上的在线模型服务（15 个模型：UMA、OMol25 的 eSEN / AllScAIP、MACE、ANI-2x；决定谁能用哪个、限次、地区限制、共享暗号）。同一个队列也开给程序：`/v1/*` 用账号页生成的 API key（D1 的 `api_keys` 表只存哈希），不查来源网站，次数算在 key 的主人头上，MACE 系列不提供。
 - **桌面版**（Tauri）内置同一套网页，多了检查更新和“在本机运行 UMA”：`desktop/src-tauri/src/uma.rs` 找到访客的 Python，用编译进应用的 `uma/runner.py` 计算；页面只传经过校验的参数（SMILES、任务、模型等），日志靠轮询 `uma_poll` 取回。
 - **研习台**（`/learn/`）也完全在浏览器里：页面直接调用访客选的 AI（自己的 key 发往 DeepSeek / Muse / OpenAI 兼容服务，或经账号服务的托管额度），模型只回 JSON，校验后由页面自己画；会话、知识图和改过的提示词只存在 `localStorage`，不经过账号服务。作为依据的栏目数据文件（如 `quantum/physics/qp-data.js`）用到时才加载。
+- **讨论室**（`/chat/`）是全站唯一把访客写的内容公开存到服务器上的地方：浏览器开一条 WebSocket 到账号服务的 `/chat/ws`（登录令牌放在子协议里，没登录也能连上看），Worker 在 D1 里认出是谁、把邮箱对成随机代号（表 `chat_users`），再把连接交给 Durable Object `ChatHub`（`deploy/chat.js`，全站一个实例）。房间、消息、昵称、举报、禁言都存在它自己的 SQLite 里，那里没有邮箱和 IP；没人说话时它休眠。首页的卡片只读 `GET /chat/summary`（缓存 30 秒），不开连接。只有文字，页面只用 textContent 画别人写的内容。
 - 网站不接触卡号；AI 对话内容不保存。
 
 ## 开放数据接口
@@ -125,6 +128,7 @@ sequenceDiagram
 | `digest_sends` | 哪一期发给了谁，用来分批和续发 |
 | `sync_items` | 云同步：每个账号的学习记录和收藏，一份 localStorage 存档一行（原文照存，带账号内递增的版本号） |
 | `net_misses` | 网状查询里术语表认不出的词：词、报过几次、最近的全文命中数、第一次和最近一次的时间；没有 IP 和账号，最多 3000 行 |
+| `chat_users` | 讨论室：账号的邮箱对成一个 12 位的随机代号；只有这张表知道代号是谁。消息、昵称、房间不在 D1，在 Durable Object `ChatHub` 自己的 SQLite 里（只认代号） |
 
 ## 数据和密钥放在哪
 
@@ -146,6 +150,7 @@ sequenceDiagram
 | DeepSeek | 托管 AI、每周精选、补译 | 按 token；flash 每百万 $0.30 / $1.20（高峰，非高峰减半） |
 | Cloudflare Workers | 账号服务 | 免费：每天 10 万次请求；超出后 Workers Paid US$5/月起 |
 | Cloudflare D1 | 数据库 | 免费：每天读 500 万行、写 10 万行，5 GB |
+| Cloudflare Durable Objects | 讨论室（一个 SQLite 存储的对象，WebSocket Hibernation） | 免费：每天 10 万次请求（收到的 WebSocket 帧 20 条算 1 次）、读 500 万行、写 10 万行，5 GB；超出后讨论室当天出错，Workers Paid US$5/月起 |
 | Cloudflare DNS | 解析 | 免费 |
 | Resend | 验证码和每周精选邮件 | 免费：每天 100 封、每月 3000 封；超出后 Pro US$20/月 |
 | GitHub Pages | 网站 | 免费：1 GB，带宽软上限 100 GB/月 |
@@ -164,4 +169,4 @@ sequenceDiagram
 | `.github/workflows/desktop.yml` | 推 `desktop-v*` 标签 | 构建 Win/Mac，签名，发布 Release 和 `latest.json` |
 | `.github/workflows/refresh-data.yml` | 每周四 13:00（UTC），也可手动运行 | 爬取各来源、合并目录、刷新 ChemRxiv，`tools/check-catalogue.mjs` 检查条目没有大幅减少后提交，再触发网站发布 |
 | `.github/workflows/health.yml` | 每周一，以及推到 `main` 时 | 浏览器端到端测试；定时运行时还检查线上。失败时 GitHub 发邮件 |
-| Worker 定时任务（`wrangler.toml`） | 周一 12:00–20:00（UTC）每小时；每 15 分钟 | 生成每周精选；发送每周精选 |
+| Worker 定时任务（`wrangler.toml`） | 周一 12:00–20:00（UTC）每小时；每 15 分钟 | 生成每周精选；发送每周精选；讨论室有举报没处理时给站长发提醒（12 小时最多一封），清掉过期的讨论室连接计数 |

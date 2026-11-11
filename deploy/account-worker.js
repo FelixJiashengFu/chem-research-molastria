@@ -17,6 +17,9 @@
      GET  /sync?since=<版本>            云同步：每份存档的版本、云端的空间，以及版本比 since 新的存档原文
      POST /sync {items:[{key, base, body}]}  传上改过的存档；base 是这台设备上次看到的版本，对不上的放进 conflicts 退回去合并
      DELETE /sync                       删掉云端的全部存档
+     GET  /chat/ws                      讨论室的 WebSocket（deploy/chat.js，由 Durable Object ChatHub 接手）：谁都能连上看，发言要登录；
+                                        浏览器的 WebSocket 带不了 Authorization，登录令牌放在子协议里：['molastria-chat', 't.<令牌>']
+     GET  /chat/summary                 讨论室的在线人数、房间和最新几条消息，给首页的卡片，公开，缓存 30 秒
      POST /net/miss {q, hits}           网状查询里术语表认不出的词，访客的浏览器新记下一个时匿名报一次，不需要登录；
                                         只存词、次数和全文命中数，不存 IP、账号、来源（规则和 public/hub/net-misses.js 一样）
      POST /web/search {q}               联网网页搜索（Brave Search），只给 Pro 支持者：每人每天 WEB_DAILY_PRO 次，全站每 30 天 WEB_MONTHLY_ALL 次；
@@ -37,7 +40,8 @@
      GET  /v1/models                    可用的模型、每种计算花几次、GPU 在不在线
      POST /v1/jobs                      提交一个计算（和网站的 /uma/jobs 同一个队列、同一份每天次数；MACE 系列是学术许可，不提供）
      GET  /v1/jobs/<id>                 查询进度和结果
-   定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js），同一次里探测一下站长的 GPU 在不在线。
+   定时任务见 wrangler.toml 的 [triggers]：周一生成每周精选，每 15 分钟发一小批邮件（deploy/digest.js），同一次里探测一下站长的 GPU 在不在线，
+   讨论室有举报没处理时给站长发一封提醒（每 12 小时最多一封）。
 
    赠送的 Pro：grants 表里 source = admin 的是站长本人（永久 Pro，可以发 VIP 卡），这一行用 wrangler d1 execute
    手动写入（见 PAYMENTS.md），不经过任何接口；兑换了 VIP 卡的人直接按 cards 表里的兑换记录算有效期。
@@ -46,6 +50,9 @@
 
 import { forward, list, reply } from './ai-proxy-worker.js';
 import { buildDigest, digestMail, latestDigest, mailFor, previewOf, sendPending, unsubscribe } from './digest.js';
+import { chatCron, chatRoute } from './chat.js';
+// The discussion rooms' Durable Object (wrangler.toml binds it as env.CHAT); Cloudflare looks for the class on this module.
+export { ChatHub } from './chat.js';
 
 const DEFAULT_ORIGINS = 'https://molastria.com,https://www.molastria.com,tauri://localhost,http://tauri.localhost,https://tauri.localhost';
 const ACTIVE = ['active', 'trialing', 'past_due'];
@@ -903,6 +910,7 @@ async function route(request, env, cors) {
   if (request.method === 'GET' && path === '/me') return json(await view(env, await access(env, await signedIn(env, request))), cors);
   if (path === '/uma' || path.startsWith('/uma/')) return uma(request, env, cors, path, ip);
   if (path === '/sync') return sync(request, env, cors, url); // larger bodies than the rest, read there
+  if (path === '/chat' || path.startsWith('/chat/')) return chatRoute(request, env, cors, path, url, ip, { fail, json, sha256, now, allow, visitorId, randomToken }); // deploy/chat.js
 
   const raw = request.method === 'GET' ? '' : await request.text();
   // Hosted AI may carry photos, so it takes larger bodies than the rest.
@@ -1174,6 +1182,7 @@ export default {
       if (event.cron === BUILD_CRON) await buildDigest(env);
       else {
         await probeUptime(env).catch((e) => console.error('uptime probe failed', e)); // its own catch: mail still goes out
+        await chatCron(env, { allow, sendMail }).catch((e) => console.error('chat report mail failed', e)); // the same
         await sendPending(env, { access, sendMail });
       }
     } catch (e) { console.error('scheduled task failed', event.cron, e); }

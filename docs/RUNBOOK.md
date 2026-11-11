@@ -201,6 +201,27 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 - **用户要删数据：** 账号页的“删除云端副本”就是 `DELETE /sync`；站长手动删：`DELETE FROM sync_items WHERE email = '…'`。其他还开着同步的设备下次会把本机的再传上来，要先在那些设备上关掉。
 - **测试：** `node --test tools/sync-test.mjs`（合并、两三台设备对着假服务）、`deno run --allow-read tools/account-test.ts`（真的 /sync 接口）、`node tools/e2e/run.mjs "cloud sync"`（两个浏览器同一个账号）。
 
+## 讨论室（/chat/）
+
+多人实时聊天。页面是 `public/chat/`（`chat-core.js` 纯逻辑、`chat.js` 界面），首页的入口是 `public/chat/chat-card.{js,css}`；服务端是账号服务里的 `deploy/chat.js`：Worker 认出是谁（D1 的 `chat_users` 表把邮箱对成随机代号），再把 WebSocket 交给 Durable Object `ChatHub`，房间、消息、昵称、举报都存在它自己的 SQLite 里。帧的格式和报错代号写在 `deploy/chat.js` 开头的注释里。
+
+- **第一次上线（站长在自己电脑上）：** 顺序是先账号服务，再网站。在 PowerShell 里：
+  1. `cd D:\ChemDraw\ChemResearchHub`，`git fetch origin`，然后 `git checkout origin/claude/project-thread-odxxto`（PR 还没合并时用它的分支；已经合并了就 `git checkout main` 再 `git pull`）。
+  2. `cd deploy`，依次运行 `npm.cmd ci`、`npx.cmd wrangler d1 execute molastria --remote --file schema.sql`（建 `chat_users` 表，可重复执行）、`npx.cmd wrangler deploy`。第一次部署会带上 `wrangler.toml` 里的 `[[migrations]]`（建 `ChatHub` 这个类），输出里应该能看到 Durable Object 的绑定 `CHAT`。
+  3. 等几分钟（见“已知的坑”：部署后线上可能还有几分钟是旧代码），浏览器打开 `https://api.molastria.com/chat/summary`，看到 `{"state":"on","online":0,"rooms":7,…}` 就对了。
+  4. 合并网站的 PR，等 GitHub Actions 发布完，打开 molastria.com 首页看卡片，再进 `/chat/` 用站长邮箱登录、起昵称、发一条。之后 `git checkout main`、`git pull` 回到主分支。
+  顺序反了（先合并网站）也不会坏：账号服务还没有讨论室时，首页的卡片和小入口自己收起，讨论室页显示连不上，部署完就好。
+- **站长怎么管：** 用站长的邮箱（`grants` 表里的）登录后打开讨论室，房间列表里多一个“管理面板”，有待处理的举报时带数字。面板里每条举报可以“保留”（恢复显示，以后不再自动隐藏）、“删除”、“删除并禁言 1 天”或“封禁”（封禁并删除），下面列着被禁言和封禁的人，可以解除。任何一条消息的“…”菜单里，站长多出：删除、禁言 1 小时 / 1 天 / 7 天、封禁、删除此人的全部消息。站长的名字旁边有“站长”标记，不受房间数、屏蔽词、保留昵称、连接数上限和只读状态的限制（发言频率和别人一样），能关闭或移除任何房间。一条消息被 3 个不同的人举报会先自动隐藏。有举报没处理时账号服务给站长的邮箱发一封提醒，12 小时最多一封（`CHAT_REPORT_MAIL = "0"` 关掉）。
+- **总开关：** `deploy/wrangler.toml` 的 `CHAT_STATE`：`on` 正常；`readonly` 所有人照样能看、只有站长能发言（出事时先用这个）；`off` 整个关掉，连接被拒绝，首页的卡片和入口自动收起。改完 `npx.cmd wrangler deploy`。消息都还在，改回 `on` 就恢复。
+- **其他设置（都在 `wrangler.toml`，改完部署）：** `CHAT_BLOCK` 屏蔽词（逗号分隔，消息、昵称、房间名里出现就拒绝）；`CHAT_ROOMS_PER_USER` 每人同时开着几个房间（`"0"` 不让用户开）；`CHAT_USER_ROOMS` 全站用户房间总数；`CHAT_MAX_SOCKETS` 同时在线的连接数。发言长度、频率这些数字是 `deploy/chat.js` 开头的常量，页面这边 `public/chat/chat-core.js` 有同一套（`tools/chat-core-test.mjs` 对照两边）。
+- **加一个官方房间：** 在 `deploy/chat.js` 的 `OFFICIAL` 里加一行（代号、中英名字、中英话题；顺序就是页面上的顺序），部署账号服务后它自己建出来；再在 `public/index.html` 的 `#cc-rooms` 里加一个链接，把 `public/chat/chat-card.js` 的 `OFFICIAL` 改成新的数目，改 `tools/chat-workerd-test.mjs` 和 `tools/e2e/run.mjs` 里列出房间的地方。从 `OFFICIAL` 里拿掉一行不会删房间和消息。
+- **从代号找到邮箱（处理严重的滥用或法律要求时）：** 每个账号在讨论室里是一个 12 位的随机代号；站长点一条消息的“…”，菜单最上面那一行（名字 · 时间 · 代号）里有它，管理面板的名单里也有。`npx.cmd wrangler d1 execute molastria --remote --command "SELECT email FROM chat_users WHERE uid = '代号'"`。结果里有邮箱，不要贴到公开的地方。
+- **用户要求删除数据：** 他自己在讨论室左下角“我的设置”里点“删除我的全部发言和昵称”就行；站长代办：在他任意一条消息的“…”菜单里点“删除此人的全部消息”。要连代号一起断开：`DELETE FROM chat_users WHERE email = '…'`（下次登录会拿到新代号）。
+- **看用量：** Cloudflare 控制台 → Workers & Pages → `molastria-account` → Durable Objects，看请求数、时长和存储。免费套餐每天 10 万次请求（收到的 WebSocket 帧 20 条算 1 次）、写 10 万行；接近时先把 `CHAT_MAX_SOCKETS` 调小或者开 `readonly`。
+- **有人刷屏、刷连接：** 先 `CHAT_STATE = "readonly"` 或 `"off"` 再部署；只是一个地址在刷连接时，在 Cloudflare 控制台 → Security → WAF → Rate limiting rules 给 `api.molastria.com/chat/ws` 加一条按 IP 的限速（服务端自己挡不住已经连上的连接继续发帧，见 `docs/DECISIONS.md`）。
+- **备份：** 讨论室的消息在 Durable Object 自己的库里，**不在** D1 的备份里（“备份”一节的命令导不出它），这次也没做导出功能。D1 里只有 `chat_users`（邮箱和代号），随 D1 一起备份。
+- **测试：** `node --test tools/chat-test.mjs tools/chat-core-test.mjs`（服务端的全部规则、页面的纯逻辑）、`deno run --allow-read tools/account-test.ts`（Worker 这一侧：认人、连接数限制、摘要、举报邮件）、`node tools/chat-workerd-test.mjs`（真的 workerd，要先 `npm ci --prefix deploy`）、`node tools/e2e/run.mjs chat`（两个浏览器对聊、举报和处理、英文和手机、首页卡片）。本地预览：`tools/account-local.ts` 自带讨论室（`tools/chat-local.ts`，数据在内存里）。
+
 ## 研习台（/learn/）
 
 AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-sources.js` 是站内内容和演示白名单，`learn-graph.js` 画 SVG，`learn.js` 是界面。决定见 `docs/DECISIONS.md` 2026-11-10（只有那一条可以写出借鉴的开源项目的名字，别处不要写）。
