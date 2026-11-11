@@ -4820,7 +4820,7 @@
  "以后需要服务器或 GPU 的新服务，额度同样按这一档给": [
   "pro/index.html"
  ],
- "AI 托管额度使用 DeepSeek V4 Flash，AI 实验室和特别长的内容会多计次数。按月自动续费，随时可以取消，当月结束后不再扣款；付款后 14 天内无理由全额退款。": [
+ "AI 托管额度使用 DeepSeek V4.1 Flash-1017，AI 实验室和特别长的内容会多计次数。按月自动续费，随时可以取消，当月结束后不再扣款；付款后 14 天内无理由全额退款。": [
   "pro/index.html"
  ],
  "课题组 / 机构": [
@@ -4900,7 +4900,7 @@
  "✓ 永久免费": [
   "pro/index.html"
  ],
- "AI 托管额度（免配 key，DeepSeek V4 Flash）": [
+ "AI 托管额度（免配 key，DeepSeek V4.1 Flash-1017）": [
   "pro/index.html"
  ],
  "每天 5 次": [
@@ -12785,7 +12785,7 @@
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。": [
   "models/models.js"
  ],
- "DeepSeek V4.1 Flash · 快速": [
+ "DeepSeek V4.1 Flash-1017 · 快速": [
   "ai/ai.js"
  ],
  "DeepSeek V4 Pro · 深度推理": [
@@ -12926,7 +12926,7 @@
  "托管额度现在的模型不能看图。可以在 AI 设置里换成 DeepSeek（自己的 key）或 Meta Muse Spark。": [
   "ai/ai.js"
  ],
- "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再试。": [
+ "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4.1 Flash-1017 或 Meta Muse Spark 再试。": [
   "ai/ai.js"
  ],
  "这个模型可能不能看图（400）。换一个能看图的模型，或去掉图片再试。{0}": [
@@ -12971,7 +12971,7 @@
  "选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。": [
   "ai/ai.js"
  ],
- "MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
+ "MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4.1 Flash-1017。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。": [
   "ai/ai.js"
  ],
  "服务商": [
@@ -13053,7 +13053,7 @@
  "自定义接口需要填写接口地址和模型 ID。": [
   "ai/ai.js"
  ],
- "{0} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4 Flash。": [
+ "{0} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4.1 Flash-1017。": [
   "ai/ai.js"
  ],
  "分析分子静电势用什么软件，有哪些教程？": [
@@ -13149,7 +13149,7 @@
  "现在的模型不能看图，这一问会改用 {0}。": [
   "ai/ai.js"
  ],
- "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再发送。": [
+ "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4.1 Flash-1017 或 Meta Muse Spark 再发送。": [
   "ai/ai.js"
  ],
  "附图 {0}": [
@@ -16032,7 +16032,7 @@
  "内容太长：这次约 {0} 字，托管额度一次最多 {1} 字。可以清空对话或缩短内容后重试。": [
   "deploy/account-worker.js"
  ],
- "托管额度的 {0} 不能看图，换成 DeepSeek V4 Flash 再试": [
+ "托管额度的 {0} 不能看图，换成 DeepSeek V4.1 Flash-1017 再试": [
   "deploy/account-worker.js"
  ],
  "本月 AI 托管额度还剩 {0} 次，这次请求要计 {1} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。": [

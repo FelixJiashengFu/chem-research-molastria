@@ -13,7 +13,7 @@
   const PROVIDERS = {
     deepseek: {
       label: 'DeepSeek', base: 'https://api.deepseek.com', keyUrl: 'https://platform.deepseek.com/api_keys', keyHint: 'sk-…',
-      models: [['deepseek-flash', 'DeepSeek V4.1 Flash · 快速'], ['deepseek-v4-pro', 'DeepSeek V4 Pro · 深度推理']],
+      models: [['deepseek-flash', 'DeepSeek V4.1 Flash-1017 · 快速'], ['deepseek-v4-pro', 'DeepSeek V4 Pro · 深度推理']],
       efforts: ['off', 'low', 'high', 'max'], json: true
     },
     muse: {
@@ -298,7 +298,7 @@
     let model = o.model || modelOf(conf);
     if (images && !canSee(provider, model)) {
       model = o.model ? '' : visionModel(conf);
-      if (!model) throw Object.assign(new Error(PROVIDERS[provider].hosted ? '托管额度现在的模型不能看图。可以在 AI 设置里换成 DeepSeek（自己的 key）或 Meta Muse Spark。' : '现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再试。'), { code: 'no-vision' });
+      if (!model) throw Object.assign(new Error(PROVIDERS[provider].hosted ? '托管额度现在的模型不能看图。可以在 AI 设置里换成 DeepSeek（自己的 key）或 Meta Muse Spark。' : '现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4.1 Flash-1017 或 Meta Muse Spark 再试。'), { code: 'no-vision' });
     }
     const effort = o.effort || s.effort[provider];
     const messages = PROVIDERS[provider].hosted ? fitHosted(o.messages) : o.messages;
@@ -679,11 +679,11 @@
       dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
     }
     const s = settings();
-    const providerCards = Object.entries(PROVIDERS).map(([id, p]) => `<label><input type="radio" name="provider" value="${id}" ${id === s.provider ? 'checked' : ''}><b>${esc(p.label)}</b><small>${id === 'deepseek' ? 'V4 Flash / V4 Pro' : id === 'muse' ? 'Spark / Wonder' : id === 'hosted' ? hostedLine() : id === 'proxy' ? '无需自备 key' : '填写接口地址'}</small></label>`).join('');
+    const providerCards = Object.entries(PROVIDERS).map(([id, p]) => `<label><input type="radio" name="provider" value="${id}" ${id === s.provider ? 'checked' : ''}><b>${esc(p.label)}</b><small>${id === 'deepseek' ? 'V4.1 Flash / V4 Pro' : id === 'muse' ? 'Spark / Wonder' : id === 'hosted' ? hostedLine() : id === 'proxy' ? '无需自备 key' : '填写接口地址'}</small></label>`).join('');
     dialog.innerHTML = `<form method="dialog" novalidate>
       <div><h2 id="cai-settings-title">AI 设置</h2></div>
       <p class="cai-note" data-note="own">选择服务商并填入你自己的 API key。key 只存在当前浏览器，请求从浏览器直接发往服务商，本站没有服务器经手。</p>
-      <p class="cai-note" data-note="hosted" hidden>MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4 Flash。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
+      <p class="cai-note" data-note="hosted" hidden>MolAstria 托管额度：不需要 key，请求经 MolAstria 账号服务转发给 DeepSeek，账号服务只计次数、不保存对话。托管额度使用 DeepSeek V4.1 Flash-1017。每次问答计 1 次；Pro 支持者每月 1 日重置，免费账号每天少量；AI 实验室一轮计 3 次，特别长的内容按长度多计。</p>
       <fieldset class="cai-prov" style="border:0;padding:0;margin:0"><legend class="cai-field" style="margin-bottom:6px">服务商</legend>${providerCards}</fieldset>
       <div class="cai-two">
         <label class="cai-field">模型<select name="model"></select></label>
@@ -778,7 +778,7 @@
       // With a Pro account a provider without a key would quietly fall back to the hosted quota on the next read
       // (see settings()), which looks like the switch did nothing: say so instead of saving.
       if (PROVIDERS.hosted && !PROVIDERS[s.provider].proxy && s.provider !== 'custom' && !keys[s.provider] && !keyFor(s)) {
-        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4 Flash。`, 'err');
+        setStatus(`${PROVIDERS[s.provider].label} 要用你自己的 API key。不想填 key，就选「MolAstria 托管」，托管额度使用 V4.1 Flash-1017。`, 'err');
         f.key.focus();
         return;
       }
@@ -942,7 +942,7 @@
     renderTray(note);
     if (attached.length && !canSee(settings().provider, modelOf(settings()))) {
       const v = visionModel();
-      renderTray(note || (v ? T(`现在的模型不能看图，这一问会改用 ${v}。`) : T('现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再发送。')));
+      renderTray(note || (v ? T(`现在的模型不能看图，这一问会改用 ${v}。`) : T('现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4.1 Flash-1017 或 Meta Muse Spark 再发送。')));
     }
     drawer.querySelector('textarea').focus({ preventScroll: true });
   }

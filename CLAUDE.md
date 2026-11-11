@@ -23,7 +23,7 @@ public/               发布目录，推到 main 就上线
   sw.js, offline.html, manifest.webmanifest   可添加到主屏幕（PWA）：sw.js 离线保存看过的页面，由 shared-nav.js 注册（桌面版、单文件版、本地文件和 localhost 不注册）；各页的 PWA 头部标签和 sw.js 版本号由 build-seo.ts 在发布时写入，仓库里的 sw.js 保持 VERSION = 'dev'
   assets/pwa/         主屏幕和安装用的图标（按 favicon.svg 图案生成的新文件）
   i18n.js             运行时中译英，词典是生成的 i18n/en.js
-  ai/ai.js            AI 助手：服务商、托管额度（只有 DeepSeek V4 Flash）、可拖宽窗口；用照片提问（图片按钮、粘贴、拖进来；readImage 在浏览器里缩成 ≤1280 px 的 JPEG，一次最多 4 张；deepseek-flash 和 Muse Spark 能看图，选了不能看图的模型时带图那一问自动换；图片只随那一问发一次）；六个吉祥物（MASCOTS，点顶部头像换，存 molastria-ai-mascot），面板从关到开时吉祥物进场 5 秒（纯 CSS，可跳过；选吉祥物的面板里能关，存 molastria-ai-intro）
+  ai/ai.js            AI 助手：服务商、托管额度（只有 DeepSeek V4.1 Flash-1017）、可拖宽窗口；用照片提问（图片按钮、粘贴、拖进来；readImage 在浏览器里缩成 ≤1280 px 的 JPEG，一次最多 4 张；deepseek-flash 和 Muse Spark 能看图，选了不能看图的模型时带图那一问自动换；图片只随那一问发一次）；六个吉祥物（MASCOTS，点顶部头像换，存 molastria-ai-mascot），面板从关到开时吉祥物进场 5 秒（纯 CSS，可跳过；选吉祥物的面板里能关，存 molastria-ai-intro）
   manual/ atlas/ journals/ scimodels/ hub/ lab/ meta/ models/ train/ download/   各栏目（meta/ 用 lab/chem.js 的 RDKit）
   manual/             讲解手册阅读器（25 章）；正文数据仍在 atlas/content.js（中文）和 atlas/guides-en.js（英文），旧地址 atlas/#guide 会跳过来；第 12–16 类五章（id p14b-cat12 … p14f-cat16）的算例由 tools/handbook-calcs.py（PySCF）算出，tools/handbook-test.mjs 核对条数、编号和数字
   videos/             教学视频：videos-data.js 是全部条目（标题和频道照平台原文，说明中英两版，按主题分组），videos.js 渲染；播放器点了才加载，桌面版点封面在系统浏览器打开；封面 thumbs/ 由 tools/video-thumbs.mjs 在 CI 里下载（不进 git）
