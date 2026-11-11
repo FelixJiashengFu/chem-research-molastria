@@ -3651,7 +3651,7 @@ check('resource catalogue: 251 entries, the 2026-11-10 additions are searchable 
   await finish(p);
   const e = await open();
   await go(e, '/index.html?lang=en');
-  assert.equal(await text(e, '#stat-atlas'), '251');
+  await e.waitForFunction(() => document.getElementById('stat-atlas').textContent === '251', null, { timeout: 5000 }); // the figure counts up when it comes into view
   await finish(e);
 });
 
