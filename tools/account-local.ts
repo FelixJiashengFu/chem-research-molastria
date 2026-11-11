@@ -79,6 +79,10 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   const reply = (data: unknown) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
   if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
   if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
+  if (fake && url.hostname === "api.search.brave.com") { // e2e: Pro web search without a key
+    const q = url.searchParams.get("q") || "";
+    return reply({ web: { results: [{ title: `${q} — a web page about ${q}`, url: `https://example.org/${encodeURIComponent(q)}`, description: `Everything about <strong>${q}</strong>.`, profile: { name: "example.org" } }] } });
+  }
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
     const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"];
     const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"] };
@@ -119,6 +123,7 @@ const env = {
   DEEPSEEK_API_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("DEEPSEEK_API_KEY") ?? "",
   ALLOWED_ORIGINS: Deno.args[1] ?? "http://localhost:8830,http://127.0.0.1:8830",
   MONTHLY_ASKS: "300",
+  BRAVE_SEARCH_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("BRAVE_SEARCH_KEY") ?? "",
   // UMA on the owner computer: UMA_ORIGIN / UMA_SERVER_SECRET from this process (e.g. tools/uma-server --fake), else the e2e stand-in.
   UMA_ORIGIN: Deno.env.get("UMA_ORIGIN") ?? (Deno.env.get("FAKE_AI") ? "https://uma.test" : ""),
   UMA_SERVER_SECRET: Deno.env.get("UMA_SERVER_SECRET") ?? (Deno.env.get("FAKE_AI") ? "e2e-secret-0123456789abcdef0123456789" : ""),

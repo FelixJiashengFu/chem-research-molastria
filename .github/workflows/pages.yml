@@ -34,6 +34,8 @@ jobs:
         run: node --test tools/realms-test.mjs
       - name: Network engine tests
         run: node --test tools/net-test.mjs
+      - name: Web search logic tests
+        run: node --test tools/websearch-test.mjs
       - name: Fundamental Science models and content
         run: node --test tools/fundamental-test.mjs
       - name: Math foundations · probability demos

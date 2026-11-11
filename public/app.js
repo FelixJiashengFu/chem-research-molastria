@@ -26,6 +26,8 @@
   const STOP=new Set(['怎么','如何','什么','哪些','可以','用什','有哪','一下','请问','the','and','for','how','what','with']);
   function grams(q){const out=new Set(q.match(/[a-z0-9][a-z0-9+#.\-]{1,}/g)||[]);for(const run of q.match(/[㐀-鿿]+/g)||[]){if(run.length<=2)out.add(run);for(let i=0;i+2<=run.length;i++)out.add(run.slice(i,i+2));for(let i=0;i+3<=run.length;i++)out.add(run.slice(i,i+3));}return [...out].filter(t=>!STOP.has(t));}
   let fuzzy=false;
+  // 联网搜索 (websearch/web.js): the best matches from OpenAlex, Wikipedia, PubChem and GitHub, above the catalogue list.
+  const webBox=$('web-results'),web=webBox&&window.MolAstriaWebSearch?.mount(webBox,{catalog:data.items});
   function matches() {
     const T=window.MolAstriaTerms, terms=T?T.tokens(state.q):state.q.toLocaleLowerCase().split(/\s+/).filter(Boolean);
     const found=(text,t)=>T?T.matchesToken(text,t):text.includes(t);
@@ -62,6 +64,7 @@
     $('next-radar').href='radar/index.html?q='+encodeURIComponent(state.q);
     $('more').hidden=list.length<=state.shown;
     $('page-count').textContent=list.length?`已显示 ${format(Math.min(state.shown,list.length))} / ${format(list.length)} 条`:'';
+    web?.update(state.q,fuzzy?0:list.length);
     syncURL();
     // The home hero's map (home-hero.js) shows these counts by type and follows every search.
     const by={};for(const i of list)by[i.type]=(by[i.type]||0)+1;window.MOLASTRIA_RESULTS={q:state.q,type:state.type,total:list.length,types:by};dispatchEvent(new CustomEvent('molastria:results',{detail:window.MOLASTRIA_RESULTS}));
@@ -99,10 +102,12 @@
   for(const k of ['collection','source','type','sort']) {if(![...$(k).options].some(o=>o.value===state[k]))state[k]='';$(k).value=state[k];$(k).addEventListener('change',()=>{state[k]=$(k).value;state.shown=24;render();});}
   $('search').value=state.q;
   // Typing waits 140 ms after the last key before redrawing the list: on a mid-range phone a full redraw takes ~200 ms, and doing it per key made typing lag.
+  const list0=()=>document.querySelectorAll('#results .result-row').length;
+  $('search').addEventListener('keydown',e=>{if(e.key==='Enter'){runSearch($('search').value);web?.update(state.q,list0(),{now:true});}});
   let typing;const runSearch=v=>{clearTimeout(typing);state.q=v.trim();state.shown=24;render();},later=v=>{clearTimeout(typing);typing=setTimeout(()=>runSearch(v),140);};
   $('search').addEventListener('input',()=>later($('search').value));
   // The search box at the top of the page feeds the same list; Enter (or the button) jumps down to the results.
-  const introQ=$('intro-q');if(introQ){introQ.value=state.q;introQ.addEventListener('input',()=>{$('search').value=introQ.value;later(introQ.value);});$('intro-search').addEventListener('submit',e=>{e.preventDefault();$('search').value=introQ.value;runSearch(introQ.value);introQ.blur();$('catalog').scrollIntoView({block:'start'});});}
+  const introQ=$('intro-q');if(introQ){introQ.value=state.q;introQ.addEventListener('input',()=>{$('search').value=introQ.value;later(introQ.value);});$('intro-search').addEventListener('submit',e=>{e.preventDefault();$('search').value=introQ.value;runSearch(introQ.value);web?.update(state.q,list0(),{now:true});introQ.blur();$('catalog').scrollIntoView({block:'start'});});}
   $('next-ai').onclick=()=>window.ChemHub?.loadAI().then(ai=>ai.openDrawer({mode:'free',question:state.q})).catch(e=>alert(e.message));
   $('reset').onclick=reset;$('empty-reset').onclick=reset;$('saved-browse').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
   // The 收藏夹 button opens this page's saved-items view in place (内容范围 = 收藏夹) with every favourite listed.

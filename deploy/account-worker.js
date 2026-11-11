@@ -19,6 +19,8 @@
      DELETE /sync                       删掉云端的全部存档
      POST /net/miss {q, hits}           网状查询里术语表认不出的词，访客的浏览器新记下一个时匿名报一次，不需要登录；
                                         只存词、次数和全文命中数，不存 IP、账号、来源（规则和 public/hub/net-misses.js 一样）
+     POST /web/search {q}               联网网页搜索（Brave Search），只给 Pro 支持者：每人每天 WEB_DAILY_PRO 次，全站每 30 天 WEB_MONTHLY_ALL 次；
+                                        需要 secret BRAVE_SEARCH_KEY，没有时回答 503（网站就不显示网页结果）
      GET  /admin/net-misses             站长：全站没找到的词，按次数排；DELETE {term} 删一个，DELETE {all: true} 全部删掉
      GET  /admin/cards                  站长：已发出的 VIP 卡；POST {count, days, note} 生成；DELETE {code} 收回
      POST /ai/chat                      与 deploy/ai-proxy-worker.js 相同的请求体，需登录：免费账号每天 FREE_DAILY_ASKS 次，Pro 每月 MONTHLY_ASKS 次
@@ -851,6 +853,48 @@ async function netMiss(env, body, cors) {
   return json({ ok: true }, cors);
 }
 
+// ── 联网网页搜索（Pro）────────────────────────────────────────────────
+// The home page's 网上最匹配 asks free sources (OpenAlex, Wikipedia, PubChem, GitHub) from the browser; general web results
+// cost money per query (Brave Search API), so they go through here: Pro only, a daily cap per person and a 30-day cap for
+// the whole site so the bill has a ceiling. Only titles, addresses and plain-text snippets come back; nothing is stored.
+const webText = (v, max) => {
+  let t = String(v ?? '').replace(/&(?:quot|#0?39|amp|lt|gt|nbsp);/g, (m) => ({ '&quot;': '"', '&#39;': "'", '&#039;': "'", '&amp;': '&', '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' })[m]);
+  for (let prev = ''; prev !== t;) { prev = t; t = t.replace(/<[^<>]*>/g, ''); }
+  return t.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+};
+async function webSearch(request, env, cors, body) {
+  const email = await signedIn(env, request);
+  const a = await access(env, email);
+  if (!a.pro) throw fail(403, '网页搜索只给 Pro 支持者');
+  if (!env.BRAVE_SEARCH_KEY) throw fail(503, '网页搜索还没有开通');
+  const q = String(body.q || '').replace(/\s+/g, ' ').trim();
+  if (!q || q.length > 200) throw fail(400, '搜索词要在 1 到 200 个字之间');
+  const daily = Number(env.WEB_DAILY_PRO || 50), monthly = Number(env.WEB_MONTHLY_ALL || 1500);
+  const mine = `web:${email}`, all = 'web-all';
+  if (!(await allow(env, mine, daily, 86400))) throw fail(429, '今天的网页搜索次数用完了，明天再来');
+  if (!(await allow(env, all, monthly, 30 * 86400))) { await refund(env, mine); throw fail(503, '本月全站的网页搜索额度用完了'); }
+  const lang = /[㐀-鿿]/.test(q) ? 'zh-hans' : 'en';
+  let res;
+  try {
+    res = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(q)}&count=8&safesearch=moderate&text_decorations=false&search_lang=${lang}`, {
+      headers: { Accept: 'application/json', 'X-Subscription-Token': env.BRAVE_SEARCH_KEY },
+    });
+  } catch { res = null; }
+  if (!res || !res.ok) {
+    await refund(env, mine); await refund(env, all);
+    if (res) await res.text().catch(() => {});
+    throw fail(502, res?.status === 429 ? '网页搜索暂时太忙，请稍后再试' : '网页搜索暂时连不上');
+  }
+  const data = await res.json().catch(() => ({}));
+  const results = (data.web?.results || []).slice(0, 8).map((r) => {
+    let url = '';
+    try { const u = new URL(r.url); if (u.protocol === 'https:' || u.protocol === 'http:') url = u.href; } catch { /* dropped */ }
+    return { title: webText(r.title, 200), url, snippet: webText(r.description, 300), site: webText(r.profile?.name || r.meta_url?.hostname || '', 80) };
+  }).filter((r) => r.title && r.url);
+  const used = (await windowOf(env, mine)).n;
+  return json({ results, used, limit: daily }, cors);
+}
+
 async function route(request, env, cors) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -1012,6 +1056,7 @@ async function route(request, env, cors) {
   }
 
   if (key === 'POST /net/miss') return netMiss(env, body, cors);
+  if (key === 'POST /web/search') return webSearch(request, env, cors, body);
   if (path === '/admin/net-misses' && (request.method === 'GET' || request.method === 'DELETE')) {
     await signedInAdmin(env, request, '只有站长可以看全站没找到的词');
     if (request.method === 'DELETE') {

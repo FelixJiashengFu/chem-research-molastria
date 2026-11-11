@@ -62,7 +62,9 @@ html[lang=en] .intro h1{font-size:clamp(30px,3.15vw,54px);font-size:clamp(28px,6
 
 /* ── right: the live map ── */
 .field-note{text-align:center}
-.note-map{position:relative;aspect-ratio:1/.76;max-width:560px;margin:0 auto}
+/* contain:layout: the chips are moved by transform alone, and Chrome keeps the page's scrollable width from the last
+   layout; after a window resize (or a phone turned upright) the chips' old places would leave the page 30 px too wide. */
+.note-map{position:relative;contain:layout;aspect-ratio:1/.76;max-width:560px;margin:0 auto}
 .nm-hub{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-content:center;justify-items:center;gap:2px;width:clamp(84px,21%,112px);aspect-ratio:1;border-radius:50%;color:var(--accent-ink);background:radial-gradient(circle at 34% 26%,color-mix(in srgb,var(--accent-2) 62%,var(--accent)),var(--accent) 56%,color-mix(in srgb,var(--accent) 72%,#000) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px color-mix(in srgb,var(--accent-2) 55%,transparent),0 0 0 8px color-mix(in srgb,var(--accent-2) 11%,transparent),0 0 46px color-mix(in srgb,var(--accent-2) 34%,transparent),0 20px 44px -16px rgba(0,0,0,.5)}
 .nm-hub::before,.nm-hub::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--accent-2);opacity:0;pointer-events:none}
 .nm-hub::after{animation:nm-breathe 4.2s ease-out infinite}
