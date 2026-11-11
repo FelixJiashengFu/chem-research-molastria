@@ -4059,6 +4059,45 @@ check('formula questions: MathLive answers graded with targeted hints, nudge, wo
   await finish(e);
 });
 
+check('home glass switches: loaded only near view, silent until pressed, one plays at a time, keyboard works, bilingual', async () => {
+  // Count AudioContexts the page creates: none may exist before a press (no autoplay).
+  const countAudio = () => { const A = window.AudioContext; window.__acN = 0; if (A) window.AudioContext = class extends A { constructor(...a) { super(...a); window.__acN++; } }; };
+  let p = await open({ init: countAudio });
+  await go(p, '/index.html');
+  // The loader starts 400 px before the block scrolls in; on a tall first screen that can already be the case.
+  if (await p.evaluate(() => document.getElementById('glass-duo').getBoundingClientRect().top > innerHeight + 450)) assert.equal(await p.evaluate(() => !!window.MolAstriaGlassSwitch), false, 'not loaded before scrolling near it');
+  await p.locator('#glass-duo').scrollIntoViewIfNeeded();
+  await p.waitForSelector('#glass-duo .gsw-hydrogen .gsw-switch');
+  await p.waitForSelector('#glass-duo .gsw-blackhole .gsw-switch');
+  await p.waitForTimeout(500);
+  assert.equal(await p.evaluate(() => window.__acN), 0, 'no audio before a press');
+  const H = '#glass-duo .gsw-hydrogen', B = '#glass-duo .gsw-blackhole';
+  await p.click(`${H} .gsw-switch`);
+  assert.equal(await p.getAttribute(`${H} .gsw-switch`, 'aria-checked'), 'true');
+  assert.equal(await text(p, `${H} .gsw-state`), '2p 激发态');
+  assert.ok(await p.evaluate(() => window.__acN) >= 1, 'audio starts on a press');
+  await p.waitForFunction((sel) => /−3\.40 eV/.test(document.querySelector(sel).textContent), `${H} .gsw-read`);
+  // Turning the black hole on turns the hydrogen off: one switch sounds at a time.
+  await p.click(`${B} .gsw-switch`);
+  assert.equal(await p.getAttribute(`${B} .gsw-switch`, 'aria-checked'), 'true');
+  assert.equal(await p.getAttribute(`${H} .gsw-switch`, 'aria-checked'), 'false');
+  assert.equal(await text(p, `${H} .gsw-state`), '1s 基态');
+  // Keyboard: Space on the focused switch toggles it.
+  await p.focus(`${B} .gsw-switch`);
+  await p.keyboard.press('Space');
+  assert.equal(await p.getAttribute(`${B} .gsw-switch`, 'aria-checked'), 'false');
+  assert.equal(await text(p, `${B} .gsw-state`), '静默');
+  await finish(p);
+  // English: the switches carry their own English (translate="no"), the section copy comes from the dictionary.
+  p = await open({ init: () => { try { localStorage.setItem('chemhub-lang', 'en'); } catch (e) {} } });
+  await go(p, '/index.html?lang=en');
+  await p.locator('#glass-duo').scrollIntoViewIfNeeded();
+  await p.waitForSelector('#glass-duo .gsw-blackhole .gsw-switch');
+  assert.equal(await text(p, `${H} .gsw-state`), '1s ground state');
+  assert.equal(await p.getAttribute(`${B} .gsw-switch`, 'aria-label'), 'Cosmic music');
+  await p.waitForFunction(() => !/[㐀-鿿]/.test(document.getElementById('glass-duo').innerText));
+  await finish(p);
+});
 check('phone width: no sideways scrolling', async () => {
   for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
