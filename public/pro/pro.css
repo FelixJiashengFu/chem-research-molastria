@@ -15,11 +15,6 @@ a{color:var(--accent-text)}
 .lead{color:var(--muted);font-size:15.5px;line-height:1.9;max-width:70ch;margin:0 auto 22px}
 .hero-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
 .badge-early{font-size:12.5px;font-weight:700;color:var(--ink);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold);border-radius:99px;padding:5px 12px}
-.billing{display:inline-flex;border:1px solid var(--line-strong);border-radius:99px;padding:3px;background:var(--surface)}
-.billing button{font:600 13px var(--font-sans);border:0;background:transparent;color:var(--muted);border-radius:99px;padding:6px 16px;cursor:pointer}
-.billing button small{color:var(--gold);font-weight:700;margin-left:4px}
-.billing button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
-.billing button[aria-pressed=true] small{color:var(--accent-ink)}
 .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 36px;align-items:start}
 .plan{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px 20px 20px;display:flex;flex-direction:column;gap:8px}
 .plan.featured{border:2px solid var(--accent-2);box-shadow:var(--shadow);transform:translateY(-6px)}

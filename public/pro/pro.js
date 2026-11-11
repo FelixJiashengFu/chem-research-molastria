@@ -1,4 +1,4 @@
-/* 价格页：年付 / 月付切换、结账窗口、跳转到托管结账页（Stripe Payment Link 等），以及下载按钮的系统识别。
+/* 价格页：价格显示、结账窗口、跳转到托管结账页（Stripe Payment Link 等），以及下载按钮的系统识别。
    收款链接与展示价格都在 ../pay/config.js。 */
 (() => {
   'use strict';
@@ -8,12 +8,12 @@
   const T = (s) => window.ChemI18n?.t(s) ?? s;
   // Prices are in yuan, as charged by Stripe. English pages mark them CN¥ and add a rough US$ figure.
   const money = (n) => (n == null ? '' : `${en() ? 'CN¥' : '¥'}${Number(n).toLocaleString(en() ? 'en-US' : 'zh-CN')}`);
-  const approx = (n) => (en() && n && PAY.usdPerCny ? `≈ US$${Math.round(n * PAY.usdPerCny)}` : '');
+  // Small prices keep cents (¥9.9 ≈ US$1.49); big ones round to whole dollars.
+  const approx = (n) => { if (!en() || !n || !PAY.usdPerCny) return ''; const u = n * PAY.usdPerCny; return `≈ US$${u < 20 ? u.toFixed(2) : Math.round(u)}`; };
   const seatLine = (p) => T(`${p.seats} 个 Pro 席位起，每加 1 席 ${money(p.seatPrice)} / 年，席位数在结账页调整`);
-  let billing = 'year';
 
   const PLANS = {
-    pro: () => (billing === 'year' ? 'pro_year' : 'pro_month'),
+    pro: () => 'pro_month', // Pro is monthly only since 2026-11-11
     team: () => 'team_year',
     sponsor: () => 'sponsor'
   };
@@ -29,14 +29,13 @@
   };
   const METHOD = { card: '银行卡', applepay: 'Apple Pay', googlepay: 'Google Pay', alipay: '支付宝', wechat: '微信支付', paypal: 'PayPal' };
 
-  // Prices on the cards follow the billing switch and the page language.
+  // Prices on the cards follow the config and the page language.
   function paintPrices() {
     const pro = PAY.plans[PLANS.pro()];
     const set = (sel, v) => document.querySelectorAll(sel).forEach((el) => { el.textContent = v; });
     if (pro) {
       set('[data-price="pro"]', money(pro.price));
-      set('[data-period="pro"]', T(billing === 'year' ? '/ 年' : '/ 月'));
-      set('[data-list="pro"]', billing === 'year' && pro.list ? money(pro.list) : '');
+      set('[data-period="pro"]', T(pro.period === 'year' ? '/ 年' : '/ 月'));
       set('[data-fx="pro"]', approx(pro.price));
     }
     const team = PAY.plans.team_year;
@@ -49,11 +48,6 @@
     }
     set('[data-price="free"]', money(0));
   }
-  document.querySelectorAll('[data-billing]').forEach((b) => b.addEventListener('click', () => {
-    billing = b.dataset.billing;
-    document.querySelectorAll('[data-billing]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    paintPrices();
-  }));
 
   if (LIVE) document.querySelectorAll('[data-live]').forEach((el) => { el.className = 'st ok'; el.textContent = T('开通即享'); });
   // This week's issue, when there is one yet; nothing shows if the account service cannot be reached.

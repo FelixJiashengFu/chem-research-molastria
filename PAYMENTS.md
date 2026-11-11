@@ -15,22 +15,21 @@ The pricing page and checkout window are live; they only need your payment links
 
 **不需要 API 密钥。** 下面全部在后台网页里点选完成；付款链接本身是公开网址，可以放心发出。密钥（`sk_…` / `rk_…`）不要发给任何人，也不要放进仓库。
 
-在 **Product catalog → Add product** 建 4 个产品，币种都选 **CNY**：
+在 **Product catalog → Add product** 建 3 个产品，币种都选 **CNY**：
 
 | 套餐 id | 产品名（建议） | 价格设置 | Payment Link 里的额外设置 |
 | --- | --- | --- | --- |
-| `pro_year` | MolAstria Pro（年付早鸟） | Recurring · Yearly · ¥199.00 | — |
-| `pro_month` | MolAstria Pro（月付） | Recurring · Monthly · ¥29.00 | — |
-| `team_year` | MolAstria 课题组版 | Recurring · Yearly · **¥298.00（每席位）** | 数量默认 5；勾选 **Let customers adjust quantity**，最少 5、最多 200 |
+| `pro_month` | MolAstria Pro（月付） | Recurring · Monthly · **¥9.90** | — |
+| `team_year` | MolAstria 课题组版 | Recurring · Yearly · **¥100.00（每席位）** | 数量默认 5；勾选 **Let customers adjust quantity**，最少 5、最多 200 |
 | `sponsor` | 支持 MolAstria | One-off · **Customer chooses price**（建议默认 ¥50，最低 ¥10） | — |
 
-（Pro 年付与月付也可以建成同一个产品下的两个价格，各自建一个 Payment Link 即可。）
+（2026-11-11 起 Pro 只有月付 ¥9.9，不再卖年付 `pro_year`；课题组版 ¥100/席/年。改价的做法：Stripe 里的价格建好后不能改金额，所以在产品下 **Add another price** 建新价格（Pro：Recurring · Monthly · ¥9.90；课题组：Recurring · Yearly · ¥100.00），再打开原来的 Payment Link → **More options → Edit**，**Add another product** 选新价格、把旧价格那一行 **Remove product**（课题组那行要重新设数量 5、勾选可调 5–99），**Update link**。这样链接地址不变，`config.js` 只改展示价格。¥199/年 的链接点 **Deactivate**。已经在付旧价格的订阅不会自动变，要降价给老用户的话，在 **Subscriptions** 里逐个 **Update subscription** 换成新价格。）
 
 然后对每个价格 **Create payment link**（或 **Payment Links → New**）：
 
 1. **After payment** → **Don't show confirmation page** → **Redirect customers to your website**，填
-   `https://molastria.com/pro/success.html?session_id={CHECKOUT_SESSION_ID}&plan=pro_year`
-   把末尾的 `pro_year` 换成该链接的套餐 id（`pro_month`、`team_year`、`sponsor`）。
+   `https://molastria.com/pro/success.html?session_id={CHECKOUT_SESSION_ID}&plan=pro_month`
+   把末尾的 `pro_month` 换成该链接的套餐 id（`team_year`、`sponsor`）。
 2. 订阅会自动收集邮箱；`sponsor` 请勾选收集邮箱，方便开收据。
 3. 保存后复制链接。
 
@@ -42,7 +41,7 @@ The pricing page and checkout window are live; they only need your payment links
 
 **用测试卡走一遍**：打开测试链接，卡号 `4242 4242 4242 4242`，有效期填任意未来日期，CVC 任意 3 位。确认：付款后跳回本站确认页（会标“测试订单”）、收到收据邮件、能从收据里的链接进入客户门户取消订阅。
 
-**切到正式环境**：测试链接在正式环境里不能用。在测试环境的产品页点 **Copy to live mode** 复制产品，然后在正式环境里按上面的步骤重新建 4 个 Payment Link，用正式链接替换测试链接。
+**切到正式环境**：测试链接在正式环境里不能用。在测试环境的产品页点 **Copy to live mode** 复制产品，然后在正式环境里按上面的步骤重新建 3 个 Payment Link，用正式链接替换测试链接。
 
 ## 3. 把链接填进网站 · Paste the links
 
@@ -51,7 +50,6 @@ The pricing page and checkout window are live; they only need your payment links
 ```js
 contactEmail: 'support@你的域名',          // 售后与退款邮箱
 plans: {
-  pro_year:  { …, checkoutUrl: 'https://buy.stripe.com/test_xxxxxxxx' },
   pro_month: { …, checkoutUrl: 'https://buy.stripe.com/test_yyyyyyyy' },
   team_year: { …, checkoutUrl: 'https://buy.stripe.com/test_zzzzzzzz' },
   sponsor:   { …, checkoutUrl: 'https://buy.stripe.com/test_wwwwwwww' }
