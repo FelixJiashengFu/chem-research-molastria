@@ -1078,7 +1078,7 @@ async function route(request, env, cors) {
     // A DeepSeek model the quota no longer offers (an older page, or a saved setting) is answered by the first one it does offer.
     const offered = hostedModels(env);
     if (!offered.includes(body.model) && /^deepseek-/.test(String(body.model)) && /^deepseek-/.test(offered[0] || '')) body.model = offered[0];
-    if (checked.images && !visionModels(env).includes(body.model)) throw fail(400, `托管额度的 ${body.model} 不能看图，换成 DeepSeek V4 Flash 再试`);
+    if (checked.images && !visionModels(env).includes(body.model)) throw fail(400, `托管额度的 ${body.model} 不能看图，换成 DeepSeek V4.1 Flash-1017 再试`);
     const weight = modelWeight(env, body.model);
     // Short calls get their own, larger allowance; anything longer counts as answers, in proportion to what it can cost.
     const aux = Number(body.max_tokens) > 0 && tokens <= AUX_TOKENS && chars <= AUX_CHARS;

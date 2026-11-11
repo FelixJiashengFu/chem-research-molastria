@@ -2020,8 +2020,8 @@
    },
    {
     "id": "deepseek-flash",
-    "model": "DeepSeek Flash（V4.1-Flash）",
-    "model_en": "DeepSeek Flash (V4.1-Flash)",
+    "model": "DeepSeek Flash（V4.1-Flash-1017）",
+    "model_en": "DeepSeek Flash (V4.1-Flash-1017)",
     "provider": {
      "zh": "DeepSeek",
      "en": "DeepSeek"

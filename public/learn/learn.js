@@ -407,7 +407,7 @@
     if (!A?.readImage) { form.msg = t('AI 模块没有载入，请刷新页面。', 'The AI module did not load; reload the page.'); render(); return; }
     if (form.files.length >= C.FILE_RULES.max) { form.msg = t('最多附带 3 项。', 'At most 3 items.'); render(); return; }
     if (blocked() || !needAI()) return;
-    if (!A.visionModel()) { form.msg = t('现在选的 AI 服务不能看图。在 AI 设置里换成 DeepSeek V4 Flash、Meta Muse Spark 或 MolAstria 托管额度再试。', 'The AI service you chose cannot read images. Switch to DeepSeek V4 Flash, Meta Muse Spark or the MolAstria hosted allowance in the AI settings.'); render(); return; }
+    if (!A.visionModel()) { form.msg = t('现在选的 AI 服务不能看图。在 AI 设置里换成 DeepSeek V4.1 Flash-1017、Meta Muse Spark 或 MolAstria 托管额度再试。', 'The AI service you chose cannot read images. Switch to DeepSeek V4.1 Flash-1017, Meta Muse Spark or the MolAstria hosted allowance in the AI settings.'); render(); return; }
     if (list.length > A.MAX_IMAGES) form.msg = t(`一次最多 ${A.MAX_IMAGES} 张照片，先读前 ${A.MAX_IMAGES} 张。`, `Up to ${A.MAX_IMAGES} photos at a time; reading the first ${A.MAX_IMAGES}.`);
     const entry = { name: '', size: 0, text: '', photo: true, thumbs: [], reading: true };
     await run('new', async () => { try {
