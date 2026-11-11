@@ -107,6 +107,21 @@ test('没找到的词：讲解手册新章节的术语现在都能认出来', ()
   }
 });
 
+test('没找到的词：站长看板上报过的词（2026-11-11）补进术语表后都能认出来，RAG 不再命中 fragment', () => {
+  const want = { CsPbI3: '钙钛矿', Cu: '铜', wiki: '百科', rag: '检索增强生成', RAG: '检索增强生成', 知识库: '知识库', votca: '粗粒化' };
+  for (const [q, center] of Object.entries(want)) {
+    const r = net.query(q);
+    assert.equal(r.mode, 'entity', q);
+    assert.equal(r.center.name, center, q);
+    assert.equal(M.missOf(r), null, q);
+  }
+  const rag = net.query('rag').primary.map((p) => p.doc.title);
+  assert.ok(rag.includes('OpenScholar'));
+  assert.ok(!rag.some((t) => /fragment|average/i.test(t)), 'a known short word is matched as a word, not inside other words');
+  // The catalogue has nothing on these yet: they stay misses, so the board keeps counting the demand.
+  for (const q of ['台阶能', '铜水界面']) assert.equal(net.query(q).mode, 'text', q);
+});
+
 test('没找到的词：记录、计数、排序、上限和删除', () => {
   let s = M.parse(null);
   assert.deepEqual(s, { v: 1, off: false, share: true, items: [] });

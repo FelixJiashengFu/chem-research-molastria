@@ -6,7 +6,7 @@
  "docs": "https://molastria.com/api/",
  "dataset": "terms",
  "updated": "2026-11-05",
- "count": 156,
+ "count": 161,
  "items": [
   {
    "terms": [
@@ -173,7 +173,9 @@
    "terms": [
     "粗粒化",
     "coarse-grained",
-    "coarse grained"
+    "coarse grained",
+    "votca",
+    "votca-csg"
    ]
   },
   {
@@ -968,6 +970,27 @@
   },
   {
    "terms": [
+    "钙钛矿",
+    "卤化物钙钛矿",
+    "铅卤钙钛矿",
+    "perovskite",
+    "perovskites",
+    "cspbi3",
+    "cspbbr3",
+    "cspbcl3",
+    "mapbi3",
+    "fapbi3"
+   ]
+  },
+  {
+   "terms": [
+    "铜",
+    "copper",
+    "cu"
+   ]
+  },
+  {
+   "terms": [
     "纳米",
     "nano"
    ]
@@ -1151,6 +1174,32 @@
     "智能体",
     "ai agent",
     "ai agents"
+   ]
+  },
+  {
+   "terms": [
+    "检索增强生成",
+    "检索增强",
+    "retrieval-augmented generation",
+    "retrieval augmented generation",
+    "retrieval-augmented",
+    "rag"
+   ]
+  },
+  {
+   "terms": [
+    "知识库",
+    "knowledge base",
+    "knowledgebase"
+   ]
+  },
+  {
+   "terms": [
+    "百科",
+    "维基",
+    "wiki",
+    "wikipedia",
+    "encyclopedia"
    ]
   }
  ]

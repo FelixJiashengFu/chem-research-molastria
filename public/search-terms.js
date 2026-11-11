@@ -27,7 +27,7 @@
     ['增强采样', 'enhanced sampling', 'metadynamics', '元动力学'],
     ['自由能', 'free energy', 'free-energy'],
     ['力场', 'force field', 'force-field'],
-    ['粗粒化', 'coarse-grained', 'coarse grained'],
+    ['粗粒化', 'coarse-grained', 'coarse grained', 'votca', 'votca-csg'], // VOTCA 是粗粒化工具包，目录里还没有它自己的条目
     ['qm/mm', '量子力学/分子力学'],
     ['非绝热', '非绝热动力学', 'nonadiabatic', 'non-adiabatic'],
     ['面跳跃', '表面跳跃', 'surface hopping', 'surface-hopping', 'fssh'],
@@ -139,6 +139,8 @@
     ['溶剂', 'solvent'],
     ['聚合物', '高分子', 'polymer'],
     ['金属有机框架', 'mof', 'metal-organic framework'],
+    ['钙钛矿', '卤化物钙钛矿', '铅卤钙钛矿', 'perovskite', 'perovskites', 'cspbi3', 'cspbbr3', 'cspbcl3', 'mapbi3', 'fapbi3'], // 具体的钙钛矿写进来，搜 CsPbI3 也能连到钙钛矿
+    ['铜', 'copper', 'cu'],
     ['纳米', 'nano'],
     ['二维材料', '2d material', 'two-dimensional material'],
     ['晶体', 'crystal', 'crystallographic'],
@@ -166,7 +168,10 @@
     ['招聘', '职位', 'job', 'postdoc', '博士后'],
     ['会议', 'conference'],
     ['超算', '集群', 'hpc', 'high-performance computing'],
-    ['智能体', 'ai agent', 'ai agents']
+    ['智能体', 'ai agent', 'ai agents'],
+    ['检索增强生成', '检索增强', 'retrieval-augmented generation', 'retrieval augmented generation', 'retrieval-augmented', 'rag'],
+    ['知识库', 'knowledge base', 'knowledgebase'],
+    ['百科', '维基', 'wiki', 'wikipedia', 'encyclopedia']
   ].map((g) => g.map((t) => t.toLowerCase()));
 
   const byTerm = new Map();
