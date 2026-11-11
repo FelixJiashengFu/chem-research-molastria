@@ -2446,6 +2446,7 @@ function studyDeskAI() {
         practice++;
         return { topic: `能量子 ${practice}`, problem: `绿光和红光，哪个的光子能量大？（第 ${practice} 题）`, kind: 'choice', options: ['红光', '一样', '绿光'], answer: 2, hints: ['想想频率', 'E = hν', '绿光频率更高'], solution: '绿光频率更高，所以 E 更大。' };
       case 'practiceGrade': return { correct: true, feedback: '对。' };
+      case 'photo': return { transcript: '[photo 1]\n题 3：氢原子 n = 2 能级的能量是多少？\n[figure] 能级图，n = 1 到 4', goal: '弄懂氢原子的能级公式' };
       default: return {};
     }
   };
@@ -2457,6 +2458,88 @@ function studyDeskAI() {
   return { route, calls };
 }
 const studyKey = () => { try { localStorage.setItem('chemhub-ai', JSON.stringify({ provider: 'deepseek', remember: true, keys: { deepseek: 'sk-test' } })); } catch {} };
+
+// A small red-and-blue PNG, made in the page so no binary file sits in the repo.
+const pngIn = (p) => p.evaluate(() => { const c = document.createElement('canvas'); c.width = 64; c.height = 40; const g = c.getContext('2d'); g.fillStyle = '#c33'; g.fillRect(0, 0, 32, 40); g.fillStyle = '#36c'; g.fillRect(32, 0, 32, 40); return c.toDataURL('image/png').split(',')[1]; });
+const pastePng = (p, selector, b64) => p.evaluate(([sel, b]) => {
+  const bytes = Uint8Array.from(atob(b), (ch) => ch.charCodeAt(0));
+  const dt = new DataTransfer();
+  dt.items.add(new File([bytes], 'screenshot.png', { type: 'image/png' }));
+  document.querySelector(sel).dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+}, [selector, b64]);
+
+check('photos: the AI panel takes pasted and picked photos (text still works), the Study Desk reads them into editable text', async () => {
+  const p = await open({ init: studyKey, reducedMotion: 'reduce' });
+  const bodies = [];
+  await p.route('https://api.deepseek.com/**', async (r) => {
+    const body = JSON.parse(r.request().postData());
+    bodies.push(body);
+    if (/^TASK: /.test(body.messages[0].content)) return studyDeskAI().route(r);
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: '图里左边红色、右边蓝色。' } }], usage: { prompt_tokens: 300, completion_tokens: 12 } }) });
+  });
+  await go(p, '/index.html');
+  const b64 = await pngIn(p);
+  await p.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openDrawer({ mode: 'free' })));
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  // Plain text first, exactly as before.
+  await p.fill('#cai-input', '什么是 DFT？');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction(() => document.querySelectorAll('.cai-msg.bot .cai-body').length === 1 && !document.querySelector('.cai-msg.bot')?.textContent.includes('生成中'));
+  assert.equal(typeof bodies.at(-1).messages.at(-1).content, 'string', 'text only stays a plain string');
+  // One photo from the picture button, one pasted; then a question.
+  await p.setInputFiles('.cai-drawer [data-attach]', { name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from(b64, 'base64') });
+  await p.waitForSelector('.cai-tray .cai-thumb img');
+  await pastePng(p, '#cai-input', b64);
+  await p.waitForFunction(() => document.querySelectorAll('.cai-tray .cai-thumb img').length === 2);
+  await p.fill('#cai-input', '这张图是什么颜色？');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction(() => document.querySelectorAll('.cai-msg.user .cai-pics img').length === 2);
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 2);
+  let last = bodies.at(-1).messages.at(-1).content;
+  assert.ok(Array.isArray(last), 'photos go as content parts');
+  assert.equal(last[0].text, '这张图是什么颜色？');
+  assert.deepEqual(last.slice(1).map((x) => x.image_url.url.slice(0, 23)), ['data:image/jpeg;base64,', 'data:image/jpeg;base64,']);
+  assert.equal(bodies.at(-1).model, 'deepseek-flash');
+  assert.equal(await p.locator('.cai-tray').isHidden(), true, 'tray empties after sending');
+  // A follow-up in words: earlier photos are not sent again, the model is told they were there.
+  await p.fill('#cai-input', '那蓝色是什么意思？');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 3);
+  const msgs = bodies.at(-1).messages;
+  assert.equal(typeof msgs.at(-1).content, 'string');
+  assert.ok(msgs.some((m) => typeof m.content === 'string' && /附了 2 张图/.test(m.content)), 'earlier photos noted in words');
+  assert.ok(!JSON.stringify(msgs).includes('image_url'), 'no image resent');
+  // V4 Pro does not read images: a photo question goes to Flash instead.
+  await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('chemhub-ai')); s.models = { deepseek: 'deepseek-v4-pro' }; localStorage.setItem('chemhub-ai', JSON.stringify(s)); document.dispatchEvent(new Event('chemhub:ai-config')); });
+  await pastePng(p, '#cai-input', b64);
+  await p.waitForSelector('.cai-tray-note');
+  assert.match(await text(p, '.cai-tray-note'), /deepseek-flash/);
+  await p.press('#cai-input', 'Enter'); // a photo with no words gets a default question
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 4);
+  assert.equal(bodies.at(-1).model, 'deepseek-flash');
+  assert.match(bodies.at(-1).messages.at(-1).content[0].text, /请看这张图/);
+  // Study Desk: paste a photo into the goal; the AI reads it, fills the empty goal, and the text can be edited.
+  await go(p, '/learn/index.html#learn');
+  await p.waitForSelector('#ln-goal');
+  await pastePng(p, '#ln-goal', b64);
+  await p.waitForSelector('.ln-photo-text textarea', { state: 'attached' });
+  assert.equal(await p.inputValue('#ln-goal'), '弄懂氢原子的能级公式', 'goal suggested from the photo');
+  assert.equal(await p.locator('.ln-photo .ln-thumbs img').count(), 1);
+  const read = bodies.at(-1);
+  assert.equal(read.model, 'deepseek-flash');
+  assert.match(read.messages[0].content, /^TASK: photo/);
+  assert.equal(read.messages[1].content.filter((x) => x.type === 'image_url').length, 1);
+  await p.click('.ln-photo-text summary');
+  await p.fill('.ln-photo-text textarea', '题 3：氢原子 n = 2 能级的能量（我改过）');
+  await p.click('[data-act=new]');
+  await p.waitForSelector('.ln-q');
+  const probe = bodies.find((b) => /^TASK: probe/.test(b.messages[0].content));
+  assert.equal(typeof probe.messages[1].content, 'string', 'the probe gets text, not the photo');
+  assert.match(probe.messages[1].content, /我改过/, 'the edited transcript goes with the session');
+  assert.ok(!JSON.stringify(probe).includes('image_url'));
+  assert.ok(!(await p.evaluate(() => localStorage.getItem('molastria-learn'))).includes('data:image'), 'photos are not stored');
+  await finish(p);
+});
 
 check('study desk: probe, plan, one step with a check and a repair, practice, knowledge graph, export', async () => {
   const p = await open({ init: studyKey, reducedMotion: 'reduce' });

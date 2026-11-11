@@ -29,6 +29,7 @@ MONTHLY_ASKS = "300"                               # 每个 Pro 席位每月的�
 FREE_DAILY_ASKS = "5"                              # 免费账号（邮箱登录、没付费）每 24 小时的托管问答次数；0 关掉
 HOSTED_MODELS = "deepseek-flash"                   # 托管额度可用的模型（站长 2026-11-07 决定只留 Flash）；加 Muse 模型前先配置 MUSE_API_KEY
 HOSTED_MODEL_WEIGHTS = "deepseek-v4-pro:3"         # 调用一次这个模型计几次；价格差很多的模型要写在这里
+HOSTED_VISION_MODELS = "deepseek-flash"            # 托管额度里能看图的模型（带图片的请求只给这些）
 UMA_ORIGIN = "https://uma-origin.molastria.com"   # 站长电脑上的在线 UMA（tools/uma-server，经 Cloudflare Tunnel）；暗号在 secret UMA_SERVER_SECRET
 UMA_DAILY = "40"                                   # 匿名访客每天的在线模型次数（UMA、OMol25、ANI-2x 共用）
 UMA_DAILY_ACCOUNT = "100"                          # 登录的免费账号每天的次数
