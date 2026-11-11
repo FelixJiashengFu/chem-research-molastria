@@ -72,7 +72,7 @@
 71,ANI-1,约两千万个小分子构象的 DFT 能量数据集，ANI 系列机器学习势函数的训练基础。,https://github.com/isayev/ANI1_dataset,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 72,OC20 / OC22,Open Catalyst 项目的大规模催化表面吸附数据集，用于训练通用机器学习势函数。,https://opencatalystproject.org,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 73,PubChemQC,基于 PubChem 的大规模电子结构数据库，含 2.2 亿分子的 PM6 与 8600 万分子的 B3LYP 数据。,https://nakatamaho.riken.jp/pubchemqc.riken.jp/,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
-74,Alexandria,百万级分子的 DFT 性质数据集，适合训练通用分子表示与性质预测模型。,https://alexandria.icams.rub.de,09,机器学习数据集与势函数,免费,optimade,provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）
+74,Alexandria,数百万个无机晶体的 DFT 计算数据库（PBE、PBEsol、SCAN），带能量、力和应力，可用 OPTIMADE 查询，常用来训练材料的机器学习势和稳定性预测模型。,https://alexandria.icams.rub.de,09,机器学习数据集与势函数,免费,optimade,provider=alexandria-pbe / alexandria-pbesol（带能量、力、应力）
 75,tmQM,过渡金属配合物的量子化学数据集，填补有机分子数据集在金属化学上的空白。,https://github.com/uiocompcat/tmQM,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器
 76,QCArchive,MolSSI 的量子化学计算数据平台，可检索、共享与复用计算结果。,https://qcarchive.molssi.org,09,机器学习数据集与势函数,免费,adapter,chemdb_agent.adapters.qcarchive（ml 与 main 公共服务器）
 77,Open Graph Benchmark,图神经网络基准套件，包含分子图性质预测等任务与标准划分。,https://ogb.stanford.edu,09,机器学习数据集与势函数,免费,catalog,已收录目录；有公开 API 时可按 pubchem/optimade 模式新增适配器

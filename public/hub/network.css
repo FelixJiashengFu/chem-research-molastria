@@ -96,9 +96,9 @@
 .net-trail b{color:var(--ink)}
 .net-focus{padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px}
 .net-focus h2{margin:4px 0 6px;font-size:22px;line-height:1.35;overflow-wrap:anywhere}
-.focus-kind{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.5px;color:#fff;background:#7d8a80;border-radius:3px;padding:2px 8px}
-.focus-kind.k-software,.focus-kind.k-database{background:#3f8a4f}.focus-kind.k-name{background:#2a8c80}.focus-kind.k-concept,.focus-kind.k-topic{background:#7a62b8}
-.focus-kind.k-category{background:#2f6f9c}.focus-kind.k-query,.focus-kind.k-hub{background:#b07f35}.focus-kind.k-source{background:#5f6f66}
+.focus-kind{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.5px;color:#fff;background:#5f6d63;border-radius:3px;padding:2px 8px}
+.focus-kind.k-software,.focus-kind.k-database{background:#2f6f3d}.focus-kind.k-name{background:#22736a}.focus-kind.k-concept,.focus-kind.k-topic{background:#7a62b8}
+.focus-kind.k-category{background:#2f6f9c}.focus-kind.k-query,.focus-kind.k-hub{background:#8a6327}.focus-kind.k-source{background:#5f6f66}
 .focus-desc{margin:4px 0 8px;color:var(--muted);font-size:13.5px;line-height:1.7}
 .focus-note{margin:4px 0 8px;font-size:13px;color:var(--ink-2,var(--ink));background:var(--surface-2);border-left:3px solid var(--gold);padding:7px 10px;border-radius:0 4px 4px 0}
 .focus-stats{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}

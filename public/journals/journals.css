@@ -47,7 +47,7 @@ main{max-width:1280px;margin:0 auto;padding:0 40px}
 .jr-tags li{font-size:11.5px;padding:1px 8px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2)}
 .jr-tags .jr-oa{border-color:color-mix(in srgb,var(--info) 45%,transparent);color:var(--info)}
 .jr-tags .jr-oa[data-oa=full]{border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)}
-.jr-tags .jr-oa[data-oa=diamond]{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold)}
+.jr-tags .jr-oa[data-oa=diamond]{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold-ink)}
 .jr-tags .jr-oa[data-oa=unknown]{border-style:dashed;color:var(--muted)}
 .jr-scope{margin:0 0 8px;font-size:13px;color:var(--ink-2)}
 .jr-card.open .jr-scope{display:none}

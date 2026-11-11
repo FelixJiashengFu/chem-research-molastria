@@ -5,6 +5,9 @@
   const base = window.__CHEM_LINK__ ? new URL(window.__CHEM_LINK__('')) : new URL('.', script.src);
   const link = (path) => String(new URL(path, base));
   const section = document.body.dataset.section || 'search';
+  // Pages whose content is drawn by script (body.js-render) stay hidden until every deferred script has run; see shared-nav.css.
+  document.addEventListener('DOMContentLoaded', () => document.body.classList.add('cr-ready'), { once: true });
+  if (document.readyState === 'complete') document.body.classList.add('cr-ready');
   // ── 全站导航（2026-11-10 改版）：二十多个栏目分成五组，每组一个按钮，点开是一块大菜单（每个栏目一句说明，大的栏目带子展馆）；
   //    窄屏（iPad 竖屏、手机）只留一个“栏目”按钮，打开后五组从上到下排开。菜单顶部能搜索栏目，Ctrl / ⌘ + K 在任何页面直接打开。
   //    常用的栏目可以“固定到顶栏”：固定的入口直接显示在分组按钮后面（放不下就只留在菜单里），能在顶栏上拖动换位，存 molastria-nav-pins。
@@ -1175,6 +1178,23 @@
         if (first) r.active?.postMessage({ cache: [location.href, ...performance.getEntriesByType('resource').map((e) => e.name)] });
       }).catch(() => {});
     });
+  }
+
+  // Visit counts: Cloudflare Web Analytics (no cookies, no localStorage, nothing tied to a person; privacy policy
+  // "访问统计"). Off while ANALYTICS is empty: the site token comes from the Cloudflare dashboard (Web Analytics → Add a
+  // site → molastria.com); it is public by design (it sits in every page), not a secret. Only on molastria.com itself,
+  // never in the desktop app, a disk copy, a local preview or the browser tests; a browser sending Global Privacy
+  // Control or Do Not Track is not counted.
+  const ANALYTICS = '';
+  if (ANALYTICS && /(^|\.)molastria\.com$/.test(location.hostname) && !window.__MOLASTRIA_DESKTOP__ && !window.__TAURI_INTERNALS__
+    && !navigator.globalPrivacyControl && navigator.doNotTrack !== '1' && !navigator.webdriver) {
+    addEventListener('load', () => {
+      const b = document.createElement('script');
+      b.defer = true;
+      b.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+      b.setAttribute('data-cf-beacon', JSON.stringify({ token: ANALYTICS, spa: false }));
+      document.head.appendChild(b);
+    }, { once: true });
   }
 
   // Desktop app only: offer the newer version published on GitHub Releases. The app checks the signed feed

@@ -212,6 +212,9 @@ test('复现：tools/handbook-calcs.py 用本机的 PySCF 算出同样的数字'
   const parts = ['ladder', 'charges', 'crawford', 'jw', ...(process.env.HANDBOOK_SOLID ? ['silicon'] : [])];
   const out = JSON.parse(execFileSync('python3', ['-I', new URL('handbook-calcs.py', import.meta.url).pathname, ...parts], { encoding: 'utf8', timeout: 3600000, maxBuffer: 1 << 24 }));
   for (const p of parts) compare(out[p], REF[p], p);
-  // 用新算的数字再生成一遍正文应有的字符串，和 REF 生成的一样
-  assert.deepEqual(expected({ ...REF, ...out }), expected(REF));
+  // 用新算的数字再生成一遍正文应有的字符串，和 REF 生成的一样。
+  // 第 15 类的 SCF 能量在正文里写到 13 位小数（对照 Crawford 的参考值），最后一位是 BLAS 多线程求和的舍入噪声
+  // （CI 上同一份代码先后算出 …281924 和 …281923），这里只比到小数点后 10 位，数值本身上面已按 2e-7 核对过。
+  const coarse = (o) => ({ ...o, 'p14e-cat15': o['p14e-cat15'].map((s, i) => (i === 0 ? s.slice(0, -3) : s)) });
+  assert.deepEqual(coarse(expected({ ...REF, ...out })), coarse(expected(REF)));
 });

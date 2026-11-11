@@ -81,10 +81,13 @@
   const done = new WeakMap();
   function translateText(node) {
     const v = node.nodeValue;
-    if (!v || !HAN.test(v) || done.get(node) === v) return;
+    if (!v || done.get(node) === v) return;
+    // A text node of Chinese punctuation only (the full stop after a link that ends a sentence) becomes its English mark.
+    const punct = !HAN.test(v) && /^\s*[。，；：！？、]\s*$/.test(v);
+    if (!HAN.test(v) && !punct) return;
     const p = node.parentElement;
     if (!p || p.closest(SKIP)) return;
-    const out = tr(v);
+    const out = punct ? v.replace(/[。，；：！？、]/, (c) => ({ '。': '.', '，': ',', '；': ';', '：': ':', '！': '!', '？': '?', '、': ',' })[c]) : tr(v);
     done.set(node, out);
     if (out !== v) node.nodeValue = out;
   }
@@ -125,6 +128,12 @@
     compile(dict);
     walk(document.documentElement);
     document.title = tr(document.title);
+    // The page summary in <head> (what search engines and link previews show for the ?lang=en address).
+    document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"]').forEach((m) => {
+      const v = m.getAttribute('content'), t = v && tr(v);
+      if (t && t !== v) m.setAttribute('content', t);
+    });
+    document.querySelector('meta[property="og:locale"]')?.setAttribute('content', 'en_US');
     new MutationObserver((records) => {
       for (const r of records) {
         if (r.type === 'childList') r.addedNodes.forEach(queue);

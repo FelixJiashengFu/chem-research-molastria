@@ -8,16 +8,16 @@
 <link rel="stylesheet" href="../shared-nav.css">
 <style>
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-sans)}
-main{width:min(100% - 2rem,60rem);margin:auto;padding:2rem 0 4rem}.brand{color:var(--accent-text);font-family:var(--font-serif);font-weight:700;text-decoration:none}.eyebrow{margin:3rem 0 .75rem;color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.12em}h1{margin:0 0 .75rem;font-family:var(--font-serif);font-size:clamp(2rem,6vw,3.25rem)}p{color:var(--muted);line-height:1.7}video{display:block;width:100%;aspect-ratio:16/9;margin-top:2rem;background:#101613}a{color:var(--accent-text);text-underline-offset:.2em}a:focus-visible,video:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+main{width:min(100% - 2rem,60rem);margin:auto;padding:2rem 0 4rem}.brand{color:var(--accent-text);font-family:var(--font-serif);font-weight:700;text-decoration:none}.eyebrow{margin:3rem 0 .75rem;color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.12em}h1{margin:0 0 .75rem;font-family:var(--font-serif);font-size:clamp(2rem,6vw,3.25rem)}p{color:var(--muted);line-height:1.7}video{display:block;width:100%;aspect-ratio:16/9;margin-top:2rem;background:#101613}a{color:var(--accent-text);text-underline-offset:.2em}.load{font:inherit;font-weight:600;padding:.7rem 1.2rem;border-radius:999px;border:1px solid var(--gold);background:transparent;color:var(--accent-text);cursor:pointer}.load:hover{background:color-mix(in srgb,var(--gold) 14%,transparent)}a:focus-visible,video:focus-visible,.load:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
 </style>
 </head>
-<body>
+<body class="no-cr-nav">
 <main><a class="brand" href="/">MolAstria</a><p class="eyebrow">MOLASTRIA · VIDEO TOUR</p><h1>一起探索 MolAstria</h1><p>计算化学研究导航 · 完整视频导览（约 15 分钟，有声音）</p>
 <video id="video" controls playsinline preload="metadata" aria-label="MolAstria 完整视频导览"></video>
-<p id="status" role="status">视频正在加载，请稍候。</p><p><a href="/">访问 MolAstria <i class="ico-ext" aria-hidden="true"></i></a></p>
+<p><button type="button" id="load" class="load">加载并播放（约 95 MB）</button></p><p id="status" role="status">视频要点一下才开始下载：约 95 MB，用手机流量时请留意。</p><p><a href="/">访问 MolAstria <i class="ico-ext" aria-hidden="true"></i></a></p>
 </main>
 <script>
-(async () => {
+async function start() {
   const video = document.getElementById('video');
   const status = document.getElementById('status');
   const paths = Array.from({length: 5}, (_, i) => 'video-0' + i + '.bin');
@@ -34,7 +34,7 @@ main{width:min(100% - 2rem,60rem);margin:auto;padding:2rem 0 4rem}.brand{color:v
     video.src = URL.createObjectURL(new Blob(parts, {type:'video/mp4'}));
     status.textContent = '视频已就绪，点击播放。';
   }
-  video.addEventListener('canplay', () => { status.textContent = '点击播放。'; }, {once:true});
+  video.addEventListener('canplay', () => { status.textContent = ''; video.play().catch(() => { status.textContent = '点击播放。'; }); }, {once:true});
   try {
     if (!window.MediaSource || !MediaSource.isTypeSupported(mime)) {
       await loadWhole();
@@ -62,7 +62,9 @@ main{width:min(100% - 2rem,60rem);margin:auto;padding:2rem 0 4rem}.brand{color:v
     try { await loadWhole(); }
     catch (err) { status.textContent = '视频暂时无法加载，请检查网络后刷新页面重试。'; }
   }
-})();
+}
+const load = document.getElementById('load');
+load.addEventListener('click', () => { load.hidden = true; document.getElementById('status').textContent = '视频正在加载，请稍候。'; start(); }, {once:true});
 </script>
 </body>
 </html>

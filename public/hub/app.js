@@ -19,7 +19,7 @@ function cardHTML(it){
     (it.sob_url ? ' · <a href="' + esc(it.sob_url) + '" target="_blank" rel="noopener">对应博文</a>' : "") + "</div>" : "";
   const meta = [it.date, it.metric || (it.views ? ("👁 " + it.views) : ""), it.authors ? ("✎ " + it.authors) : "", it.category].filter(Boolean).map(esc).join(" · ");
   return '<article class="card"><div class="card-top">' +
-    '<span class="src-badge" style="--sc:' + esc(sm.color) + ';background:' + esc(sm.color) + '">' + esc(sm.name) + "</span>" +
+    '<span class="src-badge" style="--sc:' + esc(sm.color) + '">' + esc(sm.name) + "</span>" +
     '<span class="type-badge">' + esc(TYPE_LABEL[it.type] || it.type) + "</span></div>" +
     '<h3><a href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.title) + "</a></h3>" +
     excerpt + mirror +

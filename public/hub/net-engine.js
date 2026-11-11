@@ -149,8 +149,11 @@
     // ---------- who mentions whom ----------
     const boundary = new Map();
     const casedRe = new Map();
+    // An alias is checked against every document, so its tokens are worked out once (this alone was half of build() on a phone).
+    const aliasToks = new Map();
     function latinHit(field, set, alias) {
-      const toks = latinTokens(alias);
+      let toks = aliasToks.get(alias);
+      if (!toks) aliasToks.set(alias, (toks = latinTokens(alias)));
       if (!toks.length || !toks.every((t) => set.has(t))) return false;
       if (toks.length === 1 && toks[0] === alias) return true;
       if (!boundary.has(alias)) boundary.set(alias, new RegExp(`(^|[^a-z0-9])${reEscape(alias)}($|[^a-z0-9])`));

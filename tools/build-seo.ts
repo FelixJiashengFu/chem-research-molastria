@@ -28,11 +28,25 @@ const data = (globalThis as any).CHEMRESEARCH_DATA;
 const THEME_BOOT = '<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>';
 
 // ── head blocks ──────────────────────────────────────────────────────────
-function seoHead(o: { path: string; title: string; description: string; type?: string; jsonld?: unknown[] }) {
+// English versions: the same HTML at ?lang=en (i18n.js translates it in the browser). Pages written in Chinese only
+// (the static guide chapters and resource lists) get no English alternate.
+const enUrl = (url: string) => url + (url.includes("?") ? "&" : "?") + "lang=en";
+const enPaths = new Set<string>();
+// At ?lang=en the canonical and og:url point at the English address, so the two versions are not folded into one.
+const EN_HEAD = '<script>if(/[?&]lang=en(&|$)/.test(location.search))document.querySelectorAll(\'link[rel=canonical],meta[property="og:url"]\').forEach(function(e){var a=e.tagName==="LINK"?"href":"content",u=e.getAttribute(a);e.setAttribute(a,u+(u.indexOf("?")<0?"?":"&")+"lang=en")})</script>';
+function seoHead(o: { path: string; title: string; description: string; type?: string; jsonld?: unknown[]; en?: boolean }) {
   const url = SITE + o.path;
   const ld = [...(o.jsonld || [])];
+  const en = o.en !== false;
+  if (en) enPaths.add(o.path);
   const lines = [
     `<link rel="canonical" href="${esc(url)}">`,
+    ...(en ? [
+      `<link rel="alternate" hreflang="zh-CN" href="${esc(url)}">`,
+      `<link rel="alternate" hreflang="en" href="${esc(enUrl(url))}">`,
+      `<link rel="alternate" hreflang="x-default" href="${esc(url)}">`,
+      EN_HEAD,
+    ] : []),
     `<meta property="og:type" content="${o.type || "website"}">`,
     `<meta property="og:site_name" content="${esc(NAME)}">`, // the bare brand: Google reads it (with the WebSite JSON-LD) as the site name above each result
     `<meta property="og:title" content="${esc(o.title)}">`,
@@ -62,7 +76,7 @@ async function injectHead(file: string, path: string, extra: { type?: string; js
 }
 
 // ── static page shell ────────────────────────────────────────────────────
-function page(o: { rel: string; path: string; title: string; description: string; section: string; css: string[]; body: string; jsonld?: unknown[]; type?: string }) {
+function page(o: { rel: string; path: string; title: string; description: string; section: string; css: string[]; body: string; jsonld?: unknown[]; type?: string; en?: boolean }) {
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -71,7 +85,7 @@ function page(o: { rel: string; path: string; title: string; description: string
   <title>${esc(o.title)}</title>
   <meta name="description" content="${esc(o.description)}">
   <meta name="theme-color" content="#173f34">
-  ${seoHead({ path: o.path, title: o.title, description: o.description, jsonld: o.jsonld, type: o.type })}
+  ${seoHead({ path: o.path, title: o.title, description: o.description, jsonld: o.jsonld, type: o.type, en: o.en ?? false })}
   <link rel="icon" href="${o.rel}favicon.svg" type="image/svg+xml">
   ${THEME_BOOT}
   <script src="${o.rel}i18n.js" defer></script>
@@ -356,8 +370,13 @@ const urls = [
   ["vision/", "0.5", "yearly"],
 ];
 await write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(([p, pr, f]) => `  <url><loc>${esc(SITE + p)}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`).join("\n")}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.flatMap(([p, pr, f]) => {
+  const zh = SITE + p;
+  if (!enPaths.has(p)) return [`  <url><loc>${esc(zh)}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`];
+  const alt = `<xhtml:link rel="alternate" hreflang="zh-CN" href="${esc(zh)}"/><xhtml:link rel="alternate" hreflang="en" href="${esc(enUrl(zh))}"/><xhtml:link rel="alternate" hreflang="x-default" href="${esc(zh)}"/>`;
+  return [zh, enUrl(zh)].map((loc) => `  <url><loc>${esc(loc)}</loc><lastmod>${TODAY}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority>${alt}</url>`);
+}).join("\n")}
 </urlset>
 `);
 await write("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`);
