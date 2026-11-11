@@ -14,8 +14,8 @@ import { chatLocal } from "./chat-local.ts";
 
 const port = Number(Deno.args[0] ?? 8832);
 const { DB } = await d1();
-// owner@example.com is a second admin, so a check can sign one in without using up admin@example.com's five codes an hour
-for (const email of ["admin@example.com", "owner@example.com"]) {
+// owner@example.com and chat-owner@example.com are more admins, so a check can sign one in without using up admin@example.com's five codes an hour
+for (const email of ["admin@example.com", "owner@example.com", "chat-owner@example.com"]) {
   await DB.prepare("INSERT INTO grants (email, source, expires, created) VALUES (?1, 'admin', NULL, ?2)").bind(email, Math.floor(Date.now() / 1000)).run();
 }
 const now = () => Math.floor(Date.now() / 1000);

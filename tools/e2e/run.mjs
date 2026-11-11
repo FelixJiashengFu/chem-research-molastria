@@ -4319,9 +4319,15 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   // The discussion-room card above grows when the latest messages arrive (earlier checks leave some): an empty summary keeps
   // the distance to this block what the first layout says.
   await p.route('**/chat/summary', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"state":"on","online":0,"rooms":7,"top":[],"latest":[]}' }));
+  // The loader starts 400 px before the block scrolls in. Where the block is when the script is asked for is what counts: a
+  // look after the page settles races cards above it that grow or shrink while the home page fills in.
+  let askedAt = null;
+  await p.route('**/viewer/glass-switch.js', async (r) => {
+    askedAt = await p.evaluate(() => document.getElementById('glass-duo').getBoundingClientRect().top - innerHeight).catch(() => null);
+    await r.continue();
+  });
   await go(p, '/index.html');
-  // The loader starts 400 px before the block scrolls in; on a tall first screen that can already be the case.
-  if (await p.evaluate(() => document.getElementById('glass-duo').getBoundingClientRect().top > innerHeight + 450)) assert.equal(await p.evaluate(() => !!window.MolAstriaGlassSwitch), false, 'not loaded before scrolling near it');
+  if (askedAt !== null) assert.ok(askedAt < 400 + 60, `not loaded before scrolling near it (asked for ${Math.round(askedAt)} px below the screen)`);
   await p.locator('#glass-duo').scrollIntoViewIfNeeded();
   await p.waitForSelector('#glass-duo .gsw-hydrogen .gsw-switch');
   await p.waitForSelector('#glass-duo .gsw-blackhole .gsw-switch');
@@ -4532,7 +4538,7 @@ check('chat: a report reaches the owner\'s panel; delete and mute take effect at
   await e.click('dialog.ch-dlg button[type=submit]');
   await e.waitForFunction(() => document.querySelector('.ch-toast')?.textContent.includes('已举报'));
 
-  const o = await chatSignedIn('admin@example.com', '#mod');
+  const o = await chatSignedIn('chat-owner@example.com', '#mod'); // a third admin: the other checks spend admin@example.com's five codes an hour
   const report = o.locator('.ch-report', { hasText: 'e2e 广告：便宜的机时' });
   await report.waitFor();
   assert.match(await report.textContent(), /Dave_e2e/);
