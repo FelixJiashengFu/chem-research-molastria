@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>量子世界 · MolAstria 游乐场</title>
+<!-- 游乐场 20「量子世界」：原子、双缝、隧穿、纠缠四个场景放在一个 WebGL2 的三维世界里，方程实时算。
+     原作是站长 Fe 写的单文件页（2026-11-10），这里拆成 world.css、world-models.js（物理，纯函数，tools/play-test.mjs 测）
+     和 world.js（画面与交互）。游乐场在立体馆里用 iframe 嵌入它（?embed=1）；单独打开也能用。
+     界面文字自带中英两版（元素上的 data-en，脚本里的 L(中, 英)），不走站点的 i18n.js；语言和主题跟站点存的
+     chemhub-lang、chemhub-theme 走，也接受地址里的 ?lang= 和 ?theme=。 -->
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<script>try{var d=document.documentElement,s=localStorage,q=location.search,l=(q.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang"),t=(q.match(/[?&]theme=(dark|light)/)||[])[1]||s.getItem("chemhub-theme");if(l==="en")d.lang="en";if(t==="dark"||t==="light")d.dataset.theme=t;if(/[?&]embed=1/.test(q))d.dataset.embed="1"}catch(e){}</script>
+<link rel="stylesheet" href="world.css">
+<script src="world-models.js" defer></script>
+<script src="world.js" defer></script>
+</head>
+<body translate="no">
+<canvas id="gl" tabindex="0" aria-label="量子世界三维场景：拖动旋转，滚轮缩放" data-en-aria="3D quantum world: drag to turn, scroll to zoom"></canvas>
+<div id="labels" aria-hidden="true"></div>
+<header id="brand"><h1 data-en="Quantum world">量子世界</h1><p data-en="No little balls · only amplitudes">没有小球 · 只有振幅</p><a id="home" href="../index.html#zone-3d" data-en="Back to the playground">回到游乐场</a></header>
+
+<aside id="panel">
+  <button id="fold" type="button" title="收起 / 展开面板" data-en-title="Fold / unfold the panel" data-en="Fold">收起</button>
+
+  <section data-k="overview">
+    <div class="tag">Overview</div>
+    <h2 data-en="The quantum world, as I see it">我理解的量子世界</h2>
+    <p data-en="There are no little balls flying along orbits here. At the bottom of the world are &lt;b&gt;amplitudes&lt;/b&gt;: numbers with a phase, spread over all the possibilities at once. &lt;span class=&quot;ca&quot;&gt;Brightness&lt;/span&gt; is the probability, &lt;span class=&quot;cb&quot;&gt;colour&lt;/span&gt; is the phase &lt;i class=&quot;wheel&quot;&gt;&lt;/i&gt;.">这里没有沿着轨道飞的小球。世界的底层是<b>振幅</b>——一个带相位的数，同时铺在所有可能性上。<span class="ca">亮度</span>是它出现的概率，<span class="cb">颜色</span>是它的相位 <i class="wheel"></i>。</p>
+    <p data-en="Possibilities reinforce or cancel one another; only at the moment of measurement does it turn into one definite fact.">可能性之间会相互加强或抵消；只有被测量的那一刻，它才兑现成一个确定的事实。</p>
+    <div class="cards">
+      <button class="card" type="button" data-go="atom"><b data-en="Atom">原子</b><span data-en="The electron is a standing wave, not a planet">电子是一团驻波，不是行星</span></button>
+      <button class="card" type="button" data-go="slit"><b data-en="Double slit">双缝</b><span data-en="One particle interferes with itself">一个粒子，和自己干涉</span></button>
+      <button class="card" type="button" data-go="tun"><b data-en="Tunnelling">隧穿</b><span data-en="A wave does not drop to zero at a wall">波不会在墙前归零</span></button>
+      <button class="card" type="button" data-go="bell"><b data-en="Entanglement">纠缠</b><span data-en="Two particles, one shared state">两个粒子，共用一个态</span></button>
+    </div>
+    <p class="note" data-en="The rippling floor stands for the vacuum: field fluctuations never stop. The virtual pairs that keep popping up and vanishing are the usual popular picture, drawn here as an illustration, not a calculation. The four exhibits themselves are computed from their equations in real time; only length and time are rescaled to what the eye can follow.">脚下起伏的是真空：场的涨落从不静止。不断冒出又湮灭的成对虚粒子是常见的形象说法，这里画的是示意，不是计算。四处现象本身都由方程实时算出，只把尺度和时间缩放到了人眼能看的范围。</p>
+  </section>
+
+  <section data-k="atom" hidden>
+    <div class="tag">Hydrogen</div>
+    <h2 data-en="Atom · probability cloud">原子 · 概率云</h2>
+    <p data-en="The electron is not a planet circling the nucleus but a standing wave. Each dot is one “possible position” drawn from |ψ|², and its colour is the phase &lt;i class=&quot;wheel&quot;&gt;&lt;/i&gt;.">电子不是绕核转的行星，而是一团驻波。每个光点是按 |ψ|² 抽出的一个“可能的位置”，颜色是相位 <i class="wheel"></i>。</p>
+    <p data-en="The phase of a single stationary state keeps turning while its shape stays perfectly still. Only a &lt;b&gt;superposition&lt;/b&gt; of two levels turns the phase difference into a visible wobble: that is how the charge swings when an atom emits light.">单个定态的相位一直在转，形状却纹丝不动。只有两个能级<b>叠加</b>，相位差才变成看得见的晃动——原子发光时，电荷就是这样在摆。</p>
+    <div class="grid4" id="orbs" role="group" aria-label="轨道" data-en-aria="Orbitals"></div>
+    <div class="row"><button class="b pri" type="button" id="aMeasure" data-en="Measure position">测量位置</button><button class="b" type="button" id="aAuto" data-en="Keep measuring">连续测量</button></div>
+    <div class="read" id="aRead" role="status"></div>
+    <p class="note" data-en="One measurement gives one point; after a few hundred, the gold points pile back into the shape of the cloud. The re-spreading after a collapse is illustrative.">一次测量只得到一个点；测上几百次，金色的点又堆回云的形状。塌缩后的重新弥散为示意。</p>
+  </section>
+
+  <section data-k="slit" hidden>
+    <div class="tag">Double slit</div>
+    <h2 data-en="Double slit · interference">双缝 · 干涉</h2>
+    <p data-en="Particles leave one at a time. Each one passes through both slits as a wave and adds up with itself, yet lands on the screen as a single dot. The fringes belong to no single particle; they exist only in the statistics.">粒子一个一个出发。每一个都以波的形式同时穿过两条缝、和自己叠加，落到屏上时却只是一个点。条纹不属于任何一个粒子，它只存在于统计里。</p>
+    <label class="sw"><input type="checkbox" id="sDetect"><span></span><em data-en="Which-path detector:">路径探测器：</em><b id="sDetTxt">关</b></label>
+    <p class="note" data-en="Switch it on and you know which slit every particle took. The two paths can no longer add up, and the fringes disappear at once.">打开它，你就知道了每个粒子走的是哪条缝——两条路径不再能叠加，条纹随即消失。</p>
+    <div class="seg" id="sRate" role="group" aria-label="发射速度" data-en-aria="Emission rate"><button type="button" data-v="0" data-en="One by one">逐个</button><button type="button" data-v="1" class="on" data-en="Stream">连发</button><button type="button" data-v="2" data-en="Flood">洪流</button></div>
+    <div class="read" id="sRead" role="status"></div>
+    <div class="row"><button class="b" type="button" id="sClear" data-en="Clear the screen">清空屏幕</button></div>
+    <p class="note" data-en="The bars above the screen count where particles landed; the orange line is the predicted probability.">屏上方的柱子是落点统计，橙线是理论概率分布。</p>
+  </section>
+
+  <section data-k="tun" hidden>
+    <div class="tag">Tunnelling</div>
+    <h2 data-en="Tunnelling · barrier">隧穿 · 势垒</h2>
+    <p data-en="The helix is the wave function itself: its radius is the amplitude and its twist is the phase &lt;i class=&quot;wheel&quot;&gt;&lt;/i&gt;; the white line below is |ψ|².">螺旋就是波函数本身：半径是振幅，旋转是相位 <i class="wheel"></i>；下方白线是 |ψ|²。</p>
+    <p data-en="Hitting a wall higher than its own energy, the wave does not drop to zero inside the wall but decays exponentially. If the wall is thin enough, a little amplitude is left on the far side, and a measurement finds the &lt;b&gt;whole&lt;/b&gt; particle behind the wall with that probability.">撞上一堵比自己能量还高的墙，波在墙里不是归零，而是指数衰减——墙够薄，另一侧就还剩一点振幅。测量时，粒子以这点概率<b>整个</b>出现在墙后。</p>
+    <label class="sl"><em data-en="Barrier height V₀ / E">势垒高度 V₀ / E</em> <output id="tV0o">1.40</output><input type="range" id="tV0" min="0.4" max="3" step="0.05" value="1.4"></label>
+    <label class="sl"><em data-en="Barrier width (a₀)">势垒宽度（a₀）</em> <output id="tWo">1.00</output><input type="range" id="tW" min="0.3" max="3" step="0.1" value="1"></label>
+    <div class="read" id="tRead" role="status"></div>
+    <div class="row"><button class="b" type="button" id="tReset" data-en="Reset the tally">清零统计</button></div>
+    <p class="note" data-en="The time-dependent Schrödinger equation is solved live with the Crank–Nicolson scheme on 1200 grid points. The packet has a spread of momenta, so its transmission is the plane-wave value averaged over them; both are shown. The collapse animation after a measurement is illustrative.">含时薛定谔方程用 Crank–Nicolson 格式在 1200 个格点上实时求解。波包含有一段动量，透射率是平面波的值按动量分布的平均，两个都列出来。测量后的塌缩动画为示意。</p>
+  </section>
+
+  <section data-k="bell" hidden>
+    <div class="tag">Entanglement</div>
+    <h2 data-en="Entanglement · Bell test">纠缠 · 贝尔检验</h2>
+    <p data-en="A pair of particles shares one state. Either side alone is a pure coin toss; put the two records side by side and the correlation beats the bound |S| ≤ 2 that holds for any plan “agreed before they left”.">一对粒子共用同一个态。单看任何一边都是纯粹的抛硬币；把两边的记录对在一起，相关性却超过了任何“出发前就商量好”的方案的上限 |S| ≤ 2。</p>
+    <div class="seg" id="bMode" role="group" aria-label="模式" data-en-aria="Mode"><button type="button" data-v="chsh" class="on" data-en="CHSH test">CHSH 检验</button><button type="button" data-v="free" data-en="Free angle">自由角度</button></div>
+    <label class="sl" id="bThetaRow" hidden><em data-en="Angle θ between the two settings">两侧测量方向夹角 θ</em> <output id="bThO">60°</output><input type="range" id="bTh" min="0" max="180" step="5" value="60"></label>
+    <div class="seg" id="bSpeed" role="group" aria-label="速度" data-en-aria="Speed"><button type="button" data-v="0" data-en="Pair by pair">逐对</button><button type="button" data-v="1" class="on" data-en="Fast">快</button><button type="button" data-v="2" data-en="Very fast">极快</button></div>
+    <div class="read" id="bRead" role="status"></div>
+    <div class="sbar" id="bBar"><i id="bFill"></i><em style="left:66.67%"><span data-en="classical 2">经典 2</span></em><em style="left:94.28%"><span>2√2</span></em></div>
+    <canvas id="bChart" width="600" height="300" aria-label="相关函数 E 随夹角变化的图" data-en-aria="Correlation E against the angle"></canvas>
+    <div class="row"><button class="b" type="button" id="bReset" data-en="Reset the tally">清零统计</button></div>
+    <p class="note" data-en="No signal passes between the two sides. Yet to reproduce these statistics on a computer, this program has to “peek” at Alice’s setting when it works out Bob’s result, and that is exactly Bell’s theorem: no program that does not peek can get past 2. The straight line is one such local model, which just reaches |S| = 2 at the CHSH angles.">两侧之间没有信号传递。可要在电脑里复现这组统计，这段程序在算 Bob 的结果时必须“偷看” Alice 的设置——贝尔定理说的正是：任何不偷看的程序都越不过 2。图里的直线是这样一个局域模型，它在 CHSH 的角度上刚好到 |S| = 2。</p>
+  </section>
+</aside>
+
+<nav id="nav" aria-label="场景导航" data-en-aria="Scenes">
+  <button type="button" data-k="overview" class="on" data-en="Overview">总览</button>
+  <button type="button" data-k="atom" data-en="Atom">原子</button>
+  <button type="button" data-k="slit" data-en="Slits">双缝</button>
+  <button type="button" data-k="tun" data-en="Tunnel">隧穿</button>
+  <button type="button" data-k="bell" data-en="Bell">纠缠</button>
+</nav>
+<div id="hint"></div>
+<div id="nogl" hidden><div><h2 data-en="WebGL2 is needed">需要 WebGL2</h2><p data-en="This browser has WebGL2 switched off. A recent Chrome, Safari or Edge will do.">这个浏览器没有开启 WebGL2，换用新版 Chrome / Safari / Edge 即可。</p></div></div>
+</body>
+</html>

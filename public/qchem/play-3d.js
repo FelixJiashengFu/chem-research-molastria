@@ -1,4 +1,4 @@
-/* 游乐场 16–19：立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球）。数学在 play-3d-models.js（纯函数，tools/play-test.mjs 测）。
+/* 游乐场 16–19：立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球），以及 20 量子世界的外壳（iframe，页面在 world/）。数学在 play-3d-models.js（纯函数，tools/play-test.mjs 测）。
    这个文件只定义 window.MOLASTRIA_PLAY_3D(kit)：play.js 把画图、成绩和翻译工具传进来，返回的游戏共用标签、地址和成绩（molastria-play）。
    三维是手写的：canvas 2D 上做透视投影、按深度排序画球和棍，不依赖 WebGL 和外部库，桌面版、离线也能玩。
    拖空白处转动视角（鼠标或单指），Tab 选中画面后方向键也能转；16 里拖的是电子对，19 里点的是门。
@@ -547,6 +547,23 @@ window.MOLASTRIA_PLAY_3D = (kit) => {
       },
       draw,
       bestText: (v2) => { const n = Object.values(v2 || {}).reduce((a, b2) => a + b2, 0); return n ? `已得 ${n} / ${LV.length * 3} 颗星` : ''; },
+    };
+  })();
+
+  // ── 20 量子世界（world/，站长 Fe 的 WebGL2 页面）──────────────────────────
+  // 第一次打开这个标签时才给 iframe 地址（约 60 KB，算起来吃 GPU）；换到别的游戏时让它暂停，回来再接着算。
+  // 语言跟着地址走（换语言会重新载入整页），主题在站点切换时转告它（它自己也听 chemhub-theme 的 storage 事件）。
+  games.world = (() => {
+    const frame = $('#qw-frame'), post = (m) => { try { frame.contentWindow?.postMessage({ molastriaWorld: m }, location.origin); } catch { /* not loaded */ } };
+    const theme = () => document.documentElement.dataset.theme;
+    return {
+      init() {
+        const th = theme();
+        frame.src = `world/index.html?embed=1&lang=${en ? 'en' : 'zh'}${th ? `&theme=${th}` : ''}`;
+        frame.title = t('量子世界');
+      },
+      draw() { post('resume'); const th = theme(); if (th) post(th); },
+      hide() { post('pause'); },
     };
   })();
 

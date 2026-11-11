@@ -510,3 +510,89 @@ test('Bloch sphere: each gate’s rotation equals its 2×2 matrix acting on the 
     if (L.id === 'one') assert.ok(!L.gates.includes('X'), 'the |1⟩ level really has no X');
   }
 });
+
+// ── 20：量子世界（world/world-models.js）──────────────────────────────────
+const qwbox = { window: {} };
+vm.runInNewContext(readFileSync(new URL('../public/qchem/world/world-models.js', import.meta.url), 'utf8'), qwbox);
+const QW = qwbox.window.MOLASTRIA_WORLD;
+
+test('quantum world · hydrogen: every preset is normalised, and the energies match hydrogen', () => {
+  // |ψ|² 只和 r、θ 有关（e^{imφ} 的模是 1），在 (r, θ) 网格上积分再乘 2π
+  const re = [0, 0], im = [0, 0];
+  for (const p of QW.H_PRESETS) {
+    const cs = QW.hComps(p), nr = 1500, nt = 240, R = 90;
+    let tot = 0;
+    for (let i = 0; i < nr; i++) {
+      const r = (i + 0.5) / nr * R;
+      for (let j = 0; j < nt; j++) {
+        const th = (j + 0.5) / nt * Math.PI;
+        QW.hEval(cs, r * Math.sin(th), 0, r * Math.cos(th), re, im);
+        let a = 0, b = 0;
+        for (let k = 0; k < cs.length; k++) { a += re[k]; b += im[k]; }
+        tot += (a * a + b * b) * r * r * Math.sin(th);
+      }
+    }
+    tot *= (R / nr) * (Math.PI / nt) * 2 * Math.PI;
+    assert.ok(Math.abs(tot - 1) < 2e-3, `${p.id}: ∫|ψ|² = ${tot}`);
+  }
+  // 1s 的径向最可能位置在 a₀；2p_z 在 z 轴上，xy 平面上是零
+  const c1 = QW.hComps({ c: [[1, 0, 0]] }), c2 = QW.hComps({ c: [[2, 1, 0]] });
+  const P = (r) => { QW.hEval(c1, 0, 0, r, re, im); return r * r * re[0] * re[0]; };
+  assert.ok(P(1) > P(0.95) && P(1) > P(1.05));
+  QW.hEval(c2, 3, 1, 0, re, im); assert.ok(Math.abs(re[0]) < 1e-12);
+  // 13.598 eV（约化质量）：1s→2p 是莱曼 α，121.57 nm
+  assert.ok(Math.abs(QW.levelEV(1) + 13.598) < 1e-9);
+  const ly = QW.lyman();
+  assert.ok(Math.abs(ly.dE - 10.20) < 0.005 && Math.abs(ly.nm - 121.57) < 0.05, JSON.stringify(ly));
+});
+
+test('quantum world · double slit: fringes sit where the path difference is a whole number of wavelengths', () => {
+  const { Ic, I1, I2, z } = QW.slitScreen(2000), { BX, EX, D, LAM } = QW.SLIT, L = EX - BX;
+  const peak = (z0) => { let best = -1, bz = 0; for (let b = 0; b < z.length; b++) if (Math.abs(z[b] - z0) < 1.2 && Ic[b] > best) { best = Ic[b]; bz = z[b]; } return bz; };
+  for (const m of [0, 1, -1]) { // Δr = mλ 解出屏上的 z
+    let lo = m >= 0 ? 0 : -18, hi = m >= 0 ? 18 : 0;
+    const f = (zz) => Math.hypot(L, zz + D / 2) - Math.hypot(L, zz - D / 2) - m * LAM;
+    for (let k = 0; k < 80; k++) { const mid = (lo + hi) / 2; if (f(lo) * f(mid) <= 0) hi = mid; else lo = mid; }
+    assert.ok(Math.abs(peak(lo) - lo) < 0.15, `order ${m}: peak at ${peak(lo)} vs ${lo}`);
+  }
+  // 干涉只是重新分配：屏够宽时相干与不相干的总概率接近（屏只有 ±18，交叉项剩约 3%），不相干时没有零点
+  const sum = (a) => a.reduce((s, v) => s + v, 0);
+  assert.ok(Math.abs(sum(Ic) / (sum(I1) + sum(I2)) - 1) < 0.05);
+  assert.ok(Math.min(...I1.map((v, i) => v + I2[i])) > 0);
+});
+
+test('quantum world · tunnelling: Crank–Nicolson keeps the norm and matches the packet-averaged transmission', () => {
+  // 解析：E = V 时 T = 1/(1 + E w²/2)；E ≪ V 的厚墙趋于 16E(V−E)/V² · e^{−2κw}
+  assert.ok(Math.abs(QW.transmission(2, 2, 1) - 0.5) < 1e-12);
+  const E = 2, V = 6, w = 3, k = Math.sqrt(2 * (V - E));
+  assert.ok(Math.abs(QW.transmission(E, V, w) / (16 * E * (V - E) / V / V * Math.exp(-2 * k * w)) - 1) < 1e-4);
+  for (const [v0, wd] of [[1.4, 1], [0.6, 1], [1.4, 0.5], [3, 0.3], [1, 1], [2, 2]]) {
+    const sim = QW.tunnel();
+    sim.build(v0, wd);
+    assert.ok(Math.abs(sim.w - wd) < 1e-12 && Math.abs(sim.right - sim.left - wd) < 1e-9, `the barrier is ${wd} wide`);
+    sim.launch();
+    const steps = Math.round(sim.P.TM / sim.P.DT);
+    for (let i = 0; i < steps; i++) sim.step();
+    assert.ok(Math.abs(sim.norm() - 1) < 1e-9, `norm ${sim.norm()}`);
+    const got = sim.pRight(), want = QW.packetTransmission(v0 * sim.E0, wd);
+    assert.ok(Math.abs(got - want) < 0.015, `V₀/E ${v0}, w ${wd}: ${got} vs ${want}`);
+  }
+  // 塌缩动画以后仍然归一化
+  const sim = QW.tunnel(); for (let i = 0; i < 750; i++) sim.step();
+  for (let i = 0; i < 24; i++) sim.squeeze(true);
+  assert.ok(Math.abs(sim.norm() - 1) < 1e-9 && sim.pRight() > 0.9);
+});
+
+test('quantum world · entanglement: singlet statistics give E = −cos θ and |S| = 2√2; the straight line reaches only 2', () => {
+  assert.ok(Math.abs(QW.chshS() + 2 * Math.SQRT2) < 1e-12);
+  const lin = QW.CHSH.sign.reduce((s, g, i) => s + g * QW.linearModel(QW.CHSH.A[i >> 1] - QW.CHSH.B[i & 1]), 0);
+  assert.ok(Math.abs(Math.abs(lin) - 2) < 1e-12);
+  // mulberry32：上面的 seeded 在双精度里乘法溢出 2⁵³，前后两个数相关，抛硬币会偏
+  let st = 7; const rnd = () => { st = (st + 0x6D2B79F5) | 0; let t = Math.imul(st ^ (st >>> 15), 1 | st); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  for (const th of [0, Math.PI / 3, Math.PI / 2, 2 * Math.PI / 3, Math.PI]) {
+    let s = 0, a1 = 0; const n = 40000;
+    for (let i = 0; i < n; i++) { const [A, B] = QW.singlet(0, th, rnd); s += A * B; a1 += A; }
+    assert.ok(Math.abs(s / n - QW.correlation(th)) < 0.02, `θ = ${th}: ${s / n}`);
+    assert.ok(Math.abs(a1 / n) < 0.02, 'each side alone is a fair coin');
+  }
+});
