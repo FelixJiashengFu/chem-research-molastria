@@ -1,0 +1,191 @@
+/* Home hero (2026-11-11): the first screen of the home page, and how the eye is led through it.
+   The line of sight: headline -> search bar (a light circles its rim) -> a gold thread from the bar to the hub of the
+   map -> six kinds of resources on a slowly turning ring -> the figures below. The map is not an illustration: the hub
+   shows how many resources the current search finds and each chip how many of its type (app.js sends the numbers
+   with the molastria:results event), and a chip filters the catalogue to its type.
+   home-hero.js draws the thread, the orbits and the edges into .hero-web and moves the chips; without it the chips
+   stand still at the same starting places (the cos()/sin() below), so nothing is hidden behind the script.
+   Everything that moves is transform, opacity or SVG paint: no layout shift. Reduced motion: all of it stands still. */
+@property --hs-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+
+@media(min-width:1700px){main{max-width:1520px}}
+@media(min-width:2100px){main{max-width:1680px}}
+
+.intro{position:relative;isolation:isolate;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:clamp(28px,5vw,84px);padding:clamp(30px,4.6vw,72px) 0 clamp(28px,3.4vw,52px)}
+/* A soft light under the hero that leans toward the pointer (--hx / --hy, set by home-hero.js). */
+.intro::before{content:"";position:absolute;z-index:-1;inset:-36px 0;pointer-events:none;background:radial-gradient(560px circle at var(--hx,74%) var(--hy,44%),color-mix(in srgb,var(--accent-2) var(--hero-glow,9%),transparent),transparent 72%);-webkit-mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent);mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent)}
+.hero-web{position:absolute;z-index:0;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;opacity:0;transition:opacity .9s .2s}
+.hero-web.is-live{opacity:1}
+.intro-copy,.field-note{position:relative;z-index:1;min-width:0}
+/* The headline is sized from its own column (cqw), not from the window: one line each at every width, also under the
+   site's zoom setting, where vw counts the unzoomed window. */
+.intro-copy{container-type:inline-size}
+
+/* ── left: words and the search bar ── */
+.intro .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--accent-text);letter-spacing:.2em}
+.intro .eyebrow::before{content:"";flex:none;width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.intro h1{font-size:clamp(33px,4.25vw,66px);font-size:clamp(26px,9.6cqw,66px);line-height:1.22;letter-spacing:-.022em;font-weight:650;margin:0 0 clamp(16px,1.6vw,24px)}
+html[lang=en] .intro h1{font-size:clamp(30px,3.15vw,54px);font-size:clamp(28px,6.7cqw,54px);letter-spacing:-.028em}
+.intro h1 em{display:block;width:fit-content;max-width:100%;margin-top:.06em;padding-bottom:.08em;color:var(--accent-2)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .intro h1 em{background:linear-gradient(100deg,var(--accent-2) 0%,var(--accent-2) 34%,var(--hero-glint,#f4e3ae) 46%,var(--accent-2) 58%,var(--gold) 100%) 100% 0/250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+}
+:root{--hero-glint:#9a7a2e}
+:root[data-theme=dark]{--hero-glint:#fff3c9;--hero-glow:16%}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--hero-glint:#fff3c9;--hero-glow:16%}}
+.intro-text{font-size:clamp(14px,1.08vw,17px);line-height:1.95;max-width:36em;margin-bottom:clamp(20px,2vw,30px)}
+.intro-actions{gap:12px;align-items:center}
+.intro .button{border-radius:12px}
+
+.intro-search{position:relative;flex-wrap:nowrap;gap:6px;align-items:center;padding:6px;margin:0 0 2px;border:1px solid color-mix(in srgb,var(--line-strong) 80%,transparent);border-radius:18px;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 22px 44px -30px color-mix(in srgb,var(--accent) 80%,transparent);transition:border-color .25s,box-shadow .25s}
+.intro-search:hover{border-color:color-mix(in srgb,var(--accent-2) 60%,transparent)}
+.intro-search:focus-within{border-color:var(--accent-2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-2) 17%,transparent),0 24px 50px -28px color-mix(in srgb,var(--accent) 90%,transparent)}
+/* The light that circles the rim: a conic gradient shown only in the 1.5 px border ring. */
+.intro-search::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;pointer-events:none;background:conic-gradient(from var(--hs-a),transparent 0 64%,color-mix(in srgb,var(--accent-2) 80%,transparent) 80%,var(--gold) 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.8;animation:hs-spin 7s linear infinite}
+.intro-search:focus-within::before{animation-duration:2.6s;opacity:1}
+@keyframes hs-spin{to{--hs-a:360deg}}
+.intro-search .search-label{border:0;background:none;gap:10px;padding:0 4px 0 12px;border-radius:12px}
+.intro-search .search-label:focus-within{outline:0}
+.intro-search .hs-ico{display:grid;place-items:center;color:var(--accent-2);transition:color .2s,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.intro-search:focus-within .hs-ico{color:var(--gold);transform:scale(1.1) rotate(-8deg)}
+.intro-search .search-label input{padding:13px 0;font-size:15px}
+.intro-search .button{min-height:46px;padding:0 18px;gap:12px;border-radius:13px;white-space:nowrap;transition:background .2s,transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
+.intro-search .button:hover{transform:translateY(-1px);box-shadow:0 10px 22px -12px var(--accent)}
+.intro-search .button:active{transform:scale(.97)}
+
+.hero-try{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:2px 0 8px;font-size:12px;color:var(--muted)}
+.hero-try>span{margin-right:3px}
+.hero-try button{min-height:30px;padding:3px 12px;border:1px solid color-mix(in srgb,var(--line-strong) 70%,transparent);border-radius:999px;background:color-mix(in srgb,var(--surface) 60%,transparent);color:var(--ink-2);font-size:12px;transition:border-color .2s,color .2s,transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
+.hero-try button:hover{border-color:var(--accent-2);color:var(--ink);background:var(--surface);transform:translateY(-2px)}
+.intro .snapshot{margin-top:20px}
+.intro .snapshot::before{content:"";display:inline-block;vertical-align:.08em;margin:0 10px 0 3px;width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-2) 18%,transparent)}
+
+/* ── right: the live map ── */
+.field-note{text-align:center}
+/* contain:layout: the chips are moved by transform alone, and Chrome keeps the page's scrollable width from the last
+   layout; after a window resize (or a phone turned upright) the chips' old places would leave the page 30 px too wide. */
+.note-map{position:relative;contain:layout;aspect-ratio:1/.76;max-width:560px;margin:0 auto}
+.nm-hub{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-content:center;justify-items:center;gap:2px;width:clamp(84px,21%,112px);aspect-ratio:1;border-radius:50%;color:var(--accent-ink);background:radial-gradient(circle at 34% 26%,color-mix(in srgb,var(--accent-2) 62%,var(--accent)),var(--accent) 56%,color-mix(in srgb,var(--accent) 72%,#000) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px color-mix(in srgb,var(--accent-2) 55%,transparent),0 0 0 8px color-mix(in srgb,var(--accent-2) 11%,transparent),0 0 46px color-mix(in srgb,var(--accent-2) 34%,transparent),0 20px 44px -16px rgba(0,0,0,.5)}
+.nm-hub::before,.nm-hub::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--accent-2);opacity:0;pointer-events:none}
+.nm-hub::after{animation:nm-breathe 4.2s ease-out infinite}
+.nm-hub.is-pulse::before{border-color:var(--gold);animation:nm-ripple .9s ease-out}
+.nm-hub-k{font-size:11px;font-weight:600;letter-spacing:.34em;padding-left:.34em;opacity:.86;line-height:1.3}
+.nm-hub-n{font:400 clamp(20px,2.1vw,27px)/1.05 var(--font-num);font-variant-numeric:tabular-nums lining-nums;letter-spacing:.01em}
+.nm-hub-n:empty{display:none}
+.nm-hub:has(.nm-hub-n:empty) .nm-hub-k{font-size:15px;opacity:1}
+/* Where the chips stand before (or without) the script: the same ring, tilted by -10deg, at the angle --a. */
+.nm-node{position:absolute;z-index:1;left:calc(50% + 40.4%*cos(var(--a)) + 4.5%*sin(var(--a)));top:calc(50% - 9.4%*cos(var(--a)) + 33.7%*sin(var(--a)));transform:translate(-50%,-50%);margin:0;padding:6px;border:0;background:none;color:var(--ink);font:inherit;line-height:1.3;cursor:pointer;opacity:var(--o,1);-webkit-tap-highlight-color:transparent}
+.note-map.is-live .nm-node{left:50%;top:50%;will-change:transform}
+.nm-node:focus-visible{outline:0}
+.nm-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 13px 6px 11px;border:1px solid color-mix(in srgb,var(--accent-2) 44%,transparent);border-radius:999px;background:color-mix(in srgb,var(--surface) 94%,transparent);font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 0 0 4px color-mix(in srgb,var(--paper) 55%,transparent),0 10px 22px -14px rgba(0,0,0,.5);transition:border-color .2s,box-shadow .2s,background .2s,color .2s,opacity .3s,transform .28s cubic-bezier(.34,1.56,.64,1)}
+.nm-pill::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-2) 20%,transparent);transition:background .2s}
+.nm-pill b{min-width:2.4ch;font:400 14.5px/1 var(--font-num);font-variant-numeric:tabular-nums lining-nums;color:var(--accent-text);text-align:right}
+.nm-pill b:empty{min-width:0}
+.nm-node:hover .nm-pill,.nm-node:focus-visible .nm-pill{border-color:var(--gold);transform:scale(1.09);box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 18%,transparent),0 14px 26px -14px rgba(0,0,0,.55)}
+.nm-node:hover .nm-pill::before,.nm-node:focus-visible .nm-pill::before{background:var(--gold)}
+.nm-node:focus-visible .nm-pill{outline:3px solid var(--gold);outline-offset:3px}
+.nm-node[aria-pressed=true] .nm-pill{background:var(--accent);border-color:var(--accent-2);color:var(--accent-ink)}
+.nm-node[aria-pressed=true] .nm-pill b{color:inherit}
+.nm-node[aria-pressed=true] .nm-pill::before{background:var(--gold)}
+.nm-node.is-empty .nm-pill{opacity:.5}
+.nm-node.is-tick .nm-pill b{animation:nm-tick .45s cubic-bezier(.34,1.56,.64,1)}
+
+.hw-orbit{fill:none;stroke:color-mix(in srgb,var(--accent-2) 30%,transparent);stroke-width:1;stroke-dasharray:1.5 7;stroke-linecap:round}
+.hw-ring{fill:none;stroke:color-mix(in srgb,var(--accent-2) 22%,transparent);stroke-width:1}
+.hw-hex{fill:none;stroke:color-mix(in srgb,var(--gold) 58%,transparent);stroke-width:1.1;stroke-linejoin:round}
+.hw-edge{fill:none;stroke:color-mix(in srgb,var(--accent-2) 55%,transparent);stroke-width:1.1;transition:stroke .2s}
+.hw-edge.is-hot{stroke:var(--gold)}
+.hw-flow{fill:none;stroke:var(--accent-2);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:.1 15;animation:hw-flow 2.6s linear infinite}
+.hw-flow.is-hot{stroke:var(--gold)}
+.hw-el{fill:var(--accent-2)}
+.hw-el-gold{fill:var(--gold)}
+.hw-thread{fill:none;stroke:color-mix(in srgb,var(--gold) 46%,transparent);stroke-width:1.1;stroke-dasharray:3 6;stroke-linecap:round}
+.hw-run{fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-dasharray:.09 .91;stroke-dashoffset:1;animation:hw-run 3.6s cubic-bezier(.45,0,.25,1) infinite}
+.intro:has(.intro-search:focus-within) .hw-thread{stroke:var(--gold)}
+.intro:has(.intro-search:focus-within) .hw-run{animation-duration:1.5s}
+.hw-spark{fill:var(--hero-glint);stroke:var(--gold);stroke-width:1.2;opacity:0}
+
+.note-cap{position:relative;margin-top:2px}
+.note-top{display:inline-flex;align-items:center;gap:9px;color:var(--accent-text);font-size:11px;font-weight:600;letter-spacing:.14em}
+.note-top::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.note-top span{color:var(--faint);font:500 10.5px var(--font-mono);letter-spacing:.08em}
+.field-note h2{margin:8px 0 6px;font-size:clamp(18px,1.55vw,23px);letter-spacing:-.3px}
+.field-note p{max-width:31em;margin:0 auto 14px;text-wrap:balance;font-size:13px;line-height:1.85;color:var(--muted)}
+.field-note .note-cta{display:inline-flex;align-items:center;gap:14px;min-height:44px;padding:5px 5px 5px 20px;border-radius:999px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-size:13px;font-weight:600;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-2) 12%,transparent);transition:background .2s,box-shadow .2s,transform .2s cubic-bezier(.34,1.56,.64,1)}
+.field-note .note-cta:hover{background:var(--accent-hover);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent-2) 20%,transparent);transform:translateY(-1px)}
+.field-note .note-cta span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--accent-ink) 18%,transparent);font-size:14px;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.field-note .note-cta:hover span{transform:rotate(45deg)}
+.field-note .note-cta:hover .ico-ext{transform:none}
+.field-note small{display:block;max-width:34em;margin:10px auto 0;text-wrap:balance;font-size:11px;line-height:1.6;color:var(--faint)}
+
+/* ── the figures: four doors, each number counts up when it comes into view ── */
+.metrics{padding:0}
+.metrics>a{position:relative;display:flex;flex-direction:column;padding:26px 26px 24px;border-right:1px solid var(--line);color:inherit;text-decoration:none}
+.metrics>a:first-child{padding-left:0}
+.metrics>a:last-child{border:0}
+.metrics>a::before{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;background:linear-gradient(90deg,var(--gold),color-mix(in srgb,var(--accent-2) 70%,transparent));transform:scaleX(0);transform-origin:0 50%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.metrics>a:hover::before,.metrics>a:focus-visible::before{transform:scaleX(1)}
+.metrics>a::after{content:"";position:absolute;right:22px;top:30px;width:13px;height:13px;background:var(--metal,var(--gold));-webkit-mask:var(--ico-ext) center/contain no-repeat;mask:var(--ico-ext) center/contain no-repeat;opacity:0;transform:translate(-6px,6px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.metrics>a:hover::after,.metrics>a:focus-visible::after{opacity:1;transform:none}
+.metrics strong{font-size:clamp(30px,2.9vw,46px);line-height:1.2;font-variant-numeric:tabular-nums lining-nums;transition:color .25s}
+.metrics>a:hover strong{color:var(--accent-text)}
+.metrics span{transition:color .25s}
+.metrics>a:hover span{color:var(--ink-2)}
+
+/* ── narrower ── */
+@media(max-width:1050px){
+  .intro{gap:26px}
+  .nm-pill{font-size:12px;padding:5px 11px 5px 9px;gap:6px}.nm-pill b{font-size:13px}
+}
+@media(max-width:720px){
+  .intro{grid-template-columns:minmax(0,1fr);gap:22px;padding:26px 0 30px}
+  .intro::before{background:radial-gradient(360px circle at 50% 78%,color-mix(in srgb,var(--accent-2) var(--hero-glow,9%),transparent),transparent 72%)}
+  .intro .eyebrow{gap:9px;margin-bottom:12px;letter-spacing:.12em}.intro .eyebrow::before{width:22px}
+  .intro-text{font-size:13.5px}
+  .intro-search{border-radius:16px}.intro-search .search-label{padding-left:10px}.intro-search .button{flex:none;border-radius:11px}
+  .hero-try{flex-wrap:nowrap;overflow-x:auto;margin-right:-18px;padding:2px 18px 4px 0;scrollbar-width:none}.hero-try::-webkit-scrollbar{display:none}
+  .hero-try>span,.hero-try button{flex:none}.hero-try button{min-height:32px}
+  .intro .snapshot{margin-top:14px}
+  .note-map{aspect-ratio:1/.8}
+  .nm-hub{width:84px}.nm-hub-n{font-size:21px}
+  .nm-node{padding:5px 2px}
+  .metrics>a{padding:18px 16px}.metrics>a:nth-child(odd){padding-left:0}.metrics>a:nth-child(2){border:0}.metrics>a:nth-child(-n+2){border-bottom:1px solid var(--line)}.metrics>a::after{display:none}
+  .metrics{gap:0;padding:0}
+}
+/* Small phones: the button keeps only its arrow, so the words typed stay readable. */
+@media(max-width:480px){
+  .intro-search .button{width:46px;padding:0;gap:0;font-size:0}.intro-search .button .ico-ext{font-size:17px}
+}
+
+/* ── motion ── */
+@keyframes hero-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes hero-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes hero-hub{from{opacity:0;transform:translate(-50%,-50%) scale(.5)}to{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes hero-glint{from{background-position:100% 0}to{background-position:0 0}}
+@keyframes nm-ripple{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.1)}}
+@keyframes nm-breathe{0%{opacity:.5;transform:scale(1)}60%,100%{opacity:0;transform:scale(1.75)}}
+@keyframes nm-tick{from{transform:translateY(-5px) scale(1.25);opacity:.3}to{transform:none;opacity:1}}
+@keyframes hw-flow{to{stroke-dashoffset:-15.1}}
+@keyframes hw-run{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes hero-scroll{from{opacity:.25;transform:translateY(36px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:no-preference){
+  /* Reading order: eyebrow, headline, text, search and buttons, snapshot; then the hub, the chips one by one, the
+     caption and the figures. With the entrance sheet (entrance.css) the same order starts when the sheet closes. */
+  html:not([data-entrance]) .intro-copy>*,html:not([data-entrance]) .note-cap,html:not([data-entrance]) .metrics{animation:hero-rise .8s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(40ms + var(--hi,0)*80ms)}
+  .intro-copy>:nth-child(2){--hi:1}.intro-copy>:nth-child(3){--hi:2}.intro-copy>:nth-child(4){--hi:3}.intro-copy>:nth-child(5){--hi:4}.note-cap{--hi:7}.metrics{--hi:8}
+  .nm-hub{animation:hero-hub .8s cubic-bezier(.2,.9,.3,1.15) backwards;animation-delay:calc(var(--ent-out,0ms) + 260ms)}
+  .nm-pill{animation:hero-pop .6s cubic-bezier(.2,.9,.3,1.2) backwards;animation-delay:calc(var(--ent-out,0ms) + 420ms + var(--i,0)*75ms)}
+  html[data-entrance] .hero-web{transition-delay:calc(var(--ent-out,0ms) + 500ms)}
+  .intro h1 em{animation:hero-glint 1.7s cubic-bezier(.4,0,.2,1) both;animation-delay:calc(var(--ent-out,0ms) + 620ms)}
+  /* Further down, each block comes up a little as it scrolls into view (where the browser can tie an animation to
+     scrolling; elsewhere the page is simply still). Fill mode "none": above and below that stretch it is untouched. */
+  @supports (animation-timeline:view()){
+    .digest-card,.glass-duo,.catalog>.section-title,.paths,.meta-strip{animation:hero-scroll linear;animation-timeline:view();animation-range:entry 0% entry 55%}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .intro-search::before{animation:none;opacity:.5}
+  .nm-hub::after,.hw-flow,.hw-run{animation:none}.hw-run{display:none}.hw-flow{stroke-dashoffset:-7}
+  .hero-web{transition:none}
+}
+@media print{.hero-web,.intro::before{display:none}}

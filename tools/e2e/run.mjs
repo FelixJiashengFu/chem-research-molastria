@@ -1808,6 +1808,78 @@ check('narrow phones: no sideways scroll at 320–390 px on the main pages; the 
   await v.context().close();
 });
 
+check('home hero: the map shows the numbers of the search, a chip filters the catalogue, the drawing sits on the hub (also zoomed), nothing moves under reduced motion', async () => {
+  const p = await open({ viewport: { width: 1440, height: 900 } });
+  await go(p, '/index.html');
+  const num = (sel) => p.$eval(sel, (e) => +e.textContent.replace(/\D/g, ''));
+  await p.waitForFunction(() => document.getElementById('hero-total').textContent === document.getElementById('stat-total').textContent, null, { timeout: 5000 });
+  const total = await num('#hero-total');
+  assert.ok(total > 2000, 'the hub shows the whole catalogue');
+  await p.waitForFunction(() => /^\d+$/.test(document.querySelector('.nm-node[data-type=database] b').textContent) && +document.querySelector('.nm-node[data-type=database] b').dataset.n === +document.querySelector('.nm-node[data-type=database] b').textContent);
+  const counts = await p.$$eval('.nm-node', (ns) => ns.map((n) => +n.querySelector('b').dataset.n));
+  assert.equal(counts.length, 6); assert.ok(counts.every((n) => n > 0) && counts.reduce((a, b) => a + b) <= total, String(counts));
+  // The drawing: the hexagon is centred on the hub, each edge ends on its chip, the thread starts at the search bar.
+  const geo = () => p.evaluate(() => {
+    const c = (e) => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+    const hub = c(document.querySelector('.nm-hub')), hex = c(document.querySelector('.hw-hex')), bar = document.getElementById('intro-search').getBoundingClientRect();
+    const th = document.querySelector('.hw-thread'), a = th.getPointAtLength(0), m = th.getScreenCTM(), start = [a.x * m.a + m.e, a.y * m.d + m.f];
+    const ends = [...document.querySelectorAll('.nm-node')].map((n, i) => { const e = document.querySelectorAll('.hw-edge')[i], q = e.getPointAtLength(e.getTotalLength()), k = c(n); return Math.hypot(q.x * m.a + m.e - k[0], q.y * m.d + m.f - k[1]); });
+    return { off: Math.hypot(hub[0] - hex[0], hub[1] - hex[1]), start: Math.hypot(start[0] - bar.right, start[1] - (bar.top + bar.height / 2)), ends: Math.max(...ends), wide: document.documentElement.scrollWidth - innerWidth };
+  });
+  await p.hover('#hero-map'); await p.waitForTimeout(1600); // the ring holds still under the pointer
+  let g = await geo();
+  assert.ok(g.off < 2 && g.start < 2 && g.ends < 3 && g.wide <= 0, JSON.stringify(g));
+  const where = () => p.$eval('.nm-node', (n) => n.style.transform.match(/-?[\d.]+/g).slice(0, 2).map(Number));
+  const moved = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  await p.waitForTimeout(600);
+  const held = await where(); await p.waitForTimeout(500);
+  assert.ok(moved(await where(), held) < 0.25, 'held still while the pointer is on the map');
+  await p.mouse.move(200, 300); await p.waitForTimeout(1200);
+  assert.ok(moved(await where(), held) > 1, 'and turns again afterwards');
+  // A search changes the numbers; a chip narrows the catalogue to its type, a second click clears it.
+  await p.fill('#intro-q', 'Multiwfn');
+  await p.waitForFunction((t) => { const n = +document.getElementById('hero-total').dataset.n; return n > 0 && n < t; }, total);
+  assert.equal(await num('#result-count'), +(await p.$eval('#hero-total', (e) => e.dataset.n)));
+  await p.fill('#intro-q', ''); await p.waitForFunction((t) => +document.getElementById('hero-total').dataset.n === t, total);
+  await p.hover('#hero-map'); await p.waitForTimeout(1600);
+  await p.click('.nm-node[data-type=database]');
+  await p.waitForFunction(() => document.getElementById('type').value === 'database' && Math.abs(document.getElementById('catalog').getBoundingClientRect().top) < 200);
+  assert.equal(await p.getAttribute('.nm-node[data-type=database]', 'aria-pressed'), 'true');
+  assert.equal(await num('#result-count'), counts[0]);
+  await p.evaluate(() => scrollTo(0, 0)); await p.hover('#hero-map'); await p.waitForTimeout(1600);
+  await p.click('.nm-node[data-type=database]');
+  await p.waitForFunction(() => document.getElementById('type').value === '');
+  // A quick keyword fills the bar; the figures are doors.
+  await p.evaluate(() => scrollTo(0, 0));
+  await p.click('.hero-try [data-query="PubChem"]');
+  assert.equal(await p.inputValue('#intro-q'), 'PubChem'); assert.equal(await p.inputValue('#search'), 'PubChem');
+  assert.deepEqual(await p.$$eval('.metrics > a', (as) => as.map((a) => a.getAttribute('href'))), ['#catalog', 'atlas/index.html', 'hub/index.html#overview', 'manual/index.html']);
+  await finish(p);
+  // The site's own zoom and text size: the drawing still sits on the chips; the headline keeps to two lines.
+  const z = await open({ viewport: { width: 1440, height: 900 }, init: () => { try { localStorage.setItem('molastria-zoom', '1.25'); localStorage.setItem('molastria-text', '1.15'); } catch {} } });
+  await go(z, '/index.html');
+  await z.hover('#hero-map'); await z.waitForTimeout(1600);
+  g = await z.evaluate(() => { const c = (e) => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }; const a = c(document.querySelector('.nm-hub')), b = c(document.querySelector('.hw-hex')), h = document.querySelector('.intro h1'); return { off: Math.hypot(a[0] - b[0], a[1] - b[1]), lines: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight) / (h.getBoundingClientRect().width / h.offsetWidth)) }; });
+  assert.ok(g.off < 3 && g.lines === 2, JSON.stringify(g));
+  await finish(z);
+  // Phones: one column, no thread, nothing wider than the screen; English too.
+  for (const lang of ['zh', 'en']) {
+    const m = await open({ viewport: { width: 360, height: 760 }, isMobile: true, hasTouch: true });
+    await go(m, '/index.html' + (lang === 'en' ? '?lang=en' : ''));
+    await m.waitForFunction(() => document.getElementById('hero-map').classList.contains('is-live'));
+    const r = await m.evaluate(() => ({ wide: document.documentElement.scrollWidth - innerWidth, thread: getComputedStyle(document.querySelector('.hw-thread')).display, out: [...document.querySelectorAll('.nm-node')].filter((n) => { const b = n.getBoundingClientRect(); return b.left < 0 || b.right > innerWidth; }).length }));
+    assert.deepEqual(r, { wide: 0, thread: 'none', out: 0 }, lang);
+    await finish(m);
+  }
+  // Reduced motion: the chips stand where the stylesheet puts them and stay there; the numbers are simply written.
+  const q = await open({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await go(q, '/index.html');
+  const still = await q.$eval('.nm-node', (n) => n.style.transform); await q.waitForTimeout(500);
+  assert.equal(await q.$eval('.nm-node', (n) => n.style.transform), still);
+  assert.equal(await q.$eval('.hw-run', (e) => getComputedStyle(e).display), 'none');
+  assert.equal(await q.textContent('#hero-total'), await q.textContent('#stat-total'));
+  await finish(q);
+});
 check('first screen: the home search box is at the top, typing waits for a pause, Enter jumps to the results; touch inputs are 16 px; the header and drawn pages do not jump', async () => {
   const p = await open({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   await go(p, '/index.html');
@@ -3668,7 +3740,7 @@ check('resource catalogue: 251 entries, the 2026-11-10 additions are searchable 
   await finish(p);
   const e = await open();
   await go(e, '/index.html?lang=en');
-  assert.equal(await text(e, '#stat-atlas'), '251');
+  await e.waitForFunction(() => document.getElementById('stat-atlas').textContent === '251', null, { timeout: 5000 }); // the figure counts up when it comes into view
   await finish(e);
 });
 

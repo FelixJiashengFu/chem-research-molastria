@@ -24,6 +24,26 @@
  "搜索全部资源": [
   "index.html"
  ],
+ "试着搜索": [
+  "index.html"
+ ],
+ "基组": [
+  "index.html",
+  "code/index.html"
+ ],
+ "分子动力学": [
+  "index.html",
+  "api/compute.js",
+  "hub/network.js",
+  "models/models.js",
+  "pro/account-page.js",
+  "tags",
+  "categories"
+ ],
+ "机器学习": [
+  "index.html",
+  "radar/app/app.js"
+ ],
  "阅读说明讲解手册": [
   "index.html"
  ],
@@ -35,9 +55,6 @@
   "index.html"
  ],
  "· 支持解压后离线浏览": [
-  "index.html"
- ],
- "研究笔记": [
   "index.html"
  ],
  "检索": [
@@ -54,9 +71,8 @@
   "radar/app/app.js",
   "tools/build-seo.ts"
  ],
- "方法": [
-  "index.html",
-  "lab/index.html"
+ "教程": [
+  "index.html"
  ],
  "论文": [
   "index.html",
@@ -64,11 +80,22 @@
   "train/index.html",
   "websearch/web-core.js"
  ],
- "工具": [
+ "软件": [
   "index.html",
-  "shared-nav.js"
+  "hub/network.js"
  ],
- "教程": [
+ "问答": [
+  "index.html"
+ ],
+ "预印本": [
+  "index.html",
+  "app.js",
+  "hub/app.js",
+  "hub/network.js",
+  "tools/build-seo.ts",
+  "tags"
+ ],
+ "研究笔记": [
   "index.html"
  ],
  "一处检索，多条研究路径。": [
@@ -80,7 +107,7 @@
  "打开可交互关系图": [
   "index.html"
  ],
- "上图为功能示意；实际关系图根据条目标签与归属生成。": [
+ "图上的数字是目录里各类型的条目数，跟着上面的搜索变化；点一类，只看这一类。": [
   "index.html"
  ],
  "去重后的资源": [
@@ -200,26 +227,6 @@
  ],
  "用 AI 回答当前问题": [
   "index.html"
- ],
- "试着搜索": [
-  "index.html"
- ],
- "基组": [
-  "index.html",
-  "code/index.html"
- ],
- "分子动力学": [
-  "index.html",
-  "api/compute.js",
-  "hub/network.js",
-  "models/models.js",
-  "pro/account-page.js",
-  "tags",
-  "categories"
- ],
- "机器学习": [
-  "index.html",
-  "radar/app/app.js"
  ],
  "正在载入本地目录…": [
   "index.html"
@@ -418,16 +425,16 @@
  "搜索 PubChem、ORCA、晶体、静电势…": [
   "index.html"
  ],
+ "快捷关键词": [
+  "index.html"
+ ],
  "合并内容说明": [
   "index.html"
  ],
- "数据库、文献和方法经统一检索连接的功能示意，并非条目统计关系图": [
+ "按类型看目录": [
   "index.html"
  ],
  "合并统计": [
-  "index.html"
- ],
- "快捷关键词": [
   "index.html"
  ],
  "进一步探索": [
@@ -2823,6 +2830,9 @@
   "lab/index.html"
  ],
  "可靠性先验：OMol25 系列模型的基准": [
+  "lab/index.html"
+ ],
+ "方法": [
   "lab/index.html"
  ],
  "还原电位 MAE（V，N = 192）": [
@@ -8007,6 +8017,9 @@
  "计算化学 MCP 服务器和 Agent 的做法": [
   "shared-nav.js"
  ],
+ "工具": [
+  "shared-nav.js"
+ ],
  "写输入、投稿、接数据、装桌面版": [
   "shared-nav.js"
  ],
@@ -8595,13 +8608,6 @@
   "hub/app.js",
   "hub/network.js",
   "tools/build-seo.ts"
- ],
- "预印本": [
-  "app.js",
-  "hub/app.js",
-  "hub/network.js",
-  "tools/build-seo.ts",
-  "tags"
  ],
  "期刊论文": [
   "app.js",
@@ -10933,9 +10939,6 @@
  ],
  "。请完整解压压缩包，确认 hub/data.js 与本页一起保留。": [
   "hub/app.js"
- ],
- "软件": [
-  "hub/network.js"
  ],
  "程序与方法": [
   "hub/network.js"
