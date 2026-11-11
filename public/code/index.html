@@ -20,7 +20,9 @@
   <script src="../viewer/smiles3d.js" defer></script>
   <script src="code-core.js" defer></script>
   <script src="code-demos.js" defer></script>
+  <script src="cheminf-core.js" defer></script>
   <script src="code.js" defer></script>
+  <script src="cheminf.js" defer></script>
 </head>
 <body data-section="code">
 <main class="cd">
@@ -30,9 +32,10 @@
     <p class="cd-lead">计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。</p>
   </header>
 
-  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的四个工具">
+  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的五个工具">
     <button type="button" role="tab" id="t-input" aria-controls="p-input" aria-selected="true" data-tab="input"><b>写输入</b><small>九个程序 + QCSchema</small></button>
-    <button type="button" role="tab" id="t-output" aria-controls="p-output" aria-selected="false" data-tab="output"><b>读输出</b><small>能量、收敛、虚频</small></button>
+    <button type="button" role="tab" id="t-output" aria-controls="p-output" aria-selected="false" data-tab="output"><b>读输出</b><small>能量、收敛、虚频、结构</small></button>
+    <button type="button" role="tab" id="t-chem" aria-controls="p-chem" aria-selected="false" data-tab="chem"><b>化学信息学</b><small>RDKit 描述符、子结构、相似度</small></button>
     <button type="button" role="tab" id="t-check" aria-controls="p-check" aria-selected="false" data-tab="check"><b>软件体检</b><small>版本、许可证、漏洞</small></button>
     <button type="button" role="tab" id="t-search" aria-controls="p-search" aria-selected="false" data-tab="search"><b>搜代码</b><small>五个代码搜索引擎</small></button>
   </nav>
@@ -110,7 +113,7 @@
     <div class="cd-grid">
       <div class="cd-box">
         <h2 class="cd-h2">程序输出</h2>
-        <p class="cd-p">把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。</p>
+        <p class="cd-p">把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。除了能量和收敛，还读出每一步的结构（xTB、ORCA、Psi4、Gaussian、NWChem、Q-Chem）：可以 3D 查看优化轨迹、下载 XYZ，或者把最后的结构送回“写输入”。</p>
         <textarea id="out-text" rows="12" spellcheck="false" autocomplete="off" placeholder="把 .out / .log 的内容粘贴到这里"></textarea>
         <div class="cd-row">
           <span class="cd-btn cd-filepick"><input id="out-file" type="file" accept=".out,.log,.txt,.dat"><span>选择文件</span></span>
@@ -132,7 +135,56 @@
         </details>
       </div>
     </div>
-    <p class="cd-small">思路借鉴开源的 <a href="https://cclib.github.io/" target="_blank" rel="noopener noreferrer">cclib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。</p>
+    <p class="cd-small">思路借鉴开源的 <a href="https://cclib.github.io/" target="_blank" rel="noopener noreferrer">cclib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；每一步的结构和 SCF 能量对照 cclib 读同一批真实输出的结果核对过。要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。</p>
+  </section>
+
+  <!-- 化学信息学 -->
+  <section class="cd-panel" id="p-chem" role="tabpanel" aria-labelledby="t-chem" hidden>
+    <div class="cd-grid">
+      <div class="cd-box">
+        <h2 class="cd-h2">分子列表</h2>
+        <p class="cd-p">一行一个分子：先写 SMILES，空一格再写名字（可以不写）。最多 200 个，在你的浏览器里用 RDKit 算，不上传。</p>
+        <textarea id="ci-list" rows="8" spellcheck="false" autocomplete="off" translate="no" placeholder="CC(=O)Oc1ccccc1C(=O)O aspirin"></textarea>
+        <div class="cd-smi-row ci-add">
+          <input id="ci-one" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" translate="no" placeholder="画一个或写一个 SMILES" aria-label="加一个分子">
+          <button type="button" class="cd-btn" id="ci-add">加到列表</button>
+        </div>
+        <div class="cd-row">
+          <button type="button" class="cd-btn primary" id="ci-run">计算</button>
+          <button type="button" class="cd-btn" id="ci-sample">填入示例</button>
+          <button type="button" class="cd-btn" id="ci-clear">清空</button>
+        </div>
+        <div class="cd-row">
+          <label class="cd-grow">子结构（SMARTS）<input id="ci-smarts" type="text" spellcheck="false" autocomplete="off" translate="no" placeholder="[CX3](=O)[OX2H1]"></label>
+          <label>常用<select id="ci-smarts-pick"><option value="">选一个</option></select></label>
+        </div>
+        <div class="cd-row">
+          <label class="cd-grow">相似度的参照分子（SMILES）<input id="ci-ref" type="text" spellcheck="false" autocomplete="off" translate="no" placeholder="OC(=O)c1ccccc1O"></label>
+        </div>
+        <p class="cd-status" id="ci-status" role="status" aria-live="polite"></p>
+        <p class="cd-small">描述符、子结构匹配和 Morgan 指纹（半径 2，2048 位）都由 <a href="https://github.com/rdkit/rdkit-js" target="_blank" rel="noopener noreferrer">RDKit.js <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3）在浏览器里算，第一次要从 jsDelivr 下载约 7 MB。cLogP 是 Crippen 的原子贡献法估算，不是实验值。</p>
+      </div>
+      <div class="cd-box">
+        <h2 class="cd-h2">一个分子</h2>
+        <div id="ci-detail" class="cd-result"><p class="cd-empty">算完后点表格里的一行，这里显示它的结构、InChI 和全部描述符。</p></div>
+      </div>
+    </div>
+    <div class="cd-box">
+      <div class="ci-head">
+        <h2 class="cd-h2">描述符表</h2>
+        <div class="ci-tools">
+          <button type="button" class="cd-btn" id="ci-csv" disabled>下载 CSV</button>
+          <button type="button" class="cd-btn" id="ci-py" disabled aria-expanded="false" aria-controls="ci-pywrap">在自己电脑上用 Python 重做</button>
+        </div>
+      </div>
+      <div id="ci-pywrap" hidden>
+        <p class="cd-small">同一张表的 RDKit Python 脚本（<code>pip install rdkit pandas</code>）：适合几千个分子的批量计算或接进自己的流程。</p>
+        <pre class="cd-code" id="ci-pycode" tabindex="0" translate="no"></pre>
+        <button type="button" class="cd-btn" id="ci-pycopy">复制脚本</button>
+      </div>
+      <div class="cd-tablewrap"><table class="ci-table" id="ci-table"><tbody><tr><td class="cd-empty">还没有计算。</td></tr></tbody></table></div>
+      <p class="cd-small">Lipinski 五规则：分子量 ≤ 500、cLogP ≤ 5、氢键供体 ≤ 5、受体 ≤ 10，最多违反一条算通过（Lipinski 2001）；Veber 规则：可旋转键 ≤ 10 且 TPSA ≤ 140 Å²（Veber 2002）。两条都是口服药的经验规则，不适用于天然产物、抗生素和许多新药类型。</p>
+    </div>
   </section>
 
   <!-- 软件体检 -->
@@ -182,7 +234,7 @@
   </section>
 
   <footer class="cd-credits">
-    <p>输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是 <a href="https://github.com/cheminfo/openchemlib-js" target="_blank" rel="noopener noreferrer">OpenChemLib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进 <a href="../atlas/index.html#resources">数据库目录</a>。</p>
+    <p>输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是 <a href="https://github.com/cheminfo/openchemlib-js" target="_blank" rel="noopener noreferrer">OpenChemLib <i class="ico-ext" aria-hidden="true"></i></a>（BSD-3），化学信息学用 RDKit.js（BSD-3），3D 显示用 3Dmol.js（BSD-3，py3Dmol 背后就是它）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进 <a href="../atlas/index.html#resources">数据库目录</a>。</p>
   </footer>
 </main>
 </body>

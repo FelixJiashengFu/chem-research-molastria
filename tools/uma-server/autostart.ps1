@@ -1,6 +1,6 @@
 # Starts the MolAstria online models when you sign in to Windows, and keeps them running (start.ps1 -KeepAlive).
 # It puts one shortcut in your own Startup folder: no administrator rights, no scheduled task, no Windows service.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-Xtb C:\path\to\xtb.exe]
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Status
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Remove
 # The models start after you sign in, not when the computer is switched on: the GPU and the tunnel's login belong
@@ -12,6 +12,7 @@ param(
   [switch]$Status,
   [string]$Python = $env:MOLASTRIA_UMA_PYTHON,
   [string]$MacePython = $env:MOLASTRIA_MACE_PYTHON,
+  [string]$Xtb = $env:MOLASTRIA_XTB,
   [string]$Tunnel = 'molastria-uma'
 )
 $link = Join-Path ([Environment]::GetFolderPath('Startup')) 'MolAstria online models.lnk'
@@ -25,6 +26,7 @@ if ($Install) {
   }
   $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$start`" -KeepAlive -Python `"$Python`" -Tunnel `"$Tunnel`""
   if ($MacePython) { $arguments += " -MacePython `"$MacePython`"" }
+  if ($Xtb) { $arguments += " -Xtb `"$Xtb`"" }
   $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($link)
   $shortcut.TargetPath = (Get-Command powershell.exe).Source
   $shortcut.Arguments = $arguments

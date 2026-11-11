@@ -371,6 +371,7 @@ const inviteMail = (owner) => [
 // The computer may be off; health then answers { online: false } instead of an error.
 //   fair: the Meta FAIR Chemistry models (UMA, eSEN, AllScAIP) and ANI-2x (MIT), free for everyone, sharing one daily
 //         allowance: anonymous visitors by address, free accounts and Pro supporters by email, each a larger one.
+//   open: xTB (GFN2-xTB, GFN1-xTB, GFN-FF; LGPL-3.0 program run on the owner's CPU), counted exactly like fair.
 //   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
 //        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
@@ -379,14 +380,19 @@ const UMA_MODELS = {
   'allscaip-md-conserving-all-omol': 'fair', 'allscaip-md-direct-all-omol': 'fair',
   'esen-sm-conserving-all-omol': 'fair', 'esen-sm-direct-all-omol': 'fair', 'esen-md-direct-all-omol': 'fair',
   'ani-2x': 'fair',
-  'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl'
+  'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl',
+  'gfn2-xtb': 'open', 'gfn2-xtb-alpb-water': 'open', 'gfn1-xtb': 'open', 'gfn-ff': 'open'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
 const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5 };
 const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
-const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol']);
+const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
+  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
+// xTB takes ions and radicals but its IP / EA are several eV off (tools/uma-server/server.py X_JOBS), so no ipea.
+const UMA_NO_IPEA = new Set(['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 // Which jobs each kind of model does: charge-and-spin molecular models, neutral models, and MACE-MDP's properties.
-const umaJobsOf = (model) => (model === 'mace-mdp' ? ['polar', 'ir'] : UMA_CHARGED.has(model) ? [...UMA_GEOM, 'ipea', 'spin', 'bde', 'pa'] : UMA_GEOM);
+const umaJobsOf = (model) => (model === 'mace-mdp' ? ['polar', 'ir']
+  : UMA_CHARGED.has(model) ? [...UMA_GEOM, ...(UMA_NO_IPEA.has(model) ? [] : ['ipea']), 'spin', 'bde', 'pa'] : UMA_GEOM);
 const SMILES_RE = /^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/;
 const UMA_SMILES_ONLY = new Set(['conf', 'rxn', 'bde', 'pa']);
 // params: the allowed keys per job and how each is checked; anything else is dropped, a bad value is refused.
@@ -613,7 +619,7 @@ const V1_CORS = {
 };
 const V1_CODES = { 400: 'invalid_request', 401: 'unauthorized', 403: 'forbidden', 404: 'not_found', 413: 'too_large', 429: 'too_many_requests', 451: 'region', 503: 'unavailable' };
 const rateHeaders = (u) => ({ 'X-RateLimit-Limit': String(u.limit), 'X-RateLimit-Remaining': String(u.remaining), 'X-RateLimit-Reset': String(u.reset) });
-const v1Models = Object.keys(UMA_MODELS).filter((id) => UMA_MODELS[id] === 'fair');
+const v1Models = Object.keys(UMA_MODELS).filter((id) => UMA_MODELS[id] !== 'asl');
 const v1Costs = Object.fromEntries(Object.entries(UMA_COST).filter(([job]) => v1Models.some((id) => umaJobsOf(id).includes(job))));
 
 const JOBS_SHOWN = 10, JOBS_KEPT_DAYS = 30;

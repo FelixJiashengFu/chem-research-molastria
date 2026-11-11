@@ -1,5 +1,5 @@
-/* 量子化学模型接口：站长电脑上的 15 个机器学习势，经账号服务（/uma/*，在线模型 API v3）排队计算。
-   四个窗口按模型类别分：① 带电荷与自旋的分子模型 ② 中性分子通用模型 ③ 有机分子力场 ④ 分子性质模型。
+/* 量子化学模型接口：站长电脑上的 15 个机器学习势和 xTB 的 4 种方法，经账号服务（/uma/*，在线模型 API v3）排队计算。
+   五个窗口按模型类别分：① 带电荷与自旋的分子模型 ② 中性分子通用模型 ③ 有机分子力场 ④ 分子性质模型 ⑤ 半经验量子化学（xTB）。
    RDKit 与 lab/chem.js 共用。页面只决定能不能提交；次数、许可和每人一个任务由账号服务和站长电脑检查。 */
 (() => {
   'use strict';
@@ -48,6 +48,8 @@
   const fair = (name, about, cite, more = {}) => ({ name, tier: 'fair', elements: null, dft: OMOL_DFT, license: 'FAIR Chemistry License', about, ...more,
     // One literal, not two adjacent slots: i18n.js cannot tell where a model name with spaces ends.
     fine: `${name} 采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；论文里请注明 ${cite}。` });
+  const xtb = (name, about, cite, more = {}) => ({ name, tier: 'open', elements: null, dft: '半经验紧束缚，参数拟合到 DFT 和实验数据', license: 'LGPL-3.0（xtb 程序）', about, ...more,
+    fine: `${name} 由开源程序 xtb（grimme-lab/xtb，LGPL-3.0）计算；论文里请引用 ${cite}。` });
   const UMA_CITE = 'UMA（Meta FAIR Chemistry）', ALLSCAIP = 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）', ESEN = 'eSEN 和 OMol25 数据集（Levine et al., 2025）';
   const MODELS = {
     'uma-s-1p2p1': fair('UMA-S 1.2.1', `Meta FAIR Chemistry 的通用原子模型，${OMOL}，支持电荷和自旋。实测水的垂直电离能偏低（6.4 eV，实验约 12.6 eV），极小分子的 IP / EA 请和 UMA-S 1.2 或 AllScAIP 对照。`, UMA_CITE),
@@ -68,6 +70,11 @@
     'ani-2x': { name: 'ANI-2x', tier: 'fair', elements: ['H', 'C', 'N', 'O', 'F', 'S', 'Cl'], dft: 'ωB97X/6-31G*', license: 'MIT',
       about: 'ANI-2x 神经网络势（ωB97X/6-31G*），只算由 H C N O F S Cl 组成的中性闭壳层分子，速度很快。对所有人免费，和 UMA、OMol25 模型共用每天的次数。',
       fine: 'ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。' },
+    // xTB: grimme-lab/xtb (LGPL-3.0) on the owner's CPU. Its IP / EA are several eV off, so window ⑤ has no ipea.
+    'gfn2-xtb': xtb('GFN2-xTB', 'Grimme 组的半经验紧束缚方法 GFN2-xTB（xtb 程序），几乎覆盖整张周期表，支持电荷和自旋；比机器学习势慢一些，但物理图像清楚，是结构优化、构象搜索和预筛选的常用方法。单点和优化的结果还给出 HOMO–LUMO 能隙、偶极矩和每个原子的部分电荷。', 'Bannwarth, Ehlert, Grimme, J. Chem. Theory Comput. 2019（GFN2-xTB）'),
+    'gfn2-xtb-alpb-water': xtb('GFN2-xTB（ALPB 水）', 'GFN2-xTB 加上 ALPB 隐式溶剂模型（水）：模拟水溶液里的分子，离子和极性分子的结构与能量差会和气相明显不同。', 'Bannwarth et al. 2019（GFN2-xTB）和 Ehlert et al., J. Chem. Theory Comput. 2021（ALPB）'),
+    'gfn1-xtb': xtb('GFN1-xTB', 'GFN2-xTB 的上一代，参数化方式不同，可以作对照；含卤键校正，对部分过渡金属和主族化合物的结构更稳。支持电荷和自旋。', 'Grimme, Bannwarth, Shushkov, J. Chem. Theory Comput. 2017（GFN1-xTB）'),
+    'gfn-ff': xtb('GFN-FF', '和 GFN 系列同源的通用力场：几乎覆盖整张周期表，比 GFN2-xTB 快一到两个数量级，适合大分子和快速预优化；没有电子结构，所以只算中性闭壳层分子，也不给能隙。', 'Spicher, Grimme, Angew. Chem. Int. Ed. 2020（GFN-FF）', { dft: '通用力场，按 GFN 系列的思路参数化' }),
     'mace-mdp': { name: 'MACE-MDP', tier: 'asl', elements: OFF, dft: 'SPICE-α · ωB97M-D3BJ/def2-TZVPP', license: '学术软件许可（ASL）',
       about: '预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测；红外与拉曼光谱用 MACE-OFF23 medium 的振动模式加上 MACE-MDP 的偶极矩和极化率导数。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。',
       fine: 'MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。' }
@@ -78,10 +85,12 @@
       intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。' },
     neutral: { name: '中性分子通用模型', charged: false, models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: GEOM,
       intro: '② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。' },
-    organic: { name: '有机分子力场', charged: false, models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x'], jobs: GEOM,
-      intro: '③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。' },
+    organic: { name: '有机分子力场', charged: false, models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: GEOM,
+      intro: '③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。GFN-FF 是 xTB 一系的通用力场，几乎认识所有元素。' },
     props: { name: '分子性质模型', charged: false, models: ['mace-mdp'], jobs: ['polar', 'ir'],
-      intro: '④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。' }
+      intro: '④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。' },
+    xtb: { name: '半经验量子化学（xTB）', charged: true, models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: [...GEOM, 'spin', 'bde', 'pa'],
+      intro: '⑤ 开源程序 xtb 的半经验方法，不是机器学习势，而是简化的量子化学：可以算离子、自由基和开壳层分子，可以加隐式溶剂（水），单点和优化还给出 HOMO–LUMO 能隙、偶极矩和部分电荷。实测它的电离能和电子亲和能比实验高好几 eV（水约 18 eV，实验 12.6 eV），所以这里不提供 IP / EA，请用窗口 ①。跑在站长电脑的 CPU 上，和 GPU 上的模型互不排队。' }
   };
 
   // ── 计算与参数（范围和默认值同 API v3）──────────────────────────────────
@@ -406,7 +415,7 @@
     status();
   }
   function card(id) {
-    const M = MODELS[id], tierTag = { fair: '免费', asl: '免费 · 学术许可' }[M.tier];
+    const M = MODELS[id], tierTag = { fair: '免费', open: '免费 · 开源', asl: '免费 · 学术许可' }[M.tier];
     return `<article class="md-model"><h3>${esc(M.name)}</h3><p><span class="tag">${tierTag}</span>${M.direct ? '<span class="tag">直接受力型</span>' : ''}<code>${esc(id)}</code></p><p>${esc(M.about)}</p><p class="muted small">训练数据：${esc(M.dft)} · 许可：${esc(M.license)}</p></article>`;
   }
   function status() {
@@ -524,6 +533,19 @@
   }
   const warnImag = (n) => (n > 0 ? `<p class="md-warn">有 ${n} 个虚频（表里是负数）：这个结构不是能量极小点，可能是过渡态或没有优化好，热化学数值不可靠。</p>` : '');
 
+  /** What an xtb single point prints besides the energy (server.py adds it to sp and opt): gap, orbitals, dipole, charges. */
+  function xtbView(x, c) {
+    const items = [];
+    if (Number.isFinite(x.gap_ev)) items.push(`HOMO–LUMO 能隙 <b>${f(x.gap_ev, 3)} eV</b>`);
+    if (Number.isFinite(x.homo_ev)) items.push(`HOMO ${f(x.homo_ev, 3)} eV`);
+    if (Number.isFinite(x.lumo_ev)) items.push(`LUMO ${f(x.lumo_ev, 3)} eV`);
+    if (Number.isFinite(x.dipole_debye)) items.push(`偶极矩 <b>${f(x.dipole_debye, 2)} D</b>`);
+    const q = Array.isArray(x.charges) ? x.charges : [];
+    if (q.length) c(['atom', 'charge_e'], q.map((v, i) => [i, v]));
+    return (items.length ? `<p>${items.join('，')}。</p>` : '')
+      + (q.length ? `<details><summary>每个原子的部分电荷（e）</summary>${table(['原子', '电荷'], q.map((v, i) => `<tr><td>${i}</td>${td(v, 4)}</tr>`))}</details>` : '')
+      + `<p class="muted small">xtb ${esc(x.xtb_version || '')} 在最终结构上的单点结果；能隙和轨道能量是半经验方法的数值，适合比较趋势，不等于实验的光学能隙。</p>`;
+  }
   /** One result: what it shows, plus the CSV and XYZ its buttons hand out. */
   function view(r) {
     const csv = [], c = (head, rows) => csv.push(csvOf(head, rows));
@@ -629,6 +651,7 @@
       }
       default: html = `<p>能量 <b>${e4} eV</b></p>`;
     }
+    if (r.xtb && typeof r.xtb === 'object') html += xtbView(r.xtb, c);
     return { html, csv: csv.join('\n'), xyz: xyzOut };
   }
   /** What the Code Desk needs to write an input from this result: every frame, which one to start on, and each

@@ -71,6 +71,12 @@ jobs:
           python -m pip install pyscf
           npm ci --prefix tools/e2e
           node --test tools/code-test.mjs
+      - name: Code desk cheminformatics (the generated RDKit script runs for real)
+        run: |
+          python -m pip install rdkit pandas
+          node --test tools/cheminf-test.mjs
+      - name: xTB backend of the online models (parsers on saved xtb output)
+        run: python -m pip install numpy && python -X utf8 -m unittest tools/uma-server/test_xtb_backend.py -v
       # Content checks only (chapter counts match the catalogue, example numbers present in both languages);
       # handbook.yml reruns the PySCF calculations behind those numbers when the chapters or the script change.
       - name: Handbook chapters 12–16 (catalogue counts, example numbers, both languages)
