@@ -236,9 +236,13 @@
         return { t, syn: group ? group.filter((x) => x !== t) : [] };
       });
     }
+    // A word the term table knows is matched as a word: "rag" (RAG) must not hit "fragment" or "average".
+    // Other Latin text of three letters or more may still be part of a word ("multiwf" finds Multiwfn).
+    const termWords = new Set((terms?.groups || []).flat());
     function fieldScore(d, t) {
       const latin = !HAN.test(t);
-      const inField = (f) => latin ? latinHit(d.low[f], d.tok[f], t) || (t.length >= 3 && d.low[f].includes(t)) : d.low[f].includes(t);
+      const inside = (f) => t.length >= 3 && (termWords.has(t) && terms.has ? terms.has(d.low[f], t) : d.low[f].includes(t));
+      const inField = (f) => latin ? latinHit(d.low[f], d.tok[f], t) || inside(f) : d.low[f].includes(t);
       return inField('title') ? 6 : inField('tags') ? 4 : inField('body') ? (d.type === 'handbook' ? 1 : 1.5) : 0;
     }
     function textSearch(q) {
