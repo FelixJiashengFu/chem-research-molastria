@@ -63,6 +63,8 @@
     $('more').hidden=list.length<=state.shown;
     $('page-count').textContent=list.length?`已显示 ${format(Math.min(state.shown,list.length))} / ${format(list.length)} 条`:'';
     syncURL();
+    // The home hero's map (home-hero.js) shows these counts by type and follows every search.
+    const by={};for(const i of list)by[i.type]=(by[i.type]||0)+1;window.MOLASTRIA_RESULTS={q:state.q,type:state.type,total:list.length,types:by};dispatchEvent(new CustomEvent('molastria:results',{detail:window.MOLASTRIA_RESULTS}));
   }
   // A database resource is saved in both stores, so the database page's 收藏夹 filter lists it too; removing it clears both.
   function toggleSaved(id) {
