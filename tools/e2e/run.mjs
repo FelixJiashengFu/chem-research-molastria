@@ -52,12 +52,28 @@ async function open({ init, ...options } = {}) {
     const res = await route.fetch();
     await route.fulfill({ response: res, body: (await res.text()).replace(/accountApi: '[^']*'/, `accountApi: '${API}'`) });
   });
+  // 联网搜索 (websearch/web.js) asks these from the browser: answer with small fakes so checks stay offline and free.
+  await ctx.route(/^https:\/\/(api\.openalex\.org|api\.crossref\.org|(en|zh)\.wikipedia\.org\/w\/api\.php|pubchem\.ncbi\.nlm\.nih\.gov\/rest|api\.github\.com\/search)/, (route) => route.fulfill(fakeWeb(route.request().url())));
   if (init) await ctx.addInitScript(init);
   const page = await ctx.newPage();
   page.errors = [];
   page.on('pageerror', (e) => page.errors.push(e.message));
   page.on('dialog', (d) => d.accept());
   return page;
+}
+/** Fake answers for the web search sources; ?fail=… in the page's query is not visible here, so failures are set per test. */
+const webFakes = { openalex429: false, calls: [] };
+function fakeWeb(url) {
+  webFakes.calls.push(url);
+  const json = (body, status = 200) => ({ status, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+  const q = decodeURIComponent((url.match(/(?:search|query|srsearch|gsrsearch|q)=([^&]*)/) || [])[1] || '').replace(/\+/g, ' ');
+  if (url.includes('openalex')) return webFakes.openalex429 ? json({ error: 'Rate limit exceeded' }, 429) : json({ results: [{ id: 'https://openalex.org/W1', doi: 'https://doi.org/10.9999/fake.1', display_name: `A review of ${q}`, publication_year: 2024, cited_by_count: 321, primary_location: { source: { display_name: 'Fake Journal of Chemistry' } } }] });
+  if (url.includes('crossref')) return json({ message: { items: [{ DOI: '10.9999/cross.1', title: [`${q} in practice`], 'container-title': ['Crossref Letters'], issued: { 'date-parts': [[2023]] }, 'is-referenced-by-count': 12 }] } });
+  if (url.includes('zh.wikipedia')) return json({ query: { pages: [{ title: '乙酰水杨酸', index: 1, extract: '乙酰水杨酸，俗称阿司匹林，是一种药物。', langlinks: [{ lang: 'en', title: 'Aspirin' }] }] } });
+  if (url.includes('wikipedia')) return json({ query: { pages: [{ title: q.replace(/^./, (c) => c.toUpperCase()), index: 1, extract: `${q} is a fake article.` }] } });
+  if (url.includes('pubchem')) return /aspirin/i.test(url) ? json({ PropertyTable: { Properties: [{ CID: 2244, Title: 'Aspirin', MolecularFormula: 'C9H8O4', MolecularWeight: '180.16' }] } }) : json({ Fault: { Code: 'PUGREST.NotFound' } }, 404);
+  if (url.includes('github')) return json({ items: [{ full_name: 'pyscf/pyscf', html_url: 'https://github.com/pyscf/pyscf', description: `Python-based ${q}`, stargazers_count: 1500, language: 'Python' }] });
+  return json({}, 404);
 }
 const go = (p, path) => p.goto(SITE + path, { waitUntil: 'networkidle' });
 const text = (p, sel) => p.textContent(sel);
@@ -316,6 +332,55 @@ check('search: Chinese finds English entries, and few results offer a next step'
   await f.waitForSelector('#sq');
   await f.waitForFunction(() => document.getElementById('sq').value === 'lithium electrolyte');
   await finish(radar);
+});
+
+check('web search: best web matches sit above the catalogue, Chinese is bridged, OpenAlex out falls back to Crossref, can be turned off', async () => {
+  webFakes.openalex429 = false; webFakes.calls.length = 0;
+  const p = await open();
+  await go(p, '/index.html');
+  await p.fill('#intro-q', 'pyscf');
+  await p.press('#intro-q', 'Enter');
+  await p.waitForSelector('#web-results .wr-item');
+  const titles = await p.$$eval('#web-results .wr-title', (a) => a.map((x) => x.textContent.trim()));
+  assert.ok(titles.includes('pyscf/pyscf'), 'the GitHub repo');
+  assert.ok(titles.some((t) => /review of pyscf/.test(t)), 'the OpenAlex paper');
+  // The block sits between the result count and the catalogue list.
+  assert.equal(await p.evaluate(() => document.getElementById('web-results').nextElementSibling.id), 'results');
+  const inCat = await p.$('#web-results .wr-in');
+  if (inCat) { await inCat.click(); await p.waitForSelector('#details[open]'); await p.click('#close-details'); }
+  assert.ok(await p.isVisible('#web-results .wr-note'));
+  // 阿司匹林: not in the glossary, so the Chinese wiki gives the English name, then PubChem finds the compound.
+  await p.fill('#search', '阿司匹林');
+  await p.press('#search', 'Enter');
+  await p.waitForFunction(() => [...document.querySelectorAll('#web-results .wr-title')].some((a) => a.textContent.includes('Aspirin')), null, { timeout: 8000 });
+  assert.ok(webFakes.calls.some((u) => /pubchem.*aspirin/i.test(u)), 'PubChem asked with the English name');
+  assert.ok(await p.$$eval('#web-results .wr-title', (a) => a.some((x) => x.textContent.includes('乙酰水杨酸'))), 'the Chinese wiki article');
+  // Typing waits: three quick keys make one search, not three.
+  const before = webFakes.calls.length;
+  await p.fill('#search', '');
+  await p.type('#search', 'orca', { delay: 60 });
+  await p.waitForFunction(() => document.querySelector('#web-results .wr-status').textContent.includes('共'), null, { timeout: 8000 });
+  assert.ok(webFakes.calls.slice(before).filter((u) => u.includes('openalex')).length <= 1, 'one OpenAlex request for one word');
+  // Off: nothing is sent, and the choice is kept.
+  await p.uncheck('#web-results .wr-toggle input');
+  const off = webFakes.calls.length;
+  await p.fill('#search', 'xtb');
+  await p.press('#search', 'Enter');
+  await p.waitForTimeout(1000);
+  assert.equal(webFakes.calls.length, off, 'off: no requests');
+  assert.match(await text(p, '#web-results .wr-status'), /已关闭/);
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-web-search')), 'off');
+  await p.check('#web-results .wr-toggle input');
+  await finish(p);
+  // OpenAlex's free daily budget used up: papers come from Crossref.
+  webFakes.openalex429 = true;
+  const q = await open();
+  await go(q, '/index.html?q=electrolyte');
+  await q.waitForFunction(() => [...document.querySelectorAll('#web-results .wr-src')].some((s) => s.textContent === 'Crossref'), null, { timeout: 8000 });
+  webFakes.openalex429 = false;
+  await q.setViewportSize({ width: 390, height: 800 });
+  assert.ok(await q.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(q);
 });
 
 check('hosted AI: a long conversation sends less history and still counts once', async () => {
