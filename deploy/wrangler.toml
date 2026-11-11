@@ -22,6 +22,17 @@ binding = "DB"
 database_name = "molastria"
 database_id = "2833d0b9-d3d6-45d9-8881-4384a6b41296"
 
+# 讨论室（deploy/chat.js）：一个 Durable Object 类 ChatHub，全站只用一个实例（名字 hub），消息存在它自己的 SQLite 里。
+# 免费套餐只能用 SQLite 存储的类，所以迁移里写 new_sqlite_classes。类建好以后改代码不用再加迁移；
+# 改类名或删类才要在下面追加一段新的 [[migrations]]（tag 往后排，已有的不要改）。
+[[durable_objects.bindings]]
+name = "CHAT"
+class_name = "ChatHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatHub"]
+
 [vars]
 ALLOWED_ORIGINS = "https://molastria.com,https://www.molastria.com,tauri://localhost,http://tauri.localhost,https://tauri.localhost"
 MAIL_FROM = "MolAstria <login@molastria.com>"
@@ -41,6 +52,12 @@ SYNC_PRO_KB = "10240"                              # 云同步：Pro 支持者�
 WEB_DAILY_PRO = "50"                               # 联网网页搜索（Brave Search，只给 Pro）：每人每天的次数；要 secret BRAVE_SEARCH_KEY
 WEB_MONTHLY_ALL = "1500"                           # 全站每 30 天最多搜多少次，给账单封顶（Brave 约每千次 5 美元）
 API_COMPUTE = "1"                                  # 给程序用的计算接口 /v1（用账号页生成的 API key）；改成 "0" 再部署就关掉，网站自己的在线模型不受影响
+CHAT_STATE = "on"                                  # 讨论室：on 正常；readonly 只能看，只有站长能发言（自己的消息仍然可以删）；off 关掉（连接被拒绝，首页卡片不显示）
+CHAT_ROOMS_PER_USER = "3"                          # 讨论室：每个账号最多同时开着几个自己的房间；0 表示不让用户开房间
+CHAT_USER_ROOMS = "100"                            # 讨论室：全站用户房间的总数上限
+CHAT_MAX_SOCKETS = "2000"                          # 讨论室：同时在线的连接数上限，满了新来的连不上（站长不受限）
+CHAT_BLOCK = ""                                    # 讨论室：屏蔽词，逗号分隔，不分大小写，消息、昵称、房间名里出现就拒绝
+CHAT_REPORT_MAIL = "1"                             # 讨论室：有举报没处理时给站长发邮件（每 12 小时最多一封）；改成 "0" 不发
 
 # 密钥不要写在这里，用 npx wrangler secret put <名字> 逐个填入：
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions

@@ -152,6 +152,15 @@ CREATE TABLE IF NOT EXISTS sync_items (
   PRIMARY KEY (email, key)
 );
 
+-- 讨论室（2026-11-11）：账号在讨论室里的代号。uid 是 12 位随机的小写字母和数字，账号第一次登录着连上讨论室时生成，以后不变。
+-- 邮箱只在这张表里和 uid 对上：讨论室的消息、昵称、禁言都存在 Durable Object ChatHub 自己的 SQLite 里（deploy/chat.js），
+-- 那边只认 uid，没有邮箱。删掉这里的一行，那个账号下次连上会拿到新的 uid（旧消息还在，但和这个账号对不上了）。
+CREATE TABLE IF NOT EXISTS chat_users (
+  email TEXT PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  created INTEGER NOT NULL
+);
+
 -- 网状查询没找到的词（2026-11-10）：访客的浏览器第一次记下一个术语表认不出的词时匿名报一次（POST /net/miss）。
 -- 只存词本身：term 是 NFKC + 小写后的写法（主键），shown 是最近一次的原样写法，n 是报过几次（大致是多少个浏览器查过），
 -- hits 是最近一次的全文命中数，first / last 是第一次和最近一次的时间。不存 IP、账号、来源网站。最多 3000 行，满了先删报得少、最久没报的。

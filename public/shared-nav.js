@@ -23,6 +23,7 @@
       ['radar', 'radar/index.html', '预印本雷达', 'Preprint Radar', '28 个预印本来源的新论文', 'New papers from 28 preprint servers', 0, 'arxiv chemrxiv preprint'],
       ['digest', 'digest/index.html', '每周精选', 'Weekly Picks', '每周值得读的计算化学论文和点评', 'Computational chemistry papers worth reading each week, with notes', 1, 'weekly digest newsletter'],
       ['hub', 'hub/index.html', '论文与社区', 'Papers & Community', '论文快照、论坛和社区讨论', 'Paper snapshots, forums and community threads', 0, 'forum community papers'],
+      ['chat', 'chat/index.html', '讨论室', 'Discussion Rooms', '多人实时聊天：七个主题房间，也可以自己开一间', 'Real-time chat: seven topic rooms, or open your own', 1, 'chat room discuss talk live 聊天 讨论 房间 实时 交流 提问'],
     ] },
     { id: 'learn', zh: '学习', en: 'Learn', hint: ['从讲解、视频到 AI 家教和小游戏', 'From explainers and videos to an AI tutor and games'], items: [
       ['manual', 'manual/index.html', '讲解手册', 'Handbook', '25 章中英双语的计算化学讲解', '25 bilingual chapters on computational chemistry', 0, 'handbook guide 手册'],

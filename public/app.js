@@ -107,7 +107,7 @@
   let typing;const runSearch=v=>{clearTimeout(typing);state.q=v.trim();state.shown=24;render();},later=v=>{clearTimeout(typing);typing=setTimeout(()=>runSearch(v),140);};
   $('search').addEventListener('input',()=>later($('search').value));
   // The search box at the top of the page feeds the same list; Enter (or the button) jumps down to the results.
-  const introQ=$('intro-q');if(introQ){introQ.value=state.q;introQ.addEventListener('input',()=>{$('search').value=introQ.value;later(introQ.value);});$('intro-search').addEventListener('submit',e=>{e.preventDefault();$('search').value=introQ.value;runSearch(introQ.value);web?.update(state.q,list0(),{now:true});introQ.blur();$('catalog').scrollIntoView({block:'start'});});}
+  const introQ=$('intro-q');if(introQ){introQ.value=state.q;introQ.addEventListener('input',()=>{$('search').value=introQ.value;later(introQ.value);});$('intro-search').addEventListener('submit',e=>{e.preventDefault();$('search').value=introQ.value;runSearch(introQ.value);web?.update(state.q,list0(),{now:true});introQ.blur();const cat=$('catalog');cat.scrollIntoView({block:'start'});setTimeout(()=>{if(Math.abs(cat.getBoundingClientRect().top)>140)cat.scrollIntoView({block:'start'});},900);});}
   $('next-ai').onclick=()=>window.ChemHub?.loadAI().then(ai=>ai.openDrawer({mode:'free',question:state.q})).catch(e=>alert(e.message));
   $('reset').onclick=reset;$('empty-reset').onclick=reset;$('saved-browse').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
   // The 收藏夹 button opens this page's saved-items view in place (内容范围 = 收藏夹) with every favourite listed.

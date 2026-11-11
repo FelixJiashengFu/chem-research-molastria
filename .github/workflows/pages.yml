@@ -96,6 +96,11 @@ jobs:
         run: node tools/build-api.mjs
       - name: Account service tests
         run: deno run --allow-read tools/account-test.ts
+      # Deno and not Node for the first one: it needs node:sqlite, which the runner's own Node may be too old for (the test would skip itself).
+      - name: Discussion rooms (the room logic on SQLite with stand-in sockets; the page's logic against the server's rules)
+        run: |
+          deno test --allow-read tools/chat-test.mjs
+          node --test tools/chat-core-test.mjs
       - name: Rebuild SEO pages and sitemap
         run: deno run --allow-read --allow-write tools/build-seo.ts
       - name: Teaching-video covers (never fails the build; gone videos show as warnings)
