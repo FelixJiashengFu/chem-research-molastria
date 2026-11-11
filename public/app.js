@@ -96,7 +96,11 @@
   $('type').innerHTML+=[...new Set(items.map(i=>i.type))].map(t=>`<option value="${esc(t)}">${esc(labels[t]||t)}</option>`).join('');
   for(const k of ['collection','source','type','sort']) {if(![...$(k).options].some(o=>o.value===state[k]))state[k]='';$(k).value=state[k];$(k).addEventListener('change',()=>{state[k]=$(k).value;state.shown=24;render();});}
   $('search').value=state.q;
-  $('search').addEventListener('input',()=>{state.q=$('search').value.trim();state.shown=24;render();});
+  // Typing waits 140 ms after the last key before redrawing the list: on a mid-range phone a full redraw takes ~200 ms, and doing it per key made typing lag.
+  let typing;const runSearch=v=>{clearTimeout(typing);state.q=v.trim();state.shown=24;render();},later=v=>{clearTimeout(typing);typing=setTimeout(()=>runSearch(v),140);};
+  $('search').addEventListener('input',()=>later($('search').value));
+  // The search box at the top of the page feeds the same list; Enter (or the button) jumps down to the results.
+  const introQ=$('intro-q');if(introQ){introQ.value=state.q;introQ.addEventListener('input',()=>{$('search').value=introQ.value;later(introQ.value);});$('intro-search').addEventListener('submit',e=>{e.preventDefault();$('search').value=introQ.value;runSearch(introQ.value);introQ.blur();$('catalog').scrollIntoView({block:'start'});});}
   $('next-ai').onclick=()=>window.ChemHub?.loadAI().then(ai=>ai.openDrawer({mode:'free',question:state.q})).catch(e=>alert(e.message));
   $('reset').onclick=reset;$('empty-reset').onclick=reset;$('saved-browse').onclick=reset;$('more').onclick=()=>{state.shown+=24;render();};
   // The 收藏夹 button opens this page's saved-items view in place (内容范围 = 收藏夹) with every favourite listed.

@@ -169,6 +169,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。
 - **顶栏的媒体查询顺序：** `shared-nav.css` 里 `@media(max-width:1440px)` 和 `1300px` 两条写在手机的 `760px` 那条后面，会把手机上的边距和间距改回桌面值（320 / 360 px 横向滚动就是这样来的）。给手机改顶栏，写在文件里这两条之后。
+- **脚本画内容的页面会跳：** 顶栏和正文都是 `defer` 脚本后画的，浏览器会先画一帧空架子。顶栏已经由 `shared-nav.css` 先占位；新页面如果正文主要由脚本画出来，给 `<body>` 加 `class="js-render"`（电脑上等脚本跑完再显示，最多 0.8 秒）。触屏上的输入框被 `shared-nav.css` 强制成 16 px（防 iPhone 放大），窄的输入框要按 16 px 留宽度。
 - **金色文字：** `--gold` 在浅色背景上只有约 3.4:1，小号金色文字用 `--gold-ink`。
 - **只发不读的 fetch：** 页面发出请求后不读响应体的话，Chromium 一直把这个请求挂着，Playwright 的 `networkidle` 永远等不到（网状查询上报没找到的词时遇到过）。就算用不到结果，也要 `.then((r) => r.text())` 读掉。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。

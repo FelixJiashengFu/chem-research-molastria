@@ -294,7 +294,8 @@ check('search: Chinese finds English entries, and few results offer a next step'
   const p = await open();
   await go(p, '/index.html');
   await p.fill('input[type=search]', '电解液');
-  await p.waitForFunction(() => document.querySelectorAll('.result-row').length > 0);
+  // The list redraws 140 ms after the last key, so wait for the new rows rather than any rows.
+  await p.waitForFunction(() => [...document.querySelectorAll('.result-row h3')].some((h) => /electrolyte/i.test(h.textContent)), null, { timeout: 5000 }).catch(() => {});
   assert.ok((await p.$$eval('.result-row h3', (h) => h.map((x) => x.textContent))).some((t) => /electrolyte/i.test(t)), 'an electrolyte paper');
   await p.fill('input[type=search]', 'zzqqxxyy');
   await p.waitForSelector('#empty:not([hidden])');
@@ -1718,6 +1719,35 @@ check('narrow phones: no sideways scroll at 320–390 px on the main pages; the 
   assert.ok(parts.length >= 1, 'the button starts the download');
   v.errors.length = 0; // the 8-byte stand-in is not a playable video
   await v.context().close();
+});
+
+check('first screen: the home search box is at the top, typing waits for a pause, Enter jumps to the results; touch inputs are 16 px; the header and drawn pages do not jump', async () => {
+  const p = await open({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await go(p, '/index.html');
+  const top = await p.evaluate(() => document.getElementById('intro-q').getBoundingClientRect().bottom);
+  assert.ok(top < 844, `the search box is below the first screen (${top})`);
+  await p.click('#intro-q');
+  await p.keyboard.type('Multiwfn');
+  assert.equal(await p.inputValue('#search'), 'Multiwfn', 'the catalogue box follows');
+  await p.waitForFunction(() => /Multiwfn/.test(document.querySelector('.result-row h3')?.textContent || ''));
+  await p.keyboard.press('Enter');
+  await p.waitForFunction(() => Math.abs(document.getElementById('catalog').getBoundingClientRect().top) < 200);
+  assert.match(p.url(), /[?&]q=Multiwfn/);
+  for (const path of ['/index.html', '/atlas/index.html', '/journals/index.html', '/code/index.html']) {
+    await go(p, path);
+    const small = await p.evaluate(() => [...document.querySelectorAll('input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]):not([type=file]),select,textarea')]
+      .filter((e) => e.getBoundingClientRect().width && parseFloat(getComputedStyle(e).fontSize) < 16).map((e) => e.id || e.className));
+    assert.deepEqual(small, [], `${path}: inputs under 16 px make iPhone Safari zoom in`);
+  }
+  await finish(p);
+  const d = await open({ init: () => { window.__cls = 0; new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: 'layout-shift', buffered: true }); } });
+  for (const path of ['/journals/index.html', '/quantum/index.html', '/videos/index.html', '/about/index.html']) {
+    await go(d, path);
+    await d.waitForTimeout(400);
+    const cls = await d.evaluate(() => window.__cls);
+    assert.ok(cls < 0.05, `${path} jumps while loading (CLS ${cls.toFixed(3)})`);
+  }
+  await finish(d);
 });
 
 check('English address: hreflang alternates come from the build; at ?lang=en the summary and stray Chinese full stops turn English', async () => {

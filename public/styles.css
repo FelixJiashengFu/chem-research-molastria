@@ -99,3 +99,11 @@
 .gd-slot.gsw{min-height:0}
 @media (max-width:1050px){.glass-duo{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.glass-duo{padding:20px 16px}.gd-pair{grid-template-columns:minmax(0,1fr)}.gd-slot{min-height:260px}}
+
+/* 首页首屏的搜索框（2026-11-11）：和下面目录里的搜索框是同一个列表，打字时一起更新，回车或按钮跳到结果。以前要往下滑两屏多才看到搜索框。 */
+.intro-search{display:flex;flex-wrap:wrap;gap:10px;flex-basis:100%;margin:0 0 4px}
+.intro-search .search-label{min-width:0}
+.intro-search .button{margin:0;flex:none}
+@media(max-width:720px){.intro-search .button{flex:1}}
+/* 手机上的小字不小于约 11 px（以前有 8–10 px 的说明和标签）。 */
+@media(max-width:720px){.eyebrow{font-size:10px}.kind-name,.row-meta,.row-actions small,.filterbar label,.paths span,footer p,.metrics span,.text-button,.result-heading,.field-note small{font-size:11.5px}footer strong small{font-size:10.5px}}

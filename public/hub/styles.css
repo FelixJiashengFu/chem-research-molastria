@@ -107,3 +107,4 @@ body[data-section="hub"] .card h3,body[data-section="hub"] .card-foot,body[data-
   body[data-section="hub"] .top-actions{width:100%;flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+@media(max-width:760px){#footSources{line-height:2.2}}

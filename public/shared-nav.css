@@ -515,3 +515,14 @@ main{zoom:var(--cr-text-zoom,1)}
 .cr-sync-x{flex:none;width:28px;height:28px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer}
 .cr-sync-x:hover{background:var(--glass-tile,var(--surface-2))}
 @media (max-width:600px){.cr-sync-bar{left:16px;right:16px;width:auto;max-width:none;transform:none}}
+/* 手机和平板上的输入框至少 16 px：iPhone 的 Safari 碰到更小的输入框，一点进去就把整页放大，还不会自己缩回来（2026-11-11，31 页里有 22 页是这样）。只管触屏，电脑上照旧。 */
+@media (pointer:coarse) and (max-width:900px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}
+/* 顶栏由 shared-nav.js 在页面解析完后插到 body 最前面，以前插进来时整页往下跳 64 px（电脑上大多数栏目的布局跳动就是这一下）。
+   插进来之前先用一块同样高的空白占住位置（窄屏是两行，约 99 px）；不用顶栏的页面给 body 加 no-cr-nav。 */
+body:not(.no-cr-nav):not(:has(> .cr-header))::before{content:"";display:block;height:64px}
+@media (max-width:760px){body:not(.no-cr-nav):not(:has(> .cr-header))::before{height:99px}}
+/* 正文由脚本画出来的页面（body 带 js-render，例如量子嘉年华、期刊、视频）：页面的脚本都跑完（DOMContentLoaded，shared-nav.js 加 cr-ready）之前先不显示正文，
+   免得先露出空的标题和页脚、内容一来再整块往下推（电脑上跳动分数 0.13–0.65 → 0）。最多等 0.8 秒，脚本出错也会显示。
+   只在宽屏上这样做：手机多半网慢，数据脚本要一两秒才到，等它会让第一眼看到内容的时间晚 0.5–1.4 秒（慢 4G 实测），不划算。 */
+@media (min-width:761px){body.js-render:not(.cr-ready)>:not(.cr-header){visibility:hidden;animation:cr-reveal 0s .8s forwards}}
+@keyframes cr-reveal{to{visibility:visible}}

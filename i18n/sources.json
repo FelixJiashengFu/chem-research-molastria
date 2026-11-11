@@ -414,6 +414,9 @@
  "本地资源检索需要启用 JavaScript。请使用现代浏览器打开。": [
   "index.html"
  ],
+ "搜索 PubChem、ORCA、晶体、静电势…": [
+  "index.html"
+ ],
  "合并内容说明": [
   "index.html"
  ],
@@ -421,9 +424,6 @@
   "index.html"
  ],
  "合并统计": [
-  "index.html"
- ],
- "搜索 PubChem、ORCA、晶体、静电势…": [
   "index.html"
  ],
  "快捷关键词": [

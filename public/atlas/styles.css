@@ -36,3 +36,6 @@ body[data-section="atlas"] .nav-item,body[data-section="atlas"] .guide-toc butto
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero-art svg{filter:invert(.86) hue-rotate(180deg) saturate(.8)}}
 /* 讲解手册的表格：单词不在字母中间断开（正文的 anywhere 会把窄列压成一个字母一行），放不下时表格自己横向滚动。 */
 .guide-article th,.guide-article td{overflow-wrap:break-word}
+
+/* 手机上的小字不小于约 11 px（2026-11-11：以前有 6–10 px 的标签、页脚和图注）。 */
+@media(max-width:600px){.eyebrow,.muted,.hero-art figcaption>span:last-child,.guide-article .num small{font-size:9.5px}.nav-count,.date-label,.hero-art figcaption,.metrics p,.metrics strong span,.metric-note small,.card-number,.tag,.filter,.filter span,.source-note,.section-heading .text-link,.text-link,.breadcrumb,.reader-toolbar,.reader-toolbar .text-link,.guide-article .kicker,.guide-article .en,.planner-caption,.pill.pale,.status-table-head,.state,.small-note,.agent-flow small,.code-tabs .copy-button,.load-area>span,#results-count,footer,.footer-brand span,.guide-toc button span{font-size:11px}.hero-copy>p,.reading-banner p,.reading-topics>button,.guide-toc button,.guide-article table,.code-panel code,.task-tabs button,.code-tabs button,.page-intro p,.nav-item,.status-table p{font-size:12px}}
