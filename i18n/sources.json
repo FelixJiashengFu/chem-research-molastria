@@ -61,7 +61,8 @@
  "论文": [
   "index.html",
   "meta/index.html",
-  "train/index.html"
+  "train/index.html",
+  "websearch/web-core.js"
  ],
  "工具": [
   "index.html",
@@ -4790,7 +4791,8 @@
  ],
  "Pro 支持者": [
   "pro/index.html",
-  "shared-nav.js"
+  "shared-nav.js",
+  "websearch/web.js"
  ],
  "/ 月": [
   "pro/index.html",
@@ -5586,6 +5588,15 @@
   "pro/privacy.html"
  ],
  "账号服务只保存词、报过的次数、最近一次的命中条数和第一次、最近一次的时间，不保存 IP 地址、账号或来源页面，只有站长能看到汇总；汇总最多保留 3000 个词，补进术语表后会删掉。请求经过 Cloudflare 的网络，和访问网站一样适用 Cloudflare 的日志政策。在网状查询页取消“匿名报给站长”就不再发送；取消“记下术语表认不出的词”则既不记录也不发送。": [
+  "pro/privacy.html"
+ ],
+ "首页的联网搜索": [
+  "pro/privacy.html"
+ ],
+ "首页搜索框里的词，除了在本站目录里查，还会由你的浏览器直接发给 OpenAlex（额度用完时改发 Crossref）、Wikipedia、PubChem 和 GitHub，查它们的公开资料，适用这些服务各自的隐私政策；不经过本站服务器，也不带登录令牌。在搜索结果上方的“网上最匹配”一块取消“联网搜索”就不再发送，这个选择只存在你的浏览器里。": [
+  "pro/privacy.html"
+ ],
+ "Pro 支持者另外会把搜索词连同登录令牌发给本站的账号服务，由它转发给 Brave Search 拿网页结果。账号服务只为每天的次数上限记一个计数（邮箱和当天的次数），不保存搜索词和结果。": [
   "pro/privacy.html"
  ],
  "AI 与 API key": [
@@ -11114,7 +11125,8 @@
   "hub/network.js"
  ],
  "共 {0} 条": [
-  "hub/network.js"
+  "hub/network.js",
+  "websearch/web.js"
  ],
  "缺少合并资源数据，请完整解压压缩包后打开": [
   "hub/network.js"
@@ -15723,6 +15735,69 @@
  "请输入 PyPI 包名（如 pyscf）或 GitHub 仓库网址": [
   "code/code-core.js"
  ],
+ "中文维基": [
+  "websearch/web.js"
+ ],
+ "网上最匹配": [
+  "websearch/web.js"
+ ],
+ "联网搜索": [
+  "websearch/web.js"
+ ],
+ "查询词由你的浏览器直接发给 OpenAlex、Wikipedia、PubChem 和 GitHub，不经过本站服务器，也不计 AI 额度。外部结果按和查询的匹配程度排序，没有经过本站核对。": [
+  "websearch/web.js"
+ ],
+ "你是 Pro 支持者，还会收到整个网页的结果（Brave Search，经本站账号服务转发，每天有次数上限）。": [
+  "websearch/web.js"
+ ],
+ "还会收到整个网页的结果。": [
+  "websearch/web.js"
+ ],
+ "今天的网页搜索次数用完了": [
+  "websearch/web.js"
+ ],
+ "{0} 暂时限流": [
+  "websearch/web.js"
+ ],
+ "{0} 连不上": [
+  "websearch/web.js"
+ ],
+ "正在联网搜索…": [
+  "websearch/web.js"
+ ],
+ "资源库已收录": [
+  "websearch/web.js"
+ ],
+ "网上也没有找到匹配的资源": [
+  "websearch/web.js"
+ ],
+ "再看 {0} 条": [
+  "websearch/web.js"
+ ],
+ "在来源看更多：": [
+  "websearch/web.js"
+ ],
+ "联网搜索已关闭": [
+  "websearch/web.js"
+ ],
+ "百科": [
+  "websearch/web-core.js"
+ ],
+ "化合物": [
+  "websearch/web-core.js"
+ ],
+ "开源代码": [
+  "websearch/web-core.js"
+ ],
+ "网页": [
+  "websearch/web-core.js"
+ ],
+ "被引 {0} 次": [
+  "websearch/web-core.js"
+ ],
+ "中文维基百科": [
+  "websearch/web-core.js"
+ ],
  "消息格式不对": [
   "deploy/account-worker.js"
  ],
@@ -15931,6 +16006,27 @@
   "deploy/account-worker.js"
  ],
  "提交太频繁，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "网页搜索只给 Pro 支持者": [
+  "deploy/account-worker.js"
+ ],
+ "网页搜索还没有开通": [
+  "deploy/account-worker.js"
+ ],
+ "搜索词要在 1 到 200 个字之间": [
+  "deploy/account-worker.js"
+ ],
+ "今天的网页搜索次数用完了，明天再来": [
+  "deploy/account-worker.js"
+ ],
+ "本月全站的网页搜索额度用完了": [
+  "deploy/account-worker.js"
+ ],
+ "网页搜索暂时太忙，请稍后再试": [
+  "deploy/account-worker.js"
+ ],
+ "网页搜索暂时连不上": [
   "deploy/account-worker.js"
  ],
  "内容太大：图片太多或太大，少附几张再试": [

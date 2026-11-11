@@ -13,6 +13,8 @@ const sessions: Record<string, any> = {};
 const mails: { to: string; subject: string; text: string; html?: string; headers?: Record<string, string> }[] = [];
 let mailDown = false, sourcesDown = false, digestModel = "ok", digestPrompt = "";
 let upstreamStatus = 200;
+const braveCalls: string[] = [];
+let braveDown = false;
 let lastUpstream: any = null;
 let stripeCalls = 0;
 const umaCalls: { path: string; key: string | null; access: string | null; body: unknown }[] = [];
@@ -69,6 +71,15 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (url.hostname === "api.datacite.org") {
     if (sourcesDown) return ok({}, 500);
     return ok({ data: [{ attributes: { doi: "10.48550/arxiv.1", titles: [{ title: "An arXiv paper" }], descriptions: [{ descriptionType: "Abstract", description: "arXiv abstract" }], creators: [{ name: "C, D" }], created: "2026-10-30T01:00:00Z", url: "https://arxiv.org/abs/1" } }] });
+  }
+  if (url.hostname === "api.search.brave.com") {
+    braveCalls.push(url.searchParams.get("q") || "");
+    if (req.headers.get("X-Subscription-Token") !== "brave-fake") return ok({ error: "bad key" }, 401);
+    if (braveDown) return ok({ error: "down" }, 500);
+    return ok({ web: { results: [
+      { title: "PySCF <strong>docs</strong>", url: "https://pyscf.org/", description: "The <strong>PySCF</strong> manual &amp;lt;b&amp;gt; <scr<script>ipt>", profile: { name: "pyscf.org" } },
+      { title: "Bad scheme", url: "javascript:alert(1)", description: "x" },
+    ] } });
   }
   if (url.hostname === "api.deepseek.com") {
     const b = await req.json();
@@ -1180,6 +1191,37 @@ await test("growth: first sign-in is recorded, older accounts are back-filled, o
   eq(g.data.last7 >= 1 && g.data.before >= 1, true);
   eq(g.data.recent.every((r: any) => !/@example\.com$/.test(r.who) || /^[a-z]\*+@example\.com$/.test(r.who)), true, "emails are masked");
   eq(Object.keys(g.data).sort(), ["active30", "before", "days", "digest", "keys", "last30", "last7", "paid", "recent", "sync", "total", "vip"]);
+});
+
+await test("web search: Pro only, plain text back, daily and site-wide caps, a failed search is not counted", async () => {
+  eq((await call("POST", "/web/search", { q: "pyscf" })).status, 401, "signed out");
+  sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'start%'").run(); // earlier checks used up this address's sign-ins
+  const free = (await signIn("websearch-free@example.com")).data.token;
+  const no = await call("POST", "/web/search", { q: "pyscf" }, free);
+  eq([no.status, no.data.error?.message], [403, "网页搜索只给 Pro 支持者"]);
+  addCustomer("cus_webpro", "webpro@example.com", { interval: "month" });
+  const proToken = (await signIn("webpro@example.com")).data.token;
+  const off = await call("POST", "/web/search", { q: "pyscf" }, proToken);
+  eq([off.status, off.data.error?.message], [503, "网页搜索还没有开通"], "no key configured");
+  Object.assign(env, { BRAVE_SEARCH_KEY: "brave-fake", WEB_DAILY_PRO: "2", WEB_MONTHLY_ALL: "100" });
+  eq((await call("POST", "/web/search", { q: "" }, proToken)).status, 400);
+  const r = await call("POST", "/web/search", { q: "  pyscf   manual " }, proToken);
+  eq(r.status, 200);
+  eq(braveCalls.at(-1), "pyscf manual");
+  eq(r.data.results, [{ title: "PySCF docs", url: "https://pyscf.org/", snippet: "The PySCF manual &lt;b&gt;", site: "pyscf.org" }]);
+  eq([r.data.used, r.data.limit], [1, 2]);
+  braveDown = true;
+  const down = await call("POST", "/web/search", { q: "x" }, proToken);
+  eq([down.status, down.data.error?.message], [502, "网页搜索暂时连不上"]);
+  braveDown = false;
+  eq((await call("POST", "/web/search", { q: "y" }, proToken)).data.used, 2, "the failed one was given back");
+  const capped = await call("POST", "/web/search", { q: "z" }, proToken);
+  eq([capped.status, capped.data.error?.message], [429, "今天的网页搜索次数用完了，明天再来"]);
+  Object.assign(env, { WEB_DAILY_PRO: "100", WEB_MONTHLY_ALL: "3" });
+  eq((await call("POST", "/web/search", { q: "a" }, proToken)).status, 200);
+  const site = await call("POST", "/web/search", { q: "b" }, proToken);
+  eq([site.status, site.data.error?.message], [503, "本月全站的网页搜索额度用完了"]);
+  delete env.BRAVE_SEARCH_KEY; delete env.WEB_DAILY_PRO; delete env.WEB_MONTHLY_ALL;
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");

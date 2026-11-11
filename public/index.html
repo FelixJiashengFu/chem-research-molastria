@@ -32,9 +32,12 @@
   <link rel="stylesheet" href="theme-auto.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="entrance.css">
+  <link rel="stylesheet" href="websearch/web.css">
   <script src="merged-data.js" defer></script>
   <script src="search-terms.js" defer></script>
   <script src="shared-nav.js" defer></script>
+  <script src="websearch/web-core.js" defer></script>
+  <script src="websearch/web.js" defer></script>
   <script src="app.js" defer></script>
   <script src="pay/config.js" defer></script>
   <script src="digest/digest-card.js" defer></script>
@@ -72,6 +75,7 @@
     <div class="ask-ai"><span aria-hidden="true">✦</span><span><b>想要一段带出处的回答？</b> AI 助手会先在本站目录里检索，再用 DeepSeek 或 Muse 作答，并标出引用的条目。</span><button class="button" type="button" id="ask-ai">用 AI 回答当前问题 <i class="ico-ext ico-right" aria-hidden="true"></i></button></div>
     <div class="quick-topics" aria-label="快捷关键词"><span>试着搜索</span><button data-query="基组">基组</button><button data-query="Multiwfn">Multiwfn</button><button data-query="分子动力学">分子动力学</button><button data-query="机器学习">机器学习</button><button data-query="PubChem">PubChem</button></div>
     <p class="en-only" translate="no">Titles and excerpts appear as each source published them, so many are in Chinese. The AI assistant can answer in English with citations.</p><div class="result-heading"><p id="result-count" role="status" aria-live="polite">正在载入本地目录…</p><span id="saved-count">收藏 0</span></div>
+    <section id="web-results" class="web-results" hidden></section>
     <div id="results" class="results"></div>
     <div id="empty" class="empty" hidden><h3>没有找到匹配内容</h3><p>可以缩短关键词，或清除筛选。</p><button class="button" id="empty-reset">清除筛选</button></div>
     <div id="empty-saved" class="empty fav-empty" hidden><span class="fav-empty-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40"><defs><linearGradient id="fav-gold-empty" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#fff8dc"/><stop offset=".36" stop-color="#f7da84"/><stop offset=".52" stop-color="#d09d36"/><stop offset=".7" stop-color="#f3cf6c"/><stop offset="1" stop-color="#ad7b22"/></linearGradient></defs><path d="M12 3.4l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.7l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="url(#fav-gold-empty)"/></svg></span><h3>还没有收藏</h3><p>点任意资源右侧的 ☆，或在数据库页的资源详情里点「收藏资源 ☆」，收藏的资源会出现在这里，保存在当前浏览器。</p><button class="button" type="button" id="saved-browse">浏览全部资源</button></div>

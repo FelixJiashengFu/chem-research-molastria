@@ -38,6 +38,8 @@ ASL_DAILY = "40"                                   # MACE 系列（学术许可�
 API_DAILY_TOTAL = "2000"                           # 所有 API key 加起来每天最多用多少次，免得脚本把网站访客挤出队列；0 表示不设上限
 SYNC_FREE_KB = "1024"                              # 云同步：免费账号的云端空间（KB）；0 表示只给 Pro 支持者
 SYNC_PRO_KB = "10240"                              # 云同步：Pro 支持者的云端空间（KB）
+WEB_DAILY_PRO = "50"                               # 联网网页搜索（Brave Search，只给 Pro）：每人每天的次数；要 secret BRAVE_SEARCH_KEY
+WEB_MONTHLY_ALL = "1500"                           # 全站每 30 天最多搜多少次，给账单封顶（Brave 约每千次 5 美元）
 API_COMPUTE = "1"                                  # 给程序用的计算接口 /v1（用账号页生成的 API key）；改成 "0" 再部署就关掉，网站自己的在线模型不受影响
 
 # 密钥不要写在这里，用 npx wrangler secret put <名字> 逐个填入：
