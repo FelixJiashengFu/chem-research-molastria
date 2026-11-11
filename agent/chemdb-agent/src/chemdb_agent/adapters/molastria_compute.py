@@ -25,8 +25,9 @@ MODELS = (
     "uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "uma-s-1p1",
     "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol",
     "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "ani-2x",
+    "gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb", "gfn-ff", "openmm-amber14",
 )
-JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa")
+JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa", "pmd")
 POLL_S = 3.0
 NOTE = "算力是站长电脑上的 RTX 2080，尽力而为，可能离线；不要用在有时限的任务上。"
 

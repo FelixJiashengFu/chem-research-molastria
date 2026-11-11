@@ -621,6 +621,11 @@ await test("online models: ANI-2x free like UMA, MACE free and the same for ever
   const pro = adminToken; // permanent Pro (an admin grant); the Stripe Pro account was cancelled by an earlier test
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "ani-2x" }, pro)).status, 202, "Pro runs ANI-2x");
   eq((umaCalls.at(-1)?.body as any).model, "ani-2x");
+  eq((await call("POST", "/uma/jobs", { smiles: "[NH4+]", job: "opt", model: "gfn2-xtb", charge: 1 }, pro)).status, 202, "xTB takes ions, on the same allowance");
+  eq((umaCalls.at(-1)?.body as any).model, "gfn2-xtb");
+  eq((await call("POST", "/uma/jobs", { job: "pmd", model: "openmm-amber14", params: { pdb_id: "1l2y", chains: "A", ps: 10 } }, pro)).status, 202, "protein MD by PDB ID");
+  eq((umaCalls.at(-1)?.body as any).params, { pdb_id: "1L2Y", chains: "A", ps: 10 }, "the ID is upper-cased, nothing else added");
+  eq([(umaCalls.at(-1)?.body as any).smiles, (umaCalls.at(-1)?.body as any).xyz], [undefined, undefined]);
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small" })).status, 400, "MACE needs the academic-use box");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: "yes" })).status, 400, "only a real true counts");
   eq((await call("POST", "/uma/jobs", { smiles: "CCO", job: "opt", model: "mace-off23-small", academic: true })).status, 202);
@@ -694,6 +699,17 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ smiles: "CCO", job: "md", model: "mace-mdp", academic: true }, "MACE-MDP has no MD"],
     [{ smiles: "CCO", job: "ir", model: "uma-s-1p2p1" }, "IR is MACE-MDP's"],
     [{ smiles: "CCO", job: "ipea", model: "uma-s-1p1" }, "neutral model has no IP / EA"],
+    [{ smiles: "CCO", job: "ipea", model: "gfn2-xtb" }, "xTB has no IP / EA"],
+    [{ job: "pmd", model: "openmm-amber14" }, "protein MD needs a PDB ID"],
+    [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y; rm -rf" } }, "a PDB ID is four characters"],
+    [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "0ABC" } }, "a PDB ID starts with 1-9"],
+    [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y", chains: "A B" } }, "chains are letters"],
+    [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y", ps: 500 } }, "at most 100 ps"],
+    [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y", temperature: 600 } }, "250-400 K"],
+    [{ smiles: "CCO", job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y" } }, "protein MD takes no SMILES"],
+    [{ smiles: "CCO", job: "opt", model: "openmm-amber14" }, "OpenMM does protein MD only"],
+    [{ job: "pmd", model: "uma-s-1p2p1", params: { pdb_id: "1L2Y" } }, "only OpenMM does protein MD"],
+    [{ smiles: "CCO", job: "opt", model: "gfn-ff", charge: 1, spin: 2 }, "GFN-FF refuses a cation"],
     [{ smiles: "CCO", job: "opt", model: "esen-md-direct-all-omol", charge: 1, spin: 2 }, "neutral model refuses a cation"],
     [{ smiles: "CCO", job: "opt", model: "mace-off23-large", academic: true, spin: 3 }, "neutral model refuses a triplet"],
     [{ smiles: "CCO", job: "opt", params: { fmax: 0.5 } }, "fmax too large"],
@@ -890,7 +906,8 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x")], [10, 0, true], "the ten models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14")], [15, 0, true, true, true], "the fifteen models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
   eq(models.data.models[0], { id: "uma-s-1p2p1", ready: true, queue: 1, charged: true, jobs: ["opt", "md", "ipea", "bde"] }, "a model's jobs as the computer reports them");
   eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn"] }, "not loaded right now");
   eq([models.data.costs.md, models.data.costs.polar, models.data.costs.ir, models.data.cost_with_thermo], [5, undefined, undefined, 5], "only the jobs these models do");
@@ -899,7 +916,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|PROTEIN)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
   for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
@@ -962,7 +979,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 10, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 15, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

@@ -33,7 +33,7 @@ public/               发布目录，推到 main 就上线
   sync/               云同步：sync-core.js 是纯逻辑（同步哪些存档 KEYS、三方合并、一轮同步 syncOnce；tools/sync-test.mjs 测），sync.js 管什么时候同步、页面开着时提示刷新、状态（molastria-sync、molastria-sync-state、molastria-sync-status）；登录并在账号页打开后由 shared-nav.js 在每页载入；服务端是账号服务的 /sync（表 sync_items）
   chat/               讨论室（多人实时聊天，所有人可看，登录并起昵称后发言，只有文字，消息一直保留）：七个官方话题房间，登录用户也能自己开；chat-core.js 是纯逻辑（把服务端的帧折进状态、未读、消息分组、文字里的链接和代码怎么拆、发言和昵称和房间名的规则、每个报错的中英两句；规则和 deploy/chat.js 是同一套，tools/chat-core-test.mjs 核对两边一致），chat.js 是界面（一条 WebSocket 连账号服务的 /chat/ws，断了自己重连，标签页藏起来三分钟就放开连接；文字自带中英两版，标 translate="no"；别人写的内容只用 textContent，链接只认 http(s)）；#r-<房间> 打开一个房间；本机存 molastria-chat（上次的房间、每间读到哪、屏蔽了谁）和 sessionStorage 的 molastria-chat-draft（没发出去的草稿）。chat-card.{js,css} 是首页的入口：首屏的小入口 #chat-pill 和统计条下面的卡片 #chat-card，文字和七个房间写在 index.html 里，读一次 /chat/summary 填上在线人数和最近三条发言（首页不开 WebSocket）；讨论室关着或账号服务还没有它时两处都收起
   review/             复习卡片：review-core.js 是纯逻辑（术语卡、研习台卡、自己的卡、队列、Anki 导出，tools/review-test.mjs 测），review.js 渲染并从 jsDelivr 载入 ts-fsrs（载不到用简化间隔）；进度存 molastria-review，研习台的 molastria-learn 只读不写
-  code/               开源代码台：code-core.js 是纯逻辑（读 XYZ（可以多帧，选一帧写输入）、电荷与多重度核对、PySCF/Psi4/xTB/CREST/ORCA/Gaussian/NWChem/CP2K/ASE 的输入和 QCSchema、读 xTB/ORCA/Psi4/Gaussian/PySCF/NWChem/CP2K/Q-Chem 的输出、许可证判断、代码搜索链接、PyPI/OSV 返回值整理；tools/code-test.mjs 测，NWChem、CP2K、Q-Chem 的读法对照 tools/code-fixtures/ 里的真实输出，装了 PySCF / nwchem / cp2k.psmp 时真跑生成的输入），code.js 是界面（从 SMILES 生成坐标用 viewer/smiles3d.js；软件体检由浏览器直接问 PyPI、OSV、GitHub、Software Heritage，哪家没回答就只给链接），code-demos.js 是“试一段示例”的四段输出（NWChem、CP2K、Q-Chem 摘自真实输出，ORCA 一段照格式写）；生成的输入里的注释一律英文（<pre> 不翻译）；上次的分子和标签存 molastria-code；模型接口页的“送进代码台写输入”经 molastria-code-import 把结构（每一帧的电荷和多重度）送过来，读一次就删
+  code/               开源代码台：code-core.js 是纯逻辑（读 XYZ（可以多帧，选一帧写输入）、电荷与多重度核对、PySCF/Psi4/xTB/CREST/ORCA/Gaussian/NWChem/CP2K/ASE 的输入和 QCSchema、读 xTB/ORCA/Psi4/Gaussian/PySCF/NWChem/CP2K/Q-Chem 的输出、许可证判断、代码搜索链接、PyPI/OSV 返回值整理；tools/code-test.mjs 测，NWChem、CP2K、Q-Chem 的读法对照 tools/code-fixtures/ 里的真实输出，装了 PySCF / nwchem / cp2k.psmp 时真跑生成的输入），code.js 是界面（从 SMILES 生成坐标用 viewer/smiles3d.js；软件体检由浏览器直接问 PyPI、OSV、GitHub、Software Heritage，哪家没回答就只给链接），code-demos.js 是“试一段示例”的四段输出（NWChem、CP2K、Q-Chem 摘自真实输出，ORCA 一段照格式写）；cheminf-core.js（纯逻辑，tools/cheminf-test.mjs 测）+ cheminf.js 是“化学信息学”标签（RDKit.js 的描述符、Lipinski/Veber、SMARTS、Tanimoto、CSV 和 Python 脚本）；输出解读还按 cclib 的读法给出每一步结构和能量（对照 tools/code-fixtures/cclib-geoms.json），能放 3D 轨迹；生成的输入里的注释一律英文（<pre> 不翻译）；上次的分子和标签存 molastria-code；模型接口页的“送进代码台写输入”经 molastria-code-import 把结构（每一帧的电荷和多重度）送过来，读一次就删
   atlas/              数据库目录与 Agent 工程（#agent）；downloads/ 里的 resources.{json,csv} 与 content.js 同步
   digest/             每周精选：公开页（账号服务 /digest/preview 的本周概览和全部论文带点评），digest-card.js 是首页的卡片
   journals/           期刊发表：journals-data.js（期刊，中英双语，每项带出处）与 journals-guide.js（投稿指导）
@@ -64,7 +64,7 @@ desktop/              Tauri 2 桌面版，打包时内置网站：stage-web.mjs 
 i18n/en.json          英文译文的源文件，可以手改（JSON 缩进 1 个空格）
 tools/                构建、翻译、数据、测试脚本
 tools/e2e/            浏览器端到端测试
-tools/uma-server/     在线模型：站长电脑上的服务 server.py（15 个模型，经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；start.ps1 启动服务和隧道（-KeepAlive 崩溃后重启），autostart.ps1 装成登录后自动启动；secret.local、cache*.json 不进 git
+tools/uma-server/     在线模型：站长电脑上的服务 server.py（20 个模型，四个 xTB 由 xtb_backend.py 调 xtb 程序，蛋白质分子动力学由 openmm_backend.py 调 OpenMM（按 PDB 编号从 RCSB 下载），经 Cloudflare Tunnel 接到账号服务 /uma/*），MACE 在 mace_worker.py（单独的 mace-env）；start.ps1 启动服务和隧道（-KeepAlive 崩溃后重启），autostart.ps1 装成登录后自动启动；secret.local、cache*.json 不进 git
 tools/cloud/          站长的云端 GPU 批量计算：run.mjs（本机，经 gcloud）+ batch_uma.py / batch_mace.py / remote.sh（虚拟机上）；cloud.local.json 不进 git
 agent/chemdb-agent/   chemdb-agent 源码（计算化学 MCP 服务器，Python；十二个工具，其中三个经计算接口 /v1 提交计算；测试与 venv 说明见其 README）。下载包由 python tools/pack-chemdb-agent.py 生成
 maintenance/          Python 爬虫与合并脚本，单元测试是 test_*.py（离线）；每周四由 .github/workflows/refresh-data.yml 自动运行（同一个工作流也跑 tools/train-models.mjs，核对训练页的模型）
@@ -98,6 +98,7 @@ node --test tools/sync-test.mjs                         # 云同步：三方合�
 node --test tools/chat-test.mjs tools/chat-core-test.mjs   # 讨论室：服务端的全部逻辑（Hub 跑在 node:sqlite 和假连接上：权限、限速、举报、站长操作、休眠后重建）；页面的纯逻辑，以及页面和服务端的规则是不是同一套
 node tools/chat-workerd-test.mjs                        # 讨论室在真的 workerd 里跑一遍（wrangler dev --local，不连 Cloudflare；要先 npm ci --prefix deploy，没装就跳过；用 8866 端口）
 node --test tools/code-test.mjs                         # 开源代码台：输入生成、输出解读（八个程序，NWChem/CP2K/Q-Chem 对照 tools/code-fixtures/ 的真实输出）、多帧 XYZ、SMILES 生成坐标（要 npm ci --prefix tools/e2e）、许可证、搜索链接；本机有 PySCF / nwchem / cp2k.psmp（或 CP2K_EXE）时真跑生成的输入对照参考能量（CODE_SKIP_PYTHON=1 跳过）
+node --test tools/cheminf-test.mjs                      # 代码台的化学信息学：列表、Lipinski/Veber、Tanimoto、CSV；本机 python3 有 rdkit 和 pandas 时真跑生成的脚本（CHEMINF_PYTHON 指定解释器）
 node --test tools/open-models-test.mjs tools/programming-test.mjs   # 开放模型馆的内容完整性；编程区的代码用本机有的编译器真跑（PROGRAMMING_SKIP_RUN=1 跳过）
 node --test tools/pyrun-test.mjs                        # 浏览器里的 Python：代码框的纯函数，两段练习用本机 python3 + numpy 跑并对照参考值（PYRUN_SKIP_PYTHON=1 跳过）
 node tools/quantum-algorithms-refs.mjs                  # 量子算法：文献在 OpenAlex / arXiv 核对

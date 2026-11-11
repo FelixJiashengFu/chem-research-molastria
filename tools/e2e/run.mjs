@@ -981,8 +981,10 @@ check('AI Lab demo data: the long note can be closed, the status row still says 
 const MODEL_WINDOWS = {
   charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'] },
   neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
-  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
+  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
+  xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'spin', 'bde', 'pa'] },
+  protein: { models: ['openmm-amber14'], jobs: ['pmd'] },
 };
 /** Opens the models page once the fake computer is online and RDKit has checked the sample SMILES; records each job sent. */
 async function openModels(win = '', { health, ...options } = {}) {
@@ -1021,7 +1023,7 @@ check('models page: each window lists only its own models and jobs, and the butt
     assert.equal(await p.getAttribute(`#m-tabs [data-win=${win}]`, 'aria-selected'), 'true');
     assert.deepEqual(await p.$$eval('#m-model option', (os) => os.map((o) => o.value)), want.models, `${win} models`);
     assert.deepEqual(await p.$$eval('#m-job option', (os) => os.map((o) => o.value)), want.jobs, `${win} jobs`);
-    assert.equal(await p.isVisible('#m-cs'), win === 'charged', `charge and spin only in window 1 (${win})`);
+    assert.equal(await p.isVisible('#m-cs'), win === 'charged' || win === 'xtb', `charge and spin only in windows 1 and 5 (${win})`);
     assert.equal(await p.locator('#m-cards .md-model').count(), want.models.length, `${win} model cards`);
   }
   await p.click('#m-tabs [data-win=charged]');
@@ -1089,6 +1091,53 @@ check('models page: every job runs once and its result is shown', async () => {
   assert.equal(await text(p, '#m-result .md-fwhm'), '50');
   await p.check('#m-result input[value=raman]');
   assert.match(await p.getAttribute('#m-result .md-spec svg', 'aria-label'), /拉曼/);
+  await finish(p);
+});
+
+check('models page: window 5 runs xTB on an ion and shows the gap, dipole and charges', async () => {
+  const p = await openModels('xtb');
+  assert.equal(await p.getAttribute('#m-tabs [data-win=xtb]', 'aria-selected'), 'true');
+  assert.match(await text(p, '#m-cards'), /免费 · 开源/);
+  assert.match(await text(p, '#m-fine'), /grimme-lab\/xtb，LGPL-3\.0/);
+  await p.fill('#m-smiles', '[NH4+]');
+  await p.waitForFunction(() => /H4N/.test(document.getElementById('m-check').textContent));
+  await p.fill('#m-charge', '1');
+  const r = await runJob(p, 'opt');
+  assert.match(r, /HOMO–LUMO 能隙 14\.693 eV/); assert.match(r, /偶极矩 2\.27 D/); assert.match(r, /每个原子的部分电荷/);
+  assert.deepEqual([p.posts.at(-1).model, p.posts.at(-1).charge], ['gfn2-xtb', 1]);
+  await p.selectOption('#m-model', 'gfn2-xtb-alpb-water');
+  assert.match(await text(p, '#m-about'), /ALPB/);
+  await finish(p);
+});
+
+check('models page: window 6 runs protein MD from a PDB ID: curves, fluctuation, 3D trajectory, downloads', async () => {
+  const p = await openModels('protein');
+  assert.equal(await p.isVisible('#m-struct'), false, 'no SMILES or XYZ box');
+  assert.equal(await p.isVisible('#m-cs'), false);
+  assert.match(await text(p, '#m-fine'), /OpenMM 8/);
+  await p.selectOption('#m-job', 'pmd');
+  await p.fill('#m-params input[data-k=pdb_id]', '1l2');
+  assert.match(await text(p, '#m-why'), /PDB 编号是四位/);
+  assert.equal(await runOff(p), true);
+  await p.fill('#m-params input[data-k=pdb_id]', '1l2y');
+  await p.fill('#m-params input[data-k=chains]', 'A B');
+  assert.match(await text(p, '#m-why'), /链只写链的字母/);
+  await p.fill('#m-params input[data-k=chains]', '');
+  await p.fill('#m-params input[data-k=ps]', '50');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 10 次', 'longer than 20 ps costs 10');
+  await p.fill('#m-params input[data-k=ps]', '20');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次');
+  const r = await runJob(p, 'pmd');
+  assert.deepEqual(p.posts.at(-1), { model: 'openmm-amber14', job: 'pmd', params: { pdb_id: '1L2Y', chains: '', ps: 20, temperature: 300 } }, 'a PDB ID, no structure, no charge');
+  assert.match(r, /1L2Y · 所选的链 A · 20 个残基 · 304 个原子/); assert.match(r, /OpenCL/); assert.match(r, /最终 Cα RMSD 1\.\d\d Å/);
+  assert.match(r, /动得最多的残基：A:ASN1 /); assert.match(r, /经典力场的模拟/);
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), 5, 'RMSD, Rg, RMSF, then temperature and energy');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#m-result [data-act=pdb-traj]')]);
+  assert.equal(dl.suggestedFilename(), '1L2Y_openmm-amber14_pmd_trajectory_ca.pdb');
+  assert.equal(readFileSync(await dl.path(), 'utf8').match(/^MODEL /gm).length, 25);
+  await p.click('#m-result [data-act="3d"]');
+  await p.waitForSelector('#m-result .md-3d[data-ready]', { timeout: 30000 });
+  assert.equal(await text(p, '#m-result .m3-fnum'), '第 1 / 25 帧');
   await finish(p);
 });
 
@@ -1201,11 +1250,13 @@ check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and p
 check('English: the models page has no Chinese left in its windows and a result', async () => {
   const p = await openModels('', {});
   await go(p, '/models/index.html?lang=en#charged');
-  await p.waitForFunction(() => /15/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /20/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
   await runJob(p, 'freq');
   const left = new Set();
-  for (const win of ['charged', 'neutral', 'organic', 'props']) {
+  for (const win of ['charged', 'neutral', 'organic', 'props', 'xtb', 'protein']) {
     await p.click(`#m-tabs [data-win=${win}]`);
+    if (win === 'xtb') await runJob(p, 'opt'); // the gap, dipole and charges of an xTB result
+    if (win === 'protein') await runJob(p, 'pmd'); // curves, fluctuation, fixes
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     await p.waitForTimeout(400);
     for (const t of await p.evaluate(() => {
@@ -3922,6 +3973,69 @@ check('code desk: without module workers the SMILES runs in the page, and Stop s
   await p.click('#in-embed');
   await p.waitForFunction(() => !document.getElementById('in-embed').disabled, null, { timeout: 60000 });
   assert.match(await p.inputValue('#in-xyz'), /from SMILES CCN/);
+  await finish(p);
+});
+
+check('code desk: cheminformatics with RDKit (descriptors, Lipinski, SMARTS, similarity, CSV, Python), English', async () => {
+  const p = await open({ acceptDownloads: true });
+  await go(p, '/code/index.html#chem');
+  assert.equal(await p.getAttribute('#t-chem', 'aria-selected'), 'true');
+  await p.waitForFunction(() => /算了 6 个分子/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
+  assert.equal(await p.locator('#ci-table tbody tr[data-i]').count(), 6);
+  const aspirin = await text(p, '#ci-table tbody tr[data-i="0"]');
+  assert.match(aspirin, /阿司匹林[\s\S]*C9H8O4[\s\S]*180\.16[\s\S]*1\.31[\s\S]*63\.6/); // RDKit: MW, Crippen cLogP, TPSA
+  assert.match(await text(p, '#ci-detail'), /BSYNRYMUTXBXSQ-UHFFFAOYSA-N/);
+  // a carboxylic acid SMARTS: aspirin, ibuprofen, salicylic acid
+  await p.selectOption('#ci-smarts-pick', { label: '羧酸' });
+  await p.waitForFunction(() => /3 个含有这个子结构/.test(document.getElementById('ci-status').textContent));
+  // similarity to salicylic acid: itself first, Tanimoto 1
+  await p.fill('#ci-ref', 'OC(=O)c1ccccc1O');
+  await p.waitForFunction(() => /Tanimoto/.test(document.getElementById('ci-status').textContent));
+  assert.match(await text(p, '#ci-table tbody tr[data-i="0"]'), /水杨酸[\s\S]*1\.000/);
+  // a broken line is marked, the rest still computed
+  await p.fill('#ci-list', 'CCO ethanol\nC1CC broken\n');
+  await p.click('#ci-run');
+  await p.waitForFunction(() => /有 1 行读不出 SMILES/.test(document.getElementById('ci-status').textContent));
+  assert.equal(await p.locator('#ci-table tr.ci-bad').count(), 1);
+  const dl = p.waitForEvent('download');
+  await p.click('#ci-csv');
+  const csv = readFileSync(await (await dl).path(), 'utf8');
+  assert.match(csv, /^name,input_smiles,canonical_smiles,formula,inchikey,amw/);
+  assert.match(csv, /ethanol,CCO,CCO,C2H6O,LFQSCWFLJHTTHZ-UHFFFAOYSA-N,46\.069/);
+  await p.click('#ci-py');
+  assert.match(await text(p, '#ci-pycode'), /pip install rdkit[\s\S]*\("CCO", "ethanol"\)[\s\S]*MolFromSmarts\("\[CX3\]\(=O\)\[OX2H1\]"\)[\s\S]*TanimotoSimilarity/);
+  // the row hands its SMILES to the input tab
+  await p.click('#ci-table tbody tr[data-i="0"]');
+  await p.click('#ci-to3d');
+  assert.equal(await p.getAttribute('#t-input', 'aria-selected'), 'true');
+  assert.equal(await p.inputValue('#in-smiles'), 'CCO');
+  await finish(p);
+  const e = await open();
+  await go(e, '/code/index.html?lang=en#chem');
+  await e.waitForFunction(() => /6 molecules/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
+  assert.match(await text(e, '#ci-table tbody tr[data-i="0"]'), /aspirin/);
+  assert.doesNotMatch(await e.evaluate(() => document.getElementById('p-chem').innerText), /[㐀-鿿]/, 'no Chinese left on the cheminformatics tab');
+  await finish(e);
+});
+
+check('code desk: the output reader shows every structure of an optimisation, its energies and the 3D trajectory', async () => {
+  const p = await open({ acceptDownloads: true });
+  await go(p, '/code/index.html#output');
+  await p.fill('#out-text', readFileSync(join(ROOT, 'tools/code-fixtures/orca5-dvb-gopt.out'), 'utf8'));
+  assert.match(await text(p, '#out-result'), /共 4 个结构（每一步一个），最后一个有 20 个原子C10H10/);
+  assert.match(await text(p, '#out-result figcaption'), /共 4 次/);
+  assert.equal(await p.locator('#out-result .cd-steps circle').count(), 4);
+  const dl = p.waitForEvent('download');
+  await p.click('#out-xyz');
+  const xyz = readFileSync(await (await dl).path(), 'utf8');
+  assert.equal(xyz.split('\n').filter((l) => l.trim() === '20').length, 4, 'four frames of 20 atoms');
+  assert.match(xyz, /ORCA 4\/4 E = -382\.05513337 Eh/);
+  await p.click('#out-3d button');
+  await p.waitForSelector('#out-3d[data-ready=true]', { timeout: 60000 });
+  assert.match(await text(p, '#out-3d'), /第 1 \/ 4 帧/);
+  await p.click('#out-to-input');
+  assert.equal(await p.getAttribute('#t-input', 'aria-selected'), 'true');
+  assert.match(await text(p, '#in-status'), /C10H10 · 20 个原子/);
   await finish(p);
 });
 

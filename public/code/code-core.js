@@ -596,13 +596,79 @@
     if (fe) r.errorText = fe[1].trim();
   };
 
-  /** 读一段输出，返回 { program, energy(Eh), energyEV, energyLabel, normal, scfConverged, optConverged, gap(eV), freqs, imaginary, warnings }。 */
+  // ── 结构和每一步的能量（cclib 的 atomcoords、scfenergies 那两项）──
+  // 每个程序：结构块的标题、原子行（元素符号或原子序数 / 核电荷）、每一步 SCF 能量的那一行。
+  // 标题后面最多跳过 6 行表头和横线，然后连续读原子行，遇到第一行不是原子的就停。
+  // Gaussian 每一步先印 Input orientation 再印 Standard orientation，有 Standard 就只用它；Q-Chem 只用 Standard Nuclear Orientation。
+  const NUMS = '(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)\\s+(-?\\d+\\.\\d+)';
+  const GEO = {
+    gaussian: { head: [/^\s*Standard orientation:/gm, /^\s*Input orientation:/gm], atom: new RegExp(`^\\s*\\d+\\s+(\\d+)\\s+-?\\d+\\s+${NUMS}\\s*$`), z: true },
+    orca: { head: [/^CARTESIAN COORDINATES \(ANGSTROEM\)/gm], atom: new RegExp(`^\\s*([A-Z][a-z]?)\\S*\\s+${NUMS}\\s*$`) },
+    psi4: { head: [/Geometry \(in Angstrom\)/g], atom: new RegExp(`^\\s*([A-Z][a-z]?)\\w*\\s+${NUMS}(?:\\s+\\d+\\.\\d+)?\\s*$`) },
+    nwchem: { head: [/Output coordinates in angstroms/g], atom: new RegExp(`^\\s*\\d+\\s+\\S+\\s+(\\d+\\.\\d+)\\s+${NUMS}\\s*$`), z: true },
+    qchem: { head: [/Standard Nuclear Orientation \(Angstroms\)/g], atom: new RegExp(`^\\s*\\d+\\s+([A-Z][a-z]?)\\s+${NUMS}\\s*$`) },
+    xtb: { head: [/^\s*final structure:/gm], atom: new RegExp(`^\\s*([A-Z][a-z]?)\\s+${NUMS}\\s*$`) },
+  };
+  const STEP_E = {
+    gaussian: [/SCF Done:\s+E\(\S+\)\s+=\s+(-?\d+\.\d+)/g],
+    orca: [/FINAL SINGLE POINT ENERGY\s+(-?\d+\.\d+)/g],
+    psi4: [/@\S*?(?:RHF|UHF|ROHF|RKS|UKS) Final Energy:\s+(-?\d+\.\d+)/g],
+    nwchem: [/Total (?:SCF|DFT) energy =\s+(-?\d+\.\d+)/g],
+    qchem: [/Total energy in the final basis set =\s+(-?\d+\.\d+)/g],
+    xtb: [/^\s*\* total energy\s*:\s*(-?\d+\.\d+)\s*Eh/gm, /TOTAL ENERGY\s+(-?\d+\.\d+)\s+Eh/g], // 优化的每一轮；没有优化就是单点
+    pyscf: [/converged SCF energy\s*=\s*(-?\d+\.\d+)/g],
+    cp2k: [/ENERGY\| Total FORCE_EVAL \( \w+ \) energy [[(](?:a\.u\.|hartree)[\])]:?\s+(-?\d+\.\d+)/g],
+  };
+  /** 输出里印出的每一个结构（埃），按出现的顺序：[[{el,x,y,z}]]。读不出原子的块跳过。 */
+  function geometries(t, p) {
+    const g = GEO[p];
+    if (!g) return [];
+    const heads = g.head.map((re) => all(re, t)).find((h) => h.length) || [];
+    const out = [];
+    for (const h of heads) {
+      const lines = t.slice(h.index + h[0].length).split('\n').slice(1, 400);
+      const atoms = [];
+      let skipped = 0;
+      for (const line of lines) {
+        const m = g.atom.exec(line);
+        if (!m) { if (atoms.length || ++skipped > 6) break; continue; }
+        const el = g.z ? SYMBOLS[Math.round(Number(m[1])) - 1] : element(m[1]);
+        if (!el) { atoms.length = 0; break; } // 原子序数 0（Gaussian 的虚原子）之类，整块不要
+        atoms.push({ el, x: Number(m[2]), y: Number(m[3]), z: Number(m[4]) });
+      }
+      // 同一个结构连着印好几遍（Psi4 每步三遍、Gaussian 优化完再印一遍）只留一个
+      const prev = out[out.length - 1];
+      const same = prev && prev.length === atoms.length && prev.every((b, i) => b.el === atoms[i].el && Math.abs(b.x - atoms[i].x) < 1e-6 && Math.abs(b.y - atoms[i].y) < 1e-6 && Math.abs(b.z - atoms[i].z) < 1e-6);
+      if (atoms.length && !same) out.push(atoms);
+    }
+    return out;
+  }
+  /** 每一次 SCF 的能量（Eh），按出现的顺序；优化时就是每一步的能量。 */
+  function stepEnergies(t, p) {
+    for (const re of STEP_E[p] || []) {
+      const v = all(re, t).map((m) => num(m[1]));
+      if (v.length) return v;
+    }
+    return [];
+  }
+  /** 几帧结构 → 多帧 XYZ 文本（注释行写帧号，有对应能量时写能量）。 */
+  function framesToXyz(frames, energies = [], title = 'frame') {
+    return frames.map((atoms, i) => {
+      const e = energies.length === frames.length && Number.isFinite(energies[i]) ? ` E = ${energies[i].toFixed(8)} Eh` : '';
+      return `${atoms.length}\n${title} ${i + 1}/${frames.length}${e}\n${atoms.map((a) => `${a.el.padEnd(2)} ${a.x.toFixed(6).padStart(12)} ${a.y.toFixed(6).padStart(12)} ${a.z.toFixed(6).padStart(12)}`).join('\n')}\n`;
+    }).join('');
+  }
+
+  /** 读一段输出，返回 { program, energy(Eh), energyEV, energyLabel, normal, scfConverged, optConverged, gap(eV), freqs, imaginary,
+      geoms（每个结构）, steps（每一步的 SCF 能量，Eh）, warnings }。 */
   function parseOutput(text, program) {
     const t = String(text || '').replace(/\r/g, '');
     const p = program || detect(t);
-    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, gapNote: '', errorText: '', freqs: [], imaginary: [], warnings: [] };
+    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, gapNote: '', errorText: '', freqs: [], imaginary: [], geoms: [], steps: [], warnings: [] };
     if (!p) { r.warnings.push('认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem）'); return r; }
     PARSE[p](t, r);
+    r.geoms = geometries(t, p);
+    r.steps = stepEnergies(t, p);
     r.energyEV = r.energy === null ? null : r.energy * HARTREE_EV;
     r.imaginary = r.freqs.filter((v) => v < 0);
     if (r.imaginary.length === 1) r.warnings.push(`有 1 个虚频（${r.imaginary[0].toFixed(1)} cm⁻¹）：如果找的是过渡态，这是对的；如果找的是极小点，结构还没到底。`);
@@ -748,7 +814,7 @@
 
   const pure = {
     SYMBOLS, Z, BOHR_ANGSTROM, HARTREE_EV, HARTREE_KCAL, METHODS, BASES, BASIS_NAME, TASKS, TASK_LABEL, PROGRAMS, USES, CHEM_REPOS,
-    element, parseXYZ, splitFrames, formula, checkSpin, generate, detect, parseOutput, energyDiff, licenceFamily, licenceVerdict, searchLinks,
+    element, parseXYZ, splitFrames, formula, checkSpin, generate, detect, parseOutput, geometries, stepEnergies, framesToXyz, energyDiff, licenceFamily, licenceVerdict, searchLinks,
     pypiName, parseTarget, summarizePypi, summarizeOsv,
   };
   if (typeof module === 'object' && module.exports) module.exports = pure;

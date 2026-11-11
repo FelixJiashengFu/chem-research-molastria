@@ -1,0 +1,171 @@
+      -----------------------------------------------------------      
+     |                   =====================                   |     
+     |                           x T B                           |     
+     |                   =====================                   |     
+     |                         S. Grimme                         |     
+      -----------------------------------------------------------      
+
+   * xtb version 6.7.1 (edcfbbe) compiled by 'albert@albert-system' on 2024-07-22
+
+   xtb is free software: you can redistribute it and/or modify it under
+   the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   xtb is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+           -------------------------------------------------
+
+          program call               : /tmp/claude-0/xtb/xtb-dist/bin/xtb w.xyz --opt
+          coordinate file            : w.xyz
+          omp threads                :                     4
+
+           -------------------------------------------------
+          |                 G F N 2 - x T B                 |
+           -------------------------------------------------
+
+         2        2.0000           -0.5570591             -15.1584
+         3        2.0000           -0.5153014             -14.0221
+         4        2.0000           -0.4444882             -12.0951 (HOMO)
+         5                         -0.0221033              -0.6015 (LUMO)
+         6                          0.1262463               3.4353
+      -------------------------------------------------------------
+         ::                     SUMMARY                     ::
+         :::::::::::::::::::::::::::::::::::::::::::::::::::::
+         :: total energy              -5.062038834507 Eh    ::
+         :: gradient norm              0.097653906996 Eh/a0 ::
+         :: HOMO-LUMO gap             11.493680165147 eV    ::
+         ::.................................................::
+         :: SCC energy                -5.080233696084 Eh    ::
+          :.................................................:
+          :   RF solver                   davidson          :
+          :   write xtbopt.log                true          :
+          :   linear?                        false          :
+          :   energy convergence         0.5000000E-05 Eh   :
+Using Lindh-Hessian (1995)
+ Shifting diagonal of input Hessian by   0.000000000000000E+000
+ Lowest  eigenvalues of input Hessian
+    0.000000    0.000000    0.000000    0.000000    0.000000    0.000000
+    0.176335    0.944903    1.171539
+ Highest eigenvalues
+    0.000000    0.000000    0.000000    0.176335    0.944903    1.171539
+ 
+     SCC iter.                  ...        0 min,  0.000 sec
+     gradient                   ...        0 min,  0.000 sec
+ * total energy  :    -5.0620388 Eh     change       -0.3250733E-12 Eh
+   gradient norm :     0.0976537 Eh/α   predicted     0.0000000E+00 (-100.00%)
+   displ. norm   :     0.1069548 α      lambda       -0.1012214E-01
+     SCC iter.                  ...        0 min,  0.000 sec
+     gradient                   ...        0 min,  0.000 sec
+ * total energy  :    -5.0694016 Eh     change       -0.7362717E-02 Eh
+   gradient norm :     0.0406444 Eh/α   predicted    -0.5118968E-02 ( -30.47%)
+   displ. norm   :     0.0730849 α      lambda       -0.2967573E-02
+     SCC iter.                  ...        0 min,  0.000 sec
+     gradient                   ...        0 min,  0.000 sec
+ * total energy  :    -5.0703253 Eh     change       -0.9237788E-03 Eh
+   gradient norm :     0.0201511 Eh/α   predicted    -0.1491713E-02 (  61.48%)
+   displ. norm   :     0.0267200 α      lambda       -0.4888268E-03
+     SCC iter.                  ...        0 min,  0.000 sec
+     gradient                   ...        0 min,  0.000 sec
+ * total energy  :    -5.0705409 Eh     change       -0.2156156E-03 Eh
+   gradient norm :     0.0022874 Eh/α   predicted    -0.2445866E-03 (  13.44%)
+   displ. norm   :     0.0030467 α      lambda       -0.6154746E-05
+     SCC iter.                  ...        0 min,  0.000 sec
+     gradient                   ...        0 min,  0.000 sec
+ * total energy  :    -5.0705444 Eh     change       -0.3430567E-05 Eh
+   gradient norm :     0.0002652 Eh/α   predicted    -0.3076665E-05 ( -10.32%)
+   displ. norm   :     0.0010215 α      lambda       -0.1329126E-06
+   maximum displ.:     0.0008617 α      in ANC's #1, #2, #3, ...
+
+   *** GEOMETRY OPTIMIZATION CONVERGED AFTER 5 ITERATIONS ***
+
+------------------------------------------------------------------------
+ total energy gain   :        -0.0085055 Eh       -5.3373 kcal/mol
+ total RMSD          :         0.0904329 a0        0.0479 Å
+ total power (kW/mol):        -4.4662596 (step)-7084.5059 (real)
+================
+ final structure:
+================
+3
+ xtb: 6.7.1 (edcfbbe)
+O           -0.00000000000000        0.01976385914236        0.14578922628320
+H           -0.00000000000000        0.76111617549688       -0.46304680895520
+H            0.00000000000000       -0.78088003463924       -0.38274241732800
+ 
+ Bond Distances (Angstroems)
+ ---------------------------
+O1-H2=0.9593         O1-H3=0.9594         H2-O1=0.9593         H3-O1=0.9594         
+ O  H  Rav=0.9593 sigma=0.0000  Rmin=0.9593  Rmax=0.9594     2
+ 
+ selected bond angles (degree)
+ --------------------
+H3-O1-H2=107.18                
+ 
+ selected dihedral angles (degree)
+ ---------------------------------
+
+           -------------------------------------------------
+          |                Final Singlepoint                |
+           -------------------------------------------------
+
+          ...................................................
+          :                      SETUP                      :
+          :.................................................:
+          :  # basis functions                   6          :
+          :  # atomic orbitals                   6          :
+          :  # shells                            4          :
+          :  # electrons                         8          :
+          :  max. iterations                   250          :
+          :  Hamiltonian                  GFN2-xTB          :
+          :  restarted?                      false          :
+          :  GBSA solvation                  false          :
+          :  PC potential                    false          :
+          :  electronic temp.          300.0000000     K    :
+          :  accuracy                    1.0000000          :
+          :  -> integral cutoff          0.2500000E+02      :
+          :  -> integral neglect         0.1000000E-07      :
+         2        2.0000           -0.5682605             -15.4632
+         3        2.0000           -0.5109370             -13.9033
+         4        2.0000           -0.4463994             -12.1471 (HOMO)
+         5                          0.0823293               2.2403 (LUMO)
+         6                          0.2510677               6.8319
+      -------------------------------------------------------------
+         ::                     SUMMARY                     ::
+         :::::::::::::::::::::::::::::::::::::::::::::::::::::
+         :: total energy              -5.070544376731 Eh    ::
+         :: gradient norm              0.000265263493 Eh/a0 ::
+         :: HOMO-LUMO gap             14.387438319109 eV    ::
+         ::.................................................::
+         :: SCC energy                -5.104873716388 Eh    ::
+           -------------------------------------------------
+
+    * Orbital Energies and Occupations
+
+         #    Occupation            Energy/Eh            Energy/eV
+         2        2.0000           -0.5682605             -15.4632
+         3        2.0000           -0.5109370             -13.9033
+         4        2.0000           -0.4463994             -12.1471 (HOMO)
+         5                          0.0823293               2.2403 (LUMO)
+         6                          0.2510677               6.8319
+      -------------------------------------------------------------
+
+Topologies differ in total number of bonds
+Writing topology from bond orders to xtbtopo.mol
+
+molecular dipole:
+
+
+optimized geometry written to: xtbopt.xyz
+
+
+           -------------------------------------------------
+          | TOTAL ENERGY               -5.070544376731 Eh   |
+          | GRADIENT NORM               0.000265263493 Eh/α |
+          | HOMO-LUMO GAP              14.387438319109 eV   |
+           -------------------------------------------------
+
+ * ratio c/w:     4.001 speedup
+
+normal termination of xtb
+

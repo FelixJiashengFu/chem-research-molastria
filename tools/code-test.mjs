@@ -3,6 +3,7 @@
 // 真的跑一遍生成的脚本，对照参考能量，再用输出解读读回来（CODE_SKIP_PYTHON=1 跳过）。
 // 输出解读：xTB、ORCA、Psi4、Gaussian 的片段照这些程序真实输出的格式写，PySCF 的是本机实跑的输出；
 // NWChem、CP2K、Q-Chem 用 tools/code-fixtures/ 里的真实输出（来源见那里的 README），本机有 nwchem、cp2k.psmp 时也真跑一遍。
+// 每一步的结构和能量（cclib 的 atomcoords、scfenergies）对照 cclib 1.8.1 读 cclib 回归数据全文的结果（code-fixtures/cclib-geoms.json）。
 // 从 SMILES 生成坐标（public/viewer/smiles3d.js）：用 tools/e2e 装的 openchemlib（npm ci --prefix tools/e2e），没装就跳过。
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -483,6 +484,40 @@ test('输出解读：多个 task / job 只看最后一个，Q-Chem 只有有限�
   r = C.parseOutput(' Welcome to Q-Chem\n # Starting finite difference calculation for IDERIV  #\n Total energy in the final basis set = -7.2328981140\n Total energy in the final basis set = -7.2328624033\n');
   assert.equal(r.energy, null);
   assert.ok(r.warnings.some((w) => /有限差分/.test(w)), r.warnings.join(' / '));
+});
+
+test('输出解读：每一步的结构和 SCF 能量，对照 cclib 读全文的结果（Gaussian、ORCA、Psi4、NWChem、Q-Chem）', () => {
+  const ref = JSON.parse(fixture('cclib-geoms.json'));
+  const progs = { 'gaussian16-dvb-gopt.out': 'gaussian', 'orca5-dvb-gopt.out': 'orca', 'psi4-dvb-gopt.out': 'psi4', 'nwchem7-dvb-gopt.out': 'nwchem', 'qchem-dvb-gopt.out': 'qchem' };
+  for (const [file, prog] of Object.entries(progs)) {
+    const r = C.parseOutput(fixture(file)), want = ref[file];
+    assert.equal(r.program, prog, file);
+    const fin = r.geoms.at(-1);
+    assert.ok(r.geoms.length >= 4, `${file}: an optimisation has several structures (${r.geoms.length})`);
+    assert.deepEqual(fin.map((a) => C.Z[a.el]), want.atomnos, `${file}: elements`);
+    fin.forEach((a, i) => [a.x, a.y, a.z].forEach((v, k) => assert.ok(Math.abs(v - want.final[i][k]) < 2e-6, `${file}: atom ${i}`)));
+    // cclib keeps every SCF of the optimisation; NWChem also prints the DFT energy of the guess, so ours may have more
+    want.scf_hartree.forEach((e) => assert.ok(r.steps.some((x) => Math.abs(x - e) < 2e-6), `${file}: SCF ${e}`));
+    assert.ok(Math.abs(r.steps.at(-1) - r.energy) < 1e-6 || prog === 'nwchem', `${file}: the last step is the final energy`);
+    // the trajectory as multi-frame XYZ reads back
+    const xyz = C.framesToXyz(r.geoms, r.steps, 'dvb');
+    const back = C.parseXYZ(xyz, r.geoms.length - 1);
+    assert.equal(back.frames, r.geoms.length);
+    assert.deepEqual(back.errors, []);
+  }
+});
+
+test('输出解读：xTB 优化（xtb 6.7.1 实跑）的最终结构和每一轮的能量', () => {
+  const r = C.parseOutput(fixture('xtb-water-opt.out'));
+  assert.equal(r.program, 'xtb');
+  assert.equal(r.geoms.length, 1);
+  assert.deepEqual(r.geoms[0].map((a) => a.el), ['O', 'H', 'H']);
+  assert.ok(Math.abs(Math.hypot(r.geoms[0][1].x - r.geoms[0][0].x, r.geoms[0][1].y - r.geoms[0][0].y, r.geoms[0][1].z - r.geoms[0][0].z) - 0.96) < 0.02);
+  assert.deepEqual(r.steps, [-5.0620388, -5.0694016, -5.0703253, -5.0705409, -5.0705444]);
+  assert.equal(r.optConverged, true);
+  // a single point prints no "final structure": no geometry, one energy
+  const sp = C.parseOutput('x T B\n          | TOTAL ENERGY               -5.070375897275 Eh   |\n');
+  assert.deepEqual([sp.geoms, sp.steps], [[], [-5.070375897275]]);
 });
 
 test('读输出的示例：每一段都能读对', () => {

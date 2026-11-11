@@ -5,18 +5,22 @@ Runs on the owner's computer in the UMA environment. Cloudflare Tunnel connects 
 use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, blocks embargoed regions and adds the
 shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
-    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
+    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH] [--xtb PATH]
 
 Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and AllScAIP trained on OMol25) and
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
 MACE-OMOL-0 and MACE-MDP run in mace_worker.py under the MACE environment's Python (--mace-python), because
-mace-torch and fairchem need different e3nn versions. A model whose package or environment is missing is simply
+mace-torch and fairchem need different e3nn versions. GFN2-xTB (also with ALPB water), GFN1-xTB and GFN-FF run the
+xtb program (grimme-lab/xtb, LGPL-3.0) once per energy and gradient on the CPU (xtb_backend.py; --xtb or found on
+PATH / in this Python environment). Protein MD runs OpenMM (Amber ff14SB + GBSA-OBC2 implicit water) on a PDB
+entry downloaded from RCSB by its ID (openmm_backend.py; needs openmm and pdbfixer in this environment, uses CUDA,
+then OpenCL, then the CPU). A model whose package or environment is missing is simply
 reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Three lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, and the MACE models (one GPU process, taking turns). A visitor has at
+Five lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), xTB (the CPU) and OpenMM (protein MD). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
 
@@ -26,7 +30,8 @@ environment variable MOLASTRIA_UMA_SECRET (with --fake the environment variable 
 API v3 (JSON; every request carries the header X-MolAstria-Key):
     GET  /health      {ok, api: 3, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
     POST /jobs        {model, job, smiles? | xyz?, charge?, spin?, params?, who?}  ->  {id, status, position} or a cached result
-                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir. The old form {smiles, model?, job:
+                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd. pmd (model openmm-amber14)
+                      takes no structure: params {pdb_id, chains?, ps?, temperature?}. The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -53,6 +58,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import numpy as np
 
 import chemjobs as cj
+import openmm_backend as ob
+import xtb_backend as xb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UMA = "uma-s-1p2p1"
@@ -62,10 +69,15 @@ OMOL_ELEMENTS = tuple(cj.chemical_symbols[1:84])  # H to Bi, the elements of OMo
 A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa")
 B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn")
 D_JOBS = ("polar", "ir")
-JOBS = A_JOBS + D_JOBS
+# xTB takes charges and spin states, but its IP / EA are far off (measured 2026-11-11 with xtb 6.7.1, adiabatic, at
+# the ETKDG start: GFN2 benzene / ethanol / water 14.2 / 14.4 / 18.1 eV, GFN1 15.0 / 15.9 / 20.5 eV; experiment about
+# 9.2 / 10.5 / 12.6 eV; the methods were never fitted to vertical charge changes), so no ipea. GFN-FF has no spin.
+X_JOBS = tuple(j for j in A_JOBS if j != "ipea")
+P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
+JOBS = A_JOBS + D_JOBS + P_JOBS
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -104,6 +116,15 @@ MODELS = {
     "mace-off23-large": _mace("MACE-OFF23 large", B_JOBS, OFF_ELEMENTS),
     "mace-omol-0": _mace("MACE-OMOL-0", B_JOBS, OMOL_ELEMENTS),  # 83 elements, H to Bi
     "mace-mdp": _mace("MACE-MDP", D_JOBS, OFF_ELEMENTS),
+    # GFN2 / GFN1 parametrise H to Rn (Z 1-86); GFN-FF too. Elements past Bi rarely matter and keep the list as OMol25.
+    "gfn2-xtb": {"name": "GFN2-xTB", "lane": "xtb", "jobs": X_JOBS, "charged": True, "elements": OMOL_ELEMENTS, "direct": False},
+    "gfn2-xtb-alpb-water": {"name": "GFN2-xTB (ALPB water)", "lane": "xtb", "jobs": X_JOBS, "charged": True,
+                            "elements": OMOL_ELEMENTS, "direct": False},
+    "gfn1-xtb": {"name": "GFN1-xTB", "lane": "xtb", "jobs": X_JOBS, "charged": True, "elements": OMOL_ELEMENTS, "direct": False},
+    "gfn-ff": {"name": "GFN-FF", "lane": "xtb", "jobs": B_JOBS, "charged": False, "elements": OMOL_ELEMENTS, "direct": False},
+    # proteins only: the structure comes from the PDB by its ID, not from SMILES or XYZ
+    "openmm-amber14": {"name": "OpenMM Amber ff14SB + OBC2", "lane": "openmm", "jobs": P_JOBS, "charged": False,
+                       "elements": (), "direct": False},
 }
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
@@ -217,6 +238,15 @@ def job_params(job, raw):
                 "thermo": _flag(raw, "thermo"), "temperature": temperature()}
     if job == "polar":
         return {"average": _flag(raw, "average"), "n": _number(raw, "n", 2, 20, 8, True)}
+    if job == "pmd":
+        pdb_id, chains = raw.get("pdb_id"), raw.get("chains", "")
+        if not isinstance(pdb_id, str) or not ob.PDB_ID.match(pdb_id):
+            raise BadRequest("params.pdb_id must be a four-character PDB ID such as 1L2Y")
+        if not isinstance(chains, str) or (chains and not ob.CHAINS.match(chains)):
+            raise BadRequest("params.chains must be chain letters such as A or AB (empty for every protein chain)")
+        return {"pdb_id": pdb_id.upper(), "chains": "".join(dict.fromkeys(chains)),
+                "ps": _number(raw, "ps", 1, ob.PS_MAX, ob.PS_DEFAULT, True),
+                "temperature": _number(raw, "temperature", 250, 400, 300)}
     return {}  # sp, ir
 
 
@@ -341,13 +371,14 @@ class MaceBackend:
 
 
 class Service:
-    def __init__(self, device, cache_path, fake=False, mace_python=""):
+    def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
+        self.xtb, self.openmm_platform = xtb, openmm_platform
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace")}
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -384,6 +415,20 @@ class Service:
                 except Exception as e:  # noqa: BLE001 - that lane is reported as not ready, the others still work
                     self.errors[lane] = f"{type(e).__name__}: {e}"[:400]
                     print(f"  not available: {self.errors[lane]}", flush=True)
+            exe = xb.find_xtb(self.xtb)
+            if not exe:
+                self.errors["xtb"] = "no xtb program (install xtb, or start with --xtb PATH)"
+            else:
+                try:
+                    self.backends["xtb"] = xb.XtbBackend(exe)
+                    print(f"xTB {self.backends['xtb'].version}: {exe}", flush=True)
+                except Exception as e:  # noqa: BLE001
+                    self.errors["xtb"] = f"{type(e).__name__}: {e}"[:400]
+            try:
+                self.backends["openmm"] = ob.OpenMMBackend(self.openmm_platform)
+                print(f"OpenMM {self.backends['openmm'].version} on {self.backends['openmm'].platform}", flush=True)
+            except Exception as e:  # noqa: BLE001 - no openmm / pdbfixer in this environment: protein MD is off
+                self.errors["openmm"] = f"{type(e).__name__}: {e}"[:400]
         self.loading = False
         for lane in self.backends:
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
@@ -455,7 +500,10 @@ class Service:
             symbols, positions = cj.embed(Chem.Mol(mol_h))
             st = cj.Structure(symbols, positions, q, s, spec["smiles"], mol_h)
         label = f"{st.title} {MODELS[model]['name']}" if st else ""
-        if job in D_JOBS:
+        if job == "pmd":
+            run = (lambda *a: ob.toy_run(*a)) if self.fake else self.backends["openmm"].run
+            r = run(prm["pdb_id"], prm["chains"], prm["ps"], prm["temperature"], budget)
+        elif job in D_JOBS:
             geo = self.calculator("mace-off23-medium")
             if job == "polar":
                 r = cj.run_polar(st, geo, self.dp(), budget, prm["average"], prm["n"])
@@ -492,6 +540,10 @@ class Service:
             else:
                 raise ValueError(f"unknown job {job}")
         out.update(r)
+        if MODELS[model]["lane"] == "xtb" and job in ("sp", "opt") and not self.fake:
+            # what the xtb run prints besides the energy, on the final structure: gap, frontier orbitals, dipole, charges
+            symbols, positions = cj.parse_xyz(out["xyz"])
+            out["xtb"] = self.backends["xtb"].properties(model, symbols, positions, q, s)
         if job == "ipea" and model == UMA and "ip_ev" in out:  # the AI Lab's column names
             out.update(ip_uma_s=out["ip_ev"], ea_uma_s=out["ea_ev"])
         if MODELS[model]["direct"]:
@@ -526,9 +578,10 @@ class Service:
         smiles, xyz = body.get("smiles"), body.get("xyz")
         has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
-        if job == "rxn":
+        if job in ("rxn", "pmd"):
             if has_smiles or has_xyz:
-                raise BadRequest("rxn takes the reaction in params.reaction, not smiles or xyz")
+                raise BadRequest("rxn takes the reaction in params.reaction, not smiles or xyz" if job == "rxn"
+                                 else "pmd takes the PDB ID in params, not smiles or xyz")
         elif has_smiles == has_xyz:
             raise BadRequest("give exactly one of smiles and xyz")
         if has_xyz and (job in SMILES_JOBS or (job == "polar" and params["average"])):
@@ -551,7 +604,9 @@ class Service:
 
         spec = {"model": model, "job": job, "smiles": None, "source": None, "xyz": None}
         mol_h, symbols = None, None
-        if job == "rxn":
+        if job == "pmd":
+            spec.update(charge=0, spin=None, input="pdb:" + params["pdb_id"])
+        elif job == "rxn":
             species, canonical = self.reaction(params["reaction"], m)
             params["reaction"] = canonical
             charge = sum(sp["charge"] * sp["count"] for sp in species if sp["side"] == "reactant")
@@ -764,6 +819,9 @@ def main():
     ap.add_argument("--device", default="auto", choices=["auto", "cuda", "cpu"])
     ap.add_argument("--mace-python", default=os.environ.get("MOLASTRIA_MACE_PYTHON", ""),
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
+    ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
+    ap.add_argument("--openmm-platform", default="", choices=["", "CUDA", "OpenCL", "CPU"],
+                    help="OpenMM platform for protein MD (default: the fastest there is)")
     ap.add_argument("--cache", default="", help="result cache (default cache.local.json; cache.fake.local.json with --fake)")
     ap.add_argument("--fake", action="store_true", help="tests only: no models, a toy calculator, made-up numbers")
     args = ap.parse_args()
@@ -773,7 +831,8 @@ def main():
     if len(secret) < 32:
         sys.exit("No secret: run  node tools/uma-server/new-secret.mjs  first (it also gives the account service the same value).")
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
-    service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python)
+    service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
+                      openmm_platform=args.openmm_platform)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)
     try:
