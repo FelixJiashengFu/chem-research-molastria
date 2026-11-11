@@ -2083,7 +2083,11 @@
        "esen-sm-conserving-all-omol",
        "esen-sm-direct-all-omol",
        "esen-md-direct-all-omol",
-       "ani-2x"
+       "ani-2x",
+       "gfn2-xtb",
+       "gfn2-xtb-alpb-water",
+       "gfn1-xtb",
+       "gfn-ff"
       ],
       "default": "uma-s-1p2p1"
      },
@@ -2215,7 +2219,11 @@
           "esen-sm-conserving-all-omol",
           "esen-sm-direct-all-omol",
           "esen-md-direct-all-omol",
-          "ani-2x"
+          "ani-2x",
+          "gfn2-xtb",
+          "gfn2-xtb-alpb-water",
+          "gfn1-xtb",
+          "gfn-ff"
          ]
         },
         "ready": {

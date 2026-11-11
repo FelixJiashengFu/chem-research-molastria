@@ -1,0 +1,689 @@
+  
+ Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009,2016,
+            Gaussian, Inc.  All Rights Reserved.
+  
+ This is part of the Gaussian(R) 16 program.  It is based on
+ the Gaussian(R) 09 system (copyright 2009, Gaussian, Inc.),
+ the Gaussian(R) 03 system (copyright 2003, Gaussian, Inc.),
+ the Gaussian(R) 98 system (copyright 1998, Gaussian, Inc.),
+ the Gaussian(R) 94 system (copyright 1995, Gaussian, Inc.),
+ the Gaussian 92(TM) system (copyright 1992, Gaussian, Inc.),
+ the Gaussian 90(TM) system (copyright 1990, Gaussian, Inc.),
+ the Gaussian 88(TM) system (copyright 1988, Gaussian, Inc.),
+ the Gaussian 86(TM) system (copyright 1986, Carnegie Mellon
+ University), and the Gaussian 82(TM) system (copyright 1983,
+ Carnegie Mellon University). Gaussian is a federally registered
+ trademark of Gaussian, Inc.
+  
+ This software contains proprietary and confidential information,
+ including trade secrets, belonging to Gaussian, Inc.
+  
+ This software is provided under written license and may be
+ Rights clause in FAR 52.227-19.
+  
+ Gaussian, Inc.
+ 340 Quinnipiac St., Bldg. 40, Wallingford CT 06492
+  
+ ---------------------------------------------------------------
+ Warning -- This program may not be used in any manner that
+ competes with the business of Gaussian, Inc. or will provide
+ assistance to any competitor of Gaussian, Inc.  The licensee
+ of this program is prohibited from giving any competitor of
+ Gaussian, Inc. access to this program.  By using this program,
+ the user acknowledges that Gaussian, Inc. is engaged in the
+ business of creating and licensing software in the field of
+ computational chemistry and represents and warrants to the
+ licensee that it is not a competitor of Gaussian, Inc. and that
+ it will not use this program in any manner prohibited above.
+ ---------------------------------------------------------------
+ J. Tomasi, M. Cossi, J. M. Millam, M. Klene, C. Adamo, R. Cammi, 
+ J. W. Ochterski, R. L. Martin, K. Morokuma, O. Farkas, 
+ J. B. Foresman, and D. J. Fox, Gaussian, Inc., Wallingford CT, 2016.
+ 
+ ******************************************
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.000000    0.000000    0.000000
+      2          6           0        0.000000    0.000000    1.391558
+      3          6           0        1.199912    0.000000    2.091623
+      4          6           0        2.381427    0.000000    1.405722
+      5          6           0        2.381427    0.000000    0.014165
+      6          1           0       -0.949187    0.000000    1.937349
+      7          1           0        1.193861    0.000000    3.187592
+      8          1           0        3.330614    0.000000   -0.531626
+      9          6           0        3.669632    0.000000    2.146185
+     10          6           0        4.871380    0.000000    1.546808
+     11          1           0        4.930305    0.000000    0.444834
+     12          1           0        3.585803    0.000000    3.241279
+     13          1           0        5.787099    0.000000    2.100305
+     14          6           0       -1.288205    0.000000   -0.740463
+     15          1           0       -1.204377    0.000000   -1.835557
+     16          6           0       -2.489953    0.000000   -0.141086
+     17          1           0       -2.548878    0.000000    0.960888
+     18          1           0       -3.405672    0.000000   -0.694583
+     19          6           0        1.181515    0.000000   -0.685901
+     20          1           0        1.187566    0.000000   -1.781870
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.391558   0.000000
+     3  C    2.411364   1.389201   0.000000
+     4  C    2.765366   2.381469   1.366177   0.000000
+     5  C    2.381469   2.751073   2.389940   1.391558   0.000000
+     6  H    2.157377   1.094918   2.154629   3.372776   3.845988
+     7  H    3.403828   2.156628   1.095985   2.141349   3.388356
+     8  H    3.372776   3.845988   3.379546   2.157377   1.094918
+     9  C    4.251154   3.746420   2.470323   1.485853   2.490981
+    10  C    5.111062   4.873853   3.711671   2.493947   2.923844
+    11  H    4.950332   5.020378   4.077714   2.723984   2.585006
+    12  H    4.833620   4.034781   2.648431   2.195403   3.444531
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        1.205666    0.676891   -0.000000
+      2          6           0        0.002200    1.375535   -0.000000
+      3          6           0       -1.205666    0.689286    0.000000
+      4          6           0       -1.205666   -0.676891   -0.000000
+      5          6           0       -0.002200   -1.375535   -0.000000
+      6          1           0        0.006730    2.470443   -0.000000
+      7          1           0       -2.150459    1.244759    0.000000
+      8          1           0       -0.006730   -2.470443   -0.000000
+      9          6           0       -2.492798   -1.419218    0.000000
+     10          6           0       -2.577785   -2.759452    0.000000
+     11          1           0       -1.654345   -3.363669    0.000000
+     12          1           0       -3.397785   -0.796919    0.000000
+     13          1           0       -3.516212   -3.273509    0.000000
+     14          6           0        2.492798    1.419218    0.000000
+     15          1           0        3.397785    0.796919    0.000000
+     16          6           0        2.577785    2.759452    0.000000
+     17          1           0        1.654345    3.363669    0.000000
+     18          1           0        3.516212    3.273509    0.000000
+     19          6           0        1.205666   -0.689286    0.000000
+     20          1           0        2.150459   -1.244759    0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6786942           0.7288286           0.6305967
+ Leave Link  202 at Wed Apr  4 10:18:38 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l301.exe)
+ Standard basis: STO-3G (5D, 7F)
+ Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
+ There are    25 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of BG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    25 symmetry adapted cartesian basis functions of BU  symmetry.
+ There are    25 symmetry adapted basis functions of AG  symmetry.
+ There are     5 symmetry adapted basis functions of BG  symmetry.
+ There are     5 symmetry adapted basis functions of AU  symmetry.
+ There are    25 symmetry adapted basis functions of BU  symmetry.
+    60 basis functions,   180 primitive gaussians,    60 cartesian basis functions
+ JPrj=0 DoOrth=F DoCkMO=F.
+ Initial guess orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (BU) (BU) (AG) (AU) (AG) (BU)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (BU) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ RMSDP=1.26D-09 MaxDP=1.27D-08 DE= 1.25D-12 OVMax= 1.97D-08
+
+ SCF Done:  E(RB3LYP) =  -382.294279146     A.U. after   12 cycles
+            NFock= 12  Conv=0.13D-08     -V/T= 2.0160
+ KE= 3.762731372601D+02 PE=-1.795331837111D+03 EE= 5.814571375185D+02
+
+ Orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (AG) (BU) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (BU) (AG) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ The electronic state is 1-AG.
+ Alpha  occ. eigenvalues --  -10.01922 -10.01915 -10.00733 -10.00728 -10.00558
+ Alpha  occ. eigenvalues --  -10.00557 -10.00551 -10.00540  -9.98966  -9.98966
+ Alpha  occ. eigenvalues --   -0.82796  -0.76365  -0.72060  -0.70924  -0.67032
+ Alpha  occ. eigenvalues --   -0.59492  -0.56528  -0.53402  -0.51553  -0.46363
+ Alpha  occ. eigenvalues --   -0.44625  -0.41365  -0.40271  -0.39710  -0.37822
+ Alpha  occ. eigenvalues --   -0.35387  -0.34850  -0.33887  -0.31250  -0.29779
+ Alpha  occ. eigenvalues --   -0.28751  -0.27004  -0.21230  -0.19997  -0.15689
+ Alpha virt. eigenvalues --    0.04399   0.09120   0.11237   0.18909   0.29009
+ Alpha virt. eigenvalues --    0.33877   0.33892   0.37885   0.38932   0.41782
+ Alpha virt. eigenvalues --    0.42010   0.43101   0.46747   0.48492   0.50818
+ Alpha virt. eigenvalues --    0.55386   0.57757   0.59385   0.62062   0.64333
+ Alpha virt. eigenvalues --    0.66846   0.68505   0.73980   0.82245   0.84195
+          Condensed to atoms (all electrons):
+               1          2          3          4          5          6
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ RMS Force = .12894D-01 SwitMx=.10000D-02 MixMth= 1
+ Mixed Optimization -- RFO/linear search
+ Second derivative matrix not updated -- first step.
+ ITU=  0
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -0.089576    0.000000    0.039197
+      2          6           0       -0.001038    0.000000    1.461977
+      3          6           0        1.253152   -0.000000    2.105010
+      4          6           0        2.471003   -0.000000    1.366525
+      5          6           0        2.382465   -0.000000   -0.056255
+      6          1           0       -0.910887    0.000000    2.070472
+      7          1           0        1.291463   -0.000000    3.202223
+      8          1           0        3.292314   -0.000000   -0.664749
+      9          6           0        3.781248   -0.000000    2.126395
+     10          6           0        5.030503   -0.000000    1.625098
+     11          1           0        5.224704   -0.000000    0.550554
+     12          1           0        3.658422   -0.000000    3.219472
+     13          1           0        5.911241   -0.000000    2.281741
+     14          6           0       -1.399821    0.000000   -0.720672
+     15          1           0       -1.276995    0.000000   -1.813749
+     16          6           0       -2.649077    0.000000   -0.219376
+     17          1           0       -2.843277    0.000000    0.855168
+     18          1           0       -3.529815    0.000000   -0.876019
+     19          6           0        1.128275    0.000000   -0.699288
+     20          1           0        1.089963    0.000000   -1.796500
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.425532   0.000000
+     3  C    2.463839   1.409427   0.000000
+     4  C    2.884157   2.473883   1.424261   0.000000
+     5  C    2.473883   2.825972   2.438527   1.425532   0.000000
+     6  H    2.191033   1.094573   2.164315   3.454377   3.920349
+     7  H    3.451376   2.167721   1.097881   2.181994   3.436271
+     8  H    3.454377   3.920349   3.439440   2.191033   1.094573
+     9  C    4.397689   3.840200   2.528186   1.514643   2.592403
+    10  C    5.360065   5.034185   3.807716   2.572529   3.136727
+    11  H    5.338825   5.304627   4.264921   2.872051   2.906293
+    12  H    4.915448   4.059610   2.650914   2.200767   3.515458
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.255146    1.419328    0.000000
+      2          6           0       -1.077736    0.913791    0.000000
+      3          6           0       -1.320897   -0.474502   -0.000000
+      4          6           0       -0.255146   -1.419328    0.000000
+      5          6           0        1.077736   -0.913791    0.000000
+      6          1           0       -1.928187    1.602866    0.000000
+      7          1           0       -2.357649   -0.835734   -0.000000
+      8          1           0        1.928187   -1.602866    0.000000
+      9          6           0       -0.593327   -2.895734   -0.000000
+     10          6           0        0.255146   -3.940737   -0.000000
+     11          1           0        1.339038   -3.808313   -0.000000
+     12          1           0       -1.673805   -3.101820   -0.000000
+     13          1           0       -0.111510   -4.976325   -0.000000
+     14          6           0        0.593327    2.895734   -0.000000
+     15          1           0        1.673805    3.101820   -0.000000
+     16          6           0       -0.255146    3.940737   -0.000000
+     17          1           0       -1.339038    3.808313   -0.000000
+     18          1           0        0.111510    4.976325   -0.000000
+     19          6           0        1.320897    0.474502   -0.000000
+     20          1           0        2.357649    0.835734   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6408149           0.6709024           0.5861633
+ Leave Link  202 at Wed Apr  4 10:18:49 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l301.exe)
+ Standard basis: STO-3G (5D, 7F)
+ Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
+ There are    25 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of BG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    25 symmetry adapted cartesian basis functions of BU  symmetry.
+ There are    25 symmetry adapted basis functions of AG  symmetry.
+ There are     5 symmetry adapted basis functions of BG  symmetry.
+ There are     5 symmetry adapted basis functions of AU  symmetry.
+ There are    25 symmetry adapted basis functions of BU  symmetry.
+    60 basis functions,   180 primitive gaussians,    60 cartesian basis functions
+ JPrj=2 DoOrth=T DoCkMO=T.
+ Initial guess orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (AG) (BU) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (BU) (AG) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ RMSDP=3.67D-09 MaxDP=4.81D-08 DE= 2.27D-13 OVMax= 5.23D-08
+
+ SCF Done:  E(RB3LYP) =  -382.307286501     A.U. after   12 cycles
+            NFock= 12  Conv=0.37D-08     -V/T= 2.0174
+ KE= 3.757706618080D+02 PE=-1.771392966686D+03 EE= 5.699099876769D+02
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ RMS Force = .28611D-02 SwitMx=.10000D-02 MixMth= 1
+ Mixed Optimization -- RFO/linear search
+ Update second derivatives using D2CorX and points    1    2
+ DE= -1.30D-02 DEPred=-1.89D-02 R= 6.87D-01
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -0.075093    0.000000    0.029207
+      2          6           0       -0.005726    0.000000    1.448559
+      3          6           0        1.234587    0.000000    2.105080
+      4          6           0        2.456520   -0.000000    1.376515
+      5          6           0        2.387153   -0.000000   -0.042837
+      6          1           0       -0.929444    0.000000    2.042314
+      7          1           0        1.264686    0.000000    3.203433
+      8          1           0        3.310871   -0.000000   -0.636592
+      9          6           0        3.752058   -0.000000    2.130044
+     10          6           0        4.986777   -0.000000    1.600802
+     11          1           0        5.163686   -0.000000    0.518325
+     12          1           0        3.637212   -0.000000    3.224989
+     13          1           0        5.877632   -0.000000    2.239722
+     14          6           0       -1.370631    0.000000   -0.724322
+     15          1           0       -1.255785    0.000000   -1.819267
+     16          6           0       -2.605350    0.000000   -0.195079
+     17          1           0       -2.782260    0.000000    0.887398
+     18          1           0       -3.496205    0.000000   -0.833999
+     19          6           0        1.146840   -0.000000   -0.699358
+     20          1           0        1.116741   -0.000000   -1.797711
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.421046   0.000000
+     3  C    2.454488   1.403352   0.000000
+     4  C    2.867804   2.463299   1.422647   0.000000
+     5  C    2.463299   2.819598   2.437612   1.421046   0.000000
+     6  H    2.186896   1.098089   2.164941   3.450802   3.917610
+     7  H    3.445390   2.166455   1.098765   2.181306   3.434850
+     8  H    3.450802   3.917610   3.439145   2.186896   1.098089
+     9  C    4.365844   3.819079   2.517594   1.498741   2.566004
+    10  C    5.300229   4.994823   3.785924   2.540178   3.075645
+    11  H    5.261563   5.252443   4.237406   2.839937   2.832674
+    12  H    4.898390   4.052986   2.650811   2.193374   3.498762
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.268029    1.408629    0.000000
+      2          6           0       -1.066924    0.921523    0.000000
+      3          6           0       -1.326150   -0.457679   -0.000000
+      4          6           0       -0.268029   -1.408629    0.000000
+      5          6           0        1.066924   -0.921523    0.000000
+      6          1           0       -1.907873    1.627643    0.000000
+      7          1           0       -2.366183   -0.812102   -0.000000
+      8          1           0        1.907873   -1.627643    0.000000
+      9          6           0       -0.603525   -2.869337   -0.000000
+     10          6           0        0.268029   -3.891600   -0.000000
+     11          1           0        1.354282   -3.739584   -0.000000
+     12          1           0       -1.683282   -3.084323   -0.000000
+     13          1           0       -0.078006   -4.931842   -0.000000
+     14          6           0        0.603525    2.869337   -0.000000
+     15          1           0        1.683282    3.084323   -0.000000
+     16          6           0       -0.268029    3.891600   -0.000000
+     17          1           0       -1.354282    3.739584   -0.000000
+     18          1           0        0.078006    4.931842   -0.000000
+     19          6           0        1.326150    0.457679   -0.000000
+     20          1           0        2.366183    0.812102   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6198755           0.6852406           0.5967308
+ Leave Link  202 at Wed Apr  4 10:19:00 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l301.exe)
+ Standard basis: STO-3G (5D, 7F)
+ Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
+ There are    25 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of BG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    25 symmetry adapted cartesian basis functions of BU  symmetry.
+ There are    25 symmetry adapted basis functions of AG  symmetry.
+ There are     5 symmetry adapted basis functions of BG  symmetry.
+ There are     5 symmetry adapted basis functions of AU  symmetry.
+ There are    25 symmetry adapted basis functions of BU  symmetry.
+    60 basis functions,   180 primitive gaussians,    60 cartesian basis functions
+ JPrj=2 DoOrth=T DoCkMO=T.
+ Initial guess orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ RMSDP=9.35D-09 MaxDP=1.89D-07 DE=-1.59D-12 OVMax= 2.13D-07
+
+ SCF Done:  E(RB3LYP) =  -382.308239279     A.U. after   10 cycles
+            NFock= 10  Conv=0.94D-08     -V/T= 2.0172
+ KE= 3.758431567309D+02 PE=-1.776334371465D+03 EE= 5.723256385075D+02
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ RMS Force = .39046D-03 SwitMx=.10000D-02 MixMth= 2
+ Mixed Optimization -- En-DIIS/RFO-DIIS
+ Update second derivatives using D2CorX and points    1    2    3
+ DE= -9.53D-04 DEPred=-8.37D-04 R= 1.14D+00
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -0.075714   -0.000000    0.027160
+      2          6           0       -0.004412   -0.000000    1.446201
+      3          6           0        1.234010   -0.000000    2.104087
+      4          6           0        2.457141    0.000000    1.378563
+      5          6           0        2.385839    0.000000   -0.040479
+      6          1           0       -0.928600   -0.000000    2.038141
+      7          1           0        1.265564   -0.000000    3.202244
+      8          1           0        3.310027    0.000000   -0.632419
+      9          6           0        3.752024    0.000000    2.131368
+     10          6           0        4.987226    0.000000    1.600798
+     11          1           0        5.165842    0.000000    0.519628
+     12          1           0        3.641363    0.000000    3.226122
+     13          1           0        5.879222    0.000000    2.237873
+     14          6           0       -1.370597   -0.000000   -0.725645
+     15          1           0       -1.259936   -0.000000   -1.820399
+     16          6           0       -2.605800   -0.000000   -0.195076
+     17          1           0       -2.784415   -0.000000    0.886095
+     18          1           0       -3.497796   -0.000000   -0.832150
+     19          6           0        1.147417    0.000000   -0.698365
+     20          1           0        1.115863    0.000000   -1.796521
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.420832   0.000000
+     3  C    2.455403   1.402320   0.000000
+     4  C    2.870827   2.462482   1.422124   0.000000
+     5  C    2.462482   2.814875   2.434312   1.420832   0.000000
+     6  H    2.184367   1.097505   2.163616   3.449390   3.912310
+     7  H    3.446764   2.167146   1.098610   2.178455   3.430782
+     8  H    3.449390   3.912310   3.434867   2.184367   1.097505
+     9  C    4.367983   3.818412   2.518162   1.497811   2.565810
+    10  C    5.301859   4.994032   3.786811   2.539827   3.075875
+    11  H    5.264641   5.252625   4.239082   2.841625   2.835866
+    12  H    4.904082   4.057067   2.655995   2.194506   3.499574
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.269365    1.409913    0.000000
+      2          6           0       -1.064567    0.920640   -0.000000
+      3          6           0       -1.325232   -0.457241   -0.000000
+      4          6           0       -0.269365   -1.409913    0.000000
+      5          6           0        1.064567   -0.920640   -0.000000
+      6          1           0       -1.904139    1.627488   -0.000000
+      7          1           0       -2.364536   -0.813316   -0.000000
+      8          1           0        1.904139   -1.627488   -0.000000
+      9          6           0       -0.603914   -2.869884   -0.000000
+     10          6           0        0.269365   -3.891946    0.000000
+     11          1           0        1.354830   -3.741612    0.000000
+     12          1           0       -1.682180   -3.089142   -0.000000
+     13          1           0       -0.074249   -4.932835    0.000000
+     14          6           0        0.603914    2.869884   -0.000000
+     15          1           0        1.682180    3.089142   -0.000000
+     16          6           0       -0.269365    3.891946    0.000000
+     17          1           0       -1.354830    3.741612    0.000000
+     18          1           0        0.074249    4.932835    0.000000
+     19          6           0        1.325232    0.457241   -0.000000
+     20          1           0        2.364536    0.813316   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6275970           0.6849707           0.5966547
+ Leave Link  202 at Wed Apr  4 10:19:09 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l301.exe)
+ Standard basis: STO-3G (5D, 7F)
+ Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
+ There are    25 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of BG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    25 symmetry adapted cartesian basis functions of BU  symmetry.
+ There are    25 symmetry adapted basis functions of AG  symmetry.
+ There are     5 symmetry adapted basis functions of BG  symmetry.
+ There are     5 symmetry adapted basis functions of AU  symmetry.
+ There are    25 symmetry adapted basis functions of BU  symmetry.
+    60 basis functions,   180 primitive gaussians,    60 cartesian basis functions
+ JPrj=2 DoOrth=T DoCkMO=T.
+ Initial guess orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (BU) (AG) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ RMSDP=3.61D-09 MaxDP=4.45D-08 DE=-1.25D-12 OVMax= 1.94D-08
+
+ SCF Done:  E(RB3LYP) =  -382.308265702     A.U. after    8 cycles
+            NFock=  8  Conv=0.36D-08     -V/T= 2.0172
+ KE= 3.758489407017D+02 PE=-1.776463527200D+03 EE= 5.723827307102D+02
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ RMS Force = .81836D-04 SwitMx=.10000D-02 MixMth= 2
+ Mixed Optimization -- En-DIIS/RFO-DIIS
+ Swapping is turned off.
+ Update second derivatives using D2CorX and points    1    2    3    4
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -0.075862   -0.000000    0.026976
+      2          6           0       -0.004525   -0.000000    1.446359
+      3          6           0        1.233736    0.000000    2.104185
+      4          6           0        2.457289    0.000000    1.378746
+      5          6           0        2.385952    0.000000   -0.040637
+      6          1           0       -0.928780   -0.000000    2.038370
+      7          1           0        1.265144    0.000000    3.202377
+      8          1           0        3.310207    0.000000   -0.632647
+      9          6           0        3.752112    0.000000    2.131268
+     10          6           0        4.987336    0.000000    1.600898
+     11          1           0        5.166622    0.000000    0.519652
+     12          1           0        3.642331    0.000000    3.226205
+     13          1           0        5.879352    0.000000    2.238101
+     14          6           0       -1.370685   -0.000000   -0.725546
+     15          1           0       -1.260904   -0.000000   -1.820483
+     16          6           0       -2.605909   -0.000000   -0.195175
+     17          1           0       -2.785195   -0.000000    0.886071
+     18          1           0       -3.497925   -0.000000   -0.832378
+     19          6           0        1.147690   -0.000000   -0.698462
+     20          1           0        1.116283   -0.000000   -1.796655
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.421174   0.000000
+     3  C    2.455574   1.402150   0.000000
+     4  C    2.871260   2.462742   1.422442   0.000000
+     5  C    2.462742   2.815233   2.434720   1.421174   0.000000
+     6  H    2.184759   1.097599   2.163517   3.449719   3.912763
+     7  H    3.446950   2.166946   1.098641   2.178724   3.431231
+     8  H    3.449719   3.912763   3.435401   2.184759   1.097599
+     9  C    4.368229   3.818563   2.518521   1.497617   2.565845
+    10  C    5.302188   4.994252   3.787190   2.539781   3.076009
+    11  H    5.265583   5.253527   4.240086   2.842275   2.836556
+    12  H    4.905102   4.058006   2.657115   2.194864   3.500106
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.269445    1.410118   -0.000000
+      2          6           0       -1.064785    0.920662   -0.000000
+      3          6           0       -1.325389   -0.457058   -0.000000
+      4          6           0       -0.269445   -1.410118    0.000000
+      5          6           0        1.064785   -0.920662   -0.000000
+      6          1           0       -1.904470    1.627522   -0.000000
+      7          1           0       -2.364759   -0.813041   -0.000000
+      8          1           0        1.904470   -1.627522   -0.000000
+      9          6           0       -0.603688   -2.869960    0.000000
+     10          6           0        0.269445   -3.892070    0.000000
+     11          1           0        1.355175   -3.742314    0.000000
+     12          1           0       -1.681859   -3.090152    0.000000
+     13          1           0       -0.074247   -4.933029    0.000000
+     14          6           0        0.603688    2.869960   -0.000000
+     15          1           0        1.681859    3.090152   -0.000000
+     16          6           0       -0.269445    3.892070   -0.000000
+     17          1           0       -1.355175    3.742314   -0.000000
+     18          1           0        0.074247    4.933029   -0.000000
+     19          6           0        1.325389    0.457058   -0.000000
+     20          1           0        2.364759    0.813041   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6266363           0.6849065           0.5965900
+ Leave Link  202 at Wed Apr  4 10:19:19 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l301.exe)
+ Standard basis: STO-3G (5D, 7F)
+ Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
+ There are    25 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of BG  symmetry.
+ There are     5 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    25 symmetry adapted cartesian basis functions of BU  symmetry.
+ There are    25 symmetry adapted basis functions of AG  symmetry.
+ There are     5 symmetry adapted basis functions of BG  symmetry.
+ There are     5 symmetry adapted basis functions of AU  symmetry.
+ There are    25 symmetry adapted basis functions of BU  symmetry.
+    60 basis functions,   180 primitive gaussians,    60 cartesian basis functions
+ JPrj=2 DoOrth=T DoCkMO=T.
+ Initial guess orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (BU) (AG) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ RMSDP=5.69D-09 MaxDP=6.25D-08 DE=-3.87D-12 OVMax= 2.90D-08
+
+ SCF Done:  E(RB3LYP) =  -382.308266602     A.U. after    7 cycles
+            NFock=  7  Conv=0.57D-08     -V/T= 2.0172
+ KE= 3.758473007439D+02 PE=-1.776406416010D+03 EE= 5.723556340208D+02
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ RMS Force = .10229D-04 SwitMx=.10000D-02 MixMth= 2
+ Mixed Optimization -- En-DIIS/RFO-DIIS
+ Swapping is turned off.
+ Update second derivatives using D2CorX and points    1    2    3    4    5
+ RMS     Displacement     0.000134     0.001200     YES
+ Predicted change in Energy=-1.924880D-08
+ Optimization completed.
+    -- Stationary point found.
+                           ----------------------------
+                           !   Optimized Parameters   !
+ (Enter /software/Gaussian16/g16_sse4/g16/l202.exe)
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -0.075862   -0.000000    0.026976
+      2          6           0       -0.004525   -0.000000    1.446359
+      3          6           0        1.233736   -0.000000    2.104185
+      4          6           0        2.457289    0.000000    1.378746
+      5          6           0        2.385952    0.000000   -0.040637
+      6          1           0       -0.928780   -0.000000    2.038370
+      7          1           0        1.265144   -0.000000    3.202377
+      8          1           0        3.310207    0.000000   -0.632647
+      9          6           0        3.752112    0.000000    2.131268
+     10          6           0        4.987336    0.000000    1.600898
+     11          1           0        5.166622    0.000000    0.519652
+     12          1           0        3.642331    0.000000    3.226205
+     13          1           0        5.879352    0.000000    2.238101
+     14          6           0       -1.370685   -0.000000   -0.725546
+     15          1           0       -1.260904   -0.000000   -1.820483
+     16          6           0       -2.605909   -0.000000   -0.195175
+     17          1           0       -2.785195   -0.000000    0.886071
+     18          1           0       -3.497925   -0.000000   -0.832378
+     19          6           0        1.147690    0.000000   -0.698462
+     20          1           0        1.116283    0.000000   -1.796655
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  C    0.000000
+     2  C    1.421174   0.000000
+     3  C    2.455574   1.402150   0.000000
+     4  C    2.871260   2.462742   1.422442   0.000000
+     5  C    2.462742   2.815233   2.434720   1.421174   0.000000
+     6  H    2.184759   1.097599   2.163517   3.449719   3.912763
+     7  H    3.446950   2.166946   1.098641   2.178724   3.431231
+     8  H    3.449719   3.912763   3.435401   2.184759   1.097599
+     9  C    4.368229   3.818563   2.518521   1.497617   2.565845
+    10  C    5.302188   4.994252   3.787190   2.539781   3.076009
+    11  H    5.265583   5.253527   4.240086   2.842275   2.836556
+    12  H    4.905102   4.058006   2.657115   2.194864   3.500106
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.269445    1.410118    0.000000
+      2          6           0       -1.064785    0.920662    0.000000
+      3          6           0       -1.325389   -0.457058   -0.000000
+      4          6           0       -0.269445   -1.410118    0.000000
+      5          6           0        1.064785   -0.920662    0.000000
+      6          1           0       -1.904470    1.627522    0.000000
+      7          1           0       -2.364759   -0.813041   -0.000000
+      8          1           0        1.904470   -1.627522    0.000000
+      9          6           0       -0.603688   -2.869960   -0.000000
+     10          6           0        0.269445   -3.892070   -0.000000
+     11          1           0        1.355175   -3.742314   -0.000000
+     12          1           0       -1.681859   -3.090152   -0.000000
+     13          1           0       -0.074247   -4.933029   -0.000000
+     14          6           0        0.603688    2.869960   -0.000000
+     15          1           0        1.681859    3.090152   -0.000000
+     16          6           0       -0.269445    3.892070   -0.000000
+     17          1           0       -1.355175    3.742314   -0.000000
+     18          1           0        0.074247    4.933029   -0.000000
+     19          6           0        1.325389    0.457058   -0.000000
+     20          1           0        2.364759    0.813041   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6266363           0.6849065           0.5965900
+ Leave Link  202 at Wed Apr  4 10:19:28 2018, MaxMem=    52428800 cpu:               0.0 elap:               0.0
+ (Enter /software/Gaussian16/g16_sse4/g16/l601.exe)
+ Copying SCF densities to generalized density rwf, IOpCl= 0 IROHF=0.
+
+ **********************************************************************
+
+            Population analysis using the SCF density.
+
+ **********************************************************************
+
+ Orbital symmetries:
+       Occupied  (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG) (BU) (AG)
+                 (AG) (BU) (AG) (BU) (BU) (AG) (AG) (BU) (AG) (AG)
+                 (BU) (BU) (BU) (AG) (BU) (BU) (AG) (AU) (BU) (AG)
+                 (AG) (BG) (AU) (BG) (BG)
+       Virtual   (AU) (AU) (BG) (AU) (BG) (AG) (BU) (BU) (AG) (AG)
+                 (BU) (BU) (AG) (BU) (AG) (AG) (BU) (AG) (BU) (BU)
+                 (AG) (AG) (BU) (AG) (BU)
+ The electronic state is 1-AG.
+ Alpha  occ. eigenvalues --  -10.02022 -10.02017 -10.00811 -10.00811 -10.00679
+ Alpha  occ. eigenvalues --  -10.00678 -10.00605 -10.00591  -9.99233  -9.99233
+ Alpha  occ. eigenvalues --   -0.80951  -0.75398  -0.71797  -0.69979  -0.66751
+ Alpha  occ. eigenvalues --   -0.58869  -0.55892  -0.53166  -0.51018  -0.45745
+ Alpha  occ. eigenvalues --   -0.43936  -0.41061  -0.39795  -0.39607  -0.37397
+ Alpha  occ. eigenvalues --   -0.35115  -0.34729  -0.32451  -0.31125  -0.29279
+ Alpha  occ. eigenvalues --   -0.28745  -0.26354  -0.21245  -0.19505  -0.15308
+ Alpha virt. eigenvalues --    0.03742   0.09037   0.11061   0.18220   0.27253
+ Alpha virt. eigenvalues --    0.33223   0.34074   0.37937   0.38145   0.41097
+ Alpha virt. eigenvalues --    0.41196   0.42674   0.43962   0.45274   0.47826
+ Alpha virt. eigenvalues --    0.52626   0.54580   0.57601   0.59946   0.62500
+ Alpha virt. eigenvalues --    0.63968   0.68283   0.71722   0.77955   0.79458
+          Condensed to atoms (all electrons):
+               1          2          3          4          5          6
+ 1-AG\HF=-382.3082666\RMSD=5.687e-09\RMSF=1.609e-05\Dipole=0.,0.,0.\Qua
+ drupole=1.8448826,-4.0427965,2.1979139,0.,-0.0680206,0.\PG=C02H [SGH(C
+ 10H10)]\\@
+
+
+ Elapsed time:       0 days  0 hours  0 minutes 50.1 seconds.
+ File lengths (MBytes):  RWF=      6 Int=      0 D2E=      0 Chk=     16 Scr=      1
+ Normal termination of Gaussian 16 at Wed Apr  4 10:19:28 2018.
+

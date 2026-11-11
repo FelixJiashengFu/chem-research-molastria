@@ -240,7 +240,8 @@ function schemaOf(samples, depth = 0) {
 // The compute API (account service, deploy/account-worker.js). Written by hand: it is not static data.
 // tools/account-test.ts checks these lists against what the service itself offers.
 const COMPUTE_MODELS = ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'uma-s-1p1', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
-  'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'ani-2x'];
+  'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'ani-2x',
+  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'gfn-ff'];
 const COMPUTE_JOBS = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'];
 const COMPUTE_NOTE = "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.";
 function computePaths() {

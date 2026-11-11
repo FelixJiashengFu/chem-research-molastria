@@ -4,31 +4,239 @@
 
  Q-Chem 5.4 (devel), Q-Chem, Inc., Pleasanton, CA (2021)
 
-   11    -382.3003620825      8.88e-09  Convergence criterion met
+ E. Epifanovsky,  A. T. B. Gilbert,  Xintian Feng,  Joonho Lee,  Yuezhi Mao,  
+ Yingli Su,  Hung-Yi Tsai,  C. Utku,  Fang Wang
 
+ Contributors to earlier versions of Q-Chem not listed above: 
+ R. D. Adamson,  B. Austin,  R. Baer,  J. Baker,  G. J. O. Beran,  
+ K. Brandhorst,  S. T. Brown,  E. F. C. Byrd,  A. K. Chakraborty,  
+ C. F. Williams,  Q. Wu,  X. Xu,  Jun Yang,  W. Zhang,  Yan Zhao
+
+ Please cite Q-Chem as follows:
+ Y. Shao et al., Mol. Phys. 113, 184-215 (2015)
+ DOI: 10.1080/00268976.2014.952696
+
+ Q-Chem 5.4.1 for Intel X86 EM64T Linux
+
+ Parts of Q-Chem use Armadillo 9.900.5 (Nocturnal Misbehaviour).
+ http://arma.sourceforge.net/
+
+
+
+ Q-Chem begins on Sun Sep 19 10:14:57 2021  
+
+ Host: osmium
+ ----------------------------------------------------------------
+             Standard Nuclear Orientation (Angstroms)
+    I     Atom           X                Y                Z
+ ----------------------------------------------------------------
+    1      C       1.3668132833     0.2787694006    -0.0000000000
+    2      C       0.4416487095     1.3230594681    -0.0000000000
+    3      C      -0.9249184834     1.0442842137    -0.0000000000
+    4      C      -1.3668132833    -0.2787694006     0.0000000000
+    5      C      -0.4416487095    -1.3230594681     0.0000000000
+    6      C       0.9249184834    -1.0442842137     0.0000000000
+    7      H       0.7902216068     2.3660064222    -0.0000000000
+    8      H      -1.6542028230     1.8673521173    -0.0000000000
+    9      H      -0.7902216068    -2.3660064222     0.0000000000
+   10      H       1.6542028230    -1.8673521173     0.0000000000
+   11      C      -2.8758607131    -0.5867808885     0.0000000000
+   12      C      -3.8007881058     0.3632518344    -0.0000000000
+   13      H      -3.1238341368    -1.6566831945     0.0000000000
+   14      H      -4.8769418324     0.1439747559    -0.0000000000
+   15      H      -3.5528146821     1.4331541504    -0.0000000000
+   16      C       2.8758607131     0.5867808885    -0.0000000000
+   17      C       3.8007881058    -0.3632518344     0.0000000000
+   18      H       3.1238341368     1.6566831945    -0.0000000000
+   19      H       4.8769418324    -0.1439747559     0.0000000000
+   20      H       3.5528146821    -1.4331541504     0.0000000000
+ ----------------------------------------------------------------
+ Molecular Point Group                 C2h   NOp =  4
+ Largest Abelian Subgroup              C2h   NOp =  4
+ Nuclear Repulsion Energy =         450.00613820 hartrees
+ There are       35 alpha and       35 beta electrons
+ Requested basis set is STO-3G
+ There are 30 shells and 60 basis functions
+
+ Total QAlloc Memory Limit   2000 MB
+ Mega-Array Size       188 MB
+ MEM_STATIC part       192 MB
+ A cutoff of  1.0D-11 yielded    402 shell pairs
+ There are      1776 function pairs
+ Smallest overlap matrix eigenvalue = 1.71E-01
+
+ Scale SEOQF with 1.000000e-01/1.000000e-01/1.000000e+00
+
+ ---------------------------------------
+ SCF time:   CPU 2.84s  wall 3.00s 
+ SCF   energy in the final basis set =     -382.3003620825
  Total energy in the final basis set =     -382.3003620825
 
-   11    -382.3076865486      5.29e-10  Convergence criterion met
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
 
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.018 -10.018 -10.008 -10.008 -10.007 -10.007 -10.006 -10.005
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.216  -0.198  -0.160
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.050   0.091   0.116   0.181   0.280   0.319   0.330   0.365
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.018 -10.018 -10.008 -10.008 -10.007 -10.007 -10.006 -10.005
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.216  -0.198  -0.160
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.050   0.091   0.116   0.181   0.280   0.319   0.330   0.365
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ RMS gradient           =       1.385E-02
+ Gradient time:  CPU 1.07 s  wall 1.07 s
+ Geometry Optimization Parameters
+   NAtoms,    NIC,     NZ,  NCons,   NDum,   NFix, NCnnct, MaxDiis
+       20     130       0       0       0       0       0       0
+
+
+** GEOMETRY OPTIMIZATION IN DELOCALIZED INTERNAL COORDINATES **
+   Searching for a Minimum
+
+   Optimization Cycle:   1
+
+                       Coordinates (Angstroms)
+ ----------------------------------------------------------------
+             Standard Nuclear Orientation (Angstroms)
+    I     Atom           X                Y                Z
+ ----------------------------------------------------------------
+    1      C       1.4164145862     0.2330005622     0.0000000000
+    2      C       0.4957051001     1.3161332324     0.0000000000
+    3      C      -0.8951488247     1.0906929796     0.0000000000
+    4      C      -1.4164145862    -0.2330005622     0.0000000000
+    5      C      -0.4957051001    -1.3161332324     0.0000000000
+    6      C       0.8951488247    -1.0906929796     0.0000000000
+    7      H       0.8794446006     2.3449591280     0.0000000000
+    8      H      -1.5741576437     1.9494121851     0.0000000000
+    9      H      -0.8794446006    -2.3449591280     0.0000000000
+   10      H       1.5741576437    -1.9494121851     0.0000000000
+   11      C      -2.8987742042    -0.5421405836     0.0000000000
+   12      C      -3.9081532774     0.3453487373     0.0000000000
+   13      H      -3.1211584565    -1.6191491597     0.0000000000
+   14      H      -4.9575423284     0.0269489387     0.0000000000
+   15      H      -3.7503612699     1.4278436322     0.0000000000
+   16      C       2.8987742042     0.5421405836     0.0000000000
+   17      C       3.9081532774    -0.3453487373     0.0000000000
+   18      H       3.1211584565     1.6191491597     0.0000000000
+   19      H       4.9575423284    -0.0269489387     0.0000000000
+   20      H       3.7503612699    -1.4278436322     0.0000000000
+ ----------------------------------------------------------------
+ Molecular Point Group                 C2h   NOp =  4
+ Largest Abelian Subgroup              C2h   NOp =  4
+ Nuclear Repulsion Energy =         444.40277005 hartrees
+ There are       35 alpha and       35 beta electrons
+ Applying Cartesian multipole field
+    Component          Value
+    ---------          -----
+     (2,0,0)        1.00000E-11
+     (0,2,0)        2.00000E-11
+     (0,0,2)       -3.00000E-10
+ Nucleus-field energy     =     0.0000000200 hartrees
+ Requested basis set is STO-3G
+ There are 30 shells and 60 basis functions
+ A cutoff of  1.0D-11 yielded    396 shell pairs
+ There are      1764 function pairs
+ Smallest overlap matrix eigenvalue = 1.83E-01
+ ---------------------------------------
+ SCF time:   CPU 3.44s  wall 3.00s 
+ SCF   energy in the final basis set =     -382.3076865486
  Total energy in the final basis set =     -382.3076865486
 
-   10    -382.3082546102      2.25e-09  Convergence criterion met
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
 
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.194  -0.155
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.039   0.088   0.111   0.180   0.270   0.326   0.339   0.372
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Bu    2 Ag    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.194  -0.155
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.039   0.088   0.111   0.180   0.270   0.326   0.339   0.372
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ RMS gradient           =       3.235E-03
+ Gradient time:  CPU 1.26 s  wall 1.26 s
+ Geometry Optimization Parameters
+   NAtoms,    NIC,     NZ,  NCons,   NDum,   NFix, NCnnct, MaxDiis
+       20     130       0       0       0       0       0       0
+
+
+** GEOMETRY OPTIMIZATION IN DELOCALIZED INTERNAL COORDINATES **
+   Searching for a Minimum
+
+   Optimization Cycle:   2
+
+                       Coordinates (Angstroms)
+ ----------------------------------------------------------------
+             Standard Nuclear Orientation (Angstroms)
+    I     Atom           X                Y                Z
+ ----------------------------------------------------------------
+    1      C       1.4153619598     0.2374086228     0.0000000000
+    2      C       0.4865443109     1.3160492056     0.0000000000
+    3      C      -0.8981039816     1.0864626997     0.0000000000
+    4      C      -1.4153619598    -0.2374086228     0.0000000000
+    5      C      -0.4865443109    -1.3160492056     0.0000000000
+    6      C       0.8981039816    -1.0864626997     0.0000000000
+    7      H       0.8650753823     2.3475094405     0.0000000000
+    8      H      -1.5862472767     1.9421528549     0.0000000000
+    9      H      -0.8650753823    -2.3475094405     0.0000000000
+   10      H       1.5862472767    -1.9421528549     0.0000000000
+   11      C      -2.8779851045    -0.5416847793     0.0000000000
+   12      C      -3.8829690510     0.3504027758     0.0000000000
+   13      H      -3.1150336448    -1.6166044379     0.0000000000
+   14      H      -4.9307403704     0.0276861896     0.0000000000
+   15      H      -3.7135150988     1.4339583393     0.0000000000
+   16      C       2.8779851045     0.5416847793     0.0000000000
+   17      C       3.8829690510    -0.3504027758     0.0000000000
+   18      H       3.1150336448     1.6166044379     0.0000000000
+   19      H       4.9307403704    -0.0276861896     0.0000000000
+   20      H       3.7135150988    -1.4339583393     0.0000000000
+ ----------------------------------------------------------------
+ Molecular Point Group                 C2h   NOp =  4
+ Largest Abelian Subgroup              C2h   NOp =  4
+ Nuclear Repulsion Energy =         446.01657297 hartrees
+ There are       35 alpha and       35 beta electrons
+ Applying Cartesian multipole field
+    Component          Value
+    ---------          -----
+     (2,0,0)        1.00000E-11
+     (0,2,0)        2.00000E-11
+     (0,0,2)       -3.00000E-10
+ Nucleus-field energy     =     0.0000000199 hartrees
+ Requested basis set is STO-3G
+ There are 30 shells and 60 basis functions
+ A cutoff of  1.0D-11 yielded    398 shell pairs
+ There are      1766 function pairs
+ Smallest overlap matrix eigenvalue = 1.82E-01
+ ---------------------------------------
+ SCF time:   CPU 3.04s  wall 3.00s 
+ SCF   energy in the final basis set =     -382.3082546102
  Total energy in the final basis set =     -382.3082546102
-
-    9    -382.3082947514      7.22e-09  Convergence criterion met
-
- Total energy in the final basis set =     -382.3082947514
-
-    7    -382.3082955186      6.71e-09  Convergence criterion met
-
- Total energy in the final basis set =     -382.3082955186
-
- Final energy is   -382.30829551861552     
-
- ******************************
- **  OPTIMIZATION CONVERGED  **
- ******************************
 
  --------------------------------------------------------------
              Orbital Energies (a.u.) and Symmetries
@@ -38,45 +246,233 @@
  -- Occupied --                  
 -10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
   1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
- -9.992  -9.992  -0.810  -0.754  -0.718  -0.700  -0.667  -0.589
-  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
- -0.559  -0.532  -0.510  -0.457  -0.439  -0.411  -0.398  -0.396
-  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
- -0.374  -0.351  -0.347  -0.325  -0.311  -0.293  -0.287  -0.264
- 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
  -0.212  -0.195  -0.153
   2 Au    2 Bg    3 Bg                                                         
  -- Virtual --                   
-  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  0.037   0.090   0.111   0.183   0.272   0.333   0.340   0.381
   3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
-  0.381   0.411   0.412   0.427   0.440   0.453   0.478   0.526
- 17 Ag   18 Ag   18 Bu   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
-  0.546   0.576   0.599   0.625   0.640   0.683   0.717   0.780
- 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
-  0.795
  25 Bu                                                                         
 
  Beta MOs, Restricted
  -- Occupied --                  
 -10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
   1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
- -9.992  -9.992  -0.810  -0.754  -0.718  -0.700  -0.667  -0.589
-  5 Ag    5 Bu    6 Ag    6 Bu    7 Ag    7 Bu    8 Bu    8 Ag                 
- -0.559  -0.532  -0.510  -0.457  -0.439  -0.411  -0.398  -0.396
-  9 Ag    9 Bu   10 Ag   11 Ag   10 Bu   11 Bu   12 Bu   12 Ag                 
- -0.374  -0.351  -0.347  -0.325  -0.311  -0.293  -0.287  -0.264
- 13 Bu   14 Bu   13 Ag    1 Au   15 Bu   14 Ag   15 Ag    1 Bg                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.183   0.272   0.333   0.340   0.381
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ RMS gradient           =       7.526E-04
+ Gradient time:  CPU 1.06 s  wall 1.06 s
+ Geometry Optimization Parameters
+   NAtoms,    NIC,     NZ,  NCons,   NDum,   NFix, NCnnct, MaxDiis
+       20     130       0       0       0       0       0       0
+
+
+** GEOMETRY OPTIMIZATION IN DELOCALIZED INTERNAL COORDINATES **
+   Searching for a Minimum
+
+   Optimization Cycle:   3
+
+                       Coordinates (Angstroms)
+ ----------------------------------------------------------------
+             Standard Nuclear Orientation (Angstroms)
+    I     Atom           X                Y                Z
+ ----------------------------------------------------------------
+    1      C       1.4152850380     0.2400738691     0.0000000000
+    2      C       0.4843340629     1.3155014645     0.0000000000
+    3      C      -0.8982191302     1.0832072461     0.0000000000
+    4      C      -1.4152850380    -0.2400738691     0.0000000000
+    5      C      -0.4843340629    -1.3155014645     0.0000000000
+    6      C       0.8982191302    -1.0832072461     0.0000000000
+    7      H       0.8618866411     2.3474345058     0.0000000000
+    8      H      -1.5883542786     1.9367565114     0.0000000000
+    9      H      -0.8618866411    -2.3474345058     0.0000000000
+   10      H       1.5883542786    -1.9367565114     0.0000000000
+   11      C      -2.8820224549    -0.5433080054     0.0000000000
+   12      C      -3.8854045765     0.3512367953     0.0000000000
+   13      H      -3.1255427943    -1.6164251328     0.0000000000
+   14      H      -4.9336154410     0.0300899922     0.0000000000
+   15      H      -3.7126049539     1.4336966520     0.0000000000
+   16      C       2.8820224549     0.5433080054     0.0000000000
+   17      C       3.8854045765    -0.3512367953     0.0000000000
+   18      H       3.1255427943     1.6164251328     0.0000000000
+   19      H       4.9336154410    -0.0300899922     0.0000000000
+   20      H       3.7126049539    -1.4336966520     0.0000000000
+ ----------------------------------------------------------------
+ Molecular Point Group                 C2h   NOp =  4
+ Largest Abelian Subgroup              C2h   NOp =  4
+ Nuclear Repulsion Energy =         445.92273431 hartrees
+ There are       35 alpha and       35 beta electrons
+ Applying Cartesian multipole field
+    Component          Value
+    ---------          -----
+     (2,0,0)        1.00000E-11
+     (0,2,0)        2.00000E-11
+     (0,0,2)       -3.00000E-10
+ Nucleus-field energy     =     0.0000000199 hartrees
+ Requested basis set is STO-3G
+ There are 30 shells and 60 basis functions
+ A cutoff of  1.0D-11 yielded    398 shell pairs
+ There are      1766 function pairs
+ Smallest overlap matrix eigenvalue = 1.81E-01
+ ---------------------------------------
+ SCF time:   CPU 2.47s  wall 2.00s 
+ SCF   energy in the final basis set =     -382.3082947514
+ Total energy in the final basis set =     -382.3082947514
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
  -0.212  -0.195  -0.153
   2 Au    2 Bg    3 Bg                                                         
  -- Virtual --                   
   0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
   3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
-  0.381   0.411   0.412   0.427   0.440   0.453   0.478   0.526
- 17 Ag   18 Ag   18 Bu   19 Bu   19 Ag   20 Bu   20 Ag   21 Ag                 
-  0.546   0.576   0.599   0.625   0.640   0.683   0.717   0.780
- 21 Bu   22 Ag   22 Bu   23 Bu   23 Ag   24 Ag   24 Bu   25 Ag                 
-  0.795
  25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ RMS gradient           =       1.200E-04
+ Gradient time:  CPU 1.05 s  wall 1.05 s
+ Geometry Optimization Parameters
+   NAtoms,    NIC,     NZ,  NCons,   NDum,   NFix, NCnnct, MaxDiis
+       20     130       0       0       0       0       0       0
+
+
+** GEOMETRY OPTIMIZATION IN DELOCALIZED INTERNAL COORDINATES **
+   Searching for a Minimum
+
+   Optimization Cycle:   4
+
+                       Coordinates (Angstroms)
+ ----------------------------------------------------------------
+             Standard Nuclear Orientation (Angstroms)
+    I     Atom           X                Y                Z
+ ----------------------------------------------------------------
+    1      C       1.4151037309     0.2406820315     0.0000000000
+    2      C       0.4841413595     1.3161106489     0.0000000000
+    3      C      -0.8985365494     1.0831085180     0.0000000000
+    4      C      -1.4151037309    -0.2406820315     0.0000000000
+    5      C      -0.4841413595    -1.3161106489     0.0000000000
+    6      C       0.8985365494    -1.0831085180     0.0000000000
+    7      H       0.8614602370     2.3481183743     0.0000000000
+    8      H      -1.5889485463     1.9363087293     0.0000000000
+    9      H      -0.8614602370    -2.3481183743     0.0000000000
+   10      H       1.5889485463    -1.9363087293     0.0000000000
+   11      C      -2.8817028259    -0.5435245983     0.0000000000
+   12      C      -3.8846265103     0.3516626052     0.0000000000
+   13      H      -3.1252749845    -1.6166790495     0.0000000000
+   14      H      -4.9328566458     0.0306817912     0.0000000000
+   15      H      -3.7117422140     1.4340347162     0.0000000000
+   16      C       2.8817028259     0.5435245983     0.0000000000
+   17      C       3.8846265103    -0.3516626052     0.0000000000
+   18      H       3.1252749845     1.6166790495     0.0000000000
+   19      H       4.9328566458    -0.0306817912     0.0000000000
+   20      H       3.7117422140    -1.4340347162     0.0000000000
+ ----------------------------------------------------------------
+ Molecular Point Group                 C2h   NOp =  4
+ Largest Abelian Subgroup              C2h   NOp =  4
+ Nuclear Repulsion Energy =         445.92475541 hartrees
+ There are       35 alpha and       35 beta electrons
+ Applying Cartesian multipole field
+    Component          Value
+    ---------          -----
+     (2,0,0)        1.00000E-11
+     (0,2,0)        2.00000E-11
+     (0,0,2)       -3.00000E-10
+ Nucleus-field energy     =     0.0000000199 hartrees
+ Requested basis set is STO-3G
+ There are 30 shells and 60 basis functions
+ A cutoff of  1.0D-11 yielded    398 shell pairs
+ There are      1766 function pairs
+ Smallest overlap matrix eigenvalue = 1.81E-01
+ ---------------------------------------
+ SCF time:   CPU 1.94s  wall 2.00s 
+ SCF   energy in the final basis set =     -382.3082955186
+ Total energy in the final basis set =     -382.3082955186
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
  --------------------------------------------------------------
 
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ RMS gradient           =       1.371E-05
+ Gradient time:  CPU 1.03 s  wall 1.03 s
+ Geometry Optimization Parameters
+   NAtoms,    NIC,     NZ,  NCons,   NDum,   NFix, NCnnct, MaxDiis
+       20     130       0       0       0       0       0       0
+
+
+** GEOMETRY OPTIMIZATION IN DELOCALIZED INTERNAL COORDINATES **
+   Searching for a Minimum
+
+   Optimization Cycle:   5
+
+                       Coordinates (Angstroms)
+
+ ******************************
+ **  OPTIMIZATION CONVERGED  **
+ ******************************
+
+
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+ 25 Bu                                                                         
+
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.020 -10.020 -10.008 -10.008 -10.007 -10.007 -10.006 -10.006
+  1 Bu    1 Ag    2 Ag    2 Bu    3 Bu    3 Ag    4 Bu    4 Ag                 
+ -0.212  -0.195  -0.153
+  2 Au    2 Bg    3 Bg                                                         
+ -- Virtual --                   
+  0.037   0.090   0.111   0.182   0.273   0.332   0.341   0.379
+  3 Au    4 Au    4 Bg    5 Au    5 Bg   16 Ag   16 Bu   17 Bu                 
+        *************************************************************
+        *                                                           *
         *  Thank you very much for using Q-Chem.  Have a nice day.  *
+        *                                                           *
+        *************************************************************

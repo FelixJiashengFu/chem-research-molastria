@@ -4,6 +4,11 @@
 
 ## 现在
 
+- 开源工具真功能（2026-11-11，站长说“这些 GitHub 都有的功能一定要加上去”）：
+  - **xTB 成了在线模型**（`tools/uma-server/xtb_backend.py`，每次能量和梯度调一次 xtb 程序）：GFN2-xTB、GFN2-xTB + ALPB 水、GFN1-xTB、GFN-FF 四个新模型，模型接口页第 ⑤ 窗口和计算接口 `/v1` 都能用，所有人免费（新档 `open`）。GFN2 / GFN1 可以算离子和自由基、键解离能、质子亲和能，不开放 IP/EA（实测偏高 4–6 eV，`docs/DECISIONS.md`）；GFN-FF 只算中性闭壳层。单点和优化的结果另附 HOMO–LUMO 能隙、前线轨道、偶极矩和原子电荷。**上线顺序：站长电脑装 xtb（`conda install -c conda-forge xtb`，装进 uma-env 就能自动找到；或者 `start.ps1 -Xtb <路径>` / 环境变量 `MOLASTRIA_XTB`）→ 重启 `start.ps1` → 部署账号服务 → 合并网站。** 只在云端用 xtb 6.7.1（Linux）测过，Windows 上的 xtb 没有试过；上线后用水、苯、[NH4]+ 各跑一次单点和优化，看一眼速度（xtb 和 GPU 模型共用电脑，每次调用 4 个线程）。
+  - **代码台“化学信息学”标签**（`public/code/cheminf*.js`，RDKit.js）：一次最多 200 个分子的描述符表、Lipinski / Veber、SMARTS 子结构标黄、和参照分子的 Morgan 指纹 Tanimoto 排序、CSV 下载、一段做同样事情的 RDKit Python 脚本（`tools/cheminf-test.mjs` 真跑过）；点一个分子可以送去生成 3D 结构写输入。
+  - **输出解读读出每一步结构**（照 cclib 的读法，Gaussian / ORCA / Psi4 / NWChem / Q-Chem / xTB 六个程序的最终结构和每步 SCF 能量对照 cclib 1.8.1，差在 2×10⁻⁶ 以内）：能量随步数的小图、整条轨迹的 3D 播放、多帧 XYZ 下载、把最后一帧送回输入。
+  - 没做（等站长选）：OpenMM 的蛋白分子动力学、ASE 的更多流程，见这次的 PR 讨论。桌面版要等下一个版本。
 - 首页声光开关（2026-11-11）：站长 Fe 在另一个项目做的两只液态玻璃音乐开关（电子跃迁开关、黑洞开关）合成一个组件 `viewer/glass-switch.*`，放在首页统计和每周精选下面。滚到附近才载入（约 30 KB），点了才出声，一次只响一个，滚出视野不画、页面藏起来声音暂停；没有 WebGL 时退回简单的 2D 圆。只在无头 Chromium（SwiftShader）里看过画面，声音本身没人听过；上线后在 iPhone / iPad 的 Safari 上试一次：关掉静音键后有没有声音、拖动手感、帧率，以及首页滚动是否因为两块 WebGL 变卡。
 - 用照片提问（2026-11-11）：AI 面板（图片按钮可以拍照或选相册，也能粘贴、拖进来）和研习台（学习目标里粘贴照片，或“拍照或选照片”，AI 先读成可改的文字）。DeepSeek Flash 直接看图。**上线顺序：先部署账号服务（`/ai/chat` 放行图片，请求体上限 3 MB），再推网站。** 只对着假的 DeepSeek 测过；上线后：用托管额度和自己的 DeepSeek key 各发一张真实照片（课本一页、手写题），看识读和回答的质量、这一问计几次额度（应是 1 次）；在 Cloudflare 控制台看一眼带图的 `/ai/chat` 的 CPU 时间（3 MB 的 JSON 解析在免费版 10 ms 限额附近，没测过）；在 iPad 和 iPhone 的 Safari 里试拍照、从相册选、从“照片”拷贝后粘贴（HEIC 由浏览器解码，只在 Chromium 里测过 PNG）；桌面版要等下一个版本。以后可以加：Meta 页的识图也允许用 DeepSeek Flash 和托管额度；研习台每一步作答时也能附照片（比如手写的推导）。
 - 增长看板、访问统计、英文地址、手机修补（2026-11-11，一个 PR）：

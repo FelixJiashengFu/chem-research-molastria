@@ -14,7 +14,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .cd-lead{max-width:44em;margin:16px auto 0;color:var(--ink-2);font-size:15.5px;line-height:1.9}
 
 /* 标签 */
-.cd-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:22px 0 4px}
+.cd-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:22px 0 4px}
 .cd-tabs button{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
 .cd-tabs button b{font-size:15.5px}
 .cd-tabs button small{font-size:12px;color:var(--muted);line-height:1.4}
@@ -131,6 +131,7 @@ b.no{color:var(--danger)}
 @media (max-width:860px){
   .cd-grid{grid-template-columns:minmax(0,1fr)}
   .cd-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cd-tabs button:last-child:nth-child(odd){grid-column:1/-1}
 }
 @media (max-width:560px){
   .cd{padding:0 14px 56px}
@@ -142,3 +143,48 @@ b.no{color:var(--danger)}
 }
 .cd-preview .button{display:inline-flex;align-items:center;min-height:34px;padding:4px 12px;border:1px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;font:600 13px var(--font-sans)}
 .cd-preview .button:hover{border-color:var(--accent)}
+
+/* 化学信息学（cheminf.js） */
+.ci-add{margin-top:10px}
+.ci-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.ci-tools{display:flex;flex-wrap:wrap;gap:8px}
+.ci-table{width:100%;border-collapse:collapse;font-size:13px}
+.ci-table th,.ci-table td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
+.ci-table thead th{font-weight:600;color:var(--muted);font-size:12px;white-space:nowrap}
+.ci-table thead th small{display:block;font-weight:400}
+.ci-table td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ci-table td b,.ci-table td code,.ci-table td small{display:block;max-width:220px;overflow-wrap:anywhere}
+.ci-table td code{font-size:11.5px;color:var(--ink-2);background:none;padding:0}
+.ci-table td small{color:var(--muted);font-size:11.5px}
+.ci-table tbody tr[data-i]{cursor:pointer}
+.ci-table tbody tr[data-i]:hover{background:var(--paper)}
+.ci-table tbody tr[aria-selected=true]{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.ci-table tr.ci-bad td{color:var(--danger)}
+.ci-img,.ci-big{background:#fff;border-radius:8px;line-height:0;border:1px solid var(--line)}
+.ci-img{width:130px}
+.ci-img svg{width:130px;height:95px}
+.ci-big{max-width:360px;margin:0 auto 10px}
+.ci-big svg{width:100%;height:auto}
+.ci-ok{color:var(--ok);white-space:nowrap}
+.ci-no{color:var(--danger);white-space:nowrap}
+.ci-name{margin:6px 0;font-size:15px}
+.ci-ids{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:8px 0;font-size:12.5px}
+.ci-ids dt{color:var(--muted)}
+.ci-ids dd{margin:0;overflow-wrap:anywhere}
+.ci-ids code{font-size:12px}
+.ci-more{margin-top:12px}
+.ci-desc{width:100%;border-collapse:collapse;font-size:12.5px}
+.ci-desc th,.ci-desc td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+.ci-desc td.n{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:560px){
+  .ci-img{width:120px}
+  .ci-img svg{width:120px;height:85px}
+}
+.cd-steps{margin:14px 0 0}
+.cd-steps svg{width:100%;max-width:420px;height:auto;display:block}
+.cd-steps polyline{fill:none;stroke:var(--accent);stroke-width:2}
+.cd-steps circle{fill:var(--accent)}
+.cd-steps .ax{stroke:var(--line-strong);stroke-dasharray:3 3}
+.cd-steps text{font-size:10px;fill:var(--muted);font-family:var(--font-num,inherit)}
+.cd-steps figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.cd-out3d{margin-top:10px}

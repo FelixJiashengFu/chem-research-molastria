@@ -27,10 +27,12 @@
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
   // Until the service answers: the models the API offers and whether each handles charge and spin (GET /v1/models says the same).
   const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
+  const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
   let models = [
     ['uma-s-1p2p1', CHARGED], ['uma-s-1p2', CHARGED], ['uma-s-1p2p1-ft-d4rev', CHARGED], ['uma-s-1p1', GEOM],
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
-    ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM]
+    ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
+    ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {

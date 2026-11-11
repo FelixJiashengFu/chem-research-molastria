@@ -2198,6 +2198,7 @@
   "hub/network.html",
   "lab/index.html",
   "qchem/index.html",
+  "code/index.html",
   "shared-nav.js",
   "radar/app/app.js",
   "viewer/sketch.js"
@@ -2467,7 +2468,8 @@
  ],
  "通过": [
   "lab/index.html",
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/cheminf.js"
  ],
  "未通过": [
   "lab/index.html",
@@ -2496,7 +2498,9 @@
   "lab/index.html"
  ],
  "复制脚本": [
-  "lab/index.html"
+  "lab/index.html",
+  "code/index.html",
+  "code/cheminf.js"
  ],
  "下载 .py": [
   "lab/index.html"
@@ -3056,7 +3060,8 @@
   "meta/index.html",
   "models/index.html",
   "pro/account.html",
-  "api/index.html"
+  "api/index.html",
+  "code/index.html"
  ],
  "绝热电离能与电子亲和能（可导入 AI 实验室）": [
   "meta/index.html"
@@ -3425,7 +3430,7 @@
  "跳到计算": [
   "models/index.html"
  ],
- "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x。这里按模型类别分成四个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
+ "站长电脑的 GPU 上部署了 15 个机器学习原子模型：Meta 的 UMA 和 OMol25 系列、MACE 系列和 ANI-2x；CPU 上还有开源半经验程序 xTB 的四种方法（GFN2-xTB、加水溶剂的 GFN2-xTB、GFN1-xTB、GFN-FF）。这里按模型类别分成五个窗口，不用安装任何东西，输入 SMILES 或 XYZ 结构就能在线计算。每个模型一次只给一个人算，其余按提交顺序排队；每人同时只能有一个任务。": [
   "models/index.html"
  ],
  "注意：": [
@@ -3469,14 +3474,17 @@
   "models/index.html",
   "models/models.js"
  ],
- "MACE-OFF23 · ANI-2x · 7 种计算": [
-  "models/index.html"
- ],
  "分子性质模型": [
   "models/index.html",
   "models/models.js"
  ],
  "MACE-MDP · 极化率与光谱": [
+  "models/index.html"
+ ],
+ "半经验量子化学": [
+  "models/index.html"
+ ],
+ "xTB · GFN2 / GFN1 · 隐式溶剂": [
   "models/index.html"
  ],
  "1 · 模型": [
@@ -7643,7 +7651,13 @@
  "读输出": [
   "code/index.html"
  ],
- "能量、收敛、虚频": [
+ "能量、收敛、虚频、结构": [
+  "code/index.html"
+ ],
+ "化学信息学": [
+  "code/index.html"
+ ],
+ "RDKit 描述符、子结构、相似度": [
   "code/index.html"
  ],
  "软件体检": [
@@ -7718,7 +7732,7 @@
  "程序输出": [
   "code/index.html"
  ],
- "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。": [
+ "把输出文件贴进来，或者选一个文件。认得 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K 和 Q-Chem；只在浏览器里读，不上传。除了能量和收敛，还读出每一步的结构（xTB、ORCA、Psi4、Gaussian、NWChem、Q-Chem）：可以 3D 查看优化轨迹、下载 XYZ，或者把最后的结构送回“写输入”。": [
   "code/index.html"
  ],
  "选择文件": [
@@ -7750,7 +7764,67 @@
  "思路借鉴开源的": [
   "code/index.html"
  ],
- "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。": [
+ "（BSD-3，Python 库，能读十几种程序），这里的读法是为网页另写的、只取最常用的几项；每一步的结构和 SCF 能量对照 cclib 读同一批真实输出的结果核对过。要做批量分析，请直接用 cclib。NWChem（7.2.2）和 CP2K（2026.2）的读法用本页生成的输入真跑出来的输出核对过，Q-Chem 的用 cclib 收的 Q-Chem 5.4 和 6.0 真实输出核对。CP2K 默认输出里没有 HOMO–LUMO 能隙，这一项不读。": [
+  "code/index.html"
+ ],
+ "分子列表": [
+  "code/index.html"
+ ],
+ "一行一个分子：先写 SMILES，空一格再写名字（可以不写）。最多 200 个，在你的浏览器里用 RDKit 算，不上传。": [
+  "code/index.html"
+ ],
+ "加到列表": [
+  "code/index.html"
+ ],
+ "填入示例": [
+  "code/index.html"
+ ],
+ "子结构（SMARTS）": [
+  "code/index.html"
+ ],
+ "常用": [
+  "code/index.html",
+  "shared-nav.js",
+  "radar/app/app.js"
+ ],
+ "选一个": [
+  "code/index.html"
+ ],
+ "相似度的参照分子（SMILES）": [
+  "code/index.html"
+ ],
+ "描述符、子结构匹配和 Morgan 指纹（半径 2，2048 位）都由": [
+  "code/index.html"
+ ],
+ "（BSD-3）在浏览器里算，第一次要从 jsDelivr 下载约 7 MB。cLogP 是 Crippen 的原子贡献法估算，不是实验值。": [
+  "code/index.html"
+ ],
+ "一个分子": [
+  "code/index.html"
+ ],
+ "算完后点表格里的一行，这里显示它的结构、InChI 和全部描述符。": [
+  "code/index.html",
+  "code/cheminf.js"
+ ],
+ "描述符表": [
+  "code/index.html"
+ ],
+ "下载 CSV": [
+  "code/index.html"
+ ],
+ "在自己电脑上用 Python 重做": [
+  "code/index.html"
+ ],
+ "同一张表的 RDKit Python 脚本（": [
+  "code/index.html"
+ ],
+ "）：适合几千个分子的批量计算或接进自己的流程。": [
+  "code/index.html"
+ ],
+ "还没有计算。": [
+  "code/index.html"
+ ],
+ "Lipinski 五规则：分子量 ≤ 500、cLogP ≤ 5、氢键供体 ≤ 5、受体 ≤ 10，最多违反一条算通过（Lipinski 2001）；Veber 规则：可旋转键 ≤ 10 且 TPSA ≤ 140 Å²（Veber 2002）。两条都是口服药的经验规则，不适用于天然产物、抗生素和许多新药类型。": [
   "code/index.html"
  ],
  "查一个软件": [
@@ -7818,13 +7892,13 @@
  "输入模板只写最常用的设置，交给集群前请对照各程序的手册检查；商业程序（Gaussian、Q-Chem、ORCA 的商用）要有授权。从 SMILES 生成坐标用的是": [
   "code/index.html"
  ],
- "（BSD-3）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
+ "（BSD-3），化学信息学用 RDKit.js（BSD-3），3D 显示用 3Dmol.js（BSD-3，py3Dmol 背后就是它）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
  "数据库目录": [
   "code/index.html"
  ],
- "开源代码台的四个工具": [
+ "开源代码台的五个工具": [
   "code/index.html"
  ],
  "示例分子": [
@@ -7834,6 +7908,12 @@
   "code/index.html"
  ],
  "把 .out / .log 的内容粘贴到这里": [
+  "code/index.html"
+ ],
+ "画一个或写一个 SMILES": [
+  "code/index.html"
+ ],
+ "加一个分子": [
   "code/index.html"
  ],
  "MolAstria 开源代码台：从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。": [
@@ -8068,10 +8148,6 @@
  ],
  "搜索栏目，比如“量子”“AlphaFold”“Python”": [
   "shared-nav.js"
- ],
- "常用": [
-  "shared-nav.js",
-  "radar/app/app.js"
  ],
  "整理": [
   "shared-nav.js"
@@ -8417,7 +8493,8 @@
   "meta/meta.js",
   "models/models.js",
   "train/train.js",
-  "code/code.js"
+  "code/code.js",
+  "code/cheminf.js"
  ],
  "单点能与受力": [
   "api/compute.js",
@@ -10719,7 +10796,8 @@
   "qchem/play-3d.js"
  ],
  "手性中心": [
-  "qchem/play-3d.js"
+  "qchem/play-3d.js",
+  "code/cheminf-core.js"
  ],
  "优先级：": [
   "qchem/play-3d.js"
@@ -11299,7 +11377,9 @@
   "lab/lab.js"
  ],
  "结构": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/code.js",
+  "code/cheminf.js"
  ],
  "名称 / 来源": [
   "lab/lab.js"
@@ -11311,7 +11391,8 @@
   "lab/lab.js"
  ],
  "重原子": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/cheminf-core.js"
  ],
  "复杂度": [
   "lab/lab.js"
@@ -11639,7 +11720,8 @@
   "lab/chem.js"
  ],
  "硝基": [
-  "lab/chem.js"
+  "lab/chem.js",
+  "code/cheminf-core.js"
  ],
  "亚硝基": [
   "lab/chem.js"
@@ -12038,6 +12120,15 @@
  "{0} 采用 FAIR Chemistry License：只用于合法用途，不得用于武器、军事等 Meta 可接受使用政策禁止的用途；论文里请注明 {1}。": [
   "models/models.js"
  ],
+ "半经验紧束缚，参数拟合到 DFT 和实验数据": [
+  "models/models.js"
+ ],
+ "LGPL-3.0（xtb 程序）": [
+  "models/models.js"
+ ],
+ "{0} 由开源程序 xtb（grimme-lab/xtb，LGPL-3.0）计算；论文里请引用 {1}。": [
+  "models/models.js"
+ ],
  "AllScAIP 和 OMol25 数据集（Levine et al., 2025）": [
   "models/models.js"
  ],
@@ -12104,6 +12195,27 @@
  "ANI-2x 采用 MIT 许可；论文里请引用 Devereux et al., J. Chem. Theory Comput. 2020。": [
   "models/models.js"
  ],
+ "Grimme 组的半经验紧束缚方法 GFN2-xTB（xtb 程序），几乎覆盖整张周期表，支持电荷和自旋；比机器学习势慢一些，但物理图像清楚，是结构优化、构象搜索和预筛选的常用方法。单点和优化的结果还给出 HOMO–LUMO 能隙、偶极矩和每个原子的部分电荷。": [
+  "models/models.js"
+ ],
+ "GFN2-xTB（ALPB 水）": [
+  "models/models.js"
+ ],
+ "GFN2-xTB 加上 ALPB 隐式溶剂模型（水）：模拟水溶液里的分子，离子和极性分子的结构与能量差会和气相明显不同。": [
+  "models/models.js"
+ ],
+ "Bannwarth et al. 2019（GFN2-xTB）和 Ehlert et al., J. Chem. Theory Comput. 2021（ALPB）": [
+  "models/models.js"
+ ],
+ "GFN2-xTB 的上一代，参数化方式不同，可以作对照；含卤键校正，对部分过渡金属和主族化合物的结构更稳。支持电荷和自旋。": [
+  "models/models.js"
+ ],
+ "和 GFN 系列同源的通用力场：几乎覆盖整张周期表，比 GFN2-xTB 快一到两个数量级，适合大分子和快速预优化；没有电子结构，所以只算中性闭壳层分子，也不给能隙。": [
+  "models/models.js"
+ ],
+ "通用力场，按 GFN 系列的思路参数化": [
+  "models/models.js"
+ ],
  "预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测；红外与拉曼光谱用 MACE-OFF23 medium 的振动模式加上 MACE-MDP 的偶极矩和极化率导数。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
   "models/models.js"
  ],
@@ -12116,10 +12228,16 @@
  "② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。": [
   "models/models.js"
  ],
- "③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。": [
+ "③ 为有机分子训练的力场，只认识少数元素（MACE-OFF23：H C N O F P S Cl Br I；ANI-2x：H C N O F S Cl），只算中性闭壳层分子。MACE-OFF23 是和 OMol25 系列相互独立的对照。GFN-FF 是 xTB 一系的通用力场，几乎认识所有元素。": [
   "models/models.js"
  ],
  "④ MACE-MDP 预测偶极矩和极化率，并和 MACE-OFF23 medium 的振动模式一起给出红外和拉曼光谱；只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。": [
+  "models/models.js"
+ ],
+ "半经验量子化学（xTB）": [
+  "models/models.js"
+ ],
+ "⑤ 开源程序 xtb 的半经验方法，不是机器学习势，而是简化的量子化学：可以算离子、自由基和开壳层分子，可以加隐式溶剂（水），单点和优化还给出 HOMO–LUMO 能隙、偶极矩和部分电荷。实测它的电离能和电子亲和能比实验高好几 eV（水约 18 eV，实验 12.6 eV），所以这里不提供 IP / EA，请用窗口 ①。跑在站长电脑的 CPU 上，和 GPU 上的模型互不排队。": [
   "models/models.js"
  ],
  "加上热校正（焓与吉布斯自由能，要先算频率）": [
@@ -12389,6 +12507,9 @@
  "结果按原样提供，不作任何保证。": [
   "models/models.js"
  ],
+ "免费 · 开源": [
+  "models/models.js"
+ ],
  "免费 · 学术许可": [
   "models/models.js"
  ],
@@ -12455,9 +12576,22 @@
  "有 {0} 个虚频（表里是负数）：这个结构不是能量极小点，可能是过渡态或没有优化好，热化学数值不可靠。": [
   "models/models.js"
  ],
+ "HOMO–LUMO 能隙": [
+  "models/models.js",
+  "code/code.js"
+ ],
+ "偶极矩": [
+  "models/models.js"
+ ],
  "原子": [
   "models/models.js",
   "ai/ai.js"
+ ],
+ "每个原子的部分电荷（e）": [
+  "models/models.js"
+ ],
+ "xtb {0} 在最终结构上的单点结果；能隙和轨道能量是半经验方法的数值，适合比较趋势，不等于实验的光学能隙。": [
+  "models/models.js"
  ],
  "，最大受力 {0} eV/Å。": [
   "models/models.js"
@@ -12616,9 +12750,6 @@
   "models/models.js"
  ],
  "，按 {0} 个构象的 Boltzmann 权重平均。": [
-  "models/models.js"
- ],
- "偶极矩": [
   "models/models.js"
  ],
  "{0}，各向同性极化率": [
@@ -12852,7 +12983,8 @@
   "ai/ai.js"
  ],
  "苯环": [
-  "ai/ai.js"
+  "ai/ai.js",
+  "code/cheminf-core.js"
  ],
  "小电子": [
   "ai/ai.js"
@@ -15202,7 +15334,8 @@
   "viewer/mol3d.js"
  ],
  "查看 3D 结构": [
-  "viewer/mol3d.js"
+  "viewer/mol3d.js",
+  "code/code.js"
  ],
  "Kekule.js 载入后不可用": [
   "viewer/sketch.js"
@@ -15345,16 +15478,37 @@
  "没有收敛": [
   "code/code.js"
  ],
- "HOMO–LUMO 能隙": [
-  "code/code.js"
- ],
  "振动频率 / cm⁻¹": [
   "code/code.js"
  ],
  "共 {0} 个，虚频 {1} 个（负数表示虚频）": [
   "code/code.js"
  ],
+ "共 {0} 个结构（每一步一个），最后一个有 {1} 个原子": [
+  "code/code.js"
+ ],
+ "最终结构有 {0} 个原子": [
+  "code/code.js"
+ ],
  "没有发现问题。": [
+  "code/code.js"
+ ],
+ "下载结构（XYZ）": [
+  "code/code.js"
+ ],
+ "用最后的结构写输入": [
+  "code/code.js"
+ ],
+ "输出里的结构": [
+  "code/code.js"
+ ],
+ "查看 3D 结构和优化轨迹": [
+  "code/code.js"
+ ],
+ "每一步的能量": [
+  "code/code.js"
+ ],
+ "每一次 SCF 的能量，相对最后一次（kcal/mol），共 {0} 次": [
   "code/code.js"
  ],
  "文件超过 30 MB，请只贴最后一部分。": [
@@ -15722,6 +15876,189 @@
  ],
  "请输入 PyPI 包名（如 pyscf）或 GitHub 仓库网址": [
   "code/code-core.js"
+ ],
+ "这一页没有载入 RDKit。": [
+  "code/cheminf.js"
+ ],
+ "子结构 {0} 不是 RDKit 能读的 SMARTS。": [
+  "code/cheminf.js"
+ ],
+ "参照分子 {0} 不是 RDKit 能读的 SMILES。": [
+  "code/cheminf.js"
+ ],
+ "算了 {0} 个分子。": [
+  "code/cheminf.js"
+ ],
+ "有 {0} 行读不出 SMILES，表里标红。": [
+  "code/cheminf.js"
+ ],
+ "超过 {0} 个，后面 {1} 行没算。": [
+  "code/cheminf.js"
+ ],
+ "{0} 个含有这个子结构（结构图里标黄）。": [
+  "code/cheminf.js"
+ ],
+ "已按和参照分子的 Tanimoto 相似度从高到低排好。": [
+  "code/cheminf.js"
+ ],
+ "相似度": [
+  "code/cheminf.js"
+ ],
+ "子结构": [
+  "code/cheminf.js"
+ ],
+ "名字 / SMILES": [
+  "code/cheminf.js"
+ ],
+ "第 {0} 行读不出来": [
+  "code/cheminf.js"
+ ],
+ "通过（违反 1 条）": [
+  "code/cheminf.js"
+ ],
+ "违反 {0} 条": [
+  "code/cheminf.js"
+ ],
+ "不通过": [
+  "code/cheminf.js"
+ ],
+ "列表里还没有分子。": [
+  "code/cheminf.js"
+ ],
+ "规范 SMILES": [
+  "code/cheminf.js"
+ ],
+ "Lipinski 四项都满足。": [
+  "code/cheminf.js"
+ ],
+ "Veber 两项都满足。": [
+  "code/cheminf.js"
+ ],
+ "生成 3D 结构并写输入": [
+  "code/cheminf.js"
+ ],
+ "下载 MOL 文件": [
+  "code/cheminf.js"
+ ],
+ "在 PubChem 里查": [
+  "code/cheminf.js"
+ ],
+ "全部 {0} 个描述符": [
+  "code/cheminf.js"
+ ],
+ "先在列表里写至少一个 SMILES。": [
+  "code/cheminf.js"
+ ],
+ "正在载入 RDKit（第一次约 7 MB）…": [
+  "code/cheminf.js"
+ ],
+ "复制失败，请手动选中": [
+  "code/cheminf.js"
+ ],
+ "分子量": [
+  "code/cheminf-core.js"
+ ],
+ "精确质量": [
+  "code/cheminf-core.js"
+ ],
+ "氢键供体": [
+  "code/cheminf-core.js"
+ ],
+ "氢键受体": [
+  "code/cheminf-core.js"
+ ],
+ "可旋转键": [
+  "code/cheminf-core.js"
+ ],
+ "环数": [
+  "code/cheminf-core.js"
+ ],
+ "芳香环": [
+  "code/cheminf-core.js"
+ ],
+ "原子数（含氢）": [
+  "code/cheminf-core.js"
+ ],
+ "杂原子数": [
+  "code/cheminf-core.js"
+ ],
+ "酰胺键": [
+  "code/cheminf-core.js"
+ ],
+ "氢键供体（RDKit 严格定义）": [
+  "code/cheminf-core.js"
+ ],
+ "氢键受体（RDKit 严格定义）": [
+  "code/cheminf-core.js"
+ ],
+ "脂肪环": [
+  "code/cheminf-core.js"
+ ],
+ "饱和环": [
+  "code/cheminf-core.js"
+ ],
+ "杂环": [
+  "code/cheminf-core.js"
+ ],
+ "芳香杂环": [
+  "code/cheminf-core.js"
+ ],
+ "螺原子": [
+  "code/cheminf-core.js"
+ ],
+ "桥头原子": [
+  "code/cheminf-core.js"
+ ],
+ "没写明构型的手性中心": [
+  "code/cheminf-core.js"
+ ],
+ "Labute 近似表面积（Å²）": [
+  "code/cheminf-core.js"
+ ],
+ "Crippen 摩尔折射率": [
+  "code/cheminf-core.js"
+ ],
+ "κ1 形状指数": [
+  "code/cheminf-core.js"
+ ],
+ "κ2 形状指数": [
+  "code/cheminf-core.js"
+ ],
+ "κ3 形状指数": [
+  "code/cheminf-core.js"
+ ],
+ "Kier 柔性指数 Φ": [
+  "code/cheminf-core.js"
+ ],
+ "χ0v 连接性指数": [
+  "code/cheminf-core.js"
+ ],
+ "羧酸": [
+  "code/cheminf-core.js"
+ ],
+ "酯基": [
+  "code/cheminf-core.js"
+ ],
+ "酰胺": [
+  "code/cheminf-core.js"
+ ],
+ "伯 / 仲胺": [
+  "code/cheminf-core.js"
+ ],
+ "醇羟基": [
+  "code/cheminf-core.js"
+ ],
+ "酚羟基": [
+  "code/cheminf-core.js"
+ ],
+ "羰基": [
+  "code/cheminf-core.js"
+ ],
+ "卤素": [
+  "code/cheminf-core.js"
+ ],
+ "CC(=O)Oc1ccccc1C(=O)O 阿司匹林 CN1C=NC2=C1C(=O)N(C(=O)N2C)C 咖啡因 CC(C)Cc1ccc(cc1)C(C)C(=O)O 布洛芬 CC(=O)Nc1ccc(O)cc1 对乙酰氨基酚 OC(=O)c1ccccc1O 水杨酸 c1ccccc1 苯": [
+  "code/cheminf-core.js"
  ],
  "消息格式不对": [
   "deploy/account-worker.js"

@@ -16,7 +16,7 @@
   const link = (href, text) => { const u = safeUrl(href); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>` : esc(text); };
 
   // ── 标签 ──
-  const TABS = ['input', 'output', 'check', 'search'];
+  const TABS = ['input', 'output', 'chem', 'check', 'search'];
   function show(tab, push) {
     if (!TABS.includes(tab)) tab = 'input';
     for (const t of TABS) {
@@ -296,9 +296,41 @@
       const shown = r.freqs.slice(0, 12).map((v) => `<span class="${v < 0 ? 'cd-imag' : ''}">${v.toFixed(1)}</span>`).join(' ');
       rows.push(['振动频率 / cm⁻¹', `<span class="cd-freqs" translate="no">${shown}${r.freqs.length > 12 ? ' …' : ''}</span><small class="cd-dim">共 ${r.freqs.length} 个，虚频 ${r.imaginary.length} 个（负数表示虚频）</small>`]);
     }
+    if (r.geoms.length) rows.push(['结构', `<span>${r.geoms.length > 1 ? `共 ${r.geoms.length} 个结构（每一步一个），最后一个有 ${r.geoms.at(-1).length} 个原子` : `最终结构有 ${r.geoms[0].length} 个原子`}</span><small class="cd-dim" translate="no">${esc(C.formula(r.geoms.at(-1)))}</small>`]);
     box.innerHTML = `<dl class="cd-dl">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`
-      + (r.warnings.length ? `<ul class="cd-warn">${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : `<p class="cd-ok">${esc(tr('没有发现问题。'))}</p>`);
+      + (r.warnings.length ? `<ul class="cd-warn">${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : `<p class="cd-ok">${esc(tr('没有发现问题。'))}</p>`)
+      + stepsPlot(r.steps)
+      + (r.geoms.length ? '<div class="cd-row"><button type="button" class="cd-btn" id="out-xyz">下载结构（XYZ）</button><button type="button" class="cd-btn" id="out-to-input">用最后的结构写输入</button></div><div class="cd-out3d" id="out-3d"></div>' : '');
+    if (r.geoms.length) {
+      const name = NAMES[r.program] || 'output';
+      const xyz = C.framesToXyz(r.geoms, r.steps.length === r.geoms.length ? r.steps : [], name);
+      $('out-xyz').addEventListener('click', () => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([xyz], { type: 'chemical/x-xyz' }));
+        a.download = `${r.program}-${r.geoms.length > 1 ? 'trajectory' : 'final'}.xyz`;
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      });
+      $('out-to-input').addEventListener('click', () => {
+        $('in-xyz').value = C.framesToXyz([r.geoms.at(-1)], [], `${name} final`).replace(/ 1\/1\n/, '\n');
+        $('in-xyz').dispatchEvent(new Event('input', { bubbles: true }));
+        $('t-input').click();
+        $('in-xyz').scrollIntoView({ block: 'center' });
+      });
+      if (window.MolAstriaMol3D) window.MolAstriaMol3D.button($('out-3d'), { xyz, name: `${r.program}-structure`, label: tr('输出里的结构') }, r.geoms.length > 1 ? tr('查看 3D 结构和优化轨迹') : tr('查看 3D 结构'));
+    }
     diff();
+  }
+  /** 每一步的能量画成一条线：相对最后一步，kcal/mol（几何优化的收敛曲线）。少于 3 步不画。 */
+  function stepsPlot(steps) {
+    if (!steps || steps.length < 3) return '';
+    const end = steps[steps.length - 1], ys = steps.map((e) => (e - end) * C.HARTREE_KCAL);
+    const W = 320, H = 120, padL = 44, padB = 22, top = Math.max(...ys), bot = Math.min(0, ...ys), span = top - bot || 1;
+    const X = (i) => padL + ((W - padL - 8) * i) / (steps.length - 1), Y = (v) => 8 + ((H - padB - 8) * (top - v)) / span;
+    const pts = ys.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+    return `<figure class="cd-steps"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(tr('每一步的能量'))}"><line x1="${padL}" y1="${Y(0)}" x2="${W - 8}" y2="${Y(0)}" class="ax"/><polyline points="${pts}"/>${ys.map((v, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="2.6"/>`).join('')}`
+      + `<text x="${padL - 6}" y="${Y(top) + 4}" text-anchor="end">${top.toFixed(top < 10 ? 2 : 1)}</text><text x="${padL - 6}" y="${Y(0) + 4}" text-anchor="end">0</text><text x="${padL}" y="${H - 4}">1</text><text x="${W - 8}" y="${H - 4}" text-anchor="end">${steps.length}</text></svg>`
+      + `<figcaption>每一次 SCF 的能量，相对最后一次（kcal/mol），共 ${steps.length} 次</figcaption></figure>`;
   }
   $('out-text').addEventListener('input', readOutput);
   $('out-prog').addEventListener('change', readOutput);

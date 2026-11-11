@@ -279,7 +279,7 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、决定谁能用哪个模型、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，每个模型一次只给一个人算，每人同时只能有一个任务，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
 
-**15 个在线模型**（Meta 页“在线运行”面板；`server.py` 的 `MODELS`、账号服务的 `UMA_MODELS`、`meta.js` 的 `ONLINE` 三处要一致）：
+**19 个在线模型**（Meta 页“在线运行”面板；`server.py` 的 `MODELS`、账号服务的 `UMA_MODELS`、`meta.js` 的 `ONLINE` 三处要一致）：
 
 | 模型 | 任务 | 谁能用 | 许可 |
 | --- | --- | --- | --- |
@@ -289,6 +289,8 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 | MACE-OFF23 small / medium / large，MACE-OMOL-0（中性） | 几何优化 | 所有人，勾选学术用途 | ASL（学术、非商业） |
 | MACE-MDP | 偶极矩与极化率（结构用 MACE-OFF23 medium 优化） | 所有人，勾选学术用途 | ASL |
 | ANI-2x | 中性分子的几何优化 | 只有 Pro | MIT |
+| GFN2-xTB、GFN2-xTB + ALPB 水、GFN1-xTB | 几何优化、频率、构象、扫描、MD 等（可以带电荷和自旋，不开放 IP/EA） | 所有人 | LGPL-3.0（xtb 程序） |
+| GFN-FF | 同上，只算中性闭壳层 | 所有人 | LGPL-3.0 |
 
 三条通道并行：fairchem 模型（UMA-S 1.2.1 常驻显存，另外最多留 2 个，其余按需加载）、ANI-2x、MACE 模型（`mace_worker.py`，一个 GPU 进程轮流算）。UMA-M 1.1 的权重 11 GB，这台电脑（15 GB 内存、8 GB 显存）装不下，没有上线。
 
@@ -322,6 +324,8 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 - 是“登录后”启动，不是“开机后”：电脑重启后停在登录界面时模型是离线的。电脑睡眠时也离线，想一直在线就在电源设置里关掉睡眠。
 - 仓库换了位置要重新 `-Install`（快捷方式里是绝对路径）。
 - 在线了多久看 `https://api.molastria.com/v1/status` 或 `/api/#compute` 页上的 7 天记录。
+
+**xTB（第五条通道，四个模型）：** 装一次 xtb 程序：`D:\ChemDraw\uma-env` 是 conda 环境时 `conda install -n uma-env -c conda-forge xtb`（装进 `Library\bin`，`server.py` 会自己找到）；否则从 grimme-lab/xtb 的 Releases 下载 Windows 包，解压后在 `start.ps1` 后面加 `-Xtb D:\ChemDraw\xtb\bin\xtb.exe`（或设用户环境变量 `MOLASTRIA_XTB`；装了自动启动的，`autostart.ps1 -Install` 时也加 `-Xtb` 重装一次）。找顺序：`--xtb`、`MOLASTRIA_XTB`、运行 server.py 的 Python 环境、PATH。启动日志里有 `xtb <版本>` 就是找到了；没找到时四个 xTB 模型显示离线，其他模型不受影响。测试：`python -X utf8 -m unittest tools/uma-server/test_xtb_backend.py -v`（有 xtb 时真算水）。xtb 用 CPU，每次调用 4 个线程（`xtb_backend.py` 的 `THREADS`）。
 
 **额度**（`wrangler.toml` 的 `[vars]`）：Meta 的 UMA、OMol25 模型和 ANI-2x 共用一份，匿名访客每天 `UMA_DAILY`（40）次、登录的免费账号 `UMA_DAILY_ACCOUNT`（100）次、Pro 支持者 `UMA_DAILY_PRO`（200）次；MACE 系列每位访客每天 `ASL_DAILY`（40）次，账号和 Pro 都不加（学术许可的模型不能变成付费功能）。被电脑拒绝的任务（已有任务在算、队列满、元素不支持）不计次数。改次数时要一起改 `account-worker.js` 里的默认值（`tools/account-test.ts` 会核对两边一致）、`models/index.html` 的“每日额度”表和价格页 `pro/index.html` 的“三档额度”表（`tools/e2e/run.mjs` 会核对价格页），再跑 `i18n-extract`、补 `i18n/en.json` 的英文、跑 `i18n-translate`，最后 `npx.cmd wrangler deploy`。
 

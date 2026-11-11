@@ -36,6 +36,8 @@ function fakeResult(b: any) {
   const E = -2079.62, T = p.temperature ?? 298.15, kcal = 23.0605;
   const base: any = { model, job, smiles: b.smiles ?? null, charge: b.charge ?? 0, spin: b.spin ?? 1, params: p, seconds: 1, fake: true, xyz };
   if (/direct/.test(model)) base.direct_forces = true;
+  // server.py adds what the xtb run prints to xTB single points and optimisations
+  if (/xtb/.test(model) && (job === "sp" || job === "opt")) base.xtb = { gap_ev: 14.693, homo_ev: -12.177, lumo_ev: 2.516, dipole_debye: 2.27, charges: [-0.564, 0.282, 0.282], xtb_version: "6.8.0" };
   const thermo = { temperature_k: T, h_corr_ev: 0.664, s_ev_k: 0.00195, g_corr_ev: 0.083, h_ev: E + 0.664, g_ev: E + 0.083 };
   switch (job) {
     case "sp": return { ...base, energy_ev: E, forces_ev_a: [[0, 0, 0.012], [0, 0, -0.006], [0.004, 0, -0.006]], fmax_ev_a: 0.012 };
@@ -80,9 +82,9 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (fake && url.hostname === "api.crossref.org") return reply({ message: { items: [1, 2, 3].map((n) => ({ DOI: `10.1/test.${n}`, title: [`测试论文 ${n} about electrolytes`], abstract: "Abstract", created: { "date-time": "2026-10-30T00:00:00Z" } })) } });
   if (fake && url.hostname === "api.datacite.org") return reply({ data: [] });
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
-    const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"];
-    const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"] };
-    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"] };
+    const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"], xtb = charged.filter((j) => j !== "ipea");
+    const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x", "gfn-ff"] };
+    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb };
     if (url.pathname === "/health") return reply({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
     if (url.pathname === "/jobs") {
       umaLast = JSON.parse(String(init?.body ?? (input instanceof Request ? await input.clone().text() : "{}")));

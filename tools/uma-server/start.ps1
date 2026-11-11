@@ -1,12 +1,13 @@
 # Starts the MolAstria online models and their Cloudflare Tunnel. Closing this window (or Ctrl+C) takes both
 # offline; the site then shows "the owner's GPU is offline". Do not run it as administrator: the service needs no
 # rights beyond reading its secret and model files and writing its result cache in this folder.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-Xtb C:\path\to\xtb.exe]
 # -KeepAlive starts the service again when it stops by itself (a crash, a driver reset) and the tunnel when it has
 # gone; restarts are written to keepalive.log in this folder. autostart.ps1 uses it to start the models at sign-in.
 param(
   [string]$Python = $env:MOLASTRIA_UMA_PYTHON,       # fairchem (UMA, eSEN, AllScAIP), TorchANI, rdkit
   [string]$MacePython = $env:MOLASTRIA_MACE_PYTHON,  # mace-torch, rdkit; without it the MACE models stay off
+  [string]$Xtb = $env:MOLASTRIA_XTB,                 # xtb.exe; without it server.py looks in the -Python environment and on PATH
   [string]$Tunnel = 'molastria-uma',
   [switch]$KeepAlive
 )
@@ -28,6 +29,7 @@ if ($running) { Write-Host 'The model service is already running on this compute
 $env:HF_HUB_OFFLINE = '1'
 $extra = @()
 if ($MacePython) { $extra = @('--mace-python', $MacePython) } else { Write-Warning 'No -MacePython: the MACE models stay off.' }
+if ($Xtb) { $extra += @('--xtb', $Xtb) }
 
 function Start-Tunnel { Start-Process $cloudflared -ArgumentList 'tunnel', 'run', $Tunnel -PassThru -WindowStyle Minimized }
 function Write-Note([string]$Text) {
