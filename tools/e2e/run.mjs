@@ -105,6 +105,69 @@ check('home page: English title, bilingual description, and square icons Google 
   await p.context().close();
 });
 
+check('home entrance: full on a first visit, brief in a later session, none within a session, on deep links or under reduced motion; skippable; the mark lands on the header', async () => {
+  // Automated browsers get no entrance (navigator.webdriver), so every other check sees the plain page.
+  let p = await open();
+  await go(p, '/index.html');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), undefined);
+  assert.equal(await p.evaluate(() => getComputedStyle(document.getElementById('entrance')).display), 'none');
+  await finish(p);
+  // A person's first visit: the full entrance, then the page as it always was.
+  const human = () => Object.defineProperty(Navigator.prototype, 'webdriver', { get: () => false });
+  p = await open({ init: human });
+  await p.goto(SITE + '/index.html', { waitUntil: 'commit' });
+  await p.waitForFunction(() => document.documentElement.dataset.entranceState === 'playing');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), 'full');
+  const box = await p.evaluate(() => { const r = document.getElementById('entrance').getBoundingClientRect(); return [r.width, r.height, innerWidth, innerHeight]; });
+  assert.deepEqual(box.slice(0, 2), box.slice(2), 'the sheet covers the window');
+  assert.equal(await p.evaluate(() => getComputedStyle(document.querySelector('.intro-copy h1')).opacity), '0', 'the hero waits behind the sheet');
+  await p.waitForFunction(() => document.documentElement.dataset.entranceState === 'done', null, { timeout: 8000 });
+  assert.equal(await p.$('#entrance'), null);
+  await p.waitForFunction(() => getComputedStyle(document.querySelector('.metrics')).opacity === '1', null, { timeout: 5000 });
+  assert.equal(await p.evaluate(() => getComputedStyle(document.querySelector('.intro-copy h1')).transform), 'none');
+  // Same session: nothing. A later session in the same browser: the brief one. Deep links: nothing.
+  await p.reload({ waitUntil: 'commit' });
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), undefined);
+  await p.evaluate(() => sessionStorage.clear());
+  await p.goto(SITE + '/index.html?collection=saved', { waitUntil: 'commit' });
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), undefined, 'a deep link');
+  await p.evaluate(() => sessionStorage.clear());
+  await p.goto(SITE + '/index.html?lang=en', { waitUntil: 'commit' });
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), 'brief');
+  await p.waitForFunction(() => document.documentElement.dataset.entranceState);
+  assert.equal(await p.evaluate(() => getComputedStyle(document.querySelector('.ent-foot')).display), 'none', 'no hint in the brief one');
+  await p.waitForFunction(() => document.documentElement.dataset.entranceState === 'done', null, { timeout: 5000 });
+  await finish(p);
+  // Replay link (?intro=1), skipping with a key, and where the flying mark ends: on the header's mark, also under zoom.
+  for (const zoom of ['1', '1.25']) {
+    p = await open({ init: `try { localStorage.setItem('molastria-zoom', '${zoom}'); } catch (e) {}` });
+    await go(p, '/index.html?intro=1');
+    assert.equal(await p.evaluate(() => location.search), '', 'intro=1 leaves the address');
+    assert.equal(await p.evaluate(() => document.documentElement.dataset.entranceState), 'playing');
+    const end = await p.evaluate(() => new Promise((done) => {
+      let last = null;
+      const tick = () => {
+        const m = document.querySelector('.ent-mark'), t = document.querySelector('.cr-header .cr-mark');
+        if (m && t) { const a = m.getBoundingClientRect(), b = t.getBoundingClientRect(); last = [a.left - b.left, a.top - b.top, a.width - b.width]; }
+        if (document.documentElement.dataset.entranceState === 'done') return done(last);
+        requestAnimationFrame(tick);
+      };
+      dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      tick();
+    }));
+    assert.ok(end && end.every((d) => Math.abs(d) < 1.5), `zoom ${zoom}: the mark lands on the header's mark, off by ${end}`);
+    await finish(p);
+  }
+  // Reduced motion and the "logo animation" switch: no entrance, even when asked for by address only the former holds.
+  p = await open({ init: human, reducedMotion: 'reduce' });
+  await go(p, '/index.html?intro=1');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), undefined);
+  await finish(p);
+  p = await open({ init: () => { Object.defineProperty(Navigator.prototype, 'webdriver', { get: () => false }); try { localStorage.setItem('chemhub-logo-motion', 'off'); } catch (e) {} } });
+  await go(p, '/index.html');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.entrance), undefined);
+  await finish(p);
+});
 check('pricing page: content free, three allowances, everything marked available exists', async () => {
   const p = await open();
   await go(p, '/pro/index.html');

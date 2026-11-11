@@ -1,0 +1,98 @@
+/* Home entrance ("进入动画"). One overlay on the home page, shown by the small script in index.html's <head>:
+   html[data-entrance=full]   first visit in this browser, about 3.5 s
+   html[data-entrance=brief]  first page of a later session, the same timeline at 0.34 x (about 1.2 s)
+   no attribute               everything here is inert (same session, deep links, reduced motion, logo animation off).
+   The line of sight: the sky fades in, the mark draws itself (hexagon, ring, orbit, electron, star), the wordmark and
+   the two taglines follow, then the whole sheet closes into the brand mark of the header while the mark flies there,
+   and the home hero rises in reading order. The timeline is CSS (it starts with the first paint and every delay is
+   multiplied by --ent-k); entrance.js adds the sky, the electron's ride, skipping and the exit. If that script never
+   runs, the overlay fades by itself (ent-gone), so it can never trap a visitor. Colours follow the page theme. */
+html[data-entrance=full]{--ent-k:1}
+html[data-entrance=brief]{--ent-k:.34}
+html[data-entrance]{--ent-out:calc(3.5s*var(--ent-k))}
+
+.ent{display:none}
+html[data-entrance] .ent{display:grid}
+.ent{position:fixed;inset:0;z-index:2147483000;place-items:center;visibility:visible;overflow:hidden;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;
+  --ent-ink:#1c3a2f;--ent-soft:#5f6f63;--ent-gold:#a67d42;--ent-star:166,125,66;--ent-line:52,86,66;--ent-sky-a:.5;
+  --ent-bg:radial-gradient(120% 85% at 50% 40%,#fefdf9 0%,#f6f5ee 46%,#e9eddf 100%);
+  --ent-metal:linear-gradient(100deg,#8a5f14 0%,#b98a2c 18%,#e6c26a 30%,#a77722 42%,#fff1bd 50%,#a77722 58%,#d9ae52 72%,#96691a 100%);
+  --ent-bloom:rgb(214 176 98/.3);
+  animation:ent-gone .6s calc(5.2s*var(--ent-k) + .8s) forwards}
+:root[data-theme=dark] .ent{--ent-ink:#e9eee4;--ent-soft:#a9b8ac;--ent-gold:#e0b96c;--ent-star:255,245,208;--ent-line:190,214,196;--ent-sky-a:1;
+  --ent-bg:radial-gradient(120% 85% at 50% 40%,#1f4d3e 0%,#122820 44%,#0a100e 100%);
+  --ent-metal:linear-gradient(100deg,#c2953f 0%,#e9c873 18%,#fff5d0 30%,#deb459 42%,#ffffff 50%,#deb459 58%,#f3d98f 72%,#b38634 100%);
+  --ent-bloom:rgb(240 204 120/.26)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ent{--ent-ink:#e9eee4;--ent-soft:#a9b8ac;--ent-gold:#e0b96c;--ent-star:255,245,208;--ent-line:190,214,196;--ent-sky-a:1;
+  --ent-bg:radial-gradient(120% 85% at 50% 40%,#1f4d3e 0%,#122820 44%,#0a100e 100%);
+  --ent-metal:linear-gradient(100deg,#c2953f 0%,#e9c873 18%,#fff5d0 30%,#deb459 42%,#ffffff 50%,#deb459 58%,#f3d98f 72%,#b38634 100%);
+  --ent-bloom:rgb(240 204 120/.26)}}
+
+.ent-bg{position:absolute;inset:0;background:var(--ent-bg)}
+.ent-sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ent-glow{position:absolute;left:50%;top:43%;width:min(92vmin,760px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,var(--ent-bloom),transparent 72%);animation:ent-bloom calc(1.6s*var(--ent-k)) calc(1.55s*var(--ent-k)) cubic-bezier(.2,.7,.2,1) both}
+
+.ent-stage{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 22px;margin-top:-4vh;max-width:100%}
+.ent-mark{display:block;width:clamp(104px,23vmin,172px);height:auto;aspect-ratio:1;overflow:visible;margin-bottom:clamp(14px,3.4vmin,30px);will-change:transform}
+.ent-mark .ent-a *{fill:none;stroke:var(--ent-ink);stroke-linejoin:round;stroke-linecap:round}
+.ent-mark .ent-hex{stroke-width:1.7;stroke-dasharray:1;animation:ent-draw calc(1s*var(--ent-k)) calc(.15s*var(--ent-k)) cubic-bezier(.6,0,.2,1) both}
+.ent-mark .ent-ring{stroke-width:1;stroke-dasharray:1;animation:ent-draw calc(.7s*var(--ent-k)) calc(.6s*var(--ent-k)) cubic-bezier(.6,0,.2,1) both}
+.ent-mark .ent-orb{stroke-width:.75;stroke-dasharray:1;--ent-o:.62;animation:ent-draw calc(1s*var(--ent-k)) calc(.85s*var(--ent-k)) cubic-bezier(.5,0,.2,1) both}
+.ent-mark .ent-a .ent-el{fill:var(--ent-ink);stroke:none;animation:ent-fade calc(.25s*var(--ent-k)) calc(.9s*var(--ent-k)) both}
+.ent-mark .ent-a .ent-star{fill:var(--ent-gold);stroke:none;transform-box:fill-box;transform-origin:center;animation:ent-star calc(.75s*var(--ent-k)) calc(1.7s*var(--ent-k)) cubic-bezier(.2,.9,.25,1.25) both}
+.ent-mark .ent-a .ent-speck{fill:var(--ent-gold);stroke:none;animation:ent-fade calc(.4s*var(--ent-k)) calc(2.15s*var(--ent-k)) both}
+.ent-mark .ent-a .ent-flare{fill:var(--ent-gold);stroke:none;transform-box:fill-box;transform-origin:center;animation:ent-flare calc(.9s*var(--ent-k)) calc(1.78s*var(--ent-k)) ease-out both}
+.ent-mark .ent-b{opacity:0}
+.ent-mark .ent-b rect{fill:var(--ink)}
+.ent-mark .ent-b .l{fill:none;stroke:var(--paper);stroke-linejoin:round}
+.ent-mark .ent-b .f{fill:var(--paper)}
+
+.ent-word{margin:0;font:italic 400 clamp(46px,8.4vmin + 2.6vw,108px)/1.08 var(--font-num,Georgia,"Times New Roman",serif);letter-spacing:.005em;color:var(--ent-ink);white-space:nowrap}
+.ent-word span{display:inline-block;padding:.06em .1em .12em .02em;margin:-.06em -.1em -.12em -.02em;animation:ent-wipe calc(.85s*var(--ent-k)) cubic-bezier(.2,.7,.2,1) both}
+.ent-mol{animation-delay:calc(1.5s*var(--ent-k))!important}
+.ent-astria{color:var(--ent-gold);animation-delay:calc(1.74s*var(--ent-k))!important}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .ent-astria{background:var(--ent-metal) 100% 0/240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+    animation:ent-wipe calc(.85s*var(--ent-k)) cubic-bezier(.2,.7,.2,1) both,ent-sheen calc(1.5s*var(--ent-k)) calc(2.25s*var(--ent-k)) cubic-bezier(.4,0,.2,1) both!important;animation-delay:calc(1.74s*var(--ent-k)),calc(2.25s*var(--ent-k))!important}
+}
+.ent-tag{margin:clamp(12px,2.6vmin,22px) 0 0;font:400 clamp(13.5px,1.5vmin + .55vw,23px)/1.4 var(--font-num,Georgia,serif);color:var(--ent-soft);letter-spacing:.01em;animation:ent-rise calc(.8s*var(--ent-k)) calc(2.3s*var(--ent-k)) cubic-bezier(.2,.7,.2,1) both}
+.ent-zh{margin:clamp(8px,1.8vmin,16px) 0 0;padding-left:.5em;font:500 clamp(12px,1.2vmin + .42vw,18px)/1.4 var(--font-serif,"Songti SC","Noto Serif SC",serif);color:var(--ent-gold);letter-spacing:.5em;animation:ent-track calc(1.1s*var(--ent-k)) calc(2.5s*var(--ent-k)) cubic-bezier(.2,.7,.2,1) both}
+
+.ent-foot{position:absolute;left:0;right:0;bottom:max(26px,calc(env(safe-area-inset-bottom) + 18px));display:flex;flex-direction:column;align-items:center;gap:12px;animation:ent-fade .6s 1s both}
+.ent-bar{width:112px;height:1px;background:rgb(var(--ent-line)/.22);overflow:hidden}
+.ent-bar i{display:block;height:100%;background:var(--ent-gold);transform-origin:0 50%;animation:ent-bar calc(3.5s*var(--ent-k)) linear both}
+.ent-hint{margin:0;font:400 11px/1 var(--font-sans,system-ui,sans-serif);letter-spacing:.22em;color:var(--ent-soft);opacity:.85}
+.ent-hint .en{display:none;letter-spacing:.16em;text-transform:uppercase;font-size:10px}
+:root[lang=en] .ent-hint .zh{display:none}:root[lang=en] .ent-hint .en{display:inline}
+html[data-entrance=brief] .ent-foot{display:none}
+
+@keyframes ent-draw{from{stroke-dashoffset:1;opacity:0}6%{opacity:var(--ent-o,1)}to{stroke-dashoffset:0;opacity:var(--ent-o,1)}}
+@keyframes ent-fade{from{opacity:0}to{opacity:1}}
+@keyframes ent-star{from{opacity:0;transform:scale(0) rotate(-120deg)}60%{opacity:1;transform:scale(1.32) rotate(8deg)}to{opacity:1;transform:none}}
+@keyframes ent-flare{from{opacity:.55;transform:scale(.2)}to{opacity:0;transform:scale(3.4)}}
+@keyframes ent-bloom{from{opacity:0;transform:translate(-50%,-50%) scale(.55)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes ent-wipe{from{clip-path:inset(-10% 100% -10% -4%);opacity:0;transform:translateY(.16em);filter:blur(7px)}55%{opacity:1;filter:blur(0)}to{clip-path:inset(-10% -6% -10% -4%);opacity:1;transform:none;filter:blur(0)}}
+@keyframes ent-sheen{from{background-position:100% 0}to{background-position:0 0}}
+@keyframes ent-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes ent-track{from{opacity:0;letter-spacing:.16em}to{opacity:1;letter-spacing:.5em}}
+@keyframes ent-bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ent-gone{to{opacity:0;visibility:hidden}}
+
+/* The home hero, behind the sheet: held back until the sheet closes (--ent-out; entrance.js moves it to "now" when
+   the visitor skips), then rising in reading order: eyebrow, headline, text, actions with the note card, snapshot,
+   figures. Fill is "backwards" only, so once played the page is exactly the page without an entrance. */
+html[data-entrance] .intro-copy>*,html[data-entrance] .field-note,html[data-entrance] .metrics{animation:ent-in .95s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--ent-out) + 300ms + var(--ent-i,0)*85ms)}
+html[data-entrance] .intro-copy>:nth-child(2){--ent-i:1}
+html[data-entrance] .intro-copy>:nth-child(3){--ent-i:2}
+html[data-entrance] .intro-copy>:nth-child(4),html[data-entrance] .field-note{--ent-i:3}
+html[data-entrance] .intro-copy>:nth-child(5){--ent-i:4}
+html[data-entrance] .metrics{--ent-i:5}
+@keyframes ent-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+/* Last stop of the eye: one sheen across the main button. */
+html[data-entrance] .intro-actions .primary{position:relative;overflow:hidden}
+html[data-entrance] .intro-actions .primary::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgb(255 240 196/.42) 50%,transparent 65%);transform:translateX(-120%);animation:ent-cta 1.1s calc(var(--ent-out) + 1.25s) cubic-bezier(.4,0,.2,1) backwards;pointer-events:none}
+@keyframes ent-cta{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
+
+@media (max-height:460px){.ent-mark{width:84px;margin-bottom:8px}.ent-word{font-size:42px}.ent-foot{bottom:10px}.ent-bar{display:none}}
+@media (prefers-reduced-motion:reduce){html[data-entrance] .ent{display:none}html[data-entrance] .intro-copy>*,html[data-entrance] .field-note,html[data-entrance] .metrics,html[data-entrance] .intro-actions .primary::after{animation:none}}
+@media print{.ent{display:none!important}}
