@@ -61,6 +61,10 @@
     <div class="dc-head"><p class="dc-eyebrow">每周精选 · <span class="dc-week" translate="no"></span></p><h2 id="dc-h">这一周值得读的计算化学新论文</h2><p class="dc-overview" translate="no"></p><a class="dc-link" href="digest/index.html">读本周精选 <i class="ico-ext ico-right" aria-hidden="true"></i></a></div>
     <ol class="dc-list"></ol>
   </section>
+  <section class="glass-duo" id="glass-duo" aria-labelledby="gd-h">
+    <div class="gd-copy"><p class="eyebrow">SOUND &amp; LIGHT · 声光开关</p><h2 id="gd-h">拨一下，听氢原子和黑洞</h2><p>两只液态玻璃开关，是站长 Fe 的作品。左边把氢原子从 1s 推到 2p：按住拖到中间，电子云就停在两个态的叠加里；钟声按巴耳末系谱线的频率比排列。右边把星空卷进黑洞的吸积盘。</p><p class="gd-note">声音全部由浏览器实时合成，点了才响；听不到时请关闭设备的静音模式。画面是示意，不是精确的物理模拟。</p></div>
+    <div class="gd-pair"><div class="gd-slot" data-variant="hydrogen"></div><div class="gd-slot" data-variant="blackhole"></div></div>
+  </section>
   <section id="catalog" class="catalog" aria-labelledby="catalog-title">
     <div class="section-title"><div><p class="eyebrow">ONE CATALOGUE, MORE CONNECTIONS</p><h2 id="catalog-title">统一资源检索</h2></div><button id="export" class="text-button">导出筛选结果 <i class="ico-ext ico-down" aria-hidden="true"></i></button></div>
     <div class="searchbar"><label for="search" class="search-label">⌕ <span class="sr-only">搜索名称、摘要、分类与关键词</span><input id="search" type="search" autocomplete="off" placeholder="搜索 PubChem、ORCA、晶体、静电势…"><kbd>Ctrl K</kbd></label><a id="network-query" class="button primary" href="hub/network.html">在图谱中搜索 <i class="ico-ext" aria-hidden="true"></i></a></div>
@@ -82,6 +86,23 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <noscript><p>本地资源检索需要启用 JavaScript。请使用现代浏览器打开。</p></noscript>
 <script>
+  // Home 声光开关 (viewer/glass-switch.*): two WebGL toggles with synthesised music, Fe's work. Nothing is fetched until the
+  // block is about to scroll into view; the switches make no sound until they are pressed, and only one plays at a time.
+  (() => {
+    const box = document.getElementById('glass-duo');
+    if (!box) return;
+    let started = false;
+    const start = () => {
+      if (started) return; started = true;
+      const css = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'viewer/glass-switch.css' });
+      const js = Object.assign(document.createElement('script'), { src: 'viewer/glass-switch.js' });
+      js.onload = () => { for (const slot of box.querySelectorAll('.gd-slot')) window.MolAstriaGlassSwitch?.mount(slot, { variant: slot.dataset.variant, mute: false }); };
+      document.head.append(css, js);
+    };
+    if (!('IntersectionObserver' in window)) return start();
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); start(); } }, { rootMargin: '400px 0px' });
+    io.observe(box);
+  })();
   // The logo loop is decoration: it starts after the page has loaded and stays on its poster under reduced motion
   // or when the site-wide switch in backdrop.js turned logo animations off (data-logo-motion="off" on <html>).
   // backdrop.js fires molastria:logo-motion when the switch changes, so the badge follows it without a reload.

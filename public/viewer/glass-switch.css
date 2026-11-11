@@ -1,0 +1,34 @@
+/* 液态玻璃音乐开关（glass-switch.js）。每个开关是一块小舞台：底色随开关在冷暖之间过渡（--t 由脚本写在 .gsw 上）。
+   舞台颜色自带深浅两套，跟站点主题（html[data-theme]，没选时跟系统）。 */
+.gsw{
+  --stage-off:#dce8e6;--stage-on:#ebe0f3;--gsw-ink:#14222a;--gsw-muted:#5f7078;--glow-off:#19b8a6;--glow-on:#b45cff;
+  --gsw-rim:rgba(255,255,255,.75);--gsw-drop:rgba(20,50,70,.38);--t:0;
+  display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0;padding:30px 22px 22px;border-radius:18px;
+  background:color-mix(in oklab,var(--stage-on) calc(var(--t)*100%),var(--stage-off));color:var(--gsw-ink);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gsw-ink) 8%,transparent);
+}
+.gsw-blackhole{--stage-off:#e2e0ee;--stage-on:#f2e3df;--gsw-ink:#1d1a2b;--gsw-muted:#6c6782;--glow-off:#5b4bd6;--glow-on:#ff7a45;--gsw-drop:rgba(40,30,80,.38)}
+:root[data-theme=dark] .gsw{--stage-off:#071315;--stage-on:#150b1d;--gsw-ink:#e9f3f2;--gsw-muted:#86a0a3;--gsw-rim:rgba(255,255,255,.4);--gsw-drop:rgba(0,0,0,.7)}
+:root[data-theme=dark] .gsw-blackhole{--stage-off:#0b0a15;--stage-on:#190d13;--gsw-ink:#ecebf5;--gsw-muted:#918ca8}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .gsw{--stage-off:#071315;--stage-on:#150b1d;--gsw-ink:#e9f3f2;--gsw-muted:#86a0a3;--gsw-rim:rgba(255,255,255,.4);--gsw-drop:rgba(0,0,0,.7)}
+  :root:not([data-theme=light]) .gsw-blackhole{--stage-off:#0b0a15;--stage-on:#190d13;--gsw-ink:#ecebf5;--gsw-muted:#918ca8}
+}
+.gsw-wrap{position:relative;width:min(380px,100%)}
+.gsw-glow{position:absolute;inset:18% 6% -6%;border-radius:999px;filter:blur(30px);pointer-events:none;
+  background:color-mix(in oklab,var(--glow-on) calc(var(--t)*100%),var(--glow-off));opacity:calc(.28 + var(--t)*.34)}
+.gsw-switch{position:relative;display:block;width:100%;aspect-ratio:1.9;border:0;padding:0;margin:0;border-radius:999px;overflow:hidden;cursor:pointer;
+  touch-action:pan-y;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;
+  box-shadow:0 0 0 1px var(--gsw-rim),0 2px 3px rgba(255,255,255,.5),0 22px 44px -18px var(--gsw-drop),0 8px 14px -6px var(--gsw-drop)}
+.gsw-switch:focus-visible{outline:3px solid var(--gsw-ink);outline-offset:6px}
+.gsw-switch canvas{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit}
+/* 外层玻璃罩：顶部高光、底部回光、内缘暗角 */
+.gsw-switch::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 60% at 50% -12%,rgba(255,255,255,.34),rgba(255,255,255,0) 60%),radial-gradient(90% 40% at 50% 112%,rgba(255,255,255,.16),rgba(255,255,255,0) 70%);
+  box-shadow:inset 0 1.5px 1px rgba(255,255,255,.75),inset 0 -1.5px 1px rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.14),inset 0 16px 26px -8px rgba(0,0,0,.55),inset 0 -14px 24px -10px rgba(0,0,0,.45)}
+.gsw-status{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.gsw-state{font-size:18px;font-weight:600;letter-spacing:.18em;margin-right:-.18em}
+.gsw-blackhole .gsw-state{letter-spacing:.32em;margin-right:-.32em}
+.gsw[lang=en] .gsw-state{letter-spacing:.06em;margin-right:-.06em}
+.gsw-read{font-family:var(--font-mono,ui-monospace,Menlo,Consolas,monospace);font-size:12.5px;color:var(--gsw-muted);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.gsw-hint{margin:2px 0 0;font-size:12.5px;line-height:1.7;color:var(--gsw-muted);max-width:28em;text-wrap:balance}
