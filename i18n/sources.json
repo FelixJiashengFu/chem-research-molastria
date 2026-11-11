@@ -12790,10 +12790,28 @@
  "请求失败（{0}）。{1}": [
   "ai/ai.js"
  ],
+ "这不是图片文件": [
+  "ai/ai.js"
+ ],
+ "图片太大（超过 40 MB）": [
+  "ai/ai.js"
+ ],
+ "这张图片读不出来，换成 JPEG 或 PNG 试试": [
+  "ai/ai.js"
+ ],
  "未知的 AI 服务": [
   "ai/ai.js"
  ],
  "还没有配置 API key。点右上角「AI 助手」→ 设置，填入 DeepSeek 或 Muse 的 key。": [
+  "ai/ai.js"
+ ],
+ "托管额度现在的模型不能看图。可以在 AI 设置里换成 DeepSeek（自己的 key）或 Meta Muse Spark。": [
+  "ai/ai.js"
+ ],
+ "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再试。": [
+  "ai/ai.js"
+ ],
+ "这个模型可能不能看图（400）。换一个能看图的模型，或去掉图片再试。{0}": [
   "ai/ai.js"
  ],
  "服务端返回错误": [
@@ -12968,6 +12986,9 @@
  "输入问题": [
   "ai/ai.js"
  ],
+ "附上照片": [
+  "ai/ai.js"
+ ],
  "拖动调整宽度": [
   "ai/ai.js"
  ],
@@ -12989,10 +13010,37 @@
  "提问方式": [
   "ai/ai.js"
  ],
- "输入问题，回车发送，Shift+回车换行": [
+ "输入问题，回车发送，Shift+回车换行；可以粘贴图片": [
+  "ai/ai.js"
+ ],
+ "附上照片或截图（拍照、相册，或直接粘贴）": [
   "ai/ai.js"
  ],
  "发送": [
+  "ai/ai.js"
+ ],
+ "请看这几张图：说明图里是什么，再讲解其中的概念或解答其中的问题。": [
+  "ai/ai.js"
+ ],
+ "请看这张图：说明图里是什么，再讲解其中的概念或解答其中的问题。": [
+  "ai/ai.js"
+ ],
+ "一次最多附 {0} 张图。": [
+  "ai/ai.js"
+ ],
+ "现在的模型不能看图，这一问会改用 {0}。": [
+  "ai/ai.js"
+ ],
+ "现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再发送。": [
+  "ai/ai.js"
+ ],
+ "附图 {0}": [
+  "ai/ai.js"
+ ],
+ "移除这张图": [
+  "ai/ai.js"
+ ],
+ "正在读取图片": [
   "ai/ai.js"
  ],
  "选一位陪你做研究的伙伴": [
@@ -13043,13 +13091,19 @@
  "思考过程（{0} 字）": [
   "ai/ai.js"
  ],
+ "{0} （这一问附了 {1} 张图，模型当时看过）": [
+  "ai/ai.js"
+ ],
  "[{0}] {1} 来源：{2}{3} 链接：{4} 摘要：{5}": [
   "ai/ai.js"
  ],
  "（没有检索到相关条目）": [
   "ai/ai.js"
  ],
- "问题：{0} 本站目录检索结果： {1}": [
+ "（问题附了 {0} 张图，先看图）": [
+  "ai/ai.js"
+ ],
+ "问题：{0}{1} 本站目录检索结果： {2}": [
   "ai/ai.js"
  ],
  "（模型没有返回正文，可以把思考强度调低后重试）": [
@@ -15506,6 +15560,24 @@
  "请输入 PyPI 包名（如 pyscf）或 GitHub 仓库网址": [
   "code/code-core.js"
  ],
+ "消息格式不对": [
+  "deploy/account-worker.js"
+ ],
+ "托管额度只支持文字内容": [
+  "deploy/account-worker.js"
+ ],
+ "托管额度只支持文字和图片": [
+  "deploy/account-worker.js"
+ ],
+ "图片太大，换一张小一点的再试": [
+  "deploy/account-worker.js"
+ ],
+ "图片要是 JPEG、PNG、WebP 或 GIF": [
+  "deploy/account-worker.js"
+ ],
+ "一次最多附 {0} 张图": [
+  "deploy/account-worker.js"
+ ],
  "账号服务还没有配置 Stripe 密钥": [
   "deploy/account-worker.js"
  ],
@@ -15698,6 +15770,9 @@
  "提交太频繁，请稍后再试": [
   "deploy/account-worker.js"
  ],
+ "内容太大：图片太多或太大，少附几张再试": [
+  "deploy/account-worker.js"
+ ],
  "订单参考号格式不对": [
   "deploy/account-worker.js"
  ],
@@ -15788,10 +15863,10 @@
  "免配 key 的 AI 托管额度是 Pro 支持者的服务；也可以在 AI 设置里填自己的 key，永久免费": [
   "deploy/account-worker.js"
  ],
- "托管额度只支持文字内容": [
+ "内容太长：这次约 {0} 字，托管额度一次最多 {1} 字。可以清空对话或缩短内容后重试。": [
   "deploy/account-worker.js"
  ],
- "内容太长：这次约 {0} 字，托管额度一次最多 {1} 字。可以清空对话或缩短内容后重试。": [
+ "托管额度的 {0} 不能看图，换成 DeepSeek V4 Flash 再试": [
   "deploy/account-worker.js"
  ],
  "本月 AI 托管额度还剩 {0} 次，这次请求要计 {1} 次（长内容和 AI 实验室会多计）。可以缩短内容，或在 AI 设置里换成自己的 key。": [
@@ -16104,6 +16179,12 @@
   "learn/learn-core.js"
  ],
  "提取结果的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "识读结果的格式不对": [
+  "learn/learn-core.js"
+ ],
+ "没有从照片里读出文字": [
   "learn/learn-core.js"
  ],
  "总结的格式不对": [

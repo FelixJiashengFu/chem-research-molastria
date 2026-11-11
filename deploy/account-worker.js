@@ -55,6 +55,35 @@ const CODE_MINUTES = 10;
 const UNIT_CHARS = 12000, UNIT_TOKENS = 4096;  // one answer: this much input, this much output allowed
 const AUX_CHARS = 2000, AUX_TOKENS = 400;      // a short call (search keywords, connection test) must fit both
 const MAX_INPUT_CHARS = 48000;
+// Photos in hosted AI (the AI panel and the Study Desk): at most 4 per request, each a base64 JPEG/PNG/WebP/GIF data
+// URL the page has already shrunk (public/ai/ai.js readImage keeps one under ~600 000 characters). One photo counts
+// like IMAGE_CHARS characters of text: DeepSeek bills an image as at most ~1 000 tokens (api-docs.deepseek.com/guides/vision).
+const MAX_IMAGES = 4, MAX_IMAGE_CHARS = 900_000, IMAGE_CHARS = 3000, AI_MAX_BODY = 3_000_000;
+const IMAGE_URL = /^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/;
+/** Hosted-AI messages, checked and rebuilt: text, or (user turns only) text and image parts. → {messages, chars, images} */
+function hostedMessages(messages) {
+  let chars = 0, images = 0;
+  const out = messages.map((m) => {
+    const role = ['system', 'user', 'assistant'].includes(m?.role) ? m.role : null;
+    if (!role) throw fail(400, '消息格式不对');
+    if (typeof m.content === 'string') { chars += m.content.length; return { role, content: m.content }; }
+    if (!Array.isArray(m.content) || role !== 'user') throw fail(400, '托管额度只支持文字内容');
+    const parts = m.content.map((p) => {
+      if (p?.type === 'text' && typeof p.text === 'string') { chars += p.text.length; return { type: 'text', text: p.text }; }
+      const url = p?.type === 'image_url' ? String(p.image_url?.url || '') : '';
+      if (!url) throw fail(400, '托管额度只支持文字和图片');
+      if (url.length > MAX_IMAGE_CHARS) throw fail(413, '图片太大，换一张小一点的再试');
+      if (!IMAGE_URL.test(url)) throw fail(400, '图片要是 JPEG、PNG、WebP 或 GIF');
+      images++;
+      return { type: 'image_url', image_url: { url } };
+    });
+    return { role, content: parts };
+  });
+  if (images > MAX_IMAGES) throw fail(413, `一次最多附 ${MAX_IMAGES} 张图`);
+  return { messages: out, chars: chars + images * IMAGE_CHARS, images };
+}
+/** Hosted models that read images (env HOSTED_VISION_MODELS, default deepseek-flash). */
+const visionModels = (env) => (list(env.HOSTED_VISION_MODELS).length ? list(env.HOSTED_VISION_MODELS) : ['deepseek-flash']);
 
 const now = () => Math.floor(Date.now() / 1000);
 const monthKey = () => new Date().toISOString().slice(0, 7);
@@ -795,7 +824,8 @@ async function route(request, env, cors) {
   if (path === '/sync') return sync(request, env, cors, url); // larger bodies than the rest, read there
 
   const raw = request.method === 'GET' ? '' : await request.text();
-  if (raw.length > Number(env.MAX_BODY || 200000)) throw fail(413, '请求内容过大');
+  // Hosted AI may carry photos, so it takes larger bodies than the rest.
+  if (raw.length > (path === '/ai/chat' ? AI_MAX_BODY : Number(env.MAX_BODY || 200000))) throw fail(413, path === '/ai/chat' ? '内容太大：图片太多或太大，少附几张再试' : '请求内容过大');
   let body = {};
   if (raw) { try { body = JSON.parse(raw); } catch { throw fail(400, '请求不是合法的 JSON'); } }
   const key = `${request.method} ${path}`;
@@ -998,14 +1028,15 @@ async function route(request, env, cors) {
     const a = await access(env, me);
     if (!a.pro && !freeQuota(env)) throw fail(403, '免配 key 的 AI 托管额度是 Pro 支持者的服务；也可以在 AI 设置里填自己的 key，永久免费');
     if (!(await allow(env, `ai:${me}`, 30, 60))) throw fail(429, '请求太频繁，请稍后再试');
-    const messages = Array.isArray(body.messages) ? body.messages : [];
-    if (messages.some((m) => typeof m?.content !== 'string')) throw fail(400, '托管额度只支持文字内容');
-    const chars = messages.reduce((n, m) => n + m.content.length, 0);
+    const checked = hostedMessages(Array.isArray(body.messages) ? body.messages : []);
+    const { chars } = checked;
+    body.messages = checked.messages;
     if (chars > MAX_INPUT_CHARS) throw fail(413, `内容太长：这次约 ${chars} 字，托管额度一次最多 ${MAX_INPUT_CHARS} 字。可以清空对话或缩短内容后重试。`);
     const tokens = Math.min(Number(body.max_tokens) || UNIT_TOKENS, Number(env.MAX_TOKENS || 12000));
     // A DeepSeek model the quota no longer offers (an older page, or a saved setting) is answered by the first one it does offer.
     const offered = hostedModels(env);
     if (!offered.includes(body.model) && /^deepseek-/.test(String(body.model)) && /^deepseek-/.test(offered[0] || '')) body.model = offered[0];
+    if (checked.images && !visionModels(env).includes(body.model)) throw fail(400, `托管额度的 ${body.model} 不能看图，换成 DeepSeek V4 Flash 再试`);
     const weight = modelWeight(env, body.model);
     // Short calls get their own, larger allowance; anything longer counts as answers, in proportion to what it can cost.
     const aux = Number(body.max_tokens) > 0 && tokens <= AUX_TOKENS && chars <= AUX_CHARS;

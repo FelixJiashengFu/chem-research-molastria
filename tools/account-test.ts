@@ -383,6 +383,29 @@ await test("hosted AI limits: oversized and non-text requests are refused and no
   eq(usage(), { asks: 0, aux: 0 });
 });
 
+await test("hosted AI: photos go to a model that reads them, are checked, and count like 3000 characters each", async () => {
+  sqlite.prepare("DELETE FROM usage").run();
+  env.MONTHLY_ASKS = "100";
+  const jpeg = "data:image/jpeg;base64," + "A".repeat(4000);
+  const photo = (n = 1, text = "这是什么？", url = jpeg) => [{ role: "user", content: [{ type: "text", text }, ...Array.from({ length: n }, () => ({ type: "image_url", image_url: { url, detail: "high" } }))] }];
+  let r = await asked({ messages: photo() });
+  eq(r.status, 200, "one photo");
+  eq(lastUpstream.messages[0].content[1], { type: "image_url", image_url: { url: jpeg } }, "rebuilt without extra fields");
+  eq(usage().asks, 1, "a photo and a question are one answer");
+  eq((await asked({ messages: photo(4, "x".repeat(1000)) })).status, 200, "four photos");
+  eq(usage().asks, 3, "4 × 3000 + 1000 characters is two units");
+  eq((await asked({ messages: photo(5) })).status, 413, "five photos");
+  eq((await asked({ messages: photo(1, "x", "data:image/svg+xml;base64,AAAA") })).status, 400, "svg");
+  eq((await asked({ messages: photo(1, "x", "data:image/png;base64,AA<script>") })).status, 400, "not base64");
+  eq((await asked({ messages: photo(1, "x", "data:image/png;base64," + "A".repeat(900_001)) })).status, 413, "one photo too large");
+  eq((await asked({ messages: [{ role: "assistant", content: photo()[0].content }] })).status, 400, "photos only in the learner's turns");
+  eq((await asked({ model: "deepseek-v4-pro", messages: photo() })).status, 400, "a model that does not read images");
+  eq(usage().asks, 3, "refused requests not counted");
+  const big = call("POST", "/ai/chat", { provider: "deepseek", model: "deepseek-flash", messages: photo(4, "x", "data:image/jpeg;base64," + "A".repeat(800_000)), max_tokens: 4096 }, adminToken);
+  eq((await big).status, 413, "body over 3 MB");
+  eq((await asked({ messages: photo(3, "x", "data:image/jpeg;base64," + "A".repeat(600_000)) })).status, 200, "three large photos fit (body ~1.8 MB)");
+});
+
 await test("hosted AI limits: a request bigger than what is left says so and is not counted", async () => {
   sqlite.prepare("DELETE FROM usage").run();
   env.MONTHLY_ASKS = "2";

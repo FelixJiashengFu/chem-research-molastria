@@ -208,11 +208,77 @@
     }
   }
 
+  // ── images ──────────────────────────────────────────────────────────────
+  // A message's content is a string, or (for a user turn with photos) OpenAI-style parts:
+  // [{type:'text', text}, {type:'image_url', image_url:{url:'data:image/jpeg;base64,…'}}]. The account service counts
+  // each photo like IMAGE_CHARS characters of text (deploy/account-worker.js has the same number).
+  const IMAGE_CHARS = 3000, MAX_IMAGES = 4;
+  const imagesOf = (content) => (Array.isArray(content) ? content.filter((p) => p?.type === 'image_url') : []);
+  const textOf = (content) => (Array.isArray(content) ? content.filter((p) => p?.type === 'text').map((p) => p.text).join('\n') : String(content ?? ''));
+  const charsOf = (content) => textOf(content).length + imagesOf(content).length * IMAGE_CHARS;
+  const hasImages = (messages) => messages.some((m) => imagesOf(m.content).length);
+  /** Text plus photos as one user turn's content (a plain string when there are no photos). */
+  const withImages = (text, images = []) => (images.length ? [{ type: 'text', text: String(text || '') }, ...images.slice(0, MAX_IMAGES).map((url) => ({ type: 'image_url', image_url: { url } }))] : String(text || ''));
+  // Which models read images. DeepSeek: the Flash model takes images in Chat Completions (api-docs.deepseek.com/guides/vision,
+  // checked 2026-11-11); V4 Pro is not listed there. Muse Spark reads images (the Meta page uses it); Wonder is not
+  // documented as doing so. Another compatible API: the visitor's own model; the request is simply tried.
+  const SEES = { deepseek: /^deepseek-flash$/, proxy: /^(deepseek-flash|muse-spark)/, hosted: /^deepseek-flash$/, muse: /^muse-spark/ };
+  const canSee = (provider, model) => provider === 'custom' || !!SEES[provider]?.test(String(model || ''));
+  /** The model to use for a request with images: the chosen one if it reads images, else one of the same provider that does (or ''). */
+  function visionModel(s = settings()) {
+    const p = PROVIDERS[s.provider], m = modelOf(s);
+    if (!p) return '';
+    if (canSee(s.provider, m)) return m;
+    if (s.provider === 'muse') return 'muse-spark-1.3';
+    if (p.hosted) return p.models.some(([id]) => id === 'deepseek-flash') ? 'deepseek-flash' : '';
+    return s.provider === 'deepseek' || s.provider === 'proxy' ? 'deepseek-flash' : '';
+  }
+  /**
+   * A photo or screenshot as a JPEG data URL, at most `max` px on the long side (DeepSeek scales images to about
+   * 1300 px anyway), plus a small thumbnail for the page. Transparent areas turn white.
+   * @returns {Promise<{url:string, thumb:string, width:number, height:number}>}
+   */
+  async function readImage(file, { max = 1280, quality = 0.82, thumb = 160 } = {}) {
+    if (!file || !/^image\//i.test(file.type || '') && !/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(file.name || '')) throw new Error('这不是图片文件');
+    if (file.size > 40 * 1024 * 1024) throw new Error('图片太大（超过 40 MB）');
+    let img;
+    try { img = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch {
+      img = await new Promise((resolve, reject) => {
+        const el = new Image(), u = URL.createObjectURL(file);
+        el.onload = () => { URL.revokeObjectURL(u); resolve(el); };
+        el.onerror = () => { URL.revokeObjectURL(u); reject(new Error('这张图片读不出来，换成 JPEG 或 PNG 试试')); };
+        el.src = u;
+      });
+    }
+    const w0 = img.width || img.naturalWidth, h0 = img.height || img.naturalHeight;
+    if (!w0 || !h0) throw new Error('这张图片读不出来，换成 JPEG 或 PNG 试试');
+    const draw = (side, q) => {
+      const k = Math.min(1, side / Math.max(w0, h0)), w = Math.max(1, Math.round(w0 * k)), h = Math.max(1, Math.round(h0 * k));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
+      g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
+      g.drawImage(img, 0, 0, w, h);
+      return { url: c.toDataURL('image/jpeg', q), width: w, height: h };
+    };
+    let out = draw(max, quality);
+    // Keep each photo under ~600 000 characters so a request with four of them stays small for the account service.
+    for (let side = max, q = quality; out.url.length > 600000 && side > 480;) { side = Math.round(side * 0.8); q = Math.max(0.6, q - 0.06); out = draw(side, q); }
+    const small = draw(thumb, 0.7).url;
+    img.close?.();
+    return { ...out, thumb: small };
+  }
+  /** Image files from a paste or drop (screenshots, photos copied from the Photos app). */
+  function imageFiles(dt) {
+    const files = [...(dt?.files || [])].filter((f) => /^image\//i.test(f.type));
+    return files.length ? files : [...(dt?.items || [])].filter((it) => it.kind === 'file' && /^image\//i.test(it.type)).map((it) => it.getAsFile()).filter(Boolean);
+  }
+
   // The hosted quota counts a long request as several answers (see deploy/account-worker.js), so a long
   // conversation sends only as much of its history as one answer allows. The system prompt and the newest message stay.
   function fitHosted(messages, maxChars = 12000) {
     const kept = [...messages];
-    const size = () => kept.reduce((n, m) => n + String(m.content).length, 0);
+    const size = () => kept.reduce((n, m) => n + charsOf(m.content), 0);
     while (size() > maxChars && kept.length > 2) kept.splice(kept[0].role === 'system' ? 1 : 0, 1);
     return kept;
   }
@@ -228,7 +294,12 @@
     if (!PROVIDERS[provider]) throw new Error('未知的 AI 服务');
     const conf = { ...s, provider };
     if (!isReady(conf)) throw Object.assign(new Error('还没有配置 API key。点右上角「AI 助手」→ 设置，填入 DeepSeek 或 Muse 的 key。'), { code: 'no-key' });
-    const model = o.model || modelOf(conf);
+    const images = hasImages(o.messages);
+    let model = o.model || modelOf(conf);
+    if (images && !canSee(provider, model)) {
+      model = o.model ? '' : visionModel(conf);
+      if (!model) throw Object.assign(new Error(PROVIDERS[provider].hosted ? '托管额度现在的模型不能看图。可以在 AI 设置里换成 DeepSeek（自己的 key）或 Meta Muse Spark。' : '现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再试。'), { code: 'no-vision' });
+    }
     const effort = o.effort || s.effort[provider];
     const messages = PROVIDERS[provider].hosted ? fitHosted(o.messages) : o.messages;
     const body = { model, messages, stream: true, stream_options: { include_usage: true }, max_tokens: o.maxTokens || 4096 };
@@ -262,6 +333,7 @@
       const message = detail?.error?.message || detail?.message || '';
       // The account service writes its own plain-language errors (quota used up, signed out…).
       if (PROVIDERS[provider].hosted && message) throw Object.assign(new Error(T(message)), { status: response.status });
+      if (images && response.status === 400 && provider === 'custom') throw Object.assign(new Error(`这个模型可能不能看图（400）。换一个能看图的模型，或去掉图片再试。${String(message).slice(0, 200)}`), { status: 400, code: 'no-vision' });
       throw Object.assign(new Error(friendly(response.status, message)), { status: response.status });
     }
     const used = response.headers.get('X-MolAstria-Usage');
@@ -517,7 +589,22 @@
 .cai-box:focus-within{border-color:var(--accent-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-2) 22%,transparent),0 6px 22px rgb(0 0 0/.06)}
 .cai-box textarea{display:block;width:100%;box-sizing:border-box;resize:none;min-height:52px;max-height:200px;margin:0;border:0;outline:none;background:transparent;color:var(--ink);font:14px/1.6 var(--font-sans);padding:11px 15px 2px}
 .cai-box textarea::placeholder{color:var(--faint)}
-.cai-row{display:flex;align-items:flex-end;gap:8px;padding:2px 7px 7px 15px}
+.cai-row{display:flex;align-items:flex-end;gap:8px;padding:2px 7px 7px 9px}
+.cai-attach{flex:none;width:34px;height:34px;margin-bottom:1px;display:grid;place-items:center;border-radius:50%;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.cai-attach:hover,.cai-attach:focus-within{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--ink)}
+.cai-attach:focus-within{outline:2px solid var(--accent-2);outline-offset:1px}
+.cai-tray{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px 0}
+.cai-tray[hidden]{display:none}
+.cai-thumb{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;border:1px solid var(--line-strong);background:var(--soft,rgb(127 127 127/.12))}
+.cai-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.cai-thumb button{position:absolute;top:3px;right:3px;width:22px;height:22px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgb(0 0 0/.62);color:#fff;cursor:pointer}
+.cai-busy::after{content:"";position:absolute;inset:0;margin:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--accent);animation:cai-spin .8s linear infinite}
+@keyframes cai-spin{to{transform:rotate(360deg)}}
+.cai-tray-note{flex-basis:100%;color:var(--muted);font-size:12px;line-height:1.45}
+.cai-drawer[data-drop] .cai-box{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.cai-pics{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 7px}
+.cai-pics img{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent-ink) 35%,transparent)}
+@media (prefers-reduced-motion:reduce){.cai-busy::after{animation:none}}
 .cai-row small{color:var(--faint);font-size:11px;line-height:1.45;margin-right:auto;padding-bottom:7px}
 .cai-send{flex:none;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:background .15s}
 .cai-send:hover{background:var(--accent-hover)}
@@ -729,7 +816,8 @@
     send: '<path d="M12 19V5.5M5.5 12 12 5.5 18.5 12"/>',
     catalog: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.6-4.6"/>',
     free: '<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7.5L7 19.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
-    go: '<path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/>'
+    go: '<path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/>',
+    image: '<rect x="3.5" y="5" width="17" height="14" rx="2.2"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17.5l5-4.6 3.6 3.2 2.9-2.6L20 17.5"/>'
   };
 
   // ── entrance ────────────────────────────────────────────────────────────
@@ -779,7 +867,7 @@
     drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><button type="button" class="cai-orb cai-orb-btn" data-act="mascot" data-mascot="${mascotOf().id}" aria-haspopup="true" aria-expanded="false" title="更换助手的形象" aria-label="更换助手的形象">${mascotSvg()}</button><div class="cai-mascots" role="menu" aria-label="选择助手的形象" hidden translate="no"></div><div class="cai-id"><h2 id="cai-title">AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"><span></span>${svgIcon(ICON.caret, 14)}</button></div><div class="cai-tools"><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">${svgIcon(ICON.reset)}</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">${svgIcon(ICON.tune)}</button><button type="button" class="cai-ib" data-act="close" title="关闭" aria-label="关闭">${svgIcon(ICON.close)}</button></div></div>
       <div class="cai-modes" role="tablist" aria-label="提问方式"><button type="button" role="tab" data-mode="catalog">问目录（带出处）</button><button type="button" role="tab" data-mode="free">自由提问</button></div>
       <div class="cai-log" aria-live="polite"></div>
-      <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行"></textarea><div class="cai-row"><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
+      <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><div class="cai-tray" hidden></div><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行；可以粘贴图片"></textarea><div class="cai-row"><label class="cai-attach" title="附上照片或截图（拍照、相册，或直接粘贴）"><input type="file" accept="image/*" multiple data-attach class="cai-sr"><span class="cai-sr">附上照片</span>${svgIcon(ICON.image, 18)}</label><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
     document.body.append(drawer);
     setupGrip(drawer.querySelector('.cai-grip'));
     // Typing in the panel while the film plays skips it (Esc is handled below, so it skips instead of closing).
@@ -792,6 +880,7 @@
       else if (act === 'settings') openSettings();
       else if (act === 'stop') busy?.abort();
       else if (act === 'clear') { history[mode] = []; persist(); renderLog(); }
+      else if (act === 'unattach') { attached.splice(Number(e.target.closest('[data-act]').dataset.i), 1); renderTray(); }
       const m = e.target.closest('[data-mode]')?.dataset.mode;
       if (m) { mode = m; renderLog(); }
       const sug = e.target.closest('[data-sug]');
@@ -815,9 +904,55 @@
     const input = drawer.querySelector('textarea');
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); drawer.querySelector('form').requestSubmit(); } });
     input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = `${Math.min(200, input.scrollHeight)}px`; });
-    drawer.querySelector('form').addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (q) { input.value = ''; input.style.height = ''; ask(q); } });
+    drawer.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (busy || attaching) return;
+      const q = input.value.trim(), pics = attached.splice(0);
+      if (!q && !pics.length) return;
+      input.value = ''; input.style.height = '';
+      renderTray();
+      ask(q || T(pics.length > 1 ? '请看这几张图：说明图里是什么，再讲解其中的概念或解答其中的问题。' : '请看这张图：说明图里是什么，再讲解其中的概念或解答其中的问题。'), pics);
+    });
+    // Photos: the picture button (camera or photo library on a phone or iPad), paste, or drop onto the panel.
+    input.addEventListener('paste', (e) => {
+      const files = imageFiles(e.clipboardData);
+      if (!files.length) return;
+      if (!e.clipboardData.getData('text/plain')) e.preventDefault();
+      attach(files);
+    });
+    drawer.addEventListener('dragover', (e) => { if ([...(e.dataTransfer?.items || [])].some((it) => it.kind === 'file')) { e.preventDefault(); drawer.dataset.drop = ''; } });
+    drawer.addEventListener('dragleave', (e) => { if (!drawer.contains(e.relatedTarget)) delete drawer.dataset.drop; });
+    drawer.addEventListener('drop', (e) => { delete drawer.dataset.drop; const files = imageFiles(e.dataTransfer); if (files.length) { e.preventDefault(); attach(files); } });
+    drawer.addEventListener('change', (e) => { if (e.target.matches?.('[data-attach]')) { attach([...e.target.files]); e.target.value = ''; } });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) { if (film) endFilm(); else closeDrawer(); } });
     document.addEventListener('chemhub:ai-config', refreshDrawer);
+  }
+  // Photos waiting to go with the next question: {url (sent), thumb (shown and kept in the conversation)}.
+  const attached = [];
+  let attaching = 0;
+  async function attach(files) {
+    const room = MAX_IMAGES - attached.length;
+    let note = files.length > room ? T(`一次最多附 ${MAX_IMAGES} 张图。`) : '';
+    attaching++;
+    renderTray();
+    for (const f of files.slice(0, Math.max(0, room))) {
+      try { attached.push(await readImage(f)); } catch (err) { note = T(err.message); }
+    }
+    attaching--;
+    renderTray(note);
+    if (attached.length && !canSee(settings().provider, modelOf(settings()))) {
+      const v = visionModel();
+      renderTray(note || (v ? T(`现在的模型不能看图，这一问会改用 ${v}。`) : T('现在选的模型不能看图。在 AI 设置里换成 DeepSeek V4 Flash 或 Meta Muse Spark 再发送。')));
+    }
+    drawer.querySelector('textarea').focus({ preventScroll: true });
+  }
+  function renderTray(note = '') {
+    const tray = drawer?.querySelector('.cai-tray');
+    if (!tray) return;
+    tray.hidden = !attached.length && !attaching && !note;
+    tray.innerHTML = attached.map((a, i) => `<span class="cai-thumb"><img src="${a.thumb}" alt="${esc(T(`附图 ${i + 1}`))}"><button type="button" data-act="unattach" data-i="${i}" title="${esc(T('移除这张图'))}" aria-label="${esc(T('移除这张图'))}">${svgIcon(ICON.close, 12)}</button></span>`).join('')
+      + (attaching ? `<span class="cai-thumb cai-busy" aria-label="${esc(T('正在读取图片'))}"></span>` : '')
+      + (note ? `<small class="cai-tray-note">${esc(note)}</small>` : '');
   }
   function toggleMascots(open) {
     const menu = drawer?.querySelector('.cai-mascots'), btn = drawer?.querySelector('.cai-orb-btn');
@@ -906,16 +1041,20 @@
     return `<div class="cai-usage">${esc(m.model || '')} · 输入 ${m.usage.prompt_tokens ?? '?'} / 输出 ${m.usage.completion_tokens ?? '?'} token${cost}${m.ms ? ` · ${(m.ms / 1000).toFixed(1)} s` : ''}</div>`;
   }
   function renderMsg(m) {
-    if (m.role === 'user') return `<div class="cai-msg user">${esc(m.content)}</div>`;
+    if (m.role === 'user') return `<div class="cai-msg user">${m.thumbs?.length ? `<span class="cai-pics">${m.thumbs.map((t, i) => `<img src="${esc(safeImg(t))}" alt="${esc(T(`附图 ${i + 1}`))}">`).join('')}</span>` : ''}${esc(m.content)}</div>`;
     if (m.error) return `<div class="cai-err">${esc(m.error)}${m.code === 'no-key' ? ' <button type="button" class="cai-btn" data-act="settings" style="margin-left:6px;height:28px">去设置</button>' : ''}</div>`;
     const cited = new Set([...String(m.content).matchAll(/\[(\d{1,2}(?:\s*[,，]\s*\d{1,2})*)\]/g)].flatMap((x) => x[1].split(/[,，]/).map((n) => Number(n.trim()))));
     const refs = (m.refs || []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => cited.has(r.n));
     return `<div class="cai-msg bot"><div class="cai-who">${orb()}<span class="cai-name" translate="no">MolAstria</span>${m.refs ? ` · 检索到 ${m.refs.length} 条目录资源` : ''}${m.pending ? ' · 生成中…' : ''}</div><div class="cai-bubble">${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}</div>${usageLine(m)}</div>`;
   }
-  async function ask(question) {
+  // Earlier turns go back to the model as text; their photos are sent only once, with the question they came with.
+  const priorText = (m) => (m.thumbs?.length ? `${m.content}\n（这一问附了 ${m.thumbs.length} 张图，模型当时看过）` : m.content);
+  const safeImg = (u) => (/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(String(u)) ? u : '');
+  async function ask(question, pics = []) {
     if (busy) return;
     const list = history[mode];
-    list.push({ role: 'user', content: question });
+    const images = pics.map((p) => p.url);
+    list.push(pics.length ? { role: 'user', content: question, thumbs: pics.map((p) => p.thumb) } : { role: 'user', content: question });
     const bot = { role: 'assistant', content: '', pending: true };
     list.push(bot);
     renderLog();
@@ -940,11 +1079,11 @@
         const refs = await retrieve(query, 12);
         bot.refs = refs;
         const context = refs.length ? refs.map((r, i) => `[${i + 1}] ${r.title}\n来源：${r.sources.join(' / ')}${r.date ? ` · ${r.date}` : ''}\n链接：${r.url}\n摘要：${r.excerpt}`).join('\n\n') : '（没有检索到相关条目）';
-        const prior = list.slice(0, -2).filter((m) => !m.error).slice(-6).map((m) => ({ role: m.role, content: m.content }));
-        messages = [{ role: 'system', content: SYSTEM.catalog + LANG_NOTE() }, ...prior, { role: 'user', content: `问题：${question}\n\n本站目录检索结果：\n${context}` }];
+        const prior = list.slice(0, -2).filter((m) => !m.error).slice(-6).map((m) => ({ role: m.role, content: priorText(m) }));
+        messages = [{ role: 'system', content: SYSTEM.catalog + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(`问题：${question}${images.length ? `\n（问题附了 ${images.length} 张图，先看图）` : ''}\n\n本站目录检索结果：\n${context}`, images) }];
       } else {
-        const prior = list.slice(0, -1).filter((m) => !m.error && !m.pending).slice(-10).map((m) => ({ role: m.role, content: m.content }));
-        messages = [{ role: 'system', content: SYSTEM.free + LANG_NOTE() }, ...prior];
+        const prior = list.slice(0, -2).filter((m) => !m.error && !m.pending).slice(-9).map((m) => ({ role: m.role, content: priorText(m) }));
+        messages = [{ role: 'system', content: SYSTEM.free + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(question, images) }];
       }
       const r = await chat({ messages, signal: controller.signal, maxTokens: 4096, onDelta: (_, full) => { bot.content = full; paint(); }, onReasoning: (_, full) => { bot.reasoning = full; paint(); } });
       Object.assign(bot, { content: r.text || '（模型没有返回正文，可以把思考强度调低后重试）', reasoning: r.reasoning, usage: r.usage, cost: r.cost, model: r.model, ms: r.ms });
@@ -983,6 +1122,6 @@
     if (lastFocus?.isConnected) lastFocus.focus();
   }
 
-  window.ChemAI = { chat, parseJSON, retrieve, openDrawer, closeDrawer, openSettings, settings, isReady: () => isReady(), providers: PROVIDERS, markdown, costOf };
+  window.ChemAI = { chat, parseJSON, retrieve, openDrawer, closeDrawer, openSettings, settings, isReady: () => isReady(), providers: PROVIDERS, markdown, costOf, readImage, imageFiles, withImages, visionModel: () => visionModel(), canSee, MAX_IMAGES };
   document.dispatchEvent(new Event('chemhub:ai-ready'));
 })();

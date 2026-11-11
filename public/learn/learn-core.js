@@ -944,6 +944,13 @@
     return { props, chains };
   }
   /** Summary reply → {goalSentence, props, chains}. */
+  /** {transcript, goal}: the transcript is kept as a text file (≤ FILE_RULES.maxBytes characters), the goal ≤ 200. */
+  function parsePhoto(j) {
+    if (!isObj(j)) bad('识读结果的格式不对');
+    const transcript = clip(stripTags(String(j.transcript ?? '')).replace(/\r\n?/g, '\n').trim(), FILE_RULES.maxBytes);
+    if (!transcript) bad('没有从照片里读出文字');
+    return { transcript, goal: str(j.goal, 200) };
+  }
   function parseSummary(j) {
     if (!isObj(j)) bad('总结的格式不对');
     const goalSentence = str(j.goalSentence, 600);
@@ -1058,6 +1065,15 @@ ${RULES}
 ${RULES}
 {"props":["…","…"],"chains":[{"premises":["…","…"],"conclusion":"…"}]}
 If nothing is worth keeping: {"props":[],"chains":[]}.`,
+
+    photo: `The learner attached PHOTOS (a textbook page, handwritten notes, a problem sheet, a whiteboard, a figure or a screenshot). A tutor who cannot see them will teach from your text, so report what is there.
+- transcript: everything legible, in reading order: headings, text, problem numbers, equations, table rows, labels. Keep the photo's own language; do not translate. Mark what you cannot read as [illegible].
+- For each figure, graph, diagram or structure add one line "[figure] …": what it shows, axes and units, curves, labelled parts, molecules (name them only if certain).
+- With several photos, start each with "[photo 1]", "[photo 2]" …
+- Do not solve, explain, correct or add anything. If a photo holds nothing readable, say so in one line.
+- goal: one short sentence in {lang} for what the learner most likely wants to understand from these photos (e.g. "弄懂……为什么……" / "Understand why …"). Empty if it is unclear. If the learner's GOAL is given, keep to it.
+${RULES}
+{"transcript":"…","goal":"…"}`,
 
     summary: `The learner has reached the GOAL. Close the session.
 - goalSentence: the goal as one sentence that, after these STEPS, the learner should find obvious. Build it from the ideas they just secured.
@@ -1283,6 +1299,19 @@ ${RULES}
   function buildExtract(o = {}) {
     return messages('extract', o, [{ title: 'NOTES:', text: String(o.text ?? ''), prio: 10 }]);
   }
+  /**
+   * → messages asking for {transcript, goal} from photos: the system prompt, then one user turn of text and images
+   * (OpenAI-style parts; images are data URLs). The transcript then travels with the session like an attached text file.
+   */
+  function buildPhoto(o = {}) {
+    const images = arr(o.images).filter((u) => typeof u === 'string' && u).slice(0, 4);
+    const msgs = messages('photo', o, [
+      { title: 'GOAL (may be empty):', text: String(o.goal ?? ''), prio: 5 },
+      { title: 'PHOTOS:', text: `${images.length} photo${images.length === 1 ? '' : 's'} attached below.`, prio: 10 }
+    ]);
+    msgs[1] = { role: 'user', content: [{ type: 'text', text: msgs[1].content }, ...images.map((url) => ({ type: 'image_url', image_url: { url } }))] };
+    return msgs;
+  }
   /** → messages asking for {goalSentence, props, chains} at the end of a learn session. */
   function buildSummary(o = {}) {
     const s = o.session || {};
@@ -1326,8 +1355,8 @@ ${RULES}
     gradeChoice, calibration, needsRepair,
     normText, dice, similar, addProp, addProps, addChain, removeProp, searchProps, relatedProps, neighbours, graphData,
     pickPractice, recordPractice, splitNotes,
-    stripTags, truncate, parseProbe, parsePlan, parseStep, parseGrade, parsePracticeItem, parsePracticeGrade, parseExtraction, parseSummary, parseDiagram,
-    DEFAULT_PROMPTS, effectivePrompts, buildProbe, buildPlan, buildTeach, teachContext, buildGrade, buildPractice, buildPracticeGrade, buildExtract, buildSummary,
+    stripTags, truncate, parseProbe, parsePlan, parseStep, parseGrade, parsePracticeItem, parsePracticeGrade, parseExtraction, parseSummary, parseDiagram, parsePhoto,
+    DEFAULT_PROMPTS, effectivePrompts, buildProbe, buildPlan, buildTeach, teachContext, buildGrade, buildPractice, buildPracticeGrade, buildExtract, buildSummary, buildPhoto,
     buildGrounding, addUsage, rng
   };
   if (typeof module === 'object' && module.exports) module.exports = API;

@@ -329,10 +329,10 @@
     const src = form.srcId ? S.sources.find((s) => s.id === form.srcId) : null;
     const chs = src ? S.chapters(src.id) : [];
     const ch = chs.find((c) => c.id === form.chId);
-    const accept = C.FILE_RULES.ext.map((e) => `.${e}`).join(',');
+    const accept = [...C.FILE_RULES.ext.map((e) => `.${e}`), 'image/*'].join(',');
     return `<article class="ln-card ln-new" aria-labelledby="ln-new-h">
       <h2 id="ln-new-h">${L('这次想弄懂什么？', 'What do you want to understand?')}</h2>
-      <label class="ln-field"><span>${L('学习目标', 'Goal')}</span><textarea id="ln-goal" rows="3" data-form="goal" translate="no" placeholder="${esc(t('我想弄懂……（比如：为什么氢原子的能级只和主量子数有关）', 'I want to understand… (e.g. why hydrogen levels depend only on the principal quantum number)'))}">${esc(form.goal)}</textarea></label>
+      <label class="ln-field"><span>${L('学习目标', 'Goal')}</span><textarea id="ln-goal" rows="3" data-form="goal" translate="no" placeholder="${esc(t('我想弄懂……（比如：为什么氢原子的能级只和主量子数有关）。也可以直接粘贴题目或课本的照片', 'I want to understand… (e.g. why hydrogen levels depend only on the principal quantum number). You can also paste a photo of a problem or a textbook page'))}">${esc(form.goal)}</textarea></label>
       <fieldset class="ln-src"><legend>${L('从站内章节开始（可选）', 'Start from a MolAstria chapter (optional)')}</legend>
         <p class="muted">${L('选一章，它核对过的讲解、误区和自测会作为 AI 的依据。', 'Pick a chapter; its checked explanation, pitfalls and self-checks become the AI’s grounding.')}</p>
         <div class="ln-row">
@@ -342,9 +342,11 @@
         ${ch ? `<div class="ln-chip-src"><span>${L('依据', 'Grounding')}</span><b translate="no">${esc(t(ch.name.zh, ch.name.en))}</b>${ch.blurb ? X(t(ch.blurb.zh, ch.blurb.en), 'small', 'muted') : ''}<a href="${esc(ch.href)}" target="_blank" rel="noopener">${L('打开这一章', 'Open the chapter')} ${ico()}</a><button type="button" class="text-button" data-act="src-clear">${L('不用了', 'Remove')}</button></div>` : ''}
       </fieldset>
       <fieldset class="ln-files"><legend>${L('附带文件（可选）', 'Attach files (optional)')}</legend>
-        <p class="muted">${L(`纯文本文件（${C.FILE_RULES.ext.join(' ')}），每个不超过 60 KB，最多 3 个；内容会随请求发给 AI。`, `Plain-text files (${C.FILE_RULES.ext.join(' ')}), up to 60 KB each, at most 3; their contents go to the AI with each request.`)}</p>
-        <label class="button small ln-file-btn"><input type="file" id="ln-files" accept="${accept}" multiple class="sr-only"${form.files.length >= C.FILE_RULES.max ? ' disabled' : ''}>${L('选择文件', 'Choose files')}</label>
-        ${form.files.length ? `<ul class="ln-file-list">${form.files.map((f, i) => `<li>${X(f.name)}<small translate="no">${(f.size / 1024).toFixed(1)} KB</small><button type="button" class="ln-x" data-act="file-remove" data-i="${i}"><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button></li>`).join('')}</ul>` : ''}
+        <p class="muted">${L(`纯文本文件（${C.FILE_RULES.ext.join(' ')}），每个不超过 60 KB；或者照片和截图（一次最多 4 张，也可以直接粘贴到上面的学习目标里）。合计最多 3 项，内容会随请求发给 AI。照片先由能看图的模型读成文字，你可以核对、修改，之后只发这段文字。`, `Plain-text files (${C.FILE_RULES.ext.join(' ')}), up to 60 KB each, or photos and screenshots (up to 4 at a time; you can also paste them into the goal above). At most 3 items in all; their contents go to the AI with each request. A model that reads images first turns photos into text, which you can check and edit; after that only the text is sent.`)}</p>
+        <div class="ln-row"><label class="button small ln-file-btn"><input type="file" id="ln-files" accept="${accept}" multiple class="sr-only"${form.files.length >= C.FILE_RULES.max || job ? ' disabled' : ''}>${L('选择文件', 'Choose files')}</label><label class="button small ln-file-btn"><input type="file" id="ln-photos" accept="image/*" multiple class="sr-only"${form.files.length >= C.FILE_RULES.max || job ? ' disabled' : ''}>${L('拍照或选照片', 'Take or choose photos')}</label></div>
+        ${form.files.length ? `<ul class="ln-file-list">${form.files.map((f, i) => f.photo ? `<li class="ln-photo"><span class="ln-thumbs">${f.thumbs.map((u, k) => `<img src="${esc(u)}" alt="${esc(t(`照片 ${k + 1}`, `Photo ${k + 1}`))}">`).join('')}</span>${X(f.name)}${f.reading ? `<small>${L('识读中…', 'Reading…')}</small>` : '<small></small>'}<button type="button" class="ln-x" data-act="file-remove" data-i="${i}"${f.reading ? ' disabled' : ''}><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button>
+          ${f.reading ? '' : `<details class="ln-photo-text"><summary>${L('看 AI 读出的文字（可以改）', 'See the text the AI read (editable)')}</summary><label class="ln-field"><span class="sr-only">${L('照片里的文字', 'Text from the photos')}</span><textarea rows="8" data-photo-text="${i}" translate="no">${esc(f.text)}</textarea></label></details>`}</li>`
+          : `<li>${X(f.name)}<small translate="no">${(f.size / 1024).toFixed(1)} KB</small><button type="button" class="ln-x" data-act="file-remove" data-i="${i}"><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button></li>`).join('')}</ul>` : ''}
       </fieldset>
       ${form.msg ? `<p class="ln-hint-msg" role="alert">${esc(form.msg)}</p>` : ''}
       <div class="ln-row ln-actions"><button type="button" class="button primary" data-act="new"${dis()}>${L('开始：先摸底', 'Start with the probe')} ${ico('right')}</button></div>
@@ -382,6 +384,8 @@
   }
   async function addFiles(list) {
     form.msg = '';
+    const photos = list.filter((f) => /^image\//i.test(f.type) || /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(f.name));
+    if (photos.length) { await addPhotos(photos); list = list.filter((f) => !photos.includes(f)); if (!list.length) return; }
     for (const f of list) {
       const ok = C.acceptFile(f.name, f.size, form.files.length);
       if (!ok.ok) {
@@ -393,6 +397,37 @@
       try { form.files.push({ name: f.name, size: f.size, text: await f.text() }); } catch { form.msg = t(`读不了“${f.name}”。`, `Could not read “${f.name}”.`); }
     }
     render();
+  }
+
+  // 照片：先缩小，再让能看图的模型读成文字（transcript）；之后它和文本文件一样随请求发出，照片本身不保存。
+  let photoSeq = 0;
+  async function addPhotos(list) {
+    const A = ai();
+    form.msg = '';
+    if (!A?.readImage) { form.msg = t('AI 模块没有载入，请刷新页面。', 'The AI module did not load; reload the page.'); render(); return; }
+    if (form.files.length >= C.FILE_RULES.max) { form.msg = t('最多附带 3 项。', 'At most 3 items.'); render(); return; }
+    if (blocked() || !needAI()) return;
+    if (!A.visionModel()) { form.msg = t('现在选的 AI 服务不能看图。在 AI 设置里换成 DeepSeek V4 Flash、Meta Muse Spark 或 MolAstria 托管额度再试。', 'The AI service you chose cannot read images. Switch to DeepSeek V4 Flash, Meta Muse Spark or the MolAstria hosted allowance in the AI settings.'); render(); return; }
+    if (list.length > A.MAX_IMAGES) form.msg = t(`一次最多 ${A.MAX_IMAGES} 张照片，先读前 ${A.MAX_IMAGES} 张。`, `Up to ${A.MAX_IMAGES} photos at a time; reading the first ${A.MAX_IMAGES}.`);
+    const entry = { name: '', size: 0, text: '', photo: true, thumbs: [], reading: true };
+    await run('new', async () => { try {
+      jobLabel(t('正在读取照片…', 'Loading the photos…'));
+      const imgs = [];
+      for (const f of list.slice(0, A.MAX_IMAGES)) imgs.push(await A.readImage(f));
+      photoSeq++;
+      Object.assign(entry, { name: imgs.length > 1 ? t(`照片 ${photoSeq}（${imgs.length} 张，AI 识读）`, `Photos ${photoSeq} (${imgs.length}, read by AI)`) : t(`照片 ${photoSeq}（AI 识读）`, `Photo ${photoSeq} (read by AI)`), thumbs: imgs.map((x) => x.thumb) });
+      form.files.push(entry);
+      render();
+      const j = await call('new', t('AI 正在读照片…', 'The AI is reading the photos…'), C.buildPhoto({ goal: form.goal.trim(), images: imgs.map((x) => x.url), lang: aiLang, prompts }), null, 4000);
+      const p = C.parsePhoto(j);
+      Object.assign(entry, { text: p.transcript, size: p.transcript.length, reading: false });
+      if (!form.goal.trim() && p.goal) form.goal = form.autoGoal = p.goal;
+    } catch (err) {
+      // 没读成：去掉这一项（“重试”会重新读）
+      const i = form.files.indexOf(entry);
+      if (i >= 0) form.files.splice(i, 1);
+      throw err;
+    } });
   }
 
   // 依据：所选章节的文字 + 目录检索到的资源（[n]），按会话缓存
@@ -415,7 +450,8 @@
     const goal = form.goal.trim();
     if (!goal) { form.msg = t('先写下学习目标。', 'Write a goal first.'); render(); $('#ln-goal')?.focus(); return; }
     if (blocked() || !needAI()) return;
-    const sess = C.createSession(state, { kind: 'learn', goal, title: form.source && form.goal === form.autoGoal ? form.source.label.split(' · ').pop() : '', source: form.source || { type: 'free' }, files: form.files });
+    const files = form.files.filter((f) => !f.reading && f.text.trim()).map((f) => ({ name: f.name, size: f.photo ? f.text.length : f.size, text: f.text }));
+    const sess = C.createSession(state, { kind: 'learn', goal, title: form.source && form.goal === form.autoGoal ? form.source.label.split(' · ').pop() : '', source: form.source || { type: 'free' }, files });
     save();
     Object.assign(form, { goal: '', autoGoal: '', srcId: '', chId: '', source: null, files: [], msg: '' });
     openLearn = sess.id;
@@ -1247,9 +1283,18 @@
       const msg = $(`[data-msg="${CSS.escape(el.dataset.draft)}"]`);
       if (msg) msg.textContent = '';
     } else if (el.dataset.form === 'goal') { form.goal = el.value; }
+    else if ('photoText' in el.dataset) { const f = form.files[Number(el.dataset.photoText)]; if (f?.photo) { f.text = el.value.slice(0, C.FILE_RULES.maxBytes); f.size = f.text.length; } }
     else if (el.dataset.pform === 'focus') pform.focus = el.value;
     else if ('imp' in el.dataset) { imp.text = el.value; const c = $('#imp-count'); if (c) c.innerHTML = chunkNote(imp.text.trim() ? C.splitNotes(imp.text, 3500) : []); }
     else if (el.id === 'kg-q') { kgQuery = el.value; applySearch(); }
+  });
+  // 学习目标里粘贴照片或截图：当作附带的照片
+  document.addEventListener('paste', (e) => {
+    if (e.target?.id !== 'ln-goal' || !ai()?.imageFiles) return;
+    const files = ai().imageFiles(e.clipboardData);
+    if (!files.length) return;
+    if (!e.clipboardData.getData('text/plain')) e.preventDefault();
+    addPhotos(files);
   });
   document.addEventListener('change', async (e) => {
     const el = e.target;
@@ -1263,6 +1308,7 @@
     }
     else if (el.dataset.pform === 'k') pform.k = Number(el.value) || 5;
     else if (el.id === 'ln-files') { await addFiles([...el.files]); }
+    else if (el.id === 'ln-photos') { const fs = [...el.files]; el.value = ''; if (fs.length) await addPhotos(fs); }
     else if (el.id === 'imp-file') {
       const f = el.files[0];
       if (!f) return;

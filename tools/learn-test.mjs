@@ -15,7 +15,8 @@ const clock = (start = 1_700_000_000_000) => { let t = start; return { now: () =
 const seq = () => { let i = 0; return () => ((i++ * 0.6180339887) % 1); };
 const planOf = (nodes, goalId) => C.normalizePlan({ nodes, goalId });
 const node = (id, deps = [], status = 'todo', label = `idea ${id}`) => ({ id, label, deps, status });
-const size = (msgs) => msgs.reduce((n, m) => n + m.content.length, 0);
+const textOf = (c) => (Array.isArray(c) ? c.filter((p) => p.type === 'text').map((p) => p.text).join('\n') : c);
+const size = (msgs) => msgs.reduce((n, m) => n + textOf(m.content).length, 0);
 // The upstream project's name must not appear in our code or prompts (docs/DECISIONS.md is the one place for credit).
 const UPSTREAM = new RegExp(['learn', 'harness'].join(''), 'i');
 const HAS_HTML = /<\s*\/?\s*(script|img|b|i|div|span|a|iframe|svg|p)\b[^<>]*>/i;
@@ -697,7 +698,8 @@ test('every builder: TASK marker first, language named, JSON shape, roles, and c
     practice: C.buildPractice({ props: held.slice(0, 3), avoidTopics: ['a', 'b'], lang: 'zh' }),
     practiceGrade: C.buildPracticeGrade({ item: { problem: 'P', kind: 'choice', options: ['x', 'y'], expected: 1, hints: ['1', '2', '3'], hintsUsed: 2, solution: 'S'.repeat(5000) }, answer: { value: 0, confidence: 'fair', thinking: 't' }, lang: 'zh' }),
     extract: C.buildExtract({ text: 'n'.repeat(30000), lang: 'zh' }),
-    summary: C.buildSummary({ session: s, lang: 'zh' })
+    summary: C.buildSummary({ session: s, lang: 'zh' }),
+    photo: C.buildPhoto({ goal: s.goal, images: ['data:image/jpeg;base64,AAAA'], lang: 'zh' })
   };
   assert.deepEqual(Object.keys(cases).sort(), [...Object.keys(C.DEFAULT_PROMPTS), 'grade'].filter((v, i, a) => a.indexOf(v) === i).sort());
   for (const [task, msgs] of Object.entries(cases)) {
@@ -710,7 +712,7 @@ test('every builder: TASK marker first, language named, JSON shape, roles, and c
     assert.match(msgs[0].content, /never LaTeX/i, task);
     assert.match(msgs[0].content, /Never invent sources/i, task);
     assert.match(msgs[0].content, /No HTML/i, task);
-    assert.match(msgs[1].content, /简体中文/, `${task}: reply-language reminder`);
+    assert.match(textOf(msgs[1].content), /简体中文/, `${task}: reply-language reminder`);
     assert.ok(size(msgs) < 11000, `${task}: ${size(msgs)} chars must stay under ~11 000 (hosted quota cuts at 12 000)`);
   }
   // Teach keeps what matters when cutting.
@@ -922,4 +924,21 @@ test('reserved ids are refused: __proto__, constructor and other Object.prototyp
   const m = C.migrate(raw);
   assert.equal(m.sessions[0].probe.questions[0].id, 'q1');
   assert.equal(Object.getPrototypeOf(m.sessions[0].probe.answers), Object.prototype);
+});
+
+test('photos: one user turn of text and images; the transcript comes back as a file-sized text and a goal', () => {
+  const imgs = Array.from({ length: 6 }, (_, i) => `data:image/jpeg;base64,A${i}`);
+  const m = C.buildPhoto({ goal: '', images: imgs, lang: 'en' });
+  assert.equal(m[1].content[0].type, 'text');
+  assert.match(m[1].content[0].text, /4 photos attached/);
+  assert.deepEqual(m[1].content.slice(1).map((p) => p.image_url.url), imgs.slice(0, 4), 'at most 4 photos');
+  assert.doesNotMatch(m[1].content[0].text, /GOAL/, 'an empty goal is left out');
+  assert.match(C.buildPhoto({ goal: '弄懂这道题', images: imgs.slice(0, 1), lang: 'zh' })[1].content[0].text, /GOAL[^\n]*\n弄懂这道题/);
+  assert.match(C.DEFAULT_PROMPTS.photo, /Do not solve/);
+  const p = C.parsePhoto({ transcript: '<b>题 3</b>\r\n求 ψ(x) 的归一化常数。' + 'x'.repeat(70000), goal: '弄懂<script>归一化</script>' });
+  assert.ok(p.transcript.startsWith('题 3\n求 ψ(x)'), 'tags stripped, line ends normalised');
+  assert.ok(p.transcript.length <= C.FILE_RULES.maxBytes);
+  assert.doesNotMatch(p.goal, /</);
+  assert.throws(() => C.parsePhoto({ transcript: '  ' }), /没有从照片里读出文字/);
+  assert.throws(() => C.parsePhoto('text'), /格式不对/);
 });
