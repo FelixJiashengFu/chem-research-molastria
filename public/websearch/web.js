@@ -12,7 +12,10 @@
   const enabled = () => { try { return localStorage.getItem(KEY) !== 'off'; } catch { return true; } };
   const setEnabled = (on) => { try { if (on) localStorage.removeItem(KEY); else localStorage.setItem(KEY, 'off'); } catch { /* this visit only */ } };
   const groups = () => window.MolAstriaTerms?.groups || [];
-  const NAMES = { openalex: 'OpenAlex', crossref: 'Crossref', wikipedia: 'Wikipedia', 'wikipedia-zh': '中文维基', pubchem: 'PubChem', github: 'GitHub' };
+  // Pro supporters also get general web results through the account service (deploy/account-worker.js POST /web/search).
+  const account = () => { try { const a = JSON.parse(localStorage.getItem('molastria-account') || 'null'), t = localStorage.getItem('molastria-session'); const base = String(window.MOLASTRIA_PAY?.accountApi || a?.api || '').replace(/\/+$/, ''); return a?.pro && t && base ? { base, token: t } : null; } catch { return null; } };
+  let webOff = false; // the account service said web search is not set up (503) or not for this account (403): stop asking this visit
+  const NAMES = { web: 'Brave', openalex: 'OpenAlex', crossref: 'Crossref', wikipedia: 'Wikipedia', 'wikipedia-zh': '中文维基', pubchem: 'PubChem', github: 'GitHub' };
   const cache = new Map();
   let openalexOut = false; // OpenAlex said the free daily budget for this IP is used up: ask Crossref for papers instead
 
@@ -55,24 +58,44 @@
       }
       onUpdate(results, status, plan);
     };
+    const askWeb = async () => {
+      const acct = account();
+      if (!acct || webOff) return;
+      status.web = 'wait';
+      let r;
+      try {
+        const res = await fetch(`${acct.base}/web/search`, { method: 'POST', signal, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${acct.token}` }, body: JSON.stringify({ q: plan.raw }) });
+        r = { status: res.status, json: await res.json().catch(() => null) };
+      } catch { r = { status: signal.aborted ? -1 : 0 }; }
+      if (signal.aborted) return;
+      if (r.status === 200 && r.json) { status.web = 'ok'; results.push(...W.parse('web', r.json)); }
+      else if (r.status === 503 && /开通/.test(r.json?.error?.message || '') || r.status === 403 || r.status === 401) { webOff = true; delete status.web; }
+      else status.web = r.status === 429 ? 'quota' : 'fail';
+      onUpdate(results, status, plan);
+    };
     const first = W.urls(plan, { openalexFailed: openalexOut });
-    onUpdate(results, Object.fromEntries(first.map(([s]) => [s, 'wait'])), plan);
-    await Promise.all(first.map(([s, u]) => ask(s, u)));
+    const wait = Object.fromEntries(first.map(([s]) => [s, 'wait']));
+    if (account() && !webOff) wait.web = 'wait';
+    onUpdate(results, wait, plan);
+    await Promise.all([...first.map(([s, u]) => ask(s, u)), askWeb()]);
     return { results, status, plan };
   }
 
   function mount(box, { catalog = [], detail = null } = {}) {
     const index = W.catalogIndex(catalog);
-    box.innerHTML = `<div class="wr-head"><h3 id="wr-h"><span class="wr-dot" aria-hidden="true"></span>网上最匹配</h3><p class="wr-status" role="status" aria-live="polite"></p><label class="wr-toggle"><input type="checkbox"> 联网搜索</label></div><ol class="wr-list"></ol><div class="wr-foot"><button type="button" class="wr-more button" hidden></button><p class="wr-links"></p><p class="wr-note">查询词由你的浏览器直接发给 OpenAlex、Wikipedia、PubChem 和 GitHub，不经过本站服务器，也不计 AI 额度。外部结果按和查询的匹配程度排序，没有经过本站核对。</p></div>`;
+    box.innerHTML = `<div class="wr-head"><h3 id="wr-h"><span class="wr-dot" aria-hidden="true"></span>网上最匹配</h3><p class="wr-status" role="status" aria-live="polite"></p><label class="wr-toggle"><input type="checkbox"> 联网搜索</label></div><ol class="wr-list"></ol><div class="wr-foot"><button type="button" class="wr-more button" hidden></button><p class="wr-links"></p><p class="wr-note">查询词由你的浏览器直接发给 OpenAlex、Wikipedia、PubChem 和 GitHub，不经过本站服务器，也不计 AI 额度。外部结果按和查询的匹配程度排序，没有经过本站核对。<span class="wr-pro"></span></p></div>`;
     box.setAttribute('aria-labelledby', 'wr-h');
     const $ = (s) => box.querySelector(s);
     const toggle = $('.wr-toggle input');
+    const proNote = () => { $('.wr-pro').innerHTML = account() ? ' 你是 Pro 支持者，还会收到整个网页的结果（Brave Search，经本站账号服务转发，每天有次数上限）。' : ' <a href="pro/index.html">Pro 支持者</a>还会收到整个网页的结果。'; };
+    proNote();
+    document.addEventListener('molastria:account', proNote);
     toggle.checked = enabled();
     let ctl = null, timer = 0, current = '', shown = 0, full = false, last = { list: [], status: {}, plan: null };
 
     // Each piece of the status line is its own element, so i18n.js can translate it as one string.
     const statusParts = (st) => {
-      const parts = Object.entries(st).filter(([, v]) => v === 'busy' || v === 'fail').map(([s, v]) => v === 'busy' ? `${NAMES[s] || s} 暂时限流` : `${NAMES[s] || s} 连不上`);
+      const parts = Object.entries(st).filter(([, v]) => v === 'busy' || v === 'fail' || v === 'quota').map(([s, v]) => v === 'quota' ? '今天的网页搜索次数用完了' : v === 'busy' ? `${NAMES[s] || s} 暂时限流` : `${NAMES[s] || s} 连不上`);
       return Object.values(st).includes('wait') ? ['正在联网搜索…', ...parts] : parts;
     };
     function draw() {

@@ -144,6 +144,16 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 - **有人提交了 Issue：** 题目是“网状查询：术语表里没有的词”。挑出真正的术语（不是拼错的、不是整句话），在 `public/search-terms.js` 里加一组或加进已有的组：一组只放互为同义的写法，至少一个中文、一个英文（复习卡片要用），4 个字母以内的英文缩写会按整词匹配。加完跑 `node --test tools/net-test.mjs tools/review-test.mjs`，再 `node tools/build-api.mjs`（开放数据接口的术语表跟着变）。
 - **试一个词现在认不认得：** `node -e` 里照 `tools/net-test.mjs` 开头的写法建网，看 `net.query('词').mode` 是不是 `entity`。
 
+## 联网搜索（首页“网上最匹配”）
+
+首页搜索框停下约 0.7 秒或按回车后，浏览器直接问 OpenAlex（额度用完改问 Crossref）、Wikipedia、PubChem、GitHub，结果合成一个列表画在站内结果上面（`public/websearch/`）。这部分不要 key、不经过账号服务。**Pro 支持者**另外经账号服务的 `POST /web/search` 拿 Brave Search 的通用网页结果。
+
+- **开通 Pro 的网页搜索（站长）：** 在 [api-dashboard.search.brave.com](https://api-dashboard.search.brave.com/) 注册、绑卡、建一个 Search 的 API key；然后在 `deploy` 目录的终端里运行 `npx.cmd wrangler secret put BRAVE_SEARCH_KEY` 自己粘贴，再 `npx.cmd wrangler deploy`（`WEB_DAILY_PRO`、`WEB_MONTHLY_ALL` 是 wrangler.toml 里新加的变量，要部署才生效；不用改数据库）。没有这个 secret 时接口回答 503，网页就安静地不显示网页结果。
+- **额度：** 每个 Pro 每天 `WEB_DAILY_PRO` 次（默认 50），全站每 30 天 `WEB_MONTHLY_ALL` 次（默认 1500，约 7.5 美元，扣掉 Brave 每月送的约 5 美元）。改了再 `wrangler deploy`。失败的搜索不计次数。Brave 后台也可以设每月花费上限，两边都设最稳。
+- **验证：** 部署后用 Pro 账号在首页搜 `pyscf`，展开“再看 N 条”，应有来源是 Brave 的“网页”一类；免费账号看到的说明里有“Pro 支持者还会收到整个网页的结果”。
+- **关掉：** `npx.cmd wrangler secret delete BRAVE_SEARCH_KEY`，或把 `WEB_DAILY_PRO` 设成 `"0"` 再部署。
+- **看用量：** `npx.cmd wrangler d1 execute molastria --remote --command "SELECT key, n, reset FROM throttle WHERE key LIKE 'web%'"`（`web-all` 是全站这 30 天的次数；`web:` 开头的行含邮箱，不要贴出来）。
+
 ## 基础科学栏目（/fundamental-science/）
 
 内容全部在 `public/fundamental-science/fs-data.js`，中英两版并排写（`T(中文, English)`），页面按站点语言取用，不经过 i18n 翻译。
@@ -387,9 +397,14 @@ npx.cmd wrangler secret put RESEND_API_KEY
 npx.cmd wrangler secret put DEEPSEEK_API_KEY
 ```
 
+```bash
+npx.cmd wrangler secret put BRAVE_SEARCH_KEY
+```
+
 - **Stripe：** Developers → API keys → Create restricted key，只开 Customers、Checkout Sessions、Subscriptions 三项 Read。
 - **Resend：** API Keys，Sending access。
 - **DeepSeek：** platform.deepseek.com → API keys。
+- **Brave Search：** api-dashboard.search.brave.com → API Keys（Pro 的网页搜索用）。
 - **Cloudflare：** wrangler 用 OAuth 登录（`npx.cmd wrangler login`），没有长期密钥。
 
 写入后验证：`npx wrangler secret list --name molastria-account`，再跑 `node tools/e2e/live.mjs`。

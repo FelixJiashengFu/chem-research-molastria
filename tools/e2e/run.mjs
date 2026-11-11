@@ -383,6 +383,28 @@ check('web search: best web matches sit above the catalogue, Chinese is bridged,
   await finish(q);
 });
 
+check('web search for Pro: general web results come through the account service; free accounts are pointed to Pro', async () => {
+  const p = await open();
+  await go(p, '/pro/account.html');
+  await signIn(p, 'pro@example.com');
+  await go(p, '/index.html?q=pyscf');
+  // Plenty of catalogue hits: the web list starts folded at three, so open it before looking for the web page.
+  await p.waitForFunction(() => /共 4 条/.test(document.querySelector('#web-results .wr-status').textContent), null, { timeout: 8000 });
+  if (await p.isVisible('#web-results .wr-more')) await p.click('#web-results .wr-more');
+  assert.ok(await p.$$eval('#web-results .wr-src', (s) => s.some((x) => x.textContent === 'Brave')), 'a Brave web result');
+  assert.match(await text(p, '#web-results .wr-note'), /你是 Pro 支持者/);
+  await finish(p);
+  const f = await open();
+  await go(f, '/pro/account.html');
+  await signIn(f, 'webfree@example.com');
+  await go(f, '/index.html?q=pyscf');
+  await f.waitForSelector('#web-results .wr-item');
+  await f.waitForTimeout(800);
+  assert.ok(!(await f.$$eval('#web-results .wr-src', (s) => s.some((x) => x.textContent === 'Brave'))), 'no web results for a free account');
+  assert.equal(await f.getAttribute('#web-results .wr-pro a', 'href'), 'pro/index.html');
+  await finish(f);
+});
+
 check('hosted AI: a long conversation sends less history and still counts once', async () => {
   const p = await open();
   const sent = [];

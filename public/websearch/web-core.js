@@ -12,6 +12,8 @@
     wikipedia: { name: 'Wikipedia', kind: '百科', home: (q, zh) => `https://${zh ? 'zh' : 'en'}.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}` },
     pubchem: { name: 'PubChem', kind: '化合物', home: (q) => `https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(q)}` },
     github: { name: 'GitHub', kind: '开源代码', home: (q) => `https://github.com/search?type=repositories&q=${encodeURIComponent(q)}` },
+    // General web results (Brave Search) come through the account service, for Pro supporters only (POST /web/search).
+    web: { name: 'Brave', kind: '网页', home: (q) => `https://search.brave.com/search?q=${encodeURIComponent(q)}` },
   };
   const STOP = new Set(['the', 'a', 'an', 'of', 'and', 'or', 'for', 'in', 'on', 'to', 'with', 'how', 'what', 'which', 'is', 'are', 'do', 'does', 'use', 'using']);
   // Question words only: single characters such as 中 or 的 are left alone, since they are also parts of terms (中子, 目的).
@@ -103,6 +105,11 @@
       }
       if (source === 'pubchem') return (json.PropertyTable?.Properties || []).slice(0, 1).map((c) => ({ source, kind: '化合物', title: strip(c.Title || c.IUPACName || `CID ${c.CID}`),
         url: `https://pubchem.ncbi.nlm.nih.gov/compound/${Number(c.CID)}`, snippet: [c.MolecularFormula, c.MolecularWeight && `${c.MolecularWeight} g/mol`, c.IUPACName].filter(Boolean).join(' · '), meta: `CID ${Number(c.CID)}`, signal: 2, pos: 0 }));
+      if (source === 'web') return (json.results || []).map((r, pos) => {
+        let url = '';
+        try { const u = new URL(r.url); if (u.protocol === 'https:' || u.protocol === 'http:') url = u.href; } catch { /* dropped */ }
+        return { source, kind: '网页', title: strip(r.title), url, snippet: strip(r.snippet), meta: strip(r.site), signal: 1, pos };
+      }).filter((r) => r.title && r.url);
       if (source === 'github') return (json.items || []).map((r, pos) => ({ source, kind: '开源代码', title: strip(r.full_name), url: String(r.html_url || ''),
         snippet: strip(r.description), meta: `★ ${Number(r.stargazers_count) || 0}${r.language ? ' · ' + strip(r.language) : ''}`, signal: Math.log10((Number(r.stargazers_count) || 0) + 1) * 0.8, pos }))
         .filter((r) => /^https:\/\/github\.com\//.test(r.url));
