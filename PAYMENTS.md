@@ -23,7 +23,7 @@ The pricing page and checkout window are live; they only need your payment links
 | `team_year` | MolAstria 课题组版 | Recurring · Yearly · **¥100.00（每席位）** | 数量默认 5；勾选 **Let customers adjust quantity**，最少 5、最多 200 |
 | `sponsor` | 支持 MolAstria | One-off · **Customer chooses price**（建议默认 ¥50，最低 ¥10） | — |
 
-（2026-11-11 起 Pro 只有月付 ¥9.9，不再卖年付 `pro_year`。改价的做法：在原来的 Pro 产品下 **Add another price**，Recurring · Monthly · ¥9.90；给新价格建 Payment Link，填进 `config.js` 的 `pro_month`；旧的 ¥29/月、¥199/年 两个 Payment Link 点 **Deactivate**。课题组版同样：在课题组产品下新建 Recurring · Yearly · ¥100.00 的价格（按席位），新建 Payment Link（数量默认 5，允许调整，最少 5），换进 `config.js` 的 `team_year`，停用旧的 ¥298 链接。Stripe 里的价格建好后不能改金额，只能新建；已经在付旧价格的订阅不会自动变，要降价给老用户的话，在 **Subscriptions** 里逐个 **Update subscription** 换成新价格。）
+（2026-11-11 起 Pro 只有月付 ¥9.9，不再卖年付 `pro_year`；课题组版 ¥100/席/年。改价的做法：Stripe 里的价格建好后不能改金额，所以在产品下 **Add another price** 建新价格（Pro：Recurring · Monthly · ¥9.90；课题组：Recurring · Yearly · ¥100.00），再打开原来的 Payment Link → **More options → Edit**，**Add another product** 选新价格、把旧价格那一行 **Remove product**（课题组那行要重新设数量 5、勾选可调 5–99），**Update link**。这样链接地址不变，`config.js` 只改展示价格。¥199/年 的链接点 **Deactivate**。已经在付旧价格的订阅不会自动变，要降价给老用户的话，在 **Subscriptions** 里逐个 **Update subscription** 换成新价格。）
 
 然后对每个价格 **Create payment link**（或 **Payment Links → New**）：
 

@@ -17,8 +17,8 @@ window.MOLASTRIA_PAY = {
   usdPerCny: 0.15,             // 2026-10-28 汇率约 0.150
   plans: {
     // Pro 从 2026-11-11 起只有月付 ¥9.9。旧的年付 pro_year 不再出售，已订阅的人照常续费到期（账号服务只看 Stripe 里有没有有效订阅，不看价格）。
-    pro_month: { price: 9.9,  period: 'month', checkoutUrl: 'https://buy.stripe.com/cNidR3bUQ6fk1FZ78O8Zq01' },   // Stripe 里要换成 ¥9.90 / 月的新价格和新链接（见 PAYMENTS.md）；测试链接形如 https://buy.stripe.com/test_…
-    team_year: { price: 500, seatPrice: 100, seats: 5, period: 'year', checkoutUrl: 'https://buy.stripe.com/3cI14h8IEdHMfwP8cS8Zq04' },   // Stripe 里按席位 ¥100/年（2026-11-11 起，原 ¥298），数量最少 5；要换成新价格的新链接
+    pro_month: { price: 9.9,  period: 'month', checkoutUrl: 'https://buy.stripe.com/cNidR3bUQ6fk1FZ78O8Zq01' },   // 2026-11-11 起这条链接收 ¥9.90 / 月（链接地址没变，只换了价格）；测试链接形如 https://buy.stripe.com/test_…
+    team_year: { price: 500, seatPrice: 100, seats: 5, period: 'year', checkoutUrl: 'https://buy.stripe.com/3cI14h8IEdHMfwP8cS8Zq04' },   // Stripe 里按席位 ¥100/年（2026-11-11 起，原 ¥298），数量 5–99；链接地址没变，只换了价格
     sponsor:   { price: null, checkoutUrl: 'https://buy.stripe.com/bJe00d0c89rwbgzgJo8Zq03' }                     // Stripe 里设为“顾客自定金额”
   }
 };
