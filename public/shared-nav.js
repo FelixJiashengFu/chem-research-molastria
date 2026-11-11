@@ -27,7 +27,7 @@
       ['programming', 'programming/index.html', '编程语言', 'Programming', '计算物理与化学要用的编程语言，从入门到并行', 'The programming languages of computational physics and chemistry, from basics to parallel', 1, 'python fortran c++ julia code language 编程 语言'],
       ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],
       ['review', 'review/index.html', '复习卡片', 'Flashcards', '间隔重复复习术语和学过的知识点', 'Spaced repetition for terms and what you learned', 1, 'anki flashcard fsrs'],
-      ['qchem', 'qchem/index.html', '游乐场', 'Playground', '十五个量子小游戏和浏览器里的量子化学计算器', 'Fifteen quantum games and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator'],
+      ['qchem', 'qchem/index.html', '游乐场', 'Playground', '二十个小游戏（五个 3D）和浏览器里的量子化学计算器', 'Twenty games (five in 3D) and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch'],
     ] },
     { id: 'explore', zh: '探索', en: 'Explore', hint: ['量子世界与基础科学的前沿', 'Quantum science and the frontiers of fundamental science'], items: [
       ['quantum', 'quantum/index.html', '量子嘉年华', 'Quantum Carnival', '四个展馆：量子物理、计算机、算法、生物学', 'Four pavilions: quantum physics, computers, algorithms and biology', 1, 'quantum 量子', [['量子物理', 'Quantum physics', 'quantum/physics/index.html'], ['量子计算机', 'Quantum computers', 'quantum/computing/index.html'], ['量子算法', 'Quantum algorithms', 'quantum/algorithms/index.html'], ['量子生物学', 'Quantum biology', 'quantum/biology/index.html']]],

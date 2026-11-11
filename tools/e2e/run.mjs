@@ -523,7 +523,7 @@ check('playground: overview, then each game plays by its rules (configuration, s
   const p = await open();
   await go(p, '/qchem/index.html');
   assert.equal((await text(p, '.cr-mega a[data-id=qchem]')).trim().startsWith('游乐场'), true, 'nav label');
-  assert.equal(await p.locator('.play-card').count(), 16, 'calculator + 15 games in three zones');
+  assert.equal(await p.locator('.play-card').count(), 21, 'calculator + 20 games in four zones');
   assert.equal(await p.getAttribute('#qchem-frame', 'src'), null, 'the calculator loads only when its tab opens');
   // electron configuration: lithium, built by hand, then a Hund's-rule mistake on nitrogen
   await p.click('#play-tabs a[data-view=config]');
@@ -648,7 +648,7 @@ check('playground zones 2 and 3: spin filters, Bell game, circuits, error correc
 
 check('playground in English: games and canvas labels are translated, no Chinese left', async () => {
   const p = await open();
-  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube', '#play-wave']) {
+  for (const v of ['', '#play-box', '#play-config', '#play-tunnel', '#play-ring', '#play-lines', '#play-orbital', '#play-sg', '#play-bell', '#play-circuit', '#play-qec', '#play-grover', '#play-enaqt', '#play-planck', '#play-cube', '#play-wave', '#play-vsepr', '#play-chiral', '#play-miller', '#play-bloch']) {
     await go(p, '/qchem/index.html?lang=en' + v);
     await p.waitForFunction(() => !document.documentElement.dataset.i18n);
     const left = await p.evaluate(() => [...document.querySelectorAll('main .play-view:not([hidden]), #play-tabs')].map((e) => e.innerText).join('\n').match(/[^\n]*[㐀-鿿][^\n]*/g));
@@ -3763,6 +3763,94 @@ check('playground 15: a mirror steers the wave packet into the box; the demo is 
   assert.equal((await best()).tunnel, undefined);
   assert.ok(await p.$eval('#wv-cv', (e) => e.dataset.msPerStep));
   await finish(p);
+});
+
+check('playground 16–19 (3D hall): drag an electron pair, turn a molecule to read R/S, Miller planes, Bloch-sphere gates', async () => {
+  const p = await open();
+  const best = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-play') || '{}'));
+  // 16: CO₂. Drag one oxygen anywhere: on release it slides to the far side of the carbon, which is the minimum.
+  await go(p, '/qchem/index.html#play-vsepr');
+  await p.click('#vs-levels button >> nth=0');
+  const [x0, y0] = JSON.parse(await p.$eval('#vs-cv', (e) => e.dataset.points))[0], box = await p.locator('#vs-cv').boundingBox();
+  await p.mouse.move(box.x + x0, box.y + y0); await p.mouse.down(); await p.mouse.move(box.x + x0 + 30, box.y + y0 + 20, { steps: 8 }); await p.mouse.up();
+  await p.waitForSelector('#vs-ask:not([hidden])');
+  assert.match(await text(p, '#vs-msg'), /排好了！用了 1 次拖动/);
+  await p.click('#vs-choices button:text-is("直线形")');
+  assert.equal((await best()).vsepr.co2, 3);
+  // PCl₅: “auto relax” finds the trigonal bipyramid, a wrong name is marked, and nothing is scored.
+  await p.click('#vs-levels button >> nth=6'); await p.click('#vs-auto');
+  await p.waitForSelector('#vs-ask:not([hidden])');
+  await p.click('#vs-choices button:text-is("四方锥形")');
+  assert.match(await text(p, '#vs-msg'), /不是这个/);
+  await p.click('#vs-choices button:text-is("三角双锥形")');
+  assert.match(await text(p, '#vs-msg'), /不计分/);
+  assert.equal((await best()).vsepr.pcl5, undefined);
+  // 17: R and S stay locked until group 4 points away; turn the molecule with the keyboard (30° steps, then 10°).
+  await go(p, '/qchem/index.html#play-chiral');
+  assert.ok(await p.isDisabled('#ch-ans [data-a=R]'));
+  await p.focus('#ch-cv');
+  const away = async () => Number(await p.$eval('#ch-cv', (e) => e.dataset.away));
+  for (let i = 0; i < 400 && await away() > 28; i++) await p.keyboard.press(i < 156 ? (i % 13 === 12 ? 'Shift+ArrowDown' : 'Shift+ArrowRight') : (i % 37 === 36 ? 'ArrowDown' : 'ArrowRight'));
+  assert.ok(await p.isEnabled('#ch-ans [data-a=R]'));
+  await p.click('#ch-ans [data-a=R]');
+  assert.match(await text(p, '#ch-msg'), /^(对了：R|应该是 S)/);
+  // 18: a wrong answer is drawn and marked; the shown answer checks out but is not scored.
+  await go(p, '/qchem/index.html#play-miller');
+  await p.click('#mi-steps [data-i="0"][data-d="-1"]'); await p.click('#mi-steps [data-i="0"][data-d="-1"]'); await p.click('#mi-steps [data-i="1"][data-d="-1"]'); await p.click('#mi-steps [data-i="1"][data-d="-1"]');
+  await p.click('#mi-go');
+  assert.match(await text(p, '#mi-msg'), /^还不对：/);
+  await p.click('#mi-show'); await p.click('#mi-go');
+  assert.match(await text(p, '#mi-msg'), /看过答案，这一题不计分/);
+  // 19: |1⟩ without X is H Z H, three gates: three stars.
+  await go(p, '/qchem/index.html#play-bloch');
+  await p.click('#bl-levels button >> nth=1');
+  for (const g of ['H', 'Z', 'H']) { await p.click(`#bl-gates [data-g=${g}]`); await p.waitForFunction(() => !document.querySelector('#bl-gates button').disabled || /到了/.test(document.getElementById('bl-msg').textContent)); }
+  assert.match(await text(p, '#bl-msg'), /到了！★★★/);
+  assert.equal((await best()).bloch.one, 3);
+  await go(p, '/qchem/index.html');
+  assert.match(await text(p, '.play-card [data-best=bloch]'), /已得 3 \/ 27 颗星/);
+  await finish(p);
+});
+
+check('playground 20 (quantum world): the WebGL page loads in its frame, switches scenes, follows the language and theme, pauses when left', async () => {
+  const p = await open();
+  await go(p, '/qchem/index.html#play-world');
+  const frame = p.frameLocator('#qw-frame');
+  await frame.locator('#nav button[data-k=atom]').waitFor();
+  const f = p.frames().find((x) => x.url().includes('/qchem/world/'));
+  assert.ok(f, 'the frame loaded world/');
+  assert.match(f.url(), /embed=1/);
+  assert.equal(await f.$eval('#home', (e) => getComputedStyle(e).display), 'none', 'no "back" link inside the playground');
+  if (await f.$eval('#nogl', (e) => !e.hidden)) { console.log('    (no WebGL2 in this browser: checked the notice only)'); return; }
+  await f.waitForFunction(() => window.__quantum && window.__quantum.time > 0.2);
+  // scenes: the nav switches the panel; the tunnelling read-out has both transmissions and the barrier is the slider's width
+  await frame.locator('#nav button[data-k=tun]').click();
+  assert.ok(await f.isVisible('section[data-k=tun]'));
+  await f.waitForFunction(() => /T = \d/.test(document.querySelector('#tRead').textContent));
+  assert.match(await f.textContent('#tRead'), /平面波理论透射率 T = 23\.5%.*按波包的动量分布平均 23\.9%/);
+  assert.equal(await f.evaluate(() => window.__quantum.mods.tun.sim.w), 1);
+  await frame.locator('#nav button[data-k=bell]').click();
+  await f.evaluate(() => window.__quantum.advance(3));
+  assert.match(await f.textContent('#bRead'), /已统计 \d+ 对/);
+  // leaving the tab pauses the scene; coming back resumes it
+  await go(p, '/qchem/index.html#play-bloch');
+  await f.waitForFunction(() => !window.__quantum.running);
+  await go(p, '/qchem/index.html#play-world');
+  await f.waitForFunction(() => window.__quantum.running);
+  // the site's theme reaches the frame
+  await p.evaluate(() => { localStorage.setItem('chemhub-theme', 'light'); document.documentElement.dataset.theme = 'light'; window.dispatchEvent(new Event('resize')); });
+  await f.waitForFunction(() => window.__quantum.light === true);
+  await p.evaluate(() => { localStorage.setItem('chemhub-theme', 'dark'); document.documentElement.dataset.theme = 'dark'; window.dispatchEvent(new Event('resize')); });
+  await f.waitForFunction(() => window.__quantum.light === false);
+  // English: the frame gets ?lang=en and writes its own English
+  await go(p, '/qchem/index.html?lang=en#play-world');
+  const g = await (async () => { for (let i = 0; i < 50; i++) { const x = p.frames().find((y) => /\/qchem\/world\/.*lang=en/.test(y.url())); if (x) return x; await p.waitForTimeout(100); } })();
+  assert.ok(g, 'the frame reloaded in English');
+  await g.waitForSelector('#nav button[data-k=slit]');
+  assert.equal(await g.textContent('#nav button[data-k=slit]'), 'Slits');
+  assert.equal(await g.textContent('section[data-k=overview] h2'), 'The quantum world, as I see it');
+  await p.evaluate(() => localStorage.removeItem('chemhub-theme'));
+  await p.close();
 });
 
 check('formula questions: MathLive answers graded with targeted hints, nudge, worked answer, stored progress, text fallback, English', async () => {
