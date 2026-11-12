@@ -64,6 +64,7 @@
     { id: 'explore', zh: '探索', en: 'Explore', hint: ['量子世界与基础科学的前沿', 'Quantum science and the frontiers of fundamental science'], items: [
       ['quantum', 'quantum/index.html', '量子嘉年华', 'Quantum Carnival', '四个展馆：量子物理、计算机、算法、生物学', 'Four pavilions: quantum physics, computers, algorithms and biology', 1, 'quantum 量子', [['量子物理', 'Quantum physics', 'quantum/physics/index.html'], ['量子计算机', 'Quantum computers', 'quantum/computing/index.html'], ['量子算法', 'Quantum algorithms', 'quantum/algorithms/index.html'], ['量子生物学', 'Quantum biology', 'quantum/biology/index.html']]],
       ['fundamental', 'fundamental-science/index.html', '进一步基础科学发现', 'Fundamental Science', '尚未解决的基础问题，每条标明研究状态', 'Open fundamental questions, each with its research status', 1, 'fundamental science physics', [['数学基础与探索', 'Mathematical foundations', 'fundamental-science/math/index.html']]],
+      ['nmr', 'nmr/index.html', '核磁共振', 'NMR', '从 1938 年的分子束到 1.2 GHz、超极化和 AI 解谱，附五个动手演示', 'From the 1938 molecular beam to 1.2 GHz, hyperpolarisation and AI analysis, with five hands-on demos', 1, 'nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫'],
       ['realms', 'physics-realms/index.html', '物理疆界图', 'Physics Realms', '42 个物理理论和它们之间的关系图', '42 physical theories and how they connect', 1, 'physics map theory'],
       ['vision', 'vision/index.html', '愿景：工业革命2.5', 'Vision: Industrial Revolution 2.5', '站长的文章，和 MolAstria 接下来能做什么', 'The operator’s essay, and what MolAstria can do next', 1, 'vision 愿景 essay manhattan 曼哈顿 roadmap 路线图 future'],
     ] },

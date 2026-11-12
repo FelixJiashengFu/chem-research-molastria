@@ -247,6 +247,7 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
+  "nmr/index.html",
   "hub/index.html",
   "models/models.js",
   "radar/app/app.js"
@@ -421,6 +422,7 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
+  "nmr/index.html",
   "about/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -854,7 +856,8 @@
   "manual/index.html",
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -1024,6 +1027,7 @@
   "quantum/biology/index.html",
   "quantum/algorithms/index.html",
   "quantum/computing/index.html",
+  "nmr/index.html",
   "physics-realms/index.html"
  ],
  "筛选期刊": [
@@ -1204,6 +1208,7 @@
   "videos/index.html",
   "fundamental-science/index.html",
   "quantum/biology/index.html",
+  "nmr/index.html",
   "about/index.html",
   "shared-nav.js",
   "hub/network.js"
@@ -1241,7 +1246,8 @@
  "科研文献": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "数学基础与探索": [
   "fundamental-science/index.html",
@@ -1291,7 +1297,8 @@
  "演示 1": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "量子叠加与坍缩": [
   "fundamental-science/index.html"
@@ -1314,12 +1321,14 @@
  "模型说明与局限": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "演示 2": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "分子量子相干：标准振荡与附加退相干": [
   "fundamental-science/index.html"
@@ -1349,7 +1358,8 @@
  "演示 3": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "圆锥交叉与 Berry 相位": [
   "fundamental-science/index.html"
@@ -1396,12 +1406,14 @@
  "研究领域": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "全部领域": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "研究状态": [
   "fundamental-science/index.html"
@@ -1414,12 +1426,14 @@
  "按年份（早到晚）": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "按年份（晚到早）": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "MolAstria · 进一步基础科学发现": [
   "fundamental-science/index.html"
@@ -1454,7 +1468,8 @@
  "筛选文献": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "MolAstria 的基础理论研究方向：量子力学的基础与局限、量子化学的数学重构、分子量子动力学的几何基础（Berry 相位、圆锥交叉）、GRW 与 CSL 等修正动力学及其分子检验。每一条内容都标明是已确立的科学、活跃研究、理论假说还是计划方向，附可交互的数学演示与经过核对的参考文献。": [
   "fundamental-science/index.html"
@@ -1502,6 +1517,7 @@
  "量子物理": [
   "quantum/physics/index.html",
   "quantum/computing/index.html",
+  "nmr/index.html",
   "qchem/index.html",
   "shared-nav.js",
   "radar/app/app.js",
@@ -1537,7 +1553,8 @@
  ],
  "学习路线": [
   "quantum/biology/index.html",
-  "quantum/computing/index.html"
+  "quantum/computing/index.html",
+  "nmr/index.html"
  ],
  "什么算量子生物学": [
   "quantum/biology/index.html"
@@ -1719,6 +1736,7 @@
  ],
  "量子计算机": [
   "quantum/computing/index.html",
+  "nmr/index.html",
   "qchem/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
@@ -1879,6 +1897,242 @@
  ],
  "量子计算机：量子比特的物理与噪声，超导、离子阱、中性原子、光子、半导体自旋和拓扑六条硬件路线，量子纠错与容错（表面码、阈值、低于阈值的实验），以及量子优势实验与争议。每条结论标明状态，附可交互的演示和逐条核对过的文献。": [
   "quantum/computing/index.html"
+ ],
+ "核磁共振 · NMR · MolAstria": [
+  "nmr/index.html"
+ ],
+ "跳到十一个部分": [
+  "nmr/index.html"
+ ],
+ "核磁共振": [
+  "nmr/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "十一个部分": [
+  "nmr/index.html"
+ ],
+ "方法对比": [
+  "nmr/index.html"
+ ],
+ "发展时间线": [
+  "nmr/index.html"
+ ],
+ "动手实验室": [
+  "nmr/index.html"
+ ],
+ "说法核对": [
+  "nmr/index.html"
+ ],
+ "核磁共振是什么": [
+  "nmr/index.html"
+ ],
+ "一张谱能回答的三层问题": [
+  "nmr/index.html"
+ ],
+ "前三部分是所有 NMR 实验共用的基础，中间五部分各讲一个大方向，后三部分讲计算、应用和量子信息。每一部分都有核心公式、关键方法（逐条标注成熟程度）、常见问题的解答和参考文献。": [
+  "nmr/index.html"
+ ],
+ "十一个部分详解": [
+  "nmr/index.html"
+ ],
+ "八类方法对比": [
+  "nmr/index.html"
+ ],
+ "从 1938 年到 2024 年，每一项都链接到原始论文；标注的是这种方法今天的成熟程度。": [
+  "nmr/index.html"
+ ],
+ "五个演示都在浏览器里直接计算对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画，也不是实测的谱。每个演示下方写明模型的假设和适用范围。": [
+  "nmr/index.html"
+ ],
+ "从自由感应衰减到谱：傅里叶变换": [
+  "nmr/index.html"
+ ],
+ "横向弛豫时间 T₂*": [
+  "nmr/index.html"
+ ],
+ "采样时间": [
+  "nmr/index.html"
+ ],
+ "指数窗的线展宽": [
+  "nmr/index.html"
+ ],
+ "累加次数": [
+  "nmr/index.html"
+ ],
+ "采样太短（截断）": [
+  "nmr/index.html"
+ ],
+ "匹配滤波": [
+  "nmr/index.html"
+ ],
+ "累加 256 次": [
+  "nmr/index.html"
+ ],
+ "自由感应衰减的实部（加窗之前）。竖的金色虚线是 T₂*。": [
+  "nmr/index.html"
+ ],
+ "自旋体系模拟器：磁场越高，谱越简单": [
+  "nmr/index.html"
+ ],
+ "磁场（¹H 频率）": [
+  "nmr/index.html"
+ ],
+ "线宽": [
+  "nmr/index.html"
+ ],
+ "60 MHz 台式谱仪": [
+  "nmr/index.html"
+ ],
+ "弛豫与 NOE：分子转得多快": [
+  "nmr/index.html"
+ ],
+ "转动相关时间 τc": [
+  "nmr/index.html"
+ ],
+ "两个质子的距离 r": [
+  "nmr/index.html"
+ ],
+ "由分子量估算 τc（kDa，水中 25 °C）": [
+  "nmr/index.html"
+ ],
+ "估算": [
+  "nmr/index.html"
+ ],
+ "小分子": [
+  "nmr/index.html"
+ ],
+ "NOE 过零点": [
+  "nmr/index.html"
+ ],
+ "20 kDa 蛋白质": [
+  "nmr/index.html"
+ ],
+ "稳态 NOE 增强：小分子最多 +50%，大分子趋向 −100%，中间在 ωτc ≈ 1.12 处过零。": [
+  "nmr/index.html"
+ ],
+ "演示 4": [
+  "nmr/index.html"
+ ],
+ "魔角旋转：把粉末谱转成一组尖峰": [
+  "nmr/index.html"
+ ],
+ "各向异性 δ": [
+  "nmr/index.html"
+ ],
+ "不对称参数 η": [
+  "nmr/index.html"
+ ],
+ "转速 νr": [
+  "nmr/index.html"
+ ],
+ "慢转（1 kHz）": [
+  "nmr/index.html"
+ ],
+ "超快（150 kHz）": [
+  "nmr/index.html"
+ ],
+ "演示 5": [
+  "nmr/index.html"
+ ],
+ "极化度：NMR 为什么不灵敏，超极化能借到多少": [
+  "nmr/index.html"
+ ],
+ "原子核": [
+  "nmr/index.html"
+ ],
+ "磁场 B₀": [
+  "nmr/index.html"
+ ],
+ "温度": [
+  "nmr/index.html",
+  "nmr/nmr.js"
+ ],
+ "9.4 T，室温": [
+  "nmr/index.html"
+ ],
+ "溶解 DNP（3.35 T，1.2 K）": [
+  "nmr/index.html"
+ ],
+ "地磁场（50 μT）": [
+  "nmr/index.html"
+ ],
+ "还在往前推的问题": [
+  "nmr/index.html"
+ ],
+ "这些问题目前都没有定论；标注表示它属于活跃发展的方向，还是只在少数实验室里探索。": [
+  "nmr/index.html"
+ ],
+ "从量子力学里的自旋到读懂一篇 NMR 论文的五个阶段，每一步都链接到本站已有的栏目或本页的演示。全部内容免费。": [
+  "nmr/index.html"
+ ],
+ "动手用的开放工具与数据库": [
+  "nmr/index.html"
+ ],
+ "上面五个工具的网址，和学习路线里提到的教材名，录入时没能逐个联网打开核对；发现失效或写错的请告诉我们。": [
+  "nmr/index.html"
+ ],
+ "成熟程度": [
+  "nmr/index.html"
+ ],
+ "全部": [
+  "nmr/index.html",
+  "lab/index.html",
+  "meta/index.html",
+  "train/index.html",
+  "api/index.html",
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js",
+  "quantum/computing/qc.js",
+  "nmr/nmr.js",
+  "radar/app/app.js"
+ ],
+ "MolAstria · 核磁共振": [
+  "nmr/index.html"
+ ],
+ "本页区分成熟常规的方法、活跃发展的方向和前沿探索；演示是教学用的简化模型，不是实测的谱，也不能代替对真实样品的定量分析。": [
+  "nmr/index.html"
+ ],
+ "开源代码台": [
+  "nmr/index.html",
+  "code/index.html",
+  "shared-nav.js"
+ ],
+ "三种成熟程度标注": [
+  "nmr/index.html"
+ ],
+ "自由感应衰减": [
+  "nmr/index.html"
+ ],
+ "傅里叶变换后的谱": [
+  "nmr/index.html"
+ ],
+ "自旋体系": [
+  "nmr/index.html"
+ ],
+ "模拟的 ¹H 谱": [
+  "nmr/index.html"
+ ],
+ "例如 20": [
+  "nmr/index.html"
+ ],
+ "T₁ 和 T₂ 随相关时间变化": [
+  "nmr/index.html"
+ ],
+ "稳态 NOE 随相关时间变化": [
+  "nmr/index.html"
+ ],
+ "旋转边带与静止粉末谱": [
+  "nmr/index.html"
+ ],
+ "极化度随温度变化": [
+  "nmr/index.html"
+ ],
+ "按成熟程度筛选": [
+  "nmr/index.html"
+ ],
+ "核磁共振（NMR）：从 1938 年的分子束实验到 1.2 GHz 磁体、超快魔角旋转、超极化、零场 NMR 和机器学习解谱。十一个部分讲清方法的来龙去脉，八类方法对比，五个可以动手调的演示，203 篇按 DOI 核对过的文献。": [
+  "nmr/index.html"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -2515,16 +2769,6 @@
  ],
  "全部提出过的分子": [
   "lab/index.html"
- ],
- "全部": [
-  "lab/index.html",
-  "meta/index.html",
-  "train/index.html",
-  "api/index.html",
-  "fundamental-science/fundamental.js",
-  "quantum/biology/qb.js",
-  "quantum/computing/qc.js",
-  "radar/app/app.js"
  ],
  "通过": [
   "lab/index.html",
@@ -5084,7 +5328,8 @@
  "常见问题": [
   "pro/index.html",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "为什么这么多东西免费？": [
   "pro/index.html"
@@ -6923,7 +7168,8 @@
   "qchem/index.html"
  ],
  "电子": [
-  "qchem/index.html"
+  "qchem/index.html",
+  "nmr/nmr.js"
  ],
  "质子": [
   "qchem/index.html"
@@ -7770,10 +8016,6 @@
  "开源代码台 · 计算化学输入生成、输出解读与软件体检 · MolAstria": [
   "code/index.html"
  ],
- "开源代码台": [
-  "code/index.html",
-  "shared-nav.js"
- ],
  "计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。": [
   "code/index.html"
  ],
@@ -8226,6 +8468,12 @@
   "shared-nav.js"
  ],
  "尚未解决的基础问题，每条标明研究状态": [
+  "shared-nav.js"
+ ],
+ "从 1938 年的分子束到 1.2 GHz、超极化和 AI 解谱，附五个动手演示": [
+  "shared-nav.js"
+ ],
+ "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫": [
   "shared-nav.js"
  ],
  "42 个物理理论和它们之间的关系图": [
@@ -9569,7 +9817,8 @@
  "阅读详解": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "用研习台学这一部分": [
   "fundamental-science/fundamental.js",
@@ -9582,7 +9831,8 @@
  "核心公式": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "关键概念": [
   "fundamental-science/fundamental.js"
@@ -9590,7 +9840,8 @@
  "本节参考文献": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "相关的理论详解": [
   "fundamental-science/fundamental.js"
@@ -9614,12 +9865,14 @@
  "显示 {0} / {1} 篇": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "引用于": [
   "fundamental-science/fundamental.js",
   "quantum/biology/qb.js",
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "FCI 维数计算器": [
   "fundamental-science/fundamental.js"
@@ -9957,7 +10210,8 @@
   "quantum/biology/qb.js"
  ],
  "没有这一类的说法。": [
-  "quantum/computing/qc.js"
+  "quantum/computing/qc.js",
+  "nmr/nmr.js"
  ],
  "共 {0} 篇。每一篇的题目、作者、年份、期刊、卷号和页码都在 {1} 于 OpenAlex（数据来自 Crossref）核对过。可以按研究领域和状态筛选；每条都通过 DOI 链接到出版方。": [
   "quantum/computing/qc.js"
@@ -10084,6 +10338,186 @@
  ],
  "表面码逻辑错误率随码距变化；需要码距 {0}": [
   "quantum/computing/qc.js"
+ ],
+ "关键方法与结论": [
+  "nmr/nmr.js"
+ ],
+ "共 {0} 篇。每一篇都在 {1} 按 DOI 在 OpenAlex（数据来自 Crossref）查过，题目、作者、年份、期刊、卷号和页码逐项对照。可以按研究领域和成熟程度筛选；每条都通过 DOI 链接到出版方。": [
+  "nmr/nmr.js"
+ ],
+ "时间（s）": [
+  "nmr/nmr.js"
+ ],
+ "信号": [
+  "nmr/nmr.js"
+ ],
+ "FID 的实部": [
+  "nmr/nmr.js"
+ ],
+ "频率（Hz）": [
+  "nmr/nmr.js"
+ ],
+ "强度": [
+  "nmr/nmr.js"
+ ],
+ "谱（实部）": [
+  "nmr/nmr.js"
+ ],
+ "谱上量到的线宽（半高全宽）": [
+  "nmr/nmr.js"
+ ],
+ "按公式 1/(πT₂*) + 线展宽": [
+  "nmr/nmr.js"
+ ],
+ "信噪比（峰高 / 噪声均方根）": [
+  "nmr/nmr.js"
+ ],
+ "数字分辨率 1 / 采样时间": [
+  "nmr/nmr.js"
+ ],
+ "采样点数": [
+  "nmr/nmr.js"
+ ],
+ "采样在信号衰减完之前就停了（采样时间 {0}，不到衰减时间的三倍）：谱线两侧出现正负交替的波纹，线宽由采样时间决定，而不是 T₂*。加一点指数窗可以压掉波纹，代价是线变宽。": [
+  "nmr/nmr.js"
+ ],
+ "线展宽约等于自然线宽（匹配滤波）：信噪比最高，线宽变成原来的两倍。这是灵敏度和分辨率之间的标准取舍。": [
+  "nmr/nmr.js"
+ ],
+ "洛伦兹线的半高全宽是 1/(πT₂*) = {0} Hz，加上窗函数的 {1} Hz。累加 {2} 次让噪声降到 1/√{3}：信噪比翻一倍要多花四倍时间。": [
+  "nmr/nmr.js"
+ ],
+ "傅里叶变换后的谱；线宽 {0} Hz，信噪比 {1}": [
+  "nmr/nmr.js"
+ ],
+ "化学位移（ppm）": [
+  "nmr/nmr.js"
+ ],
+ "最小的 Δν / J": [
+  "nmr/nmr.js"
+ ],
+ "磁场": [
+  "nmr/nmr.js"
+ ],
+ "自旋数": [
+  "nmr/nmr.js"
+ ],
+ "强度超过 0.2% 的跃迁": [
+  "nmr/nmr.js"
+ ],
+ "谱宽（Hz）": [
+  "nmr/nmr.js"
+ ],
+ "Δν/J = {0}：强耦合。位移差和耦合常数差不多大，谱线的位置和强度都不能用“n+1 规则”读出来，必须对角化哈密顿量；内侧的线高、外侧的线矮。": [
+  "nmr/nmr.js"
+ ],
+ "Δν/J = {0}：多重峰的形状大致对了，但强度向耦合的对方倾斜（屋顶效应）。台式低场谱仪的谱常常是这个样子。": [
+  "nmr/nmr.js"
+ ],
+ "Δν/J = {0}：弱耦合（一级谱）。每组峰按 n+1 规则分裂，强度接近二项式系数；耦合常数（Hz）不随磁场变，所以用 ppm 画时多重峰越来越窄。": [
+  "nmr/nmr.js"
+ ],
+ "{0} 在 {1} MHz 下的模拟 ¹H 谱": [
+  "nmr/nmr.js"
+ ],
+ "相关时间 τc": [
+  "nmr/nmr.js"
+ ],
+ "弛豫时间": [
+  "nmr/nmr.js"
+ ],
+ "稳态 NOE": [
+  "nmr/nmr.js"
+ ],
+ "线宽 1/(πT₂)": [
+  "nmr/nmr.js"
+ ],
+ "ωτ_c = {0} ≪ 1（极窄化区）：分子转得比拉莫尔频率快得多，T₁ ≈ T₂，线很窄，NOE 是正的。有机小分子在普通溶剂里就在这里。": [
+  "nmr/nmr.js"
+ ],
+ "ωτ_c = {0}，接近 1：T₁ 在最小值附近，NOE 很弱甚至为零（过零点在 ωτ_c ≈ 1.12）。分子量 1000 上下的分子常落在这里，这时改用 ROESY。": [
+  "nmr/nmr.js"
+ ],
+ "ωτ_c = {0} ≫ 1（慢运动区）：T₁ 回升，T₂ 继续缩短，线宽 {1}；NOE 是负的，而且自旋扩散很快。这就是大蛋白质谱线变宽、需要氘代和 TROSY 的原因。": [
+  "nmr/nmr.js"
+ ],
+ "T₁ 和 T₂ 随相关时间变化；现在 T₁ = {0}，T₂ = {1}": [
+  "nmr/nmr.js"
+ ],
+ "相对各向同性位移的频率（kHz）": [
+  "nmr/nmr.js"
+ ],
+ "强度占比": [
+  "nmr/nmr.js"
+ ],
+ "静止粉末谱（任意比例）": [
+  "nmr/nmr.js"
+ ],
+ "魔角旋转下": [
+  "nmr/nmr.js"
+ ],
+ "中心带": [
+  "nmr/nmr.js"
+ ],
+ "中心带占全部强度": [
+  "nmr/nmr.js"
+ ],
+ "强度超过 1% 的边带": [
+  "nmr/nmr.js"
+ ],
+ "粉末谱的总宽度": [
+  "nmr/nmr.js"
+ ],
+ "魔角": [
+  "nmr/nmr.js"
+ ],
+ "转速比各向异性小得多：谱分裂成间隔 ν_r = {0} kHz 的许多边带，它们的包络大致描出静止粉末谱（灰色）。由边带强度可以反推出 δ 和 η（Herzfeld–Berger 分析）。": [
+  "nmr/nmr.js"
+ ],
+ "转速和各向异性相当：只剩几条边带，{0} 的强度已经回到中心带。": [
+  "nmr/nmr.js"
+ ],
+ "转速远大于各向异性：几乎全部强度（{0}）集中在各向同性位移处，和溶液谱一样是一条线。化学位移各向异性容易转掉；¹H 之间的偶极耦合是均匀展宽，要转到 100 kHz 以上才明显变窄。": [
+  "nmr/nmr.js"
+ ],
+ "转速 {0} kHz 下的旋转边带；中心带占 {1}": [
+  "nmr/nmr.js"
+ ],
+ "（自旋 {0}）": [
+  "nmr/nmr.js"
+ ],
+ "极化度 P": [
+  "nmr/nmr.js"
+ ],
+ "核的极化度": [
+  "nmr/nmr.js"
+ ],
+ "相当于每多少个自旋净多出 1 个": [
+  "nmr/nmr.js"
+ ],
+ "同样条件下电子的极化度": [
+  "nmr/nmr.js"
+ ],
+ "拉莫尔频率": [
+  "nmr/nmr.js"
+ ],
+ "DNP 增强上限 γ_e/γ_n": [
+  "nmr/nmr.js"
+ ],
+ "相对 ¹H 的灵敏度（等量自旋 / 天然丰度）": [
+  "nmr/nmr.js"
+ ],
+ "{0} K、{1} 下电子几乎完全极化（{2}），核只有 {3}。溶解 DNP 就在这样的条件下用微波把电子的极化搬给核，再迅速溶解、送进谱仪。": [
+  "nmr/nmr.js"
+ ],
+ "极化度只有 {0} ppm：这么低的磁场下，热平衡信号几乎测不到。低场和零场 NMR 因此要靠预极化、超极化或者光泵磁力计这样的非感应探测。": [
+  "nmr/nmr.js"
+ ],
+ "每 {0} 个 {1} 自旋里只有 1 个净贡献信号，这就是 NMR 灵敏度低的根源。极化度与 B₀/T 成正比：把磁场加倍只赚两倍，而借用电子的极化最多可以赚 {2} 倍。": [
+  "nmr/nmr.js"
+ ],
+ "{0} 下极化度随温度变化；{1} 现在是 {2} ppm": [
+  "nmr/nmr.js"
  ],
  "已过 {0} / {1} 关": [
   "qchem/play.js",
@@ -17165,6 +17599,12 @@
   "tools/build-seo.ts"
  ],
  "量子计算机的物理层：量子比特的物理与噪声，超导、离子阱、中性原子、光子、半导体自旋和拓扑六条硬件路线，量子纠错与容错，量子优势实验与争议；附交互演示与核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "核磁共振 · NMR": [
+  "tools/build-seo.ts"
+ ],
+ "核磁共振方法的发展与最新技术：脉冲傅里叶变换、多维谱、生物大分子、魔角旋转固体 NMR、超极化、磁共振成像、低场与零场、计算与机器学习；附五个交互演示与按 DOI 核对过的 203 篇文献。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
