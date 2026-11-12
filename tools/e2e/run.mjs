@@ -93,7 +93,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1465,7 +1465,7 @@ check('top bar: five groups in one row at desktop widths in both languages, a si
   const p = await open({ viewport: { width: 1366, height: 800 } });
   await go(p, '/manual/index.html');
   const ids = await p.$$eval('.cr-mega a.cr-item[data-id]', (a) => a.map((x) => x.dataset.id));
-  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
+  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'pet', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
   assert.ok(!ids.includes('meta'), 'Meta is no longer its own section; it sits under 开放模型馆');
   const hrefs = await p.$$eval('.cr-mega a[href]', (a) => [...new Set(a.map((x) => x.href.split('#')[0]))]);
   for (const h of hrefs) assert.equal((await p.request.get(h)).status(), 200, h);
@@ -4066,6 +4066,118 @@ check('models page: a result goes to the code desk with its frames, charges and 
   await e.waitForSelector('#in-import:not([hidden])');
   assert.doesNotMatch(await text(e, '#in-import'), HAN, await text(e, '#in-import'));
   assert.match(await text(e, '#in-import'), /eSEN-sm/);
+  await finish(e);
+});
+
+check('pets: adopt one of three mascots, pat / feed / play / sleep, outfits by level, the corner buddy elsewhere, English, picture fallback', async () => {
+  const p = await open();
+  await go(p, '/pet/index.html');
+  const mode = () => p.evaluate(() => window.MolAstriaPet?.mode);
+  await p.waitForFunction(() => window.MolAstriaPet?.mode && window.MolAstriaPet.mode !== 'loading', null, { timeout: 30000 });
+  assert.ok(['3d', 'still'].includes(await mode()), 'stage is 3D or the picture');
+  assert.equal(await p.locator('.pt-kind[data-kind]').count(), 3, 'three mascots to choose from');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-pet')), null, 'nothing saved before adopting');
+  await p.click('.pt-kind[data-kind="astra"]');
+  assert.equal(await p.getAttribute('.pt-kind[data-kind="astra"]', 'aria-checked'), 'true');
+  await p.fill('#pt-name-in', '  星星  ');
+  await p.click('#pt-adopt-form button[type=submit]');
+  await p.waitForSelector('#pt-title');
+  const saved = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-pet')));
+  let s = await saved();
+  assert.equal(s.kind, 'astra');
+  assert.equal(s.name, '星星');
+  assert.equal(await text(p, '#pt-title'), '星星');
+  // 摸摸、喂食（吃饱了会拒绝）、玩耍、睡觉和叫醒
+  await p.click('[data-act="pet"]');
+  s = await saved();
+  assert.equal(s.count.pet, 1);
+  assert.equal(s.xp, 1);
+  await p.click('[data-act="feed"]');
+  assert.ok(await p.isVisible('#pt-snacks'), 'snack row opens');
+  await p.click('[data-snack="benzene"]');
+  assert.ok(await p.isHidden('#pt-snacks'), 'snack row closes');
+  s = await saved();
+  assert.equal(s.count.feed, 1);
+  assert.ok(s.full > 95, 'full after a cookie');
+  await p.click('[data-act="feed"]');
+  await p.click('[data-snack="water"]');
+  assert.match(await text(p, '#pt-say'), /吃不下/);
+  await p.click('[data-act="play"]');
+  s = await saved();
+  assert.equal(s.count.play, 1);
+  assert.equal(s.xp, 1 + 3 + 4);
+  await p.click('[data-act="sleep"]');
+  assert.equal(await text(p, '#pt-sleep-t'), '叫醒');
+  assert.ok(await p.isDisabled('[data-act="feed"]'), 'no feeding while asleep');
+  assert.equal(await p.getAttribute('#pt-stage', 'data-mood'), 'sleeping');
+  await p.click('[data-act="wake"]');
+  assert.equal(await text(p, '#pt-sleep-t'), '睡觉');
+  // 配饰：2 级才有护目镜
+  assert.ok(await p.isDisabled('[data-acc="goggles"]'));
+  await p.evaluate(() => { const o = JSON.parse(localStorage.getItem('molastria-pet')); o.xp = 65; localStorage.setItem('molastria-pet', JSON.stringify(o)); });
+  await go(p, '/pet/index.html');
+  assert.equal(await text(p, '#pt-lv'), 'Lv 3');
+  assert.ok(await p.isEnabled('[data-acc="cap"]'));
+  assert.ok(await p.isDisabled('[data-acc="halo"]'));
+  await p.click('[data-acc="cap"]');
+  assert.equal((await saved()).acc, 'cap');
+  // 改名
+  await p.click('#pt-rename');
+  await p.fill('#pt-rename-in', '小星');
+  await p.click('#pt-rename-form button[type=submit]');
+  assert.equal((await saved()).name, '小星');
+  // 换一只：进度留着
+  await p.click('.pt-more summary');
+  await p.click('[data-swap="budi"]');
+  s = await saved();
+  assert.deepEqual([s.kind, s.name, s.xp, s.acc], ['budi', '小星', 65, 'cap']);
+  assert.equal((await p.request.get(`${SITE}/pet/models/budi.glb`)).status(), 200, 'model download');
+  // 别的页面右下角的小伙伴：点开、收起（这个会话不再出现）
+  await go(p, '/review/index.html');
+  await p.waitForSelector('#pb-buddy .pb-pet');
+  assert.match(await p.getAttribute('#pb-buddy img', 'src'), /pet\/img\/budi\.webp$/);
+  await p.click('#pb-pet');
+  assert.match(await text(p, '#pb-bub'), /小星/);
+  assert.match(await p.getAttribute('#pb-bub a', 'href'), /\/pet\/index\.html$/);
+  await p.click('#pb-hide');
+  assert.equal(await p.locator('#pb-buddy').count(), 0);
+  await go(p, '/manual/index.html');
+  assert.equal(await p.locator('#pb-buddy').count(), 0, 'hidden for the rest of the session');
+  // 在小窝里关掉以后，新的会话里也不出现
+  await go(p, '/pet/index.html');
+  await p.click('.pt-more summary');
+  await p.uncheck('#pt-buddy');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-pet-buddy')), 'off');
+  await p.evaluate(() => sessionStorage.clear());
+  await go(p, '/review/index.html');
+  assert.equal(await p.locator('#pb-buddy').count(), 0, 'switched off');
+  await p.evaluate(() => localStorage.removeItem('molastria-pet-buddy'));
+  await go(p, '/review/index.html');
+  await p.waitForSelector('#pb-buddy .pb-pet');
+  // 重新领养
+  await go(p, '/pet/index.html');
+  await p.click('.pt-more summary');
+  await p.click('#pt-reset');
+  await p.click('#pt-reset-yes');
+  await p.waitForSelector('#pt-adopt-form');
+  assert.equal(await p.evaluate(() => localStorage.getItem('molastria-pet')), null);
+  // 顶栏菜单里有这一栏
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('a[href]')].some((a) => /\/pet\/index\.html$/.test(a.href))), 'nav links to the pet page');
+  await finish(p);
+
+  // 英文，以及载不到 three.js 时用图片
+  const e = await open({ init: () => { try { localStorage.setItem('molastria-pet', JSON.stringify({ v: 1, kind: 'budi-plain', name: 'Bao', born: Date.now() - 2 * 864e5, t: Date.now(), full: 20, joy: 50, energy: 60, xp: 0 })); } catch { /* ignore */ } } });
+  await e.context().route(/cdn\.jsdelivr\.net\/npm\/three@/, (r) => r.abort());
+  await go(e, '/pet/index.html?lang=en');
+  await e.waitForFunction(() => window.MolAstriaPet?.mode === 'still', null, { timeout: 20000 });
+  assert.ok(await e.isVisible('#pt-still'), 'picture shown');
+  assert.match(await e.getAttribute('#pt-still', 'src'), /img\/budi-plain\.webp$/);
+  assert.match(await text(e, 'h1'), /Bao.*corner/);
+  assert.equal((await text(e, '[data-act="pet"]')).trim(), 'Pat');
+  assert.match(await text(e, '#pt-mood'), /Hungry/);
+  await e.click('#pt-still', { force: true });
+  assert.equal((await e.evaluate(() => JSON.parse(localStorage.getItem('molastria-pet')))).count.pet, 1, 'tapping the picture pats');
+  assert.doesNotMatch(await text(e, 'main'), HAN, 'no Chinese left on the English page');
   await finish(e);
 });
 

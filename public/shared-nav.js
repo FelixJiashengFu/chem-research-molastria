@@ -32,6 +32,7 @@
       ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],
       ['review', 'review/index.html', '复习卡片', 'Flashcards', '间隔重复复习术语和学过的知识点', 'Spaced repetition for terms and what you learned', 1, 'anki flashcard fsrs'],
       ['qchem', 'qchem/index.html', '游乐场', 'Playground', '二十个小游戏（五个 3D）和浏览器里的量子化学计算器', 'Twenty games (five in 3D) and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch'],
+      ['pet', 'pet/index.html', '小宠物', 'Pets', '领养一只 3D 吉祥物：摸摸、喂食、陪它玩，升级换装', 'Adopt a 3D mascot: pat it, feed it, play, and dress it up as it levels', 1, 'pet 宠物 领养 adopt mascot 吉祥物 苞苞 budi 星环 astra tamagotchi 电子宠物'],
     ] },
     { id: 'explore', zh: '探索', en: 'Explore', hint: ['量子世界与基础科学的前沿', 'Quantum science and the frontiers of fundamental science'], items: [
       ['quantum', 'quantum/index.html', '量子嘉年华', 'Quantum Carnival', '四个展馆：量子物理、计算机、算法、生物学', 'Four pavilions: quantum physics, computers, algorithms and biology', 1, 'quantum 量子', [['量子物理', 'Quantum physics', 'quantum/physics/index.html'], ['量子计算机', 'Quantum computers', 'quantum/computing/index.html'], ['量子算法', 'Quantum algorithms', 'quantum/algorithms/index.html'], ['量子生物学', 'Quantum biology', 'quantum/biology/index.html']]],
@@ -1054,6 +1055,13 @@
   // Cloud sync runs on every page once it is switched on (pro/account.html#sync-card) and someone is signed in.
   if (readAccount() && syncOn() && location.protocol !== 'file:' && !window.MolAstriaSync) {
     (window.MOLASTRIA_SYNC_CORE ? Promise.resolve() : addScript('sync/sync-core.js')).then(() => window.MolAstriaSync || addScript('sync/sync.js')).catch(() => {});
+  }
+  // 小宠物（pet/）：领养过的人在别的页面右下角看到它。关掉（molastria-pet-buddy = off）或这个会话收起了就不载。
+  // 嵌着整个应用的页面（雷达、研究图谱、游乐场）和讨论室的右下角留给页面自己。
+  if (section !== 'pet' && !['chat', 'radar', 'research', 'qchem'].includes(section) && !window.__CHEM_LINK__) {
+    let want = false;
+    try { want = !!localStorage.getItem('molastria-pet') && localStorage.getItem('molastria-pet-buddy') !== 'off' && sessionStorage.getItem('molastria-pet-buddy-hide') !== '1'; } catch { /* private mode */ }
+    if (want) (window.MolAstriaPetCore ? Promise.resolve() : addScript('pet/pet-core.js')).then(() => addScript('pet/pet-buddy.js')).catch(() => {});
   }
   const loadAI = () => {
     if (window.ChemAI) return Promise.resolve(window.ChemAI);
