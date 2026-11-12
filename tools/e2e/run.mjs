@@ -979,7 +979,7 @@ check('AI Lab demo data: the long note can be closed, the status row still says 
 
 // ── models page (public/models/): the online model API v3 through the account service and the fake computer ──
 const MODEL_WINDOWS = {
-  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa'] },
+  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
   neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
   organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
@@ -1027,11 +1027,12 @@ check('models page: each window lists only its own models and jobs, and the butt
     assert.equal(await p.locator('#m-cards .md-model').count(), want.models.length, `${win} model cards`);
   }
   await p.click('#m-tabs [data-win=charged]');
-  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ipea: 1, spin: 2, bde: 2, pa: 2 };
+  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ipea: 1, spin: 2, bde: 2, pa: 2, flow: 4 };
   for (const [job, n] of Object.entries(costs)) {
     await p.selectOption('#m-job', job);
     assert.equal(await text(p, '#m-run'), `运行 · 消耗 ${n} 次`, job);
   }
+  await p.selectOption('#m-job', 'pa');
   await p.check('#m-params input[data-k=thermo]');
   assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次', 'thermochemistry costs 5');
   assert.match(await text(p, '#m-costs'), /构象搜索、二面角扫描、分子动力学/);
@@ -1091,6 +1092,34 @@ check('models page: every job runs once and its result is shown', async () => {
   assert.equal(await text(p, '#m-result .md-fwhm'), '50');
   await p.check('#m-result input[value=raman]');
   assert.match(await p.getAttribute('#m-result .md-spec svg', 'aria-label'), /拉曼/);
+  await finish(p);
+});
+
+check('models page: the one-click pipeline runs frequencies, then IP / EA on the optimised structure, and stops at an imaginary frequency', async () => {
+  const p = await openModels();
+  const jobs = () => p.posts.map((b) => b.job);
+  // The fake computer's freq has one imaginary mode: by default the pipeline stops there and charges nothing more.
+  let r = await runJob(p, 'flow');
+  assert.deepEqual(jobs(), ['freq']);
+  assert.deepEqual(p.posts[0].params, { temperature: 298.15, symmetry: 1 }, 'the pipeline-only option is not sent to the server');
+  if (V(true, false)) {
+    assert.match(r, /第 2 步没有算/); assert.match(r, /1 个虚频/);
+    assert.match(await text(p, '#m-result .md-flow'), /流水线汇总/);
+    // Untick the stop: step 2 runs on the coordinates step 1 returned.
+    p.posts.length = 0;
+    r = await runJob(p, 'flow', () => p.uncheck('#m-params input[data-k=stop_imag]'));
+    assert.deepEqual(jobs(), ['freq', 'ipea']);
+  } else if (!p.posts.some((b) => b.job === 'ipea')) return finish(p); // a real model found a minimum: nothing more to check offline
+  const [freq, ip] = p.posts;
+  assert.equal(ip.smiles, undefined); assert.match(ip.xyz, /^\s*\d+\n/); assert.deepEqual(ip.params, { mode: 'both' });
+  assert.deepEqual([ip.charge, ip.spin], [freq.charge, freq.spin]);
+  const sum = await text(p, '#m-result .md-flow');
+  assert.match(sum, V(/10\.900/, /\d+\.\d{3}/)); assert.match(sum, V(/11\.320/, /\d+\.\d{3}/));
+  assert.equal(await p.locator('#m-result .md-res h3', { hasText: /第 1 步/ }).count(), 1);
+  assert.equal(await p.locator('#m-result .md-res h3', { hasText: /第 2 步/ }).count(), 1);
+  await p.click('#m-result [data-act=flow-csv]');
+  const csv = await p.evaluate(() => navigator.clipboard.readText().catch(() => ''));
+  if (csv) assert.match(csv, /^model,energy_ev,n_imag,zpe_ev,g_ev,ip_adiabatic_ev/);
   await finish(p);
 });
 
@@ -4157,6 +4186,57 @@ check('code desk: cheminformatics with RDKit (descriptors, Lipinski, SMARTS, sim
   await e.waitForFunction(() => /6 molecules/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
   assert.match(await text(e, '#ci-table tbody tr[data-i="0"]'), /aspirin/);
   assert.doesNotMatch(await e.evaluate(() => document.getElementById('p-chem').innerText), /[㐀-鿿]/, 'no Chinese left on the cheminformatics tab');
+  await finish(e);
+});
+
+check('code desk: structure search asks PubChem (mocked) by drawing or SMILES, ranks by Morgan similarity, adds a hit to the list', async () => {
+  const p = await open();
+  const asked = [];
+  await p.route(/pubchem\.ncbi\.nlm\.nih\.gov\/rest\/pug\/compound\//, (route) => {
+    const r = route.request(), url = r.url();
+    asked.push({ url, body: r.postData() || '' });
+    if (/fastsimilarity_2d|fastsubstructure/.test(url)) return route.fulfill({ json: { IdentifierList: { CID: [1983, 2244, 338] } }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    if (/fastidentity/.test(url)) return route.fulfill({ status: 404, json: { Fault: { Code: 'PUGREST.NotFound', Message: 'No CID found' } }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    return route.fulfill({ json: { PropertyTable: { Properties: [
+      { CID: 2244, MolecularFormula: 'C9H8O4', MolecularWeight: '180.16', SMILES: 'CC(=O)OC1=CC=CC=C1C(=O)O', Title: 'Aspirin' },
+      { CID: 1983, MolecularFormula: 'C8H9NO2', MolecularWeight: '151.16', SMILES: 'CC(=O)NC1=CC=C(C=C1)O', Title: 'Acetaminophen' },
+      { CID: 338, MolecularFormula: 'C7H6O3', MolecularWeight: '138.12', SMILES: 'C1=CC=C(C(=C1)C(=O)O)O', Title: 'Salicylic Acid' },
+    ] } }, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
+  await go(p, '/code/index.html#chem');
+  await p.waitForFunction(() => /算了 6 个分子/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
+  assert.ok(await p.locator('#ss-box .ms-sketch-btn, #ss-box button', { hasText: '画结构' }).count(), 'the drawing button sits next to the search box');
+  await p.click('#ss-go');
+  await p.waitForFunction(() => /找到 3 个/.test(document.getElementById('ss-status').textContent), null, { timeout: 30000 });
+  assert.match(asked[0].url, /fastsimilarity_2d\/smiles\/cids\/JSON\?MaxRecords=20&Threshold=90$/);
+  assert.equal(decodeURIComponent(asked[0].body.replace(/^smiles=/, '')), 'CC(=O)Oc1ccccc1C(=O)O', 'RDKit canonical SMILES in the form body');
+  assert.match(asked[1].url, /cid\/1983,2244,338\/property\//);
+  const names = await p.$$eval('#ss-table tbody tr b', (bs) => bs.map((b) => b.textContent));
+  assert.deepEqual(names, ['Aspirin', 'Salicylic Acid', 'Acetaminophen'], 'ranked by Morgan Tanimoto to the query');
+  assert.match(await text(p, '#ss-table tbody tr:first-child'), /CID 2244[\s\S]*C9H8O4[\s\S]*180\.16[\s\S]*1\.000/);
+  assert.equal(await p.getAttribute('#ss-table tbody tr:first-child a[href*="pubchem"]', 'href'), 'https://pubchem.ncbi.nlm.nih.gov/compound/2244');
+  assert.equal(await p.getAttribute('#ss-table tbody tr:first-child a[href*="index.html?q="]', 'href'), '../index.html?q=Aspirin');
+  await p.click('#ss-table tbody tr:nth-child(2) [data-ss=add]');
+  await p.waitForFunction(() => /算了 7 个分子/.test(document.getElementById('ci-status').textContent));
+  assert.match(await p.inputValue('#ci-list'), /C1=CC=C\(C\(=C1\)C\(=O\)O\)O Salicylic Acid\n$/);
+  // the threshold box is only for similarity; no match is not an error
+  await p.selectOption('#ss-mode', 'identity');
+  assert.equal(await p.isVisible('#ss-th'), false);
+  await p.click('#ss-go');
+  await p.waitForFunction(() => /没有找到/.test(document.getElementById('ss-status').textContent));
+  assert.equal(await p.getAttribute('#ss-status', 'data-bad'), 'false');
+  assert.match(asked.at(-1).url, /identity_type=same_connectivity/);
+  // a SMILES RDKit cannot read never reaches PubChem
+  const n = asked.length;
+  await p.fill('#ss-q', 'C1CC');
+  await p.click('#ss-go');
+  await p.waitForFunction(() => /RDKit 读不出/.test(document.getElementById('ss-status').textContent));
+  assert.equal(asked.length, n);
+  await finish(p);
+  const e = await open();
+  await go(e, '/code/index.html?lang=en#chem');
+  await e.waitForFunction(() => /6 molecules/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
+  assert.doesNotMatch(await e.evaluate(() => document.getElementById('ss-box').innerText), /[㐀-鿿]/, 'the structure search box is translated');
   await finish(e);
 });
 

@@ -945,6 +945,7 @@
   "scimodels/index.html",
   "videos/index.html",
   "hub/index.html",
+  "code/index.html",
   "radar/app/app.js"
  ],
  "类别": [
@@ -7911,7 +7912,8 @@
   "code/index.html"
  ],
  "加到列表": [
-  "code/index.html"
+  "code/index.html",
+  "code/cheminf.js"
  ],
  "填入示例": [
   "code/index.html"
@@ -7962,6 +7964,37 @@
   "code/index.html"
  ],
  "Lipinski 五规则：分子量 ≤ 500、cLogP ≤ 5、氢键供体 ≤ 5、受体 ≤ 10，最多违反一条算通过（Lipinski 2001）；Veber 规则：可旋转键 ≤ 10 且 TPSA ≤ 140 Å²（Veber 2002）。两条都是口服药的经验规则，不适用于天然产物、抗生素和许多新药类型。": [
+  "code/index.html"
+ ],
+ "按结构搜 PubChem": [
+  "code/index.html"
+ ],
+ "画一个结构或写一个 SMILES，在 PubChem 的一亿多个化合物里找相似的、含有这个子结构的，或者就是它本身。浏览器直接问 PubChem，不经过本站；本站只把结果整理成表，再用 RDKit 算一遍相似度。": [
+  "code/index.html"
+ ],
+ "结构（SMILES）": [
+  "code/index.html"
+ ],
+ "方式": [
+  "code/index.html",
+  "models/models.js"
+ ],
+ "相似结构": [
+  "code/index.html"
+ ],
+ "含有这个子结构": [
+  "code/index.html"
+ ],
+ "同一个化合物": [
+  "code/index.html"
+ ],
+ "相似度下限（%）": [
+  "code/index.html"
+ ],
+ "还没有搜索。": [
+  "code/index.html"
+ ],
+ "“相似结构”按 PubChem 自己的 881 位二维指纹（PubChem fingerprint）的 Tanimoto 筛选，PubChem 不返回具体分数；表里的“Morgan 相似度”是 RDKit 在你的浏览器里用 Morgan 指纹（半径 2，2048 位）重算的，表格按它从高到低排。两种指纹看的东西不一样，过了 PubChem 的下限、Morgan 值却不高是正常的。“含有这个子结构”最多列 20 个，PubChem 不保证是哪 20 个。": [
   "code/index.html"
  ],
  "查一个软件": [
@@ -11563,7 +11596,8 @@
   "lab/lab.js"
  ],
  "分子式": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/cheminf.js"
  ],
  "重原子": [
   "lab/lab.js",
@@ -12433,6 +12467,9 @@
  "加上热校正（焓与吉布斯自由能，要先算频率）": [
   "models/models.js"
  ],
+ "转动对称数 σ（水是 2，苯是 12）": [
+  "models/models.js"
+ ],
  "在给定的结构上算能量和每个原子受的力，不优化。SMILES 输入时结构由 RDKit 生成。": [
   "models/models.js"
  ],
@@ -12443,9 +12480,6 @@
   "models/models.js"
  ],
  "先优化，再用有限差分求振动频率，按理想气体、刚性转子和谐振子给出零点能、焓、熵和吉布斯自由能。": [
-  "models/models.js"
- ],
- "转动对称数 σ（水是 2，苯是 12）": [
   "models/models.js"
  ],
  "RDKit 生成多个构象，全部用模型优化，去掉重复的，按相对能量和 Boltzmann 权重排序。": [
@@ -12493,9 +12527,6 @@
  "绝热：中性、阳离子、阴离子各自优化；垂直：在中性分子的结构上直接换电荷态。IP = E(+1) − E(0)，EA = E(0) − E(−1)。": [
   "models/models.js"
  ],
- "方式": [
-  "models/models.js"
- ],
  "绝热": [
   "models/models.js"
  ],
@@ -12539,6 +12570,15 @@
   "models/models.js"
  ],
  "平均用的构象数": [
+  "models/models.js"
+ ],
+ "一键流水线：优化 → 频率 → 电离能": [
+  "models/models.js"
+ ],
+ "一次提交两个计算：先优化并算振动频率和热化学（3 次），确认是能量极小点后，在优化好的结构上算绝热和垂直的电离能与电子亲和能（1 次）。最后把能量、虚频、零点能、G、IP 和 EA 汇成一张表。": [
+  "models/models.js"
+ ],
+ "有虚频时停下，不接着算电离能（不是极小点，IP / EA 没有意义；停下就不扣那 1 次）": [
   "models/models.js"
  ],
  "从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。": [
@@ -12767,6 +12807,18 @@
   "models/models.js"
  ],
  "计算失败": [
+  "models/models.js"
+ ],
+ "第 1 步 · 优化与频率": [
+  "models/models.js"
+ ],
+ "优化后的结构有 {0} 个虚频，不是能量极小点，所以没有接着算电离能（没有扣这 1 次）。可以换个初始结构再试，或者取消“有虚频时停下”。": [
+  "models/models.js"
+ ],
+ "频率计算没有返回优化后的结构": [
+  "models/models.js"
+ ],
+ "第 2 步 · 电离能与电子亲和能": [
   "models/models.js"
  ],
  "没有实频振动。": [
@@ -13122,10 +13174,31 @@
  "最终 Cα RMSD（Å）": [
   "models/models.js"
  ],
+ "（还在算）": [
+  "models/models.js"
+ ],
+ "流水线汇总{0}": [
+  "models/models.js"
+ ],
+ "（热化学按 {0} K）": [
+  "models/models.js"
+ ],
+ "同一个结构走完两步：第 1 步优化并算频率{0}，第 2 步在第 1 步优化好的结构上算电离能和电子亲和能。IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自再优化，垂直值都用中性分子的结构。已完成 {1} 步。": [
+  "models/models.js"
+ ],
+ "复制汇总 CSV": [
+  "models/models.js"
+ ],
  "多模型对比 · {0}": [
   "models/models.js"
  ],
  "复制对比 CSV": [
+  "models/models.js"
+ ],
+ "第 {0} 步没有算": [
+  "models/models.js"
+ ],
+ "第 {0} 步": [
   "models/models.js"
  ],
  "（测试数据）": [
@@ -16349,8 +16422,57 @@
  "复制失败，请手动选中": [
   "code/cheminf.js"
  ],
+ "PubChem 现在太忙（限流），过一会儿再试。": [
+  "code/cheminf.js"
+ ],
+ "先写一个 SMILES，或者点“画结构”画一个。": [
+  "code/cheminf.js"
+ ],
+ "RDKit 读不出 {0}，请检查 SMILES。": [
+  "code/cheminf.js"
+ ],
+ "正在问 PubChem…": [
+  "code/cheminf.js"
+ ],
+ "PubChem 里没有相似度 ≥ {0}% 的化合物，可以把下限调低再试。": [
+  "code/cheminf.js"
+ ],
+ "PubChem 里没有找到。": [
+  "code/cheminf.js"
+ ],
+ "（相似度 ≥ {0}%，最多列 {1} 个）": [
+  "code/cheminf.js"
+ ],
+ "（最多列 {0} 个）": [
+  "code/cheminf.js"
+ ],
+ "PubChem 找到 {0} 个{1}。": [
+  "code/cheminf.js"
+ ],
+ "连不上 PubChem（网络不通或被拦了）。可以点下面的链接直接在 PubChem 网站上搜。": [
+  "code/cheminf.js"
+ ],
+ "在 PubChem 网站上搜": [
+  "code/cheminf.js"
+ ],
+ "名字 / CID": [
+  "code/cheminf.js"
+ ],
  "分子量": [
+  "code/cheminf.js",
   "code/cheminf-core.js"
+ ],
+ "Morgan 相似度": [
+  "code/cheminf.js"
+ ],
+ "在本站搜这个名字": [
+  "code/cheminf.js"
+ ],
+ "没有结果。": [
+  "code/cheminf.js"
+ ],
+ "已加入": [
+  "code/cheminf.js"
  ],
  "精确质量": [
   "code/cheminf-core.js"

@@ -187,6 +187,19 @@
       <div class="cd-tablewrap"><table class="ci-table" id="ci-table"><tbody><tr><td class="cd-empty">还没有计算。</td></tr></tbody></table></div>
       <p class="cd-small">Lipinski 五规则：分子量 ≤ 500、cLogP ≤ 5、氢键供体 ≤ 5、受体 ≤ 10，最多违反一条算通过（Lipinski 2001）；Veber 规则：可旋转键 ≤ 10 且 TPSA ≤ 140 Å²（Veber 2002）。两条都是口服药的经验规则，不适用于天然产物、抗生素和许多新药类型。</p>
     </div>
+    <div class="cd-box" id="ss-box">
+      <h2 class="cd-h2">按结构搜 PubChem</h2>
+      <p class="cd-p">画一个结构或写一个 SMILES，在 PubChem 的一亿多个化合物里找相似的、含有这个子结构的，或者就是它本身。浏览器直接问 PubChem，不经过本站；本站只把结果整理成表，再用 RDKit 算一遍相似度。</p>
+      <form class="cd-row cd-ask" id="ss-form">
+        <label class="cd-grow">结构（SMILES）<input id="ss-q" type="text" value="CC(=O)Oc1ccccc1C(=O)O" spellcheck="false" autocomplete="off" autocapitalize="off" translate="no"></label>
+        <label>方式<select id="ss-mode"><option value="similarity">相似结构</option><option value="substructure">含有这个子结构</option><option value="identity">同一个化合物</option></select></label>
+        <label id="ss-th-l">相似度下限（%）<input id="ss-th" type="number" min="70" max="100" step="1" value="90" inputmode="numeric"></label>
+        <button type="submit" class="cd-btn primary" id="ss-go">搜索</button>
+      </form>
+      <p class="cd-status" id="ss-status" role="status" aria-live="polite"></p>
+      <div class="cd-tablewrap"><table class="ci-table" id="ss-table"><tbody><tr><td class="cd-empty">还没有搜索。</td></tr></tbody></table></div>
+      <p class="cd-small">“相似结构”按 PubChem 自己的 881 位二维指纹（PubChem fingerprint）的 Tanimoto 筛选，PubChem 不返回具体分数；表里的“Morgan 相似度”是 RDKit 在你的浏览器里用 Morgan 指纹（半径 2，2048 位）重算的，表格按它从高到低排。两种指纹看的东西不一样，过了 PubChem 的下限、Morgan 值却不高是正常的。“含有这个子结构”最多列 20 个，PubChem 不保证是哪 20 个。</p>
+    </div>
   </section>
 
   <!-- 软件体检 -->

@@ -130,3 +130,24 @@ test('python: the script runs with RDKit and gives the expected numbers', { skip
     assert.equal(body[0].split(',')[cols.indexOf('name')], 'salicylic acid', 'sorted by similarity');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('PubChem structure search: request shapes, CIDs, properties with old and new SMILES field names', () => {
+  const sim = C.pubchemSearch('similarity', ' CC(=O)Oc1ccccc1C(=O)O ', { threshold: 95, max: 10 });
+  assert.equal(sim.url, 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/fastsimilarity_2d/smiles/cids/JSON?MaxRecords=10&Threshold=95');
+  assert.equal(sim.body, 'smiles=CC(%3DO)Oc1ccccc1C(%3DO)O', 'SMILES travel in the form body, = and # escaped');
+  assert.equal(C.pubchemSearch('substructure', 'c1ccccc1').url, 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/fastsubstructure/smiles/cids/JSON?MaxRecords=20');
+  assert.match(C.pubchemSearch('identity', 'C#N').url, /fastidentity\/smiles\/cids\/JSON\?MaxRecords=20&identity_type=same_connectivity$/);
+  assert.equal(C.pubchemSearch('identity', 'C#N').body, 'smiles=C%23N');
+  assert.equal(C.pubchemSearch('nonsense', 'C').mode, 'similarity');
+  assert.deepEqual([C.pubchemSearch('similarity', 'C', { threshold: 10, max: 999 }).threshold, C.pubchemSearch('similarity', 'C', { threshold: 10, max: 999 }).max], [70, 50]);
+  assert.deepEqual(plain(C.pubchemCids({ IdentifierList: { CID: [2244, '1983', 2244, -1, 'x'] } })), [2244, 1983]);
+  assert.deepEqual(plain(C.pubchemCids({ Fault: { Code: 'PUGREST.NotFound', Message: 'No CID found' } })), []);
+  assert.throws(() => C.pubchemCids({ Fault: { Code: 'PUGREST.BadRequest', Message: 'Unable to standardize the given structure' } }), /standardize/);
+  assert.equal(C.pubchemPropsUrl([2244, 1983]), 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244,1983/property/Title,MolecularFormula,MolecularWeight,SMILES,ConnectivitySMILES,IUPACName/JSON');
+  const rows = C.pubchemRows({ PropertyTable: { Properties: [
+    { CID: 1983, MolecularFormula: 'C8H9NO2', MolecularWeight: '151.16', CanonicalSMILES: 'CC(=O)NC1=CC=C(C=C1)O', Title: 'Acetaminophen' },
+    { CID: 2244, MolecularFormula: 'C9H8O4', MolecularWeight: '180.16', SMILES: 'CC(=O)OC1=CC=CC=C1C(=O)O', ConnectivitySMILES: 'CC(=O)OC1=CC=CC=C1C(=O)O', IUPACName: '2-acetyloxybenzoic acid', Title: 'Aspirin' },
+  ] } }, [2244, 1983, 5]);
+  assert.deepEqual(plain(rows.map((r) => [r.cid, r.title, r.mw, r.smiles])), [[2244, 'Aspirin', 180.16, 'CC(=O)OC1=CC=CC=C1C(=O)O'], [1983, 'Acetaminophen', 151.16, 'CC(=O)NC1=CC=C(C=C1)O']], 'search order kept, a CID without properties dropped');
+  assert.equal(rows[0].url, 'https://pubchem.ncbi.nlm.nih.gov/compound/2244');
+});

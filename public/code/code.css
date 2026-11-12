@@ -165,6 +165,10 @@ b.no{color:var(--danger)}
 .ci-img svg{width:130px;height:95px}
 .ci-big{max-width:360px;margin:0 auto 10px}
 .ci-big svg{width:100%;height:auto}
+.ss-acts{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.ss-acts .cd-btn{white-space:nowrap}
+.ci-table td a[translate]{display:block;font-size:12px}
+#ss-box{margin-top:16px}
 .ci-ok{color:var(--ok);white-space:nowrap}
 .ci-no{color:var(--danger);white-space:nowrap}
 .ci-name{margin:6px 0;font-size:15px}
