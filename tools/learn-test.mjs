@@ -139,7 +139,10 @@ test('acceptFile enforces type, size and count', () => {
   assert.deepEqual(C.acceptFile('notes.md', 1000), { ok: true });
   assert.deepEqual(C.acceptFile('x.PY', 10), { ok: true });
   assert.equal(C.acceptFile('pic.png', 10).reason, 'type');
-  assert.equal(C.acceptFile('big.txt', 60 * 1024 + 1).reason, 'size');
+  assert.deepEqual(C.acceptFile('long.log', 60 * 1024 + 1), { ok: true }, 'long outputs are taken (their text is cut to the beginning and end)');
+  assert.deepEqual(C.acceptFile('paper.PDF', 3e6), { ok: true });
+  assert.equal(C.acceptFile('big.txt', 25 * 1024 * 1024 + 1).reason, 'size');
+  assert.equal(C.acceptFile('old.doc', 10).reason, 'type');
   assert.equal(C.acceptFile('ok.tex', 10, 3).reason, 'count');
 });
 

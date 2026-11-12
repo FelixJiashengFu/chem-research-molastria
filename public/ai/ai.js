@@ -273,6 +273,189 @@
     const files = [...(dt?.files || [])].filter((f) => /^image\//i.test(f.type));
     return files.length ? files : [...(dt?.items || [])].filter((it) => it.kind === 'file' && /^image\//i.test(it.type)).map((it) => it.getAsFile()).filter(Boolean);
   }
+  /** Every file from a paste or drop. */
+  function droppedFiles(dt) {
+    const files = [...(dt?.files || [])];
+    return files.length ? files : [...(dt?.items || [])].filter((it) => it.kind === 'file').map((it) => it.getAsFile()).filter(Boolean);
+  }
+
+  // ── files ───────────────────────────────────────────────────────────────
+  // Documents are read in the browser and go to the model as text, inside the question (public/ai/files-core.js
+  // has the rules; tools/ai-files-test.mjs tests them). Nothing is uploaded anywhere but to the chosen AI service.
+  // PDF needs pdf.js (Apache-2.0), loaded from jsDelivr the first time a PDF is attached; a scanned PDF (no text
+  // layer) becomes photos of its first pages instead, for a model that reads images.
+  let filesCore = null;
+  function loadFilesCore() {
+    if (window.MOLASTRIA_AI_FILES) return Promise.resolve(window.MOLASTRIA_AI_FILES);
+    return filesCore || (filesCore = new Promise((resolve, reject) => {
+      const el = document.createElement('script');
+      el.src = link('ai/files-core.js');
+      el.onload = () => (window.MOLASTRIA_AI_FILES ? resolve(window.MOLASTRIA_AI_FILES) : reject(new Error('文件模块没有载入，请刷新页面')));
+      el.onerror = () => { filesCore = null; reject(new Error('文件模块没有载入，请刷新页面')); };
+      document.head.append(el);
+    }));
+  }
+  const PDFJS_VERSION = '6.4.299';
+  const PDFJS = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/`;
+  let pdfLib = null;
+  function loadPdf() {
+    return pdfLib || (pdfLib = import(`${PDFJS}pdf.min.mjs`).then((m) => { m.GlobalWorkerOptions.workerSrc = `${PDFJS}pdf.worker.min.mjs`; return m; }, () => { pdfLib = null; throw new Error('PDF 阅读器载入失败（需要联网访问 cdn.jsdelivr.net）'); }));
+  }
+  const MAX_PDF_PAGES = 300, RAW_TEXT = 400000;
+  /** A PDF's text layer, page by page; a scan comes back as up to MAX_IMAGES page photos. */
+  async function pdfText(file) {
+    const lib = await loadPdf();
+    const task = lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false });
+    let doc;
+    try { doc = await task.promise; } catch (err) {
+      task.destroy?.();
+      throw new Error(err?.name === 'PasswordException' ? '这个 PDF 设了密码，先在别的软件里去掉密码再附上' : '这个 PDF 读不出来，可能已损坏');
+    }
+    const pages = doc.numPages, parts = [];
+    let chars = 0;
+    for (let i = 1; i <= Math.min(pages, MAX_PDF_PAGES) && chars < RAW_TEXT; i++) {
+      const page = await doc.getPage(i);
+      const tc = await page.getTextContent();
+      const t = tc.items.map((it) => (it.str || '') + (it.hasEOL ? '\n' : '')).join('').trim();
+      parts.push(`[第 ${i} 页]\n${t}`);
+      chars += t.length;
+      page.cleanup();
+    }
+    let images = [];
+    if (chars < 40 * Math.min(pages, MAX_PDF_PAGES)) {
+      // no text layer (a scan or a photographed handout): look at the first pages instead
+      for (let i = 1; i <= Math.min(pages, MAX_IMAGES); i++) {
+        const page = await doc.getPage(i);
+        const v1 = page.getViewport({ scale: 1 });
+        const viewport = page.getViewport({ scale: Math.min(3, 1600 / Math.max(v1.width, v1.height)) });
+        const c = document.createElement('canvas');
+        c.width = Math.ceil(viewport.width); c.height = Math.ceil(viewport.height);
+        const g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+        await page.render({ canvasContext: g, canvas: c, viewport }).promise;
+        const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
+        images.push(await readImage(new File([blob], `page-${i}.jpg`, { type: 'image/jpeg' })));
+        page.cleanup();
+      }
+    }
+    task.destroy?.();
+    return { text: images.length ? '' : parts.join('\n\n'), pages, images };
+  }
+  /**
+   * A document attached to a question, read into text.
+   * @returns {Promise<{name, kind, label, text, total, pages?, images?}>} text is tidied, at most RAW_TEXT characters
+   *   (the share for one question is cut at send time); images only for a scanned PDF.
+   */
+  async function readFile(file) {
+    const F = await loadFilesCore();
+    const k = F.kindOf(file.name, file.type);
+    const name = String(file.name || T('未命名文件')).replace(/^.*[\\/]/, '').slice(0, 120);
+    if (k.kind === 'old-office') throw new Error(T(`“${name}”是旧版 Office 格式，先另存为 .${k.want} 再附上`));
+    if (k.kind === 'image') throw new Error('图片请用照片的方式附上');
+    if (file.size > F.LIMITS.rawBytes) throw new Error(T(`“${name}”太大（超过 25 MB）`));
+    let text = '', pages, images;
+    if (k.kind === 'pdf') ({ text, pages, images } = await pdfText(file));
+    else if (k.kind === 'docx' || k.kind === 'xlsx' || k.kind === 'pptx') {
+      try { text = await F.officeText(k.kind, await file.arrayBuffer()); } catch { throw new Error(T(`“${name}”读不出来，可能已损坏或加了密码`)); }
+    } else {
+      text = F.decode(await file.slice(0, RAW_TEXT * 4).arrayBuffer());
+      if (!F.sniffText(text)) throw new Error(T(`“${name}”看起来不是文本文件，读不了`));
+      if (/\.ipynb$/i.test(name)) text = F.notebookText(text) ?? text;
+    }
+    text = F.tidy(text).slice(0, RAW_TEXT);
+    if (!text && !images?.length) throw new Error(T(`“${name}”里没有读到文字`));
+    const out = { name, kind: k.kind, label: k.label, text, total: text.length };
+    if (pages) out.pages = pages;
+    if (images?.length) out.images = images;
+    return out;
+  }
+  /** Cut the documents of one question to its share of `budget` characters. → [{name, label, text, total, clipped, pages}] */
+  function fitFiles(docs, budget) {
+    const F = window.MOLASTRIA_AI_FILES;
+    const withText = docs.filter((d) => d.text);
+    const limits = F.share(withText.map((d) => d.text.length), budget);
+    return withText.map((d, i) => { const c = F.clip(d.text, limits[i]); return { name: d.name, label: d.label, text: c.text, total: d.total, clipped: c.clipped, ...(d.pages ? { pages: d.pages } : {}) }; });
+  }
+  const fileBudget = (provider = settings().provider) => (PROVIDERS[provider]?.hosted ? window.MOLASTRIA_AI_FILES?.LIMITS.hosted : window.MOLASTRIA_AI_FILES?.LIMITS.own) || 30000;
+
+  // ── voice ───────────────────────────────────────────────────────────────
+  // Speech to text with the browser's own recognizer (Web Speech API): Chrome and Edge send the audio to their
+  // vendor's servers, Safari (macOS, iPhone, iPad) to Apple's and needs Siri / Dictation turned on. Firefox has none.
+  // The desktop app does not use it (the system web views either lack it or need permissions the app does not ask
+  // for); there, and wherever the API is missing, the button explains the system's own dictation instead, which
+  // types into any text box.
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const inDesktopApp = () => !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
+  const canListen = () => !!Recognition && !inDesktopApp();
+  function systemDictation() {
+    const ua = navigator.userAgent || '', touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    if (/iPhone|iPad|iPod/.test(ua) || touchMac) return T('可以点键盘上的麦克风键说话，系统会把话打成字。');
+    if (/Android/.test(ua)) return T('可以用输入法上的麦克风键说话。');
+    if (/Mac/.test(ua)) return T('可以用 macOS 的听写：在输入框里按两下 Fn（地球仪）键，说完再按一下。');
+    if (/Windows/.test(ua)) return T('可以用 Windows 的语音输入：在输入框里按 Win + H。');
+    return T('可以用系统或输入法自带的语音输入。');
+  }
+  /**
+   * Dictation into a text box. → {toggle(), stop(), active()}
+   * Spoken words go in at the caret; what is still being recognized shows live and is replaced as it firms up.
+   * @param {HTMLTextAreaElement|HTMLInputElement|(() => HTMLTextAreaElement)} target - the box, or a function that finds it
+   *   (for pages that redraw their forms)
+   * @param {{button?: Element|(() => Element), onNote?: (text: string) => void, lang?: () => string}} o
+   */
+  function dictation(target, o = {}) {
+    const box = () => (typeof target === 'function' ? target() : target);
+    const btn = () => (typeof o.button === 'function' ? o.button() : o.button);
+    let rec = null, before = '', after = '', finals = '', dropped = false;
+    const note = (t) => o.onNote?.(t);
+    const paint = (interim = '') => {
+      const input = box();
+      if (!input) return;
+      const said = (finals + interim).trim();
+      const gap = (a, b) => (a && b && !/\s$/.test(a) && !/^[\s，。,.!?！？]/.test(b) && /[A-Za-z0-9]$/.test(a) && /^[A-Za-z0-9]/.test(b) ? ' ' : '');
+      input.value = before + gap(before, said) + said + gap(said, after) + after;
+      const caret = (before + gap(before, said) + said).length;
+      try { input.setSelectionRange(caret, caret); } catch {}
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    const setState = (on) => { const b = btn(); if (b) { b.dataset.listening = on ? 'true' : 'false'; b.setAttribute('aria-pressed', String(on)); } };
+    const stop = () => { try { rec?.stop(); } catch {} };
+    // the text box was sent or cleared: forget what is still coming
+    const cancel = () => { if (!rec) return; dropped = true; try { rec.abort(); } catch {} };
+    function start() {
+      if (!canListen()) { note(systemDictation()); return; }
+      rec = new Recognition();
+      rec.lang = o.lang?.() || (document.documentElement.lang === 'en' ? 'en-US' : 'zh-CN');
+      rec.interimResults = true;
+      rec.continuous = true;
+      const input = box();
+      if (!input) return;
+      const v = input.value, a = input.selectionStart ?? v.length, b = input.selectionEnd ?? v.length;
+      before = v.slice(0, a); after = v.slice(b); finals = ''; dropped = false;
+      rec.onresult = (e) => {
+        if (dropped) return;
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const r = e.results[i];
+          if (r.isFinal) finals += r[0].transcript; else interim += r[0].transcript;
+        }
+        paint(interim);
+      };
+      rec.onerror = (e) => {
+        const why = {
+          'not-allowed': T('没有拿到麦克风权限。在浏览器地址栏左边的网站设置里允许麦克风，再点一次。'),
+          'service-not-allowed': T('这个浏览器现在不让网页用语音识别（Safari 要在系统设置里打开 Siri 或听写）。') + ' ' + systemDictation(),
+          'audio-capture': T('没有找到麦克风。'),
+          network: T('语音识别要连接浏览器厂商的服务器，现在连不上。') + ' ' + systemDictation(),
+          'no-speech': T('没有听到声音，再点一次麦克风试试。'),
+          'language-not-supported': T('这个浏览器的语音识别不支持当前语言。') + ' ' + systemDictation()
+        }[e.error];
+        if (why) note(why);
+      };
+      rec.onend = () => { if (!dropped) paint(); rec = null; setState(false); };
+      try { rec.start(); setState(true); note(''); } catch { rec = null; note(systemDictation()); }
+    }
+    return { toggle: () => (rec ? stop() : start()), stop, cancel, active: () => !!rec };
+  }
 
   // The hosted quota counts a long request as several answers (see deploy/account-worker.js), so a long
   // conversation sends only as much of its history as one answer allows. The system prompt and the newest message stay.
@@ -602,6 +785,21 @@
 @keyframes cai-spin{to{transform:rotate(360deg)}}
 .cai-tray-note{flex-basis:100%;color:var(--muted);font-size:12px;line-height:1.45}
 .cai-drawer[data-drop] .cai-box{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.cai-doc{position:relative;display:flex;align-items:center;gap:8px;max-width:100%;min-width:0;height:58px;box-sizing:border-box;padding:0 34px 0 11px;border-radius:12px;border:1px solid var(--line-strong);background:var(--soft,rgb(127 127 127/.12));color:var(--muted)}
+.cai-doc>span{display:grid;min-width:0}
+.cai-doc b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font:600 12.5px/1.35 var(--font-sans);max-width:220px}
+.cai-doc small{color:var(--muted);font-size:11px;line-height:1.4;white-space:nowrap}
+.cai-doc button{position:absolute;top:50%;right:6px;width:22px;height:22px;margin-top:-11px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:color-mix(in srgb,var(--ink) 14%,transparent);color:var(--ink);cursor:pointer}
+.cai-doc button:hover{background:color-mix(in srgb,var(--ink) 24%,transparent)}
+.cai-mic{border:0;padding:0;background:transparent;font:inherit}
+.cai-mic[data-listening=true]{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);animation:cai-listen 1.4s ease-in-out infinite}
+@keyframes cai-listen{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--danger) 16%,transparent)}}
+@media (prefers-reduced-motion:reduce){.cai-mic[data-listening=true]{animation:none}}
+.cai-attach + .cai-attach{margin-left:-6px}
+.cai-files{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 7px}
+.cai-files>span{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 9px;border-radius:9px;background:color-mix(in srgb,var(--accent-ink) 12%,transparent);font-size:12px}
+.cai-files b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cai-files small{opacity:.8}
 .cai-pics{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 7px}
 .cai-pics img{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent-ink) 35%,transparent)}
 @media (prefers-reduced-motion:reduce){.cai-busy::after{animation:none}}
@@ -794,7 +992,9 @@
   let drawer = null, mode = 'catalog', busy = null, lastFocus = null;
   const HISTORY = 'chemhub-ai-history';
   let history = safe(() => JSON.parse(sessionStorage.getItem(HISTORY) || 'null'), null) || { catalog: [], free: [] };
-  const persist = () => safe(() => sessionStorage.setItem(HISTORY, JSON.stringify({ catalog: history.catalog.slice(-20), free: history.free.slice(-20) })));
+  // Attached documents' text stays in memory for follow-up questions; the saved copy keeps only their names.
+  const slim = (list) => list.slice(-20).map((m) => (m.files ? { ...m, files: m.files.map(({ text, ...rest }) => rest) } : m));
+  const persist = () => safe(() => sessionStorage.setItem(HISTORY, JSON.stringify({ catalog: slim(history.catalog), free: slim(history.free) })));
   // Answers follow the page language; the catalogue itself is mostly Chinese, so English answers translate titles.
   const T = (s) => window.ChemI18n?.t(s) ?? s;
   const LANG_NOTE = () => document.documentElement.lang === 'en' ? '\n\nThe reader is using the English version of the site: answer in English (translate Chinese resource titles into English, keeping the [n] citations).' : '';
@@ -817,7 +1017,10 @@
     catalog: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.6-4.6"/>',
     free: '<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7.5L7 19.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
     go: '<path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/>',
-    image: '<rect x="3.5" y="5" width="17" height="14" rx="2.2"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17.5l5-4.6 3.6 3.2 2.9-2.6L20 17.5"/>'
+    image: '<rect x="3.5" y="5" width="17" height="14" rx="2.2"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17.5l5-4.6 3.6 3.2 2.9-2.6L20 17.5"/>',
+    clip: '<path d="M20 11.5l-7.6 7.6a5 5 0 0 1-7.1-7.1l8.1-8.1a3.4 3.4 0 0 1 4.8 4.8l-8 8a1.7 1.7 0 0 1-2.4-2.4l7.3-7.3"/>',
+    mic: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/>',
+    doc: '<path d="M7 3.5h6.5L18 8v12.5H7z"/><path d="M13.5 3.5V8H18M9.5 12.5h6M9.5 16h6"/>'
   };
 
   // ── entrance ────────────────────────────────────────────────────────────
@@ -867,7 +1070,7 @@
     drawer.innerHTML = `<div class="cai-grip" role="separator" aria-orientation="vertical" aria-label="拖动调整宽度" title="拖动调整宽度，双击恢复默认" tabindex="0"></div><div class="cai-head"><button type="button" class="cai-orb cai-orb-btn" data-act="mascot" data-mascot="${mascotOf().id}" aria-haspopup="true" aria-expanded="false" title="更换助手的形象" aria-label="更换助手的形象">${mascotSvg()}</button><div class="cai-mascots" role="menu" aria-label="选择助手的形象" hidden translate="no"></div><div class="cai-id"><h2 id="cai-title">AI 研究助手</h2><button type="button" class="cai-chip" data-act="settings" title="切换服务商或模型"><span></span>${svgIcon(ICON.caret, 14)}</button></div><div class="cai-tools"><button type="button" class="cai-ib" data-act="clear" title="清空对话" aria-label="清空对话">${svgIcon(ICON.reset)}</button><button type="button" class="cai-ib" data-act="settings" title="AI 设置" aria-label="AI 设置">${svgIcon(ICON.tune)}</button><button type="button" class="cai-ib" data-act="close" title="关闭" aria-label="关闭">${svgIcon(ICON.close)}</button></div></div>
       <div class="cai-modes" role="tablist" aria-label="提问方式"><button type="button" role="tab" data-mode="catalog">问目录（带出处）</button><button type="button" role="tab" data-mode="free">自由提问</button></div>
       <div class="cai-log" aria-live="polite"></div>
-      <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><div class="cai-tray" hidden></div><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行；可以粘贴图片"></textarea><div class="cai-row"><label class="cai-attach" title="附上照片或截图（拍照、相册，或直接粘贴）"><input type="file" accept="image/*" multiple data-attach class="cai-sr"><span class="cai-sr">附上照片</span>${svgIcon(ICON.image, 18)}</label><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
+      <form class="cai-compose"><label class="cai-sr" for="cai-input">输入问题</label><div class="cai-box"><div class="cai-tray" hidden></div><textarea id="cai-input" rows="2" placeholder="输入问题，回车发送，Shift+回车换行；可以粘贴图片、拖进文件"></textarea><div class="cai-row"><label class="cai-attach" title="附上文件或照片：PDF、Word、Excel、PPT、文本、代码、结构和计算输出（拍照、相册，或直接粘贴、拖进来）"><input type="file" multiple data-attach class="cai-sr"><span class="cai-sr">附上文件或照片</span>${svgIcon(ICON.clip, 18)}</label><button type="button" class="cai-attach cai-mic" data-act="mic" aria-pressed="false" title="${canListen() ? '语音输入：点一下开始说，再点一下停' : '语音输入'}"><span class="cai-sr">语音输入</span>${svgIcon(ICON.mic, 18)}</button><small data-hint></small><button type="button" class="cai-stop" data-act="stop" hidden>停止</button><button type="submit" class="cai-send" title="发送" aria-label="发送">${svgIcon(ICON.send)}</button></div></div></form>`;
     document.body.append(drawer);
     setupGrip(drawer.querySelector('.cai-grip'));
     // Typing in the panel while the film plays skips it (Esc is handled below, so it skips instead of closing).
@@ -875,12 +1078,14 @@
     addEventListener('molastria:logo-motion', (e) => { if (!e.detail?.on) endFilm(); });
     drawer.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
-      if (act === 'close') closeDrawer();
+      if (act === 'close') { voice.cancel(); closeDrawer(); }
       else if (act === 'mascot') toggleMascots();
       else if (act === 'settings') openSettings();
       else if (act === 'stop') busy?.abort();
       else if (act === 'clear') { history[mode] = []; persist(); renderLog(); }
       else if (act === 'unattach') { attached.splice(Number(e.target.closest('[data-act]').dataset.i), 1); renderTray(); }
+      else if (act === 'undoc') { docs.splice(Number(e.target.closest('[data-act]').dataset.i), 1); renderTray(); }
+      else if (act === 'mic') voice.toggle();
       const m = e.target.closest('[data-mode]')?.dataset.mode;
       if (m) { mode = m; renderLog(); }
       const sug = e.target.closest('[data-sug]');
@@ -907,36 +1112,53 @@
     drawer.querySelector('form').addEventListener('submit', (e) => {
       e.preventDefault();
       if (busy || attaching) return;
-      const q = input.value.trim(), pics = attached.splice(0);
-      if (!q && !pics.length) return;
+      voice.cancel();
+      const q = input.value.trim();
+      if (!q && !attached.length && !docs.length) return;
+      const pics = attached.splice(0), files = docs.splice(0);
       input.value = ''; input.style.height = '';
       renderTray();
-      ask(q || T(pics.length > 1 ? '请看这几张图：说明图里是什么，再讲解其中的概念或解答其中的问题。' : '请看这张图：说明图里是什么，再讲解其中的概念或解答其中的问题。'), pics);
+      const ask0 = files.length ? T(files.length > 1 ? '请读一下这几个文件：先概括内容，再指出要点，有问题或错误也请指出。' : '请读一下这个文件：先概括内容，再指出要点，有问题或错误也请指出。')
+        : T(pics.length > 1 ? '请看这几张图：说明图里是什么，再讲解其中的概念或解答其中的问题。' : '请看这张图：说明图里是什么，再讲解其中的概念或解答其中的问题。');
+      ask(q || ask0, pics, files);
     });
+    voice = dictation(input, { button: drawer.querySelector('[data-act=mic]'), onNote: (t) => renderTray(t) });
+    loadFilesCore().then((F) => { drawer.querySelector('[data-attach]').accept = F.ACCEPT; }, () => {});
     // Photos: the picture button (camera or photo library on a phone or iPad), paste, or drop onto the panel.
     input.addEventListener('paste', (e) => {
-      const files = imageFiles(e.clipboardData);
+      const files = droppedFiles(e.clipboardData);
       if (!files.length) return;
       if (!e.clipboardData.getData('text/plain')) e.preventDefault();
       attach(files);
     });
     drawer.addEventListener('dragover', (e) => { if ([...(e.dataTransfer?.items || [])].some((it) => it.kind === 'file')) { e.preventDefault(); drawer.dataset.drop = ''; } });
     drawer.addEventListener('dragleave', (e) => { if (!drawer.contains(e.relatedTarget)) delete drawer.dataset.drop; });
-    drawer.addEventListener('drop', (e) => { delete drawer.dataset.drop; const files = imageFiles(e.dataTransfer); if (files.length) { e.preventDefault(); attach(files); } });
+    drawer.addEventListener('drop', (e) => { delete drawer.dataset.drop; const files = droppedFiles(e.dataTransfer); if (files.length) { e.preventDefault(); attach(files); } });
     drawer.addEventListener('change', (e) => { if (e.target.matches?.('[data-attach]')) { attach([...e.target.files]); e.target.value = ''; } });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) { if (film) endFilm(); else closeDrawer(); } });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.dataset.open === 'true' && !document.querySelector('dialog[open]')) { if (film) endFilm(); else if (voice.active()) voice.stop(); else closeDrawer(); } });
     document.addEventListener('chemhub:ai-config', refreshDrawer);
   }
   // Photos waiting to go with the next question: {url (sent), thumb (shown and kept in the conversation)}.
-  const attached = [];
-  let attaching = 0;
+  // Documents waiting likewise: {name, kind, label, text, total, pages?}.
+  const attached = [], docs = [];
+  let attaching = 0, voice = { toggle() {}, stop() {}, cancel() {}, active: () => false };
+  const isImage = (f) => /^image\//i.test(f.type || '') || /\.(jpe?g|png|gif|webp|heic|heif|bmp|avif)$/i.test(f.name || '');
   async function attach(files) {
-    const room = MAX_IMAGES - attached.length;
-    let note = files.length > room ? T(`一次最多附 ${MAX_IMAGES} 张图。`) : '';
+    const pics = files.filter(isImage), rest = files.filter((f) => !isImage(f));
+    const room = MAX_IMAGES - attached.length, docRoom = 4 - docs.length;
+    let note = pics.length > room ? T(`一次最多附 ${MAX_IMAGES} 张图。`) : rest.length > docRoom ? T('一次最多附 4 个文件。') : '';
     attaching++;
     renderTray();
-    for (const f of files.slice(0, Math.max(0, room))) {
+    for (const f of pics.slice(0, Math.max(0, room))) {
       try { attached.push(await readImage(f)); } catch (err) { note = T(err.message); }
+    }
+    for (const f of rest.slice(0, Math.max(0, docRoom))) {
+      try {
+        const d = await readFile(f);
+        // a scanned PDF: its pages go as photos
+        if (d.images) { const free = MAX_IMAGES - attached.length; attached.push(...d.images.slice(0, free)); note = T(`“${d.name}”没有文字层（像是扫描件），改为把前 ${Math.min(free, d.images.length)} 页当图片发给能看图的模型。`); }
+        if (d.text) docs.push(d);
+      } catch (err) { note = T(err.message); }
     }
     attaching--;
     renderTray(note);
@@ -946,12 +1168,24 @@
     }
     drawer.querySelector('textarea').focus({ preventScroll: true });
   }
+  /** What the attached documents will cost: cut to fit, and (hosted allowance) how many answers they count as. */
+  function filesNote() {
+    const F = window.MOLASTRIA_AI_FILES;
+    if (!F || !docs.length) return '';
+    const budget = fileBudget(), total = docs.reduce((n, d) => n + d.text.length, 0);
+    const sent = Math.min(total, budget);
+    const cut = total > budget ? T(`文件合计约 ${total.toLocaleString()} 字，超过一次能发的 ${budget.toLocaleString()} 字，长的只发开头和结尾。`) : '';
+    const units = PROVIDERS[settings().provider]?.hosted && sent > 9000 ? T(`这一问连同文件约 ${sent.toLocaleString()} 字，托管额度按 ${F.hostedUnits(sent + 2000)} 次回答计。`) : '';
+    return [cut, units].filter(Boolean).join(' ');
+  }
   function renderTray(note = '') {
     const tray = drawer?.querySelector('.cai-tray');
     if (!tray) return;
-    tray.hidden = !attached.length && !attaching && !note;
-    tray.innerHTML = attached.map((a, i) => `<span class="cai-thumb"><img src="${a.thumb}" alt="${esc(T(`附图 ${i + 1}`))}"><button type="button" data-act="unattach" data-i="${i}" title="${esc(T('移除这张图'))}" aria-label="${esc(T('移除这张图'))}">${svgIcon(ICON.close, 12)}</button></span>`).join('')
-      + (attaching ? `<span class="cai-thumb cai-busy" aria-label="${esc(T('正在读取图片'))}"></span>` : '')
+    tray.hidden = !attached.length && !docs.length && !attaching && !note;
+    if (!note && docs.length) note = filesNote();
+    tray.innerHTML = docs.map((d, i) => `<span class="cai-doc" title="${esc(d.name)}">${svgIcon(ICON.doc, 16)}<span><b translate="no">${esc(d.name)}</b><small>${esc(T(d.label))} · ${esc(T(`共 ${d.total.toLocaleString()} 字`))}${d.pages ? ` · ${esc(T(`共 ${d.pages} 页`))}` : ''}</small></span><button type="button" data-act="undoc" data-i="${i}" title="${esc(T('移除这个文件'))}" aria-label="${esc(T('移除这个文件'))}">${svgIcon(ICON.close, 12)}</button></span>`).join('')
+      + attached.map((a, i) => `<span class="cai-thumb"><img src="${a.thumb}" alt="${esc(T(`附图 ${i + 1}`))}"><button type="button" data-act="unattach" data-i="${i}" title="${esc(T('移除这张图'))}" aria-label="${esc(T('移除这张图'))}">${svgIcon(ICON.close, 12)}</button></span>`).join('')
+      + (attaching ? `<span class="cai-thumb cai-busy" aria-label="${esc(T('正在读取文件'))}"></span>` : '')
       + (note ? `<small class="cai-tray-note">${esc(note)}</small>` : '');
   }
   function toggleMascots(open) {
@@ -1041,20 +1275,40 @@
     return `<div class="cai-usage">${esc(m.model || '')} · 输入 ${m.usage.prompt_tokens ?? '?'} / 输出 ${m.usage.completion_tokens ?? '?'} token${cost}${m.ms ? ` · ${(m.ms / 1000).toFixed(1)} s` : ''}</div>`;
   }
   function renderMsg(m) {
-    if (m.role === 'user') return `<div class="cai-msg user">${m.thumbs?.length ? `<span class="cai-pics">${m.thumbs.map((t, i) => `<img src="${esc(safeImg(t))}" alt="${esc(T(`附图 ${i + 1}`))}">`).join('')}</span>` : ''}${esc(m.content)}</div>`;
+    if (m.role === 'user') return `<div class="cai-msg user">${m.thumbs?.length ? `<span class="cai-pics">${m.thumbs.map((t, i) => `<img src="${esc(safeImg(t))}" alt="${esc(T(`附图 ${i + 1}`))}">`).join('')}</span>` : ''}${m.files?.length ? `<span class="cai-files">${m.files.map((f) => `<span>${svgIcon(ICON.doc, 14)}<b translate="no">${esc(f.name)}</b>${f.clipped ? `<small>${esc(T('（只发了首尾）'))}</small>` : ''}</span>`).join('')}</span>` : ''}${esc(m.content)}</div>`;
     if (m.error) return `<div class="cai-err">${esc(m.error)}${m.code === 'no-key' ? ' <button type="button" class="cai-btn" data-act="settings" style="margin-left:6px;height:28px">去设置</button>' : ''}</div>`;
     const cited = new Set([...String(m.content).matchAll(/\[(\d{1,2}(?:\s*[,，]\s*\d{1,2})*)\]/g)].flatMap((x) => x[1].split(/[,，]/).map((n) => Number(n.trim()))));
     const refs = (m.refs || []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => cited.has(r.n));
     return `<div class="cai-msg bot"><div class="cai-who">${orb()}<span class="cai-name" translate="no">MolAstria</span>${m.refs ? ` · 检索到 ${m.refs.length} 条目录资源` : ''}${m.pending ? ' · 生成中…' : ''}</div><div class="cai-bubble">${m.reasoning ? `<details class="cai-think"><summary>思考过程（${m.reasoning.length} 字）</summary><div class="cai-body">${esc(m.reasoning)}</div></details>` : ''}<div class="cai-body">${markdown(m.content || (m.pending ? '…' : ''), m.refs)}</div>${refs.length ? `<div class="cai-refs">${refs.map((r) => `<a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer"><b>${r.n}</b><span>${esc(r.title)}</span><small>${esc(r.sources[0] || '')}</small></a>`).join('')}</div>` : ''}</div>${usageLine(m)}</div>`;
   }
   // Earlier turns go back to the model as text; their photos are sent only once, with the question they came with.
-  const priorText = (m) => (m.thumbs?.length ? `${m.content}\n（这一问附了 ${m.thumbs.length} 张图，模型当时看过）` : m.content);
+  // Their documents go again (as sent) with your own key while they fit; with the hosted allowance only their names do.
+  function priorText(m, room) {
+    let text = m.content;
+    if (m.files?.length) {
+      const size = m.files.reduce((n, f) => n + (f.text?.length || 0), 0);
+      if (room && room.left >= size && m.files.every((f) => f.text)) { room.left -= size; text = window.MOLASTRIA_AI_FILES.compose(text, m.files); }
+      else text += `\n${window.MOLASTRIA_AI_FILES?.mention(m.files) || ''}`;
+    }
+    return m.thumbs?.length ? `${text}\n（这一问附了 ${m.thumbs.length} 张图，模型当时看过）` : text;
+  }
+  /** Earlier turns, newest documents first in line for the room left. */
+  function priorTurns(turns, room) {
+    return turns.slice().reverse().map((m) => ({ role: m.role, content: priorText(m, room) })).reverse();
+  }
   const safeImg = (u) => (/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(String(u)) ? u : '');
-  async function ask(question, pics = []) {
+  async function ask(question, pics = [], files = []) {
     if (busy) return;
     const list = history[mode];
     const images = pics.map((p) => p.url);
-    list.push(pics.length ? { role: 'user', content: question, thumbs: pics.map((p) => p.thumb) } : { role: 'user', content: question });
+    const budget = fileBudget(), sent = files.length ? fitFiles(files, budget) : [];
+    const user = { role: 'user', content: question };
+    if (pics.length) user.thumbs = pics.map((p) => p.thumb);
+    if (sent.length) user.files = sent;
+    list.push(user);
+    const hosted = !!PROVIDERS[settings().provider]?.hosted;
+    const room = hosted ? null : { left: budget * 1.5 - sent.reduce((n, f) => n + f.text.length, 0) };
+    const asked = (q) => (sent.length ? window.MOLASTRIA_AI_FILES.compose(q, sent) : q);
     const bot = { role: 'assistant', content: '', pending: true };
     list.push(bot);
     renderLog();
@@ -1079,11 +1333,11 @@
         const refs = await retrieve(query, 12);
         bot.refs = refs;
         const context = refs.length ? refs.map((r, i) => `[${i + 1}] ${r.title}\n来源：${r.sources.join(' / ')}${r.date ? ` · ${r.date}` : ''}\n链接：${r.url}\n摘要：${r.excerpt}`).join('\n\n') : '（没有检索到相关条目）';
-        const prior = list.slice(0, -2).filter((m) => !m.error).slice(-6).map((m) => ({ role: m.role, content: priorText(m) }));
-        messages = [{ role: 'system', content: SYSTEM.catalog + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(`问题：${question}${images.length ? `\n（问题附了 ${images.length} 张图，先看图）` : ''}\n\n本站目录检索结果：\n${context}`, images) }];
+        const prior = priorTurns(list.slice(0, -2).filter((m) => !m.error).slice(-6), room);
+        messages = [{ role: 'system', content: SYSTEM.catalog + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(`${asked(`问题：${question}${images.length ? `\n（问题附了 ${images.length} 张图，先看图）` : ''}`)}\n\n本站目录检索结果：\n${context}`, images) }];
       } else {
-        const prior = list.slice(0, -2).filter((m) => !m.error && !m.pending).slice(-9).map((m) => ({ role: m.role, content: priorText(m) }));
-        messages = [{ role: 'system', content: SYSTEM.free + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(question, images) }];
+        const prior = priorTurns(list.slice(0, -2).filter((m) => !m.error && !m.pending).slice(-9), room);
+        messages = [{ role: 'system', content: SYSTEM.free + LANG_NOTE() }, ...prior, { role: 'user', content: withImages(asked(question), images) }];
       }
       const r = await chat({ messages, signal: controller.signal, maxTokens: 4096, onDelta: (_, full) => { bot.content = full; paint(); }, onReasoning: (_, full) => { bot.reasoning = full; paint(); } });
       Object.assign(bot, { content: r.text || '（模型没有返回正文，可以把思考强度调低后重试）', reasoning: r.reasoning, usage: r.usage, cost: r.cost, model: r.model, ms: r.ms });
@@ -1122,6 +1376,6 @@
     if (lastFocus?.isConnected) lastFocus.focus();
   }
 
-  window.ChemAI = { chat, parseJSON, retrieve, openDrawer, closeDrawer, openSettings, settings, isReady: () => isReady(), providers: PROVIDERS, markdown, costOf, readImage, imageFiles, withImages, visionModel: () => visionModel(), canSee, MAX_IMAGES };
+  window.ChemAI = { chat, parseJSON, retrieve, openDrawer, closeDrawer, openSettings, settings, isReady: () => isReady(), providers: PROVIDERS, markdown, costOf, readImage, imageFiles, droppedFiles, withImages, visionModel: () => visionModel(), canSee, MAX_IMAGES, readFile, loadFilesCore, dictation, canListen, systemDictation };
   document.dispatchEvent(new Event('chemhub:ai-ready'));
 })();

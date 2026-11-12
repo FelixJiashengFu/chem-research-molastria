@@ -2858,6 +2858,143 @@ check('photos: the AI panel takes pasted and picked photos (text still works), t
   await finish(p);
 });
 
+// Files and voice. pdf.js comes from jsDelivr on the site; here it is served from tools/e2e/node_modules.
+const pdfjsLocal = (ctx) => ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/pdfjs-dist@[\d.]+\/build\/(pdf(?:\.worker)?\.min\.mjs)$/, (r) => r.fulfill({
+  contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' },
+  body: readFileSync(new URL(`./node_modules/pdfjs-dist/build/${/build\/(.+)$/.exec(r.request().url())[1]}`, import.meta.url))
+}));
+const aiFixture = (n) => readFileSync(join(ROOT, 'tools/ai-fixtures', n));
+// A stand-in for the browser's speech recognizer: says the words in window.__say, a partial result first, then final.
+function fakeSpeech() {
+  try { localStorage.setItem('chemhub-ai', JSON.stringify({ provider: 'deepseek', remember: true, keys: { deepseek: 'sk-test' } })); } catch {}
+  window.__speech = [];
+  class FakeRecognition {
+    start() {
+      window.__speech.push({ lang: this.lang, continuous: this.continuous, interim: this.interimResults });
+      const words = window.__say || '你好';
+      const res = (text, isFinal) => { const r = [{ transcript: text }]; r.isFinal = isFinal; return r; };
+      setTimeout(() => this.onresult?.({ resultIndex: 0, results: [res(words.slice(0, 2), false)] }), 30);
+      setTimeout(() => this.onresult?.({ resultIndex: 0, results: [res(words, true)] }), 80);
+      this.timer = setTimeout(() => this.onend?.(), 2000);
+    }
+    stop() { clearTimeout(this.timer); setTimeout(() => this.onend?.(), 10); }
+    abort() { this.stop(); }
+  }
+  window.webkitSpeechRecognition = FakeRecognition;
+  delete window.SpeechRecognition;
+}
+
+check('files and voice: the AI panel reads PDF, Word, Excel, PowerPoint and chemistry files into the question, dictation types at the caret; the Study Desk takes the same', async () => {
+  const p = await open({ init: fakeSpeech, reducedMotion: 'reduce' });
+  await pdfjsLocal(p.context());
+  const bodies = [];
+  await p.route('https://api.deepseek.com/**', async (r) => {
+    const body = JSON.parse(r.request().postData());
+    bodies.push(body);
+    if (/^TASK: /.test(body.messages[0].content)) return studyDeskAI().route(r);
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: '读完了。' } }], usage: { prompt_tokens: 900, completion_tokens: 4 } }) });
+  });
+  await go(p, '/index.html');
+  await p.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openDrawer({ mode: 'free' })));
+  await p.waitForSelector('.cai-drawer[data-open=true]');
+  assert.match(await p.$eval('.cai-drawer [data-attach]', (e) => e.accept), /\.pdf,.*\.docx.*\.xyz/, 'the picker offers documents and structures');
+  const xyz = '3\nwater\nO 0.000 0.000 0.117\nH 0.000 0.757 -0.469\nH 0.000 -0.757 -0.469\n';
+  await p.setInputFiles('.cai-drawer [data-attach]', [
+    { name: 'water.xyz', mimeType: '', buffer: Buffer.from(xyz) },
+    { name: 'sample.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', buffer: aiFixture('sample.docx') },
+    { name: 'sample.pdf', mimeType: 'application/pdf', buffer: aiFixture('sample.pdf') },
+    { name: 'sample.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: aiFixture('sample.xlsx') }
+  ]);
+  await p.waitForFunction(() => document.querySelectorAll('.cai-tray .cai-doc').length === 4 && !document.querySelector('.cai-tray .cai-busy'), null, { timeout: 30000 });
+  assert.match(await text(p, '.cai-tray'), /water\.xyz[\s\S]*XYZ 坐标[\s\S]*sample\.pdf[\s\S]*PDF[\s\S]*共 1 页/);
+  // remove one, then ask
+  await p.click('.cai-doc:nth-child(4) [data-act=undoc]');
+  await p.waitForFunction(() => document.querySelectorAll('.cai-tray .cai-doc').length === 3);
+  await p.fill('#cai-input', '这几个文件说的是同一个分子吗？');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction(() => document.querySelectorAll('.cai-msg.user .cai-files > span').length === 3);
+  await p.waitForFunction(() => document.querySelectorAll('.cai-msg.bot .cai-body').length === 1 && !document.querySelector('.cai-msg.bot').textContent.includes('生成中'));
+  let sent = bodies.at(-1).messages.at(-1).content;
+  assert.equal(typeof sent, 'string', 'documents go as text');
+  assert.ok(sent.startsWith('这几个文件说的是同一个分子吗？\n\n下面是提问者附上的 3 个文件'), sent.slice(0, 80));
+  assert.match(sent, /【附件：water\.xyz（XYZ 坐标，\d+ 字）】\n```\n3\nwater\nO 0\.000/);
+  assert.match(sent, /【附件：sample\.docx（Word，[^】]+）】[\s\S]*O–H 键长 0\.961 Å[\s\S]*104\.5°/);
+  assert.match(sent, /【附件：sample\.pdf（PDF，\d+ 字，1 页）】\n```\n\[第 1 页\]\n[\s\S]*水分子的几何优化[\s\S]*-76\.4636/, 'the PDF text layer, Chinese included');
+  assert.ok(!sent.includes('sample.xlsx'), 'the removed file is not sent');
+  // A follow-up with your own key: the documents go again (the model has no memory); the saved history keeps names only.
+  await p.fill('#cai-input', '键角是多少？');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 2);
+  const follow = bodies.at(-1).messages;
+  assert.equal(follow.at(-1).content, '键角是多少？');
+  assert.ok(follow.some((m) => m.role === 'user' && /【附件：sample\.docx/.test(m.content)), 'earlier documents sent again');
+  const saved = await p.evaluate(() => sessionStorage.getItem('chemhub-ai-history'));
+  assert.ok(saved.includes('sample.docx') && !saved.includes('104.5°'), 'history keeps the file names, not their text');
+  // A long output: beginning and end go, the middle is left out and said so; a file with no words gets a default question.
+  const log = `${'Iteration    Energy (Eh)\n'.repeat(5000)}FINAL SINGLE POINT ENERGY     -76.463600\n****ORCA TERMINATED NORMALLY****\n`;
+  await p.setInputFiles('.cai-drawer [data-attach]', { name: 'job.out', mimeType: '', buffer: Buffer.from(log) });
+  await p.waitForSelector('.cai-tray .cai-doc');
+  assert.match(await text(p, '.cai-tray-note'), /超过一次能发的 100,000 字/);
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 3);
+  sent = bodies.at(-1).messages.at(-1).content;
+  assert.match(sent, /^请读一下这个文件/);
+  assert.match(sent, /太长，只附了开头和结尾/);
+  assert.match(sent, /中间省略约 \d+ 字/);
+  assert.match(sent, /FINAL SINGLE POINT ENERGY {5}-76\.463600\n\*\*\*\*ORCA TERMINATED NORMALLY\*\*\*\*\n```$/, 'the end of the output, where the results are, is kept');
+  assert.ok(sent.length < 101500);
+  assert.match(await p.locator('.cai-msg.user .cai-files').last().textContent(), /job\.out（只发了首尾）/);
+  // Things it cannot read say why.
+  await p.setInputFiles('.cai-drawer [data-attach]', { name: 'old.doc', mimeType: 'application/msword', buffer: Buffer.from('\xd0\xcf\x11\xe0', 'latin1') });
+  await p.waitForFunction(() => /另存为 \.docx/.test(document.querySelector('.cai-tray-note')?.textContent || ''));
+  await p.setInputFiles('.cai-drawer [data-attach]', { name: 'blob.bin', mimeType: 'application/octet-stream', buffer: Buffer.from([0, 1, 2, 0, 255, 0]) });
+  await p.waitForFunction(() => /不是文本文件/.test(document.querySelector('.cai-tray-note')?.textContent || ''));
+  assert.equal(await p.locator('.cai-tray .cai-doc').count(), 0);
+  // Voice: words go in at the caret, live, and the button shows it is listening until clicked again.
+  await p.fill('#cai-input', '请解释和区别');
+  await p.evaluate(() => { window.__say = '密度泛函'; const t = document.querySelector('#cai-input'); t.focus(); t.setSelectionRange(3, 3); });
+  await p.click('.cai-drawer [data-act=mic]');
+  await p.waitForFunction(() => document.querySelector('#cai-input').value === '请解释密度泛函和区别');
+  assert.equal(await p.getAttribute('.cai-drawer [data-act=mic]', 'aria-pressed'), 'true');
+  assert.deepEqual(await p.evaluate(() => window.__speech.at(-1)), { lang: 'zh-CN', continuous: true, interim: true });
+  await p.click('.cai-drawer [data-act=mic]');
+  await p.waitForFunction(() => document.querySelector('.cai-drawer [data-act=mic]').getAttribute('aria-pressed') === 'false');
+  assert.equal(await p.inputValue('#cai-input'), '请解释密度泛函和区别');
+  // Sending while listening sends what is there and stops listening; late words do not come back into the empty box.
+  await p.fill('#cai-input', '');
+  await p.click('.cai-drawer [data-act=mic]');
+  await p.waitForFunction(() => document.querySelector('#cai-input').value === '密度泛函');
+  await p.press('#cai-input', 'Enter');
+  await p.waitForFunction((n) => document.querySelectorAll('.cai-msg.bot .cai-body').length === n, 4);
+  assert.equal(bodies.at(-1).messages.at(-1).content, '密度泛函');
+  await p.waitForTimeout(150);
+  assert.equal(await p.inputValue('#cai-input'), '');
+  // Study Desk: a Word file in the attachments, the goal said aloud.
+  await go(p, '/learn/index.html#learn');
+  await p.waitForSelector('#ln-goal');
+  await p.evaluate(() => { window.__say = '弄懂水分子的键角'; });
+  await p.$eval('.ln-mic[data-target=ln-goal]', (b) => b.click()); // (a click at the very top would land on the sticky header)
+  await p.waitForFunction(() => document.querySelector('#ln-goal').value === '弄懂水分子的键角');
+  await p.$eval('.ln-mic[data-target=ln-goal]', (b) => b.click()); // (a click at the very top would land on the sticky header)
+  await p.setInputFiles('#ln-files', { name: 'sample.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', buffer: aiFixture('sample.docx') });
+  await p.waitForFunction(() => /sample\.docx/.test(document.querySelector('.ln-file-list')?.textContent || ''));
+  await p.click('[data-act=new]');
+  await p.waitForSelector('.ln-q');
+  const probe = bodies.find((b) => /^TASK: probe/.test(b.messages[0].content));
+  assert.match(probe.messages[1].content, /弄懂水分子的键角/);
+  assert.match(probe.messages[1].content, /104\.5°/, 'the Word text goes with the session');
+  await finish(p);
+  // Without a recognizer (Firefox, the desktop app) the button explains the system's own dictation.
+  const q = await open({ init: () => { delete window.webkitSpeechRecognition; delete window.SpeechRecognition; }, reducedMotion: 'reduce' });
+  await go(q, '/index.html');
+  await q.evaluate(() => window.ChemHub.loadAI().then((ai) => ai.openDrawer({ mode: 'free' })));
+  await q.waitForSelector('.cai-drawer[data-open=true]');
+  await q.click('.cai-drawer [data-act=mic]');
+  await q.waitForFunction(() => /语音输入|听写|麦克风/.test(document.querySelector('.cai-tray-note')?.textContent || ''));
+  assert.equal(await q.getAttribute('.cai-drawer [data-act=mic]', 'aria-pressed'), 'false');
+  await finish(q);
+});
+
 check('study desk: probe, plan, one step with a check and a repair, practice, knowledge graph, export', async () => {
   const p = await open({ init: studyKey, reducedMotion: 'reduce' });
   const ai = studyDeskAI();
