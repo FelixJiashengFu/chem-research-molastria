@@ -257,7 +257,8 @@
   }
 
   // ── BibTeX ───────────────────────────────────────────────────────────
-  const bibEsc = (s) => String(s || '').replace(/[{}\\]/g, '').replace(/([&%$#_])/g, '\\$1');
+  // 一遍处理：花括号和反斜杠去掉（不让书名里的 LaTeX 改变 .bib 的结构），& % $ # _ 前加反斜杠
+  const bibEsc = (s) => String(s || '').replace(/[{}\\&%$#_]/g, (c) => ('{}\\'.includes(c) ? '' : '\\' + c));
   function citeKey(b, used) {
     const first = String(b.a || 'anon').split(/,| and |、|，/)[0].trim().split(/\s+/).pop() || 'anon';
     const word = String(b.t || '').toLowerCase().match(/[a-z]{4,}/);
