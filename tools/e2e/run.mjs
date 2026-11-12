@@ -4797,6 +4797,9 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   // The discussion-room card above grows when the latest messages arrive (earlier checks leave some): an empty summary keeps
   // the distance to this block what the first layout says.
   await p.route('**/chat/summary', (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"state":"on","online":0,"rooms":7,"top":[],"latest":[]}' }));
+  // The weekly-picks card between them appears once an issue exists (earlier checks generate one) and pushes the block down
+  // after the observer has fired: no issue keeps that card folded away.
+  await p.route('**/digest/preview', (r) => r.fulfill({ status: 404, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{}' }));
   // The loader starts 400 px before the block scrolls in. Where the block is when the script is asked for is what counts: a
   // look after the page settles races cards above it that grow or shrink while the home page fills in.
   let askedAt = null;
