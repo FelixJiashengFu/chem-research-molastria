@@ -3547,7 +3547,7 @@ check('cloud sync: two devices on one account merge favourites and progress, an 
   await laptop.evaluate(() => { localStorage.setItem('chemresearch-saved', JSON.stringify(['pyscf', 'orca'])); localStorage.setItem('molastria-qp-progress', JSON.stringify({ c1: true })); });
   await signIn(laptop, email);
   await laptop.waitForSelector('#sync-card:not([hidden])');
-  assert.equal(await laptop.locator('#sync-list li').count(), 13, 'every synced record is listed');
+  assert.equal(await laptop.locator('#sync-list li').count(), 14, 'every synced record is listed');
   assert.match(await text(laptop, '#sync-card'), /不同步/);
   assert.equal(await text(laptop, '#sync-toggle'), '打开云同步');
   await laptop.click('#sync-toggle');
@@ -3615,10 +3615,10 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 11);
+  assert.equal(await p.locator('#run-jobs tr').count(), 12);
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
-  assert.equal(models.length, 10);
+  assert.equal(models.length, 14); // ten machine-learning potentials and the four xTB models (#123)
   assert.ok(!models.some((m) => m.startsWith('mace')), 'no MACE model is offered');
   // The code follows the form and never holds the key.
   await p.fill('#run-key', key);
