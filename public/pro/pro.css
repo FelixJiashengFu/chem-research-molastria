@@ -119,6 +119,7 @@ tbody tr:last-child td{border-bottom:0}
 .acct-form{display:grid;gap:12px;margin-top:14px}
 .acct-form input[readonly]{color:var(--muted);background:var(--surface-2)}
 #login-code{font:500 20px var(--font-mono);letter-spacing:.35em}
+#login-code::placeholder{font:400 16px var(--font-sans);letter-spacing:normal}
 .acct-actions{display:flex;justify-content:flex-end;gap:8px}
 .acct-digest-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
 #digest-week{margin:14px 0 4px;font-size:14px}
