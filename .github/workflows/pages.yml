@@ -58,6 +58,8 @@ jobs:
         run: node --test tools/review-test.mjs
       - name: Cloud sync (three-way merge, devices against a fake account service)
         run: node --test tools/sync-test.mjs
+      - name: Pets (adoption, time, actions, daily bond cap, levels, outfits)
+        run: node --test tools/pet-test.mjs
       # The two in-browser Python exercises are run here with the runner's Python + numpy and checked against PySCF and exact levels.
       - name: Python in the browser (runner helpers, H₂ Hartree–Fock, 1D Schrödinger solver)
         run: |

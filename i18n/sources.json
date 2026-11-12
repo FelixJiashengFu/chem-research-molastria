@@ -8153,6 +8153,15 @@
  "game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch": [
   "shared-nav.js"
  ],
+ "小宠物": [
+  "shared-nav.js"
+ ],
+ "领养一只 3D 吉祥物：摸摸、喂食、陪它玩，升级换装": [
+  "shared-nav.js"
+ ],
+ "pet 宠物 领养 adopt mascot 吉祥物 苞苞 budi 星环 astra tamagotchi 电子宠物": [
+  "shared-nav.js"
+ ],
  "量子世界与基础科学的前沿": [
   "shared-nav.js"
  ],
@@ -16838,6 +16847,12 @@
   "tools/build-seo.ts"
  ],
  "中英术语、研习台的知识点和自己写的卡片，按 FSRS 间隔重复算法安排复习，可导出到 Anki。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 小宠物 · Pets": [
+  "tools/build-seo.ts"
+ ],
+ "从三个 3D 吉祥物里领养一只：起名字、摸摸、喂食、陪它玩、哄它睡觉，升级解锁配饰。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [

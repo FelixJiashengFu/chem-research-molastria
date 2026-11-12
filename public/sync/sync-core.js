@@ -21,7 +21,8 @@
     { key: 'molastria-fm-track', pages: ['/fundamental-science/math/'], zh: '数学基础的学习路线', en: 'Mathematics learning track' },
     { key: 'molastria-qa-progress', pages: ['/quantum/algorithms/'], zh: '量子算法的自测', en: 'Quantum algorithms self-checks' },
     { key: 'molastria-qa-track', pages: ['/quantum/algorithms/'], zh: '量子算法的学习路线', en: 'Quantum algorithms learning track' },
-    { key: 'molastria-play', pages: ['/qchem/'], zh: '游乐场的最好成绩', en: 'Playground best scores' }
+    { key: 'molastria-play', pages: ['/qchem/'], zh: '游乐场的最好成绩', en: 'Playground best scores' },
+    { key: 'molastria-pet', pages: ['/pet/'], zh: '领养的小宠物', en: 'Your adopted pet' }
   ];
   const KEY_NAMES = KEYS.map((k) => k.key);
   const KEY_RE = /^[a-z0-9-]{1,48}$/; // 账号服务也按这个检查
