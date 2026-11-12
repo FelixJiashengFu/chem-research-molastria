@@ -53,7 +53,7 @@ async function open({ init, initArg, ...options } = {}) {
     await route.fulfill({ response: res, body: (await res.text()).replace(/accountApi: '[^']*'/, `accountApi: '${API}'`) });
   });
   // 联网搜索 (websearch/web.js) asks these from the browser: answer with small fakes so checks stay offline and free.
-  await ctx.route(/^https:\/\/(api\.openalex\.org|api\.crossref\.org|(en|zh)\.wikipedia\.org\/w\/api\.php|pubchem\.ncbi\.nlm\.nih\.gov\/rest|api\.github\.com\/search)/, (route) => route.fulfill(fakeWeb(route.request().url())));
+  await ctx.route(/^https:\/\/(api\.openalex\.org|api\.crossref\.org|(en|zh)\.wikipedia\.org\/w\/api\.php|pubchem\.ncbi\.nlm\.nih\.gov\/rest|api\.github\.com\/search|openlibrary\.org\/api\/books)/, (route) => route.fulfill(fakeWeb(route.request().url())));
   if (init) await ctx.addInitScript(init, initArg);
   const page = await ctx.newPage();
   page.errors = [];
@@ -72,6 +72,7 @@ function fakeWeb(url) {
   if (url.includes('zh.wikipedia')) return json({ query: { pages: [{ title: '乙酰水杨酸', index: 1, extract: '乙酰水杨酸，俗称阿司匹林，是一种药物。', langlinks: [{ lang: 'en', title: 'Aspirin' }] }] } });
   if (url.includes('wikipedia')) return json({ query: { pages: [{ title: q.replace(/^./, (c) => c.toUpperCase()), index: 1, extract: `${q} is a fake article.` }] } });
   if (url.includes('pubchem')) return /aspirin/i.test(url) ? json({ PropertyTable: { Properties: [{ CID: 2244, Title: 'Aspirin', MolecularFormula: 'C9H8O4', MolecularWeight: '180.16' }] } }) : json({ Fault: { Code: 'PUGREST.NotFound' } }, 404);
+  if (url.includes('openlibrary')) return /9780486691862/.test(url) ? json({ 'ISBN:9780486691862': { title: 'Modern quantum chemistry', authors: [{ name: 'Attila Szabo' }, { name: 'Neil S. Ostlund' }], publishers: [{ name: 'Dover Publications' }], publish_date: '1996' } }) : json({});
   if (url.includes('github')) return json({ items: [{ full_name: 'pyscf/pyscf', html_url: 'https://github.com/pyscf/pyscf', description: `Python-based ${q}`, stargazers_count: 1500, language: 'Python' }] });
   return json({}, 404);
 }
@@ -93,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1494,7 +1495,7 @@ check('top bar: five groups in one row at desktop widths in both languages, a si
   const p = await open({ viewport: { width: 1366, height: 800 } });
   await go(p, '/manual/index.html');
   const ids = await p.$$eval('.cr-mega a.cr-item[data-id]', (a) => a.map((x) => x.dataset.id));
-  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'pet', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
+  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'shelf', 'pet', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
   assert.ok(!ids.includes('meta'), 'Meta is no longer its own section; it sits under 开放模型馆');
   const hrefs = await p.$$eval('.cr-mega a[href]', (a) => [...new Set(a.map((x) => x.href.split('#')[0]))]);
   for (const h of hrefs) assert.equal((await p.request.get(h)).status(), 200, h);
@@ -3713,7 +3714,7 @@ check('cloud sync: two devices on one account merge favourites and progress, an 
   await laptop.evaluate(() => { localStorage.setItem('chemresearch-saved', JSON.stringify(['pyscf', 'orca'])); localStorage.setItem('molastria-qp-progress', JSON.stringify({ c1: true })); });
   await signIn(laptop, email);
   await laptop.waitForSelector('#sync-card:not([hidden])');
-  assert.equal(await laptop.locator('#sync-list li').count(), 15, 'every synced record is listed');
+  assert.equal(await laptop.locator('#sync-list li').count(), 16, 'every synced record is listed');
   assert.match(await text(laptop, '#sync-card'), /不同步/);
   assert.equal(await text(laptop, '#sync-toggle'), '打开云同步');
   await laptop.click('#sync-toggle');
@@ -4400,6 +4401,120 @@ check('pets: adopt one of three mascots, pat / feed / play / sleep, outfits by l
   await e.click('#pt-still', { force: true });
   assert.equal((await e.evaluate(() => JSON.parse(localStorage.getItem('molastria-pet')))).count.pet, 1, 'tapping the picture pats');
   assert.doesNotMatch(await text(e, 'main'), HAN, 'no Chinese left on the English page');
+  await finish(e);
+});
+
+check('bookshelf: site shelves, pull a book out, status / stars / notes, my shelf, DOI / ISBN / title lookup, typed-in book, reorder, BibTeX, covers view, English', async () => {
+  const p = await open();
+  await go(p, '/shelf/index.html');
+  const saved = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-shelf') || 'null'));
+  assert.equal(await saved(), null, 'nothing saved before touching anything');
+  assert.ok(await p.locator('.sh-case').count() >= 6, 'site shelves');
+  assert.equal(await p.locator('[data-shelf="handbook"] .sp').count(), 25, 'the Handbook series');
+  // 搜索和筛选
+  await p.fill('#sh-q', 'helgaker');
+  await p.waitForFunction(() => document.querySelectorAll('.sp').length === 1);
+  await p.fill('#sh-q', '');
+  await p.waitForFunction(() => document.querySelectorAll('.sp').length > 100);
+  await p.click('[data-filter="free"]');
+  assert.ok(await p.locator('.sp[data-id="fm-axler-ladr"]').count() === 1 && await p.locator('.sp[data-id="helgaker"]').count() === 0, 'free-to-read filter');
+  await p.click('[data-filter="all"]');
+  // 抽出一本书：详情、站内推荐的链接、状态、评分、笔记、放上书架
+  await p.click('.sp[data-id="helgaker"]');
+  await p.waitForSelector('.sh-dlg.on #bk-title');
+  assert.equal(await text(p, '#bk-title'), 'Molecular Electronic-Structure Theory');
+  assert.match(await p.getAttribute('.bk-ids a', 'href'), /doi\.org\/10\.1002\/9781119019572$/);
+  assert.ok(await p.locator('.bk-from a[href$="manual/index.html#p14e-cat15"]').count(), 'links back to the handbook chapter');
+  assert.match(p.url(), /#b-helgaker$/);
+  await p.click('[data-status="reading"]');
+  await p.click('[data-rate="4"]');
+  await p.fill('#bk-note', '第 9 章');
+  let s = await saved();
+  assert.equal(s.items.helgaker.s, 'reading');
+  assert.equal(s.items.helgaker.r, 4);
+  assert.deepEqual(s.order, ['helgaker'], 'marking a status puts it on my shelf');
+  await p.click('.bk-x');
+  await p.waitForFunction(() => document.querySelector('.sh-dlg').hidden);
+  assert.equal((await saved()).items.helgaker.n, '第 9 章', 'note saved on close');
+  assert.ok(await p.locator('.sp[data-id="helgaker"] .sp-reading').count(), 'ribbon on the spine');
+  // 地址打开一本书，Esc 放回去
+  await go(p, '/shelf/index.html#b-szabo-ostlund');
+  await p.waitForSelector('.sh-dlg.on');
+  await p.click('[data-act="shelve"]');
+  await p.keyboard.press('Escape');
+  assert.deepEqual((await saved()).order, ['helgaker', 'szabo-ostlund']);
+  // 我的书架：DOI、ISBN、书名查找，手填（校验位错的 ISBN 被拦下）
+  await p.click('[data-tab="mine"]');
+  assert.equal(await p.locator('[data-shelf="mine"] .sp').count(), 2);
+  await p.fill('#sh-find-q', '10.9999/fake.1');
+  await p.click('#sh-find button[type=submit]');
+  await p.waitForSelector('[data-add="0"]');
+  assert.equal(await saved().then((x) => x.mine.length), 0, 'nothing added until picked');
+  await p.click('[data-add="0"]');
+  s = await saved();
+  assert.equal(s.mine.length, 1);
+  assert.equal(s.mine[0].doi, '10.9999/fake.1');
+  const fake = s.mine[0].id;
+  await p.fill('#sh-find-q', '978-0-486-69186-9');
+  await p.click('#sh-find button[type=submit]');
+  await p.waitForFunction(() => /校验位/.test(document.querySelector('.sh-find-msg').textContent));
+  await p.fill('#sh-find-q', '9780486691862');
+  await p.click('#sh-find button[type=submit]');
+  await p.waitForSelector('[data-add="0"]');
+  assert.match(await text(p, '.sh-hit'), /Modern quantum chemistry/);
+  await p.click('[data-add="0"]');
+  s = await saved();
+  assert.equal(s.mine.length, 1, 'same ISBN as a site book: the site book is used');
+  assert.match(await text(p, '.sh-find-msg'), /站内已经有了/);
+  await p.click('[data-act="manual"]');
+  await p.fill('#sh-manual [name=t]', 'Essentials of Computational Chemistry');
+  await p.fill('#sh-manual [name=a]', 'C. J. Cramer');
+  await p.fill('#sh-manual [name=isbn]', '0470091827');
+  await p.click('#sh-manual button[type=submit]');
+  s = await saved();
+  assert.equal(s.mine.length, 2);
+  const own = s.mine[1].id;
+  assert.equal(s.mine[1].isbn, '9780470091821');
+  assert.deepEqual(s.order, ['helgaker', 'szabo-ostlund', fake, own]);
+  // 拖动换位
+  const from = await p.locator(`.sp[data-id="${own}"]`).boundingBox(), to = await p.locator('.sp[data-id="helgaker"]').boundingBox();
+  await p.mouse.move(from.x + from.width / 2, from.y + 40);
+  await p.mouse.down();
+  await p.mouse.move(from.x - 20, from.y + 40, { steps: 4 });
+  await p.mouse.move(to.x + 4, to.y + 40, { steps: 8 });
+  await p.mouse.up();
+  assert.deepEqual((await saved()).order, [own, 'helgaker', 'szabo-ostlund', fake], 'dragged to the front');
+  // 键盘换位
+  await p.focus(`.sp[data-id="${own}"]`);
+  await p.keyboard.press('Alt+Shift+ArrowRight');
+  assert.deepEqual((await saved()).order, ['helgaker', own, 'szabo-ostlund', fake]);
+  // BibTeX
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('[data-act="bib"]')]);
+  const bib = readFileSync(await dl.path(), 'utf8');
+  assert.match(bib, /@book\{helgaker2000molecular,/);
+  assert.match(bib, /isbn += \{978-0-47009-182-1\}/);
+  // 封面朝外，删掉自己的书
+  await p.click('[data-view="cover"]');
+  assert.equal(await p.locator('[data-shelf="mine"] .face-btn').count(), 4);
+  await p.click(`.face-btn[data-id="${own}"]`);
+  await p.click('[data-act="unshelve"]');
+  s = await saved();
+  assert.equal(s.mine.length, 1);
+  assert.deepEqual(s.order, ['helgaker', 'szabo-ostlund', fake]);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('a[href]')].some((a) => /\/shelf\/index\.html$/.test(a.href))), 'nav links to the shelf');
+  await finish(p);
+
+  const e = await open({ init: () => { try { localStorage.setItem('molastria-shelf', JSON.stringify({ v: 1, items: { 'qp-zeng': { s: 'want' } }, mine: [], order: ['qp-zeng', 'hb-p14e-cat15'] })); } catch { /* ignore */ } } });
+  await go(e, '/shelf/index.html?lang=en#mine');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  assert.equal(await e.locator('[data-shelf="mine"] .sp').count(), 2);
+  assert.match(await text(e, 'h1'), /Bookshelf/);
+  await e.click('.sp[data-id="hb-p14e-cat15"]');
+  assert.equal(await text(e, '#bk-title'), '15 · Quantum courses & textbooks');
+  await e.keyboard.press('Escape');
+  // 书脊上的书名是原文（这本书本来就是中文书），其余都要是英文
+  const main = (await e.evaluate(() => { const m = document.querySelector('main').cloneNode(true); m.querySelectorAll('.sp').forEach((x) => x.remove()); return m.textContent; })).replace(/书架/g, '');
+  assert.doesNotMatch(main, HAN, 'no Chinese left on the English page apart from book titles');
   await finish(e);
 });
 

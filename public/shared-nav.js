@@ -58,6 +58,7 @@
       ['me', 'me/index.html', '我的学习', 'My Study', '连续打卡、每周目标和各栏目的进度汇在一页', 'Your streak, weekly goal and progress across the site on one page', 1, 'me my progress streak dashboard 打卡 进度 我的 学习记录 目标'],
       ['review', 'review/index.html', '复习卡片', 'Flashcards', '间隔重复复习术语和学过的知识点', 'Spaced repetition for terms and what you learned', 1, 'anki flashcard fsrs'],
       ['qchem', 'qchem/index.html', '游乐场', 'Playground', '二十个小游戏（五个 3D）和浏览器里的量子化学计算器', 'Twenty games (five in 3D) and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch'],
+      ['shelf', 'shelf/index.html', '书架', 'Bookshelf', '核对过的教材和讲解手册摆成书架，也能放自己的书', 'Checked textbooks and the Handbook on wooden shelves, plus your own books', 1, 'book books shelf bookshelf library textbook reading list bibtex isbn doi 书 书架 书单 教材 图书 读书 藏书'],
       ['pet', 'pet/index.html', '小宠物', 'Pets', '领养一只 3D 吉祥物：摸摸、喂食、陪它玩，升级换装', 'Adopt a 3D mascot: pat it, feed it, play, and dress it up as it levels', 1, 'pet 宠物 领养 adopt mascot 吉祥物 苞苞 budi 星环 astra tamagotchi 电子宠物'],
     ] },
     { id: 'explore', zh: '探索', en: 'Explore', hint: ['量子世界与基础科学的前沿', 'Quantum science and the frontiers of fundamental science'], items: [

@@ -8198,6 +8198,15 @@
  "game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch": [
   "shared-nav.js"
  ],
+ "书架": [
+  "shared-nav.js"
+ ],
+ "核对过的教材和讲解手册摆成书架，也能放自己的书": [
+  "shared-nav.js"
+ ],
+ "book books shelf bookshelf library textbook reading list bibtex isbn doi 书 书架 书单 教材 图书 读书 藏书": [
+  "shared-nav.js"
+ ],
  "小宠物": [
   "shared-nav.js"
  ],
@@ -17108,6 +17117,12 @@
   "tools/build-seo.ts"
  ],
  "从三个 3D 吉祥物里领养一只：起名字、摸摸、喂食、陪它玩、哄它睡觉，升级解锁配饰。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 书架 · Bookshelf": [
+  "tools/build-seo.ts"
+ ],
+ "站内各栏目推荐、逐本核对过的计算化学、量子物理、量子算法和数学教材，加上讲解手册 25 册；放上自己的书架，标在读、读完，写笔记，导出 BibTeX。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [
