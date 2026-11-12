@@ -12,7 +12,9 @@ const only = process.argv[2] || '';
 const refs = box.window.MOLASTRIA_NMR.refs.filter((r) => r.id.includes(only));
 const UA = { 'User-Agent': 'MolAstria-reference-check/1.0 (https://molastria.com)' };
 const wait = (ms) => new Promise((ok) => setTimeout(ok, ms));
-const norm = (s) => String(s || '').normalize('NFKD').replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+// Titles in the records carry markup such as <i>…</i>: drop the tags (repeatedly, so nothing tag-like is left), then keep letters and digits only.
+const untag = (s) => { let prev; do { prev = s; s = s.replace(/<[^>]*>/g, ''); } while (s !== prev); return s; };
+const norm = (s) => untag(String(s || '').normalize('NFKD')).replace(/[^a-z0-9]/gi, '').toLowerCase();
 const sameTitle = (ours, theirs) => { const o = norm(ours), t = norm(theirs); return t.length > 8 && (o === t || o.startsWith(t) || o.endsWith(t) || t.startsWith(o) || t.endsWith(o)); };
 const get = async (url) => {
   for (let i = 0; i < 5; i++) {
