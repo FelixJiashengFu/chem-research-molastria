@@ -231,7 +231,8 @@
   const CONF = [['sure', '确定', 'Sure'], ['fair', '大概', 'Fairly sure'], ['guess', '猜的', 'Guessing']];
   const confLabel = (c) => { const x = CONF.find(([k]) => k === c) || CONF[1]; return t(x[1], x[2]); };
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const micBtn = (target) => (SR ? `<button type="button" class="ln-mic" data-act="mic" data-target="${esc(target)}" aria-pressed="false" title="${esc(t('口述（语音输入）', 'Dictate'))}"><span class="ln-mic-ico" aria-hidden="true"></span><span class="sr-only">${L('口述', 'Dictate')}</span></button>` : '');
+  // 口述：浏览器自带的语音识别（ai/ai.js 的 dictation：边说边出字，插在光标处）；没有它的地方（Firefox、桌面版）点了提示系统自带的听写
+  const micBtn = (target) => (SR || ai()?.dictation ? `<button type="button" class="ln-mic" data-act="mic" data-target="${esc(target)}" aria-pressed="false" title="${esc(t('口述（语音输入）', 'Dictate'))}"><span class="ln-mic-ico" aria-hidden="true"></span><span class="sr-only">${L('口述', 'Dictate')}</span></button>` : '');
   function answerBlock(key, q, o = {}) {
     const d = draft(key), id = safeId(key);
     let input;
@@ -332,7 +333,7 @@
     const accept = [...C.FILE_RULES.ext.map((e) => `.${e}`), 'image/*'].join(',');
     return `<article class="ln-card ln-new" aria-labelledby="ln-new-h">
       <h2 id="ln-new-h">${L('这次想弄懂什么？', 'What do you want to understand?')}</h2>
-      <label class="ln-field"><span>${L('学习目标', 'Goal')}</span><textarea id="ln-goal" rows="3" data-form="goal" translate="no" placeholder="${esc(t('我想弄懂……（比如：为什么氢原子的能级只和主量子数有关）。也可以直接粘贴题目或课本的照片', 'I want to understand… (e.g. why hydrogen levels depend only on the principal quantum number). You can also paste a photo of a problem or a textbook page'))}">${esc(form.goal)}</textarea></label>
+      <label class="ln-field"><span>${L('学习目标', 'Goal')}</span><span class="ln-with-mic"><textarea id="ln-goal" rows="3" data-form="goal" translate="no" placeholder="${esc(t('我想弄懂……（比如：为什么氢原子的能级只和主量子数有关）。也可以直接粘贴题目或课本的照片', 'I want to understand… (e.g. why hydrogen levels depend only on the principal quantum number). You can also paste a photo of a problem or a textbook page'))}">${esc(form.goal)}</textarea>${micBtn('ln-goal')}</span></label>
       <fieldset class="ln-src"><legend>${L('从站内章节开始（可选）', 'Start from a MolAstria chapter (optional)')}</legend>
         <p class="muted">${L('选一章，它核对过的讲解、误区和自测会作为 AI 的依据。', 'Pick a chapter; its checked explanation, pitfalls and self-checks become the AI’s grounding.')}</p>
         <div class="ln-row">
@@ -342,11 +343,11 @@
         ${ch ? `<div class="ln-chip-src"><span>${L('依据', 'Grounding')}</span><b translate="no">${esc(t(ch.name.zh, ch.name.en))}</b>${ch.blurb ? X(t(ch.blurb.zh, ch.blurb.en), 'small', 'muted') : ''}<a href="${esc(ch.href)}" target="_blank" rel="noopener">${L('打开这一章', 'Open the chapter')} ${ico()}</a><button type="button" class="text-button" data-act="src-clear">${L('不用了', 'Remove')}</button></div>` : ''}
       </fieldset>
       <fieldset class="ln-files"><legend>${L('附带文件（可选）', 'Attach files (optional)')}</legend>
-        <p class="muted">${L(`纯文本文件（${C.FILE_RULES.ext.join(' ')}），每个不超过 60 KB；或者照片和截图（一次最多 4 张，也可以直接粘贴到上面的学习目标里）。合计最多 3 项，内容会随请求发给 AI。照片先由能看图的模型读成文字，你可以核对、修改，之后只发这段文字。`, `Plain-text files (${C.FILE_RULES.ext.join(' ')}), up to 60 KB each, or photos and screenshots (up to 4 at a time; you can also paste them into the goal above). At most 3 items in all; their contents go to the AI with each request. A model that reads images first turns photos into text, which you can check and edit; after that only the text is sent.`)}</p>
+        <p class="muted">${L('PDF、Word、Excel、PPT、讲义笔记、代码、分子结构和计算输出（在浏览器里读成文字，每个最多保留 6 万字，太长的保留开头和结尾）；或者照片和截图（一次最多 4 张，也可以直接粘贴到上面的学习目标里）。合计最多 3 项，内容会随请求发给 AI。照片先由能看图的模型读成文字，你可以核对、修改，之后只发这段文字。', 'PDF, Word, Excel, PowerPoint, notes, code, molecular structures and calculation outputs (read into text in your browser; up to 60 000 characters each, a longer one keeps its beginning and end), or photos and screenshots (up to 4 at a time; you can also paste them into the goal above). At most 3 items in all; their contents go to the AI with each request. A model that reads images first turns photos into text, which you can check and edit; after that only the text is sent.')}</p>
         <div class="ln-row"><label class="button small ln-file-btn"><input type="file" id="ln-files" accept="${accept}" multiple class="sr-only"${form.files.length >= C.FILE_RULES.max || job ? ' disabled' : ''}>${L('选择文件', 'Choose files')}</label><label class="button small ln-file-btn"><input type="file" id="ln-photos" accept="image/*" multiple class="sr-only"${form.files.length >= C.FILE_RULES.max || job ? ' disabled' : ''}>${L('拍照或选照片', 'Take or choose photos')}</label></div>
         ${form.files.length ? `<ul class="ln-file-list">${form.files.map((f, i) => f.photo ? `<li class="ln-photo"><span class="ln-thumbs">${f.thumbs.map((u, k) => `<img src="${esc(u)}" alt="${esc(t(`照片 ${k + 1}`, `Photo ${k + 1}`))}">`).join('')}</span>${X(f.name)}${f.reading ? `<small>${L('识读中…', 'Reading…')}</small>` : '<small></small>'}<button type="button" class="ln-x" data-act="file-remove" data-i="${i}"${f.reading ? ' disabled' : ''}><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button>
           ${f.reading ? '' : `<details class="ln-photo-text"><summary>${L('看 AI 读出的文字（可以改）', 'See the text the AI read (editable)')}</summary><label class="ln-field"><span class="sr-only">${L('照片里的文字', 'Text from the photos')}</span><textarea rows="8" data-photo-text="${i}" translate="no">${esc(f.text)}</textarea></label></details>`}</li>`
-          : `<li>${X(f.name)}<small translate="no">${(f.size / 1024).toFixed(1)} KB</small><button type="button" class="ln-x" data-act="file-remove" data-i="${i}"><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button></li>`).join('')}</ul>` : ''}
+          : `<li>${X(f.name)}<small translate="no">${(f.size / 1024).toFixed(1)} KB</small>${f.clipped ? `<small>${L('只保留了开头和结尾', 'beginning and end kept')}</small>` : ''}<button type="button" class="ln-x" data-act="file-remove" data-i="${i}"><span aria-hidden="true">×</span><span class="sr-only">${L('移除', 'Remove')}</span></button></li>`).join('')}</ul>` : ''}
       </fieldset>
       ${form.msg ? `<p class="ln-hint-msg" role="alert">${esc(form.msg)}</p>` : ''}
       <div class="ln-row ln-actions"><button type="button" class="button primary" data-act="new"${dis()}>${L('开始：先摸底', 'Start with the probe')} ${ico('right')}</button></div>
@@ -389,12 +390,25 @@
     for (const f of list) {
       const ok = C.acceptFile(f.name, f.size, form.files.length);
       if (!ok.ok) {
-        form.msg = ok.reason === 'type' ? t(`“${f.name}”不是支持的文本格式。`, `“${f.name}” is not a supported text format.`)
-          : ok.reason === 'size' ? t(`“${f.name}”超过 60 KB。`, `“${f.name}” is larger than 60 KB.`)
+        form.msg = ok.reason === 'type' ? t(`“${f.name}”不是支持的格式。`, `“${f.name}” is not a supported format.`)
+          : ok.reason === 'size' ? t(`“${f.name}”超过 25 MB。`, `“${f.name}” is larger than 25 MB.`)
             : t('最多附带 3 个文件。', 'At most 3 files.');
         continue;
       }
-      try { form.files.push({ name: f.name, size: f.size, text: await f.text() }); } catch { form.msg = t(`读不了“${f.name}”。`, `Could not read “${f.name}”.`); }
+      try {
+        // PDF, Office and other formats are read into text by the AI module; a scan has no text to read
+        const A = ai();
+        let text;
+        if (A?.readFile) {
+          const d = await A.readFile(f);
+          if (!d.text) { form.msg = t(`“${f.name}”像是扫描件，没有文字可读。请把需要的页面截图或拍照，用“拍照或选照片”附上。`, `“${f.name}” looks like a scan with no text to read. Take screenshots or photos of the pages you need and add them with “Take or choose photos”.`); continue; }
+          text = d.text;
+        } else text = await f.text();
+        const F = window.MOLASTRIA_AI_FILES;
+        const c = F ? F.clip(text, C.FILE_RULES.maxBytes) : { text: text.slice(0, C.FILE_RULES.maxBytes), clipped: text.length > C.FILE_RULES.maxBytes };
+        form.files.push({ name: f.name, size: f.size, text: c.text, ...(c.clipped ? { clipped: true } : {}) });
+      } catch (err) { form.msg = err?.message ? t(err.message, `Could not read “${f.name}”: ${err.message}`) : t(`读不了“${f.name}”。`, `Could not read “${f.name}”.`); }
+      render();
     }
     render();
   }
@@ -1154,27 +1168,12 @@
   const curPractice = () => sessionById(openPractice);
   let rec = null;
   function dictate(btn) {
-    const target = document.getElementById(btn.dataset.target);
-    if (!SR || !target) return;
-    if (rec) { try { rec.stop(); } catch { /* 已停 */ } return; }
-    try {
-      rec = new SR();
-      rec.lang = en ? 'en-US' : 'zh-CN';
-      rec.interimResults = false;
-      rec.continuous = true;
-      rec.onresult = (ev) => {
-        let add = '';
-        for (let i = ev.resultIndex; i < ev.results.length; i++) if (ev.results[i].isFinal) add += ev.results[i][0].transcript;
-        if (!add) return;
-        target.value = target.value ? `${target.value}${en ? ' ' : ''}${add}` : add;
-        target.dispatchEvent(new Event('input', { bubbles: true }));
-      };
-      const stop = () => { rec = null; for (const b of $$('.ln-mic')) b.setAttribute('aria-pressed', 'false'); };
-      rec.onend = stop;
-      rec.onerror = (ev) => { stop(); if (ev?.error === 'not-allowed') announce(t('浏览器没有允许使用麦克风。', 'The browser did not allow the microphone.')); };
-      rec.start();
-      btn.setAttribute('aria-pressed', 'true');
-    } catch { rec = null; }
+    const id = btn.dataset.target, A = ai();
+    if (!A?.dictation || !document.getElementById(id)) return;
+    if (rec?.active()) { const same = rec.id === id; rec.stop(); if (same) return; }
+    rec = A.dictation(() => document.getElementById(id), { button: () => panel.querySelector(`.ln-mic[data-target="${CSS.escape(id)}"]`), lang: () => (en ? 'en-US' : 'zh-CN'), onNote: (m) => { if (m) announce(m); } });
+    rec.id = id;
+    rec.toggle();
   }
 
   document.addEventListener('click', async (e) => {

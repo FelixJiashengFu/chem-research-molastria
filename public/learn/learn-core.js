@@ -13,7 +13,12 @@
   const STEP_KINDS = ['teach', 'repair', 'summary'];
   const LEARN_PHASES = ['probe', 'plan', 'teach', 'done'];
   const PRACTICE_PHASES = ['practice', 'done'];
-  const FILE_RULES = { max: 3, maxBytes: 60 * 1024, ext: ['txt', 'md', 'markdown', 'csv', 'json', 'py', 'tex'] };
+  // maxBytes: characters of text kept per file (a longer one keeps its beginning and end); rawBytes: the file itself.
+  // PDF and Office files are read into text by the AI module (public/ai/files-core.js) before they get here.
+  const FILE_RULES = {
+    max: 3, maxBytes: 60 * 1024, rawBytes: 25 * 1024 * 1024,
+    ext: ['txt', 'md', 'markdown', 'csv', 'json', 'py', 'tex', 'pdf', 'docx', 'pptx', 'xlsx', 'ipynb', 'bib', 'tsv', 'xyz', 'pdb', 'mol', 'mol2', 'sdf', 'cif', 'gjf', 'com', 'inp', 'out', 'log', 'm', 'jl', 'r', 'f90', 'c', 'cpp', 'sh']
+  };
   /** Total characters one request may send (the hosted quota cuts at 12 000; leave room). */
   const REQUEST_BUDGET = 10800;
 
@@ -398,7 +403,7 @@
   function acceptFile(name, size, count = 0) {
     const ext = String(name || '').toLowerCase().split('.').pop();
     if (!FILE_RULES.ext.includes(ext)) return { ok: false, reason: 'type' };
-    if (size > FILE_RULES.maxBytes) return { ok: false, reason: 'size' };
+    if (size > FILE_RULES.rawBytes) return { ok: false, reason: 'size' };
     if (count >= FILE_RULES.max) return { ok: false, reason: 'count' };
     return { ok: true };
   }

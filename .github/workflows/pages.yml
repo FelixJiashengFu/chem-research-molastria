@@ -67,6 +67,8 @@ jobs:
           node --test tools/pyrun-test.mjs
       - name: Study Desk logic and site sources
         run: node --test tools/learn-test.mjs tools/learn-sources-test.mjs
+      - name: AI assistant attachments (kinds, clipping, Word / Excel / PowerPoint)
+        run: node --test tools/ai-files-test.mjs
       # openchemlib (in tools/e2e) is what the page loads from jsDelivr for SMILES → 3D; the NWChem / CP2K / Q-Chem readers use tools/code-fixtures.
       - name: Code desk (generated PySCF scripts run for real, real program outputs, SMILES → 3D)
         run: |
