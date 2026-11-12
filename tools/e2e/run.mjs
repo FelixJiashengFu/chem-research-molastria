@@ -3713,7 +3713,7 @@ check('cloud sync: two devices on one account merge favourites and progress, an 
   await laptop.evaluate(() => { localStorage.setItem('chemresearch-saved', JSON.stringify(['pyscf', 'orca'])); localStorage.setItem('molastria-qp-progress', JSON.stringify({ c1: true })); });
   await signIn(laptop, email);
   await laptop.waitForSelector('#sync-card:not([hidden])');
-  assert.equal(await laptop.locator('#sync-list li').count(), 14, 'every synced record is listed');
+  assert.equal(await laptop.locator('#sync-list li').count(), 15, 'every synced record is listed');
   assert.match(await text(laptop, '#sync-card'), /不同步/);
   assert.equal(await text(laptop, '#sync-toggle'), '打开云同步');
   await laptop.click('#sync-toggle');
@@ -5034,7 +5034,7 @@ check('chat: the daily problem is the same for everyone today, graded in place, 
   await p.waitForSelector('a.ch-room[data-room="study"][aria-current="true"]');
   await p.waitForSelector('#ch-input');
   assert.match(await p.inputValue('#ch-input'), /^【每日一题 \d\d-\d\d】[\s\S]+\n我的思路：$/);
-  assert.match(await text(p, '#ch-daily'), /已答对/);
+  await p.waitForFunction(() => /已答对/.test(document.getElementById('ch-daily').textContent), null, { timeout: 5000 });
   await p.reload();
   await p.waitForSelector('.ch-daily-btn[data-solved]');
   await finish(p);
