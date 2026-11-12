@@ -101,8 +101,10 @@
     const head = (last || words.shift() || 'ref').slice(0, 20);
     return head + (rec.year || '') + (words[0] || '').slice(0, 16);
   }
+  const BIB_SPECIAL = { '\\': '\\textbackslash{}', '&': '\\&', '%': '\\%', $: '\\$', '#': '\\#', _: '\\_', '~': '\\textasciitilde{}', '^': '\\textasciicircum{}' };
   const bibEsc = (s) => {
-    let t = String(s).replace(/\\/g, '\\textbackslash{}').replace(/([&%$#_])/g, '\\$1').replace(/~/g, '\\textasciitilde{}').replace(/\^/g, '\\textasciicircum{}');
+    // 一遍替换（反斜杠也在同一张表里），免得先后顺序把前一步加的反斜杠又转一次
+    const t = String(s).replace(/[\\&%$#_~^]/g, (c) => BIB_SPECIAL[c]);
     // 去掉不成对的花括号，免得整份文件读不进去
     let depth = 0, out = '';
     for (const ch of t) { if (ch === '{') depth++; if (ch === '}') { if (!depth) continue; depth--; } out += ch; }
