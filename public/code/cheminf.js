@@ -184,6 +184,75 @@
     catch { $('ci-pycopy').textContent = tr('复制失败，请手动选中'); }
     setTimeout(() => { $('ci-pycopy').textContent = tr('复制脚本'); }, 1600);
   });
+  // ── 按结构搜 PubChem ──
+  const ssQ = $('ss-q'), ssMode = $('ss-mode'), ssTh = $('ss-th');
+  if (typeof st.ssQ === 'string' && st.ssQ) ssQ.value = st.ssQ;
+  if (CI.SEARCH_MODES.includes(st.ssMode)) ssMode.value = st.ssMode;
+  if (Number.isFinite(st.ssTh)) ssTh.value = String(st.ssTh);
+  if (window.MolAstriaSketch) window.MolAstriaSketch.attach(ssQ);
+  const ssStatus = (t, bad = false) => { const el = $('ss-status'); el.textContent = t; el.dataset.bad = String(bad); };
+  const ssModeSync = () => { $('ss-th-l').hidden = ssMode.value !== 'similarity'; };
+  ssMode.addEventListener('change', ssModeSync); ssModeSync();
+  let ssRows = [], ssBusy = false;
+  async function pubchem(url, body) {
+    const res = await fetch(url, body ? { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body } : {});
+    const json = await res.json().catch(() => null);
+    if (!json) throw new Error(`PubChem HTTP ${res.status}`);
+    if (res.status === 503) throw new Error(tr('PubChem 现在太忙（限流），过一会儿再试。'));
+    return json;
+  }
+  async function structureSearch(e) {
+    e?.preventDefault();
+    if (ssBusy) return;
+    const raw = ssQ.value.trim();
+    if (!raw) { ssStatus(tr('先写一个 SMILES，或者点“画结构”画一个。'), true); ssQ.focus(); return; }
+    ssBusy = true; $('ss-go').disabled = true;
+    try {
+      if (!R) ssStatus(tr('正在载入 RDKit（第一次约 7 MB）…'));
+      await rdkit();
+      const q = getMol(raw);
+      if (!q) { ssStatus(`RDKit 读不出 ${raw}，请检查 SMILES。`, true); return; }
+      const canon = use(q, (m) => m.get_smiles());
+      const qfp = use(getMol(canon), (m) => m.get_morgan_fp(JSON.stringify({ radius: 2, nBits: 2048 })));
+      const req = CI.pubchemSearch(ssMode.value, canon, { threshold: ssTh.value, max: 20 });
+      ssTh.value = String(req.threshold);
+      save({ ssQ: raw, ssMode: req.mode, ssTh: req.threshold });
+      ssStatus(tr('正在问 PubChem…'));
+      const cids = CI.pubchemCids(await pubchem(req.url, req.body), req.max);
+      if (!cids.length) { ssRows = []; ssDraw(); ssStatus(req.mode === 'similarity' ? `PubChem 里没有相似度 ≥ ${req.threshold}% 的化合物，可以把下限调低再试。` : tr('PubChem 里没有找到。'), false); return; }
+      ssRows = CI.pubchemRows(await pubchem(CI.pubchemPropsUrl(cids)), cids).map((r) => {
+        const m = r.smiles ? getMol(r.smiles) : null;
+        if (!m) return { ...r, svg: '', sim: undefined };
+        return use(m, (x) => ({ ...r, svg: svgOf(x), sim: CI.tanimoto(qfp, x.get_morgan_fp(JSON.stringify({ radius: 2, nBits: 2048 }))) }));
+      });
+      if (req.mode === 'similarity') ssRows.sort((a, b) => (b.sim ?? -1) - (a.sim ?? -1));
+      ssDraw();
+      ssStatus(`PubChem 找到 ${ssRows.length} 个${req.mode === 'similarity' ? `（相似度 ≥ ${req.threshold}%，最多列 ${req.max} 个）` : req.mode === 'substructure' ? `（最多列 ${req.max} 个）` : ''}。`);
+    } catch (err) {
+      const msg = String(err?.message || err);
+      ssStatus(/fetch|network|Failed/i.test(msg) ? tr('连不上 PubChem（网络不通或被拦了）。可以点下面的链接直接在 PubChem 网站上搜。') : `PubChem：${msg}`, true);
+      $('ss-table').innerHTML = `<tbody><tr><td class="cd-empty"><a href="https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(raw)}&input_type=smiles" target="_blank" rel="noopener noreferrer">${esc(tr('在 PubChem 网站上搜'))} <i class="ico-ext" aria-hidden="true"></i></a></td></tr></tbody>`;
+    } finally { ssBusy = false; $('ss-go').disabled = false; }
+  }
+  function ssDraw() {
+    const head = '<thead><tr><th>结构</th><th>名字 / CID</th><th>分子式</th><th>分子量<small>g/mol</small></th><th>Morgan 相似度</th><th></th></tr></thead>';
+    const body = ssRows.map((r, i) => `<tr><td>${r.svg ? `<div class="ci-img">${r.svg}</div>` : ''}</td>`
+      + `<td><b translate="no">${esc(r.title)}</b><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer" translate="no">CID ${r.cid} <i class="ico-ext" aria-hidden="true"></i></a><code translate="no">${esc(r.smiles)}</code></td>`
+      + `<td translate="no">${esc(r.formula)}</td><td class="n">${fmt(r.mw, 2)}</td><td class="n">${fmt(r.sim, 3)}</td>`
+      + `<td><div class="ss-acts"><button type="button" class="cd-btn" data-ss="add" data-i="${i}">加到列表</button><a class="cd-btn" href="../index.html?q=${encodeURIComponent(r.title)}">在本站搜这个名字</a></div></td></tr>`).join('');
+    $('ss-table').innerHTML = ssRows.length ? head + `<tbody>${body}</tbody>` : `<tbody><tr><td class="cd-empty">${esc(tr('没有结果。'))}</td></tr></tbody>`;
+  }
+  $('ss-form').addEventListener('submit', structureSearch);
+  $('ss-table').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ss=add]');
+    if (!b) return;
+    const r = ssRows[Number(b.dataset.i)];
+    if (!r?.smiles) return;
+    list.value = list.value.replace(/\s*$/, '') + (list.value.trim() ? '\n' : '') + `${r.smiles} ${r.title}\n`;
+    b.textContent = tr('已加入'); b.disabled = true;
+    run();
+  });
+
   // 打开这个标签时，如果列表里有东西就直接算
   const maybe = () => { if (!$('p-chem').hidden && !rows.length && list.value.trim()) run(); };
   $('t-chem').addEventListener('click', maybe);

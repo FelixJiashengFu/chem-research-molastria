@@ -576,7 +576,7 @@
   };
   document.addEventListener('change', (e) => {
     const c = e.target.closest('input[data-check]'); if (!c) return;
-    if (c.checked) progress.add(c.dataset.check); else progress.delete(c.dataset.check);
+    if (c.checked) { progress.add(c.dataset.check); window.MolAstriaActivity?.('check'); } else progress.delete(c.dataset.check);
     saveProgress(); drawStart();
   });
   document.addEventListener('click', (e) => {
@@ -595,10 +595,13 @@
     <label>${L('类型', 'Type')}<select id="qa-f-kind"><option value="">${esc(en ? 'All types' : '全部类型')}</option>${Object.keys(D.kinds).map((k) => `<option value="${k}">${esc(tx(D.kinds[k]))}</option>`).join('')}<option value="video">${esc(en ? 'Videos' : '视频')}</option></select></label>
     <label class="fm-f-check"><input type="checkbox" id="qa-f-free">${L('只看可免费阅读 / 观看', 'Free to read or watch only')}</label>`;
   for (const el of document.querySelectorAll('#qa-lib-filters select')) el.setAttribute('translate', 'no');
+  let libRefs = [];
   const drawLib = () => {
     const al = $('#qa-f-algo').value, kind = $('#qa-f-kind').value, free = $('#qa-f-free').checked;
     const refs = kind === 'video' ? [] : D.refs.filter((r) => (!al || r.algos.includes(al)) && (!kind || r.kind === kind) && (!free || r.free));
     const vids = kind && kind !== 'video' ? [] : videos.filter((x) => !al || x.algos.includes(al));
+    libRefs = refs;
+    if (window.MolAstriaCite && !document.getElementById('qa-cite')) { const cb = window.MolAstriaCite.bar(() => libRefs.map(window.MolAstriaCite.fromRef), { name: 'molastria-quantum-algorithms', label: en ? 'Export these references' : '导出这些文献' }); cb.id = 'qa-cite'; $('#qa-lib-count').after(cb); }
     $('#qa-lib-count').innerHTML = L(`共 ${refs.length} 篇文献与讲义、${vids.length} 个视频`, `${refs.length} papers & notes, ${vids.length} videos`);
     const groups = Object.keys(D.kinds).map((k) => [k, refs.filter((r) => r.kind === k)]).filter(([, l]) => l.length);
     $('#qa-lib').innerHTML = groups.map(([k, l]) => `<div class="fm-lib-g"><h3>${R(D.kinds[k])}</h3><ul class="fm-cards">${l.map(refCard).join('')}</ul></div>`).join('')

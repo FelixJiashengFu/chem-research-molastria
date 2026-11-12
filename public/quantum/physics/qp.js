@@ -376,7 +376,7 @@
       <ul class="fm-meters">${D.chapters.map((c) => `<li data-tier="${c.stage}"><a href="#c-${c.id}" data-open="${c.id}" translate="no" lang="${lang}">${num(c.id)}. ${esc(sn(c.id))}</a><span class="fm-meter"><i style="width:${Math.round(pct(c.id) * 100)}%"></i></span><span class="fm-meter-n" translate="no">${Math.round(pct(c.id) * c.checks.length)}/${c.checks.length}</span></li>`).join('')}</ul>`;
     for (const el of document.querySelectorAll('.fm-side-p')) { const p = pct(el.dataset.p); el.style.setProperty('--p', p); el.title = `${Math.round(p * 100)}%`; }
   };
-  document.addEventListener('change', (e) => { const c = e.target.closest('input[data-check]'); if (!c) return; if (c.checked) progress.add(c.dataset.check); else progress.delete(c.dataset.check); saveProgress(); drawStart(); });
+  document.addEventListener('change', (e) => { const c = e.target.closest('input[data-check]'); if (!c) return; if (c.checked) { progress.add(c.dataset.check); window.MolAstriaActivity?.('check'); } else progress.delete(c.dataset.check); saveProgress(); drawStart(); });
   document.addEventListener('click', (e) => { if (!e.target.closest('#qp-reset')) return; progress.clear(); saveProgress(); for (const c of document.querySelectorAll('input[data-check]')) c.checked = false; drawStart(); });
   drawStart();
 
@@ -387,12 +387,15 @@
     <label>${L('类型', 'Type')}<select id="qp-f-type"><option value="">${esc(en ? 'All types' : '全部类型')}</option><option value="paper">${esc(en ? 'Original papers' : '原始论文')}</option><option value="book">${esc(en ? 'Textbooks & notes' : '教材与讲义')}</option><option value="video">${esc(en ? 'Courses & videos' : '课程与视频')}</option></select></label>
     <label class="fm-f-check"><input type="checkbox" id="qp-f-free">${L('只看可免费阅读 / 观看', 'Free to read or watch only')}</label>`;
   for (const el of document.querySelectorAll('#qp-lib-filters select')) el.setAttribute('translate', 'no');
+  let libRefs = [];
   const drawLib = () => {
     const ch = $('#qp-f-ch').value, type = $('#qp-f-type').value, free = $('#qp-f-free').checked;
     const inCh = (list) => (id) => !ch || CH[ch][list].includes(id);
     const papers = type && type !== 'paper' || free ? [] : D.papers.filter((p) => inCh('papers')(p.id));
     const books = type && type !== 'book' ? [] : D.books.filter((b) => inCh('books')(b.id) && (!free || b.free));
     const vids = type && type !== 'video' ? [] : D.videos.filter((v) => inCh('videos')(v.id));
+    libRefs = [...papers, ...books];
+    if (window.MolAstriaCite && !document.getElementById('qp-cite')) { const cb = window.MolAstriaCite.bar(() => libRefs.map(window.MolAstriaCite.fromRef), { name: 'molastria-quantum-physics', label: en ? 'Export these references' : '导出这些文献' }); cb.id = 'qp-cite'; $('#qp-lib-count').after(cb); }
     $('#qp-lib-count').innerHTML = L(`共 ${papers.length} 篇论文、${books.length} 本教材与讲义、${vids.length} 门课程`, `${papers.length} papers, ${books.length} books & notes, ${vids.length} courses`);
     $('#qp-lib').innerHTML = (papers.length ? `<div class="fm-lib-g"><h3>${L('原始论文（按年份）', 'Original papers (by year)')}</h3><ul class="fm-cards">${papers.map(paperCard).join('')}</ul></div>` : '')
       + (books.length ? `<div class="fm-lib-g"><h3>${L('教材与讲义', 'Textbooks & notes')}</h3><ul class="fm-cards">${books.map(bookCard).join('')}</ul></div>` : '')

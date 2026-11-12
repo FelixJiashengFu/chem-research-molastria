@@ -661,12 +661,41 @@
 
   /** 读一段输出，返回 { program, energy(Eh), energyEV, energyLabel, normal, scfConverged, optConverged, gap(eV), freqs, imaginary,
       geoms（每个结构）, steps（每一步的 SCF 能量，Eh）, warnings }。 */
+  /**
+   * 红外谱：每个振动模式的频率（cm⁻¹，虚频为负）和强度（km/mol）。读 Gaussian、ORCA、Psi4、Q-Chem、NWChem 的频率输出；
+   * 没有强度的输出（xTB、CP2K、PySCF 默认）返回空数组。读法对照 cclib 的 vibfreqs / vibirs（tools/code-fixtures/cclib-ir.json）。
+   */
+  function irOf(t, p) {
+    const pairs = (fs, is) => (fs.length && fs.length === is.length ? fs.map((f, i) => ({ freq: f, int: is[i] })) : []);
+    const rowNums = (re) => all(re, t).flatMap((m) => (m[1].match(/-?\d+\.\d+i?/g) || []).map((x) => (x.endsWith('i') ? -num(x.slice(0, -1)) : num(x))));
+    if (p === 'gaussian') {
+      // 普通格式是 “Frequencies --”；HPModes 另有一份 “Frequencies ---”（多一位小数）。有普通格式就只用它，免得重复
+      const two = pairs(rowNums(/^\s*Frequencies --(?!-)([^\n]+)/gm), rowNums(/^\s*IR Inten\s+--(?!-)([^\n]+)/gm));
+      return two.length ? two : pairs(rowNums(/^\s*Frequencies ---([^\n]+)/gm), rowNums(/^\s*IR Intensities ---([^\n]+)/gm));
+    }
+    if (p === 'orca') {
+      const b = last(all(/IR SPECTRUM\s*\n-+\n([\s\S]*?)(?:\n\s*\n(?!\s*-)|$)/g, t));
+      if (!b) return [];
+      return all(/^\s*\d+:\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)/gm, b[1]).map((m) => ({ freq: num(m[1]), int: num(m[3]) }));
+    }
+    if (p === 'psi4') return pairs(rowNums(/^\s*Freq \[cm\^-1\]([^\n]+)/gm), rowNums(/^\s*IR activ \[km\/mol\]([^\n]+)/gm));
+    if (p === 'qchem') return pairs(rowNums(/^\s*Frequency:([^\n]+)/gm), rowNums(/^\s*IR Intens:([^\n]+)/gm));
+    if (p === 'nwchem') {
+      const b = last(all(/Projected Infra Red Intensities[^\n]*\n[^\n]*\n\s*-+[^\n]*\n([\s\S]*?)\n\s*-{10,}/g, t));
+      if (!b) return [];
+      return all(/^\s*\d+\s+(-?\d+\.\d+)\s+\|\|\s+\S+\s+\S+\s+(-?\d+\.\d+)/gm, b[1]).map((m) => ({ freq: num(m[1]), int: num(m[2]) })).filter((x) => Math.abs(x.freq) > 1);
+    }
+    return [];
+  }
+
   function parseOutput(text, program) {
     const t = String(text || '').replace(/\r/g, '');
     const p = program || detect(t);
-    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, gapNote: '', errorText: '', freqs: [], imaginary: [], geoms: [], steps: [], warnings: [] };
+    const r = { program: p, energy: null, energyLabel: '', normal: null, scfConverged: null, optConverged: null, gap: null, gapNote: '', errorText: '', freqs: [], ir: [], imaginary: [], geoms: [], steps: [], warnings: [] };
     if (!p) { r.warnings.push('认不出是哪个程序的输出（支持 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem）'); return r; }
     PARSE[p](t, r);
+    r.ir = irOf(t, p);
+    if (!r.freqs.length && r.ir.length) r.freqs = r.ir.map((x) => x.freq);
     r.geoms = geometries(t, p);
     r.steps = stepEnergies(t, p);
     r.energyEV = r.energy === null ? null : r.energy * HARTREE_EV;

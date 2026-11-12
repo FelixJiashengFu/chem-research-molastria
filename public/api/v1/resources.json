@@ -6,7 +6,7 @@
  "docs": "https://molastria.com/api/",
  "dataset": "resources",
  "updated": "2026-11-05",
- "count": 251,
+ "count": 253,
  "categories": [
   {
    "code": "01",
@@ -84,13 +84,13 @@
    "code": "13",
    "zh": "周期体系与凝聚态第一性原理",
    "en": "Periodic and condensed-matter first-principles codes",
-   "count": 15
+   "count": 16
   },
   {
    "code": "14",
    "zh": "波函数分析、可视化与动力学",
    "en": "Wavefunction analysis, visualization, and dynamics",
-   "count": 21
+   "count": 22
   },
   {
    "code": "15",
@@ -4121,6 +4121,36 @@
    "description": {
     "zh": "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。",
     "en": "Open-source vulnerability database started by Google, covering PyPI, npm, crates.io and other ecosystems; look up known vulnerabilities by package name and version through a free API. The software check-up in MolAstria's Code Desk uses it."
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 252,
+   "name": "Environ",
+   "url": "https://www.quantum-environ.org",
+   "page": "https://molastria.com/atlas/#resources/252",
+   "category_code": "13",
+   "description": {
+    "zh": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。"
+   },
+   "access": {
+    "zh": "免费",
+    "en": "Free"
+   },
+   "agent_integration": "catalog"
+  },
+  {
+   "number": 253,
+   "name": "VOTCA",
+   "url": "https://www.votca.org",
+   "page": "https://molastria.com/atlas/#resources/253",
+   "category_code": "14",
+   "description": {
+    "zh": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。"
    },
    "access": {
     "zh": "免费",

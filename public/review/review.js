@@ -146,6 +146,7 @@
     if (!current || !shown) return;
     try { C.record(state, current.id, r, Date.now(), scheduler || C.simpleScheduler); } catch { return; }
     save();
+    window.MolAstriaActivity?.('review');
     if (saveFailed) $('rv-sched-note').textContent = '这台设备的浏览器不让保存（可能是隐私模式），关掉页面后进度会丢失。';
     render();
     $('rv-show').focus({ preventScroll: true });

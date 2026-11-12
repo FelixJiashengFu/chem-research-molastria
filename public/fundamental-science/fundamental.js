@@ -123,9 +123,12 @@
   areaSel.insertAdjacentHTML('beforeend', Object.entries(D.areas).map(([k, v]) => `<option value="${k}">${esc(tx(v))}</option>`).join(''));
   statusSel.insertAdjacentHTML('beforeend', ['established', 'active', 'hypothesis'].map((k) => `<option value="${k}">${esc(tx(D.status[k]))}</option>`).join(''));
   for (const o of [...areaSel.options, ...statusSel.options].filter((o) => o.value)) { o.setAttribute('translate', 'no'); o.lang = lang; }
+  let libRefs = [];
   function renderRefs() {
     const a = areaSel.value, s = statusSel.value, desc = sortSel.value === 'year-desc';
     const list = D.refs.filter((r) => (!a || r.area === a) && (!s || r.status === s)).sort((x, y) => (desc ? y.year - x.year : x.year - y.year) || x.id.localeCompare(y.id));
+    libRefs = list;
+    if (window.MolAstriaCite && !document.getElementById('fs-cite')) { const cb = window.MolAstriaCite.bar(() => libRefs.map(window.MolAstriaCite.fromRef), { name: 'molastria-fundamental-science', label: en ? 'Export these references' : '导出这些文献' }); cb.id = 'fs-cite'; $('#fs-lib-count').after(cb); }
     $('#fs-lib-count').textContent = en ? `${list.length} of ${D.refs.length}` : `显示 ${list.length} / ${D.refs.length} 篇`;
     $('#fs-refs').innerHTML = list.map((r) => `<li class="fs-ref" id="ref-${r.id}">
       <span translate="no">${esc(r.authors)} (${r.year}). <span class="fs-ref-title">${esc(r.title)}</span>. <i>${esc(r.journal)}</i> ${esc(r.vol)}, ${esc(r.pages)}.</span>

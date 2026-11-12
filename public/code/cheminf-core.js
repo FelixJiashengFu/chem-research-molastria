@@ -164,5 +164,41 @@
   // 英文页面的示例用英文名（列表框是数据，不经界面翻译）
   const SAMPLES_EN = 'CC(=O)Oc1ccccc1C(=O)O aspirin\nCN1C=NC2=C1C(=O)N(C(=O)N2C)C caffeine\nCC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen\nCC(=O)Nc1ccc(O)cc1 paracetamol\nOC(=O)c1ccccc1O salicylic acid\nc1ccccc1 benzene\n';
 
-  root.MolAstriaChemInf = { MAX_MOLS, parseList, COLUMNS, MORE, lipinski, veber, tanimoto, matches, csv, python, SMARTS, SAMPLES, SAMPLES_EN };
+  // ── 按结构搜 PubChem（PUG-REST，浏览器直接问，不经过账号服务） ──
+  const PUBCHEM = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug';
+  const SEARCH_MODES = ['similarity', 'substructure', 'identity'];
+  const clampInt = (v, lo, hi, def) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : def; };
+  /**
+   * 第一步：按结构找 CID。SMILES 放在 POST 的表单里（放进网址的话 / 和 # 会出问题）。
+   * similarity：PubChem 自己的二维指纹，Tanimoto ≥ threshold（%）；substructure：含有这个子结构；identity：同一个连接方式（不管立体）。
+   */
+  function pubchemSearch(mode, smiles, opts = {}) {
+    const m = SEARCH_MODES.includes(mode) ? mode : 'similarity';
+    const max = clampInt(opts.max, 1, 50, 20), threshold = clampInt(opts.threshold, 70, 100, 90);
+    const q = [`MaxRecords=${max}`, ...(m === 'similarity' ? [`Threshold=${threshold}`] : []), ...(m === 'identity' ? ['identity_type=same_connectivity'] : [])].join('&');
+    const op = { similarity: 'fastsimilarity_2d', substructure: 'fastsubstructure', identity: 'fastidentity' }[m];
+    return { url: `${PUBCHEM}/compound/${op}/smiles/cids/JSON?${q}`, body: `smiles=${encodeURIComponent(String(smiles || '').trim())}`, mode: m, max, threshold };
+  }
+  /** PubChem 的回答里的 CID（去重、保持顺序）；没找到（PUGREST.NotFound）是空数组，别的错误抛出带 PubChem 原话的异常。 */
+  function pubchemCids(json, max = 50) {
+    if (json?.Fault) { if (/NotFound/i.test(json.Fault.Code || '')) return []; throw new Error(json.Fault.Message || json.Fault.Code || 'PubChem error'); }
+    const ids = json?.IdentifierList?.CID || [];
+    return [...new Set(ids.map(Number).filter((n) => Number.isInteger(n) && n > 0))].slice(0, max);
+  }
+  /** 第二步：这些 CID 的名字、分子式、分子量和 SMILES。 */
+  function pubchemPropsUrl(cids) {
+    return `${PUBCHEM}/compound/cid/${cids.map(Number).filter((n) => n > 0).join(',')}/property/Title,MolecularFormula,MolecularWeight,SMILES,ConnectivitySMILES,IUPACName/JSON`;
+  }
+  /** 整理成表格的行，顺序跟 cids 一样。SMILES 的字段名 PubChem 2025 年改过（CanonicalSMILES/IsomericSMILES → ConnectivitySMILES/SMILES），新旧都认。 */
+  function pubchemRows(json, cids) {
+    const props = json?.PropertyTable?.Properties || [];
+    const by = new Map(props.map((p) => [Number(p.CID), p]));
+    return (cids || props.map((p) => Number(p.CID))).filter((c) => by.has(c)).map((cid) => {
+      const p = by.get(cid);
+      return { cid, title: String(p.Title || p.IUPACName || `CID ${cid}`), formula: String(p.MolecularFormula || ''), mw: Number(p.MolecularWeight),
+        smiles: String(p.SMILES || p.IsomericSMILES || p.ConnectivitySMILES || p.CanonicalSMILES || ''), iupac: String(p.IUPACName || ''), url: `https://pubchem.ncbi.nlm.nih.gov/compound/${cid}` };
+    });
+  }
+
+  root.MolAstriaChemInf = { PUBCHEM, SEARCH_MODES, pubchemSearch, pubchemCids, pubchemPropsUrl, pubchemRows, MAX_MOLS, parseList, COLUMNS, MORE, lipinski, veber, tanimoto, matches, csv, python, SMARTS, SAMPLES, SAMPLES_EN };
 })(typeof window !== 'undefined' ? window : globalThis);

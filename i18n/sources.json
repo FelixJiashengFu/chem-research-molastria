@@ -658,7 +658,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "251 条 · 已实现": [
+ "253 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -706,7 +706,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 251 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 253 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -884,7 +884,7 @@
  "关闭资源详情": [
   "atlas/index.html"
  ],
- "251 条计算化学资源，17 个研究主题。按问题和研究主题搜索数据库，了解 chemdb-agent 的接入进展。": [
+ "253 条计算化学资源，17 个研究主题。按问题和研究主题搜索数据库，了解 chemdb-agent 的接入进展。": [
   "atlas/index.html"
  ],
  "说明讲解手册 · MolAstria": [
@@ -945,6 +945,7 @@
   "scimodels/index.html",
   "videos/index.html",
   "hub/index.html",
+  "code/index.html",
   "radar/app/app.js"
  ],
  "类别": [
@@ -7882,6 +7883,9 @@
  "示例": [
   "code/index.html"
  ],
+ "Gaussian 红外光谱": [
+  "code/index.html"
+ ],
  "试一段示例": [
   "code/index.html"
  ],
@@ -7908,7 +7912,8 @@
   "code/index.html"
  ],
  "加到列表": [
-  "code/index.html"
+  "code/index.html",
+  "code/cheminf.js"
  ],
  "填入示例": [
   "code/index.html"
@@ -7959,6 +7964,37 @@
   "code/index.html"
  ],
  "Lipinski 五规则：分子量 ≤ 500、cLogP ≤ 5、氢键供体 ≤ 5、受体 ≤ 10，最多违反一条算通过（Lipinski 2001）；Veber 规则：可旋转键 ≤ 10 且 TPSA ≤ 140 Å²（Veber 2002）。两条都是口服药的经验规则，不适用于天然产物、抗生素和许多新药类型。": [
+  "code/index.html"
+ ],
+ "按结构搜 PubChem": [
+  "code/index.html"
+ ],
+ "画一个结构或写一个 SMILES，在 PubChem 的一亿多个化合物里找相似的、含有这个子结构的，或者就是它本身。浏览器直接问 PubChem，不经过本站；本站只把结果整理成表，再用 RDKit 算一遍相似度。": [
+  "code/index.html"
+ ],
+ "结构（SMILES）": [
+  "code/index.html"
+ ],
+ "方式": [
+  "code/index.html",
+  "models/models.js"
+ ],
+ "相似结构": [
+  "code/index.html"
+ ],
+ "含有这个子结构": [
+  "code/index.html"
+ ],
+ "同一个化合物": [
+  "code/index.html"
+ ],
+ "相似度下限（%）": [
+  "code/index.html"
+ ],
+ "还没有搜索。": [
+  "code/index.html"
+ ],
+ "“相似结构”按 PubChem 自己的 881 位二维指纹（PubChem fingerprint）的 Tanimoto 筛选，PubChem 不返回具体分数；表里的“Morgan 相似度”是 RDKit 在你的浏览器里用 Morgan 指纹（半径 2，2048 位）重算的，表格按它从高到低排。两种指纹看的东西不一样，过了 PubChem 的下限、Morgan 值却不高是正常的。“含有这个子结构”最多列 20 个，PubChem 不保证是哪 20 个。": [
   "code/index.html"
  ],
  "查一个软件": [
@@ -8144,6 +8180,15 @@
  "tutor ai 家教": [
   "shared-nav.js"
  ],
+ "我的学习": [
+  "shared-nav.js"
+ ],
+ "连续打卡、每周目标和各栏目的进度汇在一页": [
+  "shared-nav.js"
+ ],
+ "me my progress streak dashboard 打卡 进度 我的 学习记录 目标": [
+  "shared-nav.js"
+ ],
  "间隔重复复习术语和学过的知识点": [
   "shared-nav.js"
  ],
@@ -8151,6 +8196,15 @@
   "shared-nav.js"
  ],
  "game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch": [
+  "shared-nav.js"
+ ],
+ "书架": [
+  "shared-nav.js"
+ ],
+ "核对过的教材和讲解手册摆成书架，也能放自己的书": [
+  "shared-nav.js"
+ ],
+ "book books shelf bookshelf library textbook reading list bibtex isbn doi 书 书架 书单 教材 图书 读书 藏书": [
   "shared-nav.js"
  ],
  "小宠物": [
@@ -8426,6 +8480,9 @@
   "shared-nav.js"
  ],
  "登录后可以生成自己的 API key": [
+  "shared-nav.js"
+ ],
+ "连续打卡、每周目标和各栏目进度": [
   "shared-nav.js"
  ],
  "登录后可以订阅邮件": [
@@ -8964,6 +9021,9 @@
   "app.js"
  ],
  "访问原始资源": [
+  "app.js"
+ ],
+ "引用这些结果": [
   "app.js"
  ],
  "名称": [
@@ -9546,6 +9606,10 @@
  ],
  "共 {0} 篇。每一篇的题目、作者、年份、期刊和 DOI 都在 {1} 于 Crossref 核对过（XENONnT 的论文另在 arXiv 核对）。可以按研究领域和状态筛选；每条都通过 DOI 链接到出版方。": [
   "fundamental-science/fundamental.js"
+ ],
+ "导出这些文献": [
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "显示 {0} / {1} 篇": [
   "fundamental-science/fundamental.js",
@@ -11541,7 +11605,8 @@
   "lab/lab.js"
  ],
  "分子式": [
-  "lab/lab.js"
+  "lab/lab.js",
+  "code/cheminf.js"
  ],
  "重原子": [
   "lab/lab.js",
@@ -12411,6 +12476,9 @@
  "加上热校正（焓与吉布斯自由能，要先算频率）": [
   "models/models.js"
  ],
+ "转动对称数 σ（水是 2，苯是 12）": [
+  "models/models.js"
+ ],
  "在给定的结构上算能量和每个原子受的力，不优化。SMILES 输入时结构由 RDKit 生成。": [
   "models/models.js"
  ],
@@ -12421,9 +12489,6 @@
   "models/models.js"
  ],
  "先优化，再用有限差分求振动频率，按理想气体、刚性转子和谐振子给出零点能、焓、熵和吉布斯自由能。": [
-  "models/models.js"
- ],
- "转动对称数 σ（水是 2，苯是 12）": [
   "models/models.js"
  ],
  "RDKit 生成多个构象，全部用模型优化，去掉重复的，按相对能量和 Boltzmann 权重排序。": [
@@ -12471,9 +12536,6 @@
  "绝热：中性、阳离子、阴离子各自优化；垂直：在中性分子的结构上直接换电荷态。IP = E(+1) − E(0)，EA = E(0) − E(−1)。": [
   "models/models.js"
  ],
- "方式": [
-  "models/models.js"
- ],
  "绝热": [
   "models/models.js"
  ],
@@ -12517,6 +12579,15 @@
   "models/models.js"
  ],
  "平均用的构象数": [
+  "models/models.js"
+ ],
+ "一键流水线：优化 → 频率 → 电离能": [
+  "models/models.js"
+ ],
+ "一次提交两个计算：先优化并算振动频率和热化学（3 次），确认是能量极小点后，在优化好的结构上算绝热和垂直的电离能与电子亲和能（1 次）。最后把能量、虚频、零点能、G、IP 和 EA 汇成一张表。": [
+  "models/models.js"
+ ],
+ "有虚频时停下，不接着算电离能（不是极小点，IP / EA 没有意义；停下就不扣那 1 次）": [
   "models/models.js"
  ],
  "从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。": [
@@ -12745,6 +12816,18 @@
   "models/models.js"
  ],
  "计算失败": [
+  "models/models.js"
+ ],
+ "第 1 步 · 优化与频率": [
+  "models/models.js"
+ ],
+ "优化后的结构有 {0} 个虚频，不是能量极小点，所以没有接着算电离能（没有扣这 1 次）。可以换个初始结构再试，或者取消“有虚频时停下”。": [
+  "models/models.js"
+ ],
+ "频率计算没有返回优化后的结构": [
+  "models/models.js"
+ ],
+ "第 2 步 · 电离能与电子亲和能": [
   "models/models.js"
  ],
  "没有实频振动。": [
@@ -13100,10 +13183,31 @@
  "最终 Cα RMSD（Å）": [
   "models/models.js"
  ],
+ "（还在算）": [
+  "models/models.js"
+ ],
+ "流水线汇总{0}": [
+  "models/models.js"
+ ],
+ "（热化学按 {0} K）": [
+  "models/models.js"
+ ],
+ "同一个结构走完两步：第 1 步优化并算频率{0}，第 2 步在第 1 步优化好的结构上算电离能和电子亲和能。IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自再优化，垂直值都用中性分子的结构。已完成 {1} 步。": [
+  "models/models.js"
+ ],
+ "复制汇总 CSV": [
+  "models/models.js"
+ ],
  "多模型对比 · {0}": [
   "models/models.js"
  ],
  "复制对比 CSV": [
+  "models/models.js"
+ ],
+ "第 {0} 步没有算": [
+  "models/models.js"
+ ],
+ "第 {0} 步": [
   "models/models.js"
  ],
  "（测试数据）": [
@@ -15862,6 +15966,9 @@
  "没有发现问题。": [
   "code/code.js"
  ],
+ "这份输出只有频率、没有红外强度，所以画不出红外谱。Gaussian、ORCA、Psi4、Q-Chem、NWChem 的频率输出都带强度。": [
+  "code/code.js"
+ ],
  "下载结构（XYZ）": [
   "code/code.js"
  ],
@@ -16324,8 +16431,57 @@
  "复制失败，请手动选中": [
   "code/cheminf.js"
  ],
+ "PubChem 现在太忙（限流），过一会儿再试。": [
+  "code/cheminf.js"
+ ],
+ "先写一个 SMILES，或者点“画结构”画一个。": [
+  "code/cheminf.js"
+ ],
+ "RDKit 读不出 {0}，请检查 SMILES。": [
+  "code/cheminf.js"
+ ],
+ "正在问 PubChem…": [
+  "code/cheminf.js"
+ ],
+ "PubChem 里没有相似度 ≥ {0}% 的化合物，可以把下限调低再试。": [
+  "code/cheminf.js"
+ ],
+ "PubChem 里没有找到。": [
+  "code/cheminf.js"
+ ],
+ "（相似度 ≥ {0}%，最多列 {1} 个）": [
+  "code/cheminf.js"
+ ],
+ "（最多列 {0} 个）": [
+  "code/cheminf.js"
+ ],
+ "PubChem 找到 {0} 个{1}。": [
+  "code/cheminf.js"
+ ],
+ "连不上 PubChem（网络不通或被拦了）。可以点下面的链接直接在 PubChem 网站上搜。": [
+  "code/cheminf.js"
+ ],
+ "在 PubChem 网站上搜": [
+  "code/cheminf.js"
+ ],
+ "名字 / CID": [
+  "code/cheminf.js"
+ ],
  "分子量": [
+  "code/cheminf.js",
   "code/cheminf-core.js"
+ ],
+ "Morgan 相似度": [
+  "code/cheminf.js"
+ ],
+ "在本站搜这个名字": [
+  "code/cheminf.js"
+ ],
+ "没有结果。": [
+  "code/cheminf.js"
+ ],
+ "已加入": [
+  "code/cheminf.js"
  ],
  "精确质量": [
   "code/cheminf-core.js"
@@ -16961,6 +17117,12 @@
   "tools/build-seo.ts"
  ],
  "从三个 3D 吉祥物里领养一只：起名字、摸摸、喂食、陪它玩、哄它睡觉，升级解锁配饰。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 书架 · Bookshelf": [
+  "tools/build-seo.ts"
+ ],
+ "站内各栏目推荐、逐本核对过的计算化学、量子物理、量子算法和数学教材，加上讲解手册 25 册；放上自己的书架，标在读、读完，写笔记，导出 BibTeX。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [
@@ -18117,6 +18279,12 @@
   "atlas data"
  ],
  "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。": [
+  "atlas data"
+ ],
+ "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。": [
+  "atlas data"
+ ],
+ "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。": [
   "atlas data"
  ],
  "一百零三个入口，先分清去哪一层": [

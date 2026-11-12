@@ -1,0 +1,56 @@
+                  Welcome to Q-Chem
+ Frequency:        47.24                  80.82                 152.37
+ IR Active:          YES                    NO                     YES
+ IR Intens:        0.031                  0.000                  0.343
+ Frequency:       178.92                 262.66                 301.87
+ IR Active:          YES                    NO                     NO 
+ IR Intens:        0.257                  0.000                  0.000
+ Frequency:       408.38                 425.37                 470.36
+ IR Active:          NO                     YES                    YES
+ IR Intens:        0.000                  0.086                  5.787
+ Frequency:       485.60                 578.68                 659.07
+ IR Active:          YES                    NO                     NO 
+ IR Intens:        1.930                  0.000                  0.000
+ Frequency:       672.02                 709.29                 735.87
+ IR Active:          NO                     YES                    YES
+ IR Intens:        0.000                  0.437                  4.355
+ Frequency:       811.22                 861.59                 897.08
+ IR Active:          NO                     NO                     NO 
+ IR Intens:        0.000                  0.000                  0.000
+ Frequency:       898.61                 981.68                 981.80
+ IR Active:          YES                    NO                     YES
+ IR Intens:       26.391                  0.000                 36.559
+ Frequency:      1020.66                1039.07                1072.61
+ IR Active:          NO                     YES                    YES
+ IR Intens:        0.000                  0.006                  0.478
+ Frequency:      1102.69                1108.73                1108.89
+ IR Active:          YES                    YES                    NO 
+ IR Intens:        8.927                 13.153                  0.000
+ Frequency:      1110.63                1203.79                1263.09
+ IR Active:          NO                     YES                    NO 
+ IR Intens:        0.000                  1.407                  0.000
+ Frequency:      1285.19                1295.90                1350.01
+ IR Active:          YES                    NO                     YES
+ IR Intens:        0.100                  0.000                  8.894
+ Frequency:      1399.73                1420.64                1426.68
+ IR Active:          NO                     YES                    NO 
+ IR Intens:        0.000                  8.441                  0.000
+ Frequency:      1514.74                1565.29                1574.86
+ IR Active:          YES                    NO                     YES
+ IR Intens:       19.109                  0.000                  0.493
+ Frequency:      1639.27                1689.70                1737.77
+ IR Active:          YES                    NO                     NO 
+ IR Intens:       15.380                  0.000                  0.000
+ Frequency:      1815.59                1816.57                3399.68
+ IR Active:          NO                     YES                    YES
+ IR Intens:        0.000                  1.493                 98.856
+ Frequency:      3400.41                3438.13                3438.16
+ IR Active:          NO                     YES                    NO 
+ IR Intens:        0.000                  3.689                  0.000
+ Frequency:      3458.77                3462.27                3477.87
+ IR Active:          YES                    NO                     YES
+ IR Intens:        0.732                  0.000                  6.275
+ Frequency:      3480.80                3552.24                3552.26
+ IR Active:          NO                     YES                    NO 
+ IR Intens:        0.000                  0.010                  0.000
+        *  Thank you very much for using Q-Chem.  Have a nice day.  *

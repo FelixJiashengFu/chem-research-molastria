@@ -300,6 +300,7 @@
     box.innerHTML = `<dl class="cd-dl">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`
       + (r.warnings.length ? `<ul class="cd-warn">${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : `<p class="cd-ok">${esc(tr('没有发现问题。'))}</p>`)
       + stepsPlot(r.steps)
+      + (r.ir.length ? '<div id="out-ir"></div>' : r.freqs.length ? `<p class="cd-dim cd-irnote">${esc(tr('这份输出只有频率、没有红外强度，所以画不出红外谱。Gaussian、ORCA、Psi4、Q-Chem、NWChem 的频率输出都带强度。'))}</p>` : '')
       + (r.geoms.length ? '<div class="cd-row"><button type="button" class="cd-btn" id="out-xyz">下载结构（XYZ）</button><button type="button" class="cd-btn" id="out-to-input">用最后的结构写输入</button></div><div class="cd-out3d" id="out-3d"></div>' : '');
     if (r.geoms.length) {
       const name = NAMES[r.program] || 'output';
@@ -319,6 +320,7 @@
       });
       if (window.MolAstriaMol3D) window.MolAstriaMol3D.button($('out-3d'), { xyz, name: `${r.program}-structure`, label: tr('输出里的结构') }, r.geoms.length > 1 ? tr('查看 3D 结构和优化轨迹') : tr('查看 3D 结构'));
     }
+    if (r.ir.length && window.MolAstriaIR) window.MolAstriaIR.mount($('out-ir'), r.ir, NAMES[r.program] || 'output');
     diff();
   }
   /** 每一步的能量画成一条线：相对最后一步，kcal/mol（几何优化的收敛曲线）。少于 3 步不画。 */

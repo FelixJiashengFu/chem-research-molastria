@@ -84,7 +84,7 @@
   };
   const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
   const GROUPS = {
-    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa'],
+    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa', 'flow'],
       intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。' },
     neutral: { name: '中性分子通用模型', charged: false, models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: GEOM,
       intro: '② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。' },
@@ -102,11 +102,12 @@
   const T = (hi = 2000, def = 298.15) => ({ k: 'temperature', label: '温度（K）', type: 'num', lo: 10, hi, def, step: 0.01 });
   const RXN = '>>'; // kept out of the Chinese literals: i18n-extract would read it as the end of a tag
   const THERMO = { k: 'thermo', label: '加上热校正（焓与吉布斯自由能，要先算频率）', type: 'bool', def: false };
+  const SIGMA = { k: 'symmetry', label: '转动对称数 σ（水是 2，苯是 12）', type: 'int', lo: 1, hi: 24, def: 1 };
   const JOBS = {
     sp: { name: '单点能与受力', cost: () => 1, about: '在给定的结构上算能量和每个原子受的力，不优化。SMILES 输入时结构由 RDKit 生成。', fields: [] },
     opt: { name: '几何优化', cost: () => 1, about: '找到能量最低的结构（局部极小点）。', fields: [{ k: 'fmax', label: '收敛判据 fmax（eV/Å）', type: 'num', lo: 0.001, hi: 0.1, def: 0.02, step: 0.001 }] },
     freq: { name: '振动频率与热化学', cost: () => 3, about: '先优化，再用有限差分求振动频率，按理想气体、刚性转子和谐振子给出零点能、焓、熵和吉布斯自由能。',
-      fields: [T(), { k: 'symmetry', label: '转动对称数 σ（水是 2，苯是 12）', type: 'int', lo: 1, hi: 24, def: 1 }] },
+      fields: [T(), SIGMA] },
     conf: { name: '构象搜索', cost: () => 5, smiles: () => true, about: 'RDKit 生成多个构象，全部用模型优化，去掉重复的，按相对能量和 Boltzmann 权重排序。',
       fields: [{ k: 'n', label: '生成的构象数', type: 'int', lo: 2, hi: 30, def: 10 }, T(), { k: 'window_kcal', label: '保留的能量窗口（kcal/mol）', type: 'num', lo: 1, hi: 30, def: 10, step: 0.1 }] },
     scan: { name: '二面角扫描', cost: () => 5, about: '固定一个二面角，每个角度优化其余结构，得到扭转能量曲线（柔性扫描）。',
@@ -125,6 +126,10 @@
       fields: [{ k: 'site', label: '位点（重原子编号）', type: 'site' }, { k: 'mode', label: '方式', type: 'select', def: 'protonate', options: [['protonate', '加质子：质子亲和能'], ['deprotonate', '去质子：去质子化能']] }, THERMO, T()] },
     polar: { name: '偶极矩与极化率', cost: (p) => (p.average ? 5 : 1), smiles: (p) => !!p.average, about: '偶极矩和完整的极化率张量；可以对多个构象按 Boltzmann 权重平均。',
       fields: [{ k: 'average', label: '按构象的 Boltzmann 权重平均（要用 SMILES）', type: 'bool', def: false }, { k: 'n', label: '平均用的构象数', type: 'int', lo: 2, hi: 20, def: 8 }] },
+    // Not a job of the server: the page runs freq, then ipea on the structure freq optimised (see runFlow).
+    flow: { name: '一键流水线：优化 → 频率 → 电离能', cost: () => 4, steps: ['freq', 'ipea'],
+      about: '一次提交两个计算：先优化并算振动频率和热化学（3 次），确认是能量极小点后，在优化好的结构上算绝热和垂直的电离能与电子亲和能（1 次）。最后把能量、虚频、零点能、G、IP 和 EA 汇成一张表。',
+      fields: [T(), SIGMA, { k: 'stop_imag', label: '有虚频时停下，不接着算电离能（不是极小点，IP / EA 没有意义；停下就不扣那 1 次）', type: 'bool', def: true }] },
     pmd: { name: '蛋白质分子动力学', cost: (p) => (p.ps > 20 ? 10 : 5), about: '从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。',
       fields: [{ k: 'pdb_id', label: 'PDB 编号（四位，如 1L2Y、1VII、1UBQ）', type: 'pdb', def: '1L2Y' }, { k: 'chains', label: '链（如 A 或 AB；空着就是全部蛋白链）', type: 'chains', def: '' },
         { k: 'ps', label: '模拟时长（ps）', type: 'int', lo: 1, hi: 100, def: 20 }, { k: 'temperature', label: '温度（K）', type: 'num', lo: 250, hi: 400, def: 300, step: 1 }] },
@@ -148,7 +153,7 @@
     return data;
   }
   const st = (id) => health?.models?.[id];
-  const can = (id, job) => !!st(id)?.jobs?.includes(job);
+  const can = (id, job) => (JOBS[job]?.steps || [job]).every((j) => !!st(id)?.jobs?.includes(j));
 
   // ── 结构 ────────────────────────────────────────────────────────────────
   function electrons(counts, charge) {
@@ -463,10 +468,10 @@
     return b;
   }
   const say = (html) => { $('m-progress').innerHTML = html; };
-  async function runOne(model, prefix) {
+  async function runOne(model, prefix, b = body(model)) {
     const M = MODELS[model];
     say(`${prefix}<span>已提交 ${esc(M.name)}…</span>`);
-    let r = await umaCall('/uma/jobs', { method: 'POST', body: JSON.stringify(body(model)) });
+    let r = await umaCall('/uma/jobs', { method: 'POST', body: JSON.stringify(b) });
     const until = Date.now() + 20 * 60 * 1000;
     while (r.status !== 'done' && r.status !== 'error') {
       const pr = r.progress && Number(r.progress.total) ? `（进度 ${Number(r.progress.done) || 0}/${Number(r.progress.total)}${r.progress.note ? ` · ${esc(r.progress.note)}` : ''}）` : '';
@@ -478,6 +483,20 @@
     if (r.status === 'error') throw new Error(r.error || '计算失败');
     return r.result;
   }
+  /** The pipeline: freq (which optimises first), then ipea on the optimised structure. Pushes one entry per step. */
+  async function runFlow(model, prefix) {
+    const b = body(model), p = b.params || {};
+    const freqBody = { ...b, job: 'freq', params: { temperature: p.temperature, symmetry: p.symmetry } };
+    const r1 = await runOne(model, `${prefix}<b>第 1 步 · 优化与频率</b> `, freqBody);
+    shown.push({ model, job: 'freq', r: r1, flow: 1 });
+    paint();
+    if (p.stop_imag && r1.n_imag > 0) { shown.push({ model, job: 'ipea', flow: 2, stop: `优化后的结构有 ${r1.n_imag} 个虚频，不是能量极小点，所以没有接着算电离能（没有扣这 1 次）。可以换个初始结构再试，或者取消“有虚频时停下”。` }); return; }
+    if (!r1.xyz) throw new Error('频率计算没有返回优化后的结构');
+    const ipBody = { model, job: 'ipea', xyz: r1.xyz, charge: b.charge, spin: b.spin, params: { mode: 'both' }, ...(b.academic ? { academic: true } : {}) };
+    const r2 = await runOne(model, `${prefix}<b>第 2 步 · 电离能与电子亲和能</b> `, ipBody);
+    if (!r2.smiles && b.smiles) r2.smiles = b.smiles; // the pipeline sent coordinates; keep the name the person typed
+    shown.push({ model, job: 'ipea', r: r2, flow: 2 });
+  }
   let shown = []; // results on screen: {model, r} or {model, error}
   $('m-run').addEventListener('click', async () => {
     const models = runModels(), j = job();
@@ -487,7 +506,7 @@
     try {
       for (const [i, model] of models.entries()) {
         const prefix = models.length > 1 ? `<b>${i + 1}/${models.length}</b> ` : '';
-        try { shown.push({ model, job: j, r: await runOne(model, prefix) }); }
+        try { if (j === 'flow') await runFlow(model, prefix); else shown.push({ model, job: j, r: await runOne(model, prefix) }); }
         catch (e) { shown.push({ model, job: j, error: e.message }); if (e.status === 429 || e.status === 503) break; }
         paint();
       }
@@ -737,26 +756,49 @@
       default: return [['能量（eV）', f(r.energy_ev, 4)]];
     }
   }
+  /** One row per model: the numbers a reader of the pipeline wants side by side. */
+  function flowRows() {
+    const models = [...new Set(shown.map((x) => x.model))];
+    return models.map((m) => {
+      const fr = shown.find((x) => x.model === m && x.job === 'freq')?.r, ip = shown.find((x) => x.model === m && x.job === 'ipea')?.r;
+      const why = shown.find((x) => x.model === m && (x.error || x.stop)), err = why ? why.error || why.stop : '';
+      const t = fr?.thermo || {};
+      return { m, err, cells: [fr?.energy_ev, fr?.n_imag, fr?.zpe_ev, t.g_ev, ip?.ip_ev, ip?.ip_vertical_ev, ip?.ea_ev, ip?.ea_vertical_ev], T: t.temperature_k };
+    });
+  }
+  const FLOW_HEAD = ['E（eV）', '虚频数', 'ZPE（eV）', 'G（eV）', '绝热 IP（eV）', '垂直 IP（eV）', '绝热 EA（eV）', '垂直 EA（eV）'];
+  const FLOW_KEYS = ['energy_ev', 'n_imag', 'zpe_ev', 'g_ev', 'ip_adiabatic_ev', 'ip_vertical_ev', 'ea_adiabatic_ev', 'ea_vertical_ev'];
+  function flowTable() {
+    const rows = flowRows(), T = rows.find((r) => r.T)?.T;
+    const cell = (v, k) => (k === 1 ? `<td class="n${v > 0 ? ' neg' : ''}">${v ?? '—'}</td>` : td(v, k === 0 || k === 2 || k === 3 ? 4 : 3));
+    const body = rows.map((r) => `<tr><td>${esc(MODELS[r.m].name)}</td>${r.cells.map(cell).join('')}</tr>${r.err ? `<tr><td></td><td colspan="${FLOW_HEAD.length}" class="muted small">${esc(r.err)}</td></tr>` : ''}`);
+    const n = shown.filter((x) => x.r).length;
+    return `<div class="md-res md-cmp md-flow"><h3>流水线汇总${busy ? '（还在算）' : ''}</h3>${table(['模型', ...FLOW_HEAD], body)}`
+      + `<p class="muted small">同一个结构走完两步：第 1 步优化并算频率${T ? `（热化学按 ${f(T, 2)} K）` : ''}，第 2 步在第 1 步优化好的结构上算电离能和电子亲和能。IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自再优化，垂直值都用中性分子的结构。已完成 ${n} 步。</p>`
+      + `<div class="btns"><button type="button" class="button small" data-act="flow-csv">复制汇总 CSV</button></div></div>`;
+  }
   function paint() {
     const box = $('m-result');
     if (!shown.length) { box.innerHTML = ''; return; }
     let html = '';
-    if (shown.length > 1) {
+    if (shown.some((x) => x.flow)) html += flowTable();
+    else if (shown.length > 1) {
       const first = shown.find((x) => x.r), cols = first ? summary(first.r).map(([k]) => k) : [];
       html += `<div class="md-res md-cmp"><h3>多模型对比 · ${esc(JOBS[shown[0].job].name)}</h3>${table(['模型', ...cols], shown.map((x) => (x.r ? `<tr><td>${esc(MODELS[x.model].name)}</td>${summary(x.r).map(([, v]) => `<td class="n">${esc(v)}</td>`).join('')}</tr>` : `<tr><td>${esc(MODELS[x.model].name)}</td><td colspan="${Math.max(1, cols.length)}" class="muted">${esc(x.error)}</td></tr>`)))}<div class="btns"><button type="button" class="button small" data-act="cmp-csv">复制对比 CSV</button></div></div>`;
     }
     shown.forEach((x, i) => {
       const M = MODELS[x.model];
+      if (x.stop) { html += `<div class="md-note md-flow-stop"><b>${esc(M.name)}</b> · <b>第 ${x.flow} 步没有算</b>：${esc(x.stop)}</div>`; return; }
       if (x.error) { html += `<div class="md-err"><b>${esc(M.name)}</b>：${esc(x.error)}</div>`; return; }
       x.r.__i = i;
       const v = view(x.r);
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
-      const head = `<h3>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</h3>`;
+      const head = `<h3>${x.flow ? `<span class="md-flow-n">第 ${x.flow} 步</span>` : ''}<span>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</span></h3>`;
       const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`;
       const what = M.kind === 'ff' ? '经典力场的模拟，不是量子化学计算' : M.tier === 'open' ? '半经验量子化学（xTB）的结果，不是 DFT 计算' : '机器学习势的预测，不是 DFT 计算';
       const foot = `<p class="muted small">用时 ${x.r.seconds ?? '?'} 秒 · <span>${what}</span>${x.r.direct_forces ? '<span> · 直接受力型模型：力不是能量的导数，频率由受力差分得到</span>' : ''}。</p>`;
-      const body = shown.length > 1 ? `<details${i === 0 ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
+      const body = shown.length > 1 ? `<details${i === 0 || (x.flow && new Set(shown.map((y) => y.model)).size === 1) ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
       html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
     });
     box.innerHTML = html;
@@ -766,6 +808,7 @@
     if (!b || b.dataset.act === 'spec') return;
     const x = shown[Number(b.closest('[data-i]')?.dataset.i ?? b.dataset.i)];
     const stem = `${(x?.r?.smiles || x?.r?.pdb_id || 'molecule').replace(/[^\w.-]+/g, '_').slice(0, 40)}_${x?.model || ''}_${x?.r?.job || ''}`;
+    if (b.dataset.act === 'flow-csv') copy(csvOf(['model', ...FLOW_KEYS, 'note'], flowRows().map((r) => [r.m, ...r.cells, r.err])));
     if (b.dataset.act === 'cmp-csv') {
       const first = shown.find((y) => y.r), cols = first ? summary(first.r).map(([k]) => k) : [];
       copy(csvOf(['model', ...cols], shown.map((y) => [y.model, ...(y.r ? summary(y.r).map(([, v]) => v) : [y.error])])));

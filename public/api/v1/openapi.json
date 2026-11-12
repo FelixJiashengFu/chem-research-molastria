@@ -53,7 +53,7 @@
   "/resources.json": {
    "get": {
     "operationId": "get_resources",
-    "summary": "Resource catalogue: databases, software, datasets and courses (251 entries, whole file)",
+    "summary": "Resource catalogue: databases, software, datasets and courses (253 entries, whole file)",
     "responses": {
      "200": {
       "description": "OK",
@@ -697,8 +697,7 @@
           }
          },
          "required": [
-          "zh",
-          "en"
+          "zh"
          ]
         },
         "access": {

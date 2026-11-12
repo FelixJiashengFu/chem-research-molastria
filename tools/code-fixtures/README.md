@@ -8,6 +8,7 @@
 | `cp2k-*.out` | CP2K 2026.2（conda-forge 的 `cp2k`，MPICH 版），输入由代码台生成，同一天真跑。`-scf-fail` 把 `MAX_SCF` 改成 3，`-opt-fail` 把 `MAX_ITER` 改成 2，`-input-abort` 是 `GFN_TYPE 2`（CP2K 2026.2 不认，代码台已改成 `GFN_TYPE TBLITE`） |
 | `gaussian16-dvb-gopt.out`、`orca5-dvb-gopt.out`、`psi4-dvb-gopt.out`、`nwchem7-dvb-gopt.out` | cclib 回归数据 `data/Gaussian/basicGaussian16/dvb_gopt.out`、`data/ORCA/basicORCA5.0/dvb_gopt.out`、`data/Psi4/basicPsi4-1.7/dvb_gopt_rhf.out`、`data/NWChem/basicNWChem7.0/dvb_gopt_ks.out`（BSD-3-Clause，© cclib 的作者们），二乙烯基苯的几何优化。摘录留着每一个结构块和每一步的能量行；`cclib-geoms.json` 是 cclib 1.8.1 读全文得到的最终结构和每一步 SCF 能量，测试拿摘录的读法对照它（2026-11-11 生成一次） |
 | `xtb-water-opt.out` | xtb 6.7.1（grimme-lab/xtb 的 Linux 发行包），水 GFN2-xTB 优化，2026-11-11 在云端会话里真跑，摘录 |
+| `ir-*.out`、`cclib-ir.json` | 红外光谱的读法（`tools/ir-test.mjs`）：cclib 回归数据 `data/Gaussian/basicGaussian16/dvb_ir.out`、`data/ORCA/basicORCA5.0/dvb_ir.out`、`data/Psi4/basicPsi4-1.7/dvb_ir_rhf.out`、`data/QChem/basicQChem5.4/dvb_ir.out`、`data/NWChem/basicNWChem7.0/dvb_ir.out`（BSD-3-Clause，© cclib 的作者们）的摘录：横幅、频率和红外强度那几行、结束行，数字没改。`cclib-ir.json` 是 cclib 1.8.1 读全文得到的 vibfreqs / vibirs（2026-11-12 生成一次）。Gaussian 那份同时留着普通格式和 HPModes 两套表 |
 | `qchem-*.out`、`qchem6-*.out` | [cclib](https://github.com/cclib/cclib) 的回归数据 `data/QChem/basicQChem5.4`、`basicQChem6.0`（BSD-3-Clause，© cclib 的作者们），Q-Chem 5.4 和 6.0 的真实输出。`qchem-dvb-raman.out` 留着有限差分的起止两行（参考结构的能量在它前面）；`qchem-dvb-gopt.out` 2026-11-11 重新摘录，多留了每一步的结构块 |
 
 Q-Chem 是商业软件，云端会话里没有，所以它的样本只能用 cclib 收的这些；报错（`Q-Chem fatal error occurred`）没有真实样本，测试里是照官方手册的格式写的一段。

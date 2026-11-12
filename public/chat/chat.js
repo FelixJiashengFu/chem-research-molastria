@@ -1365,6 +1365,18 @@
   }).observe(app);
   addEventListener('focus', seen);
 
+  // Other scripts on this page (daily.js, the daily problem) hand a draft to a room: kept only when that room has none,
+  // so nothing the person was typing is overwritten. Then they open the room with location.hash = '#r-<id>'.
+  window.MolAstriaChat = {
+    draft(id, text) {
+      stashDraft();
+      if (!id || !text || (drafts[id] && drafts[id].trim())) return false;
+      drafts[id] = String(text); saveDrafts();
+      if (ta && ta.dataset.room === id && !ta.value.trim()) { ta.value = drafts[id]; ta.dispatchEvent(new Event('input')); }
+      return true;
+    },
+  };
+
   // ── Start ──────────────────────────────────────────────────────────────
   if (en) document.title = BASE_TITLE;
   renderTop(); renderFoot(); renderMe(); renderRooms();

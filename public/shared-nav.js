@@ -8,6 +8,31 @@
   // Pages whose content is drawn by script (body.js-render) stay hidden until every deferred script has run; see shared-nav.css.
   document.addEventListener('DOMContentLoaded', () => document.body.classList.add('cr-ready'), { once: true });
   if (document.readyState === 'complete') document.body.classList.add('cr-ready');
+  // 我的学习（me/）的打卡：页面做完一件学习的事（答对一道题、复习一张卡、研习台走一步……）时调用 window.MolAstriaActivity('quiz')。
+  // 记在 molastria-me 的当天（本地日期）一格里，只留最近 400 天；格式和清洗规则在 me/me-core.js，这里是同一套的最小写法。
+  if (!window.MolAstriaActivity) {
+    const KINDS = ['learn', 'practice', 'review', 'quiz', 'check', 'play', 'read', 'code', 'other'];
+    const p2 = (n) => String(n).padStart(2, '0');
+    const dk = (d) => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+    window.MolAstriaActivity = (kind) => {
+      try {
+        const k = KINDS.includes(kind) ? kind : 'other';
+        let s = null;
+        try { s = JSON.parse(localStorage.getItem('molastria-me') || 'null'); } catch { s = null; }
+        if (!s || typeof s !== 'object' || Array.isArray(s)) s = { v: 1, days: {}, goal: 4 };
+        if (!s.days || typeof s.days !== 'object' || Array.isArray(s.days)) s.days = {};
+        const now = new Date(), today = dk(now);
+        const day = s.days[today] && typeof s.days[today] === 'object' ? s.days[today] : (s.days[today] = { n: 0, k: {} });
+        if (!day.k || typeof day.k !== 'object') day.k = {};
+        day.n = Math.min(99999, (Number(day.n) || 0) + 1);
+        day.k[k] = Math.min(9999, (Number(day.k[k]) || 0) + 1);
+        const old = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 399, 12), oldest = dk(old);
+        for (const d of Object.keys(s.days)) if (d < oldest) delete s.days[d];
+        localStorage.setItem('molastria-me', JSON.stringify(s));
+        window.dispatchEvent(new CustomEvent('molastria:activity', { detail: { kind: k, day: today } }));
+      } catch { /* private mode */ }
+    };
+  }
   // ── 全站导航（2026-11-10 改版）：二十多个栏目分成五组，每组一个按钮，点开是一块大菜单（每个栏目一句说明，大的栏目带子展馆）；
   //    窄屏（iPad 竖屏、手机）只留一个“栏目”按钮，打开后五组从上到下排开。菜单顶部能搜索栏目，Ctrl / ⌘ + K 在任何页面直接打开。
   //    常用的栏目可以“固定到顶栏”：固定的入口直接显示在分组按钮后面（放不下就只留在菜单里），能在顶栏上拖动换位，存 molastria-nav-pins。
@@ -30,6 +55,7 @@
       ['videos', 'videos/index.html', '教学视频', 'Videos', 'YouTube 和哔哩哔哩上的课程与教程', 'Courses and tutorials on YouTube and Bilibili', 1, 'video youtube bilibili course'],
       ['programming', 'programming/index.html', '编程语言', 'Programming', '计算物理与化学要用的编程语言，从入门到并行', 'The programming languages of computational physics and chemistry, from basics to parallel', 1, 'python fortran c++ julia code language 编程 语言'],
       ['learn', 'learn/index.html', '研习台', 'Study Desk', 'AI 家教：先摸底、画路线、一步一检', 'An AI tutor: probe, plan, then teach step by step', 1, 'tutor ai 家教'],
+      ['me', 'me/index.html', '我的学习', 'My Study', '连续打卡、每周目标和各栏目的进度汇在一页', 'Your streak, weekly goal and progress across the site on one page', 1, 'me my progress streak dashboard 打卡 进度 我的 学习记录 目标'],
       ['review', 'review/index.html', '复习卡片', 'Flashcards', '间隔重复复习术语和学过的知识点', 'Spaced repetition for terms and what you learned', 1, 'anki flashcard fsrs'],
       ['qchem', 'qchem/index.html', '游乐场', 'Playground', '二十个小游戏（五个 3D）和浏览器里的量子化学计算器', 'Twenty games (five in 3D) and a quantum chemistry calculator in the browser', 1, 'game 游戏 calculator 3d vsepr chirality 手性 miller 密勒 bloch'],
       ['shelf', 'shelf/index.html', '书架', 'Bookshelf', '核对过的教材和讲解手册摆成书架，也能放自己的书', 'Checked textbooks and the Handbook on wooden shelves, plus your own books', 1, 'book books shelf bookshelf library textbook reading list bibtex isbn doi 书 书架 书单 教材 图书 读书 藏书'],
@@ -683,6 +709,7 @@
     user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.9 4.1-5.8 7.5-5.8s6.3 1.9 7.5 5.8"/></svg>',
     card: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/></svg>',
     shield: '<svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>',
+    chart: '<svg viewBox="0 0 24 24"><path d="M4 19.5h16"/><rect x="5.5" y="11" width="3" height="6" rx="1"/><rect x="10.5" y="7" width="3" height="10" rx="1"/><rect x="15.5" y="4" width="3" height="13" rx="1"/></svg>',
     sync: '<svg viewBox="0 0 24 24"><path d="M7.5 18.5h9a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 6.6 9.2 4.7 4.7 0 0 0 7.5 18.5Z"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5M12 11v5"/></svg>',
   };
   // Cloud sync (sync/sync.js): on when molastria-sync is "on"; the last result is in molastria-sync-status.
@@ -722,6 +749,7 @@
         + `<a class="cr-ap-go" href="${link('pro/account.html')}">${L('用邮箱登录', 'Sign in with email')}</a>`
         + `<div class="cr-ap-list">${apRow('pro/index.html', IC.star, L('Pro 支持者', 'Pro supporter'), L('支持 MolAstria，AI 托管额度和在线模型次数更多', 'Support MolAstria and get more hosted AI and online-model runs'))}`
         + apRow('api/index.html', IC.key, L('开放数据接口与计算接口', 'Open data and compute API'), L('登录后可以生成自己的 API key', 'Sign in to create your own API keys'))
+        + apRow('me/index.html', IC.chart, L('我的学习', 'My study'), L('连续打卡、每周目标和各栏目进度', 'Streak, weekly goal and progress across the site'))
         + apRow('digest/index.html', IC.mail, L('每周精选', 'Weekly Picks'), L('登录后可以订阅邮件', 'Sign in to get it by email'))
         + apRow('download/index.html', IC.app, L('桌面版', 'Desktop app'), L('Windows 和 macOS，可在本机跑 UMA', 'Windows and macOS, runs UMA locally'))
         + `</div><div class="cr-ap-foot"><a href="${link('pro/account.html#vip')}">${L('我有 VIP 卡', 'I have a VIP card')}</a><a href="${link('pro/terms.html')}">${L('条款', 'Terms')}</a><a href="${link('pro/privacy.html')}">${L('隐私', 'Privacy')}</a></div>`;
@@ -736,6 +764,7 @@
     acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar" data-plan="${p.kind}" aria-hidden="true">${esc((String(a.email || '?').trim()[0] || '?').toUpperCase())}</span><div><b class="cr-ap-mail">${esc(a.email)}</b><small><span class="cr-ap-plan" data-plan="${p.kind}">${esc(p.label)}</span>${a.status === 'past_due' ? ` <span class="cr-ap-warn">${L('付款未成功', 'Payment failed')}</span>` : ''}</small></div></div>`
       + meter
       + `<div class="cr-ap-list">${apRow('pro/account.html', IC.user, L('我的账号', 'My account'), L('套餐、额度、课题组成员', 'Plan, allowance, lab members'))}`
+      + apRow('me/index.html', IC.chart, L('我的学习', 'My study'), L('连续打卡、每周目标和各栏目进度', 'Streak, weekly goal and progress across the site'))
       + apRow('pro/account.html#sync-card', IC.sync, L('云同步', 'Cloud sync'), syncLine())
       + apRow('pro/account.html#keys-card', IC.key, 'API key', L('给程序用的计算接口，今天的用量', 'For the compute API, with today’s usage'))
       + apRow('pro/account.html#digest-card', IC.mail, L('每周精选', 'Weekly Picks'), L('订阅邮件或发一份到邮箱', 'Subscribe, or send one to your inbox'))
