@@ -289,3 +289,25 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
   .ch-toast{transition:none}
 }
 @media print{.ch-compose,.ch-side,.ch-acts,.ch-pill{display:none!important}}
+
+/* daily problem (daily.js): a card above the room list, a dialog with one formula question */
+.ch-daily{padding:6px 0 4px}
+.ch-daily-btn{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:0 10px;align-items:center;width:100%;padding:8px;border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 10%,var(--surface)),var(--surface));color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.ch-daily-btn:hover{border-color:var(--gold)}
+.ch-daily-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.ch-daily-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold-ink);font:600 18px/1 var(--font-serif)}
+.ch-daily-w{display:flex;flex-direction:column;min-width:0}
+.ch-daily-w b{font-size:14px}
+.ch-daily-w small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-daily-ok{padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-size:11.5px;font-weight:600;white-space:nowrap}
+.ch-daily-dlg .fq{margin:6px 0 0}
+.ch-daily-dlg .fs-formula{overflow-x:auto;max-width:100%}
+.ch-daily-src{margin:0 0 4px;font-size:13px}
+.ch-daily-state{color:var(--muted)}
+.ch-daily-dlg .ch-dlg-f{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.ch-daily-note{flex:1 1 220px;margin:0;color:var(--muted);font-size:12px}
+/* formula-check.js uses the site's .button, which this page does not otherwise load */
+.ch-daily-dlg .button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;font:500 13px/1.3 var(--font-sans)}
+.ch-daily-dlg .button:hover{background:var(--surface-2)}
+.ch-daily-dlg .button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.ch-daily-dlg .fq-more{margin:10px 0 0}

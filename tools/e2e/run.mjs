@@ -5013,6 +5013,33 @@ check('chat: a report reaches the owner\'s panel; delete and mute take effect at
   await finish(o);
 });
 
+check('chat: the daily problem is the same for everyone today, graded in place, and hands a draft to the study room', async () => {
+  const req = (await import('node:module')).createRequire(import.meta.url);
+  const D = req('../../public/chat/daily-core.js');
+  const vmLoad = async (file, name) => { const ctx = { window: {} }; (await import('node:vm')).runInNewContext(readFileSync(join(ROOT, 'public', file), 'utf8'), ctx); return ctx.window[name]; };
+  const want = D.pick(D.pool({ qp: await vmLoad('quantum/physics/qp-quiz.js', 'MOLASTRIA_QP_QUIZ'), fm: await vmLoad('fundamental-science/math/fm-quiz.js', 'MOLASTRIA_FM_QUIZ') }), D.dayKey());
+  const p = await chatSignedIn('chat-dora@example.com', '#r-lobby');
+  await p.waitForSelector('a.ch-room[data-room="lobby"][aria-current="true"]');
+  const card = await text(p, '#ch-daily');
+  assert.match(card, /每日一题/); assert.doesNotMatch(card, /已答对/);
+  await p.click('.ch-daily-btn');
+  await p.waitForSelector('dialog.ch-daily-dlg .fq-item', { timeout: 40000 });
+  assert.equal(await p.getAttribute('dialog.ch-daily-dlg .fq-item', 'data-q'), want.item.id, 'the problem the core picks for today');
+  assert.match(await p.getAttribute('dialog.ch-daily-dlg .ch-daily-src a', 'href'), want.set === 'qp' ? new RegExp(`quantum/physics/index\\.html#c-${want.chapter}$`) : new RegExp(`math/index\\.html#m-${want.chapter}$`));
+  await p.waitForSelector('dialog.ch-daily-dlg :is(math-field, .fq-text)', { timeout: 40000 });
+  await p.evaluate((v) => { document.querySelector('dialog.ch-daily-dlg :is(math-field, .fq-text)').value = v; document.querySelector('dialog.ch-daily-dlg .fq-check').click(); }, want.item.answer);
+  await p.waitForFunction(() => /答对了/.test(document.querySelector('dialog.ch-daily-dlg .fq-fb').textContent), null, { timeout: 40000 });
+  assert.ok(JSON.parse(await p.evaluate((k) => localStorage.getItem(k), D.SETS[want.set].store)).includes(want.item.id), 'counts in its section too');
+  await p.click('dialog.ch-daily-dlg .ch-dlg-f .ch-btn.primary');
+  await p.waitForSelector('a.ch-room[data-room="study"][aria-current="true"]');
+  await p.waitForSelector('#ch-input');
+  assert.match(await p.inputValue('#ch-input'), /^【每日一题 \d\d-\d\d】[\s\S]+\n我的思路：$/);
+  assert.match(await text(p, '#ch-daily'), /已答对/);
+  await p.reload();
+  await p.waitForSelector('.ch-daily-btn[data-solved]');
+  await finish(p);
+});
+
 check('chat: English and a phone: the page speaks English by itself, list first, one column, no sideways scroll', async () => {
   const p = await open({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true, init: () => { try { localStorage.setItem('chemhub-lang', 'en'); } catch (e) {} } });
   await go(p, '/chat/index.html?lang=en');
