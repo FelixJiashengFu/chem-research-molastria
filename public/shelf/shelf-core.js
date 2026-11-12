@@ -39,7 +39,7 @@
     const out = empty();
     if (isObj(v.items)) {
       for (const [id, it] of Object.entries(v.items)) {
-        if (!ID_RE.test(id) || !isObj(it)) continue;
+        if (!okId(id) || !isObj(it)) continue;
         const o = {};
         if (STATUS.includes(it.s)) o.s = it.s;
         const n = str(it.n, MAX_NOTE); if (n) o.n = n;
@@ -59,7 +59,7 @@
     }
     if (Array.isArray(v.order)) {
       const o = new Set();
-      for (const id of v.order) if (typeof id === 'string' && ID_RE.test(id) && !o.has(id)) { o.add(id); out.order.push(id); }
+      for (const id of v.order) if (okId(id) && !o.has(id)) { o.add(id); out.order.push(id); }
       out.order = out.order.slice(0, MAX_ORDER);
     }
     // 自己加的书一定在“我的书架”上
@@ -72,16 +72,21 @@
   /** 要写回去的字符串；空存档返回 null（删掉这个键）。 */
   const serialize = (s) => (isEmpty(s) ? null : JSON.stringify(s));
 
+  /** 书的 id 只能是小写字母、数字和连字符（挡住 __proto__ 这类键）。 */
+  /** 一本书的记录（只认自己的键，不会读到 Object 原型上的东西）。 */
+  const item = (s, id) => (Object.hasOwn(s.items, id) ? s.items[id] : {});
+  const okId = (id) => typeof id === 'string' && ID_RE.test(id) && !(id in Object.prototype);
   function touch(s, id, now) {
-    const it = s.items[id] || {};
+    const it = item(s, id);
     it.at = now || Date.now();
     s.items[id] = it;
     if (!it.s && !it.n && !it.r) delete s.items[id];
     return s;
   }
   function setStatus(state, id, status, now) {
+    if (!okId(id)) return state;
     const s = clone(state);
-    const it = s.items[id] || {};
+    const it = item(s, id);
     if (STATUS.includes(status)) it.s = status; else delete it.s;
     s.items[id] = it;
     // 标了状态就放到我的书架上（取消状态不拿下来）
@@ -89,16 +94,18 @@
     return touch(s, id, now);
   }
   function setNote(state, id, note, now) {
+    if (!okId(id)) return state;
     const s = clone(state);
-    const it = s.items[id] || {};
+    const it = item(s, id);
     const n = str(note, MAX_NOTE);
     if (n) it.n = n; else delete it.n;
     s.items[id] = it;
     return touch(s, id, now);
   }
   function setRating(state, id, r, now) {
+    if (!okId(id)) return state;
     const s = clone(state);
-    const it = s.items[id] || {};
+    const it = item(s, id);
     const v = Math.round(+r);
     if (v >= 1 && v <= 5) it.r = v; else delete it.r;
     s.items[id] = it;
@@ -106,12 +113,14 @@
   }
   const onMine = (state, id) => state.order.includes(id);
   function addToMine(state, id) {
+    if (!okId(id)) return state;
     const s = clone(state);
     if (!s.order.includes(id) && s.order.length < MAX_ORDER) s.order.push(id);
     return s;
   }
   /** 从我的书架拿下来；自己加的书就整本删掉（连同笔记）。 */
   function removeFromMine(state, id) {
+    if (!okId(id)) return state;
     const s = clone(state);
     s.order = s.order.filter((x) => x !== id);
     if (id.startsWith('u-')) { s.mine = s.mine.filter((b) => b.id !== id); delete s.items[id]; }
@@ -119,6 +128,7 @@
   }
   /** 把 id 挪到 order 里的第 to 位（0 起，超出就放到两头）。 */
   function moveTo(state, id, to) {
+    if (!okId(id)) return state;
     const s = clone(state);
     const i = s.order.indexOf(id);
     if (i < 0) return s;
@@ -150,7 +160,7 @@
   function findDuplicate(book, state, catalog) {
     const doi = book.doi && book.doi.toLowerCase(), isbn = book.isbn;
     const hit = (b) => (doi && b.doi && b.doi.toLowerCase() === doi) || (isbn && b.isbn && normIsbn(b.isbn) === isbn);
-    if (catalog) for (const [id, b] of Object.entries(catalog.books || {})) if (hit(b)) return id;
+    if (catalog) for (const [id, b] of Object.entries(catalog.books || {})) if (okId(id) && hit(b)) return id;
     for (const b of state.mine) if (hit(b)) return b.id;
     return null;
   }
@@ -311,7 +321,7 @@
     return c;
   }
 
-  const api = { KEY, STATUS, MAX_MINE, MAX_NOTE, empty, parse, serialize, cleanBook, setStatus, setNote, setRating, onMine, addToMine, removeFromMine, moveTo, moveBy, addCustom, findDuplicate,
+  const api = { okId, item, KEY, STATUS, MAX_MINE, MAX_NOTE, empty, parse, serialize, cleanBook, setStatus, setNote, setRating, onMine, addToMine, removeFromMine, moveTo, moveBy, addCustom, findDuplicate,
     normDoi, normIsbn, hyphenIsbn, detect, lookupUrls, results, bibtex, citeKey, spine, hash, CLOTHS, matches, counts };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.MolAstriaShelfCore = api;

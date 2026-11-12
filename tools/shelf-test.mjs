@@ -170,3 +170,17 @@ test('书脊：同一本书永远一样，尺寸在范围里，筛选按词和�
   assert.ok(!C.matches(hk, null, '', 'free'));
   assert.ok(C.matches(CAT.books['fm-axler-ladr'], null, '', 'free'));
 });
+
+test('奇怪的 id（__proto__、constructor）写不进存档，也碰不到 Object.prototype', () => {
+  const before = C.empty();
+  for (const id of ['__proto__', 'constructor', 'toString', 'A', '']) {
+    assert.equal(C.setStatus(before, id, 'done'), before, id);
+    assert.equal(C.setNote(before, id, 'x'), before, id);
+    assert.equal(C.setRating(before, id, 3), before, id);
+    assert.equal(C.addToMine(before, id), before, id);
+  }
+  assert.equal(({}).s, undefined);
+  const s = C.parse('{"items":{"__proto__":{"s":"done"}},"order":["__proto__"]}');
+  assert.equal(Object.getPrototypeOf(s.items), Object.prototype);
+  assert.deepEqual(s.order, []);
+});

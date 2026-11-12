@@ -36,7 +36,8 @@
   CAT.shelves.forEach((s) => s.books.forEach((id) => { shelfOf[id] = s; }));
   const MINE_SHELF = { id: 'mine', zh: '我自己加的书', en: 'Added by you', motif: 'leaf' };
   function book(id) {
-    const b = CAT.books[id];
+    if (!C.okId(id)) return null;
+    const b = Object.hasOwn(CAT.books, id) ? CAT.books[id] : null;
     if (b) return { id, ...b, title: en && b.tEn ? b.tEn : b.t, shelf: shelfOf[id], own: false };
     const m = state.mine.find((x) => x.id === id);
     return m ? { ...m, title: m.t, shelf: MINE_SHELF, own: true, from: [] } : null;
@@ -94,7 +95,7 @@
   }
   function spineHtml(b, i) {
     const sp = C.spine(b.id, b);
-    const it = state.items[b.id] || {};
+    const it = C.item(state, b.id) || {};
     const series = b.shelf?.series;
     // 书名一栏放不下就排两栏（书脊加宽、加高一点），两栏也放不下就截短
     const t0 = spineTitle(b), wide = cjk(t0) ? 1.1 : 0.55;
@@ -114,7 +115,7 @@
       ${b.free ? '<span class="sp-free" aria-hidden="true"></span>' : ''}${st}</button></div>`;
   }
   function faceHtml(b, i) {
-    const it = state.items[b.id] || {};
+    const it = C.item(state, b.id) || {};
     const label = `${b.title}${b.a ? ' · ' + b.a : ''}${it.s ? ' · ' + SN(it.s) : ''}`;
     return `<div class="sp-slot face" data-id="${esc(b.id)}" style="--i:${i}"><button type="button" class="face-btn" data-id="${esc(b.id)}" aria-label="${esc(label)}" title="${esc(label)}">
       ${coverHtml(b)}${it.s ? `<span class="face-st face-${it.s}">${esc(SN(it.s))}</span>` : ''}</button></div>`;
@@ -174,7 +175,7 @@
   // ── 书架
   let firstPaint = true;
   function caseHtml(sh, ids, opts = {}) {
-    const list = ids.map(book).filter(Boolean).filter((b) => C.matches(b, state.items[b.id], ui.q, ui.filter));
+    const list = ids.map(book).filter(Boolean).filter((b) => C.matches(b, C.item(state, b.id), ui.q, ui.filter));
     if (!list.length && !opts.keepEmpty) return '';
     const books = list.map((b, i) => (ui.view === 'cover' ? faceHtml(b, i) : spineHtml(b, i))).join('').replace(/class="sp-slot( face)?"(?![\s\S]*class="sp-slot)/, (m, f) => `class="sp-slot${f || ''} last"`);
     return `<section class="sh-case" data-shelf="${esc(sh.id)}" aria-labelledby="sh-h-${esc(sh.id)}">
@@ -309,7 +310,7 @@
   function visibleIds() { return [...body.querySelectorAll('.sp-slot[data-id]')].map((x) => x.dataset.id); }
   function linkFor(href) { return /^https?:/.test(href) ? href : UP + href; }
   function bookDetail(b) {
-    const it = state.items[b.id] || {};
+    const it = C.item(state, b.id) || {};
     const sp = C.spine(b.id, b);
     const depth = b.shelf?.series ? 40 : sp.w;
     const ids = visibleIds(), k = ids.indexOf(b.id);
@@ -374,7 +375,7 @@
   function closeBook() {
     if (!openId) return;
     const note = document.getElementById('bk-note');
-    if (note) { clearTimeout(noteTimer); const cur = state.items[openId]?.n || ''; if (note.value.trim() !== cur) save(C.setNote(state, openId, note.value)); }
+    if (note) { clearTimeout(noteTimer); const cur = C.item(state, openId)?.n || ''; if (note.value.trim() !== cur) save(C.setNote(state, openId, note.value)); }
     const id = openId;
     openId = null;
     dlg.classList.remove('on');
@@ -399,8 +400,8 @@
     if (!t) return;
     if (t.dataset.act === 'close') return closeBook();
     if (t.dataset.step) { const ids = visibleIds(), k = ids.indexOf(openId) + +t.dataset.step; if (ids[k]) openBook(ids[k]); return; }
-    if (t.dataset.status) { const cur = state.items[openId]?.s; save(C.setStatus(state, openId, cur === t.dataset.status ? '' : t.dataset.status)); return refreshBook(); }
-    if (t.dataset.rate) { const cur = state.items[openId]?.r; save(C.setRating(state, openId, cur === +t.dataset.rate ? 0 : +t.dataset.rate)); return refreshBook(); }
+    if (t.dataset.status) { const cur = C.item(state, openId)?.s; save(C.setStatus(state, openId, cur === t.dataset.status ? '' : t.dataset.status)); return refreshBook(); }
+    if (t.dataset.rate) { const cur = C.item(state, openId)?.r; save(C.setRating(state, openId, cur === +t.dataset.rate ? 0 : +t.dataset.rate)); return refreshBook(); }
     if (t.dataset.act === 'shelve') { save(C.addToMine(state, openId)); return refreshBook(); }
     if (t.dataset.act === 'unshelve') {
       const own = openId.startsWith('u-');
@@ -522,7 +523,7 @@
   // ── 地址：#mine 打开我的书架，#b-<id> 打开一本书
   const h = decodeURIComponent(location.hash.slice(1));
   if (h === 'mine') ui.tab = 'mine';
-  if (h.startsWith('b-') && !CAT.books[h.slice(2)] && state.order.includes(h.slice(2))) ui.tab = 'mine';
+  if (h.startsWith('b-') && !Object.hasOwn(CAT.books, h.slice(2)) && state.order.includes(h.slice(2))) ui.tab = 'mine';
   draw();
   if (h.startsWith('b-') && book(h.slice(2))) openBook(h.slice(2));
   window.addEventListener('hashchange', () => {
