@@ -1,6 +1,6 @@
 # MolAstria 项目说明
 
-MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、25 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、讨论室（多人实时聊天）、开源代码台（计算化学程序的输入生成、输出解读与软件体检）、预印本雷达、游乐场（量子化学小游戏、3D 立体馆和浏览器里的量子化学计算器）、小宠物（领养一只 3D 吉祥物）、Pro 订阅和 Win/Mac 桌面版。
+MolAstria（molastria.com）是阿斯特赖亚科技（Morning Glory，16513778 Canada Inc.）旗下的计算化学研究导航：资源搜索、资源关系网、25 章中英双语讲解手册、计算化学教学视频（YouTube 和哔哩哔哩的课程与教程）、数据库目录、期刊投稿指南、科学大模型（27 个模型与价格对比）、AI 实验室、研习台（AI 家教）、讨论室（多人实时聊天）、核磁共振栏目（NMR 方法的发展与最新技术）、开源代码台（计算化学程序的输入生成、输出解读与软件体检）、预印本雷达、游乐场（量子化学小游戏、3D 立体馆和浏览器里的量子化学计算器）、小宠物（领养一只 3D 吉祥物）、Pro 订阅和 Win/Mac 桌面版。
 网站是纯静态的，只有账号服务跑在 Cloudflare 上。**这个仓库是公开的：写进来的一切都公开，包括这个文件。**
 
 - 现在要做什么：`docs/ROADMAP.md`
@@ -48,6 +48,7 @@ public/               发布目录，推到 main 就上线
   quantum/physics/    量子物理展馆：qp-data.js 是全部内容（三幕十二章的讲解、大纲、公式、练习、自测，关键实验时间线，原始论文、教材与课程；DOI 和链接逐条核对过），qp-models.js 是四个演示的数学（纯函数），qp.js 渲染，qp-quiz.js 是每章的公式题（做对的存 molastria-qp-quiz），qp-math.js 和 qp-quiz-math.js 是生成的 MathML；地址 #c-<章> 打开一章
   quantum/algorithms/  量子嘉年华的“量子算法”展馆：qa-data.js 是全部内容（14 个算法，中英双语，每个带加速的证据等级；化学资源估算；65 篇文献在 OpenAlex / arXiv 核对过），qa-models.js 是演示的数学（态矢量模拟器等，纯函数），qa.js 渲染，qa-math.js 是生成的 MathML
   quantum/computing/  量子嘉年华 · 量子计算机：qc-data.js 是全部内容（中英两版，每条带确定程度，文献在 OpenAlex 核对过），qc-models.js 是演示的数学（纯函数，tools/quantum-computing-test.mjs 测），qc-math.js 是生成的 MathML；只讲硬件与纠错，算法在 quantum/algorithms/
+  nmr/                核磁共振栏目（独立栏目，顶栏在“探索”组）：nmr-data.js 是全部内容（十一个部分的讲解、公式、关键方法和问答，八类方法对比，1938–2024 时间线，说法核对，开放问题，学习路线，中英两版；每条标成熟程度：成熟常规 / 活跃发展 / 前沿探索；203 篇文献按 DOI 在 OpenAlex 核对过，tools/nmr-refs.mjs 重查），nmr-models.js 是五个演示的数学（FID 与傅里叶变换、自旋体系精确对角化、偶极弛豫与 NOE、魔角旋转边带、极化度；纯函数，tools/nmr-test.mjs 测），nmr.js 渲染（写法照 quantum/computing/qc.js），nmr-math.js 是生成的 MathML；版式用 ../fundamental-science/fundamental.css；地址 #s-<部分> 打开一部分
   open-models/        开放模型馆（Meta 归在这里）：om-data.js 是全部内容（11 家公司、50 个模型 / 数据集 / 工具，中英两版，每条带使用条件和许可证，按任务比较的 tasks；许可证按 GitHub 仓库、文献在 OpenAlex / arXiv 核对过），om.js 画母栏目页和每家的展馆页 open-models/<id>/（Meta 的展馆就是 meta/ 页，只用 om.js 的位置和展馆切换），om.css 在 meta/meta.css 上加；tools/open-models-test.mjs 查完整性
   programming/        编程语言教学区：pl-data.js 是全部内容（20 种语言和工具链，中英两版；每种一段代码，大多是同一道 LJ 势能题，tested 标明是否真跑过），pl.js 渲染（地址 #lang-<id>、#code-<id>，Python 用 viewer/pyrun.js 在浏览器里跑），tools/programming-test.mjs 用本机有的编译器重跑标了 tested 的代码
   scimodels/          科学大模型：scimodels-data.js（数据库第 17 类的 27 个模型，中英双语，每条官方链接；prices 是价格对比与汇率，带核对日期）
@@ -96,6 +97,8 @@ node --test tools/quantum-physics-test.mjs                # 量子嘉年华 · �
 node tools/fundamental-math.mjs                         # 基础科学栏目：把 fs-data.js 里的 LaTeX 用 KaTeX 转成 fs-math.js（MathML）
 NODE_USE_SYSTEM_CA=1 node tools/fundamental-refs.mjs    # 基础科学栏目：逐条在 Crossref 核对文献
 node --test tools/quantum-algorithms-test.mjs           # 量子算法：演示的数学对照解析解，内容完整
+node --test tools/nmr-test.mjs                          # 核磁共振栏目：五个演示的数学对照解析解（AB 四重峰、T₁ 最小值、NOE 过零点、旋转边带的矩、极化度），内容的成熟程度、公式、文献都能对上
+NODE_USE_SYSTEM_CA=1 node tools/nmr-refs.mjs            # 核磁共振栏目：203 篇文献逐条按 DOI 在 OpenAlex 核对（年份允许差一年：网络版和印刷版）
 node --test tools/mol3d-test.mjs                        # 3D 查看器的纯函数：XYZ 拆帧、Hill 式、PDB 编号、样式
 node --test tools/review-test.mjs                       # 复习卡片：卡组生成、新卡上限、调度记录、坏数据迁移、Anki 导出
 node --test tools/pet-test.mjs                          # 小宠物：存档、随时间变化、动作的限制、每天的亲密度上限、等级和配饰、台词
@@ -137,7 +140,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **真实密钥不经过 Claude：** 不写进仓库、文件或命令行，也不替用户输入，用户发到聊天里也一样。要放密钥时，在终端启动 `wrangler secret put`，让用户自己粘贴。发现密钥出现在聊天里，提醒用户更换。
 - **站长权限由用户授予：** 往 `grants` 表写站长的命令让用户自己运行（`docs/RUNBOOK.md`）。
 - **不提交用户数据：** D1 备份含邮箱，只放在仓库外。
-- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js`、`public/quantum/computing/qc-math.js`、`public/fundamental-science/math/fm-quiz-math.js` 和 `public/quantum/physics/qp-quiz-math.js`（都用 `tools/fundamental-math.mjs`；只重建公式题用 `node tools/fundamental-math.mjs quiz`）、`public/api/v1/*.json`、`public/llms.txt` 和 `agent/chemdb-agent/src/chemdb_agent/catalog/resources.json`（都用 `node tools/build-api.mjs`）、`public/shelf/shelf-books.js`（用 `node tools/build-shelf.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
+- **生成的文件不要手改：** `public/radar/app/`（用 `tools/vendor-radar.ts`）、`public/research-atlas/app/`（用 `tools/vendor-atlas.mjs`）、`public/qchem/app/`（用 `tools/vendor-qchem.ts`）、`public/i18n/en.js`（用 `i18n-translate`）、`public/hub/data.*` 和 `public/merged-data.*`（用 `tools/hub-chemrxiv.ts` 或 `maintenance/`）、`public/train/models-live.js`（用 `tools/train-models.mjs`）、`public/fundamental-science/fs-math.js`、`public/fundamental-science/math/fm-math.js`、`public/quantum/physics/qp-math.js`、`public/quantum/biology/qb-math.js`、`public/quantum/algorithms/qa-math.js`、`public/quantum/computing/qc-math.js`、`public/nmr/nmr-math.js`、`public/fundamental-science/math/fm-quiz-math.js` 和 `public/quantum/physics/qp-quiz-math.js`（都用 `tools/fundamental-math.mjs`；只重建公式题用 `node tools/fundamental-math.mjs quiz`，只重建核磁共振用 `node tools/fundamental-math.mjs nmr/`）、`public/api/v1/*.json`、`public/llms.txt` 和 `agent/chemdb-agent/src/chemdb_agent/catalog/resources.json`（都用 `node tools/build-api.mjs`）、`public/shelf/shelf-books.js`（用 `node tools/build-shelf.mjs`）、`public/atlas/downloads/chemdb-agent.zip`（用 `python tools/pack-chemdb-agent.py`，同样的源码打出同样的 zip）。`public/videos/thumbs/` 不进 git，发布和打包桌面版时由 `tools/video-thumbs.mjs` 下载。`public/guide/`、`public/resources/`、`sitemap.xml`、各页的 SEO 头和 PWA 头部标签、`sw.js` 的版本号每次发布由 CI 重新生成，本地不用跑。
 
 ## 代码约定
 

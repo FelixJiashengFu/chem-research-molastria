@@ -3412,6 +3412,71 @@ check('quantum computers: under the Quantum Carnival nav entry, seven parts, six
   await finish(e);
 });
 
+check('NMR: nav entry, eleven parts, eight method families, timeline, five working demos, references, English', async () => {
+  const p = await open();
+  await go(p, '/nmr/index.html');
+  const settle = () => p.waitForTimeout(120); // demos redraw on the next animation frame
+  assert.equal(await p.getAttribute('.cr-header a[data-id=nmr]', 'aria-current'), 'page', 'the NMR nav entry is current');
+  assert.equal(await p.locator('.nmr-level').count(), 3);
+  assert.equal(await p.locator('.fs-pillar').count(), 11);
+  assert.equal(await p.locator('.fs-tab').count(), 11);
+  assert.ok(await p.locator('#s-basics math').count() >= 4, 'MathML formulas render');
+  await p.click('.fs-pillar[data-tab=solid]');
+  assert.equal(await p.isVisible('#s-solid'), true);
+  assert.equal(await p.isVisible('#s-basics'), false);
+  assert.equal(await p.locator('.nmr-fam').count(), 8);
+  assert.equal(await p.locator('#nmr-timeline li').count(), 25);
+  // Demo 1: the measured linewidth follows 1/(πT₂*); a matched filter doubles it.
+  assert.match(await text(p, '#f-read'), /1\.0\d Hz/);
+  await p.click('#f-match'); await settle();
+  assert.match(await text(p, '#f-cap'), /匹配滤波/);
+  assert.match(await text(p, '#f-read'), /2\.0\d Hz/);
+  // Demo 2: two protons 0.25 ppm apart with J = 12 Hz are strongly coupled at 60 MHz and first order at 1.2 GHz; ethyl has five spins.
+  await p.click('#s-60'); await settle();
+  assert.match(await text(p, '#s-read'), /1\.25/);
+  assert.match(await text(p, '#s-cap'), /强耦合/);
+  await p.click('#s-presets [data-preset=ethyl]'); await p.click('#s-1200'); await settle();
+  assert.match(await text(p, '#s-cap'), /弱耦合/);
+  assert.match(await text(p, '#s-read'), /自旋数5/);
+  // Demo 3: small molecules give nearly +50% NOE, a 20 kDa protein a negative one; the zero crossing sits at ωτc = 1.12.
+  await p.click('#r-small'); await settle();
+  assert.match(await text(p, '#r-read'), /\+49\.\d %/);
+  await p.click('#r-prot'); await settle();
+  assert.match(await text(p, '#r-read'), /-9\d\.\d %/);
+  await p.click('#r-zero'); await settle();
+  assert.match(await text(p, '#r-read'), /1\.1[12]/);
+  // Demo 4: slow spinning spreads the intensity over sidebands, 150 kHz leaves only the centreband.
+  await p.click('#m-slow'); await settle();
+  assert.match(await text(p, '#m-cap'), /Herzfeld–Berger/);
+  await p.click('#m-fast'); await settle();
+  assert.match(await text(p, '#m-read'), /99\.\d %|100\.0 %/);
+  // Demo 5: ¹H at 9.4 T and 298 K has 32.2 ppm polarisation; electrons at 3.35 T and 1.2 K have 95.4%.
+  await p.click('#p-room'); await settle();
+  assert.match(await text(p, '#p-read'), /32\.2 ppm[\s\S]*658\.2/);
+  await p.click('#p-ddnp'); await settle();
+  assert.match(await text(p, '#p-read'), /95\.4\d? %[\s\S]*2618/);
+  // Ledger, library, citations.
+  assert.equal(await p.locator('#nmr-ledger-grid .fs-theory').count(), 6);
+  assert.equal(await p.locator('.fs-ref').count(), 203);
+  await p.click('#s-solid .fs-cite a[data-ref=andrew1958]');
+  assert.match(await text(p, '#ref-andrew1958'), /Andrew/);
+  await p.selectOption('#nmr-lib-area', 'hyper');
+  assert.ok(await p.locator('.fs-ref').count() < 60);
+  await go(p, '/nmr/index.html#s-hyper');
+  await p.waitForTimeout(150);
+  assert.equal(await p.isVisible('#s-hyper'), true, '#s-hyper opens part 06');
+  await finish(p);
+  const e = await open();
+  await go(e, '/nmr/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#nmr-h1'), /Nuclear Magnetic Resonance/);
+  assert.match(await text(e, '#s-cap'), /coupling/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('quantum biology: under Quantum Carnival, seven directions, evidence ledger, three working demos, references, English', async () => {
   const p = await open();
   await go(p, '/quantum/biology/index.html');
@@ -3473,7 +3538,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -4927,7 +4992,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
