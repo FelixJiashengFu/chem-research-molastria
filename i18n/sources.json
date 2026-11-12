@@ -658,7 +658,7 @@
   "atlas/app.js",
   "tools/build-seo.ts"
  ],
- "251 条 · 已实现": [
+ "253 条 · 已实现": [
   "atlas/index.html"
  ],
  "数据源适配器": [
@@ -706,7 +706,7 @@
  "已实现": [
   "atlas/index.html"
  ],
- "search_resources 按关键词、类别和接入状态检索 251 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
+ "search_resources 按关键词、类别和接入状态检索 253 条；catalog_status 列出全部数据源（是否带能量、是否要 key、许可）和本地数据。": [
   "atlas/index.html"
  ],
  "晶体与材料检索": [
@@ -884,7 +884,7 @@
  "关闭资源详情": [
   "atlas/index.html"
  ],
- "251 条计算化学资源，17 个研究主题。按问题和研究主题搜索数据库，了解 chemdb-agent 的接入进展。": [
+ "253 条计算化学资源，17 个研究主题。按问题和研究主题搜索数据库，了解 chemdb-agent 的接入进展。": [
   "atlas/index.html"
  ],
  "说明讲解手册 · MolAstria": [
@@ -7882,6 +7882,9 @@
  "示例": [
   "code/index.html"
  ],
+ "Gaussian 红外光谱": [
+  "code/index.html"
+ ],
  "试一段示例": [
   "code/index.html"
  ],
@@ -8142,6 +8145,15 @@
   "shared-nav.js"
  ],
  "tutor ai 家教": [
+  "shared-nav.js"
+ ],
+ "我的学习": [
+  "shared-nav.js"
+ ],
+ "连续打卡、每周目标和各栏目的进度汇在一页": [
+  "shared-nav.js"
+ ],
+ "me my progress streak dashboard 打卡 进度 我的 学习记录 目标": [
   "shared-nav.js"
  ],
  "间隔重复复习术语和学过的知识点": [
@@ -8426,6 +8438,9 @@
   "shared-nav.js"
  ],
  "登录后可以生成自己的 API key": [
+  "shared-nav.js"
+ ],
+ "连续打卡、每周目标和各栏目进度": [
   "shared-nav.js"
  ],
  "登录后可以订阅邮件": [
@@ -8964,6 +8979,9 @@
   "app.js"
  ],
  "访问原始资源": [
+  "app.js"
+ ],
+ "引用这些结果": [
   "app.js"
  ],
  "名称": [
@@ -9546,6 +9564,10 @@
  ],
  "共 {0} 篇。每一篇的题目、作者、年份、期刊和 DOI 都在 {1} 于 Crossref 核对过（XENONnT 的论文另在 arXiv 核对）。可以按研究领域和状态筛选；每条都通过 DOI 链接到出版方。": [
   "fundamental-science/fundamental.js"
+ ],
+ "导出这些文献": [
+  "fundamental-science/fundamental.js",
+  "quantum/biology/qb.js"
  ],
  "显示 {0} / {1} 篇": [
   "fundamental-science/fundamental.js",
@@ -15862,6 +15884,9 @@
  "没有发现问题。": [
   "code/code.js"
  ],
+ "这份输出只有频率、没有红外强度，所以画不出红外谱。Gaussian、ORCA、Psi4、Q-Chem、NWChem 的频率输出都带强度。": [
+  "code/code.js"
+ ],
  "下载结构（XYZ）": [
   "code/code.js"
  ],
@@ -18117,6 +18142,12 @@
   "atlas data"
  ],
  "Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。": [
+  "atlas data"
+ ],
+ "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。": [
+  "atlas data"
+ ],
+ "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。": [
   "atlas data"
  ],
  "一百零三个入口，先分清去哪一层": [

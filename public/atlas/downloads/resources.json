@@ -2759,5 +2759,27 @@
     "access": "免费",
     "integration": "catalog",
     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+  },
+  {
+    "number": 252,
+    "name": "Environ",
+    "description": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。",
+    "url": "https://www.quantum-environ.org",
+    "category_code": "13",
+    "category": "周期体系与凝聚态第一性原理",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+  },
+  {
+    "number": 253,
+    "name": "VOTCA",
+    "description": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。",
+    "url": "https://www.votca.org",
+    "category_code": "14",
+    "category": "波函数分析、可视化与动力学",
+    "access": "免费",
+    "integration": "catalog",
+    "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
   }
 ]

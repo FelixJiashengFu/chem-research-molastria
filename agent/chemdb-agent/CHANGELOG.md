@@ -2,7 +2,7 @@
 
 ## 未发版
 
-- **资源目录与网站同步：** 从 214 条增加到 251 条（2026-11-10 新收录 psi4numpy、Psi4Education、Quirk、QuTiP、3Dmol.js、Mol*、ColabFold 等 14 条，又补上 PySCF、xTB、MACE、cclib、QCSchema、Software Heritage 等 23 条），仍是 17 类。
+- **资源目录与网站同步：** 从 214 条增加到 253 条（2026-11-10 新收录 psi4numpy、Psi4Education、Quirk、QuTiP、3Dmol.js、Mol*、ColabFold 等 14 条，又补上 PySCF、xTB、MACE、cclib、QCSchema、Software Heritage 等 23 条；2026-11-12 加了 Environ 和 VOTCA），仍是 17 类。
 
 ## 0.3.0（2026-11-09）
 

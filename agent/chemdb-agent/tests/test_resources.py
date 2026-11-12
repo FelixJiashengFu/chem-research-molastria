@@ -5,8 +5,8 @@ from chemdb_agent.catalog import resources as res
 
 def test_resources_count_and_numbers():
     allr = res.all_resources()
-    assert len(allr) == 251
-    assert [r["number"] for r in allr] == list(range(1, 252))
+    assert len(allr) == 253
+    assert [r["number"] for r in allr] == list(range(1, 254))
     assert res.UPDATED and res.SOURCE.startswith("https://molastria.com/api/v1/")
     assert all(r["name"] and r["url"].startswith("http") and r["access"] for r in allr)
 
@@ -19,7 +19,7 @@ def test_resources_categories():
     assert counts["软件、平台与计算入口"] == 34
     assert counts["社区与中文入口"] == 4
     assert counts["科学领域语言模型与多模态基础模型"] == 27
-    assert sum(counts.values()) == 251
+    assert sum(counts.values()) == 253
 
 
 def test_resources_integrated_mapping():

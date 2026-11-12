@@ -3915,20 +3915,25 @@ check('quantum algorithms circuit: rotation gates, mid-circuit measurement, step
   await finish(p);
 });
 
-check('resource catalogue: 251 entries, the 2026-11-10 additions are searchable in both languages', async () => {
+check('resource catalogue: 253 entries, the 2026-11-10 additions are searchable in both languages', async () => {
   const p = await open();
   await go(p, '/atlas/index.html');
-  assert.match(await text(p, '.filter[data-filter=all]'), /251/);
+  assert.match(await text(p, '.filter[data-filter=all]'), /253/);
   await p.fill('#search', 'PySCF');
   await p.waitForTimeout(300);
   assert.match(await text(p, 'main'), /Apache-2.0/);
   await p.fill('#search', 'Quirk');
   await p.waitForTimeout(300);
   assert.match(await text(p, 'main'), /Quirk/);
+  for (const [q, lic] of [['Environ', /GPL-2\.0/], ['VOTCA', /Apache-2\.0/]]) { // 2026-11-12 content-gap additions
+    await p.fill('#search', q);
+    await p.waitForTimeout(300);
+    assert.match(await text(p, 'main'), lic, q);
+  }
   await finish(p);
   const e = await open();
   await go(e, '/index.html?lang=en');
-  await e.waitForFunction(() => document.getElementById('stat-atlas').textContent === '251', null, { timeout: 5000 }); // the figure counts up when it comes into view
+  await e.waitForFunction(() => document.getElementById('stat-atlas').textContent === '253', null, { timeout: 5000 }); // the figure counts up when it comes into view
   await finish(e);
 });
 

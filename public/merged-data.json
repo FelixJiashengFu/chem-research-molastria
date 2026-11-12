@@ -1,6 +1,6 @@
 {
  "generatedAt": "2026-11-06T15:26:37-05:00",
- "packagedAt": "2026-11-10",
+ "packagedAt": "2026-11-12",
  "sources": [
   {
    "id": "keinsci",
@@ -310,7 +310,7 @@
    "status": "snapshot",
    "statusLabel": "人工整理目录",
    "fetchedAt": "2026-11-05",
-   "itemCount": 251
+   "itemCount": 253
   }
  ],
  "items": [
@@ -101055,6 +101055,72 @@
    ]
   },
   {
+   "id": "5ba5aaba8540e0bb",
+   "source": "atlas",
+   "type": "database",
+   "title": "Environ",
+   "url": "https://www.quantum-environ.org",
+   "excerpt": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。",
+   "date": "",
+   "category": "周期体系与凝聚态第一性原理",
+   "tags": [
+    "周期体系与凝聚态第一性原理"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 252,
+     "name": "Environ",
+     "description": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。",
+     "url": "https://www.quantum-environ.org",
+     "category_code": "13",
+     "category": "周期体系与凝聚态第一性原理",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
+   "id": "50181fd510880912",
+   "source": "atlas",
+   "type": "database",
+   "title": "VOTCA",
+   "url": "https://www.votca.org",
+   "excerpt": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。",
+   "date": "",
+   "category": "波函数分析、可视化与动力学",
+   "tags": [
+    "波函数分析、可视化与动力学"
+   ],
+   "origins": [
+    "atlas"
+   ],
+   "sourceIds": [
+    "atlas"
+   ],
+   "sourceRecords": [],
+   "atlasRecords": [
+    {
+     "number": 253,
+     "name": "VOTCA",
+     "description": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。",
+     "url": "https://www.votca.org",
+     "category_code": "14",
+     "category": "波函数分析、可视化与动力学",
+     "access": "免费",
+     "integration": "catalog",
+     "detail": "软件/平台/工具，非结构数据库，仅作资源导航"
+    }
+   ]
+  },
+  {
    "id": "d3ad0b5d8836bc8f",
    "source": "chemrxiv",
    "type": "preprint",
@@ -103029,12 +103095,12 @@
  ],
  "stats": {
   "hubEntries": 2483,
-  "atlasEntries": 251,
-  "uniqueEntries": 2663,
+  "atlasEntries": 253,
+  "uniqueEntries": 2665,
   "duplicates": 71,
-  "guideChapters": 20,
+  "guideChapters": 25,
   "sources": 24,
-  "directoryEntries": 268
+  "directoryEntries": 270
  },
  "note": "数据为原项目保存的快照，合并未重新核验外部网站；全文与使用许可请查看原站。"
 }

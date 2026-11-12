@@ -250,3 +250,5 @@
 249,conda-forge,社区维护的 conda 软件源，PySCF、Psi4、xTB、OpenMM、RDKit 等计算化学软件大多能用一条命令装好。,https://conda-forge.org,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
 250,Hugging Face Hub,机器学习模型、数据集和在线演示的托管平台，化学和材料方向的不少模型权重（如 UMA）和数据集（如 OMol25）在这里发布；权重的许可证要单独看。,https://huggingface.co,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
 251,OSV,Google 发起的开源漏洞数据库，覆盖 PyPI、npm、crates.io 等生态，可按包名和版本查已知漏洞，有免费 API。本站开源代码台的软件体检用它。,https://osv.dev,10,软件、平台与计算入口,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+252,Environ,Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。,https://www.quantum-environ.org,13,周期体系与凝聚态第一性原理,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
+253,VOTCA,多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。,https://www.votca.org,14,波函数分析、可视化与动力学,免费,catalog,软件/平台/工具，非结构数据库，仅作资源导航
