@@ -20,7 +20,7 @@
   const KEY = 'molastria-play';
   let best = {};
   try { best = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { best = {}; }
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(best)); } catch { /* private mode */ } };
+  const save = () => { window.MolAstriaActivity?.('play'); try { localStorage.setItem(KEY, JSON.stringify(best)); } catch { /* private mode */ } };
   function renderBest() {
     for (const el of $$('[data-best]')) {
       const id = el.dataset.best, v = best[id];

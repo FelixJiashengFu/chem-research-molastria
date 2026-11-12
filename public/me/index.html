@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 我的学习：研习台、复习卡片、公式题、过关自测和游乐场的进度汇在一页，连续学习天数、每周目标和最近半年的学习热力图。记录存在这台设备的浏览器里，打开云同步就跟着账号走。">
+  <meta name="theme-color" content="#173f34">
+  <title>我的学习 · 连续打卡、每周目标和各栏目进度 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="me.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../pet/pet-core.js" defer></script>
+  <script src="me-core.js" defer></script>
+  <script src="me.js" defer></script>
+</head>
+<body data-section="me" class="js-render">
+<main class="me" id="main">
+  <header class="me-mast">
+    <p class="me-eyebrow">MOLASTRIA · MY STUDY</p>
+    <h1>我的学习<span lang="en" translate="no">My study</span></h1>
+    <p class="me-lead">研习台、复习卡片、公式题、过关自测和游乐场的进度汇在这一页。每天做一点，连续的天数就会往上走。</p>
+  </header>
+
+  <section class="me-top" id="me-top" translate="no" aria-label="连续天数和本周目标"></section>
+
+  <div class="me-cols">
+    <section class="me-box" aria-labelledby="me-next-h">
+      <h2 id="me-next-h" class="me-h2">接下来</h2>
+      <div class="me-next" id="me-next" translate="no"></div>
+    </section>
+    <section class="me-box" aria-labelledby="me-goal-h">
+      <h2 id="me-goal-h" class="me-h2">每周目标</h2>
+      <p class="me-sub">一周里想学几天？学一点就算：答一道题、复习一张卡、读一章手册都行。</p>
+      <div class="me-goal" id="me-goal" role="group" aria-label="每周学几天" translate="no">
+        <button type="button" data-goal="1">1</button><button type="button" data-goal="2">2</button><button type="button" data-goal="3">3</button><button type="button" data-goal="4">4</button><button type="button" data-goal="5">5</button><button type="button" data-goal="6">6</button><button type="button" data-goal="7">7</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="me-box" aria-labelledby="me-heat-h">
+    <div class="me-row">
+      <h2 id="me-heat-h" class="me-h2">最近半年</h2>
+      <span class="me-legend" aria-hidden="true">少<i class="me-l0"></i><i class="me-l1"></i><i class="me-l2"></i><i class="me-l3"></i><i class="me-l4"></i>多</span>
+    </div>
+    <div class="me-heat" id="me-heat" translate="no"></div>
+    <h3 class="me-h3">最近 30 天做了什么</h3>
+    <div class="me-kinds" id="me-kinds" translate="no"></div>
+  </section>
+
+  <section class="me-box" aria-labelledby="me-areas-h">
+    <h2 id="me-areas-h" class="me-h2">各栏目</h2>
+    <div class="me-areas" id="me-areas" translate="no"></div>
+  </section>
+
+  <p class="me-foot" id="me-sync" translate="no"></p>
+</main>
+</body>
+</html>

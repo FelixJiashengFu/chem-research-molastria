@@ -373,7 +373,7 @@
   };
   document.addEventListener('change', (e) => {
     const c = e.target.closest('input[data-check]'); if (!c) return;
-    if (c.checked) progress.add(c.dataset.check); else progress.delete(c.dataset.check);
+    if (c.checked) { progress.add(c.dataset.check); window.MolAstriaActivity?.('check'); } else progress.delete(c.dataset.check);
     saveProgress(); drawStart();
   });
   document.addEventListener('click', (e) => {

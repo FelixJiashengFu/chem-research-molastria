@@ -521,9 +521,10 @@ test('输出解读：xTB 优化（xtb 6.7.1 实跑）的最终结构和每一轮
 });
 
 test('读输出的示例：每一段都能读对', () => {
-  assert.deepEqual(Object.keys(DEMOS), ['orca', 'nwchem', 'cp2k', 'qchem']);
+  assert.deepEqual(Object.keys(DEMOS), ['gaussian-ir', 'orca', 'nwchem', 'cp2k', 'qchem']);
   const r = Object.fromEntries(Object.entries(DEMOS).map(([k, t]) => [k, C.parseOutput(t)]));
-  for (const k of Object.keys(DEMOS)) assert.equal(r[k].program, k);
+  for (const k of Object.keys(DEMOS)) assert.equal(r[k].program, k.replace(/-ir$/, ''));
+  assert.equal(r['gaussian-ir'].ir.length, 54);
   assert.deepEqual(r.orca.imaginary, [-212.37]);
   near(r.nwchem.energy, -76.407024141046, 1e-12);
   assert.deepEqual(r.nwchem.freqs, [1710.83, 3721.07, 3844.86]);
@@ -531,7 +532,7 @@ test('读输出的示例：每一段都能读对', () => {
   assert.equal(r.cp2k.optConverged, false);
   assert.match(r.qchem.gapNote, /开壳层/);
   // 示例里的数字都摘自真实输出：每一行能在对应的样本文件里找到
-  for (const [k, file] of [['cp2k', 'cp2k-opt-fail.out'], ['qchem', 'qchem-dvb-cation-uhf.out'], ['nwchem', 'nwchem-water-b3lyp-optfreq.out']]) {
+  for (const [k, file] of [['gaussian-ir', 'ir-gaussian16-dvb.out'], ['cp2k', 'cp2k-opt-fail.out'], ['qchem', 'qchem-dvb-cation-uhf.out'], ['nwchem', 'nwchem-water-b3lyp-optfreq.out']]) {
     const src = new Set(fixture(file).split('\n'));
     for (const line of DEMOS[k].split('\n')) if (line.trim()) assert.ok(src.has(line), `${k}: ${line}`);
   }

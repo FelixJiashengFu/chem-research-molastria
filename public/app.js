@@ -87,6 +87,7 @@
     lastFocus=document.activeElement;
     const atlas=i.atlasRecords||[];
     $('detail-body').innerHTML=`<p class="eyebrow">RESOURCE / PROVENANCE</p><h2 id="detail-title">${esc(i.title)}</h2><div class="detail-tags">${sourceNames(i).map(n=>`<span class="source-tag">${esc(n)}</span>`).join('')}</div><p>${esc(i.excerpt||atlas[0]?.description||'原站未提供摘要。')}</p>${i.authors?`<p>作者：${esc(i.authors)}</p>`:''}<div class="origin-list"><strong>保留的原始出处</strong>${(i.sourceRecords||[]).map(r=>`<p>${esc(sources.get(r.source)?.name||r.source)} · ${esc(r.date||'无单独日期')}<br><a href="${esc(safeURL(r.url))}" target="_blank" rel="noopener noreferrer">${esc(r.title)}</a>${r.mirror?' · 目录交叉引用':''}</p>`).join('')}${atlas.map(r=>`<p>ChemDB Atlas 目录第 ${r.number} 条 · ${esc(r.category)}<br>${esc(r.name)} · ${esc(r.access)}<br>${esc(r.description)}</p>`).join('')}</div>${atlas.map(r=>`<h3>数据库使用说明</h3><p>${esc(r.detail||r.description)}</p><p>接入状态：${esc(({adapter:'已有独立适配器',optimade:'已有 OPTIMADE 模块',catalog:'资源目录',stub:'待实现'})[r.integration]||r.integration)}。适配器状态不代表 MCP 工具入口已完成。</p><a class="button" href="atlas/index.html#resources/${r.number}">查看数据库详情与工程说明 <i class="ico-ext" aria-hidden="true"></i></a>`).join('')}<p>合并目录仅整理已有快照。访问条件、最新内容与使用许可请以原始网站为准。</p><a class="button primary" href="${esc(safeURL(i.url))}" target="_blank" rel="noopener noreferrer">访问原始资源 <i class="ico-ext" aria-hidden="true"></i></a>`;
+    if(window.MolAstriaCite)$('detail-body').append(window.MolAstriaCite.bar([window.MolAstriaCite.fromCatalogue(i)],{name:'molastria-'+String(i.title||'ref').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'molastria-ref'}));
     $('details').showModal();
   }
   $('details').addEventListener('close',()=>lastFocus?.isConnected&&lastFocus.focus());
@@ -117,6 +118,8 @@
   addEventListener('storage',e=>{if(!e.key||e.key==='chemresearch-saved'||e.key==='chemdb-atlas-saved')refreshSaved();});
   addEventListener('pageshow',e=>{if(e.persisted)refreshSaved();});
   document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('search').focus();$('catalog').scrollIntoView();}});
+  // 导出引用：当前筛选的结果（收藏夹视图里就是全部收藏），最多 1000 条，写成 BibTeX / RIS 或复制成文字（cite/cite.js）。
+  if(window.MolAstriaCite){const cb=window.MolAstriaCite.bar(()=>matches().slice(0,1000).map(window.MolAstriaCite.fromCatalogue),{name:'molastria-catalogue',label:'引用这些结果',compact:true});cb.id='cite-results';const ex=$('export'),w=document.createElement('div');w.className='title-actions';ex.replaceWith(w);w.append(cb,ex);}
   $('export').onclick=()=>{
     const list=matches();
     const csv=v=>{let text=String(v??'');if(/^\s*[=+@-]/u.test(text)||/^[\t\r\n]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';};

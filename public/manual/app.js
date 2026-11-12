@@ -65,7 +65,7 @@
     window.MolAstriaPy.mount(box.querySelector('.guide-try-run'), { code: ex.code, packages: ex.packages, name: ex.name, plot: true });
   }
   function selectGuide(index) {
-    guideIndex = Math.max(0,Math.min(index,guides.length-1)); renderGuide();
+    guideIndex = Math.max(0,Math.min(index,guides.length-1)); renderGuide(); window.MolAstriaActivity?.('read');
     history.replaceState(null,'',`#${guides[guideIndex].id}`);
     $('#view-guide .page-intro').scrollIntoView({behavior:'smooth',block:'start'});
   }

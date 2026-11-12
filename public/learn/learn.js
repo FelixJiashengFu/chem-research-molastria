@@ -497,6 +497,7 @@
     announce(t(`摸底题来了：${p.questions.length} 道`, `${p.questions.length} probe questions are ready`));
   }
   async function submitProbe(sess) {
+    window.MolAstriaActivity?.('learn');
     const answers = {};
     let firstBad = null;
     for (const q of sess.probe.questions) {
@@ -600,6 +601,7 @@
   let focusAfter = null;
 
   async function submitCheck(sess, stepId) {
+    window.MolAstriaActivity?.('learn');
     const step = sess.steps.find((s) => s.id === stepId);
     if (!step?.check || step.answer || blocked()) return;
     const a = readDraft(`${sess.id}:${step.id}`, step.check);
@@ -879,6 +881,7 @@
     focusAfter = `#pi-${safeId(item.id)}`;
   }
   async function submitPractice(sess, itemId) {
+    window.MolAstriaActivity?.('practice');
     const item = sess.practice.items.find((i) => i.id === itemId);
     if (!item || item.answer) return;
     const q = { kind: item.kind, options: item.options };

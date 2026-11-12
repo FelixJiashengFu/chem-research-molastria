@@ -21,6 +21,8 @@
   <script src="code-core.js" defer></script>
   <script src="code-demos.js" defer></script>
   <script src="cheminf-core.js" defer></script>
+  <script src="ir-core.js" defer></script>
+  <script src="ir.js" defer></script>
   <script src="code.js" defer></script>
   <script src="cheminf.js" defer></script>
 </head>
@@ -118,7 +120,7 @@
         <div class="cd-row">
           <span class="cd-btn cd-filepick"><input id="out-file" type="file" accept=".out,.log,.txt,.dat"><span>选择文件</span></span>
           <label>程序<select id="out-prog"><option value="">自动识别</option><option value="xtb">xTB</option><option value="orca">ORCA</option><option value="psi4">Psi4</option><option value="gaussian">Gaussian</option><option value="pyscf">PySCF</option><option value="nwchem">NWChem</option><option value="cp2k">CP2K</option><option value="qchem">Q-Chem</option></select></label>
-          <label>示例<select id="out-demo-prog"><option value="orca">ORCA</option><option value="nwchem">NWChem</option><option value="cp2k">CP2K</option><option value="qchem">Q-Chem</option></select></label>
+          <label>示例<select id="out-demo-prog"><option value="orca">ORCA</option><option value="nwchem">NWChem</option><option value="cp2k">CP2K</option><option value="qchem">Q-Chem</option><option value="gaussian-ir">Gaussian 红外光谱</option></select></label>
           <button type="button" class="cd-btn" id="out-demo">试一段示例</button>
         </div>
       </div>

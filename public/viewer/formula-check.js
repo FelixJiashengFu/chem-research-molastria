@@ -661,6 +661,7 @@
       const hint = li.querySelector('.fq-hint');
       if (v === 'correct') {
         hint.hidden = true;
+        window.MolAstriaActivity?.('quiz');
         if (!solved.has(st.q.id) && opts.store) { // 同一页的其他题目块也写这个键：先读最新的再合并
           solved.add(st.q.id);
           store.set(opts.store, [...new Set([...store.get(opts.store), st.q.id])]);
