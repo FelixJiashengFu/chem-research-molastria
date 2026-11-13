@@ -63,7 +63,7 @@
     const me = grp(n, l), mine = order(n, l);
     let sigma = 0;
     for (const [nn, ll, k] of cfg) {
-      const g = grp(nn, ll), o = order(nn, ll), cnt = g === me ? k - 1 : k;
+      const g = grp(nn, ll), o = order(nn, ll), cnt = nn === n && ll === l ? k - 1 : k; // 只扣掉自己这一个
       if (cnt <= 0) continue;
       if (g === me) sigma += cnt * (n === 1 ? 0.30 : 0.35);
       else if (o > mine) continue;
