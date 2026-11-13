@@ -52,6 +52,8 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: NMR models and content
         run: node --test tools/nmr-test.mjs
+      - name: News explainers models and content
+        run: node --test tools/news-test.mjs
       - name: Spectra Hall models and content
         run: node --test tools/spectra-test.mjs
       - name: Frontier AI Maths models and content

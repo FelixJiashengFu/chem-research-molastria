@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="化学与材料新闻图解：挑最新的化学和材料研究，讲清楚做了什么、怎么做到的、还差什么，配上能动手调的演示。每条链接原始论文，DOI 逐条核对。第一期：多孔晶体（金属有机框架）里用光造出的自旋极化自由基对，和 MOF 里第一次光学读出电子自旋。">
+  <meta name="theme-color" content="#173f34">
+  <title>化学与材料新闻 · News Explained · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="news.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../spectra/sp-plot.js" defer></script>
+  <script src="news-data.js" defer></script>
+  <script src="news-models.js" defer></script>
+  <script src="news.js" defer></script>
+</head>
+<body data-section="news" class="js-render">
+<a class="skip" href="#nw-list-h" data-zh="跳到新闻列表" data-en="Skip to the news list" translate="no">跳到新闻列表</a>
+<main>
+  <section class="fs-hero" aria-labelledby="nw-h1">
+    <p class="eyebrow">MOLASTRIA · CHEMISTRY &amp; MATERIALS NEWS, EXPLAINED</p>
+    <h1 id="nw-h1" translate="no">化学与材料新闻<span class="fs-h1-en" lang="en" translate="no">Chemistry &amp; Materials News, Explained</span></h1>
+    <p class="lead" id="nw-lead"></p>
+    <p class="fs-honest" id="nw-honest"></p>
+    <ul class="fs-legend nw-legend" id="nw-legend"></ul>
+  </section>
+
+  <section class="fs-block" aria-labelledby="nw-list-h">
+    <h2 id="nw-list-h" tabindex="-1" data-zh="最新的几条" data-en="Latest items" translate="no">最新的几条</h2>
+    <div class="nw-filter fs-btns" id="nw-filter" role="group"></div>
+    <ol class="nw-cards" id="nw-list"></ol>
+  </section>
+
+  <div id="nw-items"></div>
+
+  <footer class="fs-foot">
+    <strong data-zh="MolAstria · 化学与材料新闻" data-en="MolAstria · Chemistry &amp; Materials News" translate="no">MolAstria · 化学与材料新闻</strong>
+    <p data-zh="这里的讲解是编者对原始论文的解读，不代表作者本人；数字以论文为准。演示是教学用的简化模型，不是论文里的实测谱。发现讲错的地方，请在讨论室或 GitHub 告诉我们。" data-en="These explainers are the editors’ reading of the original papers, not the authors’ own words; the papers are authoritative on every number. Demos are simplified teaching models, not measured spectra. If something is wrong, tell us in the discussion rooms or on GitHub." translate="no">这里的讲解是编者对原始论文的解读，不代表作者本人；数字以论文为准。演示是教学用的简化模型，不是论文里的实测谱。发现讲错的地方，请在讨论室或 GitHub 告诉我们。</p>
+    <p translate="no"><a href="../spectra/index.html" data-zh="谱图馆" data-en="Spectra Hall">谱图馆</a> · <a href="../nmr/index.html" data-zh="核磁共振" data-en="NMR">核磁共振</a> · <a href="../quantum/index.html" data-zh="量子嘉年华" data-en="Quantum Carnival">量子嘉年华</a> · <a href="../radar/index.html" data-zh="预印本雷达" data-en="Preprint Radar">预印本雷达</a> · <a href="../digest/index.html" data-zh="每周精选" data-en="Weekly Picks">每周精选</a> · <a href="#nw-h1"><span data-zh="回到顶部" data-en="Back to top">回到顶部</span> <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
+  </footer>
+</main>
+</body>
+</html>

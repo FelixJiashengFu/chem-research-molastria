@@ -47,6 +47,7 @@
       ['research', 'research-atlas/index.html', '研究图谱', 'Research Atlas', '中美大学的数理化研究网络与产业地图', 'Maths, physics and chemistry research networks of US and Chinese universities', 1, 'university 大学 map'],
       ['radar', 'radar/index.html', '预印本雷达', 'Preprint Radar', '28 个预印本来源的新论文', 'New papers from 28 preprint servers', 0, 'arxiv chemrxiv preprint'],
       ['digest', 'digest/index.html', '每周精选', 'Weekly Picks', '每周值得读的计算化学论文和点评', 'Computational chemistry papers worth reading each week, with notes', 1, 'weekly digest newsletter'],
+      ['news', 'news/index.html', '化学与材料新闻', 'Chemistry News', '最新的化学和材料研究，配图解和能动手调的演示，DOI 逐条核对', 'Recent chemistry and materials research, explained with figures and hands-on demos; every DOI checked', 1, 'news 新闻 最新 研究进展 material 材料 mof 金属有机框架 多孔 porous qubit 量子传感 quantum sensing epr odmr 自旋 spin'],
       ['hub', 'hub/index.html', '论文与社区', 'Papers & Community', '论文快照、论坛和社区讨论', 'Paper snapshots, forums and community threads', 0, 'forum community papers'],
       ['chat', 'chat/index.html', '讨论室', 'Discussion Rooms', '多人实时聊天：七个主题房间，也可以自己开一间', 'Real-time chat: seven topic rooms, or open your own', 1, 'chat room discuss talk live 聊天 讨论 房间 实时 交流 提问'],
     ] },
