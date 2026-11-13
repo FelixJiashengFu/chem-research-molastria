@@ -123,7 +123,7 @@
       draw: (s) => {
         const id = s.id || f.uv, c = COMP.uv[id];
         if (!c) return missing(id);
-        const which = s.xc === 'both' ? Object.keys(XC) : [s.xc], series = [], sticks = [], out = [[L('方法', 'Method'), `TD-DFT/${c.basis} · ${L('结构', 'geometry')} ${c.geom}`]];
+        const which = s.xc === 'both' ? Object.keys(XC) : [s.xc], series = [], sticks = [], out = [[L('方法', 'Method'), `${c.td === 'TDA' ? 'TDA' : 'TD'}-DFT/${c.basis} · ${L('结构', 'geometry')} ${c.geom}`]];
         const longest = Math.max(...Object.values(c.states).flat().map((st) => 1239.842 / st[0]), ...(D.expUv[id] || []).map((e) => e[0]));
         const x0 = 130, x1 = Math.ceil((longest + 90) / 50) * 50, xs = []; for (let i = 0; i <= 700; i++) xs.push(x0 + ((x1 - x0) * i) / 700);
         const sig = 0.4 / 2.35482;

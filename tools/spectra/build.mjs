@@ -20,7 +20,7 @@ for (const name of readdirSync(dir).filter((n) => n.endsWith('.json')).sort()) {
     };
   } else if (name.startsWith('uv-')) {
     out.uv[j.id] = {
-      smiles: j.smiles, basis: j.basis, geom: j.geometry_method, atoms: j.geometry.length,
+      smiles: j.smiles, basis: j.basis, geom: j.geometry_method, atoms: j.geometry.length, ...(j.td ? { td: j.td } : {}),
       states: Object.fromEntries(Object.entries(j.states).map(([xc, list]) => [xc, list.map((s) => [+s.ev.toFixed(3), +s.f.toFixed(4)])])),
       ...(Object.values(j.states).some((l) => l.some((s) => !s.conv)) ? { unconverged: true } : {}),
     };

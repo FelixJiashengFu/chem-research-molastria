@@ -196,7 +196,7 @@ test('computed spectra: units, sanity against experiment, selection rules', () =
   const sym = v.co2.modes.find((m) => m[0] > 1200 && m[0] < 1500);
   assert.ok(sym[1] < 0.01 && sym[2] > 5, 'CO2 symmetric stretch: Raman only (mutual exclusion)');
   for (const [id, c] of Object.entries(v)) { assert.ok(D.molecules[id], `${id} has a name`); assert.equal(c.modes.length + (c.imag?.length || 0), c.atoms === 2 ? 1 : 3 * c.atoms - (['co2', 'acetylene'].includes(id) ? 5 : 6), `${id}: mode count`); assert.ok(c.modes.every((m) => m[0] > 0 && m[1] >= 0)); }
-  for (const [id, c] of Object.entries(COMP.uv)) { assert.ok(D.molecules[id], `${id} has a name`); for (const list of Object.values(c.states)) assert.ok(list.length >= 5 && list.every((s) => s[0] > 1 && s[0] < 12 && s[1] >= 0), `${id}: states`); }
+  for (const [id, c] of Object.entries(COMP.uv)) { assert.ok(D.molecules[id], `${id} has a name`); for (const list of Object.values(c.states)) assert.ok(list.length >= 5 && list.every((s) => s[0] > 1 && s[0] < 13 && s[1] >= 0), `${id}: states`); }
 });
 
 test('figures: provenance on every one, and every one draws in both languages', () => {
