@@ -197,7 +197,7 @@
   }
   const box = (t, sub, cls = '') => `<div class="chm-box${cls ? ` ${cls}` : ''}"><b>${esc(t)}</b>${sub !== undefined && sub !== '' ? `<span>${esc(sub)}</span>` : ''}</div>`;
   const flow = (...cells) => `<div class="chm-flow">${cells.join('<i class="ico-ext ico-right chm-arr" aria-hidden="true"></i>')}</div>`;
-  const table = (head, rows, on = -1) => `<div class="chm-wrap"><table class="chm-table"><thead><tr>${head.map((x) => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.map((r, i) => `<tr${i === on ? ' class="is-on"' : ''}>${r.map((x) => (typeof x === 'number' ? `<td class="num">${esc(fmt(x))}</td>` : `<td${/^[−\-\d.,\s×⁰¹²³⁴⁵⁶⁷⁸⁹⁻%]+$/.test(String(x)) ? ' class="num"' : ''}>${esc(x)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const table = (head, rows, on = -1) => `<div class="chm-wrap"><table class="chm-table"><thead><tr>${head.map((x) => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.map((r, i) => `<tr${i === on ? ' class="is-on"' : ''}>${r.map((x) => (typeof x === 'number' ? `<td class="num">${esc(fmt(x))}</td>` : `<td${/^[−+\-\d.,\s×⁰¹²³⁴⁵⁶⁷⁸⁹⁻%]+$/.test(String(x)) ? ' class="num"' : ''}>${esc(x)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
 
   // ── 演示 ────────────────────────────────────────────────────────────────
   // 每个演示：title 标题，kind（exact / data / model），intro 一句话，ctl 滑块 [键, 名字, 最小, 最大, 步长, 初值, 写法]，

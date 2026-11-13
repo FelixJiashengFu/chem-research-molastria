@@ -370,5 +370,41 @@
     return out;
   };
 
+  // ── 07 配位与金属有机 ───────────────────────────────────────────────────
+  // d 轨道在三种配位场里的能量（以该几何的分裂能 Δ 为单位；平面正方形取角重叠模型常引的相对值，以 Δo 计）
+  M.DSPLIT = {
+    oct: [['t₂g', -0.4, 3], ['eg', 0.6, 2]],
+    tet: [['e', -0.6, 2], ['t₂', 0.4, 3]],
+    sq: [['d_xz, d_yz', -0.514, 2], ['d_z²', -0.428, 1], ['d_xy', 0.228, 1], ['d_x²−y²', 1.228, 1]],
+  };
+  // n 个 d 电子：比较每一种“成对数 p”的总能量（轨道能 + p·P），取最低；能量相同时取高自旋。Δ、P 同单位（cm⁻¹）
+  M.ligandField = (n, geom, Delta, P) => {
+    const orbs = M.DSPLIT[geom].flatMap(([name, e, g]) => Array.from({ length: g }, () => ({ name, e }))).sort((a, b) => a.e - b.e);
+    let best = null;
+    for (let p = Math.max(0, n - 5); 2 * p <= n; p++) {
+      const sgl = n - 2 * p; if (p + sgl > 5) continue;
+      const occ = orbs.map((_, i) => (i < p ? 2 : i < p + sgl ? 1 : 0)), E = occ.reduce((s, o, i) => s + o * orbs[i].e, 0) * Delta + p * P;
+      if (!best || E < best.E - 1e-9) best = { E, p, occ, unpaired: sgl, cfse: occ.reduce((s, o, i) => s + o * orbs[i].e, 0) };
+    }
+    const hs = Math.min(n, 10 - n);
+    return { ...best, orbs, spin: best.unpaired === hs ? 'high' : 'low', muSO: Math.sqrt(best.unpaired * (best.unpaired + 2)) };
+  };
+  // 共价（中性配体）计数法：电子数 = 族数 + 2·L + X − 电荷 + 金属–金属键；氧化态 = 电荷 + X；d 电子数 = 族数 − 氧化态
+  M.electronCount = ({ group, L = 0, X = 0, charge = 0, mm = 0 }) => ({ count: group + 2 * L + X - charge + mm, ox: charge + X, d: group - (charge + X) });
+  // 逐级配合：logK 是逐级常数，返回各 ML_i 的分数、平均配体数 n̄（L 是游离配体浓度，mol/L）
+  M.stepwise = (logK, Lfree) => {
+    let b = 1; const t = [1];
+    for (const lk of logK) { b *= 10 ** lk; t.push(b * Lfree ** t.length); }
+    const sum = t.reduce((a, c) => a + c, 0), frac = t.map((c) => c / sum);
+    return { frac, nbar: frac.reduce((s, f, i) => s + i * f, 0) };
+  };
+  // 可见光波长（nm）→ 近似的 sRGB 颜色（Bruton 的分段近似），以及吸收某波长时看到的近似补色
+  M.waveRGB = (lam) => {
+    let r = 0, g = 0, b = 0;
+    if (lam < 440) { r = -(lam - 440) / 60; b = 1; } else if (lam < 490) { g = (lam - 440) / 50; b = 1; } else if (lam < 510) { g = 1; b = -(lam - 510) / 20; } else if (lam < 580) { r = (lam - 510) / 70; g = 1; } else if (lam < 645) { r = 1; g = -(lam - 645) / 65; } else r = 1;
+    const f = lam < 420 ? 0.3 + (0.7 * (lam - 380)) / 40 : lam > 700 ? 0.3 + (0.7 * (780 - lam)) / 80 : 1;
+    return [r, g, b].map((v) => Math.round(255 * Math.max(0, Math.min(1, v * f)) ** 0.8));
+  };
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
