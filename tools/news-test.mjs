@@ -114,7 +114,7 @@ test('items: newest first by date, both languages everywhere, every number has a
     }
     for (const [u] of it.press) assert.match(u, /^https:\/\//);
     for (const d of it.demos) assert.ok(D.demos[d], `${it.id} demo ${d}`);
-    for (const k of it.related) { const s = D.site[k]; assert.ok(s, `${it.id} related ${k}`); assert.ok(existsSync(new URL(`../public/${s[0].replace('../', '').split('#')[0]}`, import.meta.url)), `link target exists: ${s[0]}`); }
+    for (const k of it.related) { const s = D.site[k]; assert.ok(s, `${it.id} related ${k}`); assert.ok(existsSync(new URL(s[0].split('#')[0], new URL('../public/news/', import.meta.url))), `link target exists: ${s[0]}`); }
   }
   const dates = [...D.items].map((i) => i.date);
   assert.deepEqual(dates, [...dates].sort().reverse(), 'items are listed newest first');
