@@ -740,3 +740,8 @@ Stripe 里两条付款链接的地址不变，只把价格换成新建的 ¥9.90
 - 和已有栏目重叠的部分（量子化学方法、谱图、核磁、量子生物学）只写概览并链过去，不重写。
 - 演示里由编者录入、没有逐条复核的常数（Antoine 系数、半衰期、SEMF 参数等）在“模型说明”里写明；能用教科书解析结果核对的都写进 `tools/chemistry-test.mjs`。
 - 原计划十五馆，其中药物化学一馆的内容在写作会话里被自动内容审核拦下，写不出来；先做成“即将上线”占位页，站长看过后决定把这一栏删掉，学科馆定为十四馆（环境、核化学、化学工程依次改编号为 12–14）。`chem-subjects.js` 的 `soon` 机制留着（现在是空的），以后有展馆要先占位还能用。
+
+## 2026-11-13 副标题改成 Integrated Chemical Research & Computing Foundry
+
+- 站长要求：原来的英文副标题 “A computational chemistry atlas” 和中文副标题“计算化学研究导航”都换成 **Integrated Chemical Research & Computing Foundry**（用 &，前面不加 A），而且**不要中文译名**：中文界面也直接显示这个英文名。
+- 改到的地方：顶栏 `.cr-brand small`、首页 eyebrow、进入动画（去掉了 `.ent-zh` 那一行中文）、首页 `<title>` / description / og / JSON-LD（`site.config.json` 的 `siteNameZh` 也是这个英文名）、各页 `og:site_name`、manifest、分享图 `og.png`（由 `tools/og.html` 重新截图，Linux 字体渲染）、桌面版的 Cargo / tauri 描述、README、条款里的一句、AI 助手的系统提示、llms.txt。上面 2026-11-08 那条首页 `<title>` 的决定由这一条取代。

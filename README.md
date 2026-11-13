@@ -1,8 +1,8 @@
-<p align="center"><a href="https://molastria.com/"><img src="public/og.png" alt="MolAstria — a computational chemistry atlas" width="100%"></a></p>
+<p align="center"><a href="https://molastria.com/"><img src="public/og.png" alt="MolAstria — Integrated Chemical Research & Computing Foundry" width="100%"></a></p>
 
 <h1 align="center">MolAstria</h1>
 
-<p align="center"><b>计算化学研究导航 · A computational chemistry atlas</b><br>
+<p align="center"><b>Integrated Chemical Research & Computing Foundry</b><br>
 <a href="https://molastria.com/">molastria.com</a> · <a href="https://molastria.com/lab/">AI 实验室 / AI Lab</a> · <a href="https://molastria.com/?lang=en">English</a> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/releases/latest">桌面版下载 / Desktop downloads</a></p>
 
 数据库、软件、教程、论文与开源工具一处检索（2,600 多条，来自 24 个中英文来源，每周四自动更新），配 25 章中英双语讲解手册、AI 家教“研习台”（先摸底、画路线、一步一检、分开练习，学到的积累成知识图）、189 条计算化学教学视频（YouTube 和哔哩哔哩的课程与软件教程，可在页面里播放）、计算化学期刊投稿指南、27 个科学大模型的官方链接与价格对比、用站长 GPU 上 15 个机器学习原子间势在线计算的模型接口（13 种计算）、每周精选论文、以查询为中心的资源关系网、游乐场（量子化学、量子嘉年华、物理疆界和 3D 立体馆四个展区的二十个小游戏，以及浏览器里的量子化学计算器）、量子嘉年华（量子物理、量子计算机、量子算法、量子生物学四个展馆）、物理疆界图、进一步基础科学发现与数学基础、中美研究图谱、28 个平台的预印本雷达、Meta × 化学（Muse 识图与 UMA 脚本），用 DeepSeek / Meta Muse 驱动的闭环电解液分子发现实验室，以及给程序用的开放数据接口（中英双语的静态 JSON，CC BY 4.0）和带 API key 的计算接口。全站支持中文 / English、浅色 / 深色、10 种艺术背景、可调的缩放字号字体和可自己排序的导航，另有 Windows / macOS 桌面版；平板和手机上可以把网站添加到主屏幕，全屏使用，看过的页面断网也能读。

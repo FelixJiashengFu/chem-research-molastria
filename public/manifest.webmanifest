@@ -1,8 +1,8 @@
 {
  "id": "./",
- "name": "MolAstria 计算化学研究导航",
+ "name": "MolAstria Integrated Chemical Research & Computing Foundry",
  "short_name": "MolAstria",
- "description": "计算化学研究导航：资源搜索、讲解手册、数据库目录、期刊投稿指南与 AI 实验室。",
+ "description": "Integrated Chemical Research & Computing Foundry：资源搜索、讲解手册、数据库目录、期刊投稿指南与 AI 实验室。",
  "lang": "zh-CN",
  "dir": "ltr",
  "start_url": "./",

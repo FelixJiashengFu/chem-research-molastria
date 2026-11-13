@@ -21,7 +21,7 @@
     "homepage": "https://molastria.com/",
     "category": "Education",
     "copyright": "MolAstria",
-    "shortDescription": "A computational chemistry atlas",
+    "shortDescription": "Integrated Chemical Research & Computing Foundry",
     "longDescription": "MolAstria: search computational-chemistry databases, software, tutorials and papers, read the guide, and run the closed-loop AI lab — offline-capable, with easy access to local Ollama or vLLM models.",
     "icon": [
       "icons/32x32.png",
