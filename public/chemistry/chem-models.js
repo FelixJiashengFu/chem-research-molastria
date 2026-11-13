@@ -439,5 +439,63 @@
   // 理论比容量（mAh/g）：每摩尔式量转移 n 个电子
   M.specCap = (n, Mg) => (n * M.F) / (3.6 * Mg);
 
+  // ── 09 高分子化学 ───────────────────────────────────────────────────────
+  // Carothers 方程：两种官能团 A、B，r = N_A/N_B ≤ 1，p 是 A 的反应程度
+  M.carothers = (p, r = 1) => (1 + r) / (1 + r - 2 * r * p);
+  // Flory 最可几分布（线形逐步聚合，r = 1）：x 聚体的数量分数和质量分数
+  M.floryN = (p, x) => (1 - p) * p ** (x - 1);
+  M.floryW = (p, x) => x * (1 - p) ** 2 * p ** (x - 1);
+  M.floryXw = (p) => (1 + p) / (1 - p);
+  // 活性聚合的 Poisson 分布：每条链从 1 个引发单元开始，平均加上 ν 个单体
+  M.poissonN = (nu, x) => { if (x < 1) return 0; let lg = -nu + (x - 1) * Math.log(nu); for (let k = 2; k < x; k++) lg -= Math.log(k); return Math.exp(lg); };
+  M.poissonD = (nu) => 1 + nu / (1 + nu) ** 2;
+  // Mayo–Lewis 共聚方程：瞬时共聚物组成 F1
+  M.mayoLewis = (f1, r1, r2) => { const f2 = 1 - f1, a = r1 * f1 * f1 + f1 * f2; return a / (a + f1 * f2 + r2 * f2 * f2); };
+  // 组成漂移（Skeist 积分）：df1/dX = (f1 − F1)/(1 − X)；返回转化率、剩余单体组成、瞬时和累积共聚物组成
+  M.copolyDrift = (f10, r1, r2, Xmax = 0.99, n = 400) => {
+    let f1 = f10, cum = 0; const X = [0], f = [f10], Fi = [M.mayoLewis(f10, r1, r2)], Fc = [Fi[0]], dX = Xmax / n;
+    for (let k = 1; k <= n; k++) {
+      const x0 = (k - 1) * dX, F0 = M.mayoLewis(f1, r1, r2);
+      const g = (ff, xx) => (ff - M.mayoLewis(ff, r1, r2)) / (1 - xx); // RK2
+      const k1 = g(f1, x0), k2 = g(Math.min(1, Math.max(0, f1 + dX * k1)), x0 + dX);
+      f1 = Math.min(1, Math.max(0, f1 + (dX * (k1 + k2)) / 2)); cum += (dX * (F0 + M.mayoLewis(f1, r1, r2))) / 2;
+      X.push(k * dX); f.push(f1); Fi.push(M.mayoLewis(f1, r1, r2)); Fc.push(cum / (k * dX));
+    }
+    return { X, f, Fi, Fc };
+  };
+  // 三维自由旋转链：键长 b，键角 θ（自由连接链 θ 取 null），返回坐标；Rosenbluth 之外的最简单的链
+  M.chain3d = (N, theta, seed) => {
+    const r = M.rng(seed), pts = [[0, 0, 0]], ct = theta == null ? null : Math.cos(Math.PI - theta), st = theta == null ? 0 : Math.sqrt(1 - ct * ct);
+    const unit = () => { const z = 2 * r() - 1, ph = 2 * Math.PI * r(), s = Math.sqrt(1 - z * z); return [s * Math.cos(ph), s * Math.sin(ph), z]; };
+    let u = unit();
+    for (let i = 0; i < N; i++) {
+      const p = pts[i]; pts.push([p[0] + u[0], p[1] + u[1], p[2] + u[2]]);
+      if (ct === null) { u = unit(); continue; }
+      // 和上一根键成固定夹角、绕它随机转一个角度
+      const a = Math.abs(u[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0], e1 = norm3(cross3(u, a)), e2 = cross3(u, e1), ph = 2 * Math.PI * r();
+      u = [0, 1, 2].map((k) => ct * u[k] + st * (Math.cos(ph) * e1[k] + Math.sin(ph) * e2[k]));
+    }
+    return pts;
+  };
+  const cross3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norm3 = (a) => { const l = Math.hypot(...a); return a.map((v) => v / l); };
+  // 自由旋转链的特征比（N 有限时的精确式）：C_N = (1+c)/(1−c) − 2c(1−c^N)/(N(1−c)²)，c = cos(π − θ)
+  M.charRatio = (N, theta) => { if (theta == null) return 1; const c = Math.cos(Math.PI - theta); return (1 + c) / (1 - c) - (2 * c * (1 - c ** N)) / (N * (1 - c) ** 2); };
+  // Flory–Huggins：每个格点的混合自由能（kT），φ 是聚合物体积分数，N 是聚合度
+  M.fhG = (phi, N, chi) => (phi / N) * Math.log(phi) + (1 - phi) * Math.log(1 - phi) + chi * phi * (1 - phi);
+  M.fhCrit = (N) => ({ chi: 0.5 * (1 + 1 / Math.sqrt(N)) ** 2, phi: 1 / (1 + Math.sqrt(N)) });
+  M.fhSpinodal = (phi, N) => 0.5 * (1 / (N * phi) + 1 / (1 - phi));
+  // 双节线：在对数加密的网格上求自由能曲线的下凸包，跳过的那一段两端就是共存的两相
+  M.fhBinodal = (N, chi) => {
+    const c = M.fhCrit(N); if (chi <= c.chi) return null;
+    const xs = []; for (let k = 0; k <= 1200; k++) { const t = k / 1200; xs.push(t < 0.5 ? 10 ** (-9 + 16 * t) : 0); }
+    const grid = [...new Set(xs.filter((v) => v > 0 && v < 0.5).concat(Array.from({ length: 1200 }, (_, k) => 0.02 + (0.97 * k) / 1199)))].filter((v) => v > 0 && v < 1).sort((a, b) => a - b);
+    const P = grid.map((x) => [x, M.fhG(x, N, chi)]), H = [];
+    for (const q of P) { while (H.length >= 2) { const [a, b] = [H[H.length - 2], H[H.length - 1]]; if ((b[0] - a[0]) * (q[1] - a[1]) - (b[1] - a[1]) * (q[0] - a[0]) <= 0) H.pop(); else break; } H.push(q); }
+    let best = null;
+    for (let i = 1; i < H.length; i++) { const gap = H[i][0] - H[i - 1][0]; if (gap > 0.02 && (!best || gap > best[1] - best[0])) best = [H[i - 1][0], H[i][0]]; }
+    return best;
+  };
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
