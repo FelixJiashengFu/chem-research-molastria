@@ -475,9 +475,28 @@ npx.cmd wrangler secret put BRAVE_SEARCH_KEY
 | 桌面版没提示更新 | 启动时才检查，要彻底退出再打开；用户点过“稍后”的话 3 天内不再提示 |
 | 每周健康检查没运行 | 公开仓库 60 天没活动时 GitHub 会停掉定时任务，到 Actions 页重新启用 |
 
-## 定期看一眼
+## 定期维护清单（每周 / 每月）
+
+每做一次就在长期 issue（#64）留言打卡，方便回看。
+
+### 每周
+
+- 周一：确认每周精选是否按时出刊、邮件是否完成发送（见 #13）。
+- 周四：确认目录自动刷新（`.github/workflows/refresh-data.yml`）和训练页模型核对是否成功，并看 PR / Actions 是否有红。
+- 运行 `/refresh-chemrxiv` 刷新 ChemRxiv 快照；之后运行 `hub-chemrxiv.ts`，否则 ChemRxiv 条目会丢。
+- 运行 `/sync-radar` 同步预印本雷达的新版本。
+- 运行 `/site-status` 看全局状态，并运行 `node tools/e2e/live.mjs` 做线上只读检查（`.github/workflows/health.yml` 也会每周自动检查一次）。
+- 在线模型：确认站长电脑上的服务在线（health 里 `api: 3`），并看用量（见 #25）。
+
+### 每月
+
+- 科学大模型价格核对（见 #23）。
+- D1 备份：导出到仓库外（含邮箱，不提交）。
+- 看 Resend 和 Workers 用量是否接近升级门槛（见 #36）。
+- 看仓库 Security 标签页提醒（见 #34）。
+- 看云上磁盘和快照存储费（见 #35）。
+
+### 其他长期项
 
 - **每年：** Porkbun 域名续费（确认自动续费和银行卡）。
-- **每月：** D1 备份；DeepSeek 余额；科学大模型的价格和汇率（见“刷新数据”）。
-- **每周（自动）：** 健康检查失败时 GitHub 发邮件。
 - **价格：** `ARCHITECTURE.md` 的费用表写了查询日期，隔一段时间核对一次。
