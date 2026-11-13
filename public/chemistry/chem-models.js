@@ -205,5 +205,84 @@
   M.vanDeemter = (u, A, B, C) => A + B / u + C * u;
   M.resolution = (N, alpha, k) => (Math.sqrt(N) / 4) * ((alpha - 1) / alpha) * (k / (1 + k));
 
+  // ── 05 结构化学 ─────────────────────────────────────────────────────────
+  M.hydrogenE = (Z, n) => (-13.605693 * Z * Z) / (n * n);       // eV
+  M.nodes = (n, l) => ({ radial: n - l - 1, angular: l });
+  // 第二周期同核双原子分子的价层分子轨道：[名字, 简并度, 成键 +1 / 反键 −1]；mixed 是有 s–p 混合的顺序（Li₂–N₂）
+  M.MO_ORDER = {
+    mixed: [['σ2s', 1, 1], ['σ*2s', 1, -1], ['π2p', 2, 1], ['σ2p', 1, 1], ['π*2p', 2, -1], ['σ*2p', 1, -1]],
+    plain: [['σ2s', 1, 1], ['σ*2s', 1, -1], ['σ2p', 1, 1], ['π2p', 2, 1], ['π*2p', 2, -1], ['σ*2p', 1, -1]],
+  };
+  // 按 Aufbau 和 Hund 规则填 nel 个价电子；spins[k] 是第 k 个简并轨道上的电子数
+  M.moFill = (nel, mixed) => {
+    let left = nel, b = 0, a = 0, unp = 0;
+    const occ = M.MO_ORDER[mixed ? 'mixed' : 'plain'].map(([key, deg, sign]) => {
+      const put = Math.max(0, Math.min(left, 2 * deg)); left -= put;
+      const spins = Array.from({ length: deg }, (_, k) => (put > k ? 1 : 0) + (put > deg + k ? 1 : 0));
+      if (sign > 0) b += put; else a += put;
+      unp += spins.filter((x) => x === 1).length;
+      return { key, deg, sign, n: put, spins };
+    });
+    return { occ, bonding: b, anti: a, order: (b - a) / 2, unpaired: unp };
+  };
+  // 点群判定流程。f：linear、i、cubic（'Td' | 'Oh' | 'Ih' …）、n（主轴次数，没有轴为 1）、perp（n 条垂直 C₂）、sh、sv（σv 或 σd）、s2n、sigma（有没有镜面）
+  M.pointGroup = (f) => {
+    const steps = [], ask = (q, v) => (steps.push([q, !!v]), !!v);
+    if (ask('linear', f.linear)) return { group: ask('i', f.i) ? 'D∞h' : 'C∞v', steps };
+    if (ask('cubic', f.cubic)) return { group: f.cubic, steps };
+    if (!ask('cn', f.n >= 2)) return { group: ask('sigma', f.sigma) ? 'Cs' : ask('i', f.i) ? 'Ci' : 'C1', steps };
+    const n = f.n;
+    if (ask('perp', f.perp)) return { group: ask('sh', f.sh) ? `D${n}h` : ask('sd', f.sv) ? `D${n}d` : `D${n}`, steps };
+    return { group: ask('sh', f.sh) ? `C${n}h` : ask('sv', f.sv) ? `C${n}v` : ask('s2n', f.s2n) ? `S${2 * n}` : `C${n}`, steps };
+  };
+  M.groupOrder = (g) => {
+    const fixed = { C1: 1, Cs: 2, Ci: 2, T: 12, Td: 24, Th: 24, O: 24, Oh: 48, I: 60, Ih: 120 };
+    if (g in fixed) return fixed[g];
+    if (g.includes('∞')) return Infinity;
+    const m = /^([CDS])(\d+)([vhd]?)$/.exec(g); if (!m) return NaN;
+    const n = Number(m[2]);
+    return m[1] === 'S' ? n : m[1] === 'C' ? (m[3] ? 2 * n : n) : m[3] ? 4 * n : 2 * n;
+  };
+  M.chiralGroup = (g) => /^(C\d+|D\d+|T|O|I)$/.test(g);            // 没有任何非真转动
+  M.polarGroup = (g) => /^(C1|Cs|C\d+|C\d+v|C∞v)$/.test(g);        // 可以有永久偶极矩
+  // 立方晶胞：基元的分数坐标。A、B 是两种原子（单质只有 A）
+  M.cubicCell = (type) => {
+    const F = [[0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5]], sh = (ps, d) => ps.map((p) => p.map((x, i) => (x + d[i]) % 1));
+    const A = (ps) => ps.map((p) => ({ s: 'A', p })), B = (ps) => ps.map((p) => ({ s: 'B', p }));
+    const T8 = [0.25, 0.75].flatMap((x) => [0.25, 0.75].flatMap((y) => [0.25, 0.75].map((z) => [x, y, z])));
+    return {
+      sc: () => A([[0, 0, 0]]), bcc: () => A([[0, 0, 0], [0.5, 0.5, 0.5]]), fcc: () => A(F),
+      diamond: () => A([...F, ...sh(F, [0.25, 0.25, 0.25])]), rocksalt: () => [...A(F), ...B(sh(F, [0.5, 0, 0]))],
+      cscl: () => [...A([[0, 0, 0]]), ...B([[0.5, 0.5, 0.5]])], zincblende: () => [...A(F), ...B(sh(F, [0.25, 0.25, 0.25]))],
+      fluorite: () => [...A(F), ...B(T8)],
+    }[type]();
+  };
+  // 原子散射因子的粗略近似：f ≈ Z·exp(−2.5 s²)，s = sinθ/λ（Å⁻¹）。只给相对强度的趋势
+  M.fApprox = (Z, s) => Z * Math.exp(-2.5 * s * s);
+  // 立方晶体的粉末衍射：a、λ 以 pm 计；atoms 是 [{ Z, p }]。同一个 N = h² + k² + l² 的所有衍射叠在一起（自动计入多重度）
+  M.powder = (a, lam, atoms, tthMax = 150) => {
+    const Nmax = Math.floor(((2 * a) / lam * Math.sin(((tthMax / 2) * Math.PI) / 180)) ** 2), H = Math.ceil(Math.sqrt(Nmax)), acc = new Map();
+    for (let h = -H; h <= H; h++) for (let k = -H; k <= H; k++) for (let l = -H; l <= H; l++) {
+      const N = h * h + k * k + l * l; if (!N || N > Nmax) continue;
+      const s = (Math.sqrt(N) / (2 * a)) * 100;
+      let re = 0, im = 0;
+      for (const at of atoms) { const ph = 2 * Math.PI * (h * at.p[0] + k * at.p[1] + l * at.p[2]), f = M.fApprox(at.Z, s); re += f * Math.cos(ph); im += f * Math.sin(ph); }
+      const F2 = re * re + im * im, fam = [Math.abs(h), Math.abs(k), Math.abs(l)].sort((x, y) => y - x).join('');
+      const e = acc.get(N) || { N, F2: 0, fams: new Map() }; e.F2 += F2; e.fams.set(fam, (e.fams.get(fam) || 0) + F2); acc.set(N, e);
+    }
+    const out = [...acc.values()].sort((x, y) => x.N - y.N).map((e) => {
+      const d = a / Math.sqrt(e.N), th = Math.asin(lam / (2 * d)), lp = (1 + Math.cos(2 * th) ** 2) / (Math.sin(th) ** 2 * Math.cos(th));
+      return { N: e.N, d, tth: (2 * th * 180) / Math.PI, I: e.F2 * lp, F2: e.F2, hkl: [...e.fams.keys()], on: [...e.fams].filter(([, v]) => v > 1e-6).map(([k]) => k) };
+    });
+    const mx = Math.max(...out.map((r) => r.I));
+    for (const r of out) { r.I = (100 * r.I) / mx; r.absent = r.I < 1e-6; }
+    return out;
+  };
+  // 堆积：晶胞体积（pm³）、由晶胞求密度（g/cm³）、相切时的原子半径
+  M.cellVolume = (type, a, c) => (type === 'hcp' ? (Math.sqrt(3) / 2) * a * a * c : a ** 3);
+  M.cellDensity = (Z, Mg, Vpm3) => (Z * Mg) / (M.NA * Vpm3 * 1e-30);
+  M.touchRadius = (type, a) => ({ sc: a / 2, bcc: (Math.sqrt(3) * a) / 4, fcc: (Math.SQRT2 * a) / 4, hcp: a / 2, diamond: (Math.sqrt(3) * a) / 8 })[type];
+  M.packFraction = (Z, radii, V) => (Z * radii.reduce((s, r) => s + (4 / 3) * Math.PI * r ** 3, 0)) / V;
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
