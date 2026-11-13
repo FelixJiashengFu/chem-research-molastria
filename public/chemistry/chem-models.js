@@ -542,5 +542,24 @@
   };
   M.dnaTm = (dH, dS, CT, self) => (dH * 1000) / (dS + M.R / 4.184 * Math.log(self ? CT : CT / 4));
 
+  // ── 11 材料化学 ─────────────────────────────────────────────────────────
+  // 一维紧束缚：每个晶胞两个原子 A、B（在位能 αA、αB），胞内跃迁 β1、胞间 β2；k 以 π/a 为单位（−1 … 1）
+  M.tbBands = (k, aA, aB, b1, b2) => { const m = (aA + aB) / 2, d = (aA - aB) / 2, t = Math.sqrt(d * d + b1 * b1 + b2 * b2 + 2 * b1 * b2 * Math.cos(Math.PI * k)); return [m - t, m + t]; };
+  // 本征载流子浓度（cm⁻³）：有效态密度 Nc、Nv 和 Varshni 带隙
+  const KB_EV = 8.617333262e-5;
+  M.effDOS = (mRel, T) => 2 * ((2 * Math.PI * mRel * 9.1093837e-31 * 1.380649e-23 * T) / (6.62607015e-34) ** 2) ** 1.5 * 1e-6;
+  M.varshni = (Eg0, a, b, T) => Eg0 - (a * T * T) / (T + b);
+  M.semi = ({ Eg0, a, b, me, mh, mun, mup }, T, Nd = 0, Na = 0) => {
+    const Eg = M.varshni(Eg0, a, b, T), Nc = M.effDOS(me, T), Nv = M.effDOS(mh, T), kT = KB_EV * T, ni = Math.sqrt(Nc * Nv) * Math.exp(-Eg / (2 * kT));
+    const net = Nd - Na, n = net >= 0 ? net / 2 + Math.sqrt((net / 2) ** 2 + ni * ni) : (ni * ni) / (-net / 2 + Math.sqrt((net / 2) ** 2 + ni * ni)), p = (ni * ni) / n;
+    const Ei = Eg / 2 + (kT / 2) * Math.log(Nv / Nc); // 相对价带顶
+    const EF = Ei + kT * Math.log(n / ni), sigma = 1.602176634e-19 * (n * mun + p * mup);
+    return { Eg, Nc, Nv, ni, n, p, Ei, EF, sigma };
+  };
+  // Brus 方程（有效质量近似）：半径 R（nm）的量子点的最低激发能（eV）
+  M.brus = (R, Eg, me, mh, eps) => { const Rm = R * 1e-9, hbar = 1.054571817e-34, m0 = 9.1093837e-31, q = 1.602176634e-19; return Eg + ((hbar * hbar * Math.PI * Math.PI) / (2 * Rm * Rm)) * (1 / (me * m0) + 1 / (mh * m0)) / q - (1.786 * q) / (4 * Math.PI * 8.8541878128e-12 * eps * Rm); };
+  // CdSe 量子点的经验标定（Yu 等 2003）：第一吸收峰波长 λ（nm）→ 直径 D（nm）
+  M.cdseD = (lam) => 1.6122e-9 * lam ** 4 - 2.6575e-6 * lam ** 3 + 1.6242e-3 * lam ** 2 - 0.4277 * lam + 41.57;
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
