@@ -284,5 +284,91 @@
   M.touchRadius = (type, a) => ({ sc: a / 2, bcc: (Math.sqrt(3) * a) / 4, fcc: (Math.SQRT2 * a) / 4, hcp: a / 2, diamond: (Math.sqrt(3) * a) / 8 })[type];
   M.packFraction = (Z, radii, V) => (Z * radii.reduce((s, r) => s + (4 / 3) * Math.PI * r ** 3, 0)) / V;
 
+  // ── 06 量子与计算化学 ───────────────────────────────────────────────────
+  // 一维势箱：E_n（J），N 个 π 电子（偶数）填到 N/2，HOMO → LUMO 的波长（nm）。L 以 pm 计
+  M.boxE = (n, Lpm) => (n * n * M.h * M.h) / (8 * M.me * (Lpm * 1e-12) ** 2);
+  M.boxLambda = (N, Lpm) => (8 * M.me * M.c * (Lpm * 1e-12) ** 2) / (M.h * (N + 1)) * 1e9;
+  // 实对称矩阵的 Jacobi 对角化：返回按本征值从小到大排好的 { values, vectors }（vectors[k] 是第 k 个本征向量）
+  M.jacobiEig = (A0) => {
+    const n = A0.length, A = A0.map((r) => r.slice()), V = A.map((_, i) => A.map((__, j) => (i === j ? 1 : 0)));
+    for (let sweep = 0; sweep < 100; sweep++) {
+      let off = 0; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += A[i][j] ** 2;
+      if (off < 1e-22) break;
+      for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) {
+        if (Math.abs(A[p][q]) < 1e-15) continue;
+        const th = (A[q][q] - A[p][p]) / (2 * A[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), sn = t * c;
+        for (let k = 0; k < n; k++) { const akp = A[k][p], akq = A[k][q]; A[k][p] = c * akp - sn * akq; A[k][q] = sn * akp + c * akq; }
+        for (let k = 0; k < n; k++) { const apk = A[p][k], aqk = A[q][k]; A[p][k] = c * apk - sn * aqk; A[q][k] = sn * apk + c * aqk; }
+        for (let k = 0; k < n; k++) { const vkp = V[k][p], vkq = V[k][q]; V[k][p] = c * vkp - sn * vkq; V[k][q] = sn * vkp + c * vkq; }
+      }
+    }
+    const idx = A.map((_, i) => i).sort((i, j) => A[i][i] - A[j][j]);
+    return { values: idx.map((i) => A[i][i]), vectors: idx.map((i) => V.map((r) => r[i])) };
+  };
+  // Hückel：n 个 p 轨道、键 bonds（[i, j]），杂原子用 h（α_X = α + h β）和 k（β_CX = k β）。E = α + x β，β < 0，所以 x 越大能量越低。
+  // 电子从 x 最大的轨道往下填；返回 x（从低能到高能）、系数、π 能量（以 β 计）、HOMO/LUMO 能隙（以 |β| 计）
+  M.huckel = (n, bonds, nel, het = {}) => {
+    const H = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (__, j) => (i === j ? -(het[i]?.h || 0) : 0)));
+    for (const [i, j, k = 1] of bonds) { H[i][j] = -k; H[j][i] = -k; }
+    const { values, vectors } = M.jacobiEig(H), x = values.map((v) => -v), occ = x.map(() => 0);
+    let left = nel;
+    for (let k = 0; k < n && left > 0;) {
+      let g = 1; while (k + g < n && Math.abs(x[k + g] - x[k]) < 1e-8) g++;
+      const put = Math.min(2 * g, left); for (let q = 0; q < g; q++) occ[k + q] = (put > q ? 1 : 0) + (put > g + q ? 1 : 0);
+      left -= put; k += g;
+    }
+    const homo = occ.reduce((h, o, k) => (o > 0 ? k : h), -1);
+    const Epi = x.reduce((s, xi, k) => s + occ[k] * xi, 0);
+    return { x, vectors, occ, Epi, homo, gap: homo + 1 < n ? x[homo] - x[homo + 1] : NaN };
+  };
+  M.huckelChain = (n) => Array.from({ length: n }, (_, k) => 2 * Math.cos(((k + 1) * Math.PI) / (n + 1)));
+  M.huckelRing = (n) => Array.from({ length: n }, (_, k) => 2 * Math.cos((2 * Math.PI * k) / n)).sort((a, b) => b - a);
+  // Morse 势：由光谱常数 ωe、ωexe（cm⁻¹）和约化质量 μ（amu）得到 De（cm⁻¹）、a（pm⁻¹）；能级 G(v)（cm⁻¹，从势能最低点算）
+  M.morseParams = (we, wexe, mu) => { const De = (we * we) / (4 * wexe), a = 2 * Math.PI * M.c * 100 * we * Math.sqrt((mu * M.amu) / (2 * De * M.h * M.c * 100)); return { De, a: a * 1e-12, vmax: Math.floor(we / (2 * wexe) - 0.5) }; };
+  M.morseV = (r, re, De, a) => De * (1 - Math.exp(-a * (r - re))) ** 2;
+  M.morseG = (v, we, wexe) => we * (v + 0.5) - wexe * (v + 0.5) ** 2;
+  // 二维 Lennard-Jones 流体的分子动力学（约化单位 σ = ε = m = 1），速度 Verlet，截断 2.5σ 并平移势能。确定的种子，同样的输入同样的结果
+  M.ljMD = ({ N = 64, rho = 0.6, T = 1, dt = 0.005, steps = 1000, seed = 7, rc = 2.5 }) => {
+    const side = Math.ceil(Math.sqrt(N)), L = Math.sqrt(N / rho), r = M.rng(seed), x = [], y = [], vx = [], vy = [], ax = new Float64Array(N), ay = new Float64Array(N);
+    for (let i = 0; i < N; i++) { x.push(((i % side) + 0.5) * (L / side)); y.push((Math.floor(i / side) + 0.5) * (L / side)); vx.push(M.gauss(r)); vy.push(M.gauss(r)); }
+    const mx = vx.reduce((a, b) => a + b, 0) / N, my = vy.reduce((a, b) => a + b, 0) / N;
+    for (let i = 0; i < N; i++) { vx[i] -= mx; vy[i] -= my; }
+    const dof = 2 * N - 2, K0 = vx.reduce((s, v, i) => s + v * v + vy[i] * vy[i], 0) / 2, sc = Math.sqrt((T * dof) / 2 / K0);
+    for (let i = 0; i < N; i++) { vx[i] *= sc; vy[i] *= sc; }
+    const rc2 = rc * rc, Vc = 4 * (rc ** -12 - rc ** -6);
+    const force = () => {
+      ax.fill(0); ay.fill(0); let U = 0;
+      for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+        let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L);
+        const r2 = dx * dx + dy * dy; if (r2 > rc2) continue;
+        const i2 = 1 / r2, i6 = i2 * i2 * i2, f = 24 * i2 * i6 * (2 * i6 - 1);
+        U += 4 * i6 * (i6 - 1) - Vc; ax[i] += f * dx; ay[i] += f * dy; ax[j] -= f * dx; ay[j] -= f * dy;
+      }
+      return U;
+    };
+    let U = force();
+    const out = { t: [], K: [], U: [], E: [], L, x, y }, every = Math.max(1, Math.round(steps / 300)), nb = 60, rmax = Math.min(L / 2, 4), gr = new Float64Array(nb);
+    let ngr = 0;
+    for (let s = 0; s <= steps; s++) {
+      if (s) {
+        for (let i = 0; i < N; i++) { vx[i] += 0.5 * dt * ax[i]; vy[i] += 0.5 * dt * ay[i]; x[i] = (((x[i] + dt * vx[i]) % L) + L) % L; y[i] = (((y[i] + dt * vy[i]) % L) + L) % L; }
+        U = force();
+        for (let i = 0; i < N; i++) { vx[i] += 0.5 * dt * ax[i]; vy[i] += 0.5 * dt * ay[i]; }
+      }
+      if (s % every === 0) {
+        const K = vx.reduce((q, v, i) => q + v * v + vy[i] * vy[i], 0) / 2;
+        out.t.push(s * dt); out.K.push(K / N); out.U.push(U / N); out.E.push((K + U) / N);
+        if (s >= steps / 2) {
+          ngr++;
+          for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) { let dx = x[i] - x[j], dy = y[i] - y[j]; dx -= L * Math.round(dx / L); dy -= L * Math.round(dy / L); const d = Math.hypot(dx, dy); if (d < rmax) gr[Math.floor((d / rmax) * nb)] += 2; }
+        }
+      }
+    }
+    out.gr = Array.from(gr, (g, k) => { const r0 = (k * rmax) / nb, r1 = ((k + 1) * rmax) / nb; return g / (ngr * N * rho * Math.PI * (r1 * r1 - r0 * r0)); });
+    out.grR = Array.from(gr, (_, k) => ((k + 0.5) * rmax) / nb);
+    out.Tmean = (2 * N * out.K.slice(Math.floor(out.K.length / 2)).reduce((a, b) => a + b, 0)) / Math.ceil(out.K.length / 2) / dof;
+    return out;
+  };
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
