@@ -7,7 +7,7 @@ window.MOLASTRIA_CHEM = {
   hero: {
     question: ['一条氨基酸链怎么“知道”自己该折成什么形状？酶凭什么能把一个要等上亿年的反应缩短到毫秒？血红蛋白为什么在肺里抓氧、在肌肉里放氧？', 'How does a chain of amino acids “know” what shape to fold into? How can an enzyme shrink a reaction that would take a hundred million years into milliseconds? Why does haemoglobin grab oxygen in the lungs and let it go in the muscles?'],
     lead: ['生物化学用化学的语言解释生命：分子之间的识别、催化、能量转换和信息传递。它的对象是蛋白质、核酸、糖和脂这些大分子，但规律仍然是热力学、动力学和化学键。本馆八章从蛋白质的结构和折叠讲起，到酶怎样加速反应、血红蛋白怎样协同结合氧，再到细胞怎样把食物的化学能变成 ATP、DNA 怎样存储和复制信息，最后是点击化学、基因编辑和人工智能预测蛋白质结构这些前沿。', 'Biochemistry explains life in the language of chemistry: recognition, catalysis, energy conversion and information transfer between molecules. Its subjects are macromolecules such as proteins, nucleic acids, sugars and lipids, but the rules are still thermodynamics, kinetics and chemical bonds. The eight chapters begin with protein structure and folding, go on to how enzymes speed reactions and how haemoglobin binds oxygen cooperatively, then how cells turn the chemical energy of food into ATP and how DNA stores and copies information, and end with click chemistry, gene editing and AI prediction of protein structure.'],
-    scope: ['有机反应机理（羰基、取代）在 [[chemistry/organic/index.html|02 有机化学]]；动力学和热力学的一般原理在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；金属蛋白和配位化学在 [[chemistry/coordination/index.html|07 配位与金属有机化学]]；链的统计和构象在 [[chemistry/polymer/index.html#c-conformation|09 高分子化学 · 链的构象]]；药物和靶点的结合在 [[chemistry/medicinal/index.html|12 药物化学]]；量子效应在生物里的作用在 [[quantum/biology/index.html|量子生物学]]；冷冻电镜、生物大分子核磁和测序在 [[spectra/index.html#m-cryoem|谱图馆 · 大分子方法]]。', 'Organic reaction mechanisms (carbonyl chemistry, substitution) are in [[chemistry/organic/index.html|02 Organic]]; general kinetics and thermodynamics in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; metalloproteins and coordination chemistry in [[chemistry/coordination/index.html|07 Coordination & Organometallic]]; chain statistics and conformation in [[chemistry/polymer/index.html#c-conformation|09 Polymer · chain conformation]]; drug–target binding in [[chemistry/medicinal/index.html|12 Medicinal]]; quantum effects in biology in [[quantum/biology/index.html|Quantum Biology]]; cryo-EM, biomolecular NMR and sequencing in [[spectra/index.html#m-cryoem|Spectra Hall · macromolecular methods]].'],
+    scope: ['有机反应机理（羰基、取代）在 [[chemistry/organic/index.html|02 有机化学]]；动力学和热力学的一般原理在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；金属蛋白和配位化学在 [[chemistry/coordination/index.html|07 配位与金属有机化学]]；链的统计和构象在 [[chemistry/polymer/index.html#c-conformation|09 高分子化学 · 链的构象]]；量子效应在生物里的作用在 [[quantum/biology/index.html|量子生物学]]；冷冻电镜、生物大分子核磁和测序在 [[spectra/index.html#m-cryoem|谱图馆 · 大分子方法]]。', 'Organic reaction mechanisms (carbonyl chemistry, substitution) are in [[chemistry/organic/index.html|02 Organic]]; general kinetics and thermodynamics in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; metalloproteins and coordination chemistry in [[chemistry/coordination/index.html|07 Coordination & Organometallic]]; chain statistics and conformation in [[chemistry/polymer/index.html#c-conformation|09 Polymer · chain conformation]]; quantum effects in biology in [[quantum/biology/index.html|Quantum Biology]]; cryo-EM, biomolecular NMR and sequencing in [[spectra/index.html#m-cryoem|Spectra Hall · macromolecular methods]].'],
   },
   math: {
     hh: ['\\mathrm{pH}=\\mathrm pK_a+\\lg\\frac{[\\mathrm A^-]}{[\\mathrm{HA}]},\\qquad z=\\sum_{\\text{basic}}\\frac{1}{1+10^{\\mathrm{pH}-\\mathrm pK_a}}-\\sum_{\\text{acidic}}\\frac{1}{1+10^{\\mathrm pK_a-\\mathrm{pH}}}', true],
@@ -81,7 +81,7 @@ window.MOLASTRIA_CHEM = {
       ],
       points: [
         [['别构调控', 'Allosteric regulation'], ['代谢途径的关键酶常被途径的终产物在别的位点抑制（反馈抑制），速率曲线变成 S 形，见 {{ch:binding}}。', 'Key enzymes of metabolic pathways are often inhibited at another site by the pathway’s end product (feedback inhibition), giving sigmoid rate curves; see {{ch:binding}}.']],
-        [['很多药物是酶抑制剂', 'Many drugs are enzyme inhibitors'], ['阿司匹林共价修饰环加氧酶，他汀类竞争性抑制 HMG-CoA 还原酶，见 [[chemistry/medicinal/index.html|12 药物化学]]。', 'Aspirin covalently modifies cyclooxygenase and statins competitively inhibit HMG-CoA reductase; see [[chemistry/medicinal/index.html|12 Medicinal]].']],
+        [['很多药物是酶抑制剂', 'Many drugs are enzyme inhibitors'], ['阿司匹林共价修饰环加氧酶，他汀类竞争性抑制 HMG-CoA 还原酶。', 'Aspirin covalently modifies cyclooxygenase and statins competitively inhibit HMG-CoA reductase.']],
       ],
       math: [['mm', ['Michaelis–Menten 方程（Briggs–Haldane 稳态推导）。', 'The Michaelis–Menten equation (Briggs–Haldane steady state).']], ['lb', ['Lineweaver–Burk 双倒数式。', 'The Lineweaver–Burk double-reciprocal form.']], ['inhib', ['竞争性和非竞争性抑制的表观参数。', 'Apparent parameters for competitive and noncompetitive inhibition.']]],
       demos: ['mm'],
@@ -93,7 +93,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['速率减半。提高底物浓度可以抵消竞争性抑制：底物很多时速率仍能接近 V_max。', 'The rate halves. More substrate overcomes competitive inhibition: at high substrate the rate still approaches V_max.'],
       },
-      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学', '03 Physical · kinetics']], ['chemistry/medicinal/index.html', ['12 药物化学', '12 Medicinal']]],
+      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学', '03 Physical · kinetics']]],
       refs: ['radzicka1995', 'pauling1948', 'briggs1925', 'lineweaver1934'],
     },
     {
@@ -189,7 +189,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['19 小时对 7 秒：在细胞能耐受的低浓度下，只有很快的反应才实用。', '19 hours against 7 seconds: at the low concentrations cells tolerate, only fast reactions are practical.'],
       },
-      site: [['chemistry/organic/index.html#c-pericyclic', ['02 有机化学 · 周环反应（环加成）', '02 Organic · pericyclic reactions (cycloadditions)']], ['chemistry/medicinal/index.html', ['12 药物化学', '12 Medicinal']]],
+      site: [['chemistry/organic/index.html#c-pericyclic', ['02 有机化学 · 周环反应（环加成）', '02 Organic · pericyclic reactions (cycloadditions)']]],
       refs: ['prescher2005', 'jinek2012'],
     },
     {
@@ -245,7 +245,7 @@ window.MOLASTRIA_CHEM = {
     { title: 'Physical Biology of the Cell', authors: 'R. Phillips, J. Kondev, J. Theriot, H. Garcia', note: ['用物理化学的估算理解细胞。', 'Understanding the cell through physical-chemical estimates.'] },
     { title: '生物化学', authors: '王镜岩、朱圣庚、徐长法', note: ['国内常用的生物化学教材。', 'A widely used Chinese biochemistry text.'] },
   ],
-  siteLinks: [['quantum/biology/index.html', ['量子生物学', 'Quantum Biology']], ['spectra/index.html#m-cryoem', ['谱图馆 · 冷冻电镜', 'Spectra Hall · cryo-EM']], ['chemistry/medicinal/index.html', ['12 药物化学', '12 Medicinal']]],
+  siteLinks: [['quantum/biology/index.html', ['量子生物学', 'Quantum Biology']], ['spectra/index.html#m-cryoem', ['谱图馆 · 冷冻电镜', 'Spectra Hall · cryo-EM']]],
   open: [
     [['能不能从序列预测蛋白质的构象变化、动力学和功能，而不只是一个静态结构？', 'Can we predict a protein’s conformational changes, dynamics and function from sequence, not just one static structure?'], 'frontier'],
     [['设计的酶怎样才能达到天然酶的效率？缺少的是什么：动力学、静电预组织还是别的？', 'What would it take for designed enzymes to match natural ones: dynamics, electrostatic preorganisation or something else?'], 'enzymes'],

@@ -1,5 +1,5 @@
 'use strict';
-// 化学学科馆 13 · 环境化学的四个演示：开放体系的碳酸盐平衡、CO₂ 的辐射强迫、单箱模型、原子经济性和 E 因子。数学在 ../chem-models.js。
+// 化学学科馆 12 · 环境化学的四个演示：开放体系的碳酸盐平衡、CO₂ 的辐射强迫、单箱模型、原子经济性和 E 因子。数学在 ../chem-models.js。
 (window.MOLASTRIA_CHEM_DEMOS ||= []).push((K, D) => {
   const { M, L, fmt, fix, plot } = K;
 

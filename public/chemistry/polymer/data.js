@@ -7,7 +7,7 @@ window.MOLASTRIA_CHEM = {
   hero: {
     question: ['同样是碳和氢，为什么蜡一捏就碎，聚乙烯却能做防弹衣？一锅反应里的链有长有短，怎么说一个高分子“有多大”？', 'Wax and polyethylene are both carbon and hydrogen, so why does one crumble and the other stop bullets? When a pot of reaction makes chains of every length, how do you say how “big” a polymer is?'],
     lead: ['高分子是成千上万个重复单元连成的长链。1920 年 Staudinger 提出这种“大分子”时还被很多人反对，今天它们是塑料、纤维、橡胶、涂料，也是蛋白质、DNA 和纤维素。高分子化学研究这些链怎样造出来（逐步聚合、链式聚合、可控聚合），由什么组成（共聚），在空间里长什么样（无规线团），以及为什么长度本身就能改变材料的性质（缠结、玻璃化转变、相分离）。本馆八章从分子量的统计讲起，到聚合反应的动力学，再到链的物理和塑料回收的前沿。', 'Polymers are long chains of thousands of repeat units. When Staudinger proposed such “macromolecules” in 1920 many chemists objected; today they are plastics, fibres, rubbers and coatings, as well as proteins, DNA and cellulose. Polymer chemistry studies how the chains are made (step growth, chain growth, controlled polymerisation), what they are made of (copolymers), what they look like in space (random coils), and why length alone changes material properties (entanglement, the glass transition, phase separation). The eight chapters start from the statistics of molar mass, go through the kinetics of polymerisation, and end with chain physics and the frontier of plastic recycling.'],
-    scope: ['单体的有机反应（羰基加成、取代）在 [[chemistry/organic/index.html|02 有机化学]]；溶液热力学和统计力学的一般原理在 [[chemistry/physical/index.html#c-solutions|03 物理化学 · 溶液]]；配位聚合的催化剂在 [[chemistry/coordination/index.html#c-catalysis|07 配位与金属有机 · 催化]]；蛋白质和核酸这些生物高分子在 [[chemistry/biochem/index.html|10 生物化学]]；聚合物作为材料的结构和性能在 [[chemistry/materials/index.html|11 材料化学]]；聚合反应器的工程在 [[chemistry/chemeng/index.html|15 化学工程]]；凝胶渗透色谱、光散射这些表征方法在 [[spectra/index.html|谱图馆]]。', 'The organic reactions of monomers (carbonyl additions, substitutions) are in [[chemistry/organic/index.html|02 Organic]]; general solution thermodynamics and statistical mechanics in [[chemistry/physical/index.html#c-solutions|03 Physical · solutions]]; catalysts for coordination polymerisation in [[chemistry/coordination/index.html#c-catalysis|07 Coordination · catalysis]]; biopolymers such as proteins and nucleic acids in [[chemistry/biochem/index.html|10 Biochemistry]]; polymers as materials in [[chemistry/materials/index.html|11 Materials]]; polymerisation reactors in [[chemistry/chemeng/index.html|15 Chemical Engineering]]; characterisation by gel permeation chromatography and light scattering in the [[spectra/index.html|Spectra Hall]].'],
+    scope: ['单体的有机反应（羰基加成、取代）在 [[chemistry/organic/index.html|02 有机化学]]；溶液热力学和统计力学的一般原理在 [[chemistry/physical/index.html#c-solutions|03 物理化学 · 溶液]]；配位聚合的催化剂在 [[chemistry/coordination/index.html#c-catalysis|07 配位与金属有机 · 催化]]；蛋白质和核酸这些生物高分子在 [[chemistry/biochem/index.html|10 生物化学]]；聚合物作为材料的结构和性能在 [[chemistry/materials/index.html|11 材料化学]]；聚合反应器的工程在 [[chemistry/chemeng/index.html|14 化学工程]]；凝胶渗透色谱、光散射这些表征方法在 [[spectra/index.html|谱图馆]]。', 'The organic reactions of monomers (carbonyl additions, substitutions) are in [[chemistry/organic/index.html|02 Organic]]; general solution thermodynamics and statistical mechanics in [[chemistry/physical/index.html#c-solutions|03 Physical · solutions]]; catalysts for coordination polymerisation in [[chemistry/coordination/index.html#c-catalysis|07 Coordination · catalysis]]; biopolymers such as proteins and nucleic acids in [[chemistry/biochem/index.html|10 Biochemistry]]; polymers as materials in [[chemistry/materials/index.html|11 Materials]]; polymerisation reactors in [[chemistry/chemeng/index.html|14 Chemical Engineering]]; characterisation by gel permeation chromatography and light scattering in the [[spectra/index.html|Spectra Hall]].'],
   },
   math: {
     mn: ['M_n=\\frac{\\sum_i N_iM_i}{\\sum_i N_i},\\qquad M_w=\\frac{\\sum_i N_iM_i^{2}}{\\sum_i N_iM_i},\\qquad Đ=\\frac{M_w}{M_n}\\ge1', true],
@@ -94,7 +94,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['Rp ≈ 2.7 × 10⁻⁵ mol L⁻¹ s⁻¹，X̄n ≈ 4100（Mn ≈ 4.3 × 10⁵ g/mol）；链转移把链长压低了约四分之一。', 'Rp ≈ 2.7 × 10⁻⁵ mol L⁻¹ s⁻¹ and X̄n ≈ 4100 (Mn ≈ 4.3 × 10⁵ g/mol); chain transfer cuts the length by about a quarter.'],
       },
-      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学（稳态近似）', '03 Physical · kinetics (steady state)']], ['chemistry/chemeng/index.html#c-reactors', ['15 化学工程 · 反应器', '15 Chemical Engineering · reactors']]],
+      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学（稳态近似）', '03 Physical · kinetics (steady state)']], ['chemistry/chemeng/index.html#c-reactors', ['14 化学工程 · 反应器', '14 Chemical Engineering · reactors']]],
       refs: ['mayo1943'],
     },
     {
@@ -194,7 +194,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['溶液 χc ≈ 0.53、φc ≈ 3 %；共混物 χc 只有 0.002，比溶液小两百多倍，这就是共混物难以相容的原因。', 'Solution: χc ≈ 0.53 and φc ≈ 3 %; blend: χc is only 0.002, over two hundred times smaller, which is why blends are rarely miscible.'],
       },
-      site: [['chemistry/physical/index.html#c-solutions', ['03 物理化学 · 溶液和相平衡', '03 Physical · solutions and phase equilibria']], ['chemistry/chemeng/index.html#c-phase', ['15 化学工程 · 相平衡', '15 Chemical Engineering · phase equilibria']]],
+      site: [['chemistry/physical/index.html#c-solutions', ['03 物理化学 · 溶液和相平衡', '03 Physical · solutions and phase equilibria']], ['chemistry/chemeng/index.html#c-phase', ['14 化学工程 · 相平衡', '14 Chemical Engineering · phase equilibria']]],
       refs: ['flory1942', 'huggins1942', 'fox1950', 'williams1955', 'degennes1971'],
     },
     {
@@ -216,7 +216,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['本体约 63 °C（常引的实测值约 61 °C），稀溶液里室温下根本聚合不起来。上限温度这么低，稍微加热就能把它干净地变回单体，这正是“回到单体”的回收思路。', 'About 63 °C in bulk (the commonly quoted measured value is about 61 °C), and in dilute solution it will not polymerise at room temperature at all. With a ceiling this low, gentle heating returns it cleanly to monomer, which is the idea behind chemical recycling to monomer.'],
       },
-      site: [['chemistry/environmental/index.html#c-green', ['13 环境化学 · 绿色化学', '13 Environmental · green chemistry']]],
+      site: [['chemistry/environmental/index.html#c-green', ['12 环境化学 · 绿色化学', '12 Environmental · green chemistry']]],
       refs: ['geyer2017', 'coates2020', 'montarnal2011', 'lutz2013'],
     },
   ],

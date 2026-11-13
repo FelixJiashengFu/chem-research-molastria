@@ -1,5 +1,5 @@
 'use strict';
-// 化学学科馆 15 · 化学工程的三个演示：CSTR、PFR 和串联釜、理想溶液的 T–x–y 图、McCabe–Thiele 作图。数学在 ../chem-models.js。
+// 化学学科馆 14 · 化学工程的三个演示：CSTR、PFR 和串联釜、理想溶液的 T–x–y 图、McCabe–Thiele 作图。数学在 ../chem-models.js。
 (window.MOLASTRIA_CHEM_DEMOS ||= []).push((K, D) => {
   const { M, L, fmt, fix, plot } = K;
   const P = (v) => `${fix(v * 100, 1)} %`;

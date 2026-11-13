@@ -1,4 +1,4 @@
-/* 化学学科馆 13 · 环境化学：臭氧层、对流层、温室效应、碳酸盐体系、水、污染物归趋、绿色化学、前沿。
+/* 化学学科馆 12 · 环境化学：臭氧层、对流层、温室效应、碳酸盐体系、水、污染物归趋、绿色化学、前沿。
    文字是 [中文, 英文]；正文里 [@id] 引文献，[[地址|文字]] 连站内栏目，{{ch:id}} 连本馆一章。
    文献只收按 DOI 在 OpenAlex 核对过的（node tools/chemistry-refs.mjs environmental）。公式是 LaTeX，由 tools/fundamental-math.mjs 转成 math.js（生成的文件）。 */
 window.MOLASTRIA_CHEM = {
@@ -7,7 +7,7 @@ window.MOLASTRIA_CHEM = {
   hero: {
     question: ['几个氯原子怎么能毁掉成千上万个臭氧分子？为什么雨水天生就是酸的？大气里多一点 CO₂，海洋和气候会怎样？', 'How can a few chlorine atoms destroy many thousands of ozone molecules? Why is rain naturally acidic? What does a little more CO₂ in the air do to the oceans and the climate?'],
     lead: ['环境化学研究化学物质在大气、水、土壤和生物之间怎样产生、迁移、转化和消失，以及人类活动怎样改变这些过程。它用到的是物理化学的老工具：光化学和自由基链反应、酸碱和溶解平衡、分配和一级动力学。本馆八章讲臭氧层的破坏和恢复、城市烟雾和颗粒物、温室效应和辐射强迫、碳酸盐体系和海洋酸化、天然水的化学、污染物的持久性和归趋、绿色化学的度量，最后是新污染物和碳移除这些前沿问题。', 'Environmental chemistry studies how substances are produced, move, transform and disappear among air, water, soil and living things, and how human activity changes these processes. Its tools are the old ones of physical chemistry: photochemistry and radical chain reactions, acid–base and solubility equilibria, partitioning and first-order kinetics. The eight chapters cover the destruction and recovery of the ozone layer, urban smog and particles, the greenhouse effect and radiative forcing, the carbonate system and ocean acidification, the chemistry of natural waters, the persistence and fate of pollutants, and the metrics of green chemistry, ending with emerging contaminants and carbon removal.'],
-    scope: ['反应速率和链反应在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；酸碱和沉淀平衡的计算在 [[chemistry/analytical/index.html#c-acidbase|04 分析化学]]；环境样品的测定方法（气相色谱–质谱、ICP-MS、离子色谱、同位素比）在 [[spectra/index.html#m-gcms|谱图馆]]；放射性核素在环境里的行为在 [[chemistry/nuclear/index.html|14 核化学]]；分离和反应器的工程设计在 [[chemistry/chemeng/index.html|15 化学工程]]。', 'Reaction rates and chain reactions are in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; acid–base and precipitation calculations in [[chemistry/analytical/index.html#c-acidbase|04 Analytical]]; methods for environmental samples (GC–MS, ICP-MS, ion chromatography, isotope ratios) in the [[spectra/index.html#m-gcms|Spectra Hall]]; radionuclides in the environment in [[chemistry/nuclear/index.html|14 Nuclear]]; the engineering of separations and reactors in [[chemistry/chemeng/index.html|15 Chemical Engineering]].'],
+    scope: ['反应速率和链反应在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；酸碱和沉淀平衡的计算在 [[chemistry/analytical/index.html#c-acidbase|04 分析化学]]；环境样品的测定方法（气相色谱–质谱、ICP-MS、离子色谱、同位素比）在 [[spectra/index.html#m-gcms|谱图馆]]；放射性核素在环境里的行为在 [[chemistry/nuclear/index.html|13 核化学]]；分离和反应器的工程设计在 [[chemistry/chemeng/index.html|14 化学工程]]。', 'Reaction rates and chain reactions are in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; acid–base and precipitation calculations in [[chemistry/analytical/index.html#c-acidbase|04 Analytical]]; methods for environmental samples (GC–MS, ICP-MS, ion chromatography, isotope ratios) in the [[spectra/index.html#m-gcms|Spectra Hall]]; radionuclides in the environment in [[chemistry/nuclear/index.html|13 Nuclear]]; the engineering of separations and reactors in [[chemistry/chemeng/index.html|14 Chemical Engineering]].'],
   },
   math: {
     chapman: ['\\mathrm{O_2}+h\\nu\\to2\\,\\mathrm{O};\\quad \\mathrm{O+O_2+M\\to O_3+M};\\quad \\mathrm{O_3}+h\\nu\\to\\mathrm{O_2+O};\\quad \\mathrm{O+O_3\\to2\\,O_2}', true],
@@ -140,7 +140,7 @@ window.MOLASTRIA_CHEM = {
         steps: [['剩余差距按 e^{−t/τ} 衰减，要 e^{−t/12} = 0.1。', 'The remaining gap decays as e^{−t/τ}, so we need e^{−t/12} = 0.1.'], ['t = 12 × ln 10 = 27.6 年。', 't = 12 × ln 10 = 27.6 years.']],
         a: ['约 28 年。寿命长的污染物，减排的效果要一代人才完全显现；反过来，短寿命污染物（如甲烷、黑碳）减排能较快见效。', 'About 28 years. For long-lived pollutants the full effect of cutting emissions takes a generation; conversely, cutting short-lived pollutants (such as methane and black carbon) pays off faster.'],
       },
-      site: [['chemistry/analytical/index.html#c-separations', ['04 分析化学 · 萃取和分配', '04 Analytical · extraction and partitioning']], ['chemistry/chemeng/index.html#c-separation', ['15 化学工程 · 分离', '15 Chemical Engineering · separations']], ['spectra/index.html#m-lcms', ['谱图馆 · 液相色谱–质谱', 'Spectra Hall · LC–MS']]],
+      site: [['chemistry/analytical/index.html#c-separations', ['04 分析化学 · 萃取和分配', '04 Analytical · extraction and partitioning']], ['chemistry/chemeng/index.html#c-separation', ['14 化学工程 · 分离', '14 Chemical Engineering · separations']], ['spectra/index.html#m-lcms', ['谱图馆 · 液相色谱–质谱', 'Spectra Hall · LC–MS']]],
       refs: ['evich2022'],
     },
     {
@@ -180,7 +180,7 @@ window.MOLASTRIA_CHEM = {
         steps: [['1 ppm 对应 1.77 × 10²⁰ × 10⁻⁶ = 1.77 × 10¹⁴ mol。', '1 ppm corresponds to 1.77 × 10²⁰ × 10⁻⁶ = 1.77 × 10¹⁴ mol.'], ['× 44.0 g/mol = 7.8 × 10¹⁵ g = 7.8 × 10⁹ t。', '× 44.0 g/mol = 7.8 × 10¹⁵ g = 7.8 × 10⁹ t.']],
         a: ['约 78 亿吨。而且海洋和陆地会放回一部分（碳循环的“反弹”），实际需要的更多。', 'About 7.8 billion tonnes. Moreover, the ocean and land would release some back (the carbon-cycle “rebound”), so more would actually be needed.'],
       },
-      site: [['chemistry/chemeng/index.html#c-separation', ['15 化学工程 · 吸收和分离', '15 Chemical Engineering · absorption and separation']], ['spectra/index.html#m-lcms', ['谱图馆 · 液相色谱–质谱', 'Spectra Hall · LC–MS']]],
+      site: [['chemistry/chemeng/index.html#c-separation', ['14 化学工程 · 吸收和分离', '14 Chemical Engineering · absorption and separation']], ['spectra/index.html#m-lcms', ['谱图馆 · 液相色谱–质谱', 'Spectra Hall · LC–MS']]],
       refs: ['evich2022'],
     },
   ],

@@ -1,4 +1,4 @@
-/* 化学学科馆 14 · 核化学与放射化学：原子核的结合、衰变、核反应、核燃料循环、放射性测年、同位素的应用、新元素、前沿。
+/* 化学学科馆 13 · 核化学与放射化学：原子核的结合、衰变、核反应、核燃料循环、放射性测年、同位素的应用、新元素、前沿。
    文字是 [中文, 英文]；正文里 [@id] 引文献，[[地址|文字]] 连站内栏目，{{ch:id}} 连本馆一章。
    文献只收按 DOI 在 OpenAlex 核对过的（node tools/chemistry-refs.mjs nuclear）。公式是 LaTeX，由 tools/fundamental-math.mjs 转成 math.js（生成的文件）。 */
 window.MOLASTRIA_CHEM = {
@@ -7,7 +7,7 @@ window.MOLASTRIA_CHEM = {
   hero: {
     question: ['为什么铁和镍的原子核最稳定？为什么一块木炭能告诉我们它有几千岁？元素周期表的尽头在哪里？', 'Why are iron and nickel nuclei the most stable? How can a piece of charcoal tell us it is thousands of years old? Where does the periodic table end?'],
     lead: ['核化学研究原子核的性质和变化，放射化学研究放射性物质的化学。它们回答了元素从哪里来、为什么有的原子核会衰变、能量怎样从核里释放出来，也给了化学家最灵敏的示踪和测年工具。本馆八章从结合能和液滴模型讲起，经过衰变规律、核反应和核裂变的发现、核燃料循环，到放射性碳测年、医学和分析中的同位素，再到超铀元素和超重元素的合成，最后是钍-229 核钟和周期表尽头的化学。', 'Nuclear chemistry studies the properties and changes of nuclei, and radiochemistry the chemistry of radioactive substances. Together they explain where the elements come from, why some nuclei decay and how energy is released from the nucleus, and they give chemists their most sensitive tools for tracing and dating. The eight chapters start with binding energy and the liquid-drop model, go through the laws of decay, nuclear reactions and the discovery of fission, the nuclear fuel cycle, radiocarbon dating and isotopes in medicine and analysis, then the making of transuranium and superheavy elements, and end with the thorium-229 nuclear clock and the chemistry at the end of the periodic table.'],
-    scope: ['一级动力学和半衰期的一般讲法在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；元素周期律和锕系在 [[chemistry/inorganic/index.html#c-periodic|01 无机化学]]；相对论效应的量子化学在 [[chemistry/computational/index.html|06 量子与计算化学]]；γ 能谱、同位素比质谱和穆斯堡尔谱在 [[spectra/index.html#m-gamma|谱图馆]]；放射性核素在环境里的迁移可以用 [[chemistry/environmental/index.html#c-fate|13 环境化学 · 归趋]] 的箱模型思路理解。', 'First-order kinetics and half-lives in general are in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; periodicity and the actinides in [[chemistry/inorganic/index.html#c-periodic|01 Inorganic]]; the quantum chemistry of relativistic effects in [[chemistry/computational/index.html|06 Quantum & Computational]]; gamma spectrometry, isotope-ratio mass spectrometry and Mössbauer spectroscopy in the [[spectra/index.html#m-gamma|Spectra Hall]]; the movement of radionuclides in the environment can be understood with the box-model ideas of [[chemistry/environmental/index.html#c-fate|13 Environmental · fate]].'],
+    scope: ['一级动力学和半衰期的一般讲法在 [[chemistry/physical/index.html#c-kinetics|03 物理化学 · 动力学]]；元素周期律和锕系在 [[chemistry/inorganic/index.html#c-periodic|01 无机化学]]；相对论效应的量子化学在 [[chemistry/computational/index.html|06 量子与计算化学]]；γ 能谱、同位素比质谱和穆斯堡尔谱在 [[spectra/index.html#m-gamma|谱图馆]]；放射性核素在环境里的迁移可以用 [[chemistry/environmental/index.html#c-fate|12 环境化学 · 归趋]] 的箱模型思路理解。', 'First-order kinetics and half-lives in general are in [[chemistry/physical/index.html#c-kinetics|03 Physical · kinetics]]; periodicity and the actinides in [[chemistry/inorganic/index.html#c-periodic|01 Inorganic]]; the quantum chemistry of relativistic effects in [[chemistry/computational/index.html|06 Quantum & Computational]]; gamma spectrometry, isotope-ratio mass spectrometry and Mössbauer spectroscopy in the [[spectra/index.html#m-gamma|Spectra Hall]]; the movement of radionuclides in the environment can be understood with the box-model ideas of [[chemistry/environmental/index.html#c-fate|12 Environmental · fate]].'],
   },
   math: {
     semf: ['B(Z,A)=a_VA-a_SA^{2/3}-a_C\\frac{Z(Z-1)}{A^{1/3}}-a_A\\frac{(A-2Z)^2}{A}+\\delta(A,Z)', true],
@@ -96,7 +96,7 @@ window.MOLASTRIA_CHEM = {
         steps: [['核数：1000/235 × 6.022 × 10²³ = 2.56 × 10²⁴。', 'Nuclei: 1000/235 × 6.022 × 10²³ = 2.56 × 10²⁴.'], ['E = 2.56 × 10²⁴ × 200 × 1.602 × 10⁻¹³ J = 8.2 × 10¹³ J。', 'E = 2.56 × 10²⁴ × 200 × 1.602 × 10⁻¹³ J = 8.2 × 10¹³ J.'], ['8.2 × 10¹³/2.9 × 10⁷ = 2.8 × 10⁶。', '8.2 × 10¹³/2.9 × 10⁷ = 2.8 × 10⁶.']],
         a: ['约 8 × 10¹³ J，是同质量煤的约 280 万倍，也就是约 2800 吨煤。实际燃料里铀-235 只占几个百分点、也不会全部裂变，所以每千克燃料的能量要低得多。', 'About 8 × 10¹³ J, some 2.8 million times the same mass of coal, or about 2800 tonnes of it. Real fuel has only a few per cent uranium-235 and not all of it fissions, so the energy per kilogram of fuel is much lower.'],
       },
-      site: [['chemistry/chemeng/index.html#c-separation', ['15 化学工程 · 萃取和分离', '15 Chemical Engineering · extraction and separations']], ['chemistry/materials/index.html#c-energy', ['11 材料化学 · 能源材料', '11 Materials · energy materials']]],
+      site: [['chemistry/chemeng/index.html#c-separation', ['14 化学工程 · 萃取和分离', '14 Chemical Engineering · extraction and separations']], ['chemistry/materials/index.html#c-energy', ['11 材料化学 · 能源材料', '11 Materials · energy materials']]],
       refs: ['ewing2015'],
     },
     {
@@ -117,7 +117,7 @@ window.MOLASTRIA_CHEM = {
         steps: [['常规：t = −8033 × ln 0.25 = 11 136 年。', 'Conventional: t = −8033 × ln 0.25 = 11 136 years.'], ['5730 年：正好两个半衰期，11 460 年。', 'With 5730 years: exactly two half-lives, 11 460 years.']],
         a: ['常规年龄约 11 140 BP，用真实半衰期约 11 460 年；两者都还要用校正曲线换成日历年龄，那时大气碳-14 偏高，校正后的日历年龄约一万三千年前。', 'A conventional age of about 11 140 BP, or about 11 460 years with the true half-life; both still need calibration to calendar years, and since atmospheric carbon-14 was higher then, the calibrated age is about thirteen thousand years ago.'],
       },
-      site: [['spectra/index.html#m-irms', ['谱图馆 · 同位素比质谱', 'Spectra Hall · isotope-ratio mass spectrometry']], ['chemistry/environmental/index.html#c-greenhouse', ['13 环境化学 · 大气 CO₂', '13 Environmental · atmospheric CO₂']]],
+      site: [['spectra/index.html#m-irms', ['谱图馆 · 同位素比质谱', 'Spectra Hall · isotope-ratio mass spectrometry']], ['chemistry/environmental/index.html#c-greenhouse', ['12 环境化学 · 大气 CO₂', '12 Environmental · atmospheric CO₂']]],
       refs: ['arnold1949', 'reimer2020'],
     },
     {

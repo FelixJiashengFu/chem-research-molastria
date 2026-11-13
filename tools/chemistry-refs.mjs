@@ -1,4 +1,4 @@
-// 化学学科馆的文献核对：十五个展馆（public/chemistry/<id>/data.js）的每一篇文献都要能按 DOI 在 OpenAlex（数据来自 Crossref）查到，
+// 化学学科馆的文献核对：十四个展馆（public/chemistry/<id>/data.js）的每一篇文献都要能按 DOI 在 OpenAlex（数据来自 Crossref）查到，
 // 年份、第一作者、题目和卷号要对得上。年份允许差一年（网络版和印刷版）；题目允许是记录里的前缀或后缀（老记录会丢掉上下标）。
 //   node tools/chemistry-refs.mjs                 核对全部（NODE_USE_SYSTEM_CA=1 用于本机杀毒软件拦截 HTTPS 时）
 //   node tools/chemistry-refs.mjs organic         只核对一个展馆

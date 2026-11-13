@@ -1,5 +1,5 @@
 'use strict';
-// 化学学科馆 · 总入口：十五个展馆的卡片（按四组排）、学科关系图、站内已有的化学内容。名单在 chem-subjects.js。
+// 化学学科馆 · 总入口：十四个展馆的卡片（按四组排）、学科关系图、站内已有的化学内容。名单在 chem-subjects.js。
 // 文字自带中英两版，页面标 translate="no"。卡片上的进度读本机的 molastria-chem（各展馆读过的章、答对的题）。
 (() => {
   const S = window.MOLASTRIA_CHEM_SUBJECTS;
@@ -22,17 +22,17 @@
   $('#chm-question').innerHTML = esc(L('同一个“化学”，为什么大学里要拆成十几门课？它们各自回答什么问题，又怎样连成一张网？', 'Chemistry is one subject, so why does a university split it into a dozen courses? What question does each answer, and how do they join into one web?'))
     + (en ? '' : '<span class="fs-q-en" lang="en">Chemistry is one subject, so why does a university split it into a dozen courses? What question does each answer, and how do they join into one web?</span>');
   $('#chm-lead').textContent = L(
-    `十五个展馆，从四大基础化学（无机、有机、物理化学、分析化学）到结构、计算、配位、电化学，再到高分子、生物、材料、药物、环境、核化学和化学工程。每一馆分章讲解（标出基础、进阶、前沿三档），给出核心公式和一道带数字的例题，配有在浏览器里当场计算的演示、发展时间线、自测题、教材和按 DOI 核对过的文献。一共 ${total('chapters')} 章、${total('demos')} 个演示、${total('refs')} 篇文献。${soon.size ? `现在开放 ${open} 个展馆，${later}还在准备，即将上线。` : ''}`,
-    `Fifteen halls, from the four core branches (inorganic, organic, physical, analytical) through structure, computation, coordination and electrochemistry to polymers, biochemistry, materials, medicines, the environment, nuclear chemistry and chemical engineering. Each hall has chapters marked foundation, advanced or frontier, key formulas and a worked example with numbers, demos computed live in the browser, a timeline, a self-test, textbooks and references checked by DOI. ${total('chapters')} chapters, ${total('demos')} demos and ${total('refs')} references in all.${soon.size ? ` ${open} halls are open now; ${later} is still being prepared and will open soon.` : ''}`);
+    `十四个展馆，从四大基础化学（无机、有机、物理化学、分析化学）到结构、计算、配位、电化学，再到高分子、生物、材料、环境、核化学和化学工程。每一馆分章讲解（标出基础、进阶、前沿三档），给出核心公式和一道带数字的例题，配有在浏览器里当场计算的演示、发展时间线、自测题、教材和按 DOI 核对过的文献。一共 ${total('chapters')} 章、${total('demos')} 个演示、${total('refs')} 篇文献。${soon.size ? `现在开放 ${open} 个展馆，${later}还在准备，即将上线。` : ''}`,
+    `Fourteen halls, from the four core branches (inorganic, organic, physical, analytical) through structure, computation, coordination and electrochemistry to polymers, biochemistry, materials, the environment, nuclear chemistry and chemical engineering. Each hall has chapters marked foundation, advanced or frontier, key formulas and a worked example with numbers, demos computed live in the browser, a timeline, a self-test, textbooks and references checked by DOI. ${total('chapters')} chapters, ${total('demos')} demos and ${total('refs')} references in all.${soon.size ? ` ${open} halls are open now; ${later} is still being prepared and will open soon.` : ''}`);
   $('#chm-honest').textContent = L(
     '每一门都是一整套大学课程，这里不可能把教材搬过来。每馆挑出这一门最核心的概念和最常用的公式，讲清它们回答什么问题、在哪里会失效，然后指向原始论文和好教材。和站里已有栏目重叠的部分（量子化学、谱图、核磁）只写概览并链过去。',
     'Each of these is a whole university course and no page can replace the textbook. Each hall picks the core ideas and the formulas used most, says what question they answer and where they break down, and points to the original papers and good textbooks. Where another section of this site already covers a topic in depth (quantum chemistry, spectra, NMR), the hall gives an overview and links there.');
   $('#chm-legend').innerHTML = Object.entries(S.levels).map(([k, [t, d]]) => `<li><span class="fs-st" data-s="${k}">${esc(tx(t))}</span><span>${esc(tx(d))}</span></li>`).join('');
-  $('#chm-jump').innerHTML = [['chm-halls', L('十五个展馆', 'The fifteen halls'), 1], ['chm-web', L('学科关系图', 'How they connect')], ['chm-site', L('站内其他化学内容', 'More chemistry on this site')]].map(([id, t, p]) => `<a class="button${p ? ' primary' : ''}" href="#${id}">${t}${p ? ' <i class="ico-ext ico-down" aria-hidden="true"></i>' : ''}</a>`).join('');
-  for (const [id, t] of Object.entries({ 'chm-halls-h': ['十五个展馆', 'The fifteen halls'], 'chm-web-h': ['学科关系图', 'How the disciplines connect'], 'chm-site-h': ['站内其他化学内容', 'More chemistry on this site'] })) $(`#${id}`).textContent = tx(t);
+  $('#chm-jump').innerHTML = [['chm-halls', L('十四个展馆', 'The fourteen halls'), 1], ['chm-web', L('学科关系图', 'How they connect')], ['chm-site', L('站内其他化学内容', 'More chemistry on this site')]].map(([id, t, p]) => `<a class="button${p ? ' primary' : ''}" href="#${id}">${t}${p ? ' <i class="ico-ext ico-down" aria-hidden="true"></i>' : ''}</a>`).join('');
+  for (const [id, t] of Object.entries({ 'chm-halls-h': ['十四个展馆', 'The fourteen halls'], 'chm-web-h': ['学科关系图', 'How the disciplines connect'], 'chm-site-h': ['站内其他化学内容', 'More chemistry on this site'] })) $(`#${id}`).textContent = tx(t);
   $('#chm-halls-note').textContent = L('按四组排列。卡片右上角的数字是你在这台设备上读过的章和答对的题。', 'Arranged in four groups. The figures in a card’s corner are the chapters you have read and questions you have answered on this device.');
   $('#chm-web-note').textContent = L('每条线表示两门学科在概念或方法上联系很紧（各馆末尾的“接着逛”就是按这张图推荐的）。指向一个展馆，看它连着哪些；点一下进入。', 'Each line joins two disciplines that share many ideas or methods (each hall’s “Keep exploring” follows this map). Point at a hall to see its links; click to enter.');
-  $('#chm-skip').textContent = L('跳到十五个展馆', 'Skip to the fifteen halls');
+  $('#chm-skip').textContent = L('跳到十四个展馆', 'Skip to the fourteen halls');
 
   const card = (s) => {
     if (soon.has(s.id)) return `<div class="chm-card is-soon" aria-disabled="true"><span class="chm-card-n">${s.num}</span><span class="chm-card-done chm-soon-tag">${L('即将上线', 'Coming soon')}</span>
@@ -45,14 +45,14 @@
   };
   $('#chm-groups').innerHTML = S.groups.map((g) => `<section class="chm-group"><header><h3>${esc(tx(g.title))}</h3><p>${esc(tx(g.text))}</p></header><div class="chm-cards">${SUB.filter((s) => s.group === g.id).map(card).join('')}</div></section>`).join('');
 
-  // ── 学科关系图：十五个节点排成一圈，按组连续，四大基础在上 ──────────────
+  // ── 学科关系图：十四个节点排成一圈，按组连续，四大基础在上 ──────────────
   const R = 230, cx = 300, cy = 270, n = SUB.length;
   const pos = Object.fromEntries(SUB.map((s, i) => { const a = -Math.PI / 2 + ((i - 1.5) / n) * 2 * Math.PI; return [s.id, [cx + R * Math.cos(a), cy + R * Math.sin(a)]]; }));
   const edges = [];
   for (const s of SUB) for (const t of s.rel) if (pos[t] && !edges.some(([a, b]) => (a === t && b === s.id) || (a === s.id && b === t))) edges.push([s.id, t]);
   const curve = ([a, b]) => { const [x0, y0] = pos[a], [x1, y1] = pos[b], mx = (x0 + x1) / 2, my = (y0 + y1) / 2, k = 0.35; return `M${x0.toFixed(1)} ${y0.toFixed(1)}Q${(mx + (cx - mx) * k).toFixed(1)} ${(my + (cy - my) * k).toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
   const label = (s) => { const t = en ? s.en.replace(/ Chemistry$/, '').replace('Quantum & Computational', 'Computational').replace('Coordination & Organometallic', 'Coordination').replace('Nuclear & Radiochemistry', 'Nuclear') : s.zh.replace('与金属有机化学', '').replace('与放射化学', '').replace('量子与', ''); return t; };
-  $('#chm-map').innerHTML = `<svg viewBox="0 0 600 540" role="group" aria-label="${esc(L('十五门化学学科的关系图', 'A map of how the fifteen disciplines connect'))}">
+  $('#chm-map').innerHTML = `<svg viewBox="0 0 600 540" role="group" aria-label="${esc(L('十四门化学学科的关系图', 'A map of how the fourteen disciplines connect'))}">
     <g>${edges.map((e) => `<path class="chm-edge" data-a="${e[0]}" data-b="${e[1]}" d="${curve(e)}"/>`).join('')}</g>
     <g>${SUB.map((s) => { const [x, y] = pos[s.id]; return `<a class="chm-node${soon.has(s.id) ? ' is-soon' : ''}" href="${s.id}/index.html" data-id="${s.id}" data-g="${s.group}" aria-label="${esc(`${s.num} ${name(s)}${soon.has(s.id) ? L('（即将上线）', ' (coming soon)') : ''}`)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="chm-node-n" x="${x.toFixed(1)}" y="${(y - 6).toFixed(1)}">${s.num}</text><text x="${x.toFixed(1)}" y="${(y + 10).toFixed(1)}">${esc(label(s))}</text></a>`; }).join('')}</g></svg>`;
   const map = $('#chm-map');

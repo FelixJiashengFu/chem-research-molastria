@@ -1,4 +1,4 @@
-// 化学学科馆：按 public/chemistry/chem-subjects.js 的名单写出十五个展馆页 public/chemistry/<id>/index.html（生成的文件，不要手改）。
+// 化学学科馆：按 public/chemistry/chem-subjects.js 的名单写出十四个展馆页 public/chemistry/<id>/index.html（生成的文件，不要手改）。
 // 每个展馆页只是一个空架子：内容由 chem.js 从同目录的 data.js、math.js、demos.js 画出来。
 //   node tools/chemistry-pages.mjs          写出全部展馆页
 //   node tools/chemistry-pages.mjs --check  只核对现有文件是不是最新的（tools/chemistry-test.mjs 也会核对）

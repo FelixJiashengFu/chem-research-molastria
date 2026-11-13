@@ -141,7 +141,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['得到顺式；反过来从 [Pt(NH₃)₄]²⁺ 加 Cl⁻ 则得到反式。', 'The cis isomer; going the other way, adding Cl⁻ to [Pt(NH₃)₄]²⁺, gives trans.'],
       },
-      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学', '03 Physical · kinetics']], ['chemistry/medicinal/index.html', ['12 药物化学：顺铂一类金属药物', '12 Medicinal: metal drugs such as cisplatin']]],
+      site: [['chemistry/physical/index.html#c-kinetics', ['03 物理化学 · 动力学', '03 Physical · kinetics']]],
       refs: ['taube1953'],
     },
     {

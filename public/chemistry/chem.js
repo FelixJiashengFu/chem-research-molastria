@@ -60,7 +60,7 @@
   const soon = new Set(S.soon || []), OPEN = SUB.filter((s) => s === me || !soon.has(s.id));
   const idx = OPEN.indexOf(me);
   $('#chm-switch').innerHTML = `<a href="../index.html">${L('全部展馆', 'All halls')}</a>` + SUB.map((s) => (soon.has(s.id) ? `<span class="chm-soon" title="${L('即将上线', 'Coming soon')}"><b>${s.num}</b>${esc(name(s))}</span>` : `<a href="../${s.id}/index.html"${s === me ? ' aria-current="page"' : ''}><b>${s.num}</b>${esc(name(s))}</a>`)).join('');
-  $('#chm-switch').setAttribute('aria-label', L('十五个展馆', 'The fifteen halls'));
+  $('#chm-switch').setAttribute('aria-label', L('十四个展馆', 'The fourteen halls'));
   $('#chm-eyebrow').textContent = `MOLASTRIA · CHEMISTRY DISCIPLINES · ${me.num}`;
   $('#chm-h1').innerHTML = en ? esc(me.en) : `${esc(me.zh)}<span class="fs-h1-en" lang="en">${esc(me.en)}</span>`;
   $('#chm-question').innerHTML = esc(tx(D.hero.question)) + (en ? '' : `<span class="fs-q-en" lang="en">${esc(D.hero.question[1])}</span>`);
@@ -362,7 +362,7 @@
   const prevS = OPEN[(idx - 1 + OPEN.length) % OPEN.length], nextS = OPEN[(idx + 1) % OPEN.length];
   const rel = me.rel.filter((id) => !soon.has(id)).map((id) => SUB.find((s) => s.id === id)).filter(Boolean);
   $('#chm-more-body').innerHTML = `<div class="chm-cards">${rel.map((s) => `<a class="chm-card" href="../${s.id}/index.html"><span class="chm-card-n">${s.num}</span><h4>${esc(name(s))}</h4><p>${esc(tx(s.line))}</p></a>`).join('')}</div>
-    <nav class="chm-pager" aria-label="${L('上一个和下一个展馆', 'Previous and next hall')}"><a class="button" href="../${prevS.id}/index.html"><i class="ico-ext ico-left" aria-hidden="true"></i> ${prevS.num} · ${esc(name(prevS))}</a><a class="button" href="../index.html">${L('十五个展馆', 'All fifteen halls')}</a><a class="button primary" href="../${nextS.id}/index.html">${nextS.num} · ${esc(name(nextS))} <i class="ico-ext ico-right" aria-hidden="true"></i></a></nav>`;
+    <nav class="chm-pager" aria-label="${L('上一个和下一个展馆', 'Previous and next hall')}"><a class="button" href="../${prevS.id}/index.html"><i class="ico-ext ico-left" aria-hidden="true"></i> ${prevS.num} · ${esc(name(prevS))}</a><a class="button" href="../index.html">${L('十四个展馆', 'All fourteen halls')}</a><a class="button primary" href="../${nextS.id}/index.html">${nextS.num} · ${esc(name(nextS))} <i class="ico-ext ico-right" aria-hidden="true"></i></a></nav>`;
 
   // ── 地址 ────────────────────────────────────────────────────────────────
   function route() {
