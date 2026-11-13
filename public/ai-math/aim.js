@@ -235,8 +235,9 @@
   sel.innerHTML = D.parts.map((p) => `<optgroup label="${esc(`${p.num} · ${tx(p.title)}`)}">${items.filter((t) => t.part === p.id).map((t) => `<option value="${t.id}">${esc(`${label(t.id)} · ${tx(t.title)}`)}</option>`).join('')}</optgroup>`).join('');
   let current = null;
   function open(id, { scroll = false, push = true, auto = false } = {}) {
-    const t = byId[id];
+    const t = Object.hasOwn(byId, id) ? byId[id] : null;
     if (!t) return false;
+    id = t.id; // 只用数据里自己的编号往页面上写，不用地址或属性里传进来的那份
     stopPlay();
     current = id;
     const i = order.indexOf(id), prev = order[i - 1], next = order[i + 1], p = partById[t.part];

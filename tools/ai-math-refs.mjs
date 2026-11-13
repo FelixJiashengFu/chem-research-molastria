@@ -9,7 +9,8 @@ vm.runInNewContext(readFileSync(new URL('../public/ai-math/aim-data.js', import.
 const refs = box.window.MOLASTRIA_AIM.refs;
 const UA = { 'User-Agent': 'MolAstria-reference-check/1.0 (https://molastria.com)' };
 const wait = (ms) => new Promise((ok) => setTimeout(ok, ms));
-const norm = (s) => String(s || '').normalize('NFKD').replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+const untag = (s) => { let prev; do { prev = s; s = s.replace(/<[^>]*>/g, ''); } while (s !== prev); return s; }; // OpenAlex titles sometimes carry <i>…</i>
+const norm = (s) => untag(String(s || '').normalize('NFKD')).replace(/[^a-z0-9]/gi, '').toLowerCase();
 const get = async (url) => {
   for (let i = 0; i < 5; i++) {
     const res = await fetch(url, { headers: UA });
