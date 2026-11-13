@@ -2,7 +2,7 @@
 // converted to MathML by KaTeX, so the page renders math natively, offline and without a script library.
 //   node tools/fundamental-math.mjs          (needs network once, for npx to fetch katex)
 //   node tools/fundamental-math.mjs quantum  (only the files whose path contains "quantum")
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import vm from 'node:vm';
 
@@ -46,3 +46,11 @@ build('aim-data.js', 'MOLASTRIA_AIM', 'aim-math.js', 'ai-math/');
 // 写公式作答的题（../viewer/formula-check.js 判分）：题面和解答里的公式
 build('math/fm-quiz.js', 'MOLASTRIA_FM_QUIZ', 'math/fm-quiz-math.js');
 build('qp-quiz.js', 'MOLASTRIA_QP_QUIZ', 'qp-quiz-math.js', 'quantum/physics/');
+// 化学学科馆的十五个展馆（chemistry/<id>/data.js → <id>/math.js）
+{
+  const box = { window: {} };
+  vm.runInNewContext(readFileSync(new URL('../public/chemistry/chem-subjects.js', import.meta.url), 'utf8'), box);
+  for (const [id] of box.window.MOLASTRIA_CHEM_SUBJECTS.subjects) {
+    if (existsSync(new URL(`../public/chemistry/${id}/data.js`, import.meta.url))) build(`${id}/data.js`, 'MOLASTRIA_CHEM', `${id}/math.js`, 'chemistry/');
+  }
+}

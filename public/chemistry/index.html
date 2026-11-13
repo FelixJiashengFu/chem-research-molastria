@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="化学学科馆：十四门化学学科各一个展馆。无机、有机、物理化学、分析化学四大基础，结构化学、量子与计算化学、配位与金属有机、电化学，高分子、生物化学、材料、环境、核化学和化学工程。分章讲解、核心公式、例题、浏览器里当场计算的演示、自测和按 DOI 核对的文献。Chemistry Disciplines: fourteen halls.">
+  <meta name="theme-color" content="#173f34">
+  <title>化学学科馆 · Chemistry Disciplines · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="chem.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="chem-subjects.js" defer></script>
+  <script src="hub.js" defer></script>
+</head>
+<body data-section="chemistry" class="js-render">
+<!-- 文字自带中英两版，由 hub.js 按页面语言写进来，每个 section 标 translate="no"（页脚照常翻译）。 -->
+<a class="skip" href="#chm-halls" id="chm-skip" translate="no">跳到十四个展馆</a>
+<main>
+  <section translate="no" class="fs-hero" aria-labelledby="chm-h1">
+    <p class="eyebrow">MOLASTRIA · CHEMISTRY DISCIPLINES</p>
+    <h1 id="chm-h1">化学学科馆<span class="fs-h1-en" lang="en">Chemistry Disciplines</span></h1>
+    <blockquote class="fs-question" id="chm-question"></blockquote>
+    <p class="lead" id="chm-lead"></p>
+    <p class="fs-honest" id="chm-honest"></p>
+    <ul class="fs-legend" id="chm-legend"></ul>
+    <nav class="fs-jump" id="chm-jump"></nav>
+  </section>
+  <section translate="no" class="fs-block" id="chm-halls" aria-labelledby="chm-halls-h" tabindex="-1">
+    <h2 id="chm-halls-h">十四个展馆</h2>
+    <p class="muted" id="chm-halls-note"></p>
+    <div id="chm-groups"></div>
+  </section>
+  <section translate="no" class="fs-block" id="chm-web" aria-labelledby="chm-web-h" tabindex="-1">
+    <h2 id="chm-web-h">学科关系图</h2>
+    <p class="muted" id="chm-web-note"></p>
+    <div class="chm-map" id="chm-map"></div>
+  </section>
+  <section translate="no" class="fs-block" id="chm-site" aria-labelledby="chm-site-h" tabindex="-1">
+    <h2 id="chm-site-h">站内其他化学内容</h2>
+    <ul class="chm-ext" id="chm-site-list"></ul>
+  </section>
+</main>
+<noscript><p style="padding:24px">这一页的内容由脚本生成，请打开 JavaScript。This page is rendered by script; please enable JavaScript.</p></noscript>
+</body>
+</html>

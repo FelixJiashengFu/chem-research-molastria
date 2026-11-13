@@ -3573,6 +3573,52 @@ check('News explainers: nav entry, item list and filter, two explainers with key
   await finish(e);
 });
 
+check('Chemistry Disciplines: nav entry, fourteen halls, map, every chapter and demo of the open halls draws, a worked number, English', async () => {
+  const p = await open();
+  const demoErrors = [];
+  p.on('console', (m) => { if (m.type() === 'error') demoErrors.push(m.text()); });
+  await go(p, '/chemistry/index.html');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=chemistry]', 'aria-current'), 'page', 'the chemistry nav entry is current');
+  assert.equal(await p.locator('a.chm-card').count(), 14, 'fourteen halls, all links');
+  assert.equal(await p.locator('.chm-card.is-soon').count(), 0);
+  assert.equal(await p.locator('#chm-map .chm-node').count(), 14);
+  assert.match(await text(p, '#chm-lead'), /十四个展馆[\s\S]*110 章、52 个演示、275 篇文献/);
+  const halls = await p.evaluate(() => window.MOLASTRIA_CHEM_SUBJECTS.subjects.filter((s) => !(window.MOLASTRIA_CHEM_SUBJECTS.soon || []).includes(s[0])).map((s) => [s[0], s[6], s[7]]));
+  assert.equal(halls.length, 14);
+  for (const [id, chapters, demos] of halls) {
+    await go(p, `/chemistry/${id}/index.html`);
+    assert.equal(await p.locator('#chm-chapters .chm-ch').count(), chapters, `${id}: chapter cards`);
+    assert.equal(await p.locator('#chm-switch a[href$="/index.html"]').count(), 15, `${id}: all halls plus the hub in the switcher`);
+    const ids = await p.evaluate(() => window.MOLASTRIA_CHEM.chapters.filter((c) => c.demos?.length).map((c) => c.id));
+    let drawn = 0;
+    for (const ch of ids) {
+      await p.evaluate((h) => { location.hash = h; }, `#c-${ch}`);
+      await p.waitForTimeout(200);
+      drawn += await p.locator('.chm-demo:visible').count();
+    }
+    assert.equal(drawn, demos, `${id}: every demo is shown`);
+  }
+  assert.deepEqual(demoErrors, [], 'no demo threw');
+  // A worked number: McCabe–Thiele at α = 2.5, R = 2 needs 11 theoretical stages, R_min = 1.10.
+  await go(p, '/chemistry/chemeng/index.html#c-separation');
+  await p.waitForTimeout(300);
+  assert.match(await p.locator('#demo-mccabe .fs-readout').innerText(), /理论板数\s*11[\s\S]*1\.10/);
+  // The materials hall links back to the MOF news items.
+  await go(p, '/chemistry/materials/index.html#c-porous');
+  await p.waitForTimeout(300);
+  assert.equal(await p.locator('a[href$="news/index.html#n-mof-radical-pairs"]').count() >= 1, true);
+  await finish(p);
+  const e = await open();
+  for (const path of ['/chemistry/index.html', '/chemistry/organic/index.html', '/chemistry/nuclear/index.html']) {
+    await go(e, `${path}?lang=en`);
+    await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await e.waitForTimeout(400);
+    const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+    assert.deepEqual(han, [], `no Chinese left on ${path} in English`);
+  }
+  await finish(e);
+});
+
 check('Spectra Hall: nav entry, 91 methods, filter and search, a method opens with drawn spectra, atlas, references, English', async () => {
   const p = await open();
   await go(p, '/spectra/index.html');
