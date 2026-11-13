@@ -34,6 +34,8 @@ window.MOLASTRIA_NEWS = (() => {
     qbio: ['../quantum/biology/index.html', '量子嘉年华 · 量子生物学（自由基对与磁感应）', 'Quantum Carnival · Quantum biology (radical pairs and magnetoreception)'],
     qphys: ['../quantum/physics/index.html', '量子嘉年华 · 量子物理（自旋）', 'Quantum Carnival · Quantum physics (spin)'],
     code: ['../code/index.html', '开源代码台（写 PySCF / ORCA 输入）', 'Code Desk (write PySCF / ORCA inputs)'],
+    porous: ['../chemistry/materials/index.html#c-porous', '化学学科馆 · 材料化学 · 多孔材料与金属有机框架', 'Chemistry Disciplines · Materials · porous materials and MOFs'],
+    magnetism: ['../chemistry/coordination/index.html#c-magnetism', '化学学科馆 · 配位化学 · 磁性', 'Chemistry Disciplines · Coordination · magnetism'],
   };
 
   const items = [
@@ -90,7 +92,7 @@ window.MOLASTRIA_NEWS = (() => {
       ],
       interp: T('演示 1 用的“单重态只和 T₀ 混合”是自由基对化学的教科书图像，用来说明为什么只有 T₀ 被填上；论文对机理的具体分析（包括量子化学计算）请看原文。', 'Demo 1 uses the textbook radical-pair picture, in which the singlet mixes only with T₀, to show why only T₀ fills up; for the paper’s own mechanistic analysis, including its quantum-chemical calculations, read the original.'),
       demos: ['rp', 'epr'],
-      related: ['epr', 'hyper', 'qbio', 'qcomp'],
+      related: ['porous', 'epr', 'hyper', 'qbio', 'qcomp'],
       refs: ['hamachi2026', 'inoue2026', 'yamauchi2024', 'wasielewski2020', 'furukawa2013', 'hore2016', 'degen2017'],
     },
     // ───────────────────────────────────────────────────────────────────────
@@ -141,7 +143,7 @@ window.MOLASTRIA_NEWS = (() => {
         T('这是系综测量（大量三重态一起），不是单自旋。', 'These are ensemble measurements (many triplets at once), not single spins.'),
       ],
       demos: ['zf', 'epr'],
-      related: ['epr', 'qphys', 'qcomp', 'code'],
+      related: ['porous', 'magnetism', 'epr', 'qphys', 'qcomp', 'code'],
       refs: ['inoue2026', 'bayliss2020', 'doherty2013', 'degen2017', 'wasielewski2020', 'furukawa2013'],
     },
   ];
