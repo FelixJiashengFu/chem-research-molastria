@@ -1,0 +1,98 @@
+{
+ "id": "formaldehyde",
+ "smiles": "C=O",
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -114.55522764,
+ "dipole": 2.3828,
+ "alpha_iso": 2.6717,
+ "geometry": [
+  [
+   "C",
+   -0.00649,
+   -0.00062,
+   0.00011
+  ],
+  [
+   "O",
+   1.1729,
+   -0.21879,
+   -0.00399
+  ],
+  [
+   "H",
+   -0.75366,
+   -0.81747,
+   0.00116
+  ],
+  [
+   "H",
+   -0.41208,
+   1.02944,
+   0.00297
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  1198.3,
+  1262.8,
+  1528.8,
+  1815.0,
+  2885.0,
+  2941.4
+ ],
+ "hessian_asymmetry": 1.8283294235017425e-05,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 1198.5,
+   "ir": 5.6341,
+   "redmass": 1.368,
+   "raman": 0.2406,
+   "depol": 0.75
+  },
+  {
+   "freq": 1262.9,
+   "ir": 11.7433,
+   "redmass": 1.3442,
+   "raman": 1.1052,
+   "depol": 0.75
+  },
+  {
+   "freq": 1528.91,
+   "ir": 11.7297,
+   "redmass": 1.1059,
+   "raman": 8.8311,
+   "depol": 0.4036
+  },
+  {
+   "freq": 1815.1,
+   "ir": 114.4049,
+   "redmass": 7.5021,
+   "raman": 8.7853,
+   "depol": 0.2766
+  },
+  {
+   "freq": 2885.28,
+   "ir": 73.553,
+   "redmass": 1.0426,
+   "raman": 181.5479,
+   "depol": 0.1049
+  },
+  {
+   "freq": 2941.83,
+   "ir": 117.0666,
+   "redmass": 1.1209,
+   "raman": 105.9636,
+   "depol": 0.75
+  }
+ ],
+ "seconds": 191
+}

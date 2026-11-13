@@ -1,0 +1,46 @@
+{
+ "id": "hcl",
+ "smiles": "Cl",
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -460.83690289,
+ "dipole": 1.0971,
+ "alpha_iso": 2.6514,
+ "geometry": [
+  [
+   "Cl",
+   0.0,
+   -0.0,
+   -0.09127
+  ],
+  [
+   "H",
+   -0.0,
+   0.0,
+   1.19131
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  2941.3
+ ],
+ "hessian_asymmetry": 0.0,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 2941.5,
+   "ir": 40.692,
+   "redmass": 1.0358,
+   "raman": 91.3893,
+   "depol": 0.1796
+  }
+ ],
+ "seconds": 39
+}

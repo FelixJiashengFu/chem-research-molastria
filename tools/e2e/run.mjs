@@ -3477,6 +3477,47 @@ check('NMR: nav entry, eleven parts, eight method families, timeline, five worki
   await finish(e);
 });
 
+check('Spectra Hall: nav entry, 91 methods, filter and search, a method opens with drawn spectra, atlas, references, English', async () => {
+  const p = await open();
+  await go(p, '/spectra/index.html');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=spectra]', 'aria-current'), 'page', 'the Spectra Hall nav entry is current');
+  assert.equal(await p.locator('.sp-card').count(), 91);
+  await p.click('#sp-fams button[data-fam=ms]');
+  const ms = await p.locator('.sp-card').count();
+  assert.ok(ms > 5 && ms < 91, `mass spectrometry family shows ${ms}`);
+  await p.click('#sp-fams button[data-fam=""]');
+  await p.fill('#sp-q', 'GC-MS');
+  assert.ok(await p.locator('.sp-card[data-id=gcms]').count() === 1);
+  await p.fill('#sp-q', '');
+  await go(p, '/spectra/index.html#m-gcms');
+  await p.waitForTimeout(400);
+  assert.match(await text(p, '#sp-m-title'), /GC-MS/);
+  await p.locator('#sp-method .sp-fig').first().scrollIntoViewIfNeeded();
+  await p.waitForFunction(() => document.querySelectorAll('#sp-method .sp-fig[data-done] svg.sp-plot').length > 0);
+  // Every figure says where its data come from.
+  const kinds = await p.$$eval('#sp-method .sp-fig', (fs) => fs.map((f) => f.dataset.kind));
+  assert.ok(kinds.length && kinds.every((k) => ['measured', 'computed', 'constants', 'sketch'].includes(k)), kinds.join());
+  // Infrared opens with computed and measured spectra; the computed one carries a provenance tag.
+  await go(p, '/spectra/index.html#m-ir');
+  await p.waitForTimeout(400);
+  assert.ok(await p.locator('#sp-method .sp-fig[data-kind=computed]').count() >= 1, 'IR has a computed spectrum');
+  // Atlas tables are filled when opened.
+  await p.click('#sp-atlas-list details summary >> nth=0');
+  assert.ok(await p.locator('#sp-atlas-list details[open] table tr').count() > 3);
+  assert.equal(await p.locator('#sp-refs > li').count(), 178);
+  await p.click('#sp-case-tabs [data-case]:nth-child(2)');
+  assert.equal(await p.locator('#sp-case-panel .sp-steps li').count() > 2, true);
+  await finish(p);
+  const e = await open();
+  await go(e, '/spectra/index.html?lang=en#m-ms');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(800);
+  assert.match(await text(e, '#sp-h1'), /Spectra Hall/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('quantum biology: under Quantum Carnival, seven directions, evidence ledger, three working demos, references, English', async () => {
   const p = await open();
   await go(p, '/quantum/biology/index.html');
@@ -3538,7 +3579,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5055,7 +5096,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

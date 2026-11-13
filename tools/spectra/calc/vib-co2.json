@@ -1,0 +1,76 @@
+{
+ "id": "co2",
+ "smiles": "O=C=O",
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -188.67078377,
+ "dipole": 0.0,
+ "alpha_iso": 2.5563,
+ "geometry": [
+  [
+   "O",
+   -1.15657,
+   0.19035,
+   -0.0
+  ],
+  [
+   "C",
+   -0.0,
+   0.10347,
+   -0.0
+  ],
+  [
+   "O",
+   1.15657,
+   0.01659,
+   0.0
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  676.6,
+  677.2,
+  1370.5,
+  2405.5
+ ],
+ "hessian_asymmetry": 1.5960898290055163e-05,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 676.68,
+   "ir": 30.1792,
+   "redmass": 12.8878,
+   "raman": 0.0,
+   "depol": null
+  },
+  {
+   "freq": 677.21,
+   "ir": 30.1788,
+   "redmass": 12.8878,
+   "raman": 0.0,
+   "depol": null
+  },
+  {
+   "freq": 1371.06,
+   "ir": 0.0,
+   "redmass": 15.999,
+   "raman": 21.1824,
+   "depol": 0.104
+  },
+  {
+   "freq": 2405.52,
+   "ir": 675.2495,
+   "redmass": 12.8878,
+   "raman": 0.0,
+   "depol": 0.6732
+  }
+ ],
+ "seconds": 206
+}

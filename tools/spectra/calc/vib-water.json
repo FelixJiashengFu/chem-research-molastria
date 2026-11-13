@@ -1,0 +1,68 @@
+{
+ "id": "water",
+ "smiles": "O",
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -76.46684016,
+ "dipole": 1.8508,
+ "alpha_iso": 1.4607,
+ "geometry": [
+  [
+   "O",
+   0.007,
+   0.39006,
+   -0.0
+  ],
+  [
+   "H",
+   -0.76842,
+   -0.18152,
+   0.0
+  ],
+  [
+   "H",
+   0.76105,
+   -0.20944,
+   0.0
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  1623.8,
+  3785.9,
+  3887.2
+ ],
+ "hessian_asymmetry": 0.00010394772132529817,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 1623.8,
+   "ir": 77.8126,
+   "redmass": 1.0837,
+   "raman": 0.6606,
+   "depol": 0.7128
+  },
+  {
+   "freq": 3786.55,
+   "ir": 4.1298,
+   "redmass": 1.0445,
+   "raman": 101.669,
+   "depol": 0.0569
+  },
+  {
+   "freq": 3887.9,
+   "ir": 61.2371,
+   "redmass": 1.0827,
+   "raman": 26.8932,
+   "depol": 0.75
+  }
+ ],
+ "seconds": 51
+}

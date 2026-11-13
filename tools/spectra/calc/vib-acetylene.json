@@ -1,0 +1,106 @@
+{
+ "id": "acetylene",
+ "smiles": "C#C",
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -77.36489917,
+ "dipole": 0.0,
+ "alpha_iso": 3.4604,
+ "geometry": [
+  [
+   "C",
+   -0.5598,
+   0.08001,
+   -0.1963
+  ],
+  [
+   "C",
+   0.5598,
+   -0.08001,
+   0.1963
+  ],
+  [
+   "H",
+   -1.55381,
+   0.2221,
+   -0.54479
+  ],
+  [
+   "H",
+   1.55381,
+   -0.2221,
+   0.54479
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  659.1,
+  659.4,
+  764.8,
+  765.0,
+  2070.1,
+  3415.8,
+  3514.1
+ ],
+ "hessian_asymmetry": 7.79563078480306e-05,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 659.24,
+   "ir": 0.0,
+   "redmass": 1.5743,
+   "raman": 3.0271,
+   "depol": 0.75
+  },
+  {
+   "freq": 659.44,
+   "ir": 0.0,
+   "redmass": 1.5743,
+   "raman": 3.021,
+   "depol": 0.75
+  },
+  {
+   "freq": 764.96,
+   "ir": 97.0469,
+   "redmass": 1.085,
+   "raman": 0.0,
+   "depol": 0.75
+  },
+  {
+   "freq": 765.17,
+   "ir": 97.0634,
+   "redmass": 1.085,
+   "raman": 0.0,
+   "depol": 0.7246
+  },
+  {
+   "freq": 2069.99,
+   "ir": 0.0,
+   "redmass": 3.8125,
+   "raman": 112.2694,
+   "depol": 0.0671
+  },
+  {
+   "freq": 3416.27,
+   "ir": 89.2838,
+   "redmass": 1.085,
+   "raman": 0.0176,
+   "depol": 0.1201
+  },
+  {
+   "freq": 3514.44,
+   "ir": 0.0,
+   "redmass": 1.23,
+   "raman": 52.5568,
+   "depol": 0.2795
+  }
+ ],
+ "seconds": 212
+}

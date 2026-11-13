@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="谱图馆：91 种分析方法的谱图怎么来、怎么读。红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、蛋白质和糖的多维核磁、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法。52 张开放许可的实测质谱，28 个分子的量化计算红外和拉曼谱、13 个分子的紫外谱，78 个可以动手调的演示，16 张速查表，178 篇核对过的文献；每张图都写明是实测、计算还是示意。">
+  <meta name="theme-color" content="#173f34">
+  <title>谱图馆 · Spectra Hall · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="spectra.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../cite/cite-core.js" defer></script>
+  <script src="../cite/cite.js" defer></script>
+  <script src="sp-tables.js" defer></script>
+  <script src="sp-models.js" defer></script>
+  <script src="sp-macro.js" defer></script>
+  <script src="sp-data.js" defer></script>
+  <script src="sp-m-vib.js" defer></script>
+  <script src="sp-m-elec.js" defer></script>
+  <script src="sp-m-ms.js" defer></script>
+  <script src="sp-m-sep.js" defer></script>
+  <script src="sp-m-mag.js" defer></script>
+  <script src="sp-m-xray.js" defer></script>
+  <script src="sp-m-atom.js" defer></script>
+  <script src="sp-m-thermal.js" defer></script>
+  <script src="sp-m-echem.js" defer></script>
+  <script src="sp-m-other.js" defer></script>
+  <script src="sp-m-macro.js" defer></script>
+  <script src="sp-atlas.js" defer></script>
+  <script src="sp-refs.js" defer></script>
+  <script src="sp-measured.js" defer></script>
+  <script src="sp-computed.js" defer></script>
+  <script src="sp-plot.js" defer></script>
+  <script src="sp-figs.js" defer></script>
+  <script src="sp-gens.js" defer></script>
+  <script src="sp-gens2.js" defer></script>
+  <script src="sp-gens3.js" defer></script>
+  <script src="spectra.js" defer></script>
+</head>
+<body data-section="spectra" class="js-render">
+<a class="skip" href="#sp-methods">跳到方法目录</a>
+<main>
+  <section class="fs-hero" aria-labelledby="sp-h1">
+    <p class="eyebrow">MOLASTRIA · SPECTRA HALL</p>
+    <h1 id="sp-h1">谱图馆<span class="fs-h1-en" lang="en" translate="no">Spectra Hall</span></h1>
+    <blockquote class="fs-question" id="sp-question"></blockquote>
+    <p class="lead" id="sp-lead"></p>
+    <p class="fs-honest" id="sp-honest"></p>
+    <ul class="fs-legend" id="sp-legend" aria-label="四种数据来源标注"></ul>
+    <nav class="fs-jump" aria-label="本页内容">
+      <a class="button primary" href="#sp-methods">91 种方法 <span aria-hidden="true"><i class="ico-ext ico-down" aria-hidden="true"></i></span></a>
+      <a class="button" href="#sp-questions">按问题找方法</a>
+      <a class="button" href="#sp-cases">联合解谱</a>
+      <a class="button" href="#sp-labs">动手实验台</a>
+      <a class="button" href="#sp-atlas">速查表</a>
+      <a class="button" href="#sp-ledger">数据来源</a>
+      <a class="button" href="#sp-library">文献</a>
+    </nav>
+  </section>
+
+  <section class="fs-block" id="sp-ladder" aria-labelledby="sp-ladder-h" tabindex="-1">
+    <h2 id="sp-ladder-h">一把能量的尺子</h2>
+    <p class="muted" id="sp-ladder-intro"></p>
+    <div class="sp-scroll"><table class="sp-table sp-ladder" id="sp-ladder-table"></table></div>
+    <p class="muted" id="sp-ladder-rest"></p>
+  </section>
+
+  <section class="fs-block" id="sp-questions" aria-labelledby="sp-questions-h" tabindex="-1">
+    <h2 id="sp-questions-h">按问题找方法</h2>
+    <p class="muted">先想清楚要问样品什么，再挑方法。下面二十个问题各配了最常用的几种方法，点方法名直接打开它的讲解。</p>
+    <div class="sp-q-grid" id="sp-q-grid"></div>
+  </section>
+
+  <section class="fs-block" id="sp-methods" aria-labelledby="sp-methods-h" tabindex="-1">
+    <h2 id="sp-methods-h">方法目录</h2>
+    <p class="muted">十一个家族，91 种方法。每种方法都讲原理、坐标轴、能回答什么问题、样品要求、关键数字、读谱步骤和常见的坑，并配有谱图。标“常用”的 33 种是多数实验室天天在用的。</p>
+    <div class="sp-find" role="search" aria-label="筛选方法">
+      <label class="sp-find-q">搜索方法<input type="search" id="sp-q" placeholder="例如 红外、GC-MS、XPS、手性" autocomplete="off" spellcheck="false"></label>
+      <div class="sp-fams" id="sp-fams" role="group" aria-label="按家族筛选"></div>
+    </div>
+    <p class="fs-count" id="sp-count" role="status" aria-live="polite"></p>
+    <div class="sp-grid" id="sp-grid"></div>
+  </section>
+
+  <section class="fs-block fs-reader" id="sp-reader" aria-labelledby="sp-reader-h" tabindex="-1">
+    <h2 id="sp-reader-h">方法详解</h2>
+    <p class="muted">在上面的目录里点一种方法，它的讲解和谱图就显示在这里。图里的滑块、选项都可以动；鼠标移到图上读数，标了“可点”的图可以点峰。</p>
+    <article class="sp-method" id="sp-method" aria-live="polite"></article>
+  </section>
+
+  <section class="fs-block" id="sp-cases" aria-labelledby="sp-cases-h" tabindex="-1">
+    <h2 id="sp-cases-h">联合解谱：四个例子</h2>
+    <p class="muted">真正解决问题时很少只看一张谱。下面四个分子各用几种谱一步步推出结构，每一步都写明这张谱是实测的还是计算的。</p>
+    <div class="fs-tabs" role="tablist" aria-label="联合解谱的例子" id="sp-case-tabs"></div>
+    <div id="sp-case-panel"></div>
+  </section>
+
+  <section class="fs-block fs-lab" id="sp-labs" aria-labelledby="sp-labs-h" tabindex="-1">
+    <h2 id="sp-labs-h">动手实验台</h2>
+    <p class="muted">九个可以自己输入、自己调的工具。曲线和数字都在浏览器里现算，每个工具上方标明数据属于哪一类。</p>
+    <div id="sp-lab-list"></div>
+  </section>
+
+  <section class="fs-block" id="sp-atlas" aria-labelledby="sp-atlas-h" tabindex="-1">
+    <h2 id="sp-atlas-h">速查表</h2>
+    <p class="muted">读谱时最常翻的十六张表：特征频率、发色团、中性丢失、同位素、加合离子、化学位移、结合能、特征 X 射线、原子谱线、参比电极。带“现算”的表由本页的同位素质量和常数直接算出。</p>
+    <div class="sp-atlas" id="sp-atlas-list"></div>
+  </section>
+
+  <section class="fs-block" id="sp-ledger" aria-labelledby="sp-ledger-h" tabindex="-1">
+    <h2 id="sp-ledger-h">数据来源与核对</h2>
+    <p class="muted" id="sp-ledger-intro"></p>
+    <div class="fs-theory-grid" id="sp-ledger-grid"></div>
+    <div class="sp-unverified" id="sp-unverified"></div>
+    <details class="fs-notes sp-records"><summary>52 张实测质谱的记录清单</summary>
+      <div class="sp-scroll"><table class="sp-table" id="sp-records"></table></div>
+    </details>
+  </section>
+
+  <section class="fs-block" id="sp-library" aria-labelledby="sp-library-h" tabindex="-1">
+    <h2 id="sp-library-h">文献</h2>
+    <p class="muted" id="sp-lib-intro"></p>
+    <div class="fs-lib-filters" role="search" aria-label="筛选文献">
+      <label>方法家族<select id="sp-lib-area"><option value="">全部家族</option></select></label>
+      <label>排序<select id="sp-lib-sort"><option value="year-asc">按年份（早到晚）</option><option value="year-desc">按年份（晚到早）</option></select></label>
+    </div>
+    <p class="fs-count" id="sp-lib-count" role="status" aria-live="polite"></p>
+    <ol class="fs-refs" id="sp-refs"></ol>
+  </section>
+
+  <footer class="fs-foot">
+    <strong>MolAstria · 谱图馆</strong>
+    <p>本页的每张图都标明来源：实测、量化计算、由实测常数算出，或者示意。计算谱和模型用来学习怎样读谱，不能代替对真实样品的测量，也不能当作鉴定的依据。</p>
+    <p><a href="../nmr/index.html">核磁共振</a> · <a href="../code/index.html">开源代码台</a> · <a href="../manual/index.html">讲解手册</a> · <a href="../quantum/physics/index.html">量子物理</a> · <a href="../atlas/index.html">数据库目录</a> · <a href="#sp-h1">回到顶部 <i class="ico-ext ico-up" aria-hidden="true"></i></a></p>
+  </footer>
+</main>
+</body>
+</html>
