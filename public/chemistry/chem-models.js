@@ -406,5 +406,38 @@
     return [r, g, b].map((v) => Math.round(255 * Math.max(0, Math.min(1, v * f)) ** 0.8));
   };
 
+  // ── 08 电化学 ───────────────────────────────────────────────────────────
+  // Nernst：E = E° − (RT/nF) ln Q；mH 是反应式里 H⁺ 的计量数（氧化态一侧），所以 E 随 pH 下降 (mH/n)·0.05916 V
+  M.nernst = (E0, n, lgOx, lgRed, pH = 0, mH = 0, T = 298.15) => E0 + ((M.R * T * Math.LN10) / (n * M.F)) * (lgOx - lgRed - mH * pH);
+  // Butler–Volmer，带两侧的极限扩散电流（同一形式的闭式解）：j0、jla、jlc 都取正值（mA/cm²），η 以 V 计
+  M.butlerVolmer = (eta, j0, alpha, n = 1, T = 298.15, jla = Infinity, jlc = Infinity) => {
+    const f = (n * M.F) / (M.R * T), a = Math.exp((1 - alpha) * f * eta), c = Math.exp(-alpha * f * eta);
+    return (a - c) / (1 / j0 + a / jla + c / jlc);
+  };
+  // 循环伏安的有限差分模拟：O + n e⁻ ⇌ R，溶液里开始只有 O（c，mol/L），半无限线性扩散，电极反应按 Butler–Volmer（k0，cm/s）。
+  // 返回电位（V，相对 E°′）和电流密度（mA/cm²，还原为负）
+  M.cv = ({ c = 1e-3, D = 1e-5, v = 0.1, k0 = 1, alpha = 0.5, n = 1, Ei = 0.4, Ev = -0.4, T = 298.15, steps = 2000 }) => {
+    const f = (n * M.F) / (M.R * T), tt = (2 * Math.abs(Ei - Ev)) / v, dt = tt / steps, dx = Math.sqrt((D * dt) / 0.4), nx = Math.ceil((6 * Math.sqrt(D * tt)) / dx) + 2, lam = (D * dt) / (dx * dx);
+    const C = c * 1e-3; // mol/cm³
+    let O = new Float64Array(nx).fill(C), R = new Float64Array(nx), O2 = new Float64Array(nx), R2 = new Float64Array(nx);
+    const E = [], j = [], dir = Ev < Ei ? -1 : 1;
+    for (let k = 0; k <= steps; k++) {
+      const t = k * dt, Et = t <= tt / 2 ? Ei + dir * v * t : Ev - dir * v * (t - tt / 2), eta = Et;
+      const kf = k0 * Math.exp(-alpha * f * eta), kb = k0 * Math.exp((1 - alpha) * f * eta);
+      // 表面浓度梯度用三点公式；通量和表面浓度一起解出，k 很大时也稳定
+      const J = ((kf * (4 * O[1] - O[2]) - kb * (4 * R[1] - R[2])) / 3) / (1 + (2 * dx * (kf + kb)) / (3 * D)); // 还原通量，mol cm⁻² s⁻¹
+      O[0] = (4 * O[1] - O[2] - (2 * dx * J) / D) / 3; R[0] = (4 * R[1] - R[2] + (2 * dx * J) / D) / 3;
+      E.push(Et); j.push(-n * M.F * J * 1000);
+      for (let i = 1; i < nx - 1; i++) { O2[i] = O[i] + lam * (O[i + 1] - 2 * O[i] + O[i - 1]); R2[i] = R[i] + lam * (R[i + 1] - 2 * R[i] + R[i - 1]); }
+      O2[0] = O[0]; R2[0] = R[0]; O2[nx - 1] = C; R2[nx - 1] = 0;
+      [O, O2] = [O2, O]; [R, R2] = [R2, R];
+    }
+    return { E, j };
+  };
+  // Randles–Ševčík：可逆体系的峰电流密度（mA/cm²），c 以 mol/L 计
+  M.randlesSevcik = (n, c, D, v, T = 298.15) => 0.4463 * n * M.F * (c * 1e-3) * Math.sqrt((n * M.F * v * D) / (M.R * T)) * 1000;
+  // 理论比容量（mAh/g）：每摩尔式量转移 n 个电子
+  M.specCap = (n, Mg) => (n * M.F) / (3.6 * Mg);
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();

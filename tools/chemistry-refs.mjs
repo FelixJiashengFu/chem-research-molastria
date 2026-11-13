@@ -71,7 +71,8 @@ for (const [sid] of box.window.MOLASTRIA_CHEM_SUBJECTS.subjects) {
     if (first && !okAuthor) problems.push(`first author ${first}`);
     if (!sameTitle(r.title, m.title)) problems.push(`title "${m.title}"`);
     const vol = m.biblio?.volume;
-    if (r.vol && vol && String(vol) !== String(r.vol)) problems.push(`volume ${r.vol} vs ${vol}`);
+    // OpenAlex 给 Zeitschrift für Physikalische Chemie 早年各卷加了一个 U（如 4U、50U），比较时去掉
+    if (r.vol && vol && String(vol).replace(/^(\d+)U$/, '$1') !== String(r.vol)) problems.push(`volume ${r.vol} vs ${vol}`);
     console.log(`${problems.length ? 'FAIL' : 'ok  '} ${sid}/${r.id}${problems.length ? ': ' + problems.join('; ') : ''}`);
     if (problems.length) bad++;
   }
