@@ -16,6 +16,9 @@
   const PALS = {
     budi: { a: '#F8E9BC', b: '#D9A53C', G: '#2F9468', DG: '#1C6B4A', T: '#E9C36A', plain: false },
     'budi-plain': { a: '#F8E9BC', b: '#F8E9BC', G: '#2F9468', DG: '#2F9468', T: '#D9A53C', plain: true },
+    // 两只按真花配的色（站长 2026-11-12 给的照片）：face 是脸上那块的颜色（深色身体上眼睛要看得见），base[i] 盖掉第 i 层的底色
+    'budi-midnight': { a: '#361A55', b: '#EFE4B0', face: '#F4EBCB', G: '#2F9468', DG: '#1C6B4A', T: '#E6D59A', plain: false },
+    'budi-rose': { a: '#DE3F7C', b: '#F383AB', face: '#FDF1F4', base: [0, 0, '#FDF1F4', '#FDF1F4', '#FDF1F4', '#FDF1F4', '#F6B3CA'], G: '#2F9468', DG: '#1C6B4A', T: '#9BC76A', plain: false },
   };
 
   function create(T, canvas, opts = {}) {
@@ -138,7 +141,8 @@
           const th = Math.atan2(z, x - c) / (2 * Math.PI);
           const v = ((th * 2 + i * 0.11) % 1 + 1) % 1;
           let col = v < 0.3 ? pal.b : pal.a;
-          if (i >= 4 && i <= 6 && front && Math.abs(x) < 3.6) col = pal.a;
+          if (pal.base?.[i]) col = pal.base[i];
+          if (i >= 4 && i <= 6 && front && Math.abs(x) < 3.6) col = pal.face || pal.a;
           if (i <= 1) col = G;
           if (i === 2) {
             const per = ex > w / 2 - 1.01 || ez > w / 2 - 1.01;

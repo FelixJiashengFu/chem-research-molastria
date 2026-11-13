@@ -4363,7 +4363,7 @@ check('pets: adopt one of three mascots, pat / feed / play / sleep, outfits by l
   const mode = () => p.evaluate(() => window.MolAstriaPet?.mode);
   await p.waitForFunction(() => window.MolAstriaPet?.mode && window.MolAstriaPet.mode !== 'loading', null, { timeout: 30000 });
   assert.ok(['3d', 'still'].includes(await mode()), 'stage is 3D or the picture');
-  assert.equal(await p.locator('.pt-kind[data-kind]').count(), 3, 'three mascots to choose from');
+  assert.equal(await p.locator('.pt-kind[data-kind]').count(), 5, 'five mascots to choose from');
   assert.equal(await p.evaluate(() => localStorage.getItem('molastria-pet')), null, 'nothing saved before adopting');
   await p.click('.pt-kind[data-kind="astra"]');
   assert.equal(await p.getAttribute('.pt-kind[data-kind="astra"]', 'aria-checked'), 'true');
@@ -4467,6 +4467,69 @@ check('pets: adopt one of three mascots, pat / feed / play / sleep, outfits by l
   assert.equal((await e.evaluate(() => JSON.parse(localStorage.getItem('molastria-pet')))).count.pet, 1, 'tapping the picture pats');
   assert.doesNotMatch(await text(e, 'main'), HAN, 'no Chinese left on the English page');
   await finish(e);
+});
+
+check('pet in the menu: the current group is marked by your pet (Budi by default), clicking it opens the floating garden to adopt, pat, feed and sleep; phone, English, the pet page repaints', async () => {
+  const p = await open();
+  await go(p, '/videos/index.html');
+  await p.click('.cr-grp-btn[data-group=learn]');
+  await p.waitForSelector('.cr-petm-rail:not([hidden])');
+  assert.match(await p.getAttribute('.cr-petm-rail img', 'src'), /pet\/img\/budi\.webp$/, 'Budi when nothing is adopted');
+  // it sits right after the group's name on the current row, not on the others
+  const box = await p.evaluate(() => {
+    const m = document.querySelector('.cr-petm-rail').getBoundingClientRect(), b = document.querySelector('[data-rail=learn] b').getBoundingClientRect();
+    return { dx: m.left - b.right, feet: m.bottom - b.bottom };
+  });
+  assert.ok(box.dx >= 0 && box.dx < 12 && Math.abs(box.feet) < 6, `next to the group name ${JSON.stringify(box)}`);
+  assert.equal(await p.evaluate(() => getComputedStyle(document.querySelector('[data-rail=learn] b'), '::after').content), 'none', 'the old green dot is gone');
+  await p.click('.cr-petm-rail');
+  await p.waitForSelector('#pet-garden:not([hidden])');
+  assert.ok(await p.evaluate(() => document.querySelector('.cr-mega').hidden), 'the menu closes');
+  assert.equal(await text(p, '#pg-t'), '苞苞的花园');
+  assert.ok(await p.isVisible('[data-adopt]'), 'offers to adopt Budi');
+  assert.ok(!(await p.isVisible('.pg-acts')));
+  await p.click('[data-adopt]');
+  const saved = () => p.evaluate(() => JSON.parse(localStorage.getItem('molastria-pet')));
+  assert.equal((await saved()).kind, 'budi');
+  await p.click('.pg-acts [data-act=pet]');
+  assert.equal((await saved()).count.pet, 1);
+  await p.click('.pg-acts [data-act=feed]');
+  await p.click('[data-snack=water]');
+  assert.equal((await saved()).count.feed, 1);
+  await p.click('.pg-acts [data-act=sleep]');
+  assert.equal((await saved()).asleep, true);
+  assert.equal((await text(p, '.pg-acts [data-act=sleep]')).trim(), '叫醒');
+  await p.click('.pg-acts [data-act=play]');
+  assert.match(await text(p, '.pg-msg'), /睡着/, 'asleep: no playing');
+  await p.keyboard.press('Escape');
+  assert.ok(await p.evaluate(() => document.getElementById('pet-garden').hidden), 'Escape closes');
+  await p.waitForSelector('#pb-buddy .pb-pet', { timeout: 3000 }).catch(() => {}); // the corner buddy appears on the next page
+  await finish(p);
+
+  // phone, English, an adopted Astra: the mark is next to the group title in the all-groups list
+  const e = await open({ viewport: { width: 390, height: 844 }, init: () => { try { localStorage.setItem('molastria-pet', JSON.stringify({ v: 1, kind: 'astra', name: 'Star', born: Date.now() - 864e5, t: Date.now(), full: 70, joy: 70, energy: 70, xp: 0 })); } catch { /* ignore */ } } });
+  await go(e, '/videos/index.html?lang=en');
+  await e.click('.cr-menu-btn');
+  await e.waitForSelector('.cr-sec[data-group=learn] h3 .cr-petm-head:not([hidden])');
+  assert.match(await e.getAttribute('.cr-petm-head img', 'src'), /pet\/img\/astra\.webp$/);
+  assert.match(await e.getAttribute('.cr-petm-head', 'aria-label'), /Star/);
+  await e.click('.cr-petm-head');
+  await e.waitForSelector('#pet-garden:not([hidden])');
+  assert.equal(await text(e, '#pg-t'), 'Star’s garden');
+  assert.doesNotMatch(await text(e, '#pet-garden'), HAN, 'no Chinese in the English garden');
+  const w = await e.evaluate(() => document.querySelector('.pg-win').getBoundingClientRect().width);
+  assert.equal(Math.round(w), 390, 'a bottom sheet on phones');
+  assert.equal(await e.evaluate(() => document.documentElement.scrollWidth), 390, 'no sideways scroll');
+  await finish(e);
+
+  // on the pet page itself, the den repaints after acting in the garden
+  const d = await open({ init: () => { try { localStorage.setItem('molastria-pet', JSON.stringify({ v: 1, kind: 'budi', name: '苞苞', born: Date.now() - 864e5, t: Date.now(), full: 70, joy: 50, energy: 70, xp: 0 })); } catch { /* ignore */ } } });
+  await go(d, '/pet/index.html');
+  await d.click('.cr-grp-btn[data-current]');
+  await d.click('.cr-petm-rail');
+  await d.click('.pg-acts [data-act=pet]');
+  assert.equal(await d.evaluate(() => window.MolAstriaPet.state.count.pet), 1, 'the den saw the pat');
+  await finish(d);
 });
 
 check('bookshelf: site shelves, pull a book out, status / stars / notes, my shelf, DOI / ISBN / title lookup, typed-in book, reorder, BibTeX, covers view, English', async () => {

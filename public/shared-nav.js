@@ -181,7 +181,64 @@
     mega.querySelectorAll('[data-rail]').forEach((b) => b.toggleAttribute('data-current', !!x && x.group === b.dataset.rail));
     const g = x && GROUPS.find((y) => y.id === x.group);
     menuBtn.querySelector('.cr-where').textContent = x ? `${en ? g.en : g.zh} · ${name(x)}` : '';
+    placePet();
   };
+
+  // ── 当前位置的小宠物：菜单里“你在这一组”的标记是用户领养的宠物（没领养就是苞苞），点它打开浮窗花园（pet/pet-garden.js，
+  //    点了才载入）。图片是 pet/ 里 11–21 KB 的 webp，菜单打开时才请求。宽屏标在左栏组名旁边；窄屏（全部分组一起列出）标在组标题旁边。
+  const PET_KINDS = { budi: ['苞苞', 'Budi'], 'budi-plain': ['苞苞', 'Budi'], 'budi-midnight': ['苞苞', 'Budi'], 'budi-rose': ['苞苞', 'Budi'], astra: ['星环', 'Astra'] };
+  const petNow = () => {
+    try {
+      const o = JSON.parse(localStorage.getItem('molastria-pet') || 'null');
+      if (o && PET_KINDS[o.kind]) return { kind: o.kind, name: typeof o.name === 'string' && o.name.trim() ? o.name.trim().slice(0, 24) : L(...PET_KINDS[o.kind]), own: true };
+    } catch { /* private mode or a broken save */ }
+    return { kind: 'budi', name: L('苞苞', 'Budi'), own: false };
+  };
+  const petBtn = (where) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `cr-petm cr-petm-${where}`;
+    b.hidden = true;
+    b.setAttribute('aria-haspopup', 'dialog');
+    b.innerHTML = '<img alt="" width="26" height="26" decoding="async">';
+    b.addEventListener('click', (e) => { e.stopPropagation(); openGarden(); });
+    return b;
+  };
+  const railPet = petBtn('rail'), headPet = petBtn('head');
+  mega.querySelector('.cr-rail').append(railPet);
+  function paintPet() {
+    const p = petNow(), src = link(`pet/img/${p.kind}.webp`);
+    const label = p.own ? L(`你在这一组 · ${p.name}陪着你，点它进花园`, `You are here · ${p.name} is with you. Open the garden`) : L('你在这一组 · 苞苞在这儿，点它进花园', 'You are here · Budi is here. Open the garden');
+    [railPet, headPet].forEach((b) => {
+      const img = b.firstChild;
+      if (img.getAttribute('src') !== src) img.src = src;
+      b.setAttribute('aria-label', label);
+      b.title = label;
+    });
+  }
+  function placePet() {
+    const x = byId.get(currentId());
+    const rb = x && mega.querySelector(`[data-rail="${x.group}"]`), h3 = x && mega.querySelector(`.cr-sec[data-group="${x.group}"] h3`);
+    railPet.hidden = !rb;
+    headPet.hidden = !h3;
+    if (h3 && headPet.parentNode !== h3) h3.insertBefore(headPet, h3.querySelector('small'));
+    if (!rb || mega.hidden) return;
+    paintPet();
+    // offsets are in the header's own CSS pixels, so CSS zoom needs no correction
+    const t = rb.querySelector('b');
+    railPet.style.left = `${t.offsetLeft + t.offsetWidth + 4}px`;
+    railPet.style.top = `${t.offsetTop + t.offsetHeight - 33}px`; // its feet on the name's baseline
+  }
+  let garden = null;
+  function openGarden() {
+    closeMenu();
+    if (!garden) {
+      garden = (window.MolAstriaPetCore ? Promise.resolve() : addScript('pet/pet-core.js')).then(() => window.MolAstriaPetGarden || addScript('pet/pet-garden.js'));
+      garden.catch(() => { garden = null; });
+    }
+    garden.then(() => window.MolAstriaPetGarden?.open(opener && document.contains(opener) ? opener : (compact ? menuBtn : grpBtns.find((b) => b.hasAttribute('data-current')) || jumpBtn)), () => { location.href = link('pet/index.html'); });
+  }
+  addEventListener('storage', (e) => { if (e.key === 'molastria-pet' && !mega.hidden) paintPet(); });
   const markPins = () => {
     mega.querySelectorAll('.cr-pin-t').forEach((b) => { const on = pins.includes(b.dataset.pin); b.setAttribute('aria-pressed', String(on)); b.title = on ? L('从顶栏取下', 'Unpin from the header') : L('固定到顶栏', 'Pin to the header'); });
     const box = mega.querySelector('.cr-mega-pins');
@@ -247,6 +304,7 @@
     jumpBtn.setAttribute('aria-expanded', 'true');
     markPins();
     place();
+    placePet();
     requestAnimationFrame(() => mega.classList.add('open'));
     if (opts.search) findIn.focus({ preventScroll: true });
     else if (opts.focus) (mega.querySelector(`.cr-sec[data-group="${active}"] .cr-item`) || findIn).focus({ preventScroll: true });

@@ -98,7 +98,7 @@
     app.innerHTML = `<header class="pt-mast">
         <p class="pt-eyebrow">MOLASTRIA · PETS</p>
         <h1>${L('领养一只小宠物', 'Adopt a little pet')}</h1>
-        <p class="pt-lead">${L('MolAstria 的三个吉祥物在等一个主人。选一只，给它起个名字，以后来学习的时候顺便摸摸它、喂一块苯环饼干。它不会生病，也不会因为你忙而离开，只是会想你。', 'MolAstria’s three mascots are waiting for a home. Pick one, give it a name, and drop by to pat it or share a benzene cookie when you come to study. It never gets sick and won’t leave when you’re busy. It just misses you.')}</p>
+        <p class="pt-lead">${L('MolAstria 的五只吉祥物在等一个主人。选一只，给它起个名字，以后来学习的时候顺便摸摸它、喂一块苯环饼干。它不会生病，也不会因为你忙而离开，只是会想你。', 'MolAstria’s five mascots are waiting for a home. Pick one, give it a name, and drop by to pat it or share a benzene cookie when you come to study. It never gets sick and won’t leave when you’re busy. It just misses you.')}</p>
       </header>
       <section class="pt-adopt">
         ${stageHtml(L(`候选宠物：${k.zh}`, `Candidate: ${k.en}`))}
