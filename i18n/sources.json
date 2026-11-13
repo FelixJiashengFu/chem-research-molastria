@@ -56,57 +56,19 @@
  "讨论室开张了，进来聊聊": [
   "index.html"
  ],
- "检索": [
-  "index.html"
- ],
- "数据库": [
+ "谱图馆": [
   "index.html",
-  "scimodels/index.html",
-  "videos/index.html",
+  "spectra/index.html",
   "shared-nav.js",
-  "app.js",
-  "hub/app.js",
-  "hub/network.js",
-  "radar/app/app.js",
   "tools/build-seo.ts"
  ],
- "教程": [
+ "一张谱图，怎么读出一个分子？": [
   "index.html"
  ],
- "论文": [
-  "index.html",
-  "meta/index.html",
-  "train/index.html",
-  "websearch/web-core.js"
- ],
- "软件": [
-  "index.html",
-  "hub/network.js"
- ],
- "问答": [
+ "乙醇、丙酮、乙酸的红外谱：B3LYP/def2-SVPD 谐振频率（未标度），PySCF 计算。每个峰是一种键的振动。": [
   "index.html"
  ],
- "预印本": [
-  "index.html",
-  "app.js",
-  "hub/app.js",
-  "hub/network.js",
-  "tools/build-seo.ts",
-  "tags"
- ],
- "研究笔记": [
-  "index.html"
- ],
- "一处检索，多条研究路径。": [
-  "index.html"
- ],
- "在统一目录里找入口，在网状查询中发现关联，在中文手册里补全背景。": [
-  "index.html"
- ],
- "打开可交互关系图": [
-  "index.html"
- ],
- "图上的数字是目录里各类型的条目数，跟着上面的搜索变化；点一类，只看这一类。": [
+ "进入谱图馆": [
   "index.html"
  ],
  "去重后的资源": [
@@ -475,10 +437,16 @@
  "快捷关键词": [
   "index.html"
  ],
- "合并内容说明": [
+ "栏目图版": [
   "index.html"
  ],
- "按类型看目录": [
+ "乙醇、丙酮、乙酸的红外谱": [
+  "index.html"
+ ],
+ "上一张图 / Previous figure": [
+  "index.html"
+ ],
+ "下一张图 / Next figure": [
   "index.html"
  ],
  "合并统计": [
@@ -1078,6 +1046,16 @@
  ],
  "讲解手册：本类专章": [
   "scimodels/index.html"
+ ],
+ "数据库": [
+  "scimodels/index.html",
+  "videos/index.html",
+  "shared-nav.js",
+  "app.js",
+  "hub/app.js",
+  "hub/network.js",
+  "radar/app/app.js",
+  "tools/build-seo.ts"
  ],
  "按主要用途分成六个子类，同一个模型可能同时属于几个方向。可以组合筛选和搜索；点“查看详情”看特点、输入输出、规模、许可、费用和已知限制。": [
   "scimodels/index.html"
@@ -2145,11 +2123,6 @@
  ],
  "跳到方法目录": [
   "spectra/index.html"
- ],
- "谱图馆": [
-  "spectra/index.html",
-  "shared-nav.js",
-  "tools/build-seo.ts"
  ],
  "91 种方法": [
   "spectra/index.html"
@@ -3681,6 +3654,11 @@
  ],
  "许可：FAIR Chemistry License，需在 Hugging Face 申请": [
   "meta/index.html"
+ ],
+ "论文": [
+  "meta/index.html",
+  "train/index.html",
+  "websearch/web-core.js"
  ],
  "文档": [
   "meta/index.html"
@@ -8491,6 +8469,16 @@
  "每周值得读的计算化学论文和点评": [
   "shared-nav.js"
  ],
+ "化学与材料新闻": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "最新的化学和材料研究，配图解和能动手调的演示，DOI 逐条核对": [
+  "shared-nav.js"
+ ],
+ "news 新闻 最新 研究进展 material 材料 mof 金属有机框架 多孔 porous qubit 量子传感 quantum sensing epr odmr 自旋 spin": [
+  "shared-nav.js"
+ ],
  "论文快照、论坛和社区讨论": [
   "shared-nav.js"
  ],
@@ -8510,6 +8498,27 @@
   "shared-nav.js"
  ],
  "handbook guide 手册": [
+  "shared-nav.js"
+ ],
+ "化学学科馆": [
+  "shared-nav.js"
+ ],
+ "无机、有机、物理、分析到材料、环境、核化学和化学工程，十四个展馆": [
+  "shared-nav.js"
+ ],
+ "chemistry 化学 学科 inorganic 无机 organic 有机 physical 物理化学 analytical 分析 structural 结构 computational 计算 coordination 配位 金属有机 organometallic electrochemistry 电化学 polymer 高分子 biochemistry 生物化学 materials 材料 environmental 环境 nuclear 核化学 放射化学 chemical engineering 化工 化学工程 course 课程 大学": [
+  "shared-nav.js"
+ ],
+ "无机化学": [
+  "shared-nav.js"
+ ],
+ "有机化学": [
+  "shared-nav.js"
+ ],
+ "物理化学": [
+  "shared-nav.js"
+ ],
+ "分析化学": [
   "shared-nav.js"
  ],
  "YouTube 和哔哩哔哩上的课程与教程": [
@@ -9264,6 +9273,13 @@
   "hub/app.js",
   "hub/network.js",
   "tools/build-seo.ts"
+ ],
+ "预印本": [
+  "app.js",
+  "hub/app.js",
+  "hub/network.js",
+  "tools/build-seo.ts",
+  "tags"
  ],
  "期刊论文": [
   "app.js",
@@ -11790,6 +11806,9 @@
  ],
  "。请完整解压压缩包，确认 hub/data.js 与本页一起保留。": [
   "hub/app.js"
+ ],
+ "软件": [
+  "hub/network.js"
  ],
  "程序与方法": [
   "hub/network.js"
@@ -17741,6 +17760,12 @@
  "核磁共振方法的发展与最新技术：脉冲傅里叶变换、多维谱、生物大分子、魔角旋转固体 NMR、超极化、磁共振成像、低场与零场、计算与机器学习；附五个交互演示与按 DOI 核对过的 203 篇文献。": [
   "tools/build-seo.ts"
  ],
+ "化学与材料新闻 · Chemistry & Materials News, Explained": [
+  "tools/build-seo.ts"
+ ],
+ "最新的化学和材料研究图解：做了什么、怎么做到的、还差什么，配交互演示；每条链接原始论文，DOI 逐条核对。": [
+  "tools/build-seo.ts"
+ ],
  "谱图馆 · Spectra Hall": [
   "tools/build-seo.ts"
  ],
@@ -17751,6 +17776,12 @@
   "tools/build-seo.ts"
  ],
  "前沿 AI 背后的数学：44 个主题从线性代数、优化几何、Transformer 到扩散、流匹配、强化学习与科学 AI，每个主题一个在浏览器里现算的演示，另有 12 篇附录推导、数值核验和核对过的 43 条参考资料。": [
+  "tools/build-seo.ts"
+ ],
+ "化学学科馆 · Chemistry Disciplines": [
+  "tools/build-seo.ts"
+ ],
+ "十四门化学学科的展馆：无机、有机、物理、分析、结构、量子与计算、配位与金属有机、电化学、高分子、生物、材料、环境、核化学与放射化学、化学工程；分章讲解、核心公式、现算的演示和按 DOI 核对的文献。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [

@@ -1889,76 +1889,86 @@ check('narrow phones: no sideways scroll at 320–390 px on the main pages; the 
   await v.context().close();
 });
 
-check('home hero: the map shows the numbers of the search, a chip filters the catalogue, the drawing sits on the hub (also zoomed), nothing moves under reduced motion', async () => {
+check('home hero: the book of figures draws a real plot for each of its plates, turns its pages, links into the sections; the belt runs; nothing moves under reduced motion', async () => {
   const p = await open({ viewport: { width: 1440, height: 900 } });
   await go(p, '/index.html');
-  const num = (sel) => p.$eval(sel, (e) => +e.textContent.replace(/\D/g, ''));
-  await p.waitForFunction(() => document.getElementById('hero-total').textContent === document.getElementById('stat-total').textContent, null, { timeout: 5000 });
-  const total = await num('#hero-total');
-  assert.ok(total > 2000, 'the hub shows the whole catalogue');
-  await p.waitForFunction(() => /^\d+$/.test(document.querySelector('.nm-node[data-type=database] b').textContent) && +document.querySelector('.nm-node[data-type=database] b').dataset.n === +document.querySelector('.nm-node[data-type=database] b').textContent);
-  const counts = await p.$$eval('.nm-node', (ns) => ns.map((n) => +n.querySelector('b').dataset.n));
-  assert.equal(counts.length, 6); assert.ok(counts.every((n) => n > 0) && counts.reduce((a, b) => a + b) <= total, String(counts));
-  // The drawing: the hexagon is centred on the hub, each edge ends on its chip, the thread starts at the search bar.
-  const geo = () => p.evaluate(() => {
-    const c = (e) => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
-    const hub = c(document.querySelector('.nm-hub')), hex = c(document.querySelector('.hw-hex')), bar = document.getElementById('intro-search').getBoundingClientRect();
-    const th = document.querySelector('.hw-thread'), a = th.getPointAtLength(0), m = th.getScreenCTM(), start = [a.x * m.a + m.e, a.y * m.d + m.f];
-    const ends = [...document.querySelectorAll('.nm-node')].map((n, i) => { const e = document.querySelectorAll('.hw-edge')[i], q = e.getPointAtLength(e.getTotalLength()), k = c(n); return Math.hypot(q.x * m.a + m.e - k[0], q.y * m.d + m.f - k[1]); });
-    return { off: Math.hypot(hub[0] - hex[0], hub[1] - hex[1]), start: Math.hypot(start[0] - bar.right, start[1] - (bar.top + bar.height / 2)), ends: Math.max(...ends), wide: document.documentElement.scrollWidth - innerWidth };
-  });
-  await p.hover('#hero-map'); await p.waitForTimeout(1600); // the ring holds still under the pointer
-  let g = await geo();
-  assert.ok(g.off < 2 && g.start < 2 && g.ends < 3 && g.wide <= 0, JSON.stringify(g));
-  const where = () => p.$eval('.nm-node', (n) => n.style.transform.match(/-?[\d.]+/g).slice(0, 2).map(Number));
-  const moved = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
-  await p.waitForTimeout(600);
-  const held = await where(); await p.waitForTimeout(500);
-  assert.ok(moved(await where(), held) < 0.25, 'held still while the pointer is on the map');
-  await p.mouse.move(200, 300); await p.waitForTimeout(1200);
-  assert.ok(moved(await where(), held) > 1, 'and turns again afterwards');
-  // A search changes the numbers; a chip narrows the catalogue to its type, a second click clears it.
-  await p.fill('#intro-q', 'Multiwfn');
-  await p.waitForFunction((t) => { const n = +document.getElementById('hero-total').dataset.n; return n > 0 && n < t; }, total);
-  assert.equal(await num('#result-count'), +(await p.$eval('#hero-total', (e) => e.dataset.n)));
-  await p.fill('#intro-q', ''); await p.waitForFunction((t) => +document.getElementById('hero-total').dataset.n === t, total);
-  await p.hover('#hero-map'); await p.waitForTimeout(1600);
-  await p.click('.nm-node[data-type=database]');
-  await p.waitForFunction(() => document.getElementById('type').value === 'database' && Math.abs(document.getElementById('catalog').getBoundingClientRect().top) < 200);
-  assert.equal(await p.getAttribute('.nm-node[data-type=database]', 'aria-pressed'), 'true');
-  assert.equal(await num('#result-count'), counts[0]);
-  await p.evaluate(() => scrollTo(0, 0)); await p.hover('#hero-map'); await p.waitForTimeout(1600);
-  await p.click('.nm-node[data-type=database]');
-  await p.waitForFunction(() => document.getElementById('type').value === '');
-  // A quick keyword fills the bar; the figures are doors.
-  await p.evaluate(() => scrollTo(0, 0));
+  await p.waitForFunction(() => document.getElementById('hero-stage').classList.contains('is-live'));
+  const chips = await p.$$eval('.st-track .st-chip', (cs) => cs.map((c) => [c.dataset.i, c.getAttribute('aria-hidden'), c.textContent]));
+  const n = chips.length / 2;
+  assert.ok(n >= 12, `${n} plates`); assert.ok(chips.slice(n).every((c) => c[1] === 'true') && chips.slice(0, n).every((c) => c[1] === null), 'the second run of the belt is hidden from assistive technology');
+  assert.equal(await p.textContent('#st-of'), ` / ${n}`);
+  // How much of the canvas is not background: a drawn figure has axes, labels and a curve.
+  const inked = () => p.$eval('#st-fig', (c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, bg = [d[0], d[1], d[2]]; let k = 0; for (let i = 0; i < d.length; i += 16) if (Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 40) k++; return k / (d.length / 16); });
+  const seen = new Set(), hrefs = new Set();
+  await p.hover('#st-plate'); // the page stays while the pointer is on it
+  for (let i = 0; i < n; i++) {
+    await p.evaluate((i) => document.querySelector(`.st-chip[data-i="${i}"]`).click(), i);
+    await p.waitForFunction((t) => document.getElementById('st-no').textContent === t, 'FIG. ' + String(i + 1).padStart(2, '0'));
+    await p.waitForTimeout(700);
+    assert.ok((await inked()) > 0.004, `plate ${i + 1} is drawn`);
+    const w = await p.evaluate(() => ({ q: document.getElementById('st-q').textContent, cap: document.getElementById('st-cap').textContent, sec: document.getElementById('st-sec').textContent, href: document.getElementById('st-go').getAttribute('href'), on: [...document.querySelectorAll('.st-chip[aria-pressed=true]')].map((c) => c.dataset.i) }));
+    assert.ok(/？$/.test(w.q) && w.cap.length > 30 && w.sec, JSON.stringify(w)); assert.deepEqual(w.on, [String(i), String(i)]);
+    assert.ok(!seen.has(w.q), 'each plate has its own question'); seen.add(w.q); hrefs.add(w.href);
+  }
+  for (const h of hrefs) assert.equal((await p.request.get(SITE + '/' + h)).status(), 200, h);
+  assert.ok(hrefs.size >= 9, 'the plates lead into many sections');
+  // The page turns: a leaf with the old picture swings over the new one and is gone again; the words never change the plate's height.
+  const tall = await p.$eval('#st-plate', (e) => e.offsetHeight);
+  await p.click('#st-next');
+  assert.equal(await p.textContent('#st-no'), 'FIG. 01'); assert.equal(await p.$$eval('.st-leaf', (l) => l.length), 1);
+  assert.equal(await p.$eval('.st-leaf', (l) => l.querySelector('.st-no b').textContent), 'FIG. ' + n, 'the leaf shows the page that is leaving');
+  await p.waitForFunction(() => !document.querySelector('.st-leaf'), null, { timeout: 3000 });
+  await p.click('#st-prev'); assert.equal(await p.textContent('#st-no'), 'FIG. ' + n);
+  await p.focus('#st-next'); await p.keyboard.press('ArrowRight'); assert.equal(await p.textContent('#st-no'), 'FIG. 01');
+  assert.equal(await p.$eval('#st-plate', (e) => e.offsetHeight), tall, 'no jump between plates');
+  assert.equal(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
+  // The belt moves by itself and stops under the pointer; the picture is alive.
+  await p.mouse.move(200, 300);
+  const beltAt = () => p.$eval('.st-track', (t) => new DOMMatrix(getComputedStyle(t).transform).m41);
+  const b0 = await beltAt(); await p.waitForTimeout(500); assert.ok((await beltAt()) < b0 - 3, 'the belt runs');
+  await p.hover('#st-belt'); await p.waitForTimeout(100); const b1 = await beltAt(); await p.waitForTimeout(400); assert.ok(Math.abs((await beltAt()) - b1) < 0.5, 'and stops under the pointer');
+  const shot = () => p.$eval('#st-fig', (c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0; for (let i = 0; i < d.length; i += 64) s += d[i] * (1 + (i % 251)); return s; });
+  const s0 = await shot(); await p.waitForTimeout(900); assert.notEqual(await shot(), s0, 'the figure animates');
+  // A click on the figure goes to its section.
+  await Promise.all([p.waitForURL(/\/spectra\/index\.html/), p.click('#st-fig')]);
+  // A quick keyword fills the bar; the figures under the hero are doors.
+  await go(p, '/index.html');
   await p.click('.hero-try [data-query="PubChem"]');
   assert.equal(await p.inputValue('#intro-q'), 'PubChem'); assert.equal(await p.inputValue('#search'), 'PubChem');
   assert.deepEqual(await p.$$eval('.metrics > a', (as) => as.map((a) => a.getAttribute('href'))), ['#catalog', 'atlas/index.html', 'hub/index.html#overview', 'manual/index.html']);
   await finish(p);
-  // The site's own zoom and text size: the drawing still sits on the chips; the headline keeps to two lines.
+  // By itself the page turns after a while.
+  const a = await open({ viewport: { width: 1440, height: 900 } });
+  await go(a, '/index.html'); await a.mouse.move(200, 300);
+  await a.waitForFunction(() => document.getElementById('st-no').textContent === 'FIG. 02', null, { timeout: 14000 });
+  await finish(a);
+  // The site's own zoom and text size: the headline keeps to two lines, the plate stays inside the page; the dark plate differs from the light one.
   const z = await open({ viewport: { width: 1440, height: 900 }, init: () => { try { localStorage.setItem('molastria-zoom', '1.25'); localStorage.setItem('molastria-text', '1.15'); } catch {} } });
   await go(z, '/index.html');
-  await z.hover('#hero-map'); await z.waitForTimeout(1600);
-  g = await z.evaluate(() => { const c = (e) => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }; const a = c(document.querySelector('.nm-hub')), b = c(document.querySelector('.hw-hex')), h = document.querySelector('.intro h1'); return { off: Math.hypot(a[0] - b[0], a[1] - b[1]), lines: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight) / (h.getBoundingClientRect().width / h.offsetWidth)) }; });
-  assert.ok(g.off < 3 && g.lines === 2, JSON.stringify(g));
+  await z.waitForFunction(() => document.getElementById('hero-stage').classList.contains('is-live'));
+  const g = await z.evaluate(() => { const h = document.querySelector('.intro h1'), r = document.getElementById('st-plate').getBoundingClientRect(); return { lines: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight) / (h.getBoundingClientRect().width / h.offsetWidth)), right: r.right <= innerWidth, wide: document.documentElement.scrollWidth - innerWidth }; });
+  assert.deepEqual(g, { lines: 2, right: true, wide: 0 });
+  const corner = () => z.$eval('#st-fig', (c) => [...c.getContext('2d').getImageData(2, 2, 1, 1).data].slice(0, 3).join());
+  const light = await corner(); await z.evaluate(() => { document.documentElement.dataset.theme = 'dark'; }); await z.waitForTimeout(200);
+  assert.notEqual(await corner(), light, 'the canvas follows the theme');
   await finish(z);
-  // Phones: one column, no thread, nothing wider than the screen; English too.
+  // Phones: one column, nothing wider than the screen; English has its own words.
   for (const lang of ['zh', 'en']) {
     const m = await open({ viewport: { width: 360, height: 760 }, isMobile: true, hasTouch: true });
     await go(m, '/index.html' + (lang === 'en' ? '?lang=en' : ''));
-    await m.waitForFunction(() => document.getElementById('hero-map').classList.contains('is-live'));
-    const r = await m.evaluate(() => ({ wide: document.documentElement.scrollWidth - innerWidth, thread: getComputedStyle(document.querySelector('.hw-thread')).display, out: [...document.querySelectorAll('.nm-node')].filter((n) => { const b = n.getBoundingClientRect(); return b.left < 0 || b.right > innerWidth; }).length }));
-    assert.deepEqual(r, { wide: 0, thread: 'none', out: 0 }, lang);
+    await m.waitForFunction(() => document.getElementById('hero-stage').classList.contains('is-live'));
+    const r = await m.evaluate(() => ({ wide: document.documentElement.scrollWidth - innerWidth, q: document.getElementById('st-q').textContent, inside: document.getElementById('st-plate').getBoundingClientRect().right <= innerWidth }));
+    assert.equal(r.wide, 0, lang); assert.ok(r.inside, lang); assert.ok(lang === 'en' ? /^[\x20-\x7e’]+$/.test(r.q) : HAN.test(r.q), r.q);
     await finish(m);
   }
-  // Reduced motion: the chips stand where the stylesheet puts them and stay there; the numbers are simply written.
+  // Reduced motion: one still frame, no page turning by itself, the belt stands and can be scrolled.
   const q = await open({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await go(q, '/index.html');
-  const still = await q.$eval('.nm-node', (n) => n.style.transform); await q.waitForTimeout(500);
-  assert.equal(await q.$eval('.nm-node', (n) => n.style.transform), still);
-  assert.equal(await q.$eval('.hw-run', (e) => getComputedStyle(e).display), 'none');
-  assert.equal(await q.textContent('#hero-total'), await q.textContent('#stat-total'));
+  await q.waitForFunction(() => document.getElementById('hero-stage').classList.contains('is-live'));
+  const sum = () => q.$eval('#st-fig', (c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0; for (let i = 0; i < d.length; i += 64) s += d[i] * (1 + (i % 251)); return s; });
+  const f0 = await sum(); await q.waitForTimeout(700); assert.equal(await sum(), f0);
+  assert.equal(await q.$eval('.st-track', (t) => getComputedStyle(t).animationName), 'none');
+  await q.click('#st-next'); assert.equal(await q.textContent('#st-no'), 'FIG. 02'); assert.equal(await q.$$eval('.st-leaf', (l) => l.length), 0);
   await finish(q);
 });
 check('first screen: the home search box is at the top, typing waits for a pause, Enter jumps to the results; touch inputs are 16 px; the header and drawn pages do not jump', async () => {

@@ -81,10 +81,10 @@ html[data-entrance=brief] .ent-foot{display:none}
 /* The home hero, behind the sheet: held back until the sheet closes (--ent-out; entrance.js moves it to "now" when
    the visitor skips), then rising in reading order: eyebrow, headline, text, actions with the note card, snapshot,
    figures. Fill is "backwards" only, so once played the page is exactly the page without an entrance. */
-html[data-entrance] .intro-copy>*,html[data-entrance] .field-note,html[data-entrance] .metrics{animation:ent-in .95s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--ent-out) + 300ms + var(--ent-i,0)*85ms)}
+html[data-entrance] .intro-copy>*,html[data-entrance] .stage,html[data-entrance] .metrics{animation:ent-in .95s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--ent-out) + 300ms + var(--ent-i,0)*85ms)}
 html[data-entrance] .intro-copy>:nth-child(2){--ent-i:1}
 html[data-entrance] .intro-copy>:nth-child(3){--ent-i:2}
-html[data-entrance] .intro-copy>:nth-child(4),html[data-entrance] .field-note{--ent-i:3}
+html[data-entrance] .intro-copy>:nth-child(4),html[data-entrance] .stage{--ent-i:3}
 html[data-entrance] .intro-copy>:nth-child(5){--ent-i:4}
 html[data-entrance] .metrics{--ent-i:5}
 @keyframes ent-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
@@ -94,5 +94,5 @@ html[data-entrance] .intro-actions .primary::after{content:"";position:absolute;
 @keyframes ent-cta{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
 
 @media (max-height:460px){.ent-mark{width:84px;margin-bottom:8px}.ent-word{font-size:42px}.ent-foot{bottom:10px}.ent-bar{display:none}}
-@media (prefers-reduced-motion:reduce){html[data-entrance] .ent{display:none}html[data-entrance] .intro-copy>*,html[data-entrance] .field-note,html[data-entrance] .metrics,html[data-entrance] .intro-actions .primary::after{animation:none}}
+@media (prefers-reduced-motion:reduce){html[data-entrance] .ent{display:none}html[data-entrance] .intro-copy>*,html[data-entrance] .stage,html[data-entrance] .metrics,html[data-entrance] .intro-actions .primary::after{animation:none}}
 @media print{.ent{display:none!important}}
