@@ -18,7 +18,7 @@ public/               发布目录，推到 main 就上线
   index.html, app.js  统一搜索与收藏夹（?collection=saved，合并首页和数据库页两个收藏库）；search-terms.js 是中英术语表
   websearch/          首页的联网搜索“网上最匹配”：web-core.js 是纯逻辑（中文查询改写成英文、各家接口地址、返回值整理、打分排序、标出资源库已收录；tools/websearch-test.mjs 测），web.js 是界面（浏览器直接问 OpenAlex / Crossref、Wikipedia、PubChem、GitHub，不要 key、不经过账号服务；Pro 支持者另外经账号服务的 /web/search 拿 Brave Search 网页结果；开关存 molastria-web-search）；e2e 在 run.mjs 的 open() 里把这几家换成假的
   entrance.*          首页进入动画（只有首页用）：index.html 头部的小脚本在第一次绘制前给 <html> 标 data-entrance=full（这个浏览器第一次来，约 3.5 秒）或 brief（以后每个新会话，约 1.2 秒），同一会话、带 #… 或筛选参数的地址、切换语言、减少动态效果、关了“徽标动画”、自动化浏览器都不标；entrance.css 是全部时间线（每个延时乘 --ent-k）和首屏依次升起，entrance.js 画星空和分子星座、电子绕轨道、跳过、收幕时让徽标飞到顶栏的 .cr-mark 上；?intro=1 重播；存 molastria-entrance（localStorage 和 sessionStorage 各一份）
-  home-hero.*         首页首屏（只有首页用）：home-hero.css 是版式和全部动效（标题按栏宽 cqw 定字号、搜索框边上绕圈的光、入场顺序、滚动时升起），home-hero.js 把金线、轨道和连线画进 svg.hero-web，让六类资源的标签（.nm-node，data-type 是目录的类型）绕“检索”慢慢转；app.js 每次重画列表时发 window 事件 molastria:results（{ q, type, total, types }，最新一份留在 window.MOLASTRIA_RESULTS），图上的数字照它显示，点标签就是改 #type 筛选；四个统计数字是链接，进入视野时数一遍；减少动态效果时全部静止
+  home-hero.*         首页首屏（只有首页用）：home-hero.css 是版式和全部动效（标题按栏宽 cqw 定字号、搜索框边上绕圈的光、入场顺序、滚动时升起）。右侧是“栏目图版” #hero-stage：十二页由公式现算的图（期刊插图的画法：坐标轴、刻度、图注，只用墨色、绿、金），每页一个问句和进栏目的链接，九秒翻一页（旧页变成 .st-leaf 绕书脊翻过去），下面一条循环的回转带 .st-belt；home-hero.js 的 FIGS 是十二页的文字（自带中英两版，整块 translate="no"）和画法，画布颜色读 .stage 上的 --st-* 变量（浅色、深色两套）；home-figs-models.js 是图的数学（纯函数，tools/home-figs-test.mjs 测）；加一页就是在 FIGS 里加一项。app.js 每次重画列表时仍然发 window 事件 molastria:results（{ q, type, total, types }，最新一份留在 window.MOLASTRIA_RESULTS），现在没有人听；四个统计数字是链接，进入视野时数一遍；减少动态效果时全部静止
   shared-nav.*        顶栏（所有页面共用）：五个分组（发现、学习、探索、模型与 AI、工具）的大菜单，栏目清单是 shared-nav.js 的 GROUPS（新栏目在那里加一行：id、地址、中英名字、中英一句说明、关键词、子页面），页面用 body[data-section] 标出自己是哪一栏；Ctrl / ⌘ + K 打开菜单里的搜索（首页和数据库页自己的 Ctrl+K 优先）；放不下五个按钮时只剩一个“栏目”按钮，打开是全部分组的一张表。用户可以把栏目固定到顶栏（菜单里的图钉，或 显示 → 常用入口），存 molastria-nav-pins，固定的入口、五个分组和右边的按钮都能在顶栏上直接拖动换位（鼠标一拖就起，触屏先按住约 0.4 秒，拖起来是液态玻璃；Alt + Shift + ←/→ 键盘换位），分组和按钮的顺序存 molastria-nav-groups、molastria-nav-tools；原来的 Pro 按钮换成了账号入口（没登录是“登录”，登录后是首字母头像，点开是账号面板：登录、套餐与 AI 额度、API key、每周精选、订阅与付款、桌面版、退出登录，手机上在第二行右端）；主题、语言、AI 入口、左下角“下载桌面版”浮窗也在这里；切换语言时把地址、滚动位置、标签页和筛选存进 sessionStorage 的 molastria-lang-restore，刷新后复原；访问统计（Cloudflare Web Analytics）也在这里，常量 ANALYTICS 是站点 token，空着就不统计
   backdrop.js         10 种背景和背景面板，含“徽标动画”开关（关时 html[data-logo-motion=off]，切换时派发 window 事件 molastria:logo-motion）
   assets/brand/       装饰视频与 poster：首页徽标 logo-loop.{mp4,webp}（以徽章为中心裁切的 256 px 正方形）；片头 intro.mp4 + intro-end.webp，只有下载页用（AI 面板改成了吉祥物进场动画）（ffmpeg 转码的小文件，原片不进仓库）
@@ -89,6 +89,7 @@ node tools/build-api.mjs                                # 开放数据接口：�
 node --test tools/api-test.mjs                          # 开放数据接口：内容完整、双语齐全、代号都对得上；JS 库的搜索（同义词互通、排序、筛选）
 python3 tools/molastria-py-test.py                      # Python 客户端 molastria.py：对着本地假服务测提交、等待、报错和命令行
 node --test tools/websearch-test.mjs                    # 首页联网搜索的纯逻辑：查询改写、各家返回值、排序去重、资源库已收录
+node --test tools/home-figs-test.mjs                    # 首页栏目图版的十二张图：红外谱数据和谱图馆一致，Hückel 键级、氢原子归一、解析分数函数、截断 FID、双缝、Grover、中心极限、分岔、Morse、麦克斯韦、同位素峰
 node --test tools/net-test.mjs                          # 网状查询引擎（用真实目录快照）和“没找到的词”
 node --test tools/handbook-test.mjs                     # 讲解手册第 12–16 类五章：条数编号对得上目录、算例数字中英都在；本机有 PySCF 时重算（约 4 分钟，HANDBOOK_SKIP_PYTHON=1 跳过，HANDBOOK_SOLID=1 加算硅能带约 20 分钟）
 node --test tools/fundamental-test.mjs                  # 基础科学栏目：演示的数学对照解析解，内容的状态、公式、文献都能对上
@@ -194,6 +195,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **Stripe 测试 ID：** 账号服务只接受 `cs_test_` 或 `cs_live_` 加字母数字，带下划线的假 ID 会被拒。
 - **本机杀毒：** Norton 会拦截 HTTPS。Deno 脚本报 `UnknownIssuer` 时加 `DENO_TLS_CA_STORE=system`，Node 脚本加 `NODE_USE_SYSTEM_CA=1`。
 - **本机 shell：** Git Bash 的 heredoc 里同时有反引号和引号时可能解析失败；复杂的编辑脚本先写成文件再运行。脚本里 `String.replace` 的替换文本要用函数形式，否则 `$$eval` 会变成 `$eval`。
+- **`styles.css` 里的十六进制颜色在深色主题会被翻转：** `tools/theme.ts` 把 `styles.css`、`atlas/styles.css`、`lab/lab.css` 里每个 `#hex` 换成 `var(--t-…)`，深色主题按明度翻过来（金色按钮因此变成深褐色）。两种主题都要保持原色的东西写成 `rgb()`，或者写在别的样式文件里。
 - **MathLive 的输入框：** 点一下之后约 60 ms 才把焦点移进去，浏览器测试里点完要等一下再打字（或者直接给 `math-field` 的 `value` 赋值再点“检查”）；数学子模块和量子物理页读到地址里的 `#…` 后也要过 60 ms 才滚动，测试先等 300 ms 再自己滚到题块。
 - **浏览器面板：** 不要把内置浏览器导航到 PDF（会在用户屏幕上弹保存框）；窗口隐藏时动画会变慢，看动画和性能用无头 Chrome。
 - **PWA 在本地看不到：** localhost 不注册 sw.js（e2e 用 `page.route` 模拟同源文件，Service Worker 会绕过它），各页的 manifest 等头部标签也只在 CI 跑 build-seo.ts 时才加。要测离线和安装，按 `docs/RUNBOOK.md`“本地测 PWA”在仓库外的副本里测。本地跑过 build-seo.ts 的话，提交前把 `public/sw.js` 的 `VERSION` 改回 `'dev'`。

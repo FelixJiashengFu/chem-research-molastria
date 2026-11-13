@@ -28,6 +28,7 @@
   <script src="entrance.js" defer></script>
   <script src="i18n.js" defer></script>
   <script src="backdrop.js" defer></script>
+  <script src="home-figs-models.js" defer></script>
   <script src="home-hero.js" defer></script>
   <link rel="stylesheet" href="shared-nav.css">
   <link rel="stylesheet" href="theme-auto.css">
@@ -61,19 +62,17 @@
 </div>
 <main>
   <section class="intro" id="hero">
-    <svg class="hero-web" aria-hidden="true" focusable="false"></svg>
     <div class="intro-copy"><p class="eyebrow">MOLASTRIA · INTEGRATED CHEMICAL RESEARCH &amp; COMPUTING FOUNDRY</p><h1><span class="h1-lead"><span>找数据，读方法。</span><span class="h1-badge">&#8288;<span class="brand-loop" aria-hidden="true"><video data-src="assets/brand/logo-loop.mp4" poster="assets/brand/logo-loop.webp" width="256" height="256" autoplay muted loop playsinline preload="none" tabindex="-1" disablepictureinpicture disableremoteplayback></video></span></span></span><em>研究，从这里连起来。</em></h1><p class="intro-text">把数据库地图与论文、社区、开源工具放在同一张书桌上。<br>从一个关键词出发，找到原始资源，也读懂它的用途与边界。</p><div class="intro-actions"><form class="intro-search" id="intro-search" role="search" action="#catalog"><label class="search-label" for="intro-q"><span class="hs-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.6" cy="10.6" r="6.4"/><path d="m15.4 15.4 4.8 4.8"/></svg></span><span class="sr-only">搜索全部资源</span><input id="intro-q" type="search" enterkeyhint="search" autocomplete="off" placeholder="搜索 PubChem、ORCA、晶体、静电势…"></label><button class="button primary" type="submit">搜索全部资源 <span><i class="ico-ext ico-down" aria-hidden="true"></i></span></button></form><div class="hero-try" aria-label="快捷关键词"><span>试着搜索</span><button type="button" data-query="基组">基组</button><button type="button" data-query="Multiwfn">Multiwfn</button><button type="button" data-query="分子动力学">分子动力学</button><button type="button" data-query="机器学习">机器学习</button><button type="button" data-query="PubChem">PubChem</button></div><a class="button" href="manual/index.html">阅读说明讲解手册 <span><i class="ico-ext" aria-hidden="true"></i></span></a><button class="fav-open" id="fav-open" type="button" data-count="0"><span class="fav-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17"><defs><linearGradient id="fav-gold" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#fff8dc"/><stop offset=".36" stop-color="#f7da84"/><stop offset=".52" stop-color="#d09d36"/><stop offset=".7" stop-color="#f3cf6c"/><stop offset="1" stop-color="#ad7b22"/></linearGradient></defs><path d="M12 3.4l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.7l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="url(#fav-gold)"/></svg></span><span>收藏夹</span><span class="fav-count" id="fav-count">0</span></button></div><p class="snapshot">目录快照 <span id="snapshot-date">2026.11.05</span> · 支持解压后离线浏览</p><a class="chat-pill" id="chat-pill" href="chat/index.html"><i class="cc-live" aria-hidden="true"></i><span id="chat-pill-text">讨论室开张了，进来聊聊</span><i class="ico-ext" aria-hidden="true"></i></a></div>
-    <aside class="field-note" aria-label="合并内容说明">
-      <div class="note-map" id="hero-map" role="group" aria-label="按类型看目录">
-        <span class="nm-hub"><span class="nm-hub-k">检索</span><b class="nm-hub-n" id="hero-total" translate="no"></b></span>
-        <button class="nm-node" type="button" data-type="database" style="--a:-150deg;--i:0"><span class="nm-pill"><span>数据库</span><b translate="no"></b></span></button>
-        <button class="nm-node" type="button" data-type="tutorial" style="--a:-90deg;--i:1"><span class="nm-pill"><span>教程</span><b translate="no"></b></span></button>
-        <button class="nm-node" type="button" data-type="paper" style="--a:-30deg;--i:2"><span class="nm-pill"><span>论文</span><b translate="no"></b></span></button>
-        <button class="nm-node" type="button" data-type="software" style="--a:30deg;--i:3"><span class="nm-pill"><span>软件</span><b translate="no"></b></span></button>
-        <button class="nm-node" type="button" data-type="qa" style="--a:90deg;--i:4"><span class="nm-pill"><span>问答</span><b translate="no"></b></span></button>
-        <button class="nm-node" type="button" data-type="preprint" style="--a:150deg;--i:5"><span class="nm-pill"><span>预印本</span><b translate="no"></b></span></button>
+    <aside class="stage" id="hero-stage" aria-label="栏目图版" translate="no">
+      <div class="st-plate" id="st-plate">
+        <div class="st-page" id="st-page">
+          <div class="st-head"><span class="st-no"><b id="st-no">FIG. 01</b><span id="st-of"> / 12</span></span><span class="st-sec" id="st-sec">谱图馆</span></div>
+          <canvas class="st-fig" id="st-fig" role="img" aria-label="乙醇、丙酮、乙酸的红外谱"></canvas>
+          <div class="st-foot"><h2 id="st-q">一张谱图，怎么读出一个分子？</h2><p id="st-cap">乙醇、丙酮、乙酸的红外谱：B3LYP/def2-SVPD 谐振频率（未标度），PySCF 计算。每个峰是一种键的振动。</p><a class="st-go" id="st-go" href="spectra/index.html"><span>进入谱图馆</span> <i class="ico-ext" aria-hidden="true"></i></a></div>
+        </div>
+        <div class="st-nav"><button type="button" id="st-prev" aria-label="上一张图 / Previous figure"><i class="ico-ext ico-left" aria-hidden="true"></i></button><button type="button" id="st-next" aria-label="下一张图 / Next figure"><i class="ico-ext ico-right" aria-hidden="true"></i></button></div>
       </div>
-      <div class="note-cap"><div class="note-top">研究笔记 <span>No. 01</span></div><h2>一处检索，多条研究路径。</h2><p>在统一目录里找入口，在网状查询中发现关联，在中文手册里补全背景。</p><a class="note-cta" href="hub/network.html">打开可交互关系图 <span aria-hidden="true"><i class="ico-ext" aria-hidden="true"></i></span></a><small>图上的数字是目录里各类型的条目数，跟着上面的搜索变化；点一类，只看这一类。</small></div>
+      <div class="st-belt" id="st-belt"><div class="st-track"></div></div>
     </aside>
   </section>
   <section class="metrics" aria-label="合并统计"><a href="#catalog"><strong id="stat-total">2,665</strong><span>去重后的资源</span></a><a href="atlas/index.html"><strong id="stat-atlas">253</strong><span>数据库与研究资源目录条目</span></a><a href="hub/index.html#overview"><strong id="stat-hub">2,483</strong><span>论文、教程与社区条目</span></a><a href="manual/index.html"><strong>25</strong><span>章双语讲解手册</span></a></section>
