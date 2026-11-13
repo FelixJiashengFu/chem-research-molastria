@@ -61,7 +61,7 @@ function seoHead(o: { path: string; title: string; description: string; type?: s
   ].filter(Boolean);
   return `<!-- seo:start -->\n  ${lines.join("\n  ")}\n  <!-- seo:end -->`;
 }
-const website = { "@context": "https://schema.org", "@type": "WebSite", name: NAME, alternateName: [cfg.siteNameZh, "molastria.com"], url: SITE, inLanguage: ["zh-CN", "en"], description: "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。" };
+const website = { "@context": "https://schema.org", "@type": "WebSite", name: NAME, alternateName: [cfg.siteNameZh, "molastria.com"], url: SITE, inLanguage: ["zh-CN", "en"], description: "Integrated Chemical Research & Computing Foundry, bilingual: databases, papers, tutorials and open-source tools. 数据库、文献、教程与开源工具一站检索。" };
 const crumbs = (items: [string, string][]) => ({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: SITE + path })) });
 
 async function injectHead(file: string, path: string, extra: { type?: string; jsonld?: unknown[] } = {}) {

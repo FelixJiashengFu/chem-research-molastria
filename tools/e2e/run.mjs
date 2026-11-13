@@ -109,7 +109,7 @@ check('home page: English title, bilingual description, and square icons Google 
     desc: document.querySelector('meta[name=description]').content,
     icons: [...document.querySelectorAll('link[rel=icon]')].map((l) => ({ href: l.href, sizes: l.getAttribute('sizes') })),
   }));
-  assert.match(head.title, /^MolAstria · [A-Za-z ]+$/);
+  assert.match(head.title, /^MolAstria · [A-Za-z &]+$/);
   assert.match(head.desc, /[A-Za-z]{4}/); assert.match(head.desc, HAN);
   for (const href of [...head.icons.map((i) => i.href), `${SITE}/favicon.ico`]) {
     const res = await p.request.get(href);

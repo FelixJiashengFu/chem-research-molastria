@@ -107,8 +107,8 @@ window.MOLASTRIA_VISION = {
   outlook: {
     title: ['从愿景到工程：MolAstria 能做什么', 'From vision to engineering: what MolAstria can do'],
     intro: [
-      '上面的文章说，参与这场变革的起点，是“找到一个值得长期解决的问题，并在其中积累扎实的成果”。MolAstria 就是这样一个起点：一个人运营、代码开源的计算化学研究导航。下面把文章里的四项承诺，对照到这个项目里已经能用的东西，再写下接下来要做的事。每一条都标了状态，标“规划中”和“设想”的还没有做出来。',
-      'The essay above says the starting point for taking part is “to find a problem worth working on for a long time, and to build solid results within it”. MolAstria is one such starting point: a computational chemistry research navigator, run by one person, with open-source code. Below, the essay’s four commitments are set against what already works in the project, followed by what comes next. Every item is labelled; anything marked “planned” or “idea” does not exist yet.',
+      '上面的文章说，参与这场变革的起点，是“找到一个值得长期解决的问题，并在其中积累扎实的成果”。MolAstria 就是这样一个起点：一个人运营、代码开源的 Integrated Chemical Research & Computing Foundry。下面把文章里的四项承诺，对照到这个项目里已经能用的东西，再写下接下来要做的事。每一条都标了状态，标“规划中”和“设想”的还没有做出来。',
+      'The essay above says the starting point for taking part is “to find a problem worth working on for a long time, and to build solid results within it”. MolAstria is one such starting point: an integrated chemical research & computing foundry, run by one person, with open-source code. Below, the essay’s four commitments are set against what already works in the project, followed by what comes next. Every item is labelled; anything marked “planned” or “idea” does not exist yet.',
     ],
     pledges: [
       {

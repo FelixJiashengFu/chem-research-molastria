@@ -151,7 +151,7 @@
   const cell = (x) => `<div class="cr-cell" data-id="${x.id}"><a class="cr-item" href="${link(x.path)}" data-id="${x.id}"><span class="cr-item-t">${name(x)}${fresh(x)}</span><span class="cr-item-d">${en ? x.de : x.dz}</span></a>`
     + `<button type="button" class="cr-pin-t" data-pin="${x.id}" aria-pressed="false" aria-label="${L(`固定“${x.zh}”到顶栏`, `Pin ${x.en} to the header`)}" title="${L('固定到顶栏', 'Pin to the header')}">${pinIcon}</button>`
     + (x.subs.length ? `<div class="cr-subs">${x.subs.map(([zh, e, p]) => `<a href="${link(p)}" data-sub="${x.id}">${en ? e : zh}</a>`).join('')}</div>` : '') + '</div>';
-  nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>计算化学研究导航</small></span></a>`
+  nav.innerHTML = `<a class="cr-brand" href="${link('index.html')}" aria-label="MolAstria">${mark}<span><span class="cr-word">Mol<i>Astria</i></span><small>Integrated Chemical Research &amp; Computing Foundry</small></span></a>`
     + `<nav class="cr-links" aria-label="${L('全站导航', 'Site navigation')}" translate="no">`
     + `<button class="cr-menu-btn" type="button" aria-expanded="false" aria-controls="cr-mega" hidden>${grid4}<span>${L('栏目', 'Sections')}</span><b class="cr-where"></b></button>`
     + `<span class="cr-grps">${GROUPS.map((g) => `<button class="cr-grp-btn" type="button" data-group="${g.id}" aria-expanded="false" aria-controls="cr-mega">${en ? g.en : g.zh}${chevron}</button>`).join('')}</span>`

@@ -332,7 +332,7 @@ function llms(index) {
   const lines = [
     '# MolAstria',
     '',
-    '> MolAstria (molastria.com) is a free research navigator for computational chemistry: a curated, bilingual (Chinese and English) catalogue of databases, software, datasets, courses, journals, science foundation models and teaching videos. All content is free to read; the data is open under CC BY 4.0.',
+    '> MolAstria (molastria.com) is a free integrated chemical research & computing foundry: a curated, bilingual (Chinese and English) catalogue of databases, software, datasets, courses, journals, science foundation models and teaching videos. All content is free to read; the data is open under CC BY 4.0.',
     '',
     `Programs and AI agents should read the open data API instead of scraping pages. It is static JSON: no key, no sign-up, CORS open. Each dataset is one whole file with \`count\`, \`updated\` (the date it was last checked) and \`items\`; bilingual text is \`{ "zh": …, "en": … }\`. When you use it, credit "${LICENSE.attribution}".`,
     '',

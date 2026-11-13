@@ -2,10 +2,6 @@
  "跳到统一搜索": [
   "index.html"
  ],
- "计算化学研究导航": [
-  "index.html",
-  "shared-nav.js"
- ],
  "点按任意处进入": [
   "index.html"
  ],
@@ -497,7 +493,7 @@
  "关闭详情": [
   "index.html"
  ],
- "Bilingual computational chemistry research atlas: databases, papers, tutorials and open-source tools. 计算化学研究导航：数据库、文献、教程与开源工具一站检索。": [
+ "Integrated Chemical Research & Computing Foundry, bilingual: databases, papers, tutorials and open-source tools. 数据库、文献、教程与开源工具一站检索。": [
   "index.html",
   "tools/build-seo.ts"
  ],
@@ -2523,7 +2519,7 @@
  "聚合计算化学公社、Sobereva、X-MOL、CCL、Stack Exchange、matsci.org 等国际论坛与博客、arXiv、ChemRxiv、Crossref 期刊、GitHub 与官方软件数据库目录的真实标题与链接": [
   "hub/index.html"
  ],
- "网状查询 · MolAstria 计算化学研究导航": [
+ "网状查询 · MolAstria · Integrated Chemical Research & Computing Foundry": [
   "hub/network.html"
  ],
  "跳到跨库查询": [
@@ -5875,7 +5871,7 @@
  "详见关于页": [
   "pro/terms.html"
  ],
- "MolAstria 是一个计算化学研究导航网站，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。网站的内容对所有访客免费开放；任何人都可以用邮箱免费注册账号。Pro 支持者与课题组版提供更多的服务额度（AI 托管额度、在线模型次数等），具体内容以价格页说明为准。": [
+ "MolAstria 是一个 Integrated Chemical Research & Computing Foundry，提供资源检索、关系网、说明讲解手册、AI 助手、AI 实验室、训练指南与桌面版。网站的内容对所有访客免费开放；任何人都可以用邮箱免费注册账号。Pro 支持者与课题组版提供更多的服务额度（AI 托管额度、在线模型次数等），具体内容以价格页说明为准。": [
   "pro/terms.html"
  ],
  "付费权益绑定在付款邮箱上，用邮箱验证码登录使用。Pro 的 AI 托管额度按自然月计算，免费账号的额度按 24 小时计算，未用完的次数不累计，并设有防滥用的频率限制；较贵的模型、AI 实验室和特别长的内容会多计次数，具体规则见账号页。同一账号最多同时在 5 台设备上登录，超过时最早登录的设备会退出。每周精选里的解读由 AI 根据论文标题和摘要生成，可能有误，请以原文为准；邮件可以随时退订。课题组版每个席位单独计算额度，购买者可以在账号页添加或移除成员，成员被移除后立即失去付费权益。": [
@@ -14218,7 +14214,7 @@
  "帮我写一段 RDKit 代码：按 InChIKey 去重 SMILES 列表": [
   "ai/ai.js"
  ],
- "你是 MolAstria（计算化学研究导航）的研究助手。用户提问后，系统会附上从本站目录检索到的条目，编号为 [1]、[2]…。 规则： 1. 推荐资源、教程、数据库、软件时，只能引用附上的条目，并在句末用 [编号] 标注出处；不要编造链接或条目。 2. 附上的条目不足以回答时直接说明“本站目录里没有直接对应的条目”，可以补充一般性知识，但要标明“（目录外的一般知识）”。 3. 用简体中文，先给结论，再分点说明；保持简洁，不超过 300 字，除非用户要求详细。": [
+ "你是 MolAstria（Integrated Chemical Research & Computing Foundry）的研究助手。用户提问后，系统会附上从本站目录检索到的条目，编号为 [1]、[2]…。 规则： 1. 推荐资源、教程、数据库、软件时，只能引用附上的条目，并在句末用 [编号] 标注出处；不要编造链接或条目。 2. 附上的条目不足以回答时直接说明“本站目录里没有直接对应的条目”，可以补充一般性知识，但要标明“（目录外的一般知识）”。 3. 用简体中文，先给结论，再分点说明；保持简洁，不超过 300 字，除非用户要求详细。": [
   "ai/ai.js"
  ],
  "你是一位严谨的计算化学与电化学研究助手，服务于 MolAstria 的访客。用简体中文回答；公式、方法名保留英文。给出可核查的依据，对不确定的数值明确说明不确定，不要编造文献、DOI 或数据。": [

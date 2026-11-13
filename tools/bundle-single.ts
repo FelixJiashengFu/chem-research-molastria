@@ -138,7 +138,7 @@ const wrapper = `<!doctype html>
 <title>MolAstria · 单文件版</title>
 <link rel="icon" href="${favicon}" type="image/svg+xml">
 <style>html,body{margin:0;width:100%;height:100%;background:#f6f5ee}#site{border:0;width:100%;height:100%;display:block}#loading{position:fixed;inset:0;display:grid;place-items:center;font:16px "Microsoft YaHei",sans-serif;color:#204f3d;background:#f6f5ee}@media (prefers-color-scheme:dark){html,body,#loading{background:#101613;color:#9fd0aa}}</style></head>
-<body><div id="loading" role="status">正在打开计算化学研究导航…</div><iframe id="site" title="计算化学研究导航" allow="clipboard-write"></iframe><noscript>请在浏览器中启用 JavaScript 后重新打开此文件。</noscript>
+<body><div id="loading" role="status">正在打开 Integrated Chemical Research & Computing Foundry…</div><iframe id="site" title="Integrated Chemical Research & Computing Foundry" allow="clipboard-write"></iframe><noscript>请在浏览器中启用 JavaScript 后重新打开此文件。</noscript>
 <script type="application/json" id="data-merged">${embed(merged)}</script>
 <script type="application/json" id="data-hub">${embed(hub)}</script>
 <script type="application/json" id="data-en">${embed(english)}</script>
