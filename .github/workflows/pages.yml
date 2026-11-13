@@ -52,6 +52,8 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: NMR models and content
         run: node --test tools/nmr-test.mjs
+      - name: Frontier AI Maths models and content
+        run: node --test tools/ai-math-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
       - name: 3D molecule viewer helpers

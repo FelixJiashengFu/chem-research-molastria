@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="前沿 AI 数学：把 69 页的研究进阶讲义做成可以动手的栏目。44 个主题从线性代数、优化几何、Transformer 到扩散、流匹配、强化学习和科学 AI，每个主题配一个浏览器里当场计算的演示，外加 10 篇完整推导、数值核验和 40 项核对过的参考资料。Frontier AI Mathematics: 44 topics with interactive demos.">
+  <meta name="theme-color" content="#173f34">
+  <title>前沿 AI 数学 · Frontier AI Mathematics · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="aim.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="aim-data.js" defer></script>
+  <script src="aim-topics.js" defer></script>
+  <script src="aim-math.js" defer></script>
+  <script src="aim-models.js" defer></script>
+  <script src="aim-demos-a.js" defer></script>
+  <script src="aim-demos-b.js" defer></script>
+  <script src="aim-demos-c.js" defer></script>
+  <script src="aim.js" defer></script>
+</head>
+<body data-section="aimath" class="js-render">
+<!-- 这一页的文字自带中英两版，由 aim.js 按页面语言写进来，所以每个 section 都标了 translate="no"，不交给 i18n.js 翻译（页脚照常翻译）。 -->
+<a class="skip" href="#aim-map" id="aim-skip" translate="no">跳到 44 个主题</a>
+<main>
+  <section translate="no" class="fs-hero" aria-labelledby="aim-h1">
+    <p class="eyebrow">MOLASTRIA · FRONTIER AI MATHEMATICS</p>
+    <h1 id="aim-h1">前沿 AI 数学<span class="fs-h1-en" lang="en">Frontier AI Mathematics</span></h1>
+    <blockquote class="fs-question" id="aim-question"></blockquote>
+    <p class="lead" id="aim-lead"></p>
+    <p class="fs-honest" id="aim-honest"></p>
+    <ul class="fs-legend" id="aim-legend"></ul>
+    <nav class="fs-jump" id="aim-jump"></nav>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-howto" aria-labelledby="aim-how-h">
+    <h2 id="aim-how-h">怎么用这一栏</h2>
+    <div class="aim-how-grid" id="aim-how"></div>
+    <h3 class="aim-sub" id="aim-notation-h">先统一符号</h3>
+    <dl class="aim-notation" id="aim-notation"></dl>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-map" aria-labelledby="aim-map-h" tabindex="-1">
+    <h2 id="aim-map-h">七个部分，44 个主题</h2>
+    <p class="muted" id="aim-map-note"></p>
+    <p class="aim-progress" id="aim-progress" aria-live="polite"></p>
+    <div id="aim-parts"></div>
+  </section>
+
+  <section translate="no" class="fs-block fs-reader" id="aim-reader" aria-labelledby="aim-reader-h" tabindex="-1">
+    <h2 id="aim-reader-h">阅读与演示</h2>
+    <div class="aim-bar">
+      <button type="button" class="button" id="aim-prev"><i class="ico-ext ico-left" aria-hidden="true"></i></button>
+      <select id="aim-select"></select>
+      <button type="button" class="button" id="aim-next"><i class="ico-ext ico-right" aria-hidden="true"></i></button>
+    </div>
+    <div id="aim-panel"></div>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-threads" aria-labelledby="aim-threads-h" tabindex="-1">
+    <h2 id="aim-threads-h">五条贯穿全书的主线</h2>
+    <p class="muted" id="aim-threads-note"></p>
+    <ul class="aim-threads" id="aim-threads-list"></ul>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-reading" aria-labelledby="aim-reading-h" tabindex="-1">
+    <h2 id="aim-reading-h">读一篇前沿论文的清单</h2>
+    <p class="muted" id="aim-reading-note"></p>
+    <ol class="aim-objects" id="aim-objects"></ol>
+    <div class="aim-rounds" id="aim-rounds"></div>
+    <p class="aim-progress" id="aim-tally" aria-live="polite"></p>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-quiz" aria-labelledby="aim-quiz-h" tabindex="-1">
+    <h2 id="aim-quiz-h">十题自测</h2>
+    <p class="muted" id="aim-quiz-note"></p>
+    <div class="fs-qa" id="aim-quiz-list"></div>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-audit" aria-labelledby="aim-audit-h" tabindex="-1">
+    <h2 id="aim-audit-h">核对说明</h2>
+    <p class="muted" id="aim-audit-note"></p>
+    <div class="aim-audit-grid" id="aim-audit-body"></div>
+  </section>
+
+  <section translate="no" class="fs-block" id="aim-library" aria-labelledby="aim-library-h" tabindex="-1">
+    <h2 id="aim-library-h">参考资料</h2>
+    <p class="muted" id="aim-library-note"></p>
+    <div class="fs-kind-filter" role="group" id="aim-ref-filter"></div>
+    <p class="aim-progress" id="aim-ref-count" aria-live="polite"></p>
+    <ol class="fs-refs" id="aim-refs"></ol>
+  </section>
+</main>
+<noscript><p style="padding:24px">这一页的内容和演示由脚本生成，请打开 JavaScript。This page is rendered by script; please enable JavaScript.</p></noscript>
+</body>
+</html>
