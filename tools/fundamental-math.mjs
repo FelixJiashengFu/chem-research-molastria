@@ -41,6 +41,8 @@ build('qa-data.js', 'MOLASTRIA_QA', 'qa-math.js', 'quantum/algorithms/');
 build('qc-data.js', 'MOLASTRIA_QC', 'qc-math.js', 'quantum/computing/');
 // NMR 栏目（nmr/nmr-data.js → nmr-math.js）
 build('nmr-data.js', 'MOLASTRIA_NMR', 'nmr-math.js', 'nmr/');
+// 前沿 AI 数学（ai-math/aim-data.js → aim-math.js）
+build('aim-data.js', 'MOLASTRIA_AIM', 'aim-math.js', 'ai-math/');
 // 写公式作答的题（../viewer/formula-check.js 判分）：题面和解答里的公式
 build('math/fm-quiz.js', 'MOLASTRIA_FM_QUIZ', 'math/fm-quiz-math.js');
 build('qp-quiz.js', 'MOLASTRIA_QP_QUIZ', 'qp-quiz-math.js', 'quantum/physics/');

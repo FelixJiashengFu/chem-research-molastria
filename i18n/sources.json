@@ -8639,6 +8639,16 @@
  "llm language model price 价格": [
   "shared-nav.js"
  ],
+ "前沿 AI 数学": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "大模型、扩散、流匹配和强化学习背后的数学：44 个主题，各带一个能调的演示": [
+  "shared-nav.js"
+ ],
+ "ai math 数学 transformer attention 注意力 diffusion 扩散 flow matching 流匹配 score sde 强化学习 rl ppo grpo dpo lora muon adam fisher kl vae 最优传输 sinkhorn 双下降 保形 conformal 因果 等变 神经算子": [
+  "shared-nav.js"
+ ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
   "shared-nav.js"
  ],
@@ -17739,6 +17749,12 @@
   "tools/build-seo.ts"
  ],
  "91 种分析方法的谱图怎么来、怎么读：红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法；开放许可的实测质谱、量化计算的红外拉曼紫外谱、78 个交互演示、16 张速查表和 178 篇文献，每张图都写明来源。": [
+  "tools/build-seo.ts"
+ ],
+ "前沿 AI 数学 · Frontier AI Mathematics": [
+  "tools/build-seo.ts"
+ ],
+ "前沿 AI 背后的数学：44 个主题从线性代数、优化几何、Transformer 到扩散、流匹配、强化学习与科学 AI，每个主题一个在浏览器里现算的演示，另有 12 篇附录推导、数值核验和核对过的 43 条参考资料。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [

@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1495,7 +1495,7 @@ check('top bar: five groups in one row at desktop widths in both languages, a si
   const p = await open({ viewport: { width: 1366, height: 800 } });
   await go(p, '/manual/index.html');
   const ids = await p.$$eval('.cr-mega a.cr-item[data-id]', (a) => a.map((x) => x.dataset.id));
-  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'shelf', 'pet', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
+  for (const id of ['search', 'atlas', 'network', 'research', 'radar', 'digest', 'hub', 'chat', 'manual', 'videos', 'programming', 'learn', 'review', 'shelf', 'pet', 'qchem', 'quantum', 'fundamental', 'realms', 'openmodels', 'aimath', 'scimodels', 'models', 'lab', 'train', 'agent', 'code', 'journals', 'api', 'download']) assert.ok(ids.includes(id), `menu has ${id}`);
   assert.ok(!ids.includes('meta'), 'Meta is no longer its own section; it sits under 开放模型馆');
   const hrefs = await p.$$eval('.cr-mega a[href]', (a) => [...new Set(a.map((x) => x.href.split('#')[0]))]);
   for (const h of hrefs) assert.equal((await p.request.get(h)).status(), 200, h);
@@ -3412,6 +3412,61 @@ check('quantum computers: under the Quantum Carnival nav entry, seven parts, six
   await finish(e);
 });
 
+check('Frontier AI Maths: nav entry, 44 topics and 12 appendices, working demos, the re-run of the notes’ checks, references, English', async () => {
+  const p = await open();
+  await go(p, '/ai-math/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_AIM_READY);
+  const settle = () => p.waitForTimeout(150); // demos redraw on the next animation frame
+  const read = () => text(p, '#aim-panel .fs-readout');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=aimath]', 'aria-current'), 'page', 'the nav entry is current');
+  assert.equal(await p.locator('.aim-card').count(), 56);
+  assert.equal(await p.locator('#aim-select option').count(), 56);
+  assert.equal(await p.locator('.aim-part').count(), 8);
+  // Topic 01 is open; its formulas are MathML and the demo has drawn something.
+  assert.ok(await p.locator('#aim-panel math').count() >= 2, 'MathML formulas render');
+  assert.equal(await p.locator('#aim-panel .aim-demo').count(), 1);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('#aim-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas of the demo is painted');
+  // Topic 11: the worked attention example of the notes, then the mask.
+  await p.click('.aim-card[data-open="11"]'); await settle();
+  assert.equal(await p.evaluate(() => location.hash), '#t-11');
+  assert.match(await read(), /0\.401, 0\.198, 0\.401[\s\S]*0\.802, 0\.797/);
+  await p.check('#aim-panel .aim-check input'); await settle();
+  assert.match(await read(), /0\.500, 0\.500, 0\.000|0\.670, 0\.330, 0\.000/);
+  // Topic 33: the tilted policy with β = 1 and rewards (0, 1, −1).
+  await p.selectOption('#aim-select', '33'); await settle();
+  assert.match(await read(), /0\.2055[\s\S]*0\.3133/);
+  await p.click('#aim-panel [data-preset="0"]'); await settle();
+  assert.doesNotMatch(await read(), /0\.2055|NaN|undefined/);
+  // Next / previous, and the seen mark.
+  await p.click('#aim-next'); await settle();
+  assert.equal(await p.evaluate(() => location.hash), '#t-34');
+  assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-aim')).seen)).includes('33'));
+  assert.equal(await p.locator('.aim-card.is-seen').count() >= 3, true);
+  // Appendix K re-runs the notes’ numerical checks in the browser: the twelve error-table numbers agree.
+  await go(p, '/ai-math/index.html#a-K');
+  await p.waitForFunction(() => window.MOLASTRIA_AIM_READY); await p.waitForTimeout(300);
+  assert.match(await text(p, '#aim-panel'), /三个可复现数值检查/);
+  assert.match(await read(), /逐位一致/);
+  assert.match(await text(p, '#aim-panel'), /0\.1575[\s\S]*0\.2100[\s\S]*1\.595e-1 \/ 4\.835e-3[\s\S]*5\.755e-3 \/ 1\.401e-5/);
+  // Quiz, audit, references.
+  assert.equal(await p.locator('#aim-quiz-list details').count(), 10);
+  assert.ok(await p.locator('#aim-audit-body li').count() >= 8);
+  assert.equal(await p.locator('.fs-ref').count(), 43);
+  await go(p, '/ai-math/index.html#t-08'); await p.waitForFunction(() => window.MOLASTRIA_AIM_READY); await p.waitForTimeout(300);
+  await p.click('#aim-panel a[data-ref=amari1998]');
+  assert.match(await text(p, '#ref-amari1998'), /Amari[\s\S]*08/);
+  await finish(p);
+  const e = await open();
+  await go(e, '/ai-math/index.html?lang=en#t-22');
+  await e.waitForFunction(() => window.MOLASTRIA_AIM_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#aim-h1'), /Frontier AI Mathematics/);
+  assert.match(await text(e, '#aim-panel'), /Fokker–Planck[\s\S]*probability-flow|Fokker–Planck/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('NMR: nav entry, eleven parts, eight method families, timeline, five working demos, references, English', async () => {
   const p = await open();
   await go(p, '/nmr/index.html');
@@ -3503,7 +3558,7 @@ check('Spectra Hall: nav entry, 91 methods, filter and search, a method opens wi
   assert.ok(await p.locator('#sp-method .sp-fig[data-kind=computed]').count() >= 1, 'IR has a computed spectrum');
   // Atlas tables are filled when opened.
   await p.click('#sp-atlas-list details summary >> nth=0');
-  assert.ok(await p.locator('#sp-atlas-list details[open] table tr').count() > 3);
+  await p.locator('#sp-atlas-list details[open] table tr').nth(3).waitFor({ timeout: 5000 });
   assert.equal(await p.locator('#sp-refs > li').count(), 178);
   await p.click('#sp-case-tabs [data-case]:nth-child(2)');
   assert.equal(await p.locator('#sp-case-panel .sp-steps li').count() > 2, true);
@@ -3579,7 +3634,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/ai-math/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5096,7 +5151,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
