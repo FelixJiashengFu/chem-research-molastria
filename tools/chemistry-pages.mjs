@@ -9,9 +9,47 @@ import { pathToFileURL } from 'node:url';
 const root = new URL('../public/chemistry/', import.meta.url);
 const box = { window: {} };
 vm.runInNewContext(readFileSync(new URL('chem-subjects.js', root), 'utf8'), box);
-const { subjects } = box.window.MOLASTRIA_CHEM_SUBJECTS;
+const { subjects, soon = [] } = box.window.MOLASTRIA_CHEM_SUBJECTS;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const HEAD = '<script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>';
+
+// 还在准备的展馆：只有首屏和一段说明，由 ../chem-soon.js 按页面语言写进来，不载入 data.js、演示和公式
+export function soonPage([id, num, , zh, en]) {
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="${esc(`化学学科馆 ${num} · ${zh}：这个展馆正在准备，即将上线。Chemistry Disciplines ${num} · ${en}: this hall is being prepared and will open soon.`)}">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#173f34">
+  <title>${esc(`${zh} · ${en} · 化学学科馆 · MolAstria`)}</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  ${HEAD}
+  <script src="../../i18n.js" defer></script>
+  <script src="../../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../../shared-nav.css">
+  <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
+  <link rel="stylesheet" href="../chem.css">
+  <script src="../../shared-nav.js" defer></script>
+  <script src="../chem-subjects.js" defer></script>
+  <script src="../chem-soon.js" defer></script>
+</head>
+<body data-section="chemistry" data-hall="${id}" class="js-render">
+<!-- 生成的文件，不要手改：node tools/chemistry-pages.mjs。这个展馆还在准备（chem-subjects.js 的 soon），文字由 ../chem-soon.js 按页面语言写进来。 -->
+<main>
+  <section translate="no" class="fs-hero" aria-labelledby="chm-h1">
+    <nav class="chm-switch" id="chm-switch"></nav>
+    <p class="eyebrow" id="chm-eyebrow">MOLASTRIA · CHEMISTRY DISCIPLINES · ${num}</p>
+    <h1 id="chm-h1">${esc(zh)}<span class="fs-h1-en" lang="en">${esc(en)}</span></h1>
+    <p class="lead" id="chm-lead">这个展馆正在准备，即将上线。</p>
+    <nav class="fs-jump" id="chm-jump"><a class="button primary" href="../index.html">全部展馆</a></nav>
+  </section>
+</main>
+</body>
+</html>
+`;
+}
 
 export function page([id, num, , zh, en, line]) {
   return `<!doctype html>
@@ -112,7 +150,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
   const check = process.argv.includes('--check');
   let stale = 0;
   for (const s of subjects) {
-    const dir = new URL(`${s[0]}/`, root), file = new URL('index.html', dir), html = page(s);
+    const dir = new URL(`${s[0]}/`, root), file = new URL('index.html', dir), html = soon.includes(s[0]) ? soonPage(s) : page(s);
     if (check) { if (!existsSync(file) || readFileSync(file, 'utf8') !== html) { console.log(`stale: public/chemistry/${s[0]}/index.html`); stale++; } continue; }
     mkdirSync(dir, { recursive: true });
     writeFileSync(file, html);

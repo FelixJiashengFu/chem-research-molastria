@@ -47,6 +47,16 @@
 .chm-switch a b{font:600 11px/1 var(--font-num);color:var(--fs-gold-text)}
 .chm-switch a[aria-current=page]{border-color:var(--accent-text);color:var(--accent-text);font-weight:600;background:var(--accent-soft)}
 .chm-switch a:hover,.chm-switch a:focus-visible{border-color:var(--accent-text)}
+.chm-switch .chm-soon{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px dashed var(--line);border-radius:99px;color:var(--muted);font-size:12.5px;white-space:nowrap}
+.chm-switch .chm-soon b{font:600 11px/1 var(--font-num);color:var(--muted)}
+.chm-switch .chm-soon[aria-current=page]{border-color:var(--accent-text);color:var(--accent-text)}
+/* 还在准备的展馆：卡片不是链接，虚线框，右上角标“即将上线” */
+.chm-card.is-soon{border-style:dashed;background:transparent;color:var(--muted)}
+.chm-card.is-soon:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.chm-card.is-soon .chm-card-n{color:var(--muted)}
+.chm-card .chm-soon-tag{color:var(--gold-ink)}
+.chm-map .chm-node.is-soon circle{stroke-dasharray:4 3;stroke:var(--muted)}
+.chm-map .chm-node.is-soon text{fill:var(--muted)}
 .chm-scope{margin:14px 0 0;padding:12px 16px;border-left:3px solid var(--accent-2);background:var(--accent-soft);font-size:13.5px;line-height:1.85;color:var(--ink-2);max-width:96ch}
 .chm-scope b{color:var(--ink)}
 .chm-scope a{color:var(--accent-text)}

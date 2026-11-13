@@ -12,6 +12,8 @@
   if (en) document.title = 'Chemistry Disciplines · MolAstria';
   const SUB = S.subjects.map(([id, num, group, zh, e, line, chapters, demos, refs, rel]) => ({ id, num, group, zh, en: e, line, chapters, demos, refs, rel }));
   const name = (s) => (en ? s.en : s.zh);
+  const soon = new Set(S.soon || []), open = SUB.filter((s) => !soon.has(s.id)).length;
+  const later = SUB.filter((s) => soon.has(s.id)).map(name).join(L('、', ', '));
   let rec = {};
   try { const v = JSON.parse(localStorage.getItem('molastria-chem') || '{}'); if (v && typeof v === 'object') rec = v; } catch { /* 没有记录 */ }
   const total = (k) => SUB.reduce((n, s) => n + s[k], 0);
@@ -20,8 +22,8 @@
   $('#chm-question').innerHTML = esc(L('同一个“化学”，为什么大学里要拆成十几门课？它们各自回答什么问题，又怎样连成一张网？', 'Chemistry is one subject, so why does a university split it into a dozen courses? What question does each answer, and how do they join into one web?'))
     + (en ? '' : '<span class="fs-q-en" lang="en">Chemistry is one subject, so why does a university split it into a dozen courses? What question does each answer, and how do they join into one web?</span>');
   $('#chm-lead').textContent = L(
-    `十五个展馆，从四大基础化学（无机、有机、物理化学、分析化学）到结构、计算、配位、电化学，再到高分子、生物、材料、药物、环境、核化学和化学工程。每一馆分章讲解（标出基础、进阶、前沿三档），给出核心公式和一道带数字的例题，配有在浏览器里当场计算的演示、发展时间线、自测题、教材和按 DOI 核对过的文献。一共 ${total('chapters')} 章、${total('demos')} 个演示、${total('refs')} 篇文献。`,
-    `Fifteen halls, from the four core branches (inorganic, organic, physical, analytical) through structure, computation, coordination and electrochemistry to polymers, biochemistry, materials, medicines, the environment, nuclear chemistry and chemical engineering. Each hall has chapters marked foundation, advanced or frontier, key formulas and a worked example with numbers, demos computed live in the browser, a timeline, a self-test, textbooks and references checked by DOI. ${total('chapters')} chapters, ${total('demos')} demos and ${total('refs')} references in all.`);
+    `十五个展馆，从四大基础化学（无机、有机、物理化学、分析化学）到结构、计算、配位、电化学，再到高分子、生物、材料、药物、环境、核化学和化学工程。每一馆分章讲解（标出基础、进阶、前沿三档），给出核心公式和一道带数字的例题，配有在浏览器里当场计算的演示、发展时间线、自测题、教材和按 DOI 核对过的文献。一共 ${total('chapters')} 章、${total('demos')} 个演示、${total('refs')} 篇文献。${soon.size ? `现在开放 ${open} 个展馆，${later}还在准备，即将上线。` : ''}`,
+    `Fifteen halls, from the four core branches (inorganic, organic, physical, analytical) through structure, computation, coordination and electrochemistry to polymers, biochemistry, materials, medicines, the environment, nuclear chemistry and chemical engineering. Each hall has chapters marked foundation, advanced or frontier, key formulas and a worked example with numbers, demos computed live in the browser, a timeline, a self-test, textbooks and references checked by DOI. ${total('chapters')} chapters, ${total('demos')} demos and ${total('refs')} references in all.${soon.size ? ` ${open} halls are open now; ${later} is still being prepared and will open soon.` : ''}`);
   $('#chm-honest').textContent = L(
     '每一门都是一整套大学课程，这里不可能把教材搬过来。每馆挑出这一门最核心的概念和最常用的公式，讲清它们回答什么问题、在哪里会失效，然后指向原始论文和好教材。和站里已有栏目重叠的部分（量子化学、谱图、核磁）只写概览并链过去。',
     'Each of these is a whole university course and no page can replace the textbook. Each hall picks the core ideas and the formulas used most, says what question they answer and where they break down, and points to the original papers and good textbooks. Where another section of this site already covers a topic in depth (quantum chemistry, spectra, NMR), the hall gives an overview and links there.');
@@ -33,6 +35,9 @@
   $('#chm-skip').textContent = L('跳到十五个展馆', 'Skip to the fifteen halls');
 
   const card = (s) => {
+    if (soon.has(s.id)) return `<div class="chm-card is-soon" aria-disabled="true"><span class="chm-card-n">${s.num}</span><span class="chm-card-done chm-soon-tag">${L('即将上线', 'Coming soon')}</span>
+      <h4>${esc(name(s))}</h4>${en ? '' : `<p class="chm-card-en" lang="en">${esc(s.en)}</p>`}<p>${esc(tx(s.line))}</p>
+      <span class="chm-card-meta"><span>${L('展馆正在准备', 'This hall is being prepared')}</span></span></div>`;
     const r = rec[s.id] || {}, seen = Array.isArray(r.seen) ? r.seen.length : 0, quiz = Array.isArray(r.quiz) ? r.quiz.length : 0;
     return `<a class="chm-card" href="${s.id}/index.html"><span class="chm-card-n">${s.num}</span>${seen || quiz ? `<span class="chm-card-done">${L(`读 ${seen} · 对 ${quiz}`, `${seen} read · ${quiz} right`)}</span>` : ''}
       <h4>${esc(name(s))}</h4>${en ? '' : `<p class="chm-card-en" lang="en">${esc(s.en)}</p>`}<p>${esc(tx(s.line))}</p>
@@ -49,7 +54,7 @@
   const label = (s) => { const t = en ? s.en.replace(/ Chemistry$/, '').replace('Quantum & Computational', 'Computational').replace('Coordination & Organometallic', 'Coordination').replace('Nuclear & Radiochemistry', 'Nuclear') : s.zh.replace('与金属有机化学', '').replace('与放射化学', '').replace('量子与', ''); return t; };
   $('#chm-map').innerHTML = `<svg viewBox="0 0 600 540" role="group" aria-label="${esc(L('十五门化学学科的关系图', 'A map of how the fifteen disciplines connect'))}">
     <g>${edges.map((e) => `<path class="chm-edge" data-a="${e[0]}" data-b="${e[1]}" d="${curve(e)}"/>`).join('')}</g>
-    <g>${SUB.map((s) => { const [x, y] = pos[s.id]; return `<a class="chm-node" href="${s.id}/index.html" data-id="${s.id}" data-g="${s.group}" aria-label="${esc(`${s.num} ${name(s)}`)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="chm-node-n" x="${x.toFixed(1)}" y="${(y - 6).toFixed(1)}">${s.num}</text><text x="${x.toFixed(1)}" y="${(y + 10).toFixed(1)}">${esc(label(s))}</text></a>`; }).join('')}</g></svg>`;
+    <g>${SUB.map((s) => { const [x, y] = pos[s.id]; return `<a class="chm-node${soon.has(s.id) ? ' is-soon' : ''}" href="${s.id}/index.html" data-id="${s.id}" data-g="${s.group}" aria-label="${esc(`${s.num} ${name(s)}${soon.has(s.id) ? L('（即将上线）', ' (coming soon)') : ''}`)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="chm-node-n" x="${x.toFixed(1)}" y="${(y - 6).toFixed(1)}">${s.num}</text><text x="${x.toFixed(1)}" y="${(y + 10).toFixed(1)}">${esc(label(s))}</text></a>`; }).join('')}</g></svg>`;
   const map = $('#chm-map');
   const focus = (id) => {
     map.classList.toggle('is-focus', !!id);
