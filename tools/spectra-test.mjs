@@ -12,7 +12,7 @@ function load(lang) {
   win.document = { documentElement: { lang }, addEventListener() {} };
   win.addEventListener = () => {};
   const ctx = vm.createContext(win);
-  const files = ['sp-tables.js', 'sp-models.js', 'sp-macro.js', 'sp-data.js', ...readdirSync(dir).filter((f) => /^sp-m-.*\.js$/.test(f)).sort(), 'sp-atlas.js', 'sp-refs.js', 'sp-measured.js', 'sp-computed.js', 'sp-plot.js', 'sp-figs.js', 'sp-gens.js', 'sp-gens2.js', 'sp-gens3.js'];
+  const files = ['sp-tables.js', 'sp-models.js', 'sp-macro.js', 'sp-computed.js', 'sp-data.js', ...readdirSync(dir).filter((f) => /^sp-m-.*\.js$/.test(f)).sort(), 'sp-atlas.js', 'sp-refs.js', 'sp-measured.js', 'sp-plot.js', 'sp-figs.js', 'sp-gens.js', 'sp-gens2.js', 'sp-gens3.js'];
   for (const f of files) vm.runInContext(readFileSync(new URL(f, dir), 'utf8'), ctx, { filename: f });
   return win;
 }
@@ -207,7 +207,8 @@ test('figures: provenance on every one, and every one draws in both languages', 
     const figs = [];
     for (const m of win.MOLASTRIA_SPECTRA_METHODS) for (const f of m.figs) figs.push([m.id, f]);
     for (const l of DD.labs) figs.push([`lab:${l.id}`, l.fig]);
-    for (const c of DD.cases) for (const s of c.steps) if (s.fig) figs.push([`case:${c.id}`, s.fig]);
+    const CMP = W.MOLASTRIA_SPECTRA_COMPUTED;   // the page leaves out a case step whose computed data is missing
+    for (const c of DD.cases) for (const s of c.steps) if (s.fig && !(s.fig.vib && !CMP.vib[s.fig.vib]) && !(s.fig.uv && !CMP.uv[s.fig.uv])) figs.push([`case:${c.id}`, s.fig]);
     assert.ok(figs.length >= 125);
     let gens = 0;
     for (const [who, f] of figs) {

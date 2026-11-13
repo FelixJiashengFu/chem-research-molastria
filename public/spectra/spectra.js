@@ -100,11 +100,14 @@
   }
 
   // ── 联合解谱 ──────────────────────────────────────────────────────────
+  // a step whose computed spectrum is not in sp-computed.js is left out rather than drawn as an empty frame
+  const COMPUTED = window.MOLASTRIA_SPECTRA_COMPUTED || { vib: {}, uv: {} };
+  const hasData = (st) => !st.fig || (!(st.fig.vib && !COMPUTED.vib[st.fig.vib]) && !(st.fig.uv && !COMPUTED.uv[st.fig.uv]));
   let caseId = D.cases[0].id;
   function renderCase() {
     const c = D.cases.find((x) => x.id === caseId) || D.cases[0];
     $('#sp-case-tabs').innerHTML = D.cases.map((x) => `<button type="button" class="fs-tab" role="tab" id="case-${x.id}" data-case="${x.id}" aria-selected="${x.id === c.id}" aria-controls="sp-case-panel"><b translate="no">${esc(x.formula)}</b>${C(esc(tx(x.name)))}</button>`).join('');
-    $('#sp-case-panel').innerHTML = `<div class="fs-panel sp-case" role="tabpanel" aria-labelledby="case-${c.id}">${C(T(c.intro), 'p', 'lead')}<ol class="sp-steps">${c.steps.map((s, i) => `<li><div class="sp-step-t"><span class="sp-step-n">${i + 1}</span>${mLink(s.method)}${C(T(s.text), 'p')}</div>${s.fig ? figHtml({ ...s.fig, kind: s.kind || s.fig.kind }) : ''}</li>`).join('')}</ol></div>`;
+    $('#sp-case-panel').innerHTML = `<div class="fs-panel sp-case" role="tabpanel" aria-labelledby="case-${c.id}">${C(T(c.intro), 'p', 'lead')}<ol class="sp-steps">${c.steps.filter(hasData).map((s, i) => `<li><div class="sp-step-t"><span class="sp-step-n">${i + 1}</span>${mLink(s.method)}${C(T(s.text), 'p')}</div>${s.fig ? figHtml({ ...s.fig, kind: s.kind || s.fig.kind }) : ''}</li>`).join('')}</ol></div>`;
     arm($('#sp-case-panel'));
   }
   $('#sp-case-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-case]'); if (!b) return; caseId = b.dataset.case; renderCase(); });

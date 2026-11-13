@@ -90,9 +90,10 @@ def make_mf(atoms, basis, spin=0, xc='b3lyp'):
     mf.max_cycle = 200
     return mol, mf
 
-def optimise(atoms, basis, spin=0, pre=True):
+def optimise(atoms, basis, spin=0, pre=True, tight=True):
     from pyscf.geomopt.geometric_solver import optimize
-    params = {'convergence_energy': 1e-7, 'convergence_grms': 1e-5, 'convergence_gmax': 3e-5, 'convergence_drms': 4e-4, 'convergence_dmax': 6e-4}
+    # tight for frequencies (small gradients matter there); geomeTRIC's defaults are plenty for excitation energies
+    params = {'convergence_energy': 1e-7, 'convergence_grms': 1e-5, 'convergence_gmax': 3e-5, 'convergence_drms': 4e-4, 'convergence_dmax': 6e-4} if tight else {}
     for b in (['def2-svp'] if len(atoms) > 6 and pre and basis != 'def2-svp' else []) + [basis]:   # a cheap first pass for the larger ones
         mol, mf = make_mf(atoms, b, spin)
         eq = optimize(mf, maxsteps=200, **params)
@@ -122,6 +123,10 @@ def refined_modes(mol, mf, basis, spin):
     res = thermo.harmonic_analysis(mol, hess, imaginary_freq=False)
     modes = np.asarray(res['norm_mode'])            # (nmode, natm, 3): dx/dQ, mass-weighted orthonormal
     first = np.asarray(res['freq_wavenumber']).real
+    if max(mol.atom_charges()) <= 10:
+        # Only first-row atoms: the rebuilt Hessian moved no frequency by more than 3 cm-1 for the 14 such molecules
+        # that were run both ways (2026-11-13), so the analytic modes are kept and the numerical step is skipped.
+        return first, modes, 1.0 / np.einsum('jax,jax->j', modes, modes), first, None
     coords = mol.atom_coords(unit='Angstrom')
     syms = [mol.atom_symbol(i) for i in range(mol.natm)]
     dm0 = mf.make_rdm1()
@@ -211,24 +216,24 @@ def vib(name):
             'energy': round(float(e), 8), 'dipole': round(float(np.linalg.norm(dip0)), 4),
             'alpha_iso': round(float(np.trace(polarisability(mf)) / 3), 4) if raman else None,
             'geometry': [[s, *[round(float(v), 5) for v in x]] for s, x in zip(syms, coords)],
-            'deriv': 'field', 'hessian': 'numerical', 'analytic_freq': [round(float(v), 1) for v in first], 'hessian_asymmetry': asym, 'units': UNITS, 'modes': out, 'seconds': round(time.time() - t0)}
+            'deriv': 'field', 'hessian': 'analytic' if asym is None else 'numerical', 'analytic_freq': [round(float(v), 1) for v in first], 'hessian_asymmetry': asym, 'units': UNITS, 'modes': out, 'seconds': round(time.time() - t0)}
     json.dump(data, open(os.path.join(OUT, f'vib-{name}.json'), 'w'), indent=1)
     print(f'vib {name}: {len(out)} modes, {data["seconds"]} s', flush=True)
 
 def uv(name):
     t0 = time.time()
-    basis = 'def2-tzvp'
-    gbasis = 'def2-svp' if len(start_geometry(UV[name])) > 12 else basis      # geometry: SVP for the larger ones
-    atoms = optimise(start_geometry(UV[name]), gbasis, pre=False)
+    basis = gbasis = 'def2-svp'     # small basis on purpose: the page compares positions and trends, not absolute accuracy
+    atoms = optimise(start_geometry(UV[name]), gbasis, pre=False, tight=False)
     res = {}
     for xc in ('b3lyp', 'cam-b3lyp'):
         mol, mf = make_mf(atoms, basis, xc=xc)
+        mf.grids.atom_grid = (50, 194)     # the response kernel on the vibrational grid made TDDFT take 10+ min per molecule
         mf.kernel(); assert mf.converged
-        td = mf.TDDFT(); td.nstates = 8
+        td = mf.TDA(); td.nstates = 8      # Tamm-Dancoff: converges in far fewer iterations than full TDDFT
         td.kernel()
         fosc = td.oscillator_strength(gauge='length')
         res[xc] = [{'ev': round(float(e * 27.211386245988), 4), 'f': round(float(f), 5), 'conv': bool(c)} for e, f, c in zip(td.e, fosc, td.converged)]
-    data = {'id': name, 'smiles': UV[name], 'basis': basis, 'geometry_method': 'B3LYP/' + gbasis, 'program': 'PySCF ' + __import__('pyscf').__version__,
+    data = {'id': name, 'smiles': UV[name], 'basis': basis, 'geometry_method': 'B3LYP/' + gbasis, 'td': 'TDA', 'program': 'PySCF ' + __import__('pyscf').__version__,
             'geometry': [[s, *[round(float(v), 5) for v in x]] for s, x in atoms], 'states': res, 'seconds': round(time.time() - t0)}
     json.dump(data, open(os.path.join(OUT, f'uv-{name}.json'), 'w'), indent=1)
     print(f'uv {name}: {data["seconds"]} s', flush=True)

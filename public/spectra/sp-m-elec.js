@@ -37,7 +37,7 @@
       ],
       figs: [
         { uv: 'benzene', pick: ['ethylene', 'butadiene', 'hexatriene', 'octatetraene', 'benzene', 'naphthalene', 'anthracene', 'formaldehyde', 'acetone', 'pyridine', 'pna', 'azobenzene', 'caffeine'],
-          cap: T(`用含时密度泛函理论（TDDFT）算出的垂直激发：棒是每个单重激发态的位置和振子强度，曲线是展宽 0.35 eV 后的包络。孤立分子、没有振动结构、没有溶剂。灰色刻度是文献里的实验吸收峰。多烯和并苯两个系列里可以看到共轭变长时吸收向长波移动。`, `Vertical excitations from time-dependent density functional theory (TDDFT): sticks mark each singlet excited state and its oscillator strength, and the curve is their envelope after 0.35 eV broadening. Isolated molecule, no vibrational structure, no solvent. Grey ticks are experimental absorption maxima from the literature. The polyene and acene series show the absorption moving to longer wavelength as conjugation grows.`) },
+          cap: T(`用含时密度泛函理论（TDDFT）算出的垂直激发：棒是每个单重激发态的位置和振子强度，曲线是展宽 0.4 eV 后的包络。孤立分子、没有振动结构、没有溶剂。灰色刻度是文献里的实验吸收峰。多烯和并苯两个系列里可以看到共轭变长时吸收向长波移动。`, `Vertical excitations from time-dependent density functional theory (TDDFT): sticks mark each singlet excited state and its oscillator strength, and the curve is their envelope after 0.4 eV broadening. Isolated molecule, no vibrational structure, no solvent. Grey ticks are experimental absorption maxima from the literature. The polyene and acene series show the absorption moving to longer wavelength as conjugation grows.`) },
         { gen: 'beer', cap: T(`由公式算出：有 0.1 % 杂散光时表观吸光度对真实吸光度的偏离。A = 2 处低了约 2 %，A = 3 处已经低了约 10 %。`, `From the formula: how apparent absorbance departs from true absorbance with 0.1 % stray light. At A = 2 it reads about 2 % low, at A = 3 already about 10 %.`) },
       ],
       table: 'uv-chromophores', see: [['#lab-uv', T(`动手实验室：共轭长度和吸收波长`, `Hands-on lab: conjugation length and absorption wavelength`)]],
