@@ -1,0 +1,46 @@
+{
+ "id": "o2",
+ "smiles": null,
+ "method": "B3LYP",
+ "basis": "def2-tzvpd",
+ "program": "PySCF 2.15.0",
+ "energy": -150.39078553,
+ "dipole": 0.0,
+ "alpha_iso": 1.5849,
+ "geometry": [
+  [
+   "O",
+   0.0,
+   -0.0,
+   0.00299
+  ],
+  [
+   "O",
+   -0.0,
+   0.0,
+   1.20701
+  ]
+ ],
+ "deriv": "field",
+ "hessian": "numerical",
+ "analytic_freq": [
+  1635.3
+ ],
+ "hessian_asymmetry": 0.0,
+ "units": {
+  "freq": "cm-1",
+  "ir": "km/mol",
+  "raman": "A^4/amu",
+  "redmass": "amu"
+ },
+ "modes": [
+  {
+   "freq": 1635.9,
+   "ir": 0.0,
+   "redmass": 15.999,
+   "raman": 16.6759,
+   "depol": 0.1672
+  }
+ ],
+ "seconds": 89
+}

@@ -248,6 +248,7 @@
   "quantum/biology/index.html",
   "quantum/computing/index.html",
   "nmr/index.html",
+  "spectra/index.html",
   "hub/index.html",
   "models/models.js",
   "radar/app/app.js"
@@ -857,7 +858,8 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
-  "nmr/index.html"
+  "nmr/index.html",
+  "spectra/index.html"
  ],
  "主导航": [
   "atlas/index.html",
@@ -1028,6 +1030,7 @@
   "quantum/algorithms/index.html",
   "quantum/computing/index.html",
   "nmr/index.html",
+  "spectra/index.html",
   "physics-realms/index.html"
  ],
  "筛选期刊": [
@@ -1209,6 +1212,7 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "nmr/index.html",
+  "spectra/index.html",
   "about/index.html",
   "shared-nav.js",
   "hub/network.js"
@@ -1427,13 +1431,15 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
-  "nmr/index.html"
+  "nmr/index.html",
+  "spectra/index.html"
  ],
  "按年份（晚到早）": [
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
-  "nmr/index.html"
+  "nmr/index.html",
+  "spectra/index.html"
  ],
  "MolAstria · 进一步基础科学发现": [
   "fundamental-science/index.html"
@@ -1469,7 +1475,8 @@
   "fundamental-science/index.html",
   "quantum/biology/index.html",
   "quantum/computing/index.html",
-  "nmr/index.html"
+  "nmr/index.html",
+  "spectra/index.html"
  ],
  "MolAstria 的基础理论研究方向：量子力学的基础与局限、量子化学的数学重构、分子量子动力学的几何基础（Berry 相位、圆锥交叉）、GRW 与 CSL 等修正动力学及其分子检验。每一条内容都标明是已确立的科学、活跃研究、理论假说还是计划方向，附可交互的数学演示与经过核对的参考文献。": [
   "fundamental-science/index.html"
@@ -1518,6 +1525,7 @@
   "quantum/physics/index.html",
   "quantum/computing/index.html",
   "nmr/index.html",
+  "spectra/index.html",
   "qchem/index.html",
   "shared-nav.js",
   "radar/app/app.js",
@@ -1906,6 +1914,7 @@
  ],
  "核磁共振": [
   "nmr/index.html",
+  "spectra/index.html",
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
@@ -2095,6 +2104,7 @@
  ],
  "开源代码台": [
   "nmr/index.html",
+  "spectra/index.html",
   "code/index.html",
   "shared-nav.js"
  ],
@@ -2133,6 +2143,111 @@
  ],
  "核磁共振（NMR）：从 1938 年的分子束实验到 1.2 GHz 磁体、超快魔角旋转、超极化、零场 NMR 和机器学习解谱。十一个部分讲清方法的来龙去脉，八类方法对比，五个可以动手调的演示，203 篇按 DOI 核对过的文献。": [
   "nmr/index.html"
+ ],
+ "谱图馆 · Spectra Hall · MolAstria": [
+  "spectra/index.html"
+ ],
+ "跳到方法目录": [
+  "spectra/index.html"
+ ],
+ "谱图馆": [
+  "spectra/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "91 种方法": [
+  "spectra/index.html"
+ ],
+ "按问题找方法": [
+  "spectra/index.html"
+ ],
+ "联合解谱": [
+  "spectra/index.html"
+ ],
+ "动手实验台": [
+  "spectra/index.html"
+ ],
+ "速查表": [
+  "spectra/index.html"
+ ],
+ "数据来源": [
+  "spectra/index.html"
+ ],
+ "文献": [
+  "spectra/index.html"
+ ],
+ "一把能量的尺子": [
+  "spectra/index.html"
+ ],
+ "先想清楚要问样品什么，再挑方法。下面二十个问题各配了最常用的几种方法，点方法名直接打开它的讲解。": [
+  "spectra/index.html"
+ ],
+ "方法目录": [
+  "spectra/index.html"
+ ],
+ "十一个家族，91 种方法。每种方法都讲原理、坐标轴、能回答什么问题、样品要求、关键数字、读谱步骤和常见的坑，并配有谱图。标“常用”的 33 种是多数实验室天天在用的。": [
+  "spectra/index.html"
+ ],
+ "搜索方法": [
+  "spectra/index.html"
+ ],
+ "方法详解": [
+  "spectra/index.html"
+ ],
+ "在上面的目录里点一种方法，它的讲解和谱图就显示在这里。图里的滑块、选项都可以动；鼠标移到图上读数，标了“可点”的图可以点峰。": [
+  "spectra/index.html"
+ ],
+ "联合解谱：四个例子": [
+  "spectra/index.html"
+ ],
+ "真正解决问题时很少只看一张谱。下面四个分子各用几种谱一步步推出结构，每一步都写明这张谱是实测的还是计算的。": [
+  "spectra/index.html"
+ ],
+ "九个可以自己输入、自己调的工具。曲线和数字都在浏览器里现算，每个工具上方标明数据属于哪一类。": [
+  "spectra/index.html"
+ ],
+ "读谱时最常翻的十六张表：特征频率、发色团、中性丢失、同位素、加合离子、化学位移、结合能、特征 X 射线、原子谱线、参比电极。带“现算”的表由本页的同位素质量和常数直接算出。": [
+  "spectra/index.html"
+ ],
+ "数据来源与核对": [
+  "spectra/index.html"
+ ],
+ "52 张实测质谱的记录清单": [
+  "spectra/index.html"
+ ],
+ "方法家族": [
+  "spectra/index.html"
+ ],
+ "全部家族": [
+  "spectra/index.html"
+ ],
+ "MolAstria · 谱图馆": [
+  "spectra/index.html"
+ ],
+ "本页的每张图都标明来源：实测、量化计算、由实测常数算出，或者示意。计算谱和模型用来学习怎样读谱，不能代替对真实样品的测量，也不能当作鉴定的依据。": [
+  "spectra/index.html"
+ ],
+ "数据库目录": [
+  "spectra/index.html",
+  "code/index.html"
+ ],
+ "四种数据来源标注": [
+  "spectra/index.html"
+ ],
+ "筛选方法": [
+  "spectra/index.html"
+ ],
+ "例如 红外、GC-MS、XPS、手性": [
+  "spectra/index.html"
+ ],
+ "按家族筛选": [
+  "spectra/index.html"
+ ],
+ "联合解谱的例子": [
+  "spectra/index.html"
+ ],
+ "谱图馆：91 种分析方法的谱图怎么来、怎么读。红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、蛋白质和糖的多维核磁、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法。52 张开放许可的实测质谱，量化计算的红外、拉曼和紫外谱，78 个可以动手调的演示，16 张速查表，178 篇核对过的文献；每张图都写明是实测、计算还是示意。": [
+  "spectra/index.html"
  ],
  "每周精选 · 计算化学新论文与一句话解读 · MolAstria": [
   "digest/index.html"
@@ -8307,9 +8422,6 @@
  "（BSD-3），化学信息学用 RDKit.js（BSD-3），3D 显示用 3Dmol.js（BSD-3，py3Dmol 背后就是它）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
- "数据库目录": [
-  "code/index.html"
- ],
  "开源代码台的五个工具": [
   "code/index.html"
  ],
@@ -8476,6 +8588,12 @@
  "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫": [
   "shared-nav.js"
  ],
+ "91 种分析方法的谱图怎么来、怎么读：红外、质谱、GC-MS、LC-MS、色谱、衍射、热分析、冷冻电镜和高分子表征，附实测谱和 78 个演示": [
+  "shared-nav.js"
+ ],
+ "spectra spectrum 谱图 谱 光谱 波谱 分析方法 仪器分析 红外 ir ftir 拉曼 raman 紫外 uv vis 荧光 质谱 ms gcms gc-ms lcms lc-ms maldi esi 色谱 hplc gc 气相 液相 xrd 衍射 xps xrf 顺磁 epr 穆斯堡尔 热重 tga dsc 循环伏安 cv 阻抗 eis icp 原子吸收 圆二色 同位素 isotope massbank 解谱 冷冻电镜 cryo-em 电镜 sem tem eds 蛋白质核磁 hsqc cosy hmbc 测序 sanger 凝胶电泳 sds-page 氢氘交换 hdx 高分子 polymer 立构 光散射 mals 黏度 超速离心 auc 热迁移 dsf": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -8519,6 +8637,16 @@
   "shared-nav.js"
  ],
  "llm language model price 价格": [
+  "shared-nav.js"
+ ],
+ "前沿 AI 数学": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "大模型、扩散、流匹配和强化学习背后的数学：44 个主题，各带一个能调的演示": [
+  "shared-nav.js"
+ ],
+ "ai math 数学 transformer attention 注意力 diffusion 扩散 flow matching 流匹配 score sde 强化学习 rl ppo grpo dpo lora muon adam fisher kl vae 最优传输 sinkhorn 双下降 保形 conformal 因果 等变 神经算子": [
   "shared-nav.js"
  ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
@@ -17615,6 +17743,18 @@
   "tools/build-seo.ts"
  ],
  "核磁共振方法的发展与最新技术：脉冲傅里叶变换、多维谱、生物大分子、魔角旋转固体 NMR、超极化、磁共振成像、低场与零场、计算与机器学习；附五个交互演示与按 DOI 核对过的 203 篇文献。": [
+  "tools/build-seo.ts"
+ ],
+ "谱图馆 · Spectra Hall": [
+  "tools/build-seo.ts"
+ ],
+ "91 种分析方法的谱图怎么来、怎么读：红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法；开放许可的实测质谱、量化计算的红外拉曼紫外谱、78 个交互演示、16 张速查表和 178 篇文献，每张图都写明来源。": [
+  "tools/build-seo.ts"
+ ],
+ "前沿 AI 数学 · Frontier AI Mathematics": [
+  "tools/build-seo.ts"
+ ],
+ "前沿 AI 背后的数学：44 个主题从线性代数、优化几何、Transformer 到扩散、流匹配、强化学习与科学 AI，每个主题一个在浏览器里现算的演示，另有 12 篇附录推导、数值核验和核对过的 43 条参考资料。": [
   "tools/build-seo.ts"
  ],
  "计算化学论文与社区": [
