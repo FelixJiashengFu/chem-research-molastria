@@ -435,7 +435,19 @@ main{zoom:var(--cr-text-zoom,1)}
 .cr-rail button small{display:block;margin-top:2px;font-size:11.5px;line-height:1.45;color:var(--muted)}
 .cr-rail button:hover{background:color-mix(in srgb,var(--surface-2) 80%,transparent)}
 .cr-rail button[aria-selected=true]{background:var(--accent-soft)}
-.cr-rail button[data-current] b::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);margin-left:7px;vertical-align:2px}
+.cr-rail{position:relative}
+.cr-rail button b{width:fit-content}
+/* 当前位置的小宠物（以前是一个小绿点）：点它打开浮窗花园（pet/pet-garden.js） */
+.cr-mega .cr-petm{position:absolute;z-index:1;display:grid;place-items:end center;width:34px;height:36px;padding:0;border:0;border-radius:10px;background:none;cursor:pointer}
+.cr-mega .cr-petm:hover{background:none}
+.cr-mega .cr-petm[hidden]{display:none}
+.cr-petm img{width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 2px 2px rgb(0 0 0/.18));animation:cr-pet-bob 3.2s ease-in-out infinite;transition:transform .18s}
+.cr-petm:hover img,.cr-petm:focus-visible img{transform:translateY(-2px) rotate(-6deg) scale(1.12)}
+.cr-petm:focus-visible{outline:2px solid var(--gold);outline-offset:1px;border-radius:10px}
+.cr-mega .cr-petm-head{position:relative;display:inline-grid;width:32px;height:32px;margin:-10px -6px -6px -8px}
+.cr-petm-head img{width:32px;height:32px}
+@keyframes cr-pet-bob{50%{translate:0 -2px}}
+@media (prefers-reduced-motion:reduce){.cr-petm img{animation:none;transition:none}}
 .cr-glyph{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--accent-2) 12%,transparent);color:var(--accent-2)}
 .cr-glyph svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .cr-sections{overflow:auto;padding:14px 16px 16px;overscroll-behavior:contain}

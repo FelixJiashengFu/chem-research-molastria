@@ -11,7 +11,7 @@ const H = 3600e3;
 const T0 = Date.UTC(2026, 10, 12, 9, 0, 0);
 
 test('领养：三种吉祥物、名字清理、默认名字', () => {
-  assert.deepEqual(C.KINDS.map((k) => k.id), ['budi', 'budi-plain', 'astra']);
+  assert.deepEqual(C.KINDS.map((k) => k.id), ['budi', 'budi-plain', 'budi-midnight', 'budi-rose', 'astra']);
   const s = C.fresh('astra', '  小​星\n星  ', T0);
   assert.equal(s.kind, 'astra');
   assert.equal(s.name, '小星 星');

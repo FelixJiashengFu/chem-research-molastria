@@ -11,6 +11,8 @@
   const KINDS = [
     { id: 'budi', zh: '苞苞', en: 'Budi', note: ['牵牛花的花苞：香槟白的身体、金色螺旋纹、祖母绿花萼', 'A morning-glory bud: champagne body, gold swirls, emerald calyx'] },
     { id: 'budi-plain', zh: '苞苞 · 简色', en: 'Budi · Simple', note: ['同一个花苞，去掉螺旋纹和腮红，干干净净', 'The same bud without swirls or blush, clean and simple'] },
+    { id: 'budi-midnight', zh: '苞苞 · 午夜金', en: 'Budi · Midnight Gold', note: ['照“午夜金”重瓣矮牵牛配的色：深紫近黑的身体，奶金色的纹', 'Coloured after the Midnight Gold double petunia: violet-black body, cream-gold swirls'] },
+    { id: 'budi-rose', zh: '苞苞 · 胭脂', en: 'Budi · Rose', note: ['照粉色牵牛花配的色：玫红的花冠，雪白的花喉', 'Coloured after a pink morning glory: rose-pink petals, a white throat'] },
     { id: 'astra', zh: '星环', en: 'Astra', note: ['照 MolAstria 徽标长的：金色六边形、圆环里的脸、轨道和四角星', 'Built from the MolAstria emblem: gold hexagon, a face in the ring, an orbit and a star'] },
   ];
   const SNACKS = [
