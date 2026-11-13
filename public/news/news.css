@@ -1,0 +1,146 @@
+/* 化学与材料新闻：版式沿用基础科学栏目（../fundamental-science/fundamental.css）。图和控件借用谱图馆 sp-plot.js 的写法，下面先抄一份它要的样式（.sp-*），再加本栏目的 .nw-*。颜色只用 shared-nav.css 的变量。 */
+/* ── 图的六种颜色 ── */
+.sp-c0{--c:var(--accent-text)}.sp-c1{--c:var(--gold-ink)}.sp-c2{--c:var(--info)}.sp-c3{--c:var(--danger)}.sp-c4{--c:var(--violet)}.sp-c5{--c:var(--muted)}
+
+/* ── SVG 图 ── */
+.sp-plot{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-family:var(--font-sans);-webkit-user-select:none;user-select:none}
+.sp-plot text{fill:var(--muted);font-size:11px}
+.sp-plot .sp-axis{fill:var(--ink-2);font-size:12px}
+.sp-plot .sp-tick{font-family:var(--font-num);font-size:11px}
+.sp-plot .sp-lbl{fill:var(--c,var(--ink-2));font-size:10.5px;font-weight:600;paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
+.sp-plot .sp-cur{fill:var(--ink);font:600 11.5px/1 var(--font-num);paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+.sp-plot .sp-rowl{fill:var(--ink);font-size:12px}
+.sp-grid{stroke:var(--line);stroke-width:1;opacity:.55}
+.sp-frame{fill:none;stroke:var(--line-strong);stroke-width:1}
+.sp-zero{stroke:var(--line-strong);stroke-width:1}
+.sp-line{fill:none;stroke:var(--c);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.sp-fill{fill:var(--c);opacity:.13;stroke:none}
+.sp-stick{stroke:var(--c);stroke-width:1.6;vector-effect:non-scaling-stroke}
+.sp-stick.is-sel{stroke-width:2.6}
+.sp-pt{fill:var(--c);stroke:var(--paper);stroke-width:1}
+.sp-pt.is-open{fill:var(--paper);stroke:var(--c);stroke-width:1.6}
+.sp-vl{stroke:var(--c);stroke-width:1;opacity:.8;fill:none}
+.sp-band{fill:var(--c)}
+.sp-bar{fill:var(--c);opacity:.78}
+.sp-cross{stroke:var(--ink-2);stroke-width:1;opacity:.5;pointer-events:none}
+.sp-legend{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--ink-2)}
+.sp-legend li{display:flex;align-items:center;gap:6px}
+.sp-key{width:18px;height:0;border-top:2.4px solid var(--c);flex:0 0 auto}
+.sp-key.is-dash{border-top-style:dashed}
+.sp-key.is-dot{width:9px;height:9px;border:0;border-radius:50%;background:var(--c)}
+.sp-plot-t{margin:10px 0 4px;font-size:13px;font-weight:600;color:var(--ink)}
+.sp-plots{display:grid;gap:10px;min-width:0}
+.sp-plot-host{min-width:0}
+
+/* ── 控件和读数 ── */
+.sp-ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px 22px;margin:0 0 12px;align-items:end}
+.sp-ctl-l{font-size:12.5px;color:var(--ink-2)}
+.sp-ctl-seg{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-width:0}
+.sp-ctl-seg .fs-btns{display:flex;flex-wrap:wrap;gap:6px}
+.sp-ctl-sel select,.sp-ctl-text input{width:100%;min-height:38px;padding:6px 9px;border:1px solid var(--line-strong);border-radius:4px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px;min-width:0}
+.sp-ctl-text input{font-family:var(--font-mono)}
+.sp-ctl-check{flex-direction:row!important;align-items:center;gap:8px!important;min-height:38px}
+.sp-ctl-check input{accent-color:var(--accent);width:16px;height:16px}
+.sp-out{margin-top:10px}
+.sp-out>div{display:contents}
+.sp-out dd{text-align:left}
+.sp-extra:empty,.sp-out[hidden]{display:none}
+.sp-note,.sp-src,.sp-hint{margin:8px 0 0;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+
+/* ── 列表 ── */
+.nw-legend li{flex-direction:row;align-items:center;gap:10px}
+.nw-src{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;line-height:1;padding:4px 8px;border-radius:99px;border:1px solid;white-space:nowrap}
+.nw-src[data-s=paper]{color:color-mix(in srgb,var(--ok) 76%,var(--ink));border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.nw-src[data-s=calc]{color:color-mix(in srgb,var(--info) 76%,var(--ink));border-color:color-mix(in srgb,var(--info) 45%,transparent);background:color-mix(in srgb,var(--info) 10%,transparent)}
+.nw-src[data-s=press]{color:color-mix(in srgb,var(--warn) 76%,var(--ink));border-color:color-mix(in srgb,var(--warn) 50%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+.nw-filter{margin:6px 0 14px}
+.nw-filter .button{min-height:34px;padding:5px 12px;font-size:13px}
+.nw-filter .button b{font:600 11.5px/1 var(--font-num);opacity:.7;margin-left:4px}
+.nw-filter .button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.nw-cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px}
+.nw-card a{display:flex;flex-direction:column;gap:8px;height:100%;padding:16px 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);text-decoration:none;transition:border-color .15s,transform .15s}
+.nw-card a:hover,.nw-card a:focus-visible{border-color:var(--accent-2);transform:translateY(-2px)}
+.nw-card h3{margin:0;font-size:17px;line-height:1.45}
+.nw-card p{margin:0;font-size:13.5px;line-height:1.75;color:var(--ink-2)}
+.nw-card-top{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.nw-card-top time{font-family:var(--font-num);font-weight:600;color:var(--gold-ink)}
+.nw-card-foot{margin-top:auto;display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);font-style:italic}
+.nw-more{font-style:normal;color:var(--accent-text);font-weight:600;white-space:nowrap}
+
+/* ── 一条新闻 ── */
+.nw-item{border-top:1px solid var(--line);margin-top:28px;scroll-margin-top:calc(var(--cr-nav-height,64px) + 12px)}
+.nw-item:focus{outline:none}
+.nw-head h2{font-size:clamp(22px,2.6vw,30px);line-height:1.35;margin:4px 0 10px;font-weight:600;max-width:40ch}
+.nw-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0;font-size:12.5px;color:var(--muted)}
+.nw-meta time{font:600 13px/1 var(--font-num);color:var(--gold-ink);margin-right:4px}
+.nw-field{padding:3px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent-text);font-size:11.5px;font-weight:600}
+.nw-dek{font-size:15px;line-height:1.85;color:var(--ink-2);max-width:92ch;margin:0 0 14px}
+.nw-paper{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-size:13px;line-height:1.6;max-width:96ch}
+.nw-paper-l{color:var(--muted);font-size:12px;white-space:nowrap}
+.nw-paper a{overflow-wrap:anywhere}
+.nw-sec{margin-top:26px;min-width:0}
+.nw-sec>h3{font-size:18px;margin:0 0 10px;font-weight:600}
+.nw-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;counter-reset:s}
+.nw-steps li{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.nw-steps h4{margin:0 0 4px;font-size:14.5px}
+.nw-steps p{margin:0;font-size:13px;line-height:1.75;color:var(--ink-2)}
+.nw-step-n{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 13px/1 var(--font-num);color:var(--accent-ink);background:var(--accent)}
+.nw-scheme{margin:14px 0 0;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+.nw-scheme svg{display:block;width:100%;height:auto;max-width:860px;margin:0 auto;font-family:var(--font-sans)}
+.nw-scheme figcaption{margin-top:6px;font-size:12.5px;color:var(--muted)}
+.nw-lv{stroke:var(--ink);stroke-width:2.4}
+.nw-lv.nw-thin{stroke:var(--line-strong);stroke-width:1.6}
+.nw-lv.nw-hot{stroke:var(--gold-ink);stroke-width:3.2}
+.nw-lv.nw-dim{stroke:var(--line-strong);stroke-width:1.6}
+.nw-t{fill:var(--ink-2);font-size:12.5px}
+.nw-dim-t{fill:var(--muted)}
+.nw-ar{fill:none;stroke:var(--ink-2);stroke-width:2}
+.nw-ar.nw-dim{stroke:var(--line-strong)}
+.nw-ahead{fill:context-stroke}
+.nw-c0{stroke:var(--accent-text);fill:var(--accent-text)}
+.nw-c1{stroke:var(--gold-ink);fill:var(--gold-ink)}
+.nw-c2{stroke:var(--info);fill:var(--info)}
+.nw-c3{stroke:var(--danger);fill:var(--danger)}
+.nw-c4{stroke:var(--violet);fill:var(--violet)}
+.nw-ar.nw-c0,.nw-ar.nw-c1,.nw-ar.nw-c2,.nw-ar.nw-c3,.nw-ar.nw-c4{fill:none}
+text.nw-c0,text.nw-c1,text.nw-c2,text.nw-c3,text.nw-c4{stroke:none}
+.nw-dot{fill:var(--gold);stroke:var(--paper);stroke-width:1}
+.nw-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nw-nums{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+.nw-nums th,.nw-nums td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:normal}
+.nw-nums thead th{font-size:12px;color:var(--muted);font-weight:600}
+.nw-nums tbody th{font-weight:500;color:var(--ink)}
+.nw-nums tbody th small{display:block;margin-top:3px;font-size:12px;color:var(--muted);font-weight:400;line-height:1.6}
+.nw-nums td{font-family:var(--font-num);color:var(--ink)}
+.nw-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:0 28px}
+.nw-list{margin:0;padding-left:1.2em;display:grid;gap:8px;font-size:14px;line-height:1.8;color:var(--ink-2)}
+.nw-why li::marker{color:var(--accent-text)}
+.nw-limits li::marker{color:var(--warn)}
+.nw-formula{margin:10px 0 0;padding:8px 12px;border-radius:4px;background:var(--surface-2);font:500 13.5px/1.6 var(--font-num);color:var(--ink);overflow-x:auto}
+.nw-demo>header h4{margin:0 0 6px;font-size:17px}
+.nw-demo-host{margin-top:12px;min-width:0}
+.nw-related{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.nw-related .button{min-height:36px;font-size:13px}
+.nw-refs{margin:0;padding-left:1.4em;display:grid;gap:10px;font-size:13px;line-height:1.7}
+.nw-ref a{margin-left:6px;overflow-wrap:anywhere}
+.nw-oa,.nw-chk{margin-left:8px;font-size:11.5px;color:var(--muted)}
+.nw-oa{color:var(--ok)}
+.nw-top{margin:22px 0 0;font-size:13px}
+
+@media (max-width:760px){
+  .sp-plot-host{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .sp-plot{min-width:600px}
+  .sp-plot text{font-size:13px}
+  .sp-plot .sp-lbl{font-size:12.5px}
+  .sp-plot .sp-axis{font-size:13.5px}
+  .sp-plot .sp-tick{font-size:13px}
+  .sp-out{grid-template-columns:1fr}
+  .sp-out dt{margin-top:4px}
+  .nw-paper{grid-template-columns:1fr;gap:2px}
+  .nw-paper-l{margin-top:6px}
+  .fs-demo.nw-demo{padding:14px}
+  .nw-scheme{overflow-x:auto}
+  .nw-scheme svg{min-width:560px}
+}
+@media (prefers-reduced-motion:reduce){.nw-card a{transition:none}.nw-card a:hover{transform:none}}
+@media print{.sp-ctl,.nw-filter{display:none}.nw-item{break-before:page}}

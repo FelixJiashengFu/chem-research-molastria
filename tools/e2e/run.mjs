@@ -3532,6 +3532,47 @@ check('NMR: nav entry, eleven parts, eight method families, timeline, five worki
   await finish(e);
 });
 
+check('News explainers: nav entry, item list and filter, two explainers with key numbers, three working demos, English', async () => {
+  const p = await open();
+  await go(p, '/news/index.html');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=news]', 'aria-current'), 'page', 'the news nav entry is current');
+  assert.equal(await p.locator('.nw-card').count(), 2);
+  assert.equal(await p.locator('.nw-item').count(), 2);
+  assert.match(await text(p, '#n-mof-radical-pairs .nw-paper'), /10\.1038\/s41467-026-79262-6/);
+  assert.match(await text(p, '#n-mof-odmr .nw-nums'), /920 MHz, 150 MHz/);
+  await p.click('#nw-filter button[data-f=spectroscopy]');
+  assert.equal(await p.isVisible('#n-mof-radical-pairs'), false);
+  assert.equal(await p.isVisible('#n-mof-odmr'), true);
+  await p.click('#nw-filter button[data-f=""]');
+  await p.evaluate(() => window.MOLASTRIA_NEWS_START());
+  assert.equal(await p.locator('.nw-demo .sp-plot').count(), 6, 'every demo draws');
+  // Demo: radical pair. A large J suppresses the T₀ yield.
+  const rp = p.locator('#demo-mof-radical-pairs-rp');
+  const yieldOf = async () => +(await rp.locator('.sp-out').innerText()).match(/([\d.]+)%/)[1];
+  const weak = await yieldOf();
+  await rp.locator('button[data-k=pre][data-v=strong]').click();
+  assert.ok(await yieldOf() < weak / 3, 'strong exchange gives a much smaller T₀ yield');
+  // Demo: EPR. Al-PMOF spans about 66 mT; the T₀-only preset is narrow.
+  const epr = p.locator('#demo-mof-radical-pairs-epr');
+  assert.match(await epr.locator('.sp-out').innerText(), /66\.1 mT/);
+  await epr.locator('button[data-k=pre][data-v=rp]').click();
+  assert.match(await epr.locator('.sp-out').innerText(), /1\.10 nm/);
+  // Demo: zero-field ODMR lines.
+  assert.match(await p.locator('#demo-mof-odmr-zf .sp-out').innerText(), /300, 770, 1070 MHz/);
+  await p.locator('#demo-mof-odmr-zf button[data-k=pre][data-v=epr]').click();
+  assert.match(await p.locator('#demo-mof-odmr-zf .sp-out').innerText(), /242, 805, 1047 MHz/);
+  await finish(p);
+  const e = await open();
+  await go(e, '/news/index.html?lang=en');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  await e.evaluate(() => window.MOLASTRIA_NEWS_START());
+  assert.match(await text(e, '#nw-h1'), /Chemistry & Materials News/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('Spectra Hall: nav entry, 91 methods, filter and search, a method opens with drawn spectra, atlas, references, English', async () => {
   const p = await open();
   await go(p, '/spectra/index.html');
@@ -3634,7 +3675,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/ai-math/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5151,7 +5192,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
