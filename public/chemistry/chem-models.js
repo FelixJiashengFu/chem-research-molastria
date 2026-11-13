@@ -497,5 +497,50 @@
     return best;
   };
 
+  // ── 10 生物化学 ─────────────────────────────────────────────────────────
+  // 肽和蛋白质的净电荷：Henderson–Hasselbalch 逐个加。pk 是 pKa 表，counts 是可电离基团的个数
+  M.PKA = { nterm: 8.6, cterm: 3.6, D: 3.9, E: 4.1, C: 8.5, Y: 10.1, H: 6.5, K: 10.8, R: 12.5 };
+  M.ionCounts = (seq, opts = {}) => {
+    const c = { nterm: opts.nterm === false ? 0 : 1, cterm: opts.cterm === false ? 0 : 1 };
+    for (const k of ['D', 'E', 'C', 'Y', 'H', 'K', 'R']) c[k] = [...seq].filter((x) => x === k).length;
+    return c;
+  };
+  M.netCharge = (pH, c, pk = M.PKA) => {
+    const pos = (k) => (c[k] || 0) / (1 + 10 ** (pH - pk[k])), neg = (k) => -(c[k] || 0) / (1 + 10 ** (pk[k] - pH));
+    return pos('nterm') + pos('H') + pos('K') + pos('R') + neg('cterm') + neg('D') + neg('E') + neg('C') + neg('Y');
+  };
+  M.pI = (c, pk = M.PKA) => { let lo = 0, hi = 14; for (let k = 0; k < 60; k++) { const m = (lo + hi) / 2; if (M.netCharge(m, c, pk) > 0) lo = m; else hi = m; } return (lo + hi) / 2; };
+  // Michaelis–Menten 和三种可逆抑制
+  M.mmRate = (S, { Vmax = 1, Km = 1, I = 0, Ki = 1, type = 'comp' } = {}) => {
+    const a = 1 + I / Ki;
+    if (type === 'comp') return (Vmax * S) / (Km * a + S);
+    if (type === 'uncomp') return (Vmax * S) / (Km + S * a);
+    return (Vmax * S) / ((Km + S) * a); // 非竞争（纯）
+  };
+  // Hill 方程和 MWC 模型（n 个亚基，R 态和 T 态的解离常数 KR、KT，无配体时 T/R = L0）
+  M.hill = (L, P50, n) => L ** n / (P50 ** n + L ** n);
+  M.mwc = (L, { n = 4, KR = 1, KT = 100, L0 = 1e5 } = {}) => { const a = L / KR, c = KR / KT; return (a * (1 + a) ** (n - 1) + L0 * c * a * (1 + c * a) ** (n - 1)) / ((1 + a) ** n + L0 * (1 + c * a) ** n); };
+  // DNA 双链的最近邻热力学（SantaLucia 1998 统一参数，ΔH kcal/mol，ΔS cal mol⁻¹ K⁻¹，1 mol/L NaCl）
+  const NN = { AA: [-7.9, -22.2], TT: [-7.9, -22.2], AT: [-7.2, -20.4], TA: [-7.2, -21.3], CA: [-8.5, -22.7], TG: [-8.5, -22.7], GT: [-8.4, -22.4], AC: [-8.4, -22.4], CT: [-7.8, -21.0], AG: [-7.8, -21.0], GA: [-8.2, -22.2], TC: [-8.2, -22.2], CG: [-10.6, -27.2], GC: [-9.8, -24.4], GG: [-8.0, -19.9], CC: [-8.0, -19.9] };
+  const COMP = { A: 'T', T: 'A', G: 'C', C: 'G' };
+  M.revComp = (seq) => [...seq].reverse().map((b) => COMP[b]).join('');
+  M.nnDNA = (seq, Na = 1) => {
+    let dH = 0, dS = 0;
+    for (let i = 0; i < seq.length - 1; i++) { const [h, s] = NN[seq.slice(i, i + 2)]; dH += h; dS += s; }
+    for (const end of [seq[0], seq[seq.length - 1]]) { if (end === 'G' || end === 'C') { dH += 0.1; dS += -2.8; } else { dH += 2.3; dS += 4.1; } }
+    const self = seq === M.revComp(seq);
+    if (self) dS += -1.4;
+    dS += 0.368 * (seq.length - 1) * Math.log(Na); // 盐校正（只改 ΔS）
+    const gc = [...seq].filter((b) => b === 'G' || b === 'C').length / seq.length;
+    return { dH, dS, self, gc };
+  };
+  // 双链分数：非自互补 A + B ⇌ AB，每条链 CT/2；自互补 2A ⇌ A₂，单链总浓度 CT。CT 以 mol/L 计
+  M.duplexFrac = (T, dH, dS, CT, self) => {
+    const K = Math.exp(-(dH * 4184 - T * dS * 4.184) / (M.R * T)), b = self ? 2 * K * CT : (K * CT) / 2;
+    if (b < 1e-9) return b; // 很小时 f ≈ b
+    return (2 * b + 1 - Math.sqrt(4 * b + 1)) / (2 * b);
+  };
+  M.dnaTm = (dH, dS, CT, self) => (dH * 1000) / (dS + M.R / 4.184 * Math.log(self ? CT : CT / 4));
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
