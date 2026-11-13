@@ -561,5 +561,95 @@
   // CdSe 量子点的经验标定（Yu 等 2003）：第一吸收峰波长 λ（nm）→ 直径 D（nm）
   M.cdseD = (lam) => 1.6122e-9 * lam ** 4 - 2.6575e-6 * lam ** 3 + 1.6242e-3 * lam ** 2 - 0.4277 * lam + 41.57;
 
+
+  // ── 13 环境化学 ─────────────────────────────────────────────────────────
+  // 碳酸盐体系（淡水、25 °C 的常数）：pKH 1.47（mol L⁻¹ atm⁻¹），pK1 6.35，pK2 10.33，pKw 14.00
+  M.CARB = { pKH: 1.47, pK1: 6.35, pK2: 10.33, pKw: 14.0 };
+  M.carbFrac = (pH, k = M.CARB) => { const h = 10 ** -pH, K1 = 10 ** -k.pK1, K2 = 10 ** -k.pK2, d = h * h + K1 * h + K1 * K2; return [(h * h) / d, (K1 * h) / d, (K1 * K2) / d]; };
+  // 与大气平衡的开放体系：给 pCO2（atm）和碳酸盐碱度 Alk（mol/L，强碱减强酸），解电荷平衡求 pH
+  M.carbOpen = (pCO2, Alk, k = M.CARB) => {
+    const KH = 10 ** -k.pKH, K1 = 10 ** -k.pK1, K2 = 10 ** -k.pK2, Kw = 10 ** -k.pKw, co2 = KH * pCO2;
+    const bal = (pH) => { const h = 10 ** -pH, hco3 = (K1 * co2) / h, co3 = (K2 * hco3) / h; return hco3 + 2 * co3 + Kw / h - h - Alk; };
+    let lo = 0, hi = 14; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (bal(m) > 0) hi = m; else lo = m; }
+    const pH = (lo + hi) / 2, h = 10 ** -pH, hco3 = (K1 * co2) / h, co3 = (K2 * hco3) / h;
+    return { pH, co2, hco3, co3, DIC: co2 + hco3 + co3 };
+  };
+  // CO₂ 的辐射强迫（Myhre 等 1998 的简化式）和平衡增温（给定气候敏感度 ECS，K/倍增）
+  M.forcingCO2 = (C, C0 = 278) => 5.35 * Math.log(C / C0);
+  M.warming = (dF, ECS = 3) => (ECS / (5.35 * Math.LN2)) * dF;
+  // 单箱模型：dC/dt = S − C/τ。源在 tCut 之后乘以 cut（0–1）
+  M.box = (t, { S, tau, C0 = 0, tCut = Infinity, cut = 1 }) => {
+    const f = (C, tt, Sv) => Sv * tau + (C - Sv * tau) * Math.exp(-tt / tau);
+    if (t <= tCut) return f(C0, t, S);
+    return f(f(C0, tCut, S), t - tCut, S * cut);
+  };
+  // 化学式 → 摩尔质量（g/mol），支持括号和小数下标以外的常见写法
+  M.AW = { H: 1.008, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998, Na: 22.990, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, K: 39.098, Ca: 40.078, Mn: 54.938, Fe: 55.845, Cu: 63.546, Zn: 65.38, Br: 79.904, Pd: 106.42, Ag: 107.87, I: 126.90 };
+  M.molarMass = (f) => {
+    const st = [0]; let i = 0;
+    while (i < f.length) {
+      const ch = f[i];
+      if (ch === '(') { st.push(0); i++; continue; }
+      const num = () => { let j = i; while (j < f.length && /\d/.test(f[j])) j++; const n = j > i ? +f.slice(i, j) : 1; i = j; return n; };
+      if (ch === ')') { i++; const v = st.pop(); st[st.length - 1] += v * num(); continue; }
+      const m = /^[A-Z][a-z]?/.exec(f.slice(i)); if (!m || !(m[0] in M.AW)) throw new Error(`unknown element in ${f} at ${i}`);
+      i += m[0].length; st[st.length - 1] += M.AW[m[0]] * num();
+    }
+    return st[0];
+  };
+  // 原子经济性：目标产物的摩尔质量 / 全部反应物（按计量数）的摩尔质量之和
+  M.atomEconomy = (product, reactants) => M.molarMass(product) / reactants.reduce((a, [n, f]) => a + n * M.molarMass(f), 0);
+
+  // ── 14 核化学 ───────────────────────────────────────────────────────────
+  // 半经验质量公式（液滴模型），系数 MeV（常引的一组），返回结合能 B（MeV）
+  M.SEMF = { aV: 15.75, aS: 17.8, aC: 0.711, aA: 23.7, aP: 11.18 };
+  M.semf = (Z, A, c = M.SEMF) => {
+    const N = A - Z, pair = A % 2 ? 0 : Z % 2 ? -1 : 1;
+    const B = c.aV * A - c.aS * A ** (2 / 3) - (c.aC * Z * (Z - 1)) / A ** (1 / 3) - (c.aA * (N - Z) ** 2) / A + (pair * c.aP) / Math.sqrt(A);
+    return { B, BA: B / A, terms: [c.aV * A, -c.aS * A ** (2 / 3), -(c.aC * Z * (Z - 1)) / A ** (1 / 3), -(c.aA * (N - Z) ** 2) / A, (pair * c.aP) / Math.sqrt(A)] };
+  };
+  // 给定 A，结合能最大（最稳定）的 Z（取整前的连续值，由 ∂B/∂Z = 0）
+  M.zStable = (A, c = M.SEMF) => (4 * c.aA + c.aC * A ** (-1 / 3)) / (2 * c.aC * A ** (-1 / 3) + (8 * c.aA) / A);
+  // Bateman：母体 → 子体（分支比 br）→ …；N1(0) = 1，N2(0) = 0；返回两者的活度（相对母体初始活度）
+  M.bateman2 = (t, l1, l2, br = 1) => {
+    const A1 = Math.exp(-l1 * t), A2 = Math.abs(l2 - l1) < 1e-12 ? br * l1 * t * Math.exp(-l1 * t) : (br * l2 / (l2 - l1)) * (Math.exp(-l1 * t) - Math.exp(-l2 * t));
+    return [A1, A2];
+  };
+  // 放射性碳：常规年龄用 Libby 半衰期 5568 年（t = −8033 ln F），按 5730 年的“真实”半衰期另算
+  M.c14Age = (F, thalf = 5568) => -(thalf / Math.LN2) * Math.log(F);
+
+  // ── 15 化学工程 ─────────────────────────────────────────────────────────
+  // 等温、恒密度的理想反应器：n 级反应（n = 1 或 2），Da = k τ c0^(n−1)
+  M.cstrX = (Da, n = 1) => (n === 1 ? Da / (1 + Da) : (2 * Da + 1 - Math.sqrt(4 * Da + 1)) / (2 * Da));
+  M.pfrX = (Da, n = 1) => (n === 1 ? 1 - Math.exp(-Da) : Da / (1 + Da));
+  // N 个等体积 CSTR 串联（总 Da 相同，一级）
+  M.tanksX = (Da, N) => 1 - (1 + Da / N) ** -N;
+  // 相对挥发度恒定时的平衡线 y(x)、x(y)
+  M.eqY = (x, a) => (a * x) / (1 + (a - 1) * x);
+  M.eqX = (y, a) => y / (a - (a - 1) * y);
+  // McCabe–Thiele：从塔顶开始逐板计算；q 是进料热状态（1 = 饱和液体）。返回阶梯的点、理论板数、进料板，以及最小回流比
+  M.mccabe = ({ a, xD, xB, zF, q = 1, R }) => {
+    const qx = q === 1 ? zF : null;
+    // 精馏段操作线 y = R/(R+1) x + xD/(R+1)；与 q 线的交点
+    const rs = (x) => (R / (R + 1)) * x + xD / (R + 1);
+    const xi = q === 1 ? zF : (xD / (R + 1) + zF / (q - 1)) / (q / (q - 1) - R / (R + 1)), yi = rs(xi);
+    const ss = (x) => yi + ((yi - xB) / (xi - xB)) * (x - xi);
+    // 最小回流：q 线与平衡线的交点
+    let xp; if (q === 1) xp = zF; else { let lo = 0, hi = 1; const g = (x) => M.eqY(x, a) - (q / (q - 1)) * x + zF / (q - 1); for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (g(lo) * g(m) <= 0) hi = m; else lo = m; } xp = (lo + hi) / 2; }
+    const yp = M.eqY(xp, a), Rmin = (xD - yp) / (yp - xp);
+    const pts = [[xD, xD]]; let x = xD, y = xD, n = 0, feed = 0, ok = yi < M.eqY(xi, a) && R > Rmin;
+    while (ok && x > xB && n < 60) {
+      const xn = M.eqX(y, a); pts.push([xn, y]); n++;
+      if (!feed && xn <= xi) feed = n;
+      x = xn; if (x <= xB) break;
+      y = feed ? ss(x) : rs(x); pts.push([x, y]);
+    }
+    return { pts, stages: ok ? n : Infinity, feed, Rmin, xi, yi, qx, rs, ss };
+  };
+  // Antoine 方程：lg(P / mmHg) = A − B/(T/°C + C)；Raoult 定律下的泡点（给 x1 求 T 和 y1）
+  M.antoine = (T, [A, B, C]) => 10 ** (A - B / (T + C));
+  M.bubbleT = (x1, P, a1, a2) => { let lo = -50, hi = 300; for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (x1 * M.antoine(m, a1) + (1 - x1) * M.antoine(m, a2) > P) hi = m; else lo = m; } const T = (lo + hi) / 2; return { T, y1: (x1 * M.antoine(T, a1)) / P }; };
+  M.dewT = (y1, P, a1, a2) => { let lo = -50, hi = 300; for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (y1 / M.antoine(m, a1) + (1 - y1) / M.antoine(m, a2) > 1 / P) lo = m; else hi = m; } const T = (lo + hi) / 2; return { T, x1: (y1 * P) / M.antoine(T, a1) }; };
+
   window.MOLASTRIA_CHEM_MODELS = M;
 })();
