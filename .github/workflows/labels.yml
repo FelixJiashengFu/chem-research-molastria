@@ -1,0 +1,32 @@
+name: Sync labels
+
+# Labels (name, colour, description) live in .github/labels.json.
+# Edit that file and push; this workflow creates or updates each label.
+# Labels not in the file are left alone.
+
+on:
+  push:
+    paths:
+      - .github/labels.json
+      - .github/workflows/labels.yml
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create or update labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jq -c '.[]' .github/labels.json | while read -r label; do
+            name=$(jq -r '.name' <<<"$label")
+            color=$(jq -r '.color' <<<"$label")
+            desc=$(jq -r '.description' <<<"$label")
+            gh label create "$name" --repo "$GITHUB_REPOSITORY" --color "$color" --description "$desc" --force
+            echo "ok: $name"
+          done
