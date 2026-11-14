@@ -1595,7 +1595,7 @@ check('header order and account: groups and buttons drag into a new order that i
   await p.click('.cr-arr-done');
   o = await order();
   assert.deepEqual(o.g, ['find', 'learn', 'explore', 'models', 'make']);
-  assert.equal(o.t.join(), 'jump,acct,lock,lang,disp,bg,theme,ai');
+  assert.equal(o.t.join(), 'jump,acct,lang,disp,bg,theme,ai');
   assert.deepEqual(await p.evaluate(() => [localStorage.getItem('molastria-nav-groups'), localStorage.getItem('molastria-nav-tools')]), [null, null]);
 
   // signed out: "登录" opens a panel that leads to sign-in, Pro, the API, the weekly picks and the desktop app
@@ -5570,8 +5570,9 @@ check('vault: a stranger sees only a lock; the one-off payment opens the reader,
   assert.equal(await p.isDisabled('#vault-buy'), false, 'the payment link is configured: the button is live');
   assert.match(await text(p, '#vault-buy'), /解锁/);
   assert.deepEqual(asked, [], 'signed out: the service is not even asked');
-  assert.equal(await p.getAttribute('.cr-tools #cr-lock', 'aria-current'), 'page');
-  assert.equal((await text(p, '.cr-tools #cr-lock')).trim(), '', 'the lock in the header carries no name');
+  assert.equal(await p.locator('.cr-header .cr-lock, #cr-mega .cr-lock').count(), 0, 'no lock in the header or the menu');
+  assert.equal(await p.getAttribute('.cr-legal #cr-lock', 'aria-current'), 'page');
+  assert.equal((await text(p, '.cr-legal #cr-lock')).trim(), '', 'the small lock under the page carries no name');
   // signed in but not a buyer: still the lock, with "restore"
   await p.click('#vault-signin');
   await p.fill('#vault-email', 'vaultfree@example.com');

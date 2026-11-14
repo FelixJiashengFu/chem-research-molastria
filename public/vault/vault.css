@@ -1,15 +1,63 @@
 /* 锁区：没买时整页只有一把锁；买了以后的阅读器沿用 ../fundamental-science/fundamental.css 和 ../chemistry/chem.css，这里只加锁页和阅读器多出来的几样。颜色只用 shared-nav.css 的变量。 */
 .vlt-gate{min-height:calc(100vh - 210px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:48px 16px 56px;text-align:center}
 .vlt-gate[hidden]{display:none}
-.vlt-lock svg{display:block;width:clamp(84px,16vw,120px);height:auto;filter:drop-shadow(0 10px 24px rgb(0 0 0 / .22))}
-.vlt-shackle{stroke:var(--gold);transform-origin:86px 70px;transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
-.vlt-body{fill:var(--gold)}
+.vlt-lock{position:relative;display:grid;place-items:center;--vg-hi:color-mix(in srgb,var(--gold) 52%,white);--vg-mid:var(--gold);--vg-lo:color-mix(in srgb,var(--gold) 70%,black)}
+.vlt-lock svg{position:relative;display:block;width:clamp(84px,16vw,120px);height:auto;overflow:visible;filter:drop-shadow(0 10px 22px rgb(0 0 0 / .2));animation:vlt-arrive .8s cubic-bezier(.2,.9,.3,1.2) both,vlt-float 6s ease-in-out .8s infinite}
+.vg-hi{stop-color:var(--vg-hi)}.vg-mid{stop-color:var(--vg-mid)}.vg-lo{stop-color:var(--vg-lo)}
+.vlt-shadow{fill:rgb(0 0 0 / .16);transform-origin:60px 146px;animation:vlt-shadow 6s ease-in-out .8s infinite}
+.vlt-shackle{transform-origin:86px 70px}
+.vlt-case{transform-origin:60px 103px}
+.vlt-bevel{stroke:rgb(255 255 255 / .55)}
+.vlt-plate{stroke:rgb(0 0 0 / .14)}
+.vlt-key{transform-origin:60px 103px}
 .vlt-hole{fill:var(--paper)}
-.vlt-lock.is-open .vlt-shackle{transform:translateY(-14px) rotateY(180deg)}
-.vlt-lock.is-busy svg{animation:vlt-breathe 1.6s ease-in-out infinite}
-.vlt-lock.is-no svg{animation:vlt-shake .45s}
-@keyframes vlt-breathe{50%{opacity:.55}}
-@keyframes vlt-shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.vlt-sheen{animation:vlt-sheen 5.5s ease-in-out 1.2s infinite}
+.vlt-glow{opacity:0;transform-origin:60px 103px;pointer-events:none}
+.vlt-orbit,.vlt-ring,.vlt-sparks{position:absolute;left:50%;top:58%;pointer-events:none}
+.vlt-orbit{width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 62%,var(--gold) 96%,transparent);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));transition:opacity .3s}
+.vlt-ring{width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:1.5px solid var(--gold);opacity:0}
+.vlt-sparks{width:0;height:0}
+.vlt-sparks i{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--vg-hi);box-shadow:0 0 8px var(--gold);opacity:0;transform:rotate(var(--a)) translateY(-26px)}
+.vlt-sparks i:nth-child(3n){width:3px;height:9px;left:-1.5px;border-radius:2px}
+
+/* 核对中：一道金线绕着锁转，锁芯轻轻试转 */
+.vlt-lock.is-busy .vlt-orbit{opacity:.9;animation:vlt-spin 1.1s linear infinite}
+.vlt-lock.is-busy .vlt-key{animation:vlt-try 1.1s ease-in-out infinite}
+
+/* 没打开：锁身左右一震，锁梁跟着顿一下 */
+.vlt-lock.is-no svg{animation:vlt-shake .5s cubic-bezier(.36,.07,.19,.97)}
+.vlt-lock.is-no .vlt-shackle{animation:vlt-tug .5s ease-out}
+
+/* 打开：锁芯转四分之一圈，锁身一沉，锁梁弹起再绕长腿转开，光环和火星散出去，最后整把锁化进光里（约 1.5 秒，时长和 vault.js 的 OPEN_MS 对应） */
+.vlt-lock.is-open svg{animation:vlt-leave .5s cubic-bezier(.5,0,.8,.4) 1.02s both}
+.vlt-lock.is-open .vlt-sheen{animation:vlt-sheen-once .7s ease-out .1s both}
+.vlt-lock.is-open .vlt-key{animation:vlt-turn .34s cubic-bezier(.6,0,.3,1.3) both}
+.vlt-lock.is-open .vlt-case{animation:vlt-press .46s ease-out .24s both}
+.vlt-lock.is-open .vlt-shackle{animation:vlt-lift .34s cubic-bezier(.3,1.7,.5,1) .3s both,vlt-swing .46s cubic-bezier(.5,0,.2,1) .6s forwards}
+.vlt-lock.is-open .vlt-glow{animation:vlt-glow 1s ease-out .3s both}
+.vlt-lock.is-open .vlt-ring{animation:vlt-ring .9s cubic-bezier(.2,.7,.3,1) .34s both}
+.vlt-lock.is-open .vlt-ring+.vlt-ring{animation-delay:.52s;border-width:1px}
+.vlt-lock.is-open .vlt-sparks i{animation:vlt-spark .8s cubic-bezier(.15,.7,.3,1) calc(.36s + var(--t)) both}
+.vlt-gate.is-opening #vault-panel{opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+.vlt-gate.is-opening{animation:vlt-gate-out .4s ease-in 1.12s both}
+@keyframes vlt-arrive{from{opacity:0;transform:translateY(-14px) scale(.9)}}
+@keyframes vlt-float{50%{transform:translateY(-4px)}}
+@keyframes vlt-shadow{50%{transform:scaleX(.88);opacity:.7}}
+@keyframes vlt-sheen{0%,62%{transform:skewX(-18deg) translateX(0)}80%,100%{transform:skewX(-18deg) translateX(190px)}}
+@keyframes vlt-sheen-once{from{transform:skewX(-18deg) translateX(0)}to{transform:skewX(-18deg) translateX(190px)}}
+@keyframes vlt-spin{to{transform:rotate(360deg)}}
+@keyframes vlt-try{0%,100%{transform:rotate(0)}40%{transform:rotate(16deg)}60%{transform:rotate(-6deg)}}
+@keyframes vlt-shake{15%{transform:translateX(-7px) rotate(-2deg)}30%{transform:translateX(6px) rotate(2deg)}45%{transform:translateX(-4px) rotate(-1deg)}60%{transform:translateX(3px)}75%{transform:translateX(-1px)}}
+@keyframes vlt-tug{25%{transform:translateY(-5px)}45%{transform:translateY(0)}60%{transform:translateY(-2px)}}
+@keyframes vlt-turn{to{transform:rotate(90deg)}}
+@keyframes vlt-press{30%{transform:scale(.955) translateY(2px)}65%{transform:scale(1.02)}}
+@keyframes vlt-lift{to{transform:translateY(-17px)}}
+@keyframes vlt-swing{from{transform:translateY(-17px) scaleX(1)}to{transform:translateY(-17px) scaleX(-1)}}
+@keyframes vlt-glow{0%{opacity:0;transform:scale(.3)}35%{opacity:1}100%{opacity:0;transform:scale(2.3)}}
+@keyframes vlt-ring{0%{opacity:.85;transform:scale(.45)}100%{opacity:0;transform:scale(2.5)}}
+@keyframes vlt-spark{0%{opacity:0;transform:rotate(var(--a)) translateY(-26px) scale(.4)}25%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1)}}
+@keyframes vlt-leave{to{opacity:0;transform:scale(1.22);filter:blur(5px) brightness(1.5)}}
+@keyframes vlt-gate-out{to{opacity:0}}
 .vlt-price{margin:0;font:600 clamp(34px,6vw,48px)/1 var(--font-num);color:var(--ink);letter-spacing:.5px}
 .vlt-price small{display:block;margin-top:8px;font:500 13px/1.5 var(--font-sans);color:var(--muted);letter-spacing:0}
 .vlt-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:18px 0 0}
@@ -23,11 +71,11 @@
 .vlt-form .button{min-height:44px}
 .vlt-msg{margin:12px 0 0;min-height:1.6em;font-size:13px;color:var(--ink-2)}
 .vlt-msg.is-err{color:var(--danger)}
-@media (prefers-reduced-motion:reduce){.vlt-shackle{transition:none}.vlt-lock.is-busy svg,.vlt-lock.is-no svg{animation:none}}
+@media (prefers-reduced-motion:reduce){.vlt-lock *,.vlt-lock svg,.vlt-gate.is-opening{animation:none!important;transition:none!important}.vlt-lock.is-open .vlt-shackle{transform:translateY(-17px) scaleX(-1)}.vlt-lock.is-open .vlt-key{transform:rotate(90deg)}}
 
 /* 阅读器多出来的部分 */
-#vault{animation:vlt-in .5s ease both}
-@keyframes vlt-in{from{opacity:0;transform:translateY(8px)}}
+#vault{animation:vlt-in .7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes vlt-in{from{opacity:0;transform:translateY(14px)}}
 @media (prefers-reduced-motion:reduce){#vault{animation:none}}
 .vlt-group{margin:18px 0 8px;font-size:14px;font-weight:600;color:var(--fs-gold-text);letter-spacing:.4px}
 .vlt-group:first-child{margin-top:0}
