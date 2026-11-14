@@ -56,6 +56,8 @@ jobs:
         run: node --test tools/home-figs-test.mjs
       - name: News explainers models and content
         run: node --test tools/news-test.mjs
+      - name: U of T zone and company map content
+        run: node --test tools/toronto-test.mjs
       - name: Chemistry Disciplines models and content
         run: node --test tools/chemistry-test.mjs
       - name: Spectra Hall models and content
