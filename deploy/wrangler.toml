@@ -52,6 +52,9 @@ SYNC_PRO_KB = "10240"                              # 云同步：Pro 支持者�
 WEB_DAILY_PRO = "50"                               # 联网网页搜索（Brave Search，只给 Pro）：每人每天的次数；要 secret BRAVE_SEARCH_KEY
 WEB_MONTHLY_ALL = "1500"                           # 全站每 30 天最多搜多少次，给账单封顶（Brave 约每千次 5 美元）
 API_COMPUTE = "1"                                  # 给程序用的计算接口 /v1（用账号页生成的 API key）；改成 "0" 再部署就关掉，网站自己的在线模型不受影响
+V1_LINKS = ""                                     # 锁区 /vault/（一次性买断，/premium/v1）：它的 Stripe Payment Link 的 id（plink_…，可以逗号分隔写几个）；空着时按下面的金额认
+V1_AMOUNT = "19900"                               # 没填 V1_LINKS 时：一次性付款正好是这个数（最小货币单位，19900 = ¥199.00）就算买了这个专区；"0" 关掉
+V1_CURRENCY = "cny"
 CHAT_STATE = "on"                                  # 讨论室：on 正常；readonly 只能看，只有站长能发言（自己的消息仍然可以删）；off 关掉（连接被拒绝，首页卡片不显示）
 CHAT_ROOMS_PER_USER = "3"                          # 讨论室：每个账号最多同时开着几个自己的房间；0 表示不让用户开房间
 CHAT_USER_ROOMS = "100"                            # 讨论室：全站用户房间的总数上限

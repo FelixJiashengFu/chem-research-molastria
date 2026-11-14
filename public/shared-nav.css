@@ -538,3 +538,8 @@ body:not(.no-cr-nav):not(:has(> .cr-header))::before{content:"";display:block;he
    只在宽屏上这样做：手机多半网慢，数据脚本要一两秒才到，等它会让第一眼看到内容的时间晚 0.5–1.4 秒（慢 4G 实测），不划算。 */
 @media (min-width:761px){body.js-render:not(.cr-ready)>:not(.cr-header){visibility:hidden;animation:cr-reveal 0s .8s forwards}}
 @keyframes cr-reveal{to{visibility:visible}}
+/* 锁区的入口：一把金色的锁，不写名字。手机上第一行放不下，收起来（锁区从“全部栏目”的搜索框旁边进）。写在文件最后，见 CLAUDE.md“顶栏的媒体查询顺序”。 */
+.cr-lock{color:var(--gold-ink);text-decoration:none}
+.cr-lock[aria-current=page]{border-color:var(--gold)}
+.cr-mega-head .cr-lock{flex:none;display:none}
+@media(max-width:1500px){.cr-tools>.cr-lock{display:none}.cr-mega-head .cr-lock{display:inline-flex}}

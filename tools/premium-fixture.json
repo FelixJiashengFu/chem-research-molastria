@@ -1,0 +1,35 @@
+{
+ "product": "v1",
+ "parts": {
+  "index": {
+   "zh": { "title": "示例专区", "eyebrow": "MOLASTRIA · SAMPLE", "h1": "示例专区", "question": "这是测试用的占位内容吗？", "lead": "是的。这份占位内容只给本地测试用，真正的正文不在仓库里。", "levels": { "proved": ["已证明", "数学定理"], "claim": ["主张", "作者的主张"] }, "demoKinds": { "exact": ["精确", "按公式当场计算"] }, "notes": { "library": "共 1 篇。" },
+     "groups": [{ "title": "第一部分", "ids": ["one", "two"] }],
+     "chapters": [{ "id": "one", "title": "第一章", "summary": "占位的第一章", "level": "proved", "demos": ["line"] }, { "id": "two", "title": "第二章", "summary": "占位的第二章", "level": "claim", "demos": [] }],
+     "milestones": [{ "year": "1900", "text": "占位的时间线条目。" }],
+     "quiz": [{ "q": "一加一等于几？", "opts": ["二", "三"], "a": 0, "why": "一加一等于二。", "ch": "one" }],
+     "books": [{ "title": "Sample Book", "authors": "A. Author", "note": "占位的书目。" }], "open": [{ "q": "占位的开放问题。", "ch": "two" }] },
+   "en": { "title": "Sample Section", "eyebrow": "MOLASTRIA · SAMPLE", "h1": "Sample Section", "question": "Is this placeholder content for tests?", "lead": "Yes. This placeholder is for local tests only; the real text is not in the repository.", "levels": { "proved": ["Proved", "A theorem"], "claim": ["Claim", "The author's claim"] }, "demoKinds": { "exact": ["Exact", "Computed live from the formula"] }, "notes": { "library": "1 reference." },
+     "groups": [{ "title": "Part one", "ids": ["one", "two"] }],
+     "chapters": [{ "id": "one", "title": "Chapter one", "summary": "The first placeholder chapter", "level": "proved", "demos": ["line"] }, { "id": "two", "title": "Chapter two", "summary": "The second placeholder chapter", "level": "claim", "demos": [] }],
+     "milestones": [{ "year": "1900", "text": "A placeholder timeline entry." }],
+     "quiz": [{ "q": "What is one plus one?", "opts": ["Two", "Three"], "a": 0, "why": "One plus one is two.", "ch": "one" }],
+     "books": [{ "title": "Sample Book", "authors": "A. Author", "note": "A placeholder book." }], "open": [{ "q": "A placeholder open question.", "ch": "two" }] }
+  },
+  "refs": {
+   "zh": { "refs": [{ "id": "sample1900", "authors": "A. Author", "year": 1900, "title": "A sample reference", "journal": "Journal of Samples", "vol": "1", "pages": "1–2", "doi": "10.0000/sample", "used": ["one"], "note": "占位" }] },
+   "en": { "refs": [{ "id": "sample1900", "authors": "A. Author", "year": 1900, "title": "A sample reference", "journal": "Journal of Samples", "vol": "1", "pages": "1–2", "doi": "10.0000/sample", "used": ["one"], "note": "placeholder" }] }
+  },
+  "code": {
+   "zh": { "js": "DEMOS.line = { title: K.L('一条直线', 'A straight line'), kind: 'exact', intro: K.L('斜率可以调。', 'The slope is adjustable.'), ctl: [['k', K.L('斜率', 'Slope'), 0, 4, 0.5, 1]], figs: [[0.5, K.L('y = kx', 'y = kx')]], tick: (s) => { s.k = (s.k + 0.5) % 4.5; }, draw: (s, [cv], c) => { K.plot(cv, { x: [0, 1], y: [0, 4], xl: 'x', yl: 'y', series: [{ xs: [0, 1], ys: [0, s.k], color: c.accent }] }); return [[K.L('x = 1 处的值', 'Value at x = 1'), K.fix(s.k, 1), 1]]; } };" },
+   "en": { "js": "DEMOS.line = { title: K.L('一条直线', 'A straight line'), kind: 'exact', intro: K.L('斜率可以调。', 'The slope is adjustable.'), ctl: [['k', K.L('斜率', 'Slope'), 0, 4, 0.5, 1]], figs: [[0.5, K.L('y = kx', 'y = kx')]], tick: (s) => { s.k = (s.k + 0.5) % 4.5; }, draw: (s, [cv], c) => { K.plot(cv, { x: [0, 1], y: [0, 4], xl: 'x', yl: 'y', series: [{ xs: [0, 1], ys: [0, s.k], color: c.accent }] }); return [[K.L('x = 1 处的值', 'Value at x = 1'), K.fix(s.k, 1), 1]]; } };" }
+  },
+  "c-one": {
+   "zh": { "id": "one", "body": [{ "p": "占位的第一段，引用了 <span class=\"chm-cites\">[<a href=\"#ref-sample1900\" data-ref=\"sample1900\">Author 1900</a>]</span>。" }, { "h": "小标题" }, { "demo": "line" }, { "table": { "head": ["甲", "乙"], "rows": [["1", "2"]], "cap": "占位的表" } }, { "note": "占位的提示。", "kind": "warn" }], "points": [{ "h": "要点一", "p": "占位的要点。", "st": "proved" }], "math": [{ "m": "<math display=\"block\"><mi>y</mi><mo>=</mo><mi>k</mi><mi>x</mi></math>", "cap": "一条直线" }], "example": { "q": "k = 2 时 x = 1 处是多少？", "steps": ["代入。"], "a": "2" }, "cites": "<a href=\"#ref-sample1900\" data-ref=\"sample1900\">Author 1900</a>" },
+   "en": { "id": "one", "body": [{ "p": "The first placeholder paragraph, citing <span class=\"chm-cites\">[<a href=\"#ref-sample1900\" data-ref=\"sample1900\">Author 1900</a>]</span>." }, { "h": "A subheading" }, { "demo": "line" }, { "table": { "head": ["A", "B"], "rows": [["1", "2"]], "cap": "A placeholder table" } }, { "note": "A placeholder note.", "kind": "warn" }], "points": [{ "h": "Point one", "p": "A placeholder point.", "st": "proved" }], "math": [{ "m": "<math display=\"block\"><mi>y</mi><mo>=</mo><mi>k</mi><mi>x</mi></math>", "cap": "A straight line" }], "example": { "q": "What is the value at x = 1 when k = 2?", "steps": ["Substitute."], "a": "2" }, "cites": "<a href=\"#ref-sample1900\" data-ref=\"sample1900\">Author 1900</a>" }
+  },
+  "c-two": {
+   "zh": { "id": "two", "body": [{ "p": "占位的第二章。" }, { "quote": "占位的引语。", "by": "某人" }, { "list": ["第一条", "第二条"] }] },
+   "en": { "id": "two", "body": [{ "p": "The second placeholder chapter." }, { "quote": "A placeholder quotation.", "by": "Somebody" }, { "list": ["First", "Second"] }] }
+  }
+ }
+}

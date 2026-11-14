@@ -10,7 +10,10 @@
                                         带上未使用的 VIP 卡时，验证通过后卡才算兑换
      POST /auth/verify {email, code}    用验证码换登录令牌
      POST /auth/signout                 退出这台设备
-     GET  /me                           订阅、额度、课题组成员
+     GET  /me                           订阅、额度、课题组成员，owns 是单独买断的专区（现在只有 v1）
+     GET  /premium/<专区>?part=&lang=   买断专区的正文（现在只有 v1：锁区 /vault/，一次性 ¥199，Pro 不包含）。正文不在公开仓库里，
+                                        存在 D1 的 premium 表（tools/premium-pack.mjs 生成 SQL）；没买的回答 402，code 是 need_purchase
+     POST /premium/restore              已登录：向 Stripe 重新核对这个邮箱买过哪些专区（换设备、确认页没打开时用），每小时 6 次
      POST /team/members {email}         课题组购买者添加成员；DELETE 同一路径移除
      POST /cards/redeem {code}          已登录时兑换 VIP 卡
      GET  /keys                         自己的 API key（只有前缀，没有原文）、今天的用量和最近通过 key 提交的计算；POST {name} 生成一个，原文只在这次返回；DELETE {id} 撤销
@@ -230,6 +233,63 @@ async function access(env, email) {
   return { ...own, pro: false, role: 'free' };
 }
 
+// ── one-off purchases (sections sold once, outside Pro) ─────────────────
+// A product is paid for through its own Stripe Payment Link (mode "payment"). Which link a Checkout Session came from
+// is in session.payment_link; the ids allowed for a product are in a var (V1_LINKS, comma-separated plink_… ids).
+// While that var is empty the amount decides instead (V1_AMOUNT, in the currency's smallest unit, and V1_CURRENCY),
+// so the section can be sold before anyone has looked the link id up. Refunds: set purchases.revoked = 1 by hand.
+const PRODUCTS = { v1: { links: 'V1_LINKS', amount: 'V1_AMOUNT', currency: 'V1_CURRENCY' } };
+const PREMIUM_PART = /^[a-z0-9][a-z0-9-]{0,39}$/;
+function productOf(env, s) {
+  if (!s || s.mode !== 'payment' || s.status !== 'complete' || s.payment_status !== 'paid') return null;
+  for (const [id, p] of Object.entries(PRODUCTS)) {
+    const links = String(env[p.links] || '').split(',').map((x) => x.trim()).filter(Boolean);
+    if (links.length) { if (links.includes(String(s.payment_link || ''))) return id; continue; }
+    const amount = Number(env[p.amount] || 0);
+    if (amount > 0 && Number(s.amount_total) === amount && String(s.currency || '').toLowerCase() === String(env[p.currency] || 'cny').toLowerCase()) return id;
+  }
+  return null;
+}
+async function recordPurchase(env, email, product, s) {
+  await env.DB.prepare('INSERT INTO purchases (email, product, session, amount, currency, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(email, product) DO NOTHING')
+    .bind(email, product, String(s.id || ''), Number(s.amount_total || 0), String(s.currency || ''), Number(s.created || now())).run();
+}
+/** The sections this email has bought and still holds; the site admin holds all of them. */
+async function owned(env, email) {
+  if ((await grantOf(env, email))?.source === 'admin') return Object.keys(PRODUCTS);
+  return (await env.DB.prepare('SELECT product FROM purchases WHERE email = ?1 AND revoked = 0 ORDER BY product').bind(email).all()).results.map((r) => r.product).filter((id) => PRODUCTS[id]);
+}
+/** Asks Stripe for this email's completed one-off payments and records the ones that are a product. → number newly found */
+async function restorePurchases(env, email) {
+  const list = await stripe(env, `checkout/sessions?limit=100&status=complete&customer_details[email]=${encodeURIComponent(email)}`);
+  let found = 0;
+  for (const s of list?.data || []) {
+    if (normEmail(s.customer_details?.email || s.customer_email) !== email) continue;
+    const product = productOf(env, s);
+    if (!product) continue;
+    const had = await env.DB.prepare('SELECT 1 AS x FROM purchases WHERE email = ?1 AND product = ?2').bind(email, product).first();
+    if (!had) { await recordPurchase(env, email, product, s); found++; }
+  }
+  return found;
+}
+async function premium(request, env, cors, path, url) {
+  const me = await signedIn(env, request);
+  if (request.method === 'POST' && path === '/premium/restore') {
+    if (!(await allow(env, `restore:${me}`, 6, 3600))) throw fail(429, '核对得太频繁，请一小时后再试');
+    const found = await restorePurchases(env, me);
+    return json({ found, account: await view(env, await access(env, me)) }, cors);
+  }
+  const product = path.slice('/premium/'.length);
+  if (request.method !== 'GET' || !Object.hasOwn(PRODUCTS, product)) throw fail(404, '没有这个接口');
+  if (!(await owned(env, me)).includes(product)) throw fail(402, '这个专区需要单独购买', 'This section is a separate one-time purchase', 'need_purchase');
+  const part = url.searchParams.get('part') || 'index', lang = url.searchParams.get('lang') === 'en' ? 'en' : 'zh';
+  if (!PREMIUM_PART.test(part)) throw fail(400, '参数不对');
+  const row = await env.DB.prepare('SELECT body FROM premium WHERE product = ?1 AND part = ?2 AND lang = ?3').bind(product, part, lang).first();
+  if (!row) throw fail(404, '这一部分还没有上线');
+  // The body is stored as JSON text and passed through untouched (parsing it would only spend CPU).
+  return new Response(row.body, { headers: { ...cors, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store' } });
+}
+
 /** What is left of a throttle() window: { n, reset }, or zero uses when the window has passed. */
 async function windowOf(env, key) {
   const row = await env.DB.prepare('SELECT n, reset FROM throttle WHERE key = ?1 AND reset >= ?2').bind(key, now()).first();
@@ -254,6 +314,8 @@ async function view(env, a) {
   if (a.role === 'owner') out.members = (await env.DB.prepare('SELECT member FROM members WHERE owner = ?1 ORDER BY added').bind(a.email).all()).results.map((r) => r.member);
   if (a.grant) out.grant = { source: a.grant.source, expires: a.grant.expires ?? null };
   if (a.grant?.source === 'admin') out.admin = true;
+  const owns = await owned(env, a.email);
+  if (owns.length) out.owns = owns;
   return out;
 }
 
@@ -923,6 +985,7 @@ async function route(request, env, cors) {
   if (request.method === 'GET' && path === '/') return json({ ok: true, service: 'molastria-account' }, cors);
   if (request.method === 'GET' && path === '/me') return json(await view(env, await access(env, await signedIn(env, request))), cors);
   if (path === '/uma' || path.startsWith('/uma/')) return uma(request, env, cors, path, ip);
+  if (path.startsWith('/premium/')) return premium(request, env, cors, path, url);
   if (path === '/sync') return sync(request, env, cors, url); // larger bodies than the rest, read there
   if (path === '/chat' || path.startsWith('/chat/')) return chatRoute(request, env, cors, path, url, ip, { fail, json, sha256, now, allow, visitorId, randomToken }); // deploy/chat.js
 
@@ -943,7 +1006,15 @@ async function route(request, env, cors) {
     if (s.created < now() - 86400) throw fail(410, '确认页链接已过期，请用付款邮箱登录');
     const email = normEmail(s.customer_details?.email || s.customer_email);
     if (!email) throw fail(422, '订单里没有邮箱，请联系我们');
-    if (s.mode !== 'subscription') return json({ token: null, sponsor: true, email }, cors);
+    if (s.mode !== 'subscription') {
+      const product = productOf(env, s);
+      if (!product) return json({ token: null, sponsor: true, email }, cors);
+      // A section bought once: remember it, and sign the buyer in so the section opens right away.
+      await recordPurchase(env, email, product, s);
+      await account(env, email, { known: s.customer ? [s.customer] : [] }).catch(() => {});
+      const token = await createSession(env, email);
+      return json({ token, bought: product, account: await view(env, await access(env, email)) }, cors);
+    }
     await account(env, email, { fresh: true, known: s.customer ? [s.customer] : [] });
     const token = await createSession(env, email);
     return json({ token, account: await view(env, await access(env, email)) }, cors);
@@ -986,6 +1057,7 @@ async function route(request, env, cors) {
     if (row.card) await redeem(env, email, row.card);
     await env.DB.prepare('DELETE FROM codes WHERE email = ?1').bind(email).run();
     await account(env, email, { fresh: true }).catch(() => {}); // a fresh look at Stripe; Stripe being down must not block signing in
+    await restorePurchases(env, email).catch(() => {}); // sections bought once, e.g. on another device
     const token = await createSession(env, email);
     return json({ token, account: await view(env, await access(env, email)) }, cors);
   }

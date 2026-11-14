@@ -48,6 +48,10 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
       return ok({ data: Object.values(customers).filter((c) => c.email.toLowerCase() === want) });
     }
     if (p === "subscriptions") return ok({ data: subs[url.searchParams.get("customer") || ""] || [] });
+    if (p === "checkout/sessions") { // list, filtered the way the worker asks: completed sessions of one checkout email
+      const want = url.searchParams.get("customer_details[email]");
+      return ok({ data: Object.values(sessions).filter((x: any) => x.status === "complete" && (x.customer_details?.email || "") === want) });
+    }
     if (p.startsWith("checkout/sessions/")) { const s = sessions[p.split("/")[2]]; return s ? ok(s) : ok({ error: { message: "No such session" } }, 404); }
     return ok({ error: { message: "unknown" } }, 404);
   }
@@ -1421,6 +1425,80 @@ await test("web search: Pro only, plain text back, daily and site-wide caps, a f
   const site = await call("POST", "/web/search", { q: "b" }, proToken);
   eq([site.status, site.data.error?.message], [503, "本月全站的网页搜索额度用完了"]);
   delete env.BRAVE_SEARCH_KEY; delete env.WEB_DAILY_PRO; delete env.WEB_MONTHLY_ALL;
+});
+
+// ── sections bought once (/premium) ─────────────────────────────────────
+await test("premium: a one-off ¥199 payment buys the section and signs in; the body goes only to buyers", async () => {
+  Object.assign(env, { V1_AMOUNT: "19900" });
+  sessions.cs_test_v1x = { id: "cs_test_v1x", status: "complete", payment_status: "paid", mode: "payment", created: nowS() - 30, customer: null, amount_total: 19900, currency: "cny", payment_link: "plink_v1", customer_details: { email: "Reader@Example.com" } };
+  sqlite.prepare("INSERT INTO premium (product, part, lang, body, updated) VALUES ('v1', 'index', 'zh', ?, 1), ('v1', 'index', 'en', ?, 1), ('v1', 'c-cog', 'zh', ?, 1)").run('{"v":1,"t":"目录"}', '{"v":1,"t":"Contents"}', '{"id":"cog"}');
+  eq((await call("GET", "/premium/v1")).status, 401, "signed out");
+  sessions.cs_test_paid.created = nowS() - 60;
+  const proNow = (await call("POST", "/auth/checkout", { session_id: "cs_test_paid" })).data.token;
+  const pro = await call("GET", "/premium/v1", undefined, proNow);
+  eq([pro.status, pro.data.error?.message], [402, "这个专区需要单独购买"], "Pro does not include it");
+  const r = await call("POST", "/auth/checkout", { session_id: "cs_test_v1x" });
+  eq([r.status, r.data.bought, r.data.account.email, r.data.account.pro, r.data.account.owns], [200, "v1", "reader@example.com", false, ["v1"]]);
+  const t = r.data.token;
+  eq((await call("GET", "/me", undefined, t)).data.owns, ["v1"]);
+  const zh = await call("GET", "/premium/v1", undefined, t);
+  eq([zh.status, zh.data, zh.headers.get("Cache-Control")], [200, { v: 1, t: "目录" }, "private, no-store"]);
+  eq((await call("GET", "/premium/v1?lang=en", undefined, t)).data.t, "Contents");
+  eq((await call("GET", "/premium/v1?part=c-cog", undefined, t)).data.id, "cog");
+  eq((await call("GET", "/premium/v1?part=c-cog&lang=en", undefined, t)).status, 404, "not uploaded in English");
+  eq((await call("GET", "/premium/v1?part=../x", undefined, t)).status, 400);
+  eq((await call("GET", "/premium/nope", undefined, t)).status, 404);
+  eq((await call("GET", "/premium/constructor", undefined, t)).status, 404);
+  eq((await call("POST", "/auth/checkout", { session_id: "cs_test_v1x" })).data.account.owns, ["v1"], "opening the confirmation page twice changes nothing");
+  eq((sqlite.prepare("SELECT COUNT(*) AS n FROM purchases").get() as any).n, 1);
+  eq((await call("GET", "/me", undefined, proNow)).data.owns, undefined, "nobody else got it");
+});
+
+await test("premium: other one-off payments stay donations; a refund closes the section", async () => {
+  sessions.cs_test_gift50 = { ...sessions.cs_test_v1x, id: "cs_test_gift50", amount_total: 5000, customer_details: { email: "kind@example.com" } };
+  sessions.cs_test_usd = { ...sessions.cs_test_v1x, id: "cs_test_usd", currency: "usd", customer_details: { email: "kind@example.com" } };
+  sessions.cs_test_unpaid = { ...sessions.cs_test_v1x, id: "cs_test_unpaid", payment_status: "unpaid", status: "open", customer_details: { email: "kind@example.com" } };
+  for (const id of ["cs_test_gift50", "cs_test_usd"]) { const r = await call("POST", "/auth/checkout", { session_id: id }); eq([r.status, r.data.token, r.data.sponsor], [200, null, true], id); }
+  eq((await call("POST", "/auth/checkout", { session_id: "cs_test_unpaid" })).status, 402);
+  eq((sqlite.prepare("SELECT COUNT(*) AS n FROM purchases").get() as any).n, 1);
+  const t = (await call("POST", "/auth/checkout", { session_id: "cs_test_v1x" })).data.token;
+  sqlite.prepare("UPDATE purchases SET revoked = 1 WHERE email = 'reader@example.com'").run();
+  eq((await call("GET", "/premium/v1", undefined, t)).status, 402);
+  eq((await call("GET", "/me", undefined, t)).data.owns, undefined);
+  eq((await call("POST", "/premium/restore", {}, t)).data.found, 0, "a refunded purchase is not found again");
+  eq((await call("GET", "/premium/v1", undefined, t)).status, 402);
+  sqlite.prepare("UPDATE purchases SET revoked = 0 WHERE email = 'reader@example.com'").run();
+});
+
+await test("premium: signing in or 'restore' finds a payment whose confirmation page was never opened", async () => {
+  sessions.cs_test_v1x2 = { ...sessions.cs_test_v1x, id: "cs_test_v1x2", customer_details: { email: "later@example.com" } };
+  await call("POST", "/auth/start", { email: "later@example.com" });
+  const r = await call("POST", "/auth/verify", { email: "later@example.com", code: codeFor("later@example.com") });
+  eq([r.status, r.data.account.owns], [200, ["v1"]]);
+  eq((await call("GET", "/premium/v1", undefined, r.data.token)).status, 200);
+  // with the link id configured, the amount alone is not enough
+  Object.assign(env, { V1_LINKS: "plink_other, plink_real" });
+  sessions.cs_test_v1x3 = { ...sessions.cs_test_v1x, id: "cs_test_v1x3", customer_details: { email: "third@example.com" } };
+  const no = await call("POST", "/auth/checkout", { session_id: "cs_test_v1x3" });
+  eq([no.data.token, no.data.sponsor], [null, true], "wrong link");
+  sessions.cs_test_v1x3.payment_link = "plink_real"; sessions.cs_test_v1x3.amount_total = 9900; // a sale price on the right link still counts
+  await call("POST", "/auth/start", { email: "third@example.com" });
+  const third = await call("POST", "/auth/verify", { email: "third@example.com", code: codeFor("third@example.com") });
+  eq(third.data.account.owns, ["v1"]);
+  sqlite.prepare("DELETE FROM purchases WHERE email = 'third@example.com'").run();
+  const again = await call("POST", "/premium/restore", {}, third.data.token);
+  eq([again.status, again.data.found, again.data.account.owns], [200, 1, ["v1"]]);
+  for (let i = 0; i < 5; i++) await call("POST", "/premium/restore", {}, third.data.token);
+  eq((await call("POST", "/premium/restore", {}, third.data.token)).status, 429);
+  delete env.V1_LINKS;
+  // the site admin reads everything without paying
+  await call("POST", "/auth/start", { email: "boss@molastria.com" });
+  const boss = await call("POST", "/auth/verify", { email: "boss@molastria.com", code: codeFor("boss@molastria.com") });
+  eq(boss.data.account.owns, ["v1"]);
+  eq((await call("GET", "/premium/v1", undefined, boss.data.token)).status, 200);
+  delete env.V1_AMOUNT;
+  const off = await call("POST", "/auth/checkout", { session_id: "cs_test_v1x3" }); // nothing configured: not on sale
+  eq([sessions.cs_test_v1x3.payment_link, off.data.sponsor], ["plink_real", true]);
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");

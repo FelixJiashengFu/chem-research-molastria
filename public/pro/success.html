@@ -36,7 +36,7 @@
   // Shows the plan and a short reference from the Stripe redirect (?plan=…&session_id=…).
   addEventListener('DOMContentLoaded', () => {
     const q = new URLSearchParams(location.search);
-    const names = { pro_year: 'MolAstria Pro 支持者 · 年付', pro_month: 'MolAstria Pro 支持者 · 月付', team_year: '课题组版 · 年付', sponsor: '捐助' };
+    const names = { pro_year: 'MolAstria Pro 支持者 · 年付', pro_month: 'MolAstria Pro 支持者 · 月付', team_year: '课题组版 · 年付', sponsor: '捐助', v1: '锁区 · 一次买断' };
     const plan = names[q.get('plan')] || '';
     const sid = q.get('session_id') || '';
     const ref = sid.slice(-10);
@@ -52,6 +52,7 @@
     box.hidden = false;
     box.textContent = T('正在开通 Pro…');
     acct.fromCheckout(sid).then((r) => {
+      if (q.get('plan') === 'v1' && r.owns?.includes('v1')) { box.classList.add('ok'); box.innerHTML = `<b>${T('已经解锁，这台设备已登录。')}</b> ${T('买到的内容绑定在付款邮箱上，换设备用这个邮箱登录就能再打开。')} <a href="../vault/index.html">${T('现在打开')}</a>`; return; }
       if (r.sponsor) { box.textContent = T('感谢你的支持！这笔是一次性捐助，不需要登录。'); return; }
       if (!r.pro) throw new Error(T('暂时没有查到这笔订阅。'));
       box.classList.add('ok');
