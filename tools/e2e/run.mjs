@@ -5567,7 +5567,8 @@ check('vault: a stranger sees only a lock; the one-off payment opens the reader,
   assert.equal(await p.isVisible('#vault'), false, 'nothing behind the lock');
   assert.match(await text(p, '.vlt-price'), /¥199/);
   assert.doesNotMatch(await p.innerText('main'), /示例专区|第一章/, 'no title and no table of contents before paying');
-  assert.equal(await p.isDisabled('#vault-buy'), true, 'no payment link configured yet: the button says so');
+  assert.equal(await p.isDisabled('#vault-buy'), false, 'the payment link is configured: the button is live');
+  assert.match(await text(p, '#vault-buy'), /解锁/);
   assert.deepEqual(asked, [], 'signed out: the service is not even asked');
   assert.equal(await p.getAttribute('.cr-tools #cr-lock', 'aria-current'), 'page');
   assert.equal((await text(p, '.cr-tools #cr-lock')).trim(), '', 'the lock in the header carries no name');
