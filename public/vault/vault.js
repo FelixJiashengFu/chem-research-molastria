@@ -236,7 +236,7 @@
         lx += wd + 8;
       }
     }
-    // 格子图：rows 是一行行的数，color(v, 行, 列) 给颜色；用来画元胞自动机的时空图
+    // 格子图：rows 是一行行的数，color(v, 行, 列) 给颜色；用来画时空图
     function cells(cv, rows, color, o = {}) {
       const { ctx, w, h } = fit(cv), n = rows[0]?.length || 1, m = o.rows || rows.length, cw = w / n, chh = h / m;
       rows.forEach((r, j) => { for (let i = 0; i < n; i++) { const col = color(r[i], j, i); if (!col) continue; ctx.fillStyle = col; ctx.fillRect(Math.floor(i * cw), Math.floor(j * chh), Math.ceil(cw), Math.ceil(chh)); } });

@@ -1595,7 +1595,7 @@ check('header order and account: groups and buttons drag into a new order that i
   await p.click('.cr-arr-done');
   o = await order();
   assert.deepEqual(o.g, ['find', 'learn', 'explore', 'models', 'make']);
-  assert.equal(o.t.join(), 'jump,acct,lang,disp,bg,theme,ai');
+  assert.equal(o.t.join(), 'jump,acct,lock,lang,disp,bg,theme,ai');
   assert.deepEqual(await p.evaluate(() => [localStorage.getItem('molastria-nav-groups'), localStorage.getItem('molastria-nav-tools')]), [null, null]);
 
   // signed out: "登录" opens a panel that leads to sign-in, Pro, the API, the weekly picks and the desktop app

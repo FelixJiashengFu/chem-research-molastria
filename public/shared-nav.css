@@ -542,4 +542,4 @@ body:not(.no-cr-nav):not(:has(> .cr-header))::before{content:"";display:block;he
 .cr-lock{color:var(--gold-ink);text-decoration:none}
 .cr-lock[aria-current=page]{border-color:var(--gold)}
 .cr-mega-head .cr-lock{flex:none;display:none}
-@media(max-width:760px){.cr-tools>.cr-lock{display:none}.cr-mega-head .cr-lock{display:inline-flex}}
+@media(max-width:1500px){.cr-tools>.cr-lock{display:none}.cr-mega-head .cr-lock{display:inline-flex}}

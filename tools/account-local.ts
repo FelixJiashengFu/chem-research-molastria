@@ -30,7 +30,8 @@ const sessions: Record<string, unknown> = {
   cs_test_localv1: { id: "cs_test_localv1", status: "complete", payment_status: "paid", mode: "payment", created: now(), customer: null, amount_total: 19900, currency: "cny", payment_link: "plink_local_v1", customer_details: { email: "vault@example.com" } },
 };
 {
-  const fx = JSON.parse(await Deno.readTextFile(new URL("./premium-fixture.json", import.meta.url)));
+  // PREMIUM_BUNDLE=<path to a bundle.json kept outside the repository> loads the real text instead of the stand-in
+  const fx = JSON.parse(await Deno.readTextFile(Deno.env.get("PREMIUM_BUNDLE") || new URL("./premium-fixture.json", import.meta.url)));
   for (const [part, langs] of Object.entries(fx.parts as Record<string, Record<string, unknown>>)) for (const [lang, body] of Object.entries(langs)) await DB.prepare("INSERT INTO premium (product, part, lang, body, updated) VALUES (?1, ?2, ?3, ?4, ?5)").bind(fx.product, part, lang, JSON.stringify(body), now()).run();
 }
 

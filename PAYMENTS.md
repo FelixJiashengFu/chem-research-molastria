@@ -59,6 +59,12 @@ plans: {
 `price`、`list`、`seatPrice` 只用于展示，单位是人民币，必须与 Stripe 里的价格一致。英文页显示 `CN¥` 价格并附美元约数，汇率在 `usdPerCny`。
 推送到 `main` 后约一分钟生效。填了链接的套餐，结账按钮立刻可以付款；没填的仍显示“收款通道正在开通”。
 
+### 锁区（一次买断）· The locked section (one-time purchase)
+
+`plans.v1` 是一个单独卖的栏目（`/vault/`），一次付 ¥199，和 Pro 无关。它要一个**一次性付款**（不是订阅）的 Payment Link，CNY 199.00，付款后跳转 `https://molastria.com/pro/success.html?session_id={CHECKOUT_SESSION_ID}&plan=v1`。链接填进 `plans.v1.checkoutUrl`，它的 id（`plink_…`）填进 `deploy/wrangler.toml` 的 `V1_LINKS`。完整步骤、退款和赠送见 `docs/RUNBOOK.md`“锁区”。
+
+The `v1` plan is a separately sold section: a one-time payment link (not a subscription) of CNY 199.00 that redirects to the success page with `plan=v1`. Steps, refunds and gifting are in the runbook.
+
 ## 4. 开通 Pro 账号服务 · Turn on Pro accounts
 
 账号服务是一个 Cloudflare Worker（`deploy/account-worker.js`，数据存在 Cloudflare D1）。开通后：付款回到本站自动登录；换设备用付款邮箱收 6 位验证码登录；Pro 每月 300 次免配 key 的 AI 托管额度；课题组购买者在账号页添加成员。谁付了款以 Stripe 为准，Worker 直接向 Stripe 查询，**不需要 webhook**。

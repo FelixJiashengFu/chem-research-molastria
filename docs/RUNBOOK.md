@@ -399,6 +399,25 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 **不开云也能试：** `batch_uma.py` 和 `batch_mace.py` 在本机也能跑（各用各的环境，例如 `D:\ChemDraw\uma-env` 和 `D:\ChemDraw\mace-env`）。
 
+## 锁区（/vault/，一次买断）
+
+一个单独收费的栏目：一次付 ¥199 永久可看，和 Pro 订阅无关（Pro 不包含它，买了它也不算 Pro）。没买的人只看到一把锁。正文不在仓库里，在 D1 的 `premium` 表；谁买了记在 `purchases` 表。站长账号（`grants` 表里 source 是 admin 的）不用付款，直接能看。
+
+- **第一次上线（站长在自己电脑上，顺序是先账号服务、再网站）：**
+  1. 在 Stripe 建一个**一次性**付款的 Payment Link，价格 CNY 199.00，付款后跳转到 `https://molastria.com/pro/success.html?session_id={CHECKOUT_SESSION_ID}&plan=v1`。商品名会显示在付款页上，想不露名字就起一个中性的名字。
+  2. PR 合并后拉下最新的 main，在 `deploy` 文件夹里依次运行 `npm.cmd ci`、`npx.cmd wrangler d1 execute molastria --remote --file schema.sql`（建 `purchases`、`premium` 两张表，可重复执行）。
+  3. 灌正文：`npx.cmd wrangler d1 execute molastria --remote --file <内容包文件夹>\out\upload.sql`（文件在仓库外；先删掉这个栏目的旧行再写入，所以重复执行就是更新）。
+  4. 把 Payment Link 的 id（`plink_…`，在 Stripe 的链接详情页地址里）填进 `deploy/wrangler.toml` 的 `V1_LINKS`，然后 `npx.cmd wrangler deploy`。不填也能用：这时任何一笔正好 ¥199.00 的一次性付款都算买了它（`V1_AMOUNT`），以后有别的 ¥199 商品时必须填。
+  5. 把链接地址填进 `public/pay/config.js` 的 `plans.v1.checkoutUrl`，推到 main。空着时锁页的按钮是灰的，写“即将开放”。
+- **改正文：** 改仓库外的源文件，重新生成内容包（那个文件夹里的 `node build.mjs`），再跑一次第 3 步。不用部署，读者刷新就是新的。`tools/premium-pack.mjs` 是把内容包切成 SQL 的那一步（每条语句 80 KB 以内）。
+- **有人付了款打不开：** 让他在锁页用**付款时填的邮箱**登录，再点“找回购买”（账号服务去 Stripe 按邮箱查已完成的一次性付款，一小时内限次数）。还不行就查库：`npx.cmd wrangler d1 execute molastria --remote --command "SELECT product, amount, currency, revoked, datetime(created, 'unixepoch') FROM purchases ORDER BY created DESC LIMIT 20"`（不要把带邮箱的结果贴出来）。
+- **退款：** 在 Stripe 里退款之后，账号服务不会自己知道（没有 webhook）。站长自己运行 `npx.cmd wrangler d1 execute molastria --remote --command "UPDATE purchases SET revoked = 1 WHERE email = '<邮箱>' AND product = 'v1'"`；`revoked = 1` 的行不会被“找回购买”改回来。
+- **送给某个人：** 站长自己运行 `npx.cmd wrangler d1 execute molastria --remote --command "INSERT INTO purchases (email, product, session, amount, currency, created) VALUES ('<小写邮箱>', 'v1', 'gift', 0, 'cny', unixepoch())"`。
+- **暂时关掉销售：** 把 `config.js` 里的 `checkoutUrl` 清空再推送；已经买了的人照常能看。
+- **本地看真的正文：** `PREMIUM_BUNDLE=<内容包>/out/bundle.json deno run --allow-net --allow-env --allow-read --allow-write tools/account-local.ts 8852 http://127.0.0.1:8850`，网站用 `tools/serve.ts 8850`，把 `config.js` 的 `accountApi` 临时指到 8852（不要提交），打开 `/pro/success.html?session_id=cs_test_localv1&plan=v1` 就是买了的状态。
+- **测试：** `deno run --allow-read tools/account-test.ts`（付款认定、402、找回、撤销、站长免付）、`node tools/e2e/run.mjs vault`（陌生人只看到锁、付款后打开阅读器、英文版）。真实的 Stripe 付款和真实邮件测试覆盖不到。
+- **保密的边界：** 仓库是公开的，所以正文、章节名、栏目名都不进仓库、提交信息、PR 和这些文档。锁页的源码谁都能看，但里面没有内容；内容接口不带购买记录一律 402。买了的人当然可以复制正文，这一点拦不住。
+
 ## 站长和 VIP 卡
 
 授予站长（用户自己运行，在 `deploy` 目录）：

@@ -8705,6 +8705,9 @@
  "搜索栏目（Ctrl / ⌘ + K）": [
   "shared-nav.js"
  ],
+ "锁区": [
+  "shared-nav.js"
+ ],
  "切换到中文": [
   "shared-nav.js"
  ],
@@ -17262,6 +17265,21 @@
  "付款平台返回错误（{0}）：{1}": [
   "deploy/account-worker.js"
  ],
+ "核对得太频繁，请一小时后再试": [
+  "deploy/account-worker.js"
+ ],
+ "没有这个接口": [
+  "deploy/account-worker.js"
+ ],
+ "这个专区需要单独购买": [
+  "deploy/account-worker.js"
+ ],
+ "参数不对": [
+  "deploy/account-worker.js"
+ ],
+ "这一部分还没有上线": [
+  "deploy/account-worker.js"
+ ],
  "VIP 卡无效或已经被使用": [
   "deploy/account-worker.js"
  ],
@@ -17404,9 +17422,6 @@
   "deploy/account-worker.js"
  ],
  "没有找到这个任务（完成后保留一小时）": [
-  "deploy/account-worker.js"
- ],
- "没有这个接口": [
   "deploy/account-worker.js"
  ],
  "算力是站长电脑上的 RTX 2080，尽力而为，可能离线；不要用在有时限的任务上。": [
