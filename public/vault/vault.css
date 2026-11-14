@@ -1,24 +1,25 @@
 /* 锁区：没买时整页只有一把锁；买了以后的阅读器沿用 ../fundamental-science/fundamental.css 和 ../chemistry/chem.css，这里只加锁页和阅读器多出来的几样。颜色只用 shared-nav.css 的变量。 */
 .vlt-gate{min-height:calc(100vh - 210px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:48px 16px 56px;text-align:center}
 .vlt-gate[hidden]{display:none}
-.vlt-lock{position:relative;display:grid;place-items:center;--vg-hi:color-mix(in srgb,var(--gold) 52%,white);--vg-mid:var(--gold);--vg-lo:color-mix(in srgb,var(--gold) 70%,black)}
-.vlt-lock svg{position:relative;display:block;width:clamp(84px,16vw,120px);height:auto;overflow:visible;filter:drop-shadow(0 10px 22px rgb(0 0 0 / .2));animation:vlt-arrive .8s cubic-bezier(.2,.9,.3,1.2) both,vlt-float 6s ease-in-out .8s infinite}
-.vg-hi{stop-color:var(--vg-hi)}.vg-mid{stop-color:var(--vg-mid)}.vg-lo{stop-color:var(--vg-lo)}
+.vlt-lock{position:relative;display:grid;place-items:center;--vg-hi:rgb(255 248 224);--vg-mid:rgb(236 208 142);--vg-lo:rgb(204 168 98);--vg-mint:rgb(122 204 172);--vg-key:rgb(30 84 64)}   /* 香槟金配薄荷绿，两种主题都用这一套（写成 rgb，不跟主题翻转） */
+.vlt-lock svg{position:relative;display:block;width:clamp(84px,16vw,120px);height:auto;overflow:visible;filter:drop-shadow(0 10px 20px rgb(150 120 50 / .22));animation:vlt-arrive .8s cubic-bezier(.2,.9,.3,1.2) both,vlt-float 6s ease-in-out .8s infinite}
+.vg-hi{stop-color:var(--vg-hi)}.vg-mid{stop-color:var(--vg-mid)}.vg-lo{stop-color:var(--vg-lo)}.vg-mint{stop-color:var(--vg-mint)}
 .vlt-shadow{fill:rgb(0 0 0 / .16);transform-origin:60px 146px;animation:vlt-shadow 6s ease-in-out .8s infinite}
 .vlt-shackle{transform-origin:86px 70px}
 .vlt-case{transform-origin:60px 103px}
-.vlt-bevel{stroke:rgb(255 255 255 / .55)}
-.vlt-plate{stroke:rgb(0 0 0 / .14)}
+.vlt-bevel{stroke:rgb(255 255 255 / .8)}
+.vlt-plate{stroke:rgb(30 84 64 / .22)}
 .vlt-key{transform-origin:60px 103px}
-.vlt-hole{fill:var(--paper)}
+.vlt-hole{fill:var(--vg-key)}
 .vlt-sheen{animation:vlt-sheen 5.5s ease-in-out 1.2s infinite}
 .vlt-glow{opacity:0;transform-origin:60px 103px;pointer-events:none}
 .vlt-orbit,.vlt-ring,.vlt-sparks{position:absolute;left:50%;top:58%;pointer-events:none}
-.vlt-orbit{width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 62%,var(--gold) 96%,transparent);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));transition:opacity .3s}
-.vlt-ring{width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:1.5px solid var(--gold);opacity:0}
+.vlt-orbit{width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 55%,var(--vg-mint) 80%,var(--vg-mid) 96%,transparent);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));mask:radial-gradient(closest-side,transparent calc(100% - 2.5px),black calc(100% - 2px));transition:opacity .3s}
+.vlt-ring{width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:1.5px solid var(--vg-mid);opacity:0}
 .vlt-sparks{width:0;height:0}
-.vlt-sparks i{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--vg-hi);box-shadow:0 0 8px var(--gold);opacity:0;transform:rotate(var(--a)) translateY(-26px)}
+.vlt-sparks i{position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--vg-mid);box-shadow:0 0 8px var(--vg-mid);opacity:0;transform:rotate(var(--a)) translateY(-26px)}
 .vlt-sparks i:nth-child(3n){width:3px;height:9px;left:-1.5px;border-radius:2px}
+.vlt-sparks i:nth-child(2n){background:var(--vg-mint);box-shadow:0 0 8px var(--vg-mint)}
 
 /* 核对中：一道金线绕着锁转，锁芯轻轻试转 */
 .vlt-lock.is-busy .vlt-orbit{opacity:.9;animation:vlt-spin 1.1s linear infinite}
@@ -36,7 +37,7 @@
 .vlt-lock.is-open .vlt-shackle{animation:vlt-lift .34s cubic-bezier(.3,1.7,.5,1) .3s both,vlt-swing .46s cubic-bezier(.5,0,.2,1) .6s forwards}
 .vlt-lock.is-open .vlt-glow{animation:vlt-glow 1s ease-out .3s both}
 .vlt-lock.is-open .vlt-ring{animation:vlt-ring .9s cubic-bezier(.2,.7,.3,1) .34s both}
-.vlt-lock.is-open .vlt-ring+.vlt-ring{animation-delay:.52s;border-width:1px}
+.vlt-lock.is-open .vlt-ring+.vlt-ring{animation-delay:.52s;border-width:1px;border-color:var(--vg-mint)}
 .vlt-lock.is-open .vlt-sparks i{animation:vlt-spark .8s cubic-bezier(.15,.7,.3,1) calc(.36s + var(--t)) both}
 .vlt-gate.is-opening #vault-panel{opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
 .vlt-gate.is-opening{animation:vlt-gate-out .4s ease-in 1.12s both}
