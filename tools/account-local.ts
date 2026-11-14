@@ -1,7 +1,7 @@
 // Run deploy/account-worker.js locally with a fake Stripe, for trying the Pro pages end to end.
 //   deno run --allow-net --allow-env --allow-read --allow-write tools/account-local.ts [port] [allowed-origin]
 // Fake customers: pro@example.com (Pro, yearly) and pi@example.com (Group edition, 5 seats); fake paid checkout
-// sessions cs_test_localpro and cs_test_localteam; admin@example.com and owner@example.com are site admins (permanent Pro, issue VIP cards).
+// sessions cs_test_localpro and cs_test_localteam, and cs_test_localv1 (vault@example.com buys the locked section, one-off); admin@example.com and owner@example.com are site admins (permanent Pro, issue VIP cards).
 // Sign-in codes are returned to the page instead of mailed.
 // Hosted AI calls go to the real DeepSeek with DEEPSEEK_API_KEY from this process's environment,
 // or get a fixed answer when FAKE_AI is set (tools/e2e/run.mjs).
@@ -26,7 +26,13 @@ const session = (id: string, customer: string, email: string) => ({ id, status: 
 const sessions: Record<string, unknown> = {
   cs_test_localpro: session("cs_test_localpro", "cus_local_pro", "pro@example.com"),
   cs_test_localteam: session("cs_test_localteam", "cus_local_team", "pi@example.com"),
+  // a one-off ¥199 payment: buys the locked section (/vault/). The stand-in text is tools/premium-fixture.json.
+  cs_test_localv1: { id: "cs_test_localv1", status: "complete", payment_status: "paid", mode: "payment", created: now(), customer: null, amount_total: 19900, currency: "cny", payment_link: "plink_local_v1", customer_details: { email: "vault@example.com" } },
 };
+{
+  const fx = JSON.parse(await Deno.readTextFile(new URL("./premium-fixture.json", import.meta.url)));
+  for (const [part, langs] of Object.entries(fx.parts as Record<string, Record<string, unknown>>)) for (const [lang, body] of Object.entries(langs)) await DB.prepare("INSERT INTO premium (product, part, lang, body, updated) VALUES (?1, ?2, ?3, ?4, ?5)").bind(fx.product, part, lang, JSON.stringify(body), now()).run();
+}
 
 const realFetch = globalThis.fetch;
 let umaLast: any = {}; // the last job sent to the pretend owner computer
@@ -139,6 +145,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
     return json({ data: customers.filter((c) => c.email === want) });
   }
   if (p === "subscriptions") return json({ data: subs[url.searchParams.get("customer") || ""] || [] });
+  if (p === "checkout/sessions") { const want = (url.searchParams.get("customer_details[email]") || "").toLowerCase(); return json({ data: Object.values(sessions).filter((x: any) => x.customer_details?.email === want) }); }
   if (p.startsWith("checkout/sessions/")) return sessions[p.split("/")[2]] ? json(sessions[p.split("/")[2]]) : json({ error: { message: "No such session" } }, 404);
   return json({ error: { message: "not faked" } }, 404);
 }) as typeof fetch;
@@ -147,7 +154,7 @@ const env = {
   DB, STRIPE_KEY: "rk_test_local", DEV_SHOW_CODE: "1",
   DEEPSEEK_API_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("DEEPSEEK_API_KEY") ?? "",
   ALLOWED_ORIGINS: Deno.args[1] ?? "http://localhost:8830,http://127.0.0.1:8830",
-  MONTHLY_ASKS: "300",
+  MONTHLY_ASKS: "300", V1_AMOUNT: "19900", V1_CURRENCY: "cny",
   BRAVE_SEARCH_KEY: Deno.env.get("FAKE_AI") ? "fake" : Deno.env.get("BRAVE_SEARCH_KEY") ?? "",
   // UMA on the owner computer: UMA_ORIGIN / UMA_SERVER_SECRET from this process (e.g. tools/uma-server --fake), else the e2e stand-in.
   UMA_ORIGIN: Deno.env.get("UMA_ORIGIN") ?? (Deno.env.get("FAKE_AI") ? "https://uma.test" : ""),

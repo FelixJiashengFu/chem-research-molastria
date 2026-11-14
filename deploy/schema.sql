@@ -184,3 +184,30 @@ CREATE TABLE IF NOT EXISTS signups (
   exact INTEGER NOT NULL DEFAULT 1
 );
 CREATE INDEX IF NOT EXISTS signups_created ON signups (created);
+
+-- 单独买断的专区（2026-11-13）：一次性付款买到的栏目，和 Pro 订阅无关。现在只有 product = 'v1'（锁区 /vault/，¥199）。
+-- 付款确认页（POST /auth/checkout）和登录时向 Stripe 核对到的付款各写一行；一个邮箱一个专区只留一行。
+-- 退款后把这一行作废：UPDATE purchases SET revoked = 1 WHERE email = '买家邮箱' AND product = 'v1';
+-- 手动送一份（不经过 Stripe）：INSERT INTO purchases (email, product, session, amount, currency, created) VALUES ('邮箱', 'v1', 'gift', 0, '', unixepoch());
+CREATE TABLE IF NOT EXISTS purchases (
+  email TEXT NOT NULL,
+  product TEXT NOT NULL,
+  session TEXT NOT NULL DEFAULT '',
+  amount INTEGER NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT '',
+  created INTEGER NOT NULL,
+  revoked INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (email, product)
+);
+
+-- 买断专区的正文。仓库是公开的，所以正文不进仓库：源文件在仓库外，tools/premium-pack.mjs 把它打成一份 SQL，
+-- 用 wrangler d1 execute --remote --file 写进来（docs/RUNBOOK.md“买断专区”）。body 是 JSON 文本，GET /premium/<product> 原样发给买过的账号。
+-- D1 一条语句最多 100 KB，所以一章一行、中英各一行。
+CREATE TABLE IF NOT EXISTS premium (
+  product TEXT NOT NULL,
+  part TEXT NOT NULL,
+  lang TEXT NOT NULL,
+  body TEXT NOT NULL,
+  updated INTEGER NOT NULL,
+  PRIMARY KEY (product, part, lang)
+);

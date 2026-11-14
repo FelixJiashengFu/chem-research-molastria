@@ -5557,6 +5557,77 @@ check('home: the chat card and the pill on the first screen show who is online a
   }
 });
 
+check('vault: a stranger sees only a lock; the one-off payment opens the reader, which fetches chapters from the account service', async () => {
+  // the stand-in text is tools/premium-fixture.json (the real text is not in the repository); cs_test_localv1 is a paid ¥199 one-off session
+  const p = await open();
+  const asked = [];
+  p.on('request', (r) => { if (r.url().includes('/premium/')) asked.push(new URL(r.url()).search); });
+  await go(p, '/vault/index.html');
+  await p.waitForSelector('#vault-buy');
+  assert.equal(await p.isVisible('#vault'), false, 'nothing behind the lock');
+  assert.match(await text(p, '.vlt-price'), /¥199/);
+  assert.doesNotMatch(await p.innerText('main'), /示例专区|第一章/, 'no title and no table of contents before paying');
+  assert.equal(await p.isDisabled('#vault-buy'), true, 'no payment link configured yet: the button says so');
+  assert.deepEqual(asked, [], 'signed out: the service is not even asked');
+  assert.equal(await p.getAttribute('.cr-tools #cr-lock', 'aria-current'), 'page');
+  assert.equal((await text(p, '.cr-tools #cr-lock')).trim(), '', 'the lock in the header carries no name');
+  // signed in but not a buyer: still the lock, with "restore"
+  await p.click('#vault-signin');
+  await p.fill('#vault-email', 'vaultfree@example.com');
+  const [started] = await Promise.all([p.waitForResponse((r) => r.url().endsWith('/auth/start')), p.click('#vault-send')]);
+  const code = (await started.json()).devCode;
+  await p.waitForSelector('#vault-code:not([hidden])');
+  await p.fill('#vault-code', String(code));
+  await p.click('#vault-send');
+  await p.waitForSelector('#vault-restore');
+  assert.match(await text(p, '.vlt-who'), /vaultfree@example\.com/);
+  assert.equal(await p.isVisible('#vault'), false);
+  await p.click('#vault-restore');
+  await p.waitForSelector('#vault-msg.is-err');
+  await finish(p);
+
+  // the buyer: the confirmation page signs them in, the lock opens
+  const b = await open();
+  await go(b, '/pro/success.html?session_id=cs_test_localv1&plan=v1');
+  await b.waitForSelector('#activate.ok');
+  assert.match(await text(b, '#activate'), /已经解锁/);
+  await b.click('#activate a');
+  await b.waitForFunction(() => window.MOLASTRIA_VAULT_READY);
+  await b.waitForSelector('#chm-panel .chm-topic');
+  assert.equal(await b.isVisible('#vault-gate'), false);
+  assert.equal(await text(b, '#chm-h1'), '示例专区');
+  assert.equal(await b.title(), '示例专区 · MolAstria');
+  assert.equal(await b.locator('.chm-ch').count(), 2);
+  assert.match(await text(b, '#chm-topic-h'), /第一章/);
+  assert.equal(await b.locator('#chm-panel .chm-demo canvas').count(), 1, 'the demo code came with the payload and drew');
+  assert.equal(await b.locator('#chm-panel math').count(), 1);
+  const before = await text(b, '#chm-panel .fs-readout dd');
+  await b.locator('#chm-panel input[type=range]').fill('3');
+  await b.waitForFunction((v) => document.querySelector('#chm-panel .fs-readout dd').textContent !== v, before);
+  await b.click('#chm-panel [data-play]');
+  assert.equal(await b.getAttribute('#chm-panel [data-play]', 'aria-pressed'), 'true');
+  await b.click('#chm-next');
+  await b.waitForFunction(() => /第二章/.test(document.querySelector('#chm-topic-h')?.textContent || ''));
+  assert.equal(new URL(b.url()).hash, '#c-two');
+  await b.click('#chm-quiz-list input[value="0"]');
+  assert.match(await text(b, '#chm-score'), /1 \/ 1/);
+  await b.click('#chm-panel a[data-open=one]');
+  await b.waitForFunction(() => /第一章/.test(document.querySelector('#chm-topic-h')?.textContent || ''));
+  await b.click('#chm-panel a[data-ref=sample1900]');
+  await b.waitForSelector('#ref-sample1900.flash');
+  assert.ok(await b.evaluate(() => !Object.keys(localStorage).some((k) => /示例专区|占位/.test(localStorage.getItem(k)))), 'the text is not written to this device');
+  // English, a phone, dark: the same account, the English rows
+  const e = await open({ viewport: { width: 360, height: 760 }, colorScheme: 'dark', storageState: await b.context().storageState() });
+  await go(e, '/vault/index.html?lang=en#c-two');
+  await e.waitForFunction(() => window.MOLASTRIA_VAULT_READY);
+  await e.waitForFunction(() => /Chapter two/.test(document.querySelector('#chm-topic-h')?.textContent || ''));
+  assert.equal(await text(e, '#chm-h1'), 'Sample Section');
+  assert.doesNotMatch(await e.innerText('#vault'), HAN, 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(e);
+  await finish(b);
+});
+
 // ── run ─────────────────────────────────────────────────────────────────
 let failed = 0;
 try {

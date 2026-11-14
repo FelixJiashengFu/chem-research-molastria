@@ -2,7 +2,7 @@
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
    Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
-     redeemCard(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild(), growth(), netMisses(), dropNetMiss(), clearNetMisses()} */
+     redeemCard(), premium(), restorePurchases(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild(), growth(), netMisses(), dropNetMiss(), clearNetMisses()} */
 (() => {
   'use strict';
   if (window.MolAstriaAccount) return;
@@ -57,6 +57,9 @@
     addMember: (email) => call('/team/members', { method: 'POST', body: { email } }).then(updated),
     removeMember: (email) => call('/team/members', { method: 'DELETE', body: { email } }).then(updated),
     redeemCard: (code) => call('/cards/redeem', { method: 'POST', body: { code } }).then(updated),
+    // 买断的专区（锁区）：取一块正文；没买时报错的 status 是 402。restorePurchases 让账号服务向 Stripe 重新核对这个邮箱的付款。
+    premium: (product, part, lang) => call(`/premium/${encodeURIComponent(product)}?part=${encodeURIComponent(part)}&lang=${lang === 'en' ? 'en' : 'zh'}`),
+    restorePurchases: () => call('/premium/restore', { method: 'POST' }).then((r) => { if (r.account) updated(r.account); return r; }),
     keys: () => call('/keys'),
     createKey: (name) => call('/keys', { method: 'POST', body: { name } }),
     revokeKey: (id) => call('/keys', { method: 'DELETE', body: { id } }),

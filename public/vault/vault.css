@@ -1,0 +1,55 @@
+/* 锁区：没买时整页只有一把锁；买了以后的阅读器沿用 ../fundamental-science/fundamental.css 和 ../chemistry/chem.css，这里只加锁页和阅读器多出来的几样。颜色只用 shared-nav.css 的变量。 */
+.vlt-gate{min-height:calc(100vh - 210px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:48px 16px 56px;text-align:center}
+.vlt-gate[hidden]{display:none}
+.vlt-lock svg{display:block;width:clamp(84px,16vw,120px);height:auto;filter:drop-shadow(0 10px 24px rgb(0 0 0 / .22))}
+.vlt-shackle{stroke:var(--gold);transform-origin:86px 70px;transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
+.vlt-body{fill:var(--gold)}
+.vlt-hole{fill:var(--paper)}
+.vlt-lock.is-open .vlt-shackle{transform:translateY(-14px) rotateY(180deg)}
+.vlt-lock.is-busy svg{animation:vlt-breathe 1.6s ease-in-out infinite}
+.vlt-lock.is-no svg{animation:vlt-shake .45s}
+@keyframes vlt-breathe{50%{opacity:.55}}
+@keyframes vlt-shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.vlt-price{margin:0;font:600 clamp(34px,6vw,48px)/1 var(--font-num);color:var(--ink);letter-spacing:.5px}
+.vlt-price small{display:block;margin-top:8px;font:500 13px/1.5 var(--font-sans);color:var(--muted);letter-spacing:0}
+.vlt-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:18px 0 0}
+.vlt-acts .button{min-height:44px;min-width:132px;justify-content:center;font-size:15px}
+.vlt-acts .button[disabled]{opacity:.55;cursor:not-allowed}
+.vlt-fine{margin:16px auto 0;max-width:46ch;font-size:12.5px;line-height:1.8;color:var(--muted)}
+.vlt-fine a{color:var(--accent-text)}
+.vlt-who{margin:14px 0 0;font-size:13px;color:var(--ink-2);overflow-wrap:anywhere}
+.vlt-form{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px auto 0;max-width:420px}
+.vlt-form input{flex:1 1 200px;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+.vlt-form .button{min-height:44px}
+.vlt-msg{margin:12px 0 0;min-height:1.6em;font-size:13px;color:var(--ink-2)}
+.vlt-msg.is-err{color:var(--danger)}
+@media (prefers-reduced-motion:reduce){.vlt-shackle{transition:none}.vlt-lock.is-busy svg,.vlt-lock.is-no svg{animation:none}}
+
+/* 阅读器多出来的部分 */
+#vault{animation:vlt-in .5s ease both}
+@keyframes vlt-in{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){#vault{animation:none}}
+.vlt-group{margin:18px 0 8px;font-size:14px;font-weight:600;color:var(--fs-gold-text);letter-spacing:.4px}
+.vlt-group:first-child{margin-top:0}
+.chm-prose h4{margin:22px 0 8px;font-size:16.5px;line-height:1.5;color:var(--ink)}
+.chm-prose ul,.chm-prose ol{margin:0 0 12px;padding-left:22px;font-size:15px;line-height:1.9;color:var(--ink)}
+.chm-prose blockquote{margin:0 0 14px;padding:10px 16px;border-left:3px solid var(--gold);background:var(--gold-soft);border-radius:0 6px 6px 0;font-size:14.5px;line-height:1.9;color:var(--ink)}
+.chm-prose blockquote footer{margin-top:4px;font-size:12.5px;color:var(--muted)}
+.chm-prose .vlt-note{margin:0 0 14px;padding:10px 16px;border:1px solid var(--line);border-left:3px solid var(--info);border-radius:6px;background:var(--surface);font-size:14px;line-height:1.85;color:var(--ink-2)}
+.chm-prose .vlt-note[data-k=warn]{border-left-color:var(--warn)}
+.chm-prose .vlt-note[data-k=ok]{border-left-color:var(--ok)}
+.chm-prose .vlt-note b:first-child{color:var(--ink)}
+.chm-prose figure.vlt-table{margin:0 0 16px}
+.chm-prose figure.vlt-table figcaption{margin-top:6px;font-size:12.5px;color:var(--muted)}
+.chm-prose .chm-table td,.chm-prose .chm-table th{vertical-align:top;line-height:1.7}
+.chm-prose .chm-table{min-width:520px}
+.chm-prose math,.chm-points math,.chm-example math,.chm-timeline math,.chm-q math{font-size:1.06em}
+.chm-points h5 .fs-st{margin-left:6px;vertical-align:1px}
+.fs-st[data-s=proved],.fs-st[data-s=tested]{color:color-mix(in srgb,var(--ok) 76%,var(--ink));border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+.fs-st[data-s=toy],.fs-st[data-s=history]{color:color-mix(in srgb,var(--info) 76%,var(--ink));border-color:color-mix(in srgb,var(--info) 45%,transparent);background:color-mix(in srgb,var(--info) 8%,transparent)}
+.fs-st[data-s=claim],.fs-st[data-s=open]{color:color-mix(in srgb,var(--warn) 76%,var(--ink));border-color:color-mix(in srgb,var(--warn) 50%,transparent);background:color-mix(in srgb,var(--warn) 9%,transparent)}
+.fs-st[data-s=disputed],.fs-st[data-s=spec]{color:color-mix(in srgb,var(--danger) 72%,var(--ink));border-color:color-mix(in srgb,var(--danger) 45%,transparent);background:color-mix(in srgb,var(--danger) 7%,transparent)}
+.vlt-loading{padding:40px 0;text-align:center;color:var(--muted);font-size:14px}
+.vlt-owner{margin:0 0 4px;font:500 12.5px/1.5 var(--font-num);color:var(--muted)}
+canvas.vlt-pix{image-rendering:pixelated}
+/* 顶栏的锁在手机上收进菜单里，免得第一行放不下 */
