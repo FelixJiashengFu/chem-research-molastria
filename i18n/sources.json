@@ -8723,9 +8723,6 @@
  "搜索栏目（Ctrl / ⌘ + K）": [
   "shared-nav.js"
  ],
- "锁区": [
-  "shared-nav.js"
- ],
  "切换到中文": [
   "shared-nav.js"
  ],
@@ -8792,6 +8789,9 @@
   "shared-nav.js"
  ],
  "从顶栏取下": [
+  "shared-nav.js"
+ ],
+ "锁区": [
   "shared-nav.js"
  ],
  "阿斯特赖亚科技（Morning Glory）旗下项目": [
