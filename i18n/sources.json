@@ -8463,6 +8463,15 @@
  "university 大学 map": [
   "shared-nav.js"
  ],
+ "多伦多大学 · AI 化学": [
+  "shared-nav.js"
+ ],
+ "加速联盟、八个自驱实验室、Matter Lab、清洁能源实验室、A3MD 等组织，附合作企业、论文和参与方式": [
+  "shared-nav.js"
+ ],
+ "toronto uoft u of t 多伦多 多大 university acceleration consortium 加速联盟 self-driving lab sdl 自驱实验室 自动化实验 matter lab aspuru-guzik clean energy lab voznyy a3md vector lilienfeld scinet trillium": [
+  "shared-nav.js"
+ ],
  "28 个预印本来源的新论文": [
   "shared-nav.js"
  ],
@@ -8638,6 +8647,15 @@
  "全部 11 家": [
   "shared-nav.js"
  ],
+ "AI 化学企业图谱": [
+  "shared-nav.js"
+ ],
+ "八十多家做 AI 化学、材料发现、模拟软件、量子化学和自驱实验室的公司": [
+  "shared-nav.js"
+ ],
+ "company companies industry 企业 公司 产业 startup 初创 meta merck emd lg cura schrodinger 薛定谔 orca gaussian xanadu periodic lila cuspai orbital 晶泰 深势 battery 电池 semiconductor 半导体": [
+  "shared-nav.js"
+ ],
  "27 个科学语言模型和价格对比": [
   "shared-nav.js"
  ],
@@ -8703,9 +8721,6 @@
   "shared-nav.js"
  ],
  "搜索栏目（Ctrl / ⌘ + K）": [
-  "shared-nav.js"
- ],
- "锁区": [
   "shared-nav.js"
  ],
  "切换到中文": [
@@ -8774,6 +8789,9 @@
   "shared-nav.js"
  ],
  "从顶栏取下": [
+  "shared-nav.js"
+ ],
+ "锁区": [
   "shared-nav.js"
  ],
  "阿斯特赖亚科技（Morning Glory）旗下项目": [
@@ -17779,6 +17797,24 @@
   "tools/build-seo.ts"
  ],
  "最新的化学和材料研究图解：做了什么、怎么做到的、还差什么，配交互演示；每条链接原始论文，DOI 逐条核对。": [
+  "tools/build-seo.ts"
+ ],
+ "多伦多大学 · AI 化学与材料 · U of T AI for Chemistry & Materials": [
+  "tools/build-seo.ts"
+ ],
+ "多伦多大学里做 AI 化学、材料发现、自驱实验室和计算化学的组织：加速联盟、Matter Lab、清洁能源实验室、A3MD、von Lilienfeld 组、Vector 研究所、SciNet Trillium 等，每条事实带出处。": [
+  "tools/build-seo.ts"
+ ],
+ "多伦多大学 · AI 化学与材料": [
+  "tools/build-seo.ts"
+ ],
+ "AI 化学与材料企业图谱 · AI Chemistry & Materials Companies": [
+  "tools/build-seo.ts"
+ ],
+ "做 AI 化学、材料发现、计算化学软件、量子化学计算和实验自动化的八十多家公司，各一句话，标出和多伦多大学有据可查的关系。": [
+  "tools/build-seo.ts"
+ ],
+ "AI 化学与材料企业图谱": [
   "tools/build-seo.ts"
  ],
  "谱图馆 · Spectra Hall": [

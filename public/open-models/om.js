@@ -153,6 +153,7 @@
       <p class="mx-empty" hidden>${C(T('没有匹配的条目，换个关键词试试。', 'Nothing matches; try another word.'))}</p>
     </section>
     <section class="om-also" aria-labelledby="om-also-h"><h2 id="om-also-h">${C(T('相关栏目', 'Related sections'))}</h2><ul>
+      <li><a href="../industry/index.html">${C(T('AI 化学企业图谱：八十多家做 AI 化学、材料、模拟软件和自驱实验室的公司', 'AI Chemistry Companies: eighty-plus companies in AI chemistry, materials, simulation and self-driving labs'))}</a></li>
       <li><a href="../scimodels/index.html">${C(T('科学大模型：用科学文献训练的语言模型，附价格对比', 'Science LLMs: language models trained on science, with prices'))}</a></li>
       <li><a href="../models/index.html">${C(T('模型接口：在线跑 UMA、MACE、ANI-2x 等 15 个原子模型', 'Model API: run 15 atomistic models online, including UMA, MACE and ANI-2x'))}</a></li>
       <li><a href="../train/index.html">${C(T('训练 Agent：用开放模型当老师训练自己的小模型', 'Train an Agent: use open models as teachers for your own small model'))}</a></li></ul></section>

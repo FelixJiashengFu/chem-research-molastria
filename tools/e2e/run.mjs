@@ -3542,6 +3542,51 @@ check('NMR: nav entry, eleven parts, eight method families, timeline, five worki
   await finish(e);
 });
 
+check('U of T zone and company map: nav entries, graph, filters, cross-links both ways, English', async () => {
+  const p = await open();
+  await go(p, '/toronto/index.html');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=toronto]', 'aria-current'), 'page', 'the U of T nav entry is current');
+  const orgs = await p.evaluate(() => window.MOLASTRIA_UOFT.orgs.length);
+  assert.equal(await p.locator('.to-org').count(), orgs);
+  assert.equal(await p.locator('.to-graph .to-node').count(), orgs, 'every organisation is on the graph');
+  assert.equal(await p.locator('.to-sdl').count(), 8);
+  assert.match(await text(p, '#o-ac'), /C\$2 亿/);
+  await p.click('#to-filter button[data-k=lab]');
+  assert.equal(await p.isVisible('#o-ac'), false);
+  assert.equal(await p.isVisible('#o-cel'), true);
+  await p.click('#to-filter button[data-k=""]');
+  // A company chip on the Clean Energy Lab card opens that company in the map, and its tie links back.
+  await p.click('#o-cel .to-chip[href$="#co-meta"]');
+  await p.waitForURL(/industry\/index\.html#co-meta$/);
+  await p.waitForSelector('#co-meta.is-target');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=industry]', 'aria-current'), 'page', 'the company map nav entry is current');
+  const total = await p.evaluate(() => window.MOLASTRIA_IND.companies.length);
+  assert.ok(total >= 80);
+  assert.equal(await p.locator('.ind-co').count(), total);
+  await p.click('#ind-scope button[data-v=uoft]');
+  const tied = await p.evaluate(() => window.MOLASTRIA_IND.companies.filter((c) => c.uoft?.length).length);
+  assert.equal(await p.locator('.ind-co:not([hidden])').count(), tied);
+  await p.click('#ind-scope button[data-v=""]');
+  await p.fill('#ind-q', 'ORCA');
+  assert.equal(await p.isVisible('#co-faccts'), true);
+  assert.equal(await p.isVisible('#co-meta'), false);
+  await p.fill('#ind-q', '');
+  await p.click('#co-meta .ind-to a[href$="#o-cel"]');
+  await p.waitForURL(/toronto\/index\.html#o-cel$/);
+  await p.waitForSelector('#o-cel.is-target');
+  assert.equal(await p.locator('main img').count(), 0, 'no logos on the page');
+  await finish(p);
+  for (const path of ['/toronto/index.html?lang=en', '/industry/index.html?lang=en']) {
+    const e = await open();
+    await go(e, path);
+    await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await e.waitForTimeout(600);
+    const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style') && n.parentElement.checkVisibility()) out.push(n.nodeValue.trim()); return out; });
+    assert.deepEqual(han.filter((t) => !/字节跳动|百度螺旋桨|深势科技|晶泰科技/.test(t)), [], `${path}: no Chinese left except company names`);
+    await finish(e);
+  }
+});
+
 check('News explainers: nav entry, item list and filter, two explainers with key numbers, three working demos, English', async () => {
   const p = await open();
   await go(p, '/news/index.html');
@@ -5248,7 +5293,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
