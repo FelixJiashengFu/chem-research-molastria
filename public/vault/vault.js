@@ -45,8 +45,9 @@
   }
   const buyBtn = () => `<button type="button" class="button primary" id="vault-buy"${plan.checkoutUrl ? '' : ' disabled'}>${plan.checkoutUrl ? L('解锁', 'Unlock') : L('即将开放', 'Opening soon')}</button>`;
 
+  const OPEN_MS = 1500;   // 开锁动画的总长，和 vault.css 里 .is-open 那一组的时间线对应
   function lock(state, note) {
-    gate.hidden = false; root.hidden = true; root.innerHTML = '';
+    gate.hidden = false; gate.classList.remove('is-opening'); root.hidden = true; root.innerHTML = '';
     lockEl.classList.toggle('is-busy', state === 'busy');
     lockEl.classList.remove('is-open');
     const who = acct?.token?.() ? acct.cached()?.email : '';
@@ -103,8 +104,8 @@
       if (err.status === 402) lock('in'); else if (err.status === 401) lock('out', L('登录已经过期，请重新登录。', 'Your sign-in has expired. Please sign in again.')); else lock('error', err.message);
       return;
     }
-    lockEl.classList.remove('is-busy'); lockEl.classList.add('is-open'); panel.innerHTML = '';
-    setTimeout(() => { gate.hidden = true; root.hidden = false; try { reader(D, R.refs || [], C.js || ''); } catch (err) { console.error('[vault]', err); lock('error'); } }, reduced() ? 0 : 750);
+    lockEl.classList.remove('is-busy', 'is-no'); lockEl.classList.add('is-open'); gate.classList.add('is-opening');
+    setTimeout(() => { gate.hidden = true; gate.classList.remove('is-opening'); panel.innerHTML = ''; root.hidden = false; try { reader(D, R.refs || [], C.js || ''); } catch (err) { console.error('[vault]', err); lock('error'); } }, reduced() ? 0 : OPEN_MS);
   }
 
   // ── 阅读器 ──────────────────────────────────────────────────────────────

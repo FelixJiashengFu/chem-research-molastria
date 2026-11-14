@@ -26,7 +26,26 @@
 <main>
   <section translate="no" class="vlt-gate" id="vault-gate" aria-live="polite">
     <div class="vlt-lock" id="vault-lock" aria-hidden="true">
-      <svg viewBox="0 0 120 150" width="120" height="150"><path class="vlt-shackle" d="M34 70V44a26 26 0 0 1 52 0v26" fill="none" stroke-width="10" stroke-linecap="round"/><rect class="vlt-body" x="14" y="66" width="92" height="74" rx="14"/><circle class="vlt-hole" cx="60" cy="97" r="9"/><path class="vlt-hole" d="M55 100h10l3 22H52Z"/></svg>
+      <span class="vlt-orbit"></span><span class="vlt-ring"></span><span class="vlt-ring"></span><span class="vlt-sparks"><i style="--a:0deg;--d:62px;--t:0ms"></i><i style="--a:30deg;--d:84px;--t:60ms"></i><i style="--a:60deg;--d:70px;--t:30ms"></i><i style="--a:90deg;--d:92px;--t:90ms"></i><i style="--a:120deg;--d:62px;--t:0ms"></i><i style="--a:150deg;--d:84px;--t:60ms"></i><i style="--a:180deg;--d:70px;--t:30ms"></i><i style="--a:210deg;--d:92px;--t:90ms"></i><i style="--a:240deg;--d:62px;--t:0ms"></i><i style="--a:270deg;--d:84px;--t:60ms"></i><i style="--a:300deg;--d:70px;--t:30ms"></i><i style="--a:330deg;--d:92px;--t:90ms"></i></span>
+      <svg viewBox="0 0 120 150" width="120" height="150">
+        <defs>
+          <linearGradient id="vg-body" x1="0" y1="0" x2="0" y2="1"><stop class="vg-hi" offset="0"/><stop class="vg-mid" offset=".45"/><stop class="vg-lo" offset="1"/></linearGradient>
+          <linearGradient id="vg-sh" gradientUnits="userSpaceOnUse" x1="29" y1="0" x2="91" y2="0"><stop class="vg-lo" offset="0"/><stop class="vg-hi" offset=".3"/><stop class="vg-mid" offset=".62"/><stop class="vg-lo" offset="1"/></linearGradient>
+          <linearGradient id="vg-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="white" stop-opacity="0"/><stop offset=".5" stop-color="white" stop-opacity=".55"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+          <radialGradient id="vg-glow"><stop class="vg-hi" offset="0" stop-opacity=".95"/><stop class="vg-mint" offset=".5" stop-opacity=".35"/><stop class="vg-mint" offset="1" stop-opacity="0"/></radialGradient>
+          <clipPath id="vg-clip"><rect x="14" y="66" width="92" height="74" rx="14"/></clipPath>
+        </defs>
+        <ellipse class="vlt-shadow" cx="60" cy="146" rx="38" ry="4"/>
+        <path class="vlt-shackle" d="M34 70V44a26 26 0 0 1 52 0v42" fill="none" stroke="url(#vg-sh)" stroke-width="10" stroke-linecap="round"/>
+        <g class="vlt-case">
+          <rect class="vlt-body" x="14" y="66" width="92" height="74" rx="14" fill="url(#vg-body)"/>
+          <path class="vlt-bevel" d="M27 69.5h66" fill="none" stroke-width="1.6" stroke-linecap="round"/>
+          <g clip-path="url(#vg-clip)"><rect class="vlt-sheen" x="-30" y="56" width="26" height="96" fill="url(#vg-sheen)" transform="skewX(-18)"/></g>
+          <circle class="vlt-plate" cx="60" cy="103" r="22" fill="none" stroke-width="1.4"/>
+          <g class="vlt-key"><circle class="vlt-hole" cx="60" cy="98" r="8"/><path class="vlt-hole" d="M56 101h8l2.6 17H53.4Z"/></g>
+        </g>
+        <circle class="vlt-glow" cx="60" cy="103" r="46" fill="url(#vg-glow)"/>
+      </svg>
     </div>
     <h1 class="chm-sr" id="vault-h1">锁区</h1>
     <div id="vault-panel"></div>
