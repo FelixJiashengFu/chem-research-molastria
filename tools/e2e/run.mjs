@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/macro/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -3477,6 +3477,55 @@ check('Frontier AI Maths: nav entry, 44 topics and 12 appendices, working demos,
   await finish(e);
 });
 
+check('Heat, Statistics and Flow: nav entry, three chapters, five live demos, quiz, references, English', async () => {
+  const p = await open();
+  await go(p, '/macro/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_MACRO_READY);
+  const settle = () => p.waitForTimeout(150);
+  const read = () => text(p, '#chm-panel .fs-readout');
+  assert.equal(await p.getAttribute('.cr-header a[data-id=macro]', 'aria-current'), 'page', 'the nav entry is current');
+  assert.equal(await p.locator('.chm-ch').count(), 3);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 5);
+  // Chapter 1 is open: MathML, the Kac ring painted; reversing it returns exactly to all white.
+  assert.ok(await p.locator('#chm-panel math').count() >= 10, 'MathML formulas render');
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas is painted');
+  const kac = '#chm-panel [data-demo=kac]';
+  await p.click(`${kac} [data-play]`); await p.waitForTimeout(1200); await p.click(`${kac} [data-play]`);
+  assert.doesNotMatch(await text(p, `${kac} .fs-readout`), /时刻 t\s*0\b/);
+  await p.click(`${kac} [data-act="0"]`); await p.click(`${kac} [data-play]`);
+  await p.waitForFunction((sel) => /时刻 t\s*0\b/.test(document.querySelector(sel).innerText) && /向前/.test(document.querySelector(sel).innerText), `${kac} .fs-readout`, { timeout: 15000 });
+  assert.match(await text(p, `${kac} .fs-readout`), /Δ\s*\+1\.000/, 'back to all white');
+  // Chapter 2: the two-level preset gives the worked example’s numbers.
+  await p.click('#chm-next'); await settle();
+  assert.equal(await p.evaluate(() => location.hash), '#c-statmech');
+  await p.click('#chm-panel [data-demo=levels] [data-preset="0"]'); await settle();
+  assert.match(await text(p, '#chm-panel [data-demo=levels] .fs-readout'), /0\.269[\s\S]*0\.582[\s\S]*0\.197/);
+  assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-macro')).seen)).includes('statmech'));
+  // Chapter 3: the lattice gas conserves particles while it runs.
+  await p.selectOption('#chm-select', 'fluid'); await settle();
+  const lg = '#chm-panel [data-demo=lgas]';
+  await p.click(`${lg} [data-play]`); await p.waitForTimeout(800); await p.click(`${lg} [data-play]`);
+  assert.match(await text(p, `${lg} .fs-readout`), /没变/);
+  assert.equal(await p.locator('#chm-panel [data-demo=lbm] canvas').count(), 2);
+  // Quiz and references.
+  await p.check('#chm-quiz-list .chm-q[data-q="1"] input[value="1"]');
+  assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="1"] .chm-why'), /答对了/);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 56);
+  await p.click('#chm-panel a[data-ref=fhp1986]');
+  assert.match(await text(p, '#ref-fhp1986'), /Frisch[\s\S]*1986/);
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/macro/index.html?lang=en#c-fluid');
+  await e.waitForFunction(() => window.MOLASTRIA_MACRO_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#chm-h1'), /Heat, Statistics and Flow/);
+  assert.match(await text(e, '#chm-panel'), /Navier–Stokes[\s\S]*lattice Boltzmann/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('NMR: nav entry, eleven parts, eight method families, timeline, five working demos, references, English', async () => {
   const p = await open();
   await go(p, '/nmr/index.html');
@@ -3776,7 +3825,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5293,7 +5342,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
