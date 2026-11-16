@@ -1,0 +1,47 @@
+const r = String.raw;
+export default {
+  id: 'tensor', level: 'proved', demos: ['tp'],
+  title: ['张量积和 Clebsch–Gordan 系数', 'Tensor products and Clebsch–Gordan coefficients'],
+  summary: ['两个不可约表示相乘，结果能拆回若干个不可约表示：l₁ ⊗ l₂ = |l₁ − l₂| ⊕ … ⊕ (l₁ + l₂)，系数是 Clebsch–Gordan 系数。两个向量的张量积给出点积（l = 0）、叉积（l = 1）和一个对称无迹张量（l = 2）。NequIP 的卷积就是“邻居的特征 ⊗ 邻居方向的球谐函数”，每条允许的路径带一个由距离决定的权重。', 'The product of two irreducible representations splits back into irreducible representations: l₁ ⊗ l₂ = |l₁ − l₂| ⊕ … ⊕ (l₁ + l₂), with Clebsch–Gordan coefficients. The tensor product of two vectors gives the dot product (l = 0), the cross product (l = 1) and a symmetric traceless tensor (l = 2). NequIP’s convolution is “neighbour feature ⊗ spherical harmonics of the neighbour direction”, with a distance-dependent weight on every allowed path.'],
+  body: [
+    [r`有了标量、向量和更高阶的特征，网络还需要一种把它们**组合**起来、并且保持等变的乘法。普通的逐元素乘法不行：把一个向量的 $x$ 分量和另一个向量的 $x$ 分量相乘，转一下坐标轴结果就变了。正确的乘法是张量积：两个特征所有分量两两相乘，再用固定的系数重新组合成新的不可约表示。`,
+     r`With scalar, vector and higher-order features in hand, the network also needs a way to **combine** them, a multiplication that keeps equivariance. Element-wise products will not do: multiply the $x$ component of one vector by the $x$ component of another and the result changes when the axes are turned. The correct product is the tensor product: multiply all components of the two features pairwise, then recombine them with fixed coefficients into new irreducible representations.`],
+    { math: r`(\mathbf u \otimes \mathbf v)^{(l_o)}_{m_o} = \sum_{m_1, m_2} C^{(l_o, m_o)}_{(l_1, m_1)(l_2, m_2)}\, u^{(l_1)}_{m_1}\, v^{(l_2)}_{m_2}`, cap: ['C 是 Clebsch–Gordan 系数，只由三个 l 和三个 m 决定，和网络的参数无关。', 'C are the Clebsch–Gordan coefficients, fixed by the three l and three m and independent of the network’s parameters.'] },
+    ['化学里也早就见过它：两个 p 电子耦合，总角动量 L 可以是 0、1、2（S、P、D 项）；这正是 1 ⊗ 1 = 0 ⊕ 1 ⊕ 2。量子力学里叫角动量耦合，用的也是同一套 Clebsch–Gordan 系数。',
+     'Chemistry has met this long ago: two p electrons couple to total angular momentum L = 0, 1 or 2 (S, P and D terms); that is exactly 1 ⊗ 1 = 0 ⊕ 1 ⊕ 2. Quantum mechanics calls it angular-momentum coupling, with the same Clebsch–Gordan coefficients.'],
+    { h: ['两条选择规则', 'Two selection rules'] },
+    [r`输出的阶 $l_o$ 必须满足三角不等式 $|l_1 - l_2| \le l_o \le l_1 + l_2$；宇称相乘，$p_o = p_1 p_2$。所以两个普通向量（$1o \otimes 1o$）只能给出 $0e$、$1e$、$2e$：点积是真标量、叉积是**赝**向量。这两条规则决定了网络里有哪些“路径”，也就决定了每一层有多少组可学的权重。演示的上半部分会把它们全部列出来。`,
+     r`The output order $l_o$ must satisfy the triangle inequality $|l_1 - l_2| \le l_o \le l_1 + l_2$, and parities multiply, $p_o = p_1 p_2$. So two ordinary vectors ($1o \otimes 1o$) can only give $0e$, $1e$ and $2e$: the dot product is a true scalar and the cross product a **pseudo**vector. These two rules fix which “paths” exist in the network, and therefore how many groups of learnable weights each layer has. The upper half of the demo lists them all.`],
+    { demo: 'tp' },
+    { h: ['NequIP 的卷积', 'NequIP’s convolution'] },
+    [r`张量场网络 [@thomas2018] 和 NequIP [@batzner2022] 的卷积把三样东西乘在一起：邻居 $j$ 的特征 $V_j$、从 $i$ 指向 $j$ 的方向的球谐函数 $Y(\hat{\mathbf r}_{ij})$、以及一个只依赖距离 $r_{ij}$ 的径向函数 $R(r_{ij})$：`,
+     r`The convolution of tensor field networks [@thomas2018] and NequIP [@batzner2022] multiplies three things together: the feature $V_j$ of neighbour $j$, the spherical harmonics $Y(\hat{\mathbf r}_{ij})$ of the direction from $i$ to $j$, and a radial function $R(r_{ij})$ that depends only on the distance:`],
+    { math: r`\mathcal L^{(l_o)}_{a c m_o}\big(\vec r_a, V^{(l_i)}_{b c m_i}\big) = \sum_{b \in \mathcal S} \sum_{m_f, m_i} C^{(l_o, m_o)}_{(l_f, m_f)(l_i, m_i)}\, R^{(l_f, l_i, l_o)}_{c}(r_{ab})\, Y^{(l_f)}_{m_f}(\hat r_{ab})\, V^{(l_i)}_{b c m_i}`, cap: ['论文的式 (4)：滤波器 l_f、输入 l_i、输出 l_o 每一组合法的三元组是一条路径，各有自己的径向函数。求和只跑过截断半径以内的邻居。', 'Equation (4) of the paper: every allowed triple of filter l_f, input l_i and output l_o is a path with its own radial function. The sum runs only over neighbours inside the cutoff.'] },
+    [r`径向函数只看标量 $r_{ab}$，球谐函数和输入特征都按各自的 D 矩阵转，CG 系数把它们拼成按 $D^{l_o}$ 转的输出：整个卷积因此严格等变，而可学的部分（径向函数）完全不碰方向。这是等变网络设计的核心想法：**方向信息全部交给固定的、精确的数学对象，网络只学跟方向无关的标量**。`,
+     r`The radial function sees only the scalar $r_{ab}$, while the spherical harmonics and the input feature rotate with their own D matrices, and the CG coefficients assemble them into an output that rotates with $D^{l_o}$: the convolution is therefore strictly equivariant, and its learnable part (the radial function) never touches direction. This is the core idea of equivariant network design: **all directional information goes to fixed, exact mathematical objects, and the network learns only direction-free scalars**.`],
+    { note: [r`**代价。** 路径的数目随 $l_{\max}$ 很快增长，每条路径又要对 $(2l+1)$ 个分量做求和，所以张量积是这类网络里最贵的操作。后来的工作从多个方向降低代价：MACE 把多体相互作用放进一层里的对称积、只用两层 [@batatia2022]；Allegro 改成严格局域、可以分块并行 [@musaelian2023]；NequIP 本身的新版本也改写了张量积的内核（第八章）。`, r`**Cost.** The number of paths grows quickly with $l_{\max}$, and each path sums over $(2l+1)$ components, so the tensor product is the most expensive operation in such networks. Later work cuts the cost in several ways: MACE puts many-body interactions into a symmetric product within one layer and uses only two layers [@batatia2022]; Allegro becomes strictly local so it can be split up and parallelised [@musaelian2023]; and newer versions of NequIP itself rewrite the tensor-product kernels (chapter 8).`], kind: 'info' },
+  ],
+  points: [
+    [['l₁ ⊗ l₂ = |l₁ − l₂| ⊕ … ⊕ (l₁ + l₂)', 'l₁ ⊗ l₂ = |l₁ − l₂| ⊕ … ⊕ (l₁ + l₂)'], ['维数对得上：(2l₁ + 1)(2l₂ + 1) = Σ(2l_o + 1)；比如 3 × 3 = 1 + 3 + 5。', 'The dimensions add up: (2l₁ + 1)(2l₂ + 1) = Σ(2l_o + 1); for example 3 × 3 = 1 + 3 + 5.'], 'proved'],
+    [['宇称相乘', 'Parities multiply'], ['1o ⊗ 1o 只能给偶宇称：点积是标量，叉积是赝向量。', '1o ⊗ 1o gives only even parity: the dot product is a scalar, the cross product a pseudovector.'], 'proved'],
+    [['CG 系数是固定的', 'CG coefficients are fixed'], ['它们由群论决定、不训练；同样的系数也用于原子物理的角动量耦合。', 'They are fixed by group theory and not trained; the same coefficients serve angular-momentum coupling in atomic physics.'], 'proved'],
+    [['卷积 = 特征 ⊗ 球谐函数 × 径向权重', 'Convolution = feature ⊗ spherical harmonics × radial weight'], ['可学的径向函数只依赖距离，所以等变性不靠训练、靠构造。', 'The learnable radial function depends only on distance, so equivariance comes from construction, not training.'], 'proved'],
+    [['路径数随 l_max 增长', 'The path count grows with l_max'], ['张量积是等变网络最贵的一步；MACE、Allegro 和新的内核从不同方向降低它的代价。', 'The tensor product is the most expensive step in equivariant networks; MACE, Allegro and new kernels attack its cost from different directions.'], 'tested'],
+  ],
+  math: [
+    [r`|l_1 - l_2| \le l_o \le l_1 + l_2, \qquad p_o = p_1\, p_2`, ['张量积的两条选择规则。', 'The two selection rules of the tensor product.']],
+    [r`(2l_1 + 1)(2l_2 + 1) = \sum_{l_o = |l_1 - l_2|}^{l_1 + l_2} (2l_o + 1)`, ['维数守恒。', 'Conservation of dimension.']],
+    [r`(\mathbf x \otimes \mathbf y)^{(0)} \propto \mathbf x \cdot \mathbf y, \qquad (\mathbf x \otimes \mathbf y)^{(1)} \propto \mathbf x \times \mathbf y`, ['两个向量：l = 0 是点积，l = 1 是叉积（比例常数取决于归一化，演示里是 −1/√3 和 1/√2）。', 'Two vectors: l = 0 is the dot product and l = 1 the cross product (the constants depend on the normalisation; in the demo they are −1/√3 and 1/√2).']],
+    [r`D^{l_o}(R)\,(\mathbf u \otimes \mathbf v)^{(l_o)} = \big(D^{l_1}(R)\mathbf u \otimes D^{l_2}(R)\mathbf v\big)^{(l_o)}`, ['张量积的等变性，这正是 CG 系数的定义性质。', 'Equivariance of the tensor product, the defining property of the CG coefficients.']],
+    [r`\mathcal L^{(l_o)}_{a c m_o} = \sum_{b \in \mathcal S} \sum_{m_f, m_i} C^{(l_o, m_o)}_{(l_f, m_f)(l_i, m_i)}\, R^{(l_f, l_i, l_o)}_c(r_{ab})\, Y^{(l_f)}_{m_f}(\hat r_{ab})\, V^{(l_i)}_{b c m_i}`, ['NequIP 的等变卷积 [@batzner2022]。', 'NequIP’s equivariant convolution [@batzner2022].']],
+  ],
+  example: {
+    q: [r`特征和滤波器的最高阶都是 1，并且只保留宇称为 $(-1)^l$ 的特征（$0e$、$1o$）。输入特征 $1o$ 和滤波器 $Y^{(1)}$（也是 $1o$）能走出哪些路径？`, r`Features and filters both go up to order 1, and only features of parity $(-1)^l$ ($0e$, $1o$) are kept. Which paths can an input feature $1o$ and the filter $Y^{(1)}$ (also $1o$) take?`],
+    steps: [
+      [r`三角不等式：$l_o \in \{0, 1, 2\}$；最高阶是 1，所以去掉 $l_o = 2$。`, r`Triangle inequality: $l_o \in \{0, 1, 2\}$; the maximum order is 1, so $l_o = 2$ is dropped.`],
+      [r`宇称：$p_o = (-1)(-1) = +1$，得到 $0e$ 和 $1e$。`, r`Parity: $p_o = (-1)(-1) = +1$, giving $0e$ and $1e$.`],
+      [r`$1e$ 不在保留的特征里，所以只剩 $1o \otimes 1o \to 0e$：点积这一条路径。`, r`$1e$ is not among the kept features, so only $1o \otimes 1o \to 0e$ remains: the dot-product path.`],
+    ],
+    a: ['只保留“自然宇称”会丢掉叉积这类赝向量路径。NequIP 的论文默认偶、奇两种宇称都保留（官方配置里有 parity 开关），演示的“路径”表可以切换两种设置比较路径数。', 'Keeping only “natural” parity discards pseudovector paths like the cross product. The NequIP paper keeps both parities by default (the official configuration has a parity switch), and the demo’s path table can switch between the two settings to compare the counts.'],
+  },
+};

@@ -1,0 +1,46 @@
+const r = String.raw;
+export default {
+  id: 'forces', level: 'proved', demos: ['nve'],
+  title: ['能量、力和应力：为什么力要从能量求导', 'Energy, forces and stress: why forces come from the energy'],
+  summary: ['NequIP 只预测一个标量能量，力是它对坐标的负梯度 F = −∇E，由自动求导精确得到；应力是能量对应变的导数。这样的力天然等变、天然守恒：绕任何闭合路径做功为零，NVE 模拟里总能量不漂。直接预测力的模型可以更快，但力场带一点旋度，长时间模拟会出问题。', 'NequIP predicts only a scalar energy; forces are its negative gradient F = −∇E, obtained exactly by automatic differentiation, and stress is the derivative of the energy with respect to strain. Such forces are automatically equivariant and conservative: the work around any closed path is zero and the total energy does not drift in NVE simulations. Models that predict forces directly can be faster, but their force field has a little curl, which causes trouble in long simulations.'],
+  body: [
+    [r`NequIP 的输出只有一个数：总能量 $E$。力由对原子坐标求导得到，$\mathbf F_i = -\partial E/\partial \mathbf r_i$。神经网络框架（PyTorch）可以对整个网络做自动求导，结果和解析导数一样精确，代价大约是再算一遍网络 [@batzner2022]。`,
+     r`NequIP outputs a single number: the total energy $E$. Forces are obtained by differentiating with respect to the atomic coordinates, $\mathbf F_i = -\partial E/\partial \mathbf r_i$. Neural-network frameworks (PyTorch) can differentiate the whole network automatically, as exactly as an analytic derivative, at roughly the cost of one more pass through the network [@batzner2022].`],
+    [r`这样做有三个好处。第一，力自动等变：能量是不变量，它的梯度自动跟着分子转（第二章）。第二，力自动**保守**：它是某个能量的梯度，所以旋度为零，任何闭合路径上做的功都是零。第三，能量和力彼此一致：同一个模型，既能跑分子动力学，也能做几何优化和过渡态搜索、算振动频率（对力再求一次导就是 Hessian）。早在 GDML 里就强调了“能量守恒的力场”这一点 [@chmiela2017]。`,
+     r`This has three advantages. First, the forces are automatically equivariant: the energy is invariant, so its gradient rotates with the molecule (chapter 2). Second, the forces are automatically **conservative**: being the gradient of an energy, they have zero curl, and the work done around any closed path is zero. Third, energy and forces are consistent: the same model can run molecular dynamics, optimise geometries, search for transition states and compute vibrational frequencies (differentiating the forces once more gives the Hessian). GDML had already stressed the importance of an “energy-conserving force field” [@chmiela2017].`],
+    { math: r`\mathbf F_i = -\frac{\partial E}{\partial \mathbf r_i}, \qquad \oint \mathbf F \cdot \mathrm d\mathbf r = 0, \qquad \sigma_{\alpha\beta} = \frac{1}{V}\frac{\partial E}{\partial \varepsilon_{\alpha\beta}}`, cap: ['力是能量的负梯度，因此保守；应力是能量对应变的导数（符号约定因程序而异）。', 'Forces are the negative gradient of the energy and therefore conservative; stress is the derivative of the energy with respect to strain (sign conventions differ between programs).'] },
+    { demo: 'nve' },
+    [r`演示里只要力上有一点点旋度，NVE 模拟的总能量就一直漂。真实的“直接预测力”的模型不会这么规整，但同样的问题存在：Fu 等人的基准测试发现，力的误差小并不保证模拟稳定，一些力误差很低的模型在长时间模拟里会发散或给出错的结构 [@fu2023]；Bigi 等人专门研究了不保守的力，结论是它们可以拿来加速，但最好配合保守的力一起用（比如多时间步积分），否则能量漂移和温度失控很难避免 [@bigi2024]。`,
+     r`In the demo, a tiny amount of curl in the forces makes the total energy of an NVE simulation drift steadily. Real “direct-force” models are not so tidy, but the same problem exists: Fu and co-workers’ benchmark found that low force errors do not guarantee stable simulations, and some models with very low force errors diverge or give wrong structures in long runs [@fu2023]; Bigi and co-workers studied non-conservative forces specifically and concluded that they can be used for speed, but are best combined with conservative forces (for instance in multiple-time-step integration), otherwise energy drift and runaway temperatures are hard to avoid [@bigi2024].`],
+    { h: ['力的标签和损失函数', 'Force labels and the loss function'] },
+    [r`从训练这一边看，力也是宝贵的数据。一次 DFT 计算给出 1 个能量和 $3N$ 个力分量，所以 $M$ 个结构一共提供 $M(3N + 1)$ 个标签 [@batzner2022]。对力的拟合本身就约束了能量面的形状，这对数据效率很重要 [@christensen2020]。NequIP 的损失函数把两者加权相加：`,
+     r`From the training side, forces are valuable data too. One DFT calculation gives 1 energy and $3N$ force components, so $M$ structures provide $M(3N + 1)$ labels in all [@batzner2022]. Fitting the forces constrains the shape of the energy surface directly, which matters for data efficiency [@christensen2020]. NequIP’s loss function adds the two with weights:`],
+    { math: r`\mathcal L = \lambda_E \big\| \hat E - E \big\|^2 + \frac{\lambda_F}{3N} \sum_{i=1}^{N} \sum_{\alpha} \Big\| -\frac{\partial \hat E}{\partial r_{i,\alpha}} - F_{i,\alpha} \Big\|^2`, cap: ['论文的式 (7)。默认 λ_E : λ_F = 1 : N²（N 是原子数），后来的版本把每一项的权重作为可调的配置。', 'Equation (7) of the paper. The default is λ_E : λ_F = 1 : N² (N the number of atoms); later versions make every term’s weight configurable.'] },
+    [r`注意训练时要对“力的误差”再求一次梯度（对网络参数），也就是二阶导数。这让训练比只拟合能量贵一些，但换来的是每个结构多出 $3N$ 个标签。`,
+     r`Note that training must differentiate the “force error” once more (with respect to the network parameters), which is a second derivative. Training is therefore somewhat more expensive than fitting energies alone, but each structure contributes $3N$ more labels in return.`],
+    { note: [r`**应力和周期体系。** 对晶体和液体做等压（NPT）模拟需要应力。做法和力一样：把晶胞和所有坐标乘一个对称的应变矩阵 $(1 + \varepsilon)$，能量对 $\varepsilon$ 求导再除以体积。NequIP 的周期体系版本同样经自动求导给出应力，训练时也可以把 DFT 的应力放进损失函数。`, r`**Stress and periodic systems.** Isobaric (NPT) simulations of crystals and liquids need the stress. It is done like the forces: multiply the cell and all coordinates by a symmetric strain matrix $(1 + \varepsilon)$, differentiate the energy with respect to $\varepsilon$ and divide by the volume. NequIP’s periodic version gives the stress by automatic differentiation as well, and DFT stresses can also be put into the training loss.`], kind: 'info' },
+  ],
+  points: [
+    [['只预测能量', 'Predict only the energy'], ['力 = −∇E 由自动求导精确得到，代价约等于再算一遍网络。', 'Forces = −∇E come exactly from automatic differentiation at roughly the cost of one more network pass.'], 'proved'],
+    [['保守 ⇒ NVE 能量不漂', 'Conservative ⇒ no NVE energy drift'], ['梯度场旋度为零，闭合路径做功为零；剩下的漂移只来自积分步长。', 'A gradient field has zero curl and zero work around closed paths; any remaining drift comes only from the time step.'], 'proved'],
+    [['力误差低 ≠ 模拟稳定', 'Low force error ≠ stable simulations'], ['基准测试发现力误差很低的模型也会在长时间模拟里发散。', 'Benchmarks find that models with very low force errors can still diverge in long simulations.'], 'tested'],
+    [['每个结构 3N + 1 个标签', '3N + 1 labels per structure'], ['力的数据把能量面的形状直接约束住，这是少量结构就能训练的原因之一。', 'Force data constrain the shape of the energy surface directly, one reason why few structures suffice.'], 'proved'],
+    [['不保守的力可以加速', 'Non-conservative forces can speed things up'], ['和保守的力配合使用（如多时间步）是正在研究的方向。', 'Combining them with conservative forces (for instance with multiple time steps) is an active line of work.'], 'frontier'],
+  ],
+  math: [
+    [r`\mathbf F_i = -\nabla_{\mathbf r_i} E(\mathbf r_1, \ldots, \mathbf r_N)`, ['力由能量求导。', 'Forces from the energy.']],
+    [r`\nabla \times \mathbf F = 0 \iff \oint \mathbf F \cdot \mathrm d\mathbf r = 0`, ['保守力的两种说法。', 'Two statements of a conservative force.']],
+    [r`\mathcal L = \lambda_E \| \hat E - E \|^2 + \frac{\lambda_F}{3N}\sum_{i,\alpha} \| \hat F_{i\alpha} - F_{i\alpha} \|^2, \qquad \lambda_E : \lambda_F = 1 : N^2`, ['论文的损失函数和默认权重 [@batzner2022]。', 'The paper’s loss function and default weights [@batzner2022].']],
+    [r`\sigma_{\alpha\beta} = \frac{1}{V}\,\frac{\partial E}{\partial \varepsilon_{\alpha\beta}}\Big|_{\varepsilon = 0}`, ['应力是能量对应变的导数。', 'Stress is the derivative of the energy with respect to strain.']],
+    [r`H_{i\alpha, j\beta} = \frac{\partial^2 E}{\partial r_{i\alpha}\,\partial r_{j\beta}} = -\frac{\partial F_{j\beta}}{\partial r_{i\alpha}}`, ['再求一次导就是 Hessian，可以算振动频率。', 'One more derivative gives the Hessian, from which vibrational frequencies follow.']],
+  ],
+  example: {
+    q: [r`LiPS 训练集的结构各有 83 个原子。论文最大的训练集有 2500 个结构，一共提供多少个标签？默认的力权重 $\lambda_F$ 是多少（$\lambda_E = 1$）？`, r`The structures of the LiPS training set each have 83 atoms. How many labels does the paper’s largest training set of 2500 structures provide? What is the default force weight $\lambda_F$ (with $\lambda_E = 1$)?`],
+    steps: [
+      [r`每个结构：$3 \times 83 + 1 = 250$ 个标签。`, r`Per structure: $3 \times 83 + 1 = 250$ labels.`],
+      [r`2500 个结构：$2500 \times 250 = 625\,000$ 个标签，其中能量只占 2500 个。`, r`2500 structures: $2500 \times 250 = 625\,000$ labels, of which only 2500 are energies.`],
+      [r`$\lambda_F = N^2 = 83^2 = 6889$。损失函数里力那一项已经除以了 $3N$，这个大权重让每个原子的力误差和总能量的误差处在可比的位置。`, r`$\lambda_F = N^2 = 83^2 = 6889$. The force term in the loss is already divided by $3N$, and this large weight puts the per-atom force error on a footing comparable with the total-energy error.`],
+    ],
+    a: ['力的标签是能量的 249 倍。第七章的“力的标签有多值钱”演示用一维的高斯过程单独看这一件事：同样 4 个点，加上导数以后拟合误差明显变小。', 'Force labels outnumber energies 249 to 1. The “what force labels are worth” demo in chapter 7 isolates this with a one-dimensional Gaussian process: with the same four points, adding derivatives clearly lowers the fitting error.'],
+  },
+};

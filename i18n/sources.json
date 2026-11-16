@@ -8693,6 +8693,15 @@
  "ai math 数学 transformer attention 注意力 diffusion 扩散 flow matching 流匹配 score sde 强化学习 rl ppo grpo dpo lora muon adam fisher kl vae 最优传输 sinkhorn 双下降 保形 conformal 因果 等变 神经算子": [
   "shared-nav.js"
  ],
+ "NequIP 等变势": [
+  "shared-nav.js"
+ ],
+ "会跟着分子一起转的神经网络势：对称性、球谐函数、张量积、力和数据效率，八章十个演示": [
+  "shared-nav.js"
+ ],
+ "nequip allegro mace e3nn 等变 equivariant 机器学习势 machine learning potential mlip 原子间势 interatomic potential 力场 force field 球谐 spherical harmonics 张量积 tensor product clebsch gordan 图神经网络 gnn 消息传递 message passing 分子动力学 md": [
+  "shared-nav.js"
+ ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
   "shared-nav.js"
  ],
@@ -17851,6 +17860,9 @@
   "tools/build-seo.ts"
  ],
  "91 种分析方法的谱图怎么来、怎么读：红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法；开放许可的实测质谱、量化计算的红外拉曼紫外谱、78 个交互演示、16 张速查表和 178 篇文献，每张图都写明来源。": [
+  "tools/build-seo.ts"
+ ],
+ "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "前沿 AI 数学 · Frontier AI Mathematics": [

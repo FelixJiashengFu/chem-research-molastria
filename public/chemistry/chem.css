@@ -114,6 +114,7 @@
 .chm-demo .fs-readout[hidden]{display:none}
 .chm-demo .fs-btns .button{font-size:12.5px;padding:6px 10px;min-height:34px}
 .chm-demo .fs-btns .button[aria-pressed=true]{border-color:var(--accent-text);color:var(--accent-text);font-weight:700}
+.chm-demo .fs-btns .button.primary[aria-pressed=true]{color:var(--accent-ink,#fff)}
 .chm-demo select{min-height:38px;padding:4px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink);font:inherit;font-size:16px;width:100%}
 .chm-check{flex-direction:row!important;align-items:flex-start;gap:8px!important;font-size:13px;color:var(--ink-2);cursor:pointer}
 .chm-check input{flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}

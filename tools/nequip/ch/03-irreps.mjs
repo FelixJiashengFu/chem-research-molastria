@@ -1,0 +1,48 @@
+const r = String.raw;
+export default {
+  id: 'irreps', level: 'proved', demos: ['sh'],
+  title: ['球谐函数和不可约表示', 'Spherical harmonics and irreducible representations'],
+  summary: ['旋转下最小的、不能再拆的“积木”是阶 l 的不可约表示，有 2l + 1 个分量；l = 0 是标量，l = 1 是向量，l = 2 像一个对称无迹的矩阵。球谐函数是它们最自然的基，Wigner D 矩阵描述它们怎样跟着旋转混合。NequIP 的特征写成“32x0e + 32x1o + …”就是这种语言。', 'The smallest building blocks under rotation that cannot be split further are the irreducible representations of order l, with 2l + 1 components; l = 0 is a scalar, l = 1 a vector, l = 2 behaves like a symmetric traceless matrix. Spherical harmonics are their most natural basis, and Wigner D matrices describe how they mix under rotation. NequIP’s features written as “32x0e + 32x1o + …” use exactly this language.'],
+  body: [
+    [r`上一章说等变网络的特征里有向量和更高阶的张量。可“更高阶”该怎么组织？一个普通的 $3\times3$ 矩阵 $T$ 在转动下变成 $RTR^{\mathsf T}$，9 个分量混在一起。但它可以拆成三块各自独立地转动的部分：迹（1 个数，不变）、反对称部分（3 个数，像一个向量）和对称无迹部分（5 个数）。$9 = 1 + 3 + 5$，每一块都不能再拆，它们就是转动群的**不可约表示**，阶 $l = 0, 1, 2$，维数 $2l + 1$。`,
+     r`The previous chapter said that equivariant networks carry vectors and higher-order tensors in their features. But how should “higher order” be organised? An ordinary $3\times3$ matrix $T$ becomes $RTR^{\mathsf T}$ under rotation, all nine components mixing. It can, however, be split into three parts that rotate independently: the trace (1 number, unchanged), the antisymmetric part (3 numbers, behaving like a vector) and the symmetric traceless part (5 numbers). $9 = 1 + 3 + 5$, and none of the pieces splits further: they are the **irreducible representations** of the rotation group, of order $l = 0, 1, 2$ and dimension $2l + 1$.`],
+    ['这在化学里一点都不陌生：s、p、d、f 轨道就是 l = 0、1、2、3 的不可约表示，分别有 1、3、5、7 个。原子的电子在一个球对称的势场里，转动以后一组 p 轨道还是那组 p 轨道，只是三个之间重新组合；p 和 d 永远不会互相混。',
+     'This is no stranger to chemistry: s, p, d and f orbitals are the irreducible representations with l = 0, 1, 2 and 3, of which there are 1, 3, 5 and 7. For an electron in a spherically symmetric potential, after a rotation a set of p orbitals is still that set of p orbitals, merely recombined among themselves; p and d never mix.'],
+    { h: ['球谐函数', 'Spherical harmonics'] },
+    [r`球谐函数 $Y_{lm}(\hat{\mathbf n})$ 是定义在单位球面上的函数，$m = -l, \ldots, l$。用实数形式时，$l = 1$ 的三个正比于 $y$、$z$、$x$，$l = 2$ 的五个正比于 $xy$、$yz$、$3z^2 - r^2$、$xz$、$x^2 - y^2$，和 d 轨道的角向部分一样。它们两两正交，并且每一阶在转动下只在自己内部混合：`,
+     r`The spherical harmonics $Y_{lm}(\hat{\mathbf n})$ are functions on the unit sphere, $m = -l, \ldots, l$. In real form the three of $l = 1$ are proportional to $y$, $z$ and $x$, and the five of $l = 2$ to $xy$, $yz$, $3z^2 - r^2$, $xz$ and $x^2 - y^2$, the same as the angular parts of d orbitals. They are mutually orthogonal, and each order mixes only within itself under rotation:`],
+    { math: r`Y_{lm}(R^{-1}\hat{\mathbf n}) = \sum_{m'=-l}^{l} D^{l}_{m'm}(R)\, Y_{lm'}(\hat{\mathbf n})`, cap: ['Wigner D 矩阵 D^l(R) 是 (2l + 1) × (2l + 1) 的正交矩阵；l = 1 时就是转动矩阵本身（换个分量顺序）。', 'The Wigner D matrix D^l(R) is a (2l + 1) × (2l + 1) orthogonal matrix; for l = 1 it is the rotation matrix itself (with the components reordered).'] },
+    { demo: 'sh' },
+    [r`在演示里转动 $Y_{20}$ 这样的函数，柱状图上的系数会在 5 个 $m'$ 之间重新分配，但平方和始终是 1，而且 $l$ 不同的系数永远是零。这两件事正是“正交”和“不可约”的意思。对一个原子来说，它周围的邻居方向 $\hat{\mathbf r}_{ij}$ 代进 $Y_{lm}$，就得到一组随分子一起转的数：$l = 0$ 那一项是常数，$l = 1$ 那三项就是单位向量本身，$l = 2$ 和更高的项描述邻居分布更细的形状。`,
+     r`Rotate a function such as $Y_{20}$ in the demo and the bar chart redistributes the coefficients among the five $m'$, yet their sum of squares stays 1 and coefficients of other $l$ stay zero. Those two facts are what “orthogonal” and “irreducible” mean. For an atom, putting the directions $\hat{\mathbf r}_{ij}$ of its neighbours into $Y_{lm}$ gives a set of numbers that rotate with the molecule: the $l = 0$ term is a constant, the three $l = 1$ terms are the unit vector itself, and $l = 2$ and higher describe finer details of how the neighbours are arranged.`],
+    { h: ['宇称和不可约表示的名字', 'Parity and the names of irreps'] },
+    [r`O(3) 比 SO(3) 多了反演。反演下 $Y_{lm}(-\hat{\mathbf n}) = (-1)^l Y_{lm}(\hat{\mathbf n})$，所以球谐函数本身的宇称是 $(-1)^l$。但一个特征的宇称不一定是 $(-1)^l$：两个普通向量的叉积是 $l = 1$、偶宇称。于是 O(3) 的不可约表示用两个标签 $(l, p)$，e3nn 写作 $0e$、$0o$、$1o$、$1e$、$2e$…… 字母 e 表示偶（even），o 表示奇（odd）[@geiger2022]。`,
+     r`O(3) adds inversion to SO(3). Under inversion $Y_{lm}(-\hat{\mathbf n}) = (-1)^l Y_{lm}(\hat{\mathbf n})$, so the spherical harmonics themselves have parity $(-1)^l$. But a feature need not have parity $(-1)^l$: the cross product of two ordinary vectors has $l = 1$ and even parity. So the irreducible representations of O(3) carry two labels $(l, p)$, written in e3nn as $0e$, $0o$, $1o$, $1e$, $2e$, …, where e means even and o odd [@geiger2022].`],
+    [r`NequIP 的特征就是若干个这样的不可约表示直接相加（直和），每一种带若干个“通道”：论文写作 $V^{(l,p)}_{acm}$，$a$ 是原子、$c$ 是通道、$m$ 是阶内的分量 [@batzner2022]。比如“32x0e + 32x0o + 32x1o + 32x1e”是论文表 VII 里 $l = 1$、32 个特征的设置：每个原子 32 个偶标量、32 个奇标量（赝标量）、32 个向量、32 个赝向量，一共 $32 \times (1 + 1 + 3 + 3) = 256$ 个数。`,
+     r`NequIP’s features are direct sums of several such irreducible representations, each with a number of “channels”: the paper writes $V^{(l,p)}_{acm}$, with $a$ the atom, $c$ the channel and $m$ the component within the order [@batzner2022]. For example, “32x0e + 32x0o + 32x1o + 32x1e” is the setting of the paper’s Table VII for $l = 1$ with 32 features: per atom, 32 even scalars, 32 odd scalars (pseudoscalars), 32 vectors and 32 pseudovectors, $32 \times (1 + 1 + 3 + 3) = 256$ numbers in all.`],
+    { note: [r`**为什么用球谐函数而不是笛卡尔张量？** 笛卡尔张量也能写等变网络，但一个 $L$ 阶笛卡尔张量有 $3^L$ 个分量，里面混着许多更低阶的不可约部分（就像 $3\times3$ 矩阵里藏着标量和向量）。用不可约表示，每一阶只有 $2l + 1$ 个数、互不混合，组合规则（下一章的 Clebsch–Gordan）也最简洁。代价是要处理 Wigner D 和 CG 系数这些不那么直观的对象，这也是 e3nn 这样的库要做的事。`, r`**Why spherical harmonics rather than Cartesian tensors?** Cartesian tensors can also build equivariant networks, but a rank-$L$ Cartesian tensor has $3^L$ components containing many lower-order irreducible parts mixed together (just as a $3\times3$ matrix hides a scalar and a vector). With irreducible representations each order has only $2l + 1$ numbers that never mix, and the rules for combining them (the Clebsch–Gordan coefficients of the next chapter) are the simplest. The price is handling less intuitive objects like Wigner D and CG coefficients, which is what libraries such as e3nn are for.`], kind: 'info' },
+  ],
+  points: [
+    [['阶 l 的不可约表示有 2l + 1 维', 'An irrep of order l has 2l + 1 dimensions'], ['l = 0 标量、l = 1 向量、l = 2 五维；和 s、p、d 轨道的个数一样。', 'l = 0 scalar, l = 1 vector, l = 2 five-dimensional; the same counts as s, p and d orbitals.'], 'proved'],
+    [['3 × 3 = 1 + 3 + 5', '3 × 3 = 1 + 3 + 5'], ['任意二阶张量拆成迹、反对称部分和对称无迹部分，三块各自转动。', 'Any rank-2 tensor splits into its trace, antisymmetric part and symmetric traceless part, each rotating on its own.'], 'proved'],
+    [['Wigner D 矩阵', 'Wigner D matrices'], ['转动在阶 l 上的作用是一个 (2l + 1) 维的正交矩阵，满足 D(R₁R₂) = D(R₁)D(R₂)；不同 l 永远不混。', 'A rotation acts on order l as a (2l + 1)-dimensional orthogonal matrix with D(R₁R₂) = D(R₁)D(R₂); different l never mix.'], 'proved'],
+    [['O(3) 的标签是 (l, p)', 'O(3) labels are (l, p)'], [r`球谐函数的宇称是 $(-1)^l$，但特征可以有另一种宇称：$1e$ 是赝向量，$0o$ 是赝标量。`, r`Spherical harmonics have parity $(-1)^l$, but features can have the other one: $1e$ is a pseudovector, $0o$ a pseudoscalar.`], 'proved'],
+    [['特征是不可约表示的直和', 'Features are direct sums of irreps'], ['“32x0e + 32x0o + 32x1o + 32x1e” 每个原子 256 个数；论文把 l_max 从 0 调到 3 做对比。', '“32x0e + 32x0o + 32x1o + 32x1e” is 256 numbers per atom; the paper varies l_max from 0 to 3 for comparison.'], 'tested'],
+  ],
+  math: [
+    [r`Y_{lm}(R^{-1}\hat{\mathbf n}) = \sum_{m'} D^{l}_{m'm}(R)\,Y_{lm'}(\hat{\mathbf n}), \qquad D^l(R_1R_2) = D^l(R_1)\,D^l(R_2)`, ['球谐函数在转动下只在本阶内混合，D 是群的表示。', 'Spherical harmonics mix only within their order under rotation; D is a representation of the group.']],
+    [r`\int Y_{lm}\,Y_{l'm'}\,\mathrm d\Omega = \delta_{ll'}\,\delta_{mm'}`, ['实球谐函数的正交归一（演示用的归一化）。', 'Orthonormality of the real spherical harmonics (the normalisation used in the demo).']],
+    [r`Y_{lm}(-\hat{\mathbf n}) = (-1)^l\, Y_{lm}(\hat{\mathbf n})`, ['球谐函数的宇称。', 'Parity of the spherical harmonics.']],
+    [r`V^{(l,p)}_{a c m}, \qquad l = 0, 1, \ldots, l_{\max},\ \ p = \pm1,\ \ m = -l, \ldots, l`, ['NequIP 的特征：原子 a、通道 c、阶内分量 m [@batzner2022]。', 'NequIP’s features: atom a, channel c, component m within the order [@batzner2022].']],
+    [r`\mathbb R^{3}\otimes\mathbb R^{3} = \underbrace{1}_{\mathrm{tr}} \oplus \underbrace{3}_{\text{antisym.}} \oplus \underbrace{5}_{\text{sym. traceless}}`, ['二阶张量拆成不可约部分。', 'A rank-2 tensor decomposed into irreducible parts.']],
+  ],
+  example: {
+    q: [r`一个 NequIP 模型的特征是 64 个通道、$l_{\max} = 2$，并且每一阶都有偶、奇两种宇称。每个原子的特征有多少个数？如果只保留宇称为 $(-1)^l$ 的那一半呢？`, r`A NequIP model has 64 channels, $l_{\max} = 2$, and both parities at every order. How many numbers does each atom’s feature contain? And if only the half with parity $(-1)^l$ is kept?`],
+    steps: [
+      [r`每个通道：$l = 0, 1, 2$ 各两种宇称，$2 \times (1 + 3 + 5) = 18$ 个数。`, r`Per channel: $l = 0, 1, 2$ with two parities each, $2 \times (1 + 3 + 5) = 18$ numbers.`],
+      [r`64 个通道：$64 \times 18 = 1152$ 个数。`, r`64 channels: $64 \times 18 = 1152$ numbers.`],
+      [r`只留 $0e$、$1o$、$2e$：$64 \times 9 = 576$ 个数。`, r`Keeping only $0e$, $1o$, $2e$: $64 \times 9 = 576$ numbers.`],
+    ],
+    a: ['特征的大小随 l_max 平方增长（Σ(2l + 1) = (l_max + 1)²），计算量增长得更快，因为张量积的路径也变多（下一章）。这就是为什么论文在小分子上用到 l = 3，而官方教程默认 l_max = 1。', 'The feature size grows as the square of l_max (Σ(2l + 1) = (l_max + 1)²), and the cost grows faster still, because the tensor product has more paths (next chapter). That is why the paper goes up to l = 3 on small molecules while the official tutorial defaults to l_max = 1.'],
+  },
+};

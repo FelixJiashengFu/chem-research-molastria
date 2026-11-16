@@ -128,6 +128,7 @@ window.MOLASTRIA_OM = {
       site: [
         { zh: '量子嘉年华 · 量子算法：CUDA-Q 一类工具在做什么', en: 'Quantum Carnival · Algorithms: what tools like CUDA-Q are for', href: '../../quantum/algorithms/index.html' },
         { zh: '开源代码台：给 GPU 程序生成输入', en: 'Code Desk: inputs for GPU-ready programs', href: '../../code/index.html' },
+        { zh: 'NequIP：等变网络的张量积为什么贵，cuEquivariance 这类内核在加速什么', en: 'NequIP: why tensor products in equivariant networks are costly, and what kernels like cuEquivariance speed up', href: '../../nequip/index.html#c-tensor' },
       ],
       items: [
         { id: 'alchemi', kind: 'tool', use: 'open', year: '2025', name: 'ALCHEMI Toolkit', desc: { zh: '在 GPU 上批量运行机器学习势的几何优化和分子动力学，支持多种开源原子模型。另有商业的 ALCHEMI NIM。', en: 'Batched geometry optimisation and molecular dynamics with machine-learning potentials on GPUs, supporting several open atomistic models. A commercial ALCHEMI NIM also exists.' }, lic: 'Apache 2.0', links: [['code', 'https://github.com/NVIDIA/nvalchemi-toolkit']] },
