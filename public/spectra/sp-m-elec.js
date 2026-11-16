@@ -40,7 +40,7 @@
           cap: T(`用含时密度泛函理论（TDDFT）算出的垂直激发：棒是每个单重激发态的位置和振子强度，曲线是展宽 0.4 eV 后的包络。孤立分子、没有振动结构、没有溶剂。灰色刻度是文献里的实验吸收峰。多烯和并苯两个系列里可以看到共轭变长时吸收向长波移动。`, `Vertical excitations from time-dependent density functional theory (TDDFT): sticks mark each singlet excited state and its oscillator strength, and the curve is their envelope after 0.4 eV broadening. Isolated molecule, no vibrational structure, no solvent. Grey ticks are experimental absorption maxima from the literature. The polyene and acene series show the absorption moving to longer wavelength as conjugation grows.`) },
         { gen: 'beer', cap: T(`由公式算出：有 0.1 % 杂散光时表观吸光度对真实吸光度的偏离。A = 2 处低了约 2 %，A = 3 处已经低了约 10 %。`, `From the formula: how apparent absorbance departs from true absorbance with 0.1 % stray light. At A = 2 it reads about 2 % low, at A = 3 already about 10 %.`) },
       ],
-      table: 'uv-chromophores', see: [['#lab-uv', T(`动手实验室：共轭长度和吸收波长`, `Hands-on lab: conjugation length and absorption wavelength`)]],
+      table: 'uv-chromophores', see: [['optics/#c-gratings', T(`光学栏目：光栅光谱仪的分辨本领`, `Optics: the resolving power of a grating spectrometer`)], ['#lab-uv', T(`动手实验室：共轭长度和吸收波长`, `Hands-on lab: conjugation length and absorption wavelength`)]],
       refs: ['woodward1941', 'mayerhofer2020', 'yanai2004'],
     },
     {
@@ -152,6 +152,7 @@
           cap: T(`示意：三种二级结构在远紫外区的圆二色谱。极值的位置和大小取自 Greenfield 和 Fasman 1969 年用聚赖氨酸测的数据（α 螺旋 [θ]₂₂₂ = −35700，β 折叠 [θ]₂₁₇ = −18400，无规卷曲 [θ]₁₉₇ = −41900 deg cm² dmol⁻¹），曲线是用几个高斯带拼出来的示意。`, `Schematic: far-ultraviolet circular dichroism of three secondary structures. Positions and magnitudes of the extrema follow the poly-L-lysine data of Greenfield and Fasman (1969): [θ]₂₂₂ = −35700 for the α-helix, [θ]₂₁₇ = −18400 for the β-sheet and [θ]₁₉₇ = −41900 deg cm² dmol⁻¹ for the random coil; the curves are assembled from a few Gaussian bands.`) },
       ],
       refs: ['greenfield1969', 'greenfield2006', 'kelly2005'],
+      see: [['optics/#c-polarization', T(`光学栏目：偏振、Jones 矩阵和圆偏振`, `Optics: polarisation, Jones matrices and circular light`)]],
     },
     {
       id: 'ta', fam: 'elec', abbr: 'TA · pump–probe', name: T(`瞬态吸收光谱`, `Transient absorption spectroscopy`),
