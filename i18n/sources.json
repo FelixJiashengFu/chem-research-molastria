@@ -8608,6 +8608,16 @@
  "spectra spectrum 谱图 谱 光谱 波谱 分析方法 仪器分析 红外 ir ftir 拉曼 raman 紫外 uv vis 荧光 质谱 ms gcms gc-ms lcms lc-ms maldi esi 色谱 hplc gc 气相 液相 xrd 衍射 xps xrf 顺磁 epr 穆斯堡尔 热重 tga dsc 循环伏安 cv 阻抗 eis icp 原子吸收 圆二色 同位素 isotope massbank 解谱 冷冻电镜 cryo-em 电镜 sem tem eds 蛋白质核磁 hsqc cosy hmbc 测序 sanger 凝胶电泳 sds-page 氢氘交换 hdx 高分子 polymer 立构 光散射 mals 黏度 超速离心 auc 热迁移 dsf": [
   "shared-nav.js"
  ],
+ "热、统计与流体": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "热力学、统计力学、流体力学三章，从可逆的元胞自动机讲到熵和 Navier–Stokes 方程，附五个演示": [
+  "shared-nav.js"
+ ],
+ "thermodynamics statistical mechanics fluid 热力学 统计力学 流体力学 熵 entropy navier stokes lattice boltzmann 格子 kac ising q2r 元胞自动机 cellular automaton landauer 黑洞 black hole": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -8629,10 +8639,10 @@
  "开放模型馆": [
   "shared-nav.js"
  ],
- "Meta、DeepMind、微软、英伟达等 11 家公司的开放科学模型": [
+ "Meta、DeepMind、微软、英伟达等 12 家机构的开放科学模型": [
   "shared-nav.js"
  ],
- "meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 open models": [
+ "meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 书生 intern sage 上海人工智能实验室 open models": [
   "shared-nav.js"
  ],
  "微软": [
@@ -8644,7 +8654,7 @@
  "深势科技": [
   "shared-nav.js"
  ],
- "全部 11 家": [
+ "全部 12 家": [
   "shared-nav.js"
  ],
  "AI 化学企业图谱": [
@@ -17787,6 +17797,12 @@
  "量子计算机的物理层：量子比特的物理与噪声，超导、离子阱、中性原子、光子、半导体自旋和拓扑六条硬件路线，量子纠错与容错，量子优势实验与争议；附交互演示与核对过的文献。": [
   "tools/build-seo.ts"
  ],
+ "热、统计与流体 · Heat, Statistics and Flow": [
+  "tools/build-seo.ts"
+ ],
+ "热力学、统计力学、流体力学三章：从可逆的元胞自动机讲到熵、Landauer 原理、黑洞热力学、系综与配分函数、Planck 公式、Ising 模型、格子气和格子 Boltzmann、Navier–Stokes 方程与湍流；五个在浏览器里当场计算的演示和 56 篇核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
  "核磁共振 · NMR": [
   "tools/build-seo.ts"
  ],
@@ -17880,7 +17896,7 @@
  "开放模型馆 · Open Model Hall": [
   "tools/build-seo.ts"
  ],
- "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan 开放给科研的化学、材料与生物分子 AI 模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。": [
+ "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan、上海人工智能实验室开放给科研的化学、材料与生物分子 AI 模型、科学大模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。": [
   "tools/build-seo.ts"
  ],
  "工业革命2.5：我愿成为“曼哈顿计划2.0”的一份子": [

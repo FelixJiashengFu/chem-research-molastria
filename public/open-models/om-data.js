@@ -5,9 +5,9 @@
    字段：
    orgs[].id         展馆的目录名（public/open-models/<id>/），Meta 用 path 指向 ../meta/
    orgs[].repo       “最近的版本”读哪个 GitHub 仓库的 releases
-   items[].kind      model 原子模型与机器学习势 · gen 生成与设计 · bio 生物分子结构 · qm 电子结构与 DFT · data 数据集 · tool 工具与平台
+   items[].kind      model 原子模型与机器学习势 · gen 生成与设计 · bio 生物分子结构 · qm 电子结构与 DFT · data 数据集 · tool 工具与平台 · llm 科学大模型（能读科学数据的语言模型）
    items[].use       open 宽松许可可商用 · copyleft 开源但有传染性条款 · nc 仅限非商业 / 需申请 · service 在线服务或商业平台
-   items[].links     [标签, 地址]；标签是中英两版的键（paper、code、docs、data、site、weights、demo） */
+   items[].links     [标签, 地址]；标签是中英两版的键（paper、code、docs、data、site、weights、demo、modelscope） */
 window.MOLASTRIA_OM = {
   checked: '2026-11-10',
   kinds: {
@@ -17,6 +17,7 @@ window.MOLASTRIA_OM = {
     qm: { zh: '电子结构', en: 'Electronic structure' },
     data: { zh: '数据集', en: 'Dataset' },
     tool: { zh: '工具与平台', en: 'Tools & platforms' },
+    llm: { zh: '科学大模型', en: 'Scientific LLM' },
   },
   uses: {
     open: { zh: '宽松许可，可商用', en: 'Permissive, commercial use OK' },
@@ -27,6 +28,7 @@ window.MOLASTRIA_OM = {
   linkNames: {
     paper: { zh: '论文', en: 'Paper' }, code: { zh: '代码', en: 'Code' }, docs: { zh: '文档', en: 'Docs' }, data: { zh: '数据', en: 'Data' },
     site: { zh: '官网', en: 'Website' }, weights: { zh: '模型参数', en: 'Weights' }, demo: { zh: '在线体验', en: 'Try it' },
+    modelscope: { zh: '魔搭 ModelScope', en: 'ModelScope' },
   },
   // 按任务找模型：馆里各家能做同一件事的条目放在一起比较
   tasks: [
@@ -288,6 +290,26 @@ window.MOLASTRIA_OM = {
       items: [
         { id: 'egret-1', kind: 'model', use: 'open', year: '2025', name: 'Egret-1', desc: { zh: '基于 MACE 架构的预训练神经网络势，面向主族、有机和生物分子体系，有几个不同的版本。', en: 'Pre-trained neural network potentials on the MACE architecture for main-group, organic and biomolecular systems, in several variants.' }, lic: 'MIT', links: [['paper', 'https://arxiv.org/abs/2504.20955'], ['code', 'https://github.com/rowansci/egret-public']] },
         { id: 'rowan', kind: 'tool', use: 'service', year: '', name: 'Rowan', desc: { zh: '网页里的计算化学工作台，有免费额度；构象、pKa、反应能垒、光谱等工作流，也有 Python API。', en: 'A computational-chemistry workbench in the browser with a free tier: workflows for conformers, pKa, barriers, spectra and more, plus a Python API.' }, lic: { zh: '商业服务', en: 'Commercial service' }, links: [['site', 'https://rowansci.com/']], used: true },
+      ],
+    },
+    {
+      id: 'shlab', repo: 'InternLM/Sage-S2.1-Flash', country: { zh: '中国', en: 'China' },
+      name: { zh: '上海人工智能实验室', en: 'Shanghai AI Laboratory' }, lab: 'InternLM · 书生',
+      glyph: 'Sage S2.1 Flash',
+      blurb: {
+        zh: '书生（InternLM）系列的出品方。2026 年 11 月开源的书生 S2.1 Flash（Sage-S2.1-Flash）是能读分子图、晶体结构和蛋白质结构的科学多模态大模型，代码和模型参数都是 MIT 许可。',
+        en: 'The lab behind the InternLM (书生) family. Sage-S2.1-Flash, open-sourced in November 2026, is a scientific multimodal model that reads molecular graphs, crystal structures and protein structures; code and weights are MIT-licensed.',
+      },
+      lead: {
+        zh: '这一馆和别家不同：放的不是原子模型，而是会读科学数据的大语言模型。书生 S2.1 Flash（Sage-S2.1-Flash）是 320B 总参数、每个 token 激活 18B 的多模态混合专家模型，用的是 GLM-5.3-Flash 的架构，bf16 权重约 645 GB，另有 FP8 版。模型卡说它能接收十多种科学输入，例子是分子图、晶体结构、蛋白质序列和三维结构，这些输入经单独的 Sage SciPerception 编码器转进模型；它还把科学数据理解和检索、编程、工具调用连在一起，会调用专业软件做分析，再对照中间输出和可视化反馈检查结果、调整下一步。官方模型卡列出的成绩（厂商自报，没有公开评测记录）：MLE-bench Lite 90.3，排第一（DeepSeek-V4.1-Flash-1017 是 89.2）；OfficeQA Pro 72.2、Harvey LAB 25.0、SpreadsheetBench 2 37.1 也排第一；但在 SWE-bench Pro 上是 60.6，Claude Opus 5 是 76.5。网上流传的“推理成本约为别家的十分之一”“自我进化”等说法，官方模型卡里没有，这里不写（2026-11-16 按官方模型卡核对）。',
+        en: 'This pavilion is different from the others: not atomistic models but large language models that read scientific data. Sage-S2.1-Flash (书生 S2.1 Flash) is a multimodal mixture-of-experts model with 320B total and 18B active parameters per token, on the GLM-5.3-Flash architecture; the bf16 weights are about 645 GB, with an FP8 version too. The model card says it takes more than ten kinds of scientific input, for example molecular graphs, crystal structures, and protein sequences and 3D structures, fed in through a separate Sage SciPerception encoder; it ties scientific-data understanding to retrieval, programming and tool use, running specialised software and checking results against intermediate outputs and visual feedback before deciding the next step. Scores on the official model card (vendor-reported, no published evaluation logs): first on MLE-bench Lite with 90.3 (DeepSeek-V4.1-Flash-1017: 89.2), and first on OfficeQA Pro 72.2, Harvey LAB 25.0 and SpreadsheetBench 2 37.1; on SWE-bench Pro it scores 60.6 against 76.5 for Claude Opus 5. Claims circulating online, such as "about a tenth of the inference cost" or "self-evolving", are not on the official model card and are left out here (checked against the official card on 2026-11-16).',
+      },
+      facts: [['320B', { zh: '总参数，每个 token 激活 18B', en: 'total parameters, 18B active per token' }], ['90.3', { zh: 'MLE-bench Lite，官方模型卡自报，排第一', en: 'MLE-bench Lite, self-reported on the official card, first place' }], ['MIT', { zh: '代码和模型参数', en: 'code and weights' }]],
+      site: [{ zh: '科学大模型：书生 Intern-S1、S1-Pro、S2 的规模、许可和接入方式', en: 'Scientific models: size, licence and access for Intern-S1, S1-Pro and S2', href: '../../scimodels/index.html#m-intern-s2' }, { zh: '开源代码台：给计算化学程序写输入、读输出，正好是这类模型调用工具时要做的事', en: 'Code Desk: writing inputs and reading outputs for chemistry codes, the kind of tool work these models do', href: '../../code/index.html' }],
+      items: [
+        { id: 'sage-s2-1-flash', kind: 'llm', use: 'open', year: '2026', name: 'Sage-S2.1-Flash（书生 S2.1 Flash）', desc: { zh: '320B 总参数、激活 18B 的科学多模态混合专家模型（GLM-5.3-Flash 架构）。能读分子图、晶体结构、蛋白质序列和三维结构等十多种科学输入，会调用工具并对照中间结果检查。模型卡自报 MLE-bench Lite 90.3，排第一。', en: 'A scientific multimodal mixture-of-experts model, 320B total and 18B active (GLM-5.3-Flash architecture). Reads more than ten kinds of scientific input such as molecular graphs, crystal structures and protein sequences and 3D structures, uses tools and checks against intermediate results. Self-reported 90.3 on MLE-bench Lite, first place.' }, lic: { zh: 'MIT（代码和模型参数）', en: 'MIT (code and weights)' }, links: [['weights', 'https://huggingface.co/internlm/Sage-S2.1-Flash'], ['modelscope', 'https://modelscope.cn/models/Shanghai_AI_Laboratory/Sage-S2.1-Flash'], ['code', 'https://github.com/InternLM/Sage-S2.1-Flash'], ['site', 'https://internlm.github.io/Sage-S2.1-Flash/']] },
+        { id: 'intern-s2', kind: 'llm', use: 'open', year: '2026', name: 'Intern-S2', desc: { zh: '书生 S2 系列（35B、397B）：直接从科学文献的原始页面做视觉预训练，面向科学推理、多模态理解和长流程智能体任务；官方 API 可以直接接入智能体框架。', en: 'The Intern-S2 series (35B, 397B): visual pre-training directly on raw pages of scientific papers, for scientific reasoning, multimodal understanding and long-horizon agent tasks; the official API plugs into agent frameworks.' }, lic: 'Apache 2.0', links: [['weights', 'https://huggingface.co/collections/internlm/intern-s2'], ['code', 'https://github.com/InternLM/Intern-S1']] },
+        { id: 'intern-s1', kind: 'llm', use: 'open', year: '2025', name: 'Intern-S1', desc: { zh: '科学多模态基础模型（约 241B 总参数、激活 28B），读论文里的图表和化学结构图，动态分词器原生处理分子式和蛋白序列；另有 8B 的 Intern-S1-mini 和万亿参数的 Intern-S1-Pro。', en: 'A scientific multimodal foundation model (about 241B total, 28B active) that reads figures and chemical structure drawings in papers, with a dynamic tokenizer that handles molecular formulas and protein sequences natively; also Intern-S1-mini (8B) and the trillion-parameter Intern-S1-Pro.' }, lic: 'Apache 2.0', links: [['paper', 'https://arxiv.org/abs/2508.15763'], ['weights', 'https://huggingface.co/internlm/Intern-S1'], ['code', 'https://github.com/InternLM/Intern-S1']] },
       ],
     },
   ],
