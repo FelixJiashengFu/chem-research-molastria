@@ -8618,6 +8618,17 @@
  "thermodynamics statistical mechanics fluid 热力学 统计力学 流体力学 熵 entropy navier stokes lattice boltzmann 格子 kac ising q2r 元胞自动机 cellular automaton landauer 黑洞 black hole": [
   "shared-nav.js"
  ],
+ "光学": [
+  "shared-nav.js",
+  "radar/app/app.js",
+  "tools/build-seo.ts"
+ ],
+ "波场水槽、干涉、衍射、光栅、X 射线晶体衍射、偏振、透镜和阿贝成像八章，附十二个演示": [
+  "shared-nav.js"
+ ],
+ "optics 光学 光 light wave 波动 干涉 interference 衍射 diffraction 单缝 双缝 slit young 杨氏 光栅 grating 菲涅耳 fresnel 夫琅禾费 fraunhofer 艾里斑 airy 瑞利 rayleigh 布拉格 bragg x射线 xrd 偏振 polarization polarisation 布儒斯特 brewster jones 透镜 lens 像差 aberration 光纤 fiber 傅里叶光学 fourier 阿贝 abbe 相衬 phase contrast 全息 hologram 超分辨 super-resolution 惠更斯 huygens 迈克耳孙 michelson 相干 coherence 薄膜 thin film": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -15175,9 +15186,6 @@
  "医学物理": [
   "radar/app/app.js"
  ],
- "光学": [
-  "radar/app/app.js"
- ],
  "等离子体物理": [
   "radar/app/app.js"
  ],
@@ -17801,6 +17809,12 @@
   "tools/build-seo.ts"
  ],
  "热力学、统计力学、流体力学三章：从可逆的元胞自动机讲到熵、Landauer 原理、黑洞热力学、系综与配分函数、Planck 公式、Ising 模型、格子气和格子 Boltzmann、Navier–Stokes 方程与湍流；五个在浏览器里当场计算的演示和 56 篇核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "光学 · Optics": [
+  "tools/build-seo.ts"
+ ],
+ "光学八章：波和惠更斯–菲涅耳原理、干涉与相干性、菲涅耳和夫琅禾费衍射、光栅与光谱仪、X 射线晶体衍射、偏振与菲涅耳公式、几何光学与像差、傅里叶光学与阿贝成像、超分辨显微镜；十二个在浏览器里当场计算的演示和 46 篇核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "核磁共振 · NMR": [

@@ -154,7 +154,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['2θ ≈ 43.3°；(100) 和 (110) 因面心格子的消光而缺失。', '2θ ≈ 43.3°; (100) and (110) are absent because of the face-centred lattice.'],
       },
-      site: [['spectra/index.html#m-scxrd', ['谱图馆 · 单晶 X 射线衍射', 'Spectra Hall · single-crystal X-ray diffraction']], ['spectra/index.html#m-pxrd', ['谱图馆 · 粉末衍射', 'Spectra Hall · powder diffraction']], ['atlas/index.html', ['数据库目录：CSD、ICSD、PDB', 'Database catalogue: CSD, ICSD, PDB']]],
+      site: [['optics/index.html#c-xray', ['光学 · X 射线与晶体衍射（布拉格和粉末衍射演示）', 'Optics · X-rays and crystal diffraction (Bragg and powder demos)']], ['spectra/index.html#m-scxrd', ['谱图馆 · 单晶 X 射线衍射', 'Spectra Hall · single-crystal X-ray diffraction']], ['spectra/index.html#m-pxrd', ['谱图馆 · 粉末衍射', 'Spectra Hall · powder diffraction']], ['atlas/index.html', ['数据库目录：CSD、ICSD、PDB', 'Database catalogue: CSD, ICSD, PDB']]],
       refs: ['friedrich1913', 'bragg1913', 'karle1950', 'sheldrick2008', 'groom2016', 'franklin1953', 'watson1953', 'kendrew1958'],
     },
     {

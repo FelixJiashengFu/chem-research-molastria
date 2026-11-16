@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/macro/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/macro/index.html', '/optics/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -3533,6 +3533,57 @@ check('Heat, Statistics and Flow: nav entry, three chapters, five live demos, qu
   await finish(e);
 });
 
+check('Optics: nav entry, eight chapters, twelve live demos (wave tank, Bragg, Jones, Abbe), quiz, references, English', async () => {
+  const p = await open();
+  await go(p, '/optics/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_OPTICS_READY);
+  const settle = () => p.waitForTimeout(200);
+  const read = (id) => text(p, `#chm-panel [data-demo=${id}] .fs-readout`);
+  assert.equal(await p.getAttribute('.cr-header a[data-id=optics]', 'aria-current'), 'page', 'the nav entry is current');
+  assert.equal(await p.locator('.chm-ch').count(), 8);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 12);
+  // Chapter 1: the wave tank from Fe’s page runs by itself; its canvases are painted and the single-slit readout is λ/a.
+  assert.ok(await p.locator('#chm-panel math').count() >= 5, 'MathML formulas render');
+  await p.waitForTimeout(600);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas is painted');
+  assert.match(await read('tank'), /sin θ = λ\/a\s*0\.296/);
+  await p.click('#chm-panel [data-demo=tank] [data-preset="5"]'); await settle(); // 泊松亮斑
+  assert.equal(await p.inputValue('#chm-panel [data-demo=tank] select'), 'obstacle');
+  assert.match(await read('tank'), /泊松|亮斑|N_F/);
+  // Chapter 5: tuned to the first order the Bragg phasors line up; NaCl’s (200) peak sits at 31.70°.
+  await p.selectOption('#chm-select', 'xray'); await settle();
+  assert.equal(await p.evaluate(() => location.hash), '#c-xray');
+  await p.click('#chm-panel [data-demo=bragg] [data-preset="0"]'); await settle();
+  assert.match(await read('bragg'), /2d sin θ \/ λ\s*1\.000[\s\S]*1\.000/);
+  await p.click('#chm-panel [data-demo=powder] [data-preset="0"]'); await settle();
+  assert.match(await text(p, '#chm-panel [data-demo=powder] .opt-peaks'), /2002\.820\d31\.70/);
+  // Chapter 6: three polarisers pass one eighth.
+  await p.click('#chm-next'); await settle();
+  await p.click('#chm-panel [data-demo=jones] [data-preset="0"]'); await settle();
+  assert.match(await read('jones'), /0\.1250（1\/8）/);
+  // Chapter 8: Abbe imaging, the ±1 orders just in vs just out.
+  await p.selectOption('#chm-select', 'fourier'); await settle();
+  await p.click('#chm-panel [data-demo=abbe] [data-preset="0"]'); await settle();
+  assert.match(await read('abbe'), /0, ±1/);
+  await p.click('#chm-panel [data-demo=abbe] [data-preset="1"]'); await settle();
+  assert.match(await read('abbe'), /只有零级/);
+  assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-optics')).seen)).includes('fourier'));
+  await p.check('#chm-quiz-list .chm-q[data-q="7"] input[value="3"]');
+  assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="7"] .chm-why'), /答对了/);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 46);
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/optics/index.html?lang=en#c-polarization');
+  await e.waitForFunction(() => window.MOLASTRIA_OPTICS_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#chm-h1'), /Optics/);
+  assert.match(await text(e, '#chm-panel'), /Brewster[\s\S]*Jones/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('NMR: nav entry, eleven parts, eight method families, timeline, five working demos, references, English', async () => {
   const p = await open();
   await go(p, '/nmr/index.html');
@@ -3832,7 +3883,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html', '/optics/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5349,7 +5400,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/macro/index.html', '/optics/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);

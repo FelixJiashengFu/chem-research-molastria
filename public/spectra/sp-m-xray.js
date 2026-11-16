@@ -41,7 +41,7 @@
       figs: [
         { gen: 'pxrd', args: { pick: ['NaCl', 'KCl', 'MgO', 'CsCl', 'Si', 'C', 'ZnS', 'CaF2', 'Cu', 'Al', 'Au', 'Fe', 'W', 'TiO2'] }, cap: T(`由晶体结构算出（实测的晶胞参数和原子位置，Cu Kα₁，包括原子散射因子、多重性和 Lorentz–偏振因子，不含温度因子）。NaCl 的 (111) 只有最强峰的 8 %；换成 KCl，(111) 几乎没有了。拖动晶粒尺寸看 Scherrer 展宽。`, `Calculated from crystal structures (measured cell parameters and atom positions, Cu Kα₁, with atomic scattering factors, multiplicities and the Lorentz–polarisation factor, without thermal factors). The (111) peak of NaCl is only 8 % of the strongest; switch to KCl and it almost disappears. Vary the crystallite size to see Scherrer broadening.`) },
       ],
-      see: [['#lab-xrd', T(`动手实验室：粉末衍射`, `Hands-on lab: powder diffraction`)]],
+      see: [['optics/#c-xray', T(`光学栏目：布拉格反射和粉末衍射的两个演示`, `Optics: two demos on Bragg reflection and powder diffraction`)], ['#lab-xrd', T(`动手实验室：粉末衍射`, `Hands-on lab: powder diffraction`)]],
       refs: ['bragg1913', 'patterson1939', 'rietveld1969', 'ong2013'],
     },
     {
@@ -78,6 +78,7 @@
         { gen: 'fourier1d', cap: T(`模型计算：一维“晶体”里三个原子的电子密度，用越来越多的衍射级次做傅里叶合成。只用最低的几级时原子糊成一片；级次越多（分辨率越高），峰越尖，轻原子也显出来。这就是“分辨率”的含义。`, `Model calculation: the electron density of three atoms in a one-dimensional "crystal", synthesised from more and more diffraction orders. With only the lowest few the atoms blur together; the more orders (the higher the resolution), the sharper the peaks, until the light atom appears as well. This is what resolution means.`) },
       ],
       refs: ['bragg1913', 'sheldrick2008', 'flack1983'],
+      see: [['optics/#c-xray', T(`光学栏目：晶体衍射、结构因子和相位问题`, `Optics: crystal diffraction, structure factors and the phase problem`)]],
     },
     {
       id: 'xps', fam: 'xray', core: true, abbr: 'XPS · ESCA', name: T(`X 射线光电子能谱`, `X-ray photoelectron spectroscopy`),
