@@ -35,7 +35,7 @@ export default {
   notes: {
     map: ['每张卡片是一章。标签是这一章主体内容的身份；章里的要点各自另有标签。读过的章会打上记号（只记在这台设备上）。', 'Each card is a chapter. The label gives the status of the bulk of the chapter; key points inside carry their own labels. Chapters you have opened are ticked (on this device only).'],
     history: ['年份是论文或著作发表的年份。', 'Years are publication years.'],
-    path: ['想接着往下读，化学学科馆的[[chemistry/physical/|物理化学馆]]有更多化学上的热力学和统计力学，[[nmr/|核磁共振]]栏目里有弛豫和自旋体系的统计。', 'To read on, the [[chemistry/physical/|Physical Chemistry hall]] has more of the thermodynamics and statistical mechanics used in chemistry, and the [[nmr/|NMR]] section covers relaxation and the statistics of spin systems.'],
+    path: ['想接着往下读，化学学科馆的[[chemistry/physical/|物理化学馆]]有更多化学上的热力学和统计力学，[[nmr/|核磁共振]]栏目里有弛豫和自旋体系的统计，[[nequip/|NequIP]] 讲怎样用机器学习势把分子动力学做到接近量子化学的精度。', 'To read on, the [[chemistry/physical/|Physical Chemistry hall]] has more of the thermodynamics and statistical mechanics used in chemistry, the [[nmr/|NMR]] section covers relaxation and the statistics of spin systems, and [[nequip/|NequIP]] shows how machine-learned potentials bring molecular dynamics close to quantum-chemical accuracy.'],
     library: ['共 {n} 篇。有 DOI 的逐条在 OpenAlex（数据来自 Crossref）查过题目、作者、年份和卷号（2026 年 11 月，node tools/macro-refs.mjs 可以重查）；没有 DOI 的一篇对过 arXiv 的官方记录。', '{n} references. Those with a DOI were looked up one by one in OpenAlex (which draws on Crossref) for title, authors, year and volume (November 2026; node tools/macro-refs.mjs re-checks them); the one without a DOI was checked against the official arXiv record.'],
   },
   milestones: [
