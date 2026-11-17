@@ -3,8 +3,9 @@
    with a question for a headline and a link into the section it comes from. This script:
    - draws the current figure on one canvas (a requestAnimationFrame loop that stops when the plate is off screen, the
      tab is hidden, or the visitor asked for reduced motion; then one still frame is drawn);
-   - turns the page every DWELL seconds (the old page is copied onto a leaf that swings shut on the spine), or when a
-     chip on the belt, the arrows, or ← → ask for another plate; the belt under the plate runs on its own (CSS);
+   - turns the page every DWELL seconds, or when a chip on the belt, the arrows, or ← → ask for another plate, or when a
+     finger or the mouse pulls the page over: the page curls like paper (home-curl.js; without WebGL the old page is
+     copied onto a leaf that swings shut on the spine); the belt under the plate runs on its own (CSS);
    - fills the bar from a quick keyword, and counts the four figures under the hero up when they come into view.
    The words are written here in both languages (the plate is translate="no"): a figure's labels are drawn, not text.
    Colours come from the --st-* variables on .stage, so the plates follow the light and the dark theme. */
@@ -264,7 +265,7 @@
   const N = FIGS.length, pad = (i) => String(i + 1).padStart(2, '0');
 
   // ── the page ──
-  let cur = -1, t0 = 0, raf = 0, seen = true, held = false, timer = 0, dpr = 1;
+  let cur = -1, t0 = 0, raf = 0, seen = true, held = false, gripped = false, timer = 0, dpr = 1;
   function size() {
     const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return false;
     const k = w < 470 ? w / 470 : 1; dpr = Math.min(2.5, devicePixelRatio || 1); W = w / k; H = h / k;
@@ -284,25 +285,39 @@
     const go = seen && !document.hidden && !reduce.matches;
     if (go && !raf) raf = requestAnimationFrame(frame_); else if (!go && raf) { cancelAnimationFrame(raf); raf = 0; }
     if (!go) paint(performance.now());
-    clearTimeout(timer); if (go && !held) timer = setTimeout(() => show(cur + 1, 1, true), Math.max(1200, DWELL * 1000 - (performance.now() - t0)));
+    clearTimeout(timer); if (go && !held && !gripped) timer = setTimeout(() => show(cur + 1, 1, true), Math.max(1200, DWELL * 1000 - (performance.now() - t0)));
   }
   function words(i) {
     const f = FIGS[i]; $no.textContent = 'FIG. ' + pad(i); $sec.textContent = tx(...f.sec); $q.textContent = tx(...f.q); $cap.textContent = tx(...f.cap);
     $go.href = f.href; $go.firstElementChild.textContent = tx('进入', 'Open ') + tx(...f.sec).split(' · ')[0]; canvas.setAttribute('aria-label', tx(...f.cap));
   }
+  // Put plate i on the live page now; the returned function puts back the one that was there (a turn let go of).
+  function swap(i) {
+    const keep = [cur, t0];
+    const set = (j, at) => { cur = j; t0 = at; words(j); for (const b of track.children) b.setAttribute('aria-pressed', String(+b.dataset.i === j)); paint(performance.now()); sync(); };
+    set(i, performance.now());
+    return () => set(...keep);
+  }
+  // The page curls like paper (home-curl.js, WebGL): the arrows, the keys, the timer and the belt play a turn, and a
+  // finger or the mouse can pull the page over. Without WebGL the old page is copied onto a leaf that swings shut.
+  const curl = window.MolAstriaCurl?.(plate, {
+    turn: (dir, to = cur + dir) => { const u = swap((to % N + N) % N); return u; },
+    allowed: () => cur >= 0, reduce: () => reduce.matches,
+    hold: (on) => { gripped = on; if (on) stage.dataset.picked = '1'; sync(); },
+  }) || null;
   function show(i, dir = 1, auto = false) {
     i = (i % N + N) % N; if (i === cur) return;
-    if (cur >= 0 && !reduce.matches && seen && !document.hidden && canvas.width) { // the old page becomes a leaf and turns
+    if (!auto) stage.dataset.picked = '1';
+    const turn = cur >= 0 && !reduce.matches && seen && !document.hidden && canvas.width;
+    if (turn && curl) { curl.play(dir, i); return; }
+    if (turn) { // the old page becomes a leaf and turns
       plate.querySelectorAll('.st-leaf').forEach((l) => l.remove());
       const leaf = page.cloneNode(true), c2 = leaf.querySelector('canvas'); leaf.removeAttribute('id'); leaf.className = 'st-page st-leaf' + (dir < 0 ? ' is-back' : ''); leaf.setAttribute('aria-hidden', 'true'); leaf.inert = true;
       leaf.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
       c2.width = canvas.width; c2.height = canvas.height; c2.getContext('2d').drawImage(canvas, 0, 0);
       plate.append(leaf); leaf.addEventListener('animationend', () => leaf.remove()); setTimeout(() => leaf.remove(), 1400);
     }
-    cur = i; t0 = performance.now(); words(i);
-    for (const b of track.children) b.setAttribute('aria-pressed', String(+b.dataset.i === i));
-    paint(t0); sync();
-    if (!auto) stage.dataset.picked = '1';
+    swap(i);
   }
   // Every plate's words take the same room, so turning a page never moves the rest of the first screen.
   function level() {

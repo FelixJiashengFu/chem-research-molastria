@@ -1919,12 +1919,14 @@ check('home hero: the book of figures draws a real plot for each of its plates, 
   }
   for (const h of hrefs) assert.equal((await p.request.get(SITE + '/' + h)).status(), 200, h);
   assert.ok(hrefs.size >= 9, 'the plates lead into many sections');
-  // The page turns: a leaf with the old picture swings over the new one and is gone again; the words never change the plate's height.
+  // The page turns: the old page curls over like paper (WebGL, over the new one, which is live at once) and is gone again;
+  // the words never change the plate's height.
   const tall = await p.$eval('#st-plate', (e) => e.offsetHeight);
   await p.click('#st-next');
-  assert.equal(await p.textContent('#st-no'), 'FIG. 01'); assert.equal(await p.$$eval('.st-leaf', (l) => l.length), 1);
-  assert.equal(await p.$eval('.st-leaf', (l) => l.querySelector('.st-no b').textContent), 'FIG. ' + n, 'the leaf shows the page that is leaving');
-  await p.waitForFunction(() => !document.querySelector('.st-leaf'), null, { timeout: 3000 });
+  assert.equal(await p.textContent('#st-no'), 'FIG. 01'); assert.equal(await p.$$eval('.st-curl:not([hidden])', (l) => l.length), 1, 'the curl is drawn');
+  await p.waitForTimeout(500);
+  assert.equal(await p.$eval('.st-curl', (c) => !c.hidden && c.width > 0), true, 'half way, the page is still curling');
+  await p.waitForFunction(() => document.querySelector('.st-curl').hidden, null, { timeout: 3000 });
   await p.click('#st-prev'); assert.equal(await p.textContent('#st-no'), 'FIG. ' + n);
   await p.focus('#st-next'); await p.keyboard.press('ArrowRight'); assert.equal(await p.textContent('#st-no'), 'FIG. 01');
   assert.equal(await p.$eval('#st-plate', (e) => e.offsetHeight), tall, 'no jump between plates');
@@ -1936,6 +1938,13 @@ check('home hero: the book of figures draws a real plot for each of its plates, 
   await p.hover('#st-belt'); await p.waitForTimeout(100); const b1 = await beltAt(); await p.waitForTimeout(400); assert.ok(Math.abs((await beltAt()) - b1) < 0.5, 'and stops under the pointer');
   const shot = () => p.$eval('#st-fig', (c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0; for (let i = 0; i < d.length; i += 64) s += d[i] * (1 + (i % 251)); return s; });
   const s0 = await shot(); await p.waitForTimeout(900); assert.notEqual(await shot(), s0, 'the figure animates');
+  // A hand pulls the page: a short pull falls back, a long one turns it; neither counts as a click on the figure.
+  const pr = await p.$eval('#st-plate', (e) => { const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; });
+  const pullTo = async (fx) => { await p.mouse.move(pr.x + pr.w - 30, pr.y + pr.h * 0.4); await p.mouse.down(); await p.mouse.move(pr.x + pr.w * fx, pr.y + pr.h * 0.38, { steps: 8 }); await p.waitForTimeout(150); await p.mouse.up(); await p.waitForFunction(() => document.querySelector('.st-curl').hidden, null, { timeout: 3000 }); };
+  const was = await p.textContent('#st-no');
+  await pullTo(0.86); assert.equal(await p.textContent('#st-no'), was, 'a short pull falls back'); assert.match(p.url(), /index\.html$/);
+  await pullTo(0.2); assert.notEqual(await p.textContent('#st-no'), was, 'a long pull turns the page'); assert.match(p.url(), /index\.html$/);
+  await p.click('#st-prev'); await p.waitForFunction(() => document.querySelector('.st-curl').hidden, null, { timeout: 3000 }); assert.equal(await p.textContent('#st-no'), was);
   // A click on the figure goes to its section.
   await Promise.all([p.waitForURL(/\/spectra\/index\.html/), p.click('#st-fig')]);
   // A quick keyword fills the bar; the figures under the hero are doors.
@@ -1975,7 +1984,12 @@ check('home hero: the book of figures draws a real plot for each of its plates, 
   const sum = () => q.$eval('#st-fig', (c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0; for (let i = 0; i < d.length; i += 64) s += d[i] * (1 + (i % 251)); return s; });
   const f0 = await sum(); await q.waitForTimeout(700); assert.equal(await sum(), f0);
   assert.equal(await q.$eval('.st-track', (t) => getComputedStyle(t).animationName), 'none');
-  await q.click('#st-next'); assert.equal(await q.textContent('#st-no'), 'FIG. 02'); assert.equal(await q.$$eval('.st-leaf', (l) => l.length), 0);
+  await q.click('#st-next'); assert.equal(await q.textContent('#st-no'), 'FIG. 02'); assert.equal(await q.$$eval('.st-leaf, .st-curl:not([hidden])', (l) => l.length), 0);
+  // A swipe still turns the page, at once and without the curl.
+  const qr = await q.$eval('#st-plate', (e) => { const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; });
+  await q.mouse.move(qr.x + qr.w - 30, qr.y + qr.h * 0.4); await q.mouse.down(); await q.mouse.move(qr.x + qr.w * 0.3, qr.y + qr.h * 0.4, { steps: 6 });
+  assert.equal(await q.$$eval('.st-curl:not([hidden])', (l) => l.length), 0); await q.mouse.up();
+  assert.equal(await q.textContent('#st-no'), 'FIG. 03');
   await finish(q);
 });
 check('first screen: the home search box is at the top, typing waits for a pause, Enter jumps to the results; touch inputs are 16 px; the header and drawn pages do not jump', async () => {

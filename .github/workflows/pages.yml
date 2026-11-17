@@ -52,8 +52,8 @@ jobs:
         run: node --test tools/quantum-computing-test.mjs
       - name: NMR models and content
         run: node --test tools/nmr-test.mjs
-      - name: Home figures models
-        run: node --test tools/home-figs-test.mjs
+      - name: Home figures models and page curl
+        run: node --test tools/home-figs-test.mjs tools/home-curl-test.mjs
       - name: News explainers models and content
         run: node --test tools/news-test.mjs
       - name: U of T zone and company map content
