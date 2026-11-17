@@ -8629,6 +8629,16 @@
  "optics 光学 光 light wave 波动 干涉 interference 衍射 diffraction 单缝 双缝 slit young 杨氏 光栅 grating 菲涅耳 fresnel 夫琅禾费 fraunhofer 艾里斑 airy 瑞利 rayleigh 布拉格 bragg x射线 xrd 偏振 polarization polarisation 布儒斯特 brewster jones 透镜 lens 像差 aberration 光纤 fiber 傅里叶光学 fourier 阿贝 abbe 相衬 phase contrast 全息 hologram 超分辨 super-resolution 惠更斯 huygens 迈克耳孙 michelson 相干 coherence 薄膜 thin film": [
   "shared-nav.js"
  ],
+ "准粒子": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "声子、空穴、费米液体、磁振子、激子、极化子、等离激元、极化激元、库珀对和任意子十二章，附十三个演示；另有九章的声子馆": [
+  "shared-nav.js"
+ ],
+ "声子馆": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -17860,6 +17870,21 @@
   "tools/build-seo.ts"
  ],
  "91 种分析方法的谱图怎么来、怎么读：红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法；开放许可的实测质谱、量化计算的红外拉曼紫外谱、78 个交互演示、16 张速查表和 178 篇文献，每张图都写明来源。": [
+  "tools/build-seo.ts"
+ ],
+ "准粒子 · Quasiparticles": [
+  "tools/build-seo.ts"
+ ],
+ "准粒子十二章：什么是准粒子（谱函数判据）、声子、空穴和有效质量、费米液体、磁振子、激子、极化子、等离激元、极化激元、库珀对和 Bogoliubov 准粒子、任意子和 Majorana、怎样测量准粒子（中子、光谱、ARPES）；十三个在浏览器里当场计算的演示和 57 篇按 DOI 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "声子 · Phonons": [
+  "tools/build-seo.ts"
+ ],
+ "声子馆九章：一维原子链、双原子链和光学支、三维晶体和布里渊区、声子的量子化和态密度、热容（Einstein 和 Debye）、中子散射和拉曼、非谐性与热膨胀、晶格热导率、冻结声子和机器学习势；十一个在浏览器里当场计算的演示和 53 篇核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "声子": [
   "tools/build-seo.ts"
  ],
  "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [

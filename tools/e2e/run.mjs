@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -3629,6 +3629,87 @@ check('NequIP: nav entry, eight chapters, ten live demos (equivariance, spherica
   await finish(e);
 });
 
+check('Quasiparticles: nav entry, twelve chapters, thirteen live demos (spectral function, holes, Feynman polaron, BCS, Kitaev chain, ARPES), quiz, references, English', async () => {
+  const p = await open();
+  await go(p, '/quasiparticles/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_QUASI_READY);
+  const settle = () => p.waitForTimeout(200);
+  const read = (id) => text(p, `#chm-panel [data-demo=${id}] .fs-readout`);
+  assert.equal(await p.getAttribute('.cr-header a[data-id=quasi]', 'aria-current'), 'page', 'the nav entry is current');
+  assert.equal(await p.locator('.chm-ch').count(), 12);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 13);
+  assert.ok(await p.locator('#chm-panel math').count() >= 3, 'MathML formulas render');
+  await p.waitForTimeout(400);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas is painted');
+  assert.match(await read('spectral'), /好的准粒子/);
+  // Chapter 2 links to the phonon hall.
+  await p.selectOption('#chm-select', 'phonons'); await settle();
+  assert.equal(await p.evaluate(() => location.hash), '#c-phonons');
+  assert.ok(await p.locator('#chm-panel a[href*="quasiparticles/phonons/"]').count() >= 1, 'links to the phonon hall');
+  // Chapter 3: a full band carries no current; electrons and holes give the same current.
+  await p.selectOption('#chm-select', 'holes'); await settle();
+  await p.click('#chm-panel [data-demo=band] [data-preset="2"]'); await settle();
+  const band = await read('band'), cur = [...band.matchAll(/电流([−-]?\d+\.\d{6})/g)].map((m) => m[1]);
+  assert.equal(cur.length, 2); assert.equal(cur[0], cur[1], 'electron and hole currents agree');
+  // Chapter 7: Feynman’s polaron at α = 3.
+  await p.selectOption('#chm-select', 'polarons'); await settle();
+  assert.match(await read('polaron'), /−3\.1333/);
+  // Chapter 10: weak-coupling BCS gives 2Δ/k_BT_c = 3.53.
+  await p.selectOption('#chm-select', 'cooper'); await settle();
+  assert.match(await read('bcs'), /3\.52\d/);
+  // Chapter 11: at the sweet spot the Majorana modes sit entirely on the two end sites.
+  await p.click('#chm-next'); await settle();
+  await p.click('#chm-panel [data-demo=kitaev] [data-preset="0"]'); await settle();
+  assert.match(await read('kitaev'), /拓扑相[\s\S]*100\.0 %/);
+  // Chapter 12: the ARPES velocity is divided by 1 + λ.
+  await p.click('#chm-next'); await settle();
+  assert.match(await read('arpes'), /0\.625/);
+  assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-quasi')).seen)).includes('measure'));
+  await p.check('#chm-quiz-list .chm-q[data-q="0"] input[value="1"]');
+  assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="0"] .chm-why'), /答对了/);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 57);
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/quasiparticles/index.html?lang=en#c-anyons');
+  await e.waitForFunction(() => window.MOLASTRIA_QUASI_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#chm-h1'), /Quasiparticles/);
+  assert.match(await text(e, '#chm-panel'), /anyons[\s\S]*Majorana/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
+check('Phonon hall: under Quasiparticles in the nav, nine chapters, eleven live demos, quiz, references, English', async () => {
+  const p = await open();
+  await go(p, '/quasiparticles/phonons/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_PHONON_READY);
+  const settle = () => p.waitForTimeout(200);
+  assert.equal(await p.getAttribute('.cr-header a[data-id=quasi]', 'aria-current'), 'page', 'the Quasiparticles nav entry is current');
+  assert.equal(await p.locator('.chm-ch').count(), 9);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 11);
+  for (const id of ['chain', 'quantum', 'heat', 'compute']) {
+    await p.selectOption('#chm-select', id); await settle(); await p.waitForTimeout(300);
+    assert.equal(await p.evaluate(() => location.hash), `#c-${id}`);
+    assert.ok(await p.locator('#chm-panel math').count() >= 3, `MathML formulas render in ${id}`);
+    assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), `every canvas is painted in ${id}`);
+  }
+  await p.check('#chm-quiz-list .chm-q[data-q="0"] input[value="1"]');
+  assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="0"] .chm-why'), /答对了/);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 53);
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/quasiparticles/phonons/index.html?lang=en#c-transport');
+  await e.waitForFunction(() => window.MOLASTRIA_PHONON_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#chm-h1'), /Phonons/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
 check('NMR: nav entry, eleven parts, eight method families, timeline, five working demos, references, English', async () => {
   const p = await open();
   await go(p, '/nmr/index.html');
@@ -3928,7 +4009,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5445,7 +5526,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
