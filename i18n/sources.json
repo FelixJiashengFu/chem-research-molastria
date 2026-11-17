@@ -8733,6 +8733,16 @@
  "nequip allegro mace e3nn 等变 equivariant 机器学习势 machine learning potential mlip 原子间势 interatomic potential 力场 force field 球谐 spherical harmonics 张量积 tensor product clebsch gordan 图神经网络 gnn 消息传递 message passing 分子动力学 md": [
   "shared-nav.js"
  ],
+ "化学机器学习": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "分子怎样变成数字、高斯过程、贝叶斯优化、主动学习、生成模型、自驱实验室和评估的陷阱，十章十七个演示": [
+  "shared-nav.js"
+ ],
+ "chemistry machine learning 化学机器学习 ml 指纹 fingerprint ecfp tanimoto smiles 高斯过程 gaussian process 贝叶斯优化 bayesian optimization 主动学习 active learning 生成模型 generative 自驱实验室 self-driving lab qsar 骨架划分 scaffold split 数据泄漏 leakage 校准 calibration": [
+  "shared-nav.js"
+ ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
   "shared-nav.js"
  ],
@@ -17927,6 +17937,9 @@
   "tools/build-seo.ts"
  ],
  "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "化学机器学习十章：为什么用机器学习、分子表示（SMILES、指纹、Coulomb 矩阵）、高斯过程、神经网络和消息传递、贝叶斯优化、主动学习、生成模型、自驱实验室、评估的陷阱（骨架划分、数据泄漏、校准）、前沿；十七个在浏览器里当场计算的演示和 64 篇核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "前沿 AI 数学 · Frontier AI Mathematics": [
