@@ -1,0 +1,46 @@
+const r = String.raw;
+export default {
+  id: 'lie', level: 'proved', demos: ['su2'],
+  title: ['李群：连续的对称性、转动群和自旋', 'Lie groups: continuous symmetry, the rotation group and spin'],
+  summary: ['转动可以转任意角度，这样的群叫李群。李群的性质几乎都写在它的“无穷小生成元”和它们的对易关系（李代数）里。这一章讲 SO(3) 和它的生成元、角动量对易关系的来历、SU(2) 怎样双重覆盖 SO(3)（自旋 ½ 转 360° 变号）、单李代数的分类，以及 SU(3) 和八重法。', 'Rotations can be by any angle; groups like that are Lie groups. Almost everything about a Lie group is written in its “infinitesimal generators” and their commutation relations (its Lie algebra). This chapter covers SO(3) and its generators, where the angular-momentum commutation relations come from, how SU(2) double-covers SO(3) (a spin ½ changes sign after 360°), the classification of simple Lie algebras, and SU(3) and the eightfold way.'],
+  body: [
+    [r`点群的元素是有限个，转动群 SO(3) 的元素却连续地依赖三个参数（转轴的方向两个、转角一个）。这样的群叫**李群**，以 Sophus Lie 命名。李群的关键想法是：每个转动都可以由一串“几乎不转”的转动叠成，所以只要知道单位元附近的样子就够了。绕 z 轴转一个小角度 $\varepsilon$，$R \approx 1 - i\varepsilon J_z$，$J_z$ 叫**生成元**；有限的转动是它的指数：`,
+     r`A point group has finitely many elements, but the elements of the rotation group SO(3) depend continuously on three parameters (two for the axis direction, one for the angle). Such a group is a **Lie group**, after Sophus Lie. The key idea is that every rotation can be built from a string of “barely turning” ones, so knowing the neighbourhood of the identity is enough. Turn by a small angle $\varepsilon$ about z: $R \approx 1 - i\varepsilon J_z$, and $J_z$ is a **generator**; a finite rotation is its exponential:`],
+    { math: r`R(\hat{\mathbf n}, \theta) = e^{-i\theta\,\hat{\mathbf n}\cdot\mathbf J}, \qquad [J_x, J_y] = iJ_z,\ \ [J_y, J_z] = iJ_x,\ \ [J_z, J_x] = iJ_y` },
+    [r`对易关系不是另外假设的，它来自转动本身不对易：先绕 x 转、再绕 y 转，和顺序反过来，差一个绕 z 的小转动。生成元和它们的对易关系叫**李代数**。量子力学里的角动量算符满足的正是这组关系（取 $\hbar = 1$），所以“角动量”和“转动群的生成元”是同一件事；由 Noether 定理，转动对称性对应角动量守恒 [@noether1918]。从这三条对易关系出发，纯代数就推出 $J^2$ 的本征值是 $j(j+1)$、$J_z$ 的本征值是 $m = -j, \ldots, j$，$j$ 可以是整数**或半整数**。`,
+     r`The commutation relations are not an extra assumption: they come from rotations themselves not commuting. Turning about x then y differs from the reverse order by a small turn about z. The generators and their commutators make up the **Lie algebra**. Angular-momentum operators in quantum mechanics obey exactly these relations (with $\hbar = 1$), so “angular momentum” and “generators of the rotation group” are the same thing; by Noether’s theorem rotational symmetry gives conservation of angular momentum [@noether1918]. From the three relations alone, pure algebra shows that $J^2$ has eigenvalues $j(j+1)$ and $J_z$ has $m = -j, \ldots, j$, where $j$ may be an integer **or a half-integer**.`],
+    { h: ['自旋 ½ 和 SU(2)', 'Spin ½ and SU(2)'] },
+    [r`半整数从哪里来？三维转动矩阵组成的 SO(3) 只容纳整数 $j$；半整数属于另一个群 **SU(2)**：行列式为 1 的 2 × 2 幺正矩阵。它的李代数和 SO(3) 的一模一样（生成元是 Pauli 矩阵的一半），但整体不一样：每个三维转动 $R$ 对应**两个** SU(2) 矩阵 $\pm U$。沿着一个轴把角度从 0 转到 2π，$R$ 回到单位矩阵，$U$ 却到了 $-1$；要转到 4π 才回到 $+1$。数学上说 SU(2) 是 SO(3) 的双重覆盖。`,
+     r`Where do half-integers come from? SO(3), the group of 3 × 3 rotation matrices, only accommodates integer $j$; half-integers belong to another group, **SU(2)**: 2 × 2 unitary matrices with determinant 1. Its Lie algebra is identical to that of SO(3) (the generators are half the Pauli matrices), but globally it differs: every three-dimensional rotation $R$ corresponds to **two** SU(2) matrices $\pm U$. Turn the angle about an axis from 0 to 2π and $R$ returns to the identity while $U$ arrives at $-1$; only at 4π does it come back to $+1$. Mathematically, SU(2) is the double cover of SO(3).`],
+    { demo: 'su2' },
+    [r`这个负号不是数学上的游戏。1975 年两个中子干涉实验把中子束分成两路，一路经过磁场让中子自旋进动，再让两路重新相干：干涉条纹随进动角的周期是 $4\pi$ 而不是 $2\pi$，直接看到了转 360° 后的负号 [@rauch1975, werner1975]。化学里它也处处可见：电子是自旋 ½ 的，所以含奇数个电子的分子要用点群的“双值群”（double group）来分类自旋–轨道耦合后的能级。`,
+     r`The minus sign is not a mathematical game. In 1975 two neutron-interferometry experiments split a neutron beam in two, let the spins in one path precess in a magnetic field, and recombined the paths: the interference fringes repeated every $4\pi$ of precession, not $2\pi$, directly showing the sign change after 360° [@rauch1975, werner1975]. It shows up in chemistry too: electrons have spin ½, so molecules with an odd number of electrons need the “double groups” of the point groups to classify levels once spin–orbit coupling is included.`],
+    { h: ['单李代数的分类', 'The classification of simple Lie algebras'] },
+    [r`1888 年起 Killing 开始系统地研究所有可能的李代数 [@killing1888]，Cartan 在 1894 年把分类补全：复的单李代数只有四个无穷族 $A_n$（SU(n+1)）、$B_n$（SO(2n+1)）、$C_n$（Sp(2n)）、$D_n$（SO(2n)），外加五个例外 $G_2, F_4, E_6, E_7, E_8$。这是数学里最漂亮的分类定理之一。物理学用到的几乎全在里面：转动 SU(2)、强相互作用的 SU(3)、Lorentz 群的 SO(3,1)，弦论和大统一理论里的 $E_8$。`,
+     r`From 1888 Killing set out to study every possible Lie algebra systematically [@killing1888], and Cartan completed the classification in 1894: the complex simple Lie algebras are just four infinite families, $A_n$ (SU(n+1)), $B_n$ (SO(2n+1)), $C_n$ (Sp(2n)) and $D_n$ (SO(2n)), plus five exceptions, $G_2, F_4, E_6, E_7, E_8$. It is one of the most beautiful classification theorems in mathematics, and nearly everything physics uses is in it: SU(2) for rotations, SU(3) for the strong interaction, SO(3,1) for the Lorentz group, and $E_8$ in string theory and grand unification.`],
+    { h: ['SU(3) 和八重法', 'SU(3) and the eightfold way'] },
+    [r`1950 年代加速器里发现了几十种强子，看起来杂乱无章。1961 年 Ne’eman [@neeman1961] 和 Gell-Mann [@gellmann1962] 各自注意到：把它们按同位旋和奇异数排开，正好填进 SU(3) 的 8 维和 10 维不可约表示（“八重法”）。10 维表示里还空着一个位置，Gell-Mann 预言了一个电荷 −1、奇异数 −3、质量约 1680 MeV 的粒子 Ω⁻；1964 年它在 Brookhaven 被找到，质量 1672 MeV。同一年 Gell-Mann 提出这些表示来自更基本的 3 维表示，即夸克 [@gellmann1964]。今天的标准模型就是规范群 SU(3) × SU(2) × U(1) 上的 Yang–Mills 理论 [@yangmills1954]。`,
+     r`In the 1950s accelerators turned up dozens of hadrons with no apparent order. In 1961 Ne’eman [@neeman1961] and Gell-Mann [@gellmann1962] independently noticed that, laid out by isospin and strangeness, they fill exactly the 8- and 10-dimensional irreps of SU(3) (the “eightfold way”). One slot of the 10 was empty, and Gell-Mann predicted a particle with charge −1, strangeness −3 and mass near 1680 MeV, the Ω⁻; it was found at Brookhaven in 1964 with mass 1672 MeV. That same year Gell-Mann proposed that these representations come from a more basic 3-dimensional one: quarks [@gellmann1964]. Today’s Standard Model is a Yang–Mills theory on the gauge group SU(3) × SU(2) × U(1) [@yangmills1954].`],
+  ],
+  points: [
+    [['生成元和李代数', 'Generators and the Lie algebra'], ['R = e^{−iθ n·J}；李群在单位元附近的结构由生成元的对易关系决定。', 'R = e^{−iθ n·J}; near the identity a Lie group is determined by its generators’ commutators.'], 'proved'],
+    [['角动量就是转动的生成元', 'Angular momentum generates rotations'], ['[J_x, J_y] = iJ_z 推出 j(j+1) 和 m = −j…j，j 可以是半整数。', '[J_x, J_y] = iJ_z gives j(j+1) and m = −j…j, with j possibly half-integer.'], 'proved'],
+    [['SU(2) 双重覆盖 SO(3)', 'SU(2) double-covers SO(3)'], ['每个转动对应 ±U；自旋 ½ 转 2π 变号，4π 才回来。', 'Each rotation corresponds to ±U; a spin ½ changes sign after 2π and returns after 4π.'], 'proved'],
+    [['4π 周期被测到', 'The 4π period is measured'], ['1975 年两个中子干涉实验。', 'Two neutron-interferometry experiments in 1975.'], 'tested'],
+    [['单李代数的分类', 'Classification of simple Lie algebras'], ['四个无穷族加五个例外（Killing–Cartan）。', 'Four infinite families plus five exceptions (Killing–Cartan).'], 'proved'],
+  ],
+  math: [
+    [r`U(\hat{\mathbf n}, \theta) = \cos\frac\theta2\,\mathbb 1 - i\sin\frac\theta2\,\hat{\mathbf n}\cdot\boldsymbol\sigma, \qquad U(\hat{\mathbf n}, 2\pi) = -\mathbb 1`, ['SU(2) 的元素。', 'An element of SU(2).']],
+    [r`R_{ij} = \tfrac12\,\mathrm{tr}\bigl(\sigma_i\,U\,\sigma_j\,U^\dagger\bigr), \qquad R(U) = R(-U)`, ['从 SU(2) 到 SO(3) 的二对一映射。', 'The two-to-one map from SU(2) to SO(3).']],
+    [r`J^2|j, m\rangle = j(j+1)|j, m\rangle, \qquad J_\pm|j, m\rangle = \sqrt{j(j+1) - m(m\pm1)}\;|j, m\pm1\rangle`, ['只用对易关系推出的角动量谱。', 'The angular-momentum spectrum, derived from the commutators alone.']],
+  ],
+  example: {
+    q: [r`绕 z 轴转 θ，自旋向上态 $|\!\uparrow\rangle$ 变成什么？转 2π 和 4π 时呢？`, r`What does a rotation by θ about z do to the spin-up state $|\!\uparrow\rangle$? And at 2π and 4π?`],
+    steps: [
+      [r`$U = \cos\frac\theta2 - i\sin\frac\theta2\,\sigma_z$，$\sigma_z|\!\uparrow\rangle = |\!\uparrow\rangle$。`, r`$U = \cos\frac\theta2 - i\sin\frac\theta2\,\sigma_z$ and $\sigma_z|\!\uparrow\rangle = |\!\uparrow\rangle$.`],
+      [r`所以 $U|\!\uparrow\rangle = e^{-i\theta/2}|\!\uparrow\rangle$：态没变，只多了一个相位。`, r`So $U|\!\uparrow\rangle = e^{-i\theta/2}|\!\uparrow\rangle$: the state is unchanged apart from a phase.`],
+      [r`θ = 2π 时相位是 $e^{-i\pi} = -1$；θ = 4π 时是 $+1$。`, r`At θ = 2π the phase is $e^{-i\pi} = -1$; at θ = 4π it is $+1$.`],
+    ],
+    a: [r`单独一个态的整体相位测不出来，但让转过的和没转的两部分干涉，负号就变成可测的相消：这正是中子干涉实验做的事。演示里右边的图就是 $\langle\uparrow|U|\uparrow\rangle$ 在复平面上走的路。`, r`An overall phase of a single state cannot be measured, but interfere a rotated part with an unrotated one and the minus sign becomes measurable cancellation: exactly what the neutron interferometers did. The right-hand figure in the demo is the path of $\langle\uparrow|U|\uparrow\rangle$ in the complex plane.`],
+  },
+};

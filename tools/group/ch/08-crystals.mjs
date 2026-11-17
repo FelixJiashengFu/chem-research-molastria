@@ -1,0 +1,53 @@
+const r = String.raw;
+export default {
+  id: 'crystals', level: 'proved', demos: ['wallpaper', 'restrict'],
+  title: ['晶体：平移、空间群和为什么没有五次轴', 'Crystals: translations, space groups and why there are no five-fold axes'],
+  summary: ['晶体的对称性比分子多一样东西：平移。平移和转动、反射组合，产生螺旋轴和滑移面，一共只有 230 种空间群；平面上只有 17 种壁纸群。平移还限制了转动只能是 1、2、3、4、6 次。这一章讲格子、晶系、点群和空间群、Hermann–Mauguin 记号、晶体学限制定理和准晶，以及今天怎样用程序判定空间群。', 'A crystal’s symmetry has one thing a molecule’s lacks: translations. Combined with rotations and reflections they produce screw axes and glide planes, and there are only 230 space groups; in the plane, only 17 wallpaper groups. Translations also restrict rotations to 1-, 2-, 3-, 4- and 6-fold. This chapter covers lattices, crystal systems, point and space groups, Hermann–Mauguin symbols, the crystallographic restriction and quasicrystals, and how programs determine space groups today.'],
+  body: [
+    [r`理想晶体是一个图案在三个方向上无限重复。把图案的每个拷贝挪到下一个的平移 $\mathbf t = n_1\mathbf a_1 + n_2\mathbf a_2 + n_3\mathbf a_3$（$n_i$ 是整数）构成一个无限的交换群，它的点阵叫**格子**。晶体的全部对称操作叫**空间群**，一般的操作写成 $\{R\,|\,\mathbf t\}$：先做一个点操作 $R$，再平移 $\mathbf t$。和分子不一样，这里的 $\mathbf t$ 可以是格子平移的一个分数：转 180° 再沿轴走半个晶胞是**二重螺旋轴** $2_1$，反射再沿面走半个晶胞是**滑移面**。它们没有分子里的对应物，却是晶体里最常见的对称元素（有机分子晶体最常见的空间群 $P2_1/c$ 就有螺旋轴和滑移面，大约占三分之一）。`,
+     r`An ideal crystal is one motif repeated without end in three directions. The translations $\mathbf t = n_1\mathbf a_1 + n_2\mathbf a_2 + n_3\mathbf a_3$ (integer $n_i$) that move each copy onto the next form an infinite abelian group, whose points are the **lattice**. The full set of a crystal’s symmetry operations is its **space group**, whose general element is written $\{R\,|\,\mathbf t\}$: a point operation $R$ followed by a translation $\mathbf t$. Unlike in molecules, $\mathbf t$ may be a fraction of a lattice translation: a half-turn followed by half a cell along the axis is a **two-fold screw axis** $2_1$, and a reflection followed by half a cell along the plane is a **glide plane**. They have no molecular counterpart, yet they are the commonest symmetry elements in crystals (the commonest space group of organic molecular crystals, $P2_1/c$, has both, and accounts for roughly a third of them).`],
+    { table: { head: [['层次', 'Level'], ['数目', 'Number'], ['它数的是什么', 'What it counts']], rows: [
+      [['晶系', 'Crystal systems'], ['7', '7'], ['格子的形状：三斜、单斜、正交、四方、三方、六方、立方', 'Lattice shapes: triclinic, monoclinic, orthorhombic, tetragonal, trigonal, hexagonal, cubic']],
+      [['Bravais 格子', 'Bravais lattices'], ['14', '14'], ['加上带心（体心 I、面心 F、底心 C）', 'Adding centring (body I, face F, base C)']],
+      [['晶体学点群', 'Crystallographic point groups'], ['32', '32'], ['只含 1、2、3、4、6 次轴的点群；决定宏观性质（压电、热电、光学活性）', 'Point groups with only 1-, 2-, 3-, 4-, 6-fold axes; they decide macroscopic properties (piezo- and pyroelectricity, optical activity)']],
+      [['空间群', 'Space groups'], ['230', '230'], ['加上螺旋轴和滑移面；1891 年由 Fedorov 和 Schoenflies 各自独立列全', 'Adding screw axes and glides; listed completely and independently by Fedorov and Schoenflies in 1891']],
+      [['平面：壁纸群', 'Plane: wallpaper groups'], ['17', '17'], ['二维的空间群（Fedorov 1891、Pólya 1924）', 'Two-dimensional space groups (Fedorov 1891, Pólya 1924)']],
+    ], cap: ['三维里如果把手性对映的一对算成一个，空间群是 219 种。', 'In three dimensions, counting each enantiomorphic pair once gives 219 space groups.'] } },
+    { h: ['十七种壁纸群', 'The seventeen wallpaper groups'] },
+    [r`在平面上，格子只有五种（斜方、矩形、带心矩形、正方、六方），点操作只有转动和镜面，再加上滑移，组合出恰好 17 种重复花样。Pólya 1924 年把它们画成一页图 [@polya1924]，据说 Escher 正是从这页图里学会怎样设计密铺的。阿尔罕布拉宫的瓷砖里能找到其中的绝大多数。下面的演示用一面不对称的“小旗”当图案，按每个群的全部操作复制再铺满平面：同一个操作复制出来的旗子同色。`,
+     r`In the plane there are only five lattices (oblique, rectangular, centred rectangular, square, hexagonal), the point operations are rotations and mirrors, and with glides they combine into exactly 17 repeating patterns. Pólya drew them all on one page in 1924 [@polya1924], and Escher is said to have learned to design tilings from that page. Most of them can be found in the tilework of the Alhambra. The demo below uses an asymmetric “flag” as the motif, copies it with every operation of a group and tiles the plane: flags made by the same operation share a colour.`],
+    { demo: 'wallpaper' },
+    [r`读名字的规则（Hermann–Mauguin 记号）：p 是简单格子，c 是带心；后面依次是主轴的次数和沿不同方向的镜面 m、滑移 g。p4gm 有四次轴、沿一个方向是滑移、沿另一个方向是镜面。三维的空间群名字也这样读，比如 $Fm\bar3m$（NaCl、Cu）、$P6_3/mmc$（Mg、石墨）、$Fd\bar3m$（金刚石、硅）。`,
+     r`Reading the names (Hermann–Mauguin symbols): p is a primitive lattice and c a centred one; then come the order of the principal axis and, direction by direction, mirrors m and glides g. p4gm has a four-fold axis, a glide along one set of directions and a mirror along another. Three-dimensional space-group symbols read the same way, e.g. $Fm\bar3m$ (NaCl, Cu), $P6_3/mmc$ (Mg, graphite), $Fd\bar3m$ (diamond, silicon).`],
+    { h: ['晶体学限制定理', 'The crystallographic restriction'] },
+    [r`周期晶体的转动只能是 1、2、3、4、6 次。证明只要两行：在格子基底里，把格点变成格点的转动矩阵的每个元素都是整数，所以迹是整数；换到笛卡儿基底是相似变换，迹不变，等于 $1 + 2\cos(2\pi/n)$（二维是 $2\cos(2\pi/n)$）。$\cos(2\pi/n)$ 只能取 $0, \pm\tfrac12, \pm1$，对应 $n = 1, 2, 3, 4, 6$。直观的说法是正五边形铺不满平面。`,
+     r`The rotations of a periodic crystal can only be 1-, 2-, 3-, 4- or 6-fold. The proof takes two lines: in the lattice basis, a rotation that sends lattice points to lattice points has integer entries, so its trace is an integer; changing to a Cartesian basis is a similarity transformation that leaves the trace unchanged, equal to $1 + 2\cos(2\pi/n)$ ($2\cos(2\pi/n)$ in 2D). $\cos(2\pi/n)$ can only be $0, \pm\tfrac12, \pm1$, giving $n = 1, 2, 3, 4, 6$. Intuitively, regular pentagons cannot tile the plane.`],
+    { demo: 'restrict' },
+    [r`所以 1984 年 Shechtman 报告急冷的 Al–Mn 合金有清晰的十次（二十面体）衍射斑点时，很多人不相信 [@shechtman1984]。答案是：这种材料有**长程的取向序**，却没有平移周期，叫**准晶**。它们的衍射图可以理解成高维（六维）周期格子在三维里的投影。Shechtman 因此获得 2011 年诺贝尔化学奖，国际晶体学联合会也把“晶体”的定义从“周期排列”改成了“衍射图主要由尖锐斑点组成”。`,
+     r`So when Shechtman reported in 1984 that rapidly quenched Al–Mn alloys gave sharp diffraction spots with ten-fold (icosahedral) symmetry, many did not believe it [@shechtman1984]. The resolution: such materials have **long-range orientational order** but no translational period, and are called **quasicrystals**. Their diffraction patterns can be understood as projections of a higher-dimensional (six-dimensional) periodic lattice into three dimensions. Shechtman received the 2011 Nobel Prize in Chemistry, and the International Union of Crystallography changed its definition of “crystal” from “periodic arrangement” to “a diffraction pattern consisting mainly of sharp spots”.`],
+    { h: ['今天怎样判定空间群', 'How space groups are determined today'] },
+    [r`实验上，空间群从衍射图的对称性和**系统消光**读出来：螺旋轴和滑移面让某些衍射斑点恰好抵消（比如 $2_1$ 轴让 $(0k0)$ 里 k 为奇数的斑点消失），见[[optics/#c-xray|光学 · X 射线晶体衍射]]。计算上，给出原子坐标，程序在容差内找出全部对称操作并定出空间群：材料数据库和第一性原理程序几乎都用 spglib [@togo2024]；国际晶体学表的全部数据（每个群的一般位置、Wyckoff 位置、子群关系、不可约表示）可以在 Bilbao 晶体学服务器上查到和计算 [@aroyo2006]。这一章演示里的壁纸群操作就是照国际晶体学表 A 卷的一般位置写的。`,
+     r`Experimentally, the space group is read from the symmetry of the diffraction pattern and from **systematic absences**: screw axes and glides make certain reflections cancel exactly (a $2_1$ axis, for instance, removes the $(0k0)$ spots with odd k); see [[optics/#c-xray|Optics · X-ray crystal diffraction]]. Computationally, given atomic coordinates a program finds every symmetry operation within a tolerance and identifies the space group: materials databases and first-principles codes almost all use spglib [@togo2024]; all of the International Tables data (general positions, Wyckoff positions, subgroup relations and irreps for every group) can be looked up and computed on the Bilbao Crystallographic Server [@aroyo2006]. The wallpaper-group operations in this chapter’s demo are written from the general positions in International Tables volume A.`],
+  ],
+  points: [
+    [['空间群元素 {R | t}', 'Space-group elements {R | t}'], ['点操作加平移；t 可以是格子平移的分数，于是有螺旋轴和滑移面。', 'A point operation plus a translation; t can be a fraction of a lattice vector, giving screw axes and glides.'], 'proved'],
+    [['7、14、32、230', '7, 14, 32, 230'], ['晶系、Bravais 格子、晶体学点群和空间群的数目都是定理。', 'The numbers of crystal systems, Bravais lattices, crystallographic point groups and space groups are theorems.'], 'proved'],
+    [['17 种壁纸群', '17 wallpaper groups'], ['平面上周期花样的对称性恰好 17 种。', 'Periodic patterns in the plane have exactly 17 kinds of symmetry.'], 'proved'],
+    [['晶体学限制', 'Crystallographic restriction'], ['tr R 在格子基底里是整数，所以只有 n = 1、2、3、4、6。', 'tr R is an integer in the lattice basis, so only n = 1, 2, 3, 4, 6.'], 'proved'],
+    [['准晶', 'Quasicrystals'], ['有五次、十次对称的尖锐衍射，但没有平移周期；稳定性的来源仍有争论。', 'Sharp diffraction with five- or ten-fold symmetry but no translational period; what stabilises them is still debated.'], 'tested'],
+  ],
+  math: [
+    [r`\{R\,|\,\mathbf t\}\,\mathbf r = R\mathbf r + \mathbf t, \qquad \{R\,|\,\mathbf t\}\{S\,|\,\mathbf u\} = \{RS\,|\,R\mathbf u + \mathbf t\}`, ['Seitz 记号和空间群的乘法。', 'Seitz notation and multiplication in a space group.']],
+    [r`\mathrm{tr}\,R = 1 + 2\cos\frac{2\pi}{n} \in \mathbb Z \;\Longrightarrow\; n \in \{1, 2, 3, 4, 6\}`, ['晶体学限制定理。', 'The crystallographic restriction theorem.']],
+    [r`F(hkl) = \sum_j f_j\,e^{2\pi i(hx_j + ky_j + lz_j)}, \qquad 2_1 \parallel b:\ F(0,2m{+}1,0) = 0`, ['结构因子和螺旋轴造成的系统消光。', 'The structure factor and a systematic absence caused by a screw axis.']],
+  ],
+  example: {
+    q: [r`为什么 $2_1$ 螺旋轴（沿 b）会让 $(0k0)$ 里 k 为奇数的衍射消失？`, r`Why does a $2_1$ screw axis along b remove the $(0k0)$ reflections with odd k?`],
+    steps: [
+      [r`$2_1$ 把原子 $(x, y, z)$ 送到 $(-x, y + \tfrac12, -z)$，所以原子成对出现，散射因子相同。`, r`$2_1$ sends an atom at $(x, y, z)$ to $(-x, y + \tfrac12, -z)$, so atoms come in pairs with the same scattering factor.`],
+      [r`对 $(0k0)$ 只有 y 坐标出现在相位里：一对的贡献是 $f\,e^{2\pi iky}\bigl(1 + e^{\pi ik}\bigr)$。`, r`For $(0k0)$ only the y coordinate enters the phase: one pair contributes $f\,e^{2\pi iky}\bigl(1 + e^{\pi ik}\bigr)$.`],
+      [r`k 为奇数时 $e^{\pi ik} = -1$，括号为零；每一对都抵消，整个 $F(0k0) = 0$。`, r`For odd k, $e^{\pi ik} = -1$ and the bracket vanishes; every pair cancels and the whole $F(0k0) = 0$.`],
+    ],
+    a: [r`螺旋轴让每对原子沿 b 方向错开半个晶胞，奇数级的衍射正好相消。晶体学家就是靠这样的消光规律从衍射图里读出螺旋轴和滑移面，再缩小到少数几个候选空间群。`, r`The screw axis offsets each pair by half a cell along b, so odd orders cancel exactly. Crystallographers read screw axes and glides from such absence patterns and narrow the space group down to a few candidates.`],
+  },
+};

@@ -1,0 +1,52 @@
+const r = String.raw;
+export default {
+  id: 'reps', level: 'proved', demos: ['chartable'],
+  title: ['表示和特征标表', 'Representations and character tables'],
+  summary: ['把每个对称操作写成一个矩阵，矩阵的乘法照抄群的乘法，这就是群的表示。表示可以拆成不能再拆的“不可约表示”，它们的迹（特征标）排成一张特征标表。这一章讲表示、等价和可约、正交定理、特征标表怎么读、Mulliken 记号，以及直积和“积分什么时候一定为零”。', 'Write each symmetry operation as a matrix whose multiplication copies the group’s: that is a representation. Representations split into pieces that cannot be split further, the irreducible representations, whose traces (characters) are laid out in a character table. This chapter covers representations, equivalence and reducibility, the orthogonality theorem, how to read a character table, Mulliken notation, and direct products and when an integral must vanish.'],
+  body: [
+    [r`群的一个**表示**是给每个元素 $g$ 配一个可逆矩阵 $D(g)$，让矩阵的乘法照抄群的乘法：$D(g)D(h) = D(gh)$。最直接的例子：点群的操作作用在坐标 $(x, y, z)$ 上，就是一组 3 × 3 矩阵。但表示不只这一种。水分子的两个 H 1s 轨道、三个原子的九个位移、一个 d 轨道组，在对称操作下都会互相变换，各自给出一个表示。**同一个群可以有无数个表示**，这正是它有用的地方：任何“一组在对称操作下互相变换的东西”都是表示的“基”。`,
+     r`A **representation** of a group assigns an invertible matrix $D(g)$ to each element $g$ so that matrix multiplication copies the group’s: $D(g)D(h) = D(gh)$. The most direct example: point-group operations acting on the coordinates $(x, y, z)$ give a set of 3 × 3 matrices. But that is not the only one. The two H 1s orbitals of water, the nine displacements of its three atoms, a set of d orbitals: each is mixed among itself by the symmetry operations and gives a representation. **One group has endlessly many representations**, which is exactly why they are useful: any “set of things that symmetry operations mix among themselves” is a basis for one.`],
+    [r`如果换一组基（$D \to SDS^{-1}$），矩阵全变了，但表示“本质上”没变，叫**等价表示**。如果能找到一组基，让所有矩阵同时变成块对角，表示就**可约**，拆成几个更小的表示的直和；拆到不能再拆的叫**不可约表示**（irrep）。在 $C_{3v}$ 里，$z$ 自己就是一个一维表示（每个操作都让 $z$ 不变），$(x, y)$ 则被 $C_3$ 转成彼此的组合，拆不开，是一个二维不可约表示 $E$。`,
+     r`Change basis ($D \to SDS^{-1}$) and every matrix changes, but the representation is “essentially” the same: an **equivalent representation**. If some basis makes all the matrices block-diagonal at once, the representation is **reducible** and splits into a direct sum of smaller ones; pieces that cannot be split further are **irreducible representations** (irreps). In $C_{3v}$, $z$ alone is a one-dimensional representation (every operation leaves $z$ unchanged), while $(x, y)$ is turned into mixtures of itself by $C_3$ and cannot be separated: a two-dimensional irrep, $E$.`],
+    { h: ['特征标：一个数代替一个矩阵', 'Characters: one number instead of a matrix'] },
+    [r`矩阵太多，信息也太多。表示的**特征标**是每个矩阵的迹 $\chi(g) = \mathrm{tr}\,D(g)$。迹在换基底时不变，所以等价表示的特征标相同；同一共轭类的元素特征标也相同（$\mathrm{tr}(SDS^{-1}) = \mathrm{tr}\,D$）。于是一个表示只要每个类一个数就记下来了。更妙的是，**有限群的表示由特征标完全决定**，这要归功于下面这条定理：`,
+     r`Matrices are many and carry too much information. The **character** of a representation is the trace of each matrix, $\chi(g) = \mathrm{tr}\,D(g)$. Traces do not change under a change of basis, so equivalent representations have the same characters, and so do elements of the same class ($\mathrm{tr}(SDS^{-1}) = \mathrm{tr}\,D$). A representation is therefore recorded with one number per class. Even better, **a representation of a finite group is completely determined by its characters**, thanks to this theorem:`],
+    { math: r`\frac{1}{h}\sum_{g\in G}\chi^{(i)}(g)^*\,\chi^{(j)}(g) = \delta_{ij}`, cap: ['特征标的正交关系：不同不可约表示的特征标“向量”正交（h 是群的阶）。', 'Orthogonality of characters: the character “vectors” of different irreps are orthogonal (h is the order of the group).'] },
+    [r`它是 Schur 引理和“大正交定理”的推论。由它推出几条特征标表的结构规则，可以用来检查或者从零补全一张表：`,
+     r`It follows from Schur’s lemma and the “great orthogonality theorem”. Several structural rules for character tables follow, enough to check a table or complete one from scratch:`],
+    { list: [
+      [r`不可约表示的个数**等于**共轭类的个数，所以特征标表是方的。`, r`The number of irreps **equals** the number of conjugacy classes, so the table is square.`],
+      [r`各不可约表示的维数平方和等于群的阶：$\sum_i d_i^2 = h$。$C_{3v}$：$1 + 1 + 4 = 6$；$O_h$：$1+1+4+9+9+1+1+4+9+9 = 48$。`, r`The squared dimensions of the irreps add up to the group order: $\sum_i d_i^2 = h$. $C_{3v}$: $1 + 1 + 4 = 6$; $O_h$: $1+1+4+9+9+1+1+4+9+9 = 48$.`],
+      [r`表的行按类的大小加权正交，列也正交。总有一行全是 1：全对称表示。`, r`Rows are orthogonal when weighted by class sizes, and so are columns. One row is always all 1s: the totally symmetric representation.`],
+      [r`$E$ 那一列就是维数（单位矩阵的迹）。`, r`The $E$ column gives the dimensions (the trace of an identity matrix).`],
+    ] },
+    { demo: 'chartable' },
+    { h: ['怎么读一张特征标表', 'How to read a character table'] },
+    [r`表的左上角是点群，第一行是共轭类（“$2C_3$”表示这个类有两个元素），左边一列是不可约表示的 **Mulliken 记号** [@mulliken1955]：$A$、$B$ 是一维（对主轴转动对称或反对称），$E$ 是二维，$T$ 是三维；下标 g、u 表示在反演下对称（gerade）或反对称（ungerade）；撇号 ′、″ 表示对 $\sigma_h$ 对称或反对称；下标 1、2 区分对 $C_2$ 或 $\sigma_v$ 的对称性。右边两列列出按这个表示变换的函数：$x, y, z$（和电偶极矩一样，决定红外活性和电偶极跃迁），$R_x, R_y, R_z$（转动），二次函数 $x^2, xy, \ldots$（和极化率一样，决定拉曼活性；也是 d 轨道的形状）。Bethe 1929 年第一次把这样的表用到晶体里原子能级的分裂上 [@bethe1929]。`,
+     r`The top-left corner names the point group, the first row lists the classes (“$2C_3$” means the class has two elements), and the left column gives the irreps in **Mulliken notation** [@mulliken1955]: $A$ and $B$ are one-dimensional (symmetric or antisymmetric under the principal rotation), $E$ two-dimensional, $T$ three-dimensional; subscripts g and u mean symmetric (gerade) or antisymmetric (ungerade) under inversion; primes ′ and ″ mean symmetric or antisymmetric under $\sigma_h$; subscripts 1 and 2 distinguish symmetry under a $C_2$ or $\sigma_v$. The two right-hand columns list functions that transform as each irrep: $x, y, z$ (like the electric dipole, deciding IR activity and electric-dipole transitions), $R_x, R_y, R_z$ (rotations) and quadratic functions $x^2, xy, \ldots$ (like the polarisability, deciding Raman activity; also the shapes of the d orbitals). Bethe was the first to apply such tables to the splitting of atomic levels in crystals, in 1929 [@bethe1929].`],
+    { h: ['直积和“一定为零的积分”', 'Direct products and integrals that must vanish'] },
+    [r`两个表示的直积（张量积）的特征标是两者特征标的乘积。由此得到化学里用得最多的一条规则：积分 $\int \psi_a^*\,\hat O\,\psi_b\,d\tau$ 只有在 $\Gamma_a \otimes \Gamma_O \otimes \Gamma_b$ 含有全对称表示时才可能不为零。原因是积分对全空间求，结果必须在每个对称操作下不变；不含全对称分量的被积函数，正负两半恰好抵消。这条规则一次性给出：哪些原子轨道能组合成分子轨道（{{ch:orbitals}}）、哪些振动有红外或拉曼信号（{{ch:vibrations}}）、哪些电子跃迁被允许（Laporte 规则 [@laporte1925]）。演示里点两行，读数会告诉你它们的直积含不含全对称表示。`,
+     r`The character of a direct (tensor) product of two representations is the product of their characters. This gives the rule chemists use most: an integral $\int \psi_a^*\,\hat O\,\psi_b\,d\tau$ can be non-zero only if $\Gamma_a \otimes \Gamma_O \otimes \Gamma_b$ contains the totally symmetric representation. The reason: the integral is over all space, so its value must be unchanged by every symmetry operation; an integrand with no totally symmetric part cancels between its positive and negative halves. In one stroke this decides which atomic orbitals can combine into molecular orbitals ({{ch:orbitals}}), which vibrations show in IR or Raman ({{ch:vibrations}}) and which electronic transitions are allowed (the Laporte rule [@laporte1925]). Click two rows in the demo and the readout says whether their product contains the totally symmetric irrep.`],
+  ],
+  points: [
+    [['表示', 'Representations'], ['D(g)D(h) = D(gh)；任何一组在对称操作下互相变换的东西都是一个表示的基。', 'D(g)D(h) = D(gh); any set of things mixed among themselves by symmetry operations is a basis for one.'], 'proved'],
+    [['特征标决定表示', 'Characters determine representations'], ['有限群的两个表示等价，当且仅当特征标相同。', 'Two representations of a finite group are equivalent if and only if they have the same characters.'], 'proved'],
+    [['表是方的', 'The table is square'], ['不可约表示数 = 类数；Σ dᵢ² = h；行、列都正交。', 'Number of irreps = number of classes; Σ dᵢ² = h; rows and columns are orthogonal.'], 'proved'],
+    [['非交换才有简并', 'Degeneracy needs non-commutativity'], ['交换群的不可约表示全是一维的，所以没有对称性保护的简并。', 'Every irrep of an abelian group is one-dimensional, so there is no symmetry-protected degeneracy.'], 'proved'],
+    [['积分为零的规则', 'The vanishing-integral rule'], ['⟨a|Ô|b⟩ 不为零的必要条件是 Γₐ ⊗ Γ_O ⊗ Γ_b 含全对称表示。', '⟨a|Ô|b⟩ can be non-zero only if Γa ⊗ ΓO ⊗ Γb contains the totally symmetric irrep.'], 'proved'],
+  ],
+  math: [
+    [r`\sum_{g} D^{(i)}_{mn}(g)^*\,D^{(j)}_{m'n'}(g) = \frac{h}{d_i}\,\delta_{ij}\,\delta_{mm'}\,\delta_{nn'}`, ['大正交定理（幺正的不可约表示）。', 'The great orthogonality theorem (for unitary irreps).']],
+    [r`\sum_i d_i^2 = h, \qquad \#\{\text{irreps}\} = \#\{\text{classes}\}`, ['特征标表的两条结构规则。', 'Two structural rules for character tables.']],
+    [r`\chi^{(a\otimes b)}(g) = \chi^{(a)}(g)\,\chi^{(b)}(g)`, ['直积的特征标。', 'Characters of a direct product.']],
+  ],
+  example: {
+    q: [r`$C_{3v}$ 的类是 $E$、$2C_3$、$3\sigma_v$，已知 $A_1 = (1, 1, 1)$、$A_2 = (1, 1, -1)$。只用结构规则求出第三个不可约表示的特征标。`, r`The classes of $C_{3v}$ are $E$, $2C_3$, $3\sigma_v$, and $A_1 = (1, 1, 1)$, $A_2 = (1, 1, -1)$ are known. Find the characters of the third irrep using only the structural rules.`],
+    steps: [
+      [r`三个类，所以三个不可约表示。$1^2 + 1^2 + d^2 = 6$，所以 $d = 2$，$\chi(E) = 2$。`, r`Three classes, so three irreps. $1^2 + 1^2 + d^2 = 6$ gives $d = 2$, so $\chi(E) = 2$.`],
+      [r`设 $\chi = (2, a, b)$。和 $A_1$ 正交：$2 + 2a + 3b = 0$；和 $A_2$ 正交：$2 + 2a - 3b = 0$。`, r`Write $\chi = (2, a, b)$. Orthogonal to $A_1$: $2 + 2a + 3b = 0$; to $A_2$: $2 + 2a - 3b = 0$.`],
+      [r`相减得 $b = 0$，再得 $a = -1$。自己和自己的内积 $(4 + 2 + 0)/6 = 1$，确实不可约。`, r`Subtracting gives $b = 0$, then $a = -1$. Its inner product with itself is $(4 + 2 + 0)/6 = 1$: it is indeed irreducible.`],
+    ],
+    a: [r`$E = (2, -1, 0)$。这就是 $(x, y)$ 的表示：$C_3$ 转 120°，迹是 $2\cos 120° = -1$；镜面把一个方向留下、一个翻过来，迹是 0。`, r`$E = (2, -1, 0)$. This is the representation carried by $(x, y)$: $C_3$ turns by 120° with trace $2\cos 120° = -1$; a mirror keeps one direction and flips the other, trace 0.`],
+  },
+};
