@@ -14,6 +14,20 @@
   "note": null
  },
  {
+  "id": "andrews1869",
+  "authors": "Thomas Andrews",
+  "year": 1869,
+  "title": "The Bakerian Lecture: On the continuity of the gaseous and liquid states of matter",
+  "journal": "Philosophical Transactions of the Royal Society of London",
+  "vol": "159",
+  "pages": "575–590",
+  "doi": "10.1098/rstl.1869.0021",
+  "arxiv": "",
+  "url": "",
+  "short": "Andrews 1869",
+  "note": null
+ },
+ {
   "id": "aw1970",
   "authors": "B. J. Alder, T. E. Wainwright",
   "year": 1970,
@@ -98,6 +112,20 @@
   "note": null
  },
  {
+  "id": "binder1981",
+  "authors": "K. Binder",
+  "year": 1981,
+  "title": "Finite size scaling analysis of Ising model block distribution functions",
+  "journal": "Zeitschrift für Physik B",
+  "vol": "43",
+  "pages": "119–140",
+  "doi": "10.1007/BF01293604",
+  "arxiv": "",
+  "url": "",
+  "short": "Binder 1981",
+  "note": null
+ },
+ {
   "id": "bousso2002",
   "authors": "Raphael Bousso",
   "year": 2002,
@@ -109,6 +137,20 @@
   "arxiv": "hep-th/0203101",
   "url": "",
   "short": "Bousso 2002",
+  "note": null
+ },
+ {
+  "id": "bpz1984",
+  "authors": "A. A. Belavin, A. M. Polyakov, A. B. Zamolodchikov",
+  "year": 1984,
+  "title": "Infinite conformal symmetry in two-dimensional quantum field theory",
+  "journal": "Nuclear Physics B",
+  "vol": "241",
+  "pages": "333–380",
+  "doi": "10.1016/0550-3213(84)90052-X",
+  "arxiv": "",
+  "url": "",
+  "short": "Belavin et al. 1984",
   "note": null
  },
  {
@@ -140,6 +182,20 @@
   "note": null
  },
  {
+  "id": "campostrini2002",
+  "authors": "Massimo Campostrini et al.",
+  "year": 2002,
+  "title": "Critical exponents and equation of state of the three-dimensional Heisenberg universality class",
+  "journal": "Physical Review B",
+  "vol": "65",
+  "pages": "144520",
+  "doi": "10.1103/PhysRevB.65.144520",
+  "arxiv": "",
+  "url": "",
+  "short": "Campostrini et al. 2002",
+  "note": null
+ },
+ {
   "id": "cd1998",
   "authors": "Shiyi Chen, Gary D. Doolen",
   "year": 1998,
@@ -165,6 +221,20 @@
   "arxiv": "",
   "url": "",
   "short": "Couder & Fort 2006",
+  "note": null
+ },
+ {
+  "id": "chester2020",
+  "authors": "Shai M. Chester et al.",
+  "year": 2020,
+  "title": "Carving out OPE space and precise O(2) model critical exponents",
+  "journal": "Journal of High Energy Physics",
+  "vol": "2020",
+  "pages": "06, 142",
+  "doi": "10.1007/JHEP06(2020)142",
+  "arxiv": "",
+  "url": "",
+  "short": "Chester et al. 2020",
   "note": null
  },
  {
@@ -196,6 +266,20 @@
   "note": null
  },
  {
+  "id": "elshowk2012",
+  "authors": "Sheer El-Showk et al.",
+  "year": 2012,
+  "title": "Solving the 3D Ising model with the conformal bootstrap",
+  "journal": "Physical Review D",
+  "vol": "86",
+  "pages": "025022",
+  "doi": "10.1103/PhysRevD.86.025022",
+  "arxiv": "",
+  "url": "",
+  "short": "El-Showk et al. 2012",
+  "note": null
+ },
+ {
   "id": "fhp1986",
   "authors": "U. Frisch, B. Hasslacher, Yves Pomeau",
   "year": 1986,
@@ -207,6 +291,62 @@
   "arxiv": "",
   "url": "",
   "short": "Frisch et al. 1986",
+  "note": null
+ },
+ {
+  "id": "fisher1967",
+  "authors": "M. E. Fisher",
+  "year": 1967,
+  "title": "The theory of equilibrium critical phenomena",
+  "journal": "Reports on Progress in Physics",
+  "vol": "30",
+  "pages": "615–730",
+  "doi": "10.1088/0034-4885/30/2/306",
+  "arxiv": "",
+  "url": "",
+  "short": "Fisher 1967",
+  "note": null
+ },
+ {
+  "id": "fisher1974",
+  "authors": "Michael E. Fisher",
+  "year": 1974,
+  "title": "The renormalization group in the theory of critical behavior",
+  "journal": "Reviews of Modern Physics",
+  "vol": "46",
+  "pages": "597–616",
+  "doi": "10.1103/RevModPhys.46.597",
+  "arxiv": "",
+  "url": "",
+  "short": "Fisher 1974",
+  "note": null
+ },
+ {
+  "id": "fl1991",
+  "authors": "Alan M. Ferrenberg, D. P. Landau",
+  "year": 1991,
+  "title": "Critical behavior of the three-dimensional Ising model: A high-resolution Monte Carlo study",
+  "journal": "Physical Review B",
+  "vol": "44",
+  "pages": "5081–5091",
+  "doi": "10.1103/PhysRevB.44.5081",
+  "arxiv": "",
+  "url": "",
+  "short": "Ferrenberg & Landau 1991",
+  "note": null
+ },
+ {
+  "id": "fxl2018",
+  "authors": "Alan M. Ferrenberg, Jiahao Xu, David P. Landau",
+  "year": 2018,
+  "title": "Pushing the limits of Monte Carlo simulations for the three-dimensional Ising model",
+  "journal": "Physical Review E",
+  "vol": "97",
+  "pages": "043301",
+  "doi": "10.1103/PhysRevE.97.043301",
+  "arxiv": "",
+  "url": "",
+  "short": "Ferrenberg et al. 2018",
   "note": null
  },
  {
@@ -235,6 +375,20 @@
   "arxiv": "",
   "url": "",
   "short": "Gottwald & Oliver 2009",
+  "note": null
+ },
+ {
+  "id": "guggenheim1945",
+  "authors": "E. A. Guggenheim",
+  "year": 1945,
+  "title": "The Principle of Corresponding States",
+  "journal": "The Journal of Chemical Physics",
+  "vol": "13",
+  "pages": "253–261",
+  "doi": "10.1063/1.1724033",
+  "arxiv": "",
+  "url": "",
+  "short": "Guggenheim 1945",
   "note": null
  },
  {
@@ -280,6 +434,20 @@
   "note": null
  },
  {
+  "id": "hm1976",
+  "authors": "R. Hocken, M. R. Moldover",
+  "year": 1976,
+  "title": "Ising Critical Exponents in Real Fluids: An Experiment",
+  "journal": "Physical Review Letters",
+  "vol": "37",
+  "pages": "29–32",
+  "doi": "10.1103/PhysRevLett.37.29",
+  "arxiv": "",
+  "url": "",
+  "short": "Hocken & Moldover 1976",
+  "note": null
+ },
+ {
   "id": "hpp1973",
   "authors": "J. Hardy, Yves Pomeau, O. de Pazzis",
   "year": 1973,
@@ -308,6 +476,20 @@
   "note": null
  },
  {
+  "id": "ising1925",
+  "authors": "Ernst Ising",
+  "year": 1925,
+  "title": "Beitrag zur Theorie des Ferromagnetismus",
+  "journal": "Zeitschrift für Physik",
+  "vol": "31",
+  "pages": "253–258",
+  "doi": "10.1007/BF02980577",
+  "arxiv": "",
+  "url": "",
+  "short": "Ising 1925",
+  "note": null
+ },
+ {
   "id": "jacobson1995",
   "authors": "Ted Jacobson",
   "year": 1995,
@@ -333,6 +515,34 @@
   "arxiv": "",
   "url": "",
   "short": "Jaynes 1957",
+  "note": null
+ },
+ {
+  "id": "kadanoff1966",
+  "authors": "Leo P. Kadanoff",
+  "year": 1966,
+  "title": "Scaling laws for Ising models near Tc",
+  "journal": "Physics Physique Fizika",
+  "vol": "2",
+  "pages": "263–272",
+  "doi": "10.1103/PhysicsPhysiqueFizika.2.263",
+  "arxiv": "",
+  "url": "",
+  "short": "Kadanoff 1966",
+  "note": null
+ },
+ {
+  "id": "kadanoff1976",
+  "authors": "Leo P. Kadanoff",
+  "year": 1976,
+  "title": "Notes on Migdal's recursion formulas",
+  "journal": "Annals of Physics",
+  "vol": "100",
+  "pages": "359–394",
+  "doi": "10.1016/0003-4916(76)90066-X",
+  "arxiv": "",
+  "url": "",
+  "short": "Kadanoff 1976",
   "note": null
  },
  {
@@ -382,6 +592,34 @@
   "recordYear": 1991
  },
  {
+  "id": "kos2016",
+  "authors": "Filip Kos, David Poland, David Simmons-Duffin, Alessandro Vichi",
+  "year": 2016,
+  "title": "Precision islands in the Ising and O(N) models",
+  "journal": "Journal of High Energy Physics",
+  "vol": "2016",
+  "pages": "08, 036",
+  "doi": "10.1007/JHEP08(2016)036",
+  "arxiv": "",
+  "url": "",
+  "short": "Kos et al. 2016",
+  "note": null
+ },
+ {
+  "id": "kt1973",
+  "authors": "J. M. Kosterlitz, D. J. Thouless",
+  "year": 1973,
+  "title": "Ordering, metastability and phase transitions in two-dimensional systems",
+  "journal": "Journal of Physics C: Solid State Physics",
+  "vol": "6",
+  "pages": "1181–1203",
+  "doi": "10.1088/0022-3719/6/7/010",
+  "arxiv": "",
+  "url": "",
+  "short": "Kosterlitz & Thouless 1973",
+  "note": null
+ },
+ {
   "id": "landauer1961",
   "authors": "Rolf W. Landauer",
   "year": 1961,
@@ -424,6 +662,20 @@
   "note": null
  },
  {
+  "id": "lipa2003",
+  "authors": "J. A. Lipa et al.",
+  "year": 2003,
+  "title": "Specific heat of liquid helium in zero gravity very near the lambda point",
+  "journal": "Physical Review B",
+  "vol": "68",
+  "pages": "174518",
+  "doi": "10.1103/PhysRevB.68.174518",
+  "arxiv": "",
+  "url": "",
+  "short": "Lipa et al. 2003",
+  "note": null
+ },
+ {
   "id": "madelung1927",
   "authors": "Erwin Madelung",
   "year": 1927,
@@ -438,6 +690,20 @@
   "note": null
  },
  {
+  "id": "metropolis1953",
+  "authors": "Nicholas Metropolis, Arianna W. Rosenbluth, Marshall N. Rosenbluth, Augusta H. Teller, Edward Teller",
+  "year": 1953,
+  "title": "Equation of State Calculations by Fast Computing Machines",
+  "journal": "The Journal of Chemical Physics",
+  "vol": "21",
+  "pages": "1087–1092",
+  "doi": "10.1063/1.1699114",
+  "arxiv": "",
+  "url": "",
+  "short": "Metropolis et al. 1953",
+  "note": null
+ },
+ {
   "id": "meyer1996",
   "authors": "David A. Meyer",
   "year": 1996,
@@ -449,6 +715,20 @@
   "arxiv": "quant-ph/9604003",
   "url": "",
   "short": "Meyer 1996",
+  "note": null
+ },
+ {
+  "id": "mw1966",
+  "authors": "N. D. Mermin, H. Wagner",
+  "year": 1966,
+  "title": "Absence of Ferromagnetism or Antiferromagnetism in One- or Two-Dimensional Isotropic Heisenberg Models",
+  "journal": "Physical Review Letters",
+  "vol": "17",
+  "pages": "1133–1136",
+  "doi": "10.1103/PhysRevLett.17.1133",
+  "arxiv": "",
+  "url": "",
+  "short": "Mermin & Wagner 1966",
   "note": null
  },
  {
@@ -480,6 +760,20 @@
   "note": null
  },
  {
+  "id": "peierls1936",
+  "authors": "R. Peierls",
+  "year": 1936,
+  "title": "On Ising's model of ferromagnetism",
+  "journal": "Mathematical Proceedings of the Cambridge Philosophical Society",
+  "vol": "32",
+  "pages": "477–481",
+  "doi": "10.1017/S0305004100019174",
+  "arxiv": "",
+  "url": "",
+  "short": "Peierls 1936",
+  "note": null
+ },
+ {
   "id": "pomeau1984",
   "authors": "Yves Pomeau",
   "year": 1984,
@@ -505,6 +799,20 @@
   "arxiv": "quant-ph/0511225",
   "url": "",
   "short": "Popescu et al. 2006",
+  "note": null
+ },
+ {
+  "id": "pv2002",
+  "authors": "Andrea Pelissetto, Ettore Vicari",
+  "year": 2002,
+  "title": "Critical phenomena and renormalization-group theory",
+  "journal": "Physics Reports",
+  "vol": "368",
+  "pages": "549–727",
+  "doi": "10.1016/S0370-1573(02)00219-3",
+  "arxiv": "",
+  "url": "",
+  "short": "Pelissetto & Vicari 2002",
   "note": null
  },
  {
@@ -536,6 +844,20 @@
   "note": null
  },
  {
+  "id": "rushbrooke1963",
+  "authors": "G. S. Rushbrooke",
+  "year": 1963,
+  "title": "On the Thermodynamics of the Critical Region for the Ising Problem",
+  "journal": "The Journal of Chemical Physics",
+  "vol": "39",
+  "pages": "842–843",
+  "doi": "10.1063/1.1734338",
+  "arxiv": "",
+  "url": "",
+  "short": "Rushbrooke 1963",
+  "note": null
+ },
+ {
   "id": "shannon1948",
   "authors": "Claude E. Shannon",
   "year": 1948,
@@ -547,6 +869,20 @@
   "arxiv": "",
   "url": "",
   "short": "Shannon 1948",
+  "note": null
+ },
+ {
+  "id": "stanley1999",
+  "authors": "H. Eugene Stanley",
+  "year": 1999,
+  "title": "Scaling, universality, and renormalization: Three pillars of modern critical phenomena",
+  "journal": "Reviews of Modern Physics",
+  "vol": "71",
+  "pages": "S358–S366",
+  "doi": "10.1103/RevModPhys.71.S358",
+  "arxiv": "",
+  "url": "",
+  "short": "Stanley 1999",
   "note": null
  },
  {
@@ -575,6 +911,20 @@
   "arxiv": "hep-th/9601029",
   "url": "",
   "short": "Strominger & Vafa 1996",
+  "note": null
+ },
+ {
+  "id": "sw1987",
+  "authors": "Robert H. Swendsen, Jian-Sheng Wang",
+  "year": 1987,
+  "title": "Nonuniversal critical dynamics in Monte Carlo simulations",
+  "journal": "Physical Review Letters",
+  "vol": "58",
+  "pages": "86–88",
+  "doi": "10.1103/PhysRevLett.58.86",
+  "arxiv": "",
+  "url": "",
+  "short": "Swendsen & Wang 1987",
   "note": null
  },
  {
@@ -746,6 +1096,104 @@
   "arxiv": "2111.06728",
   "url": "",
   "short": "Wetterich 2022",
+  "note": null
+ },
+ {
+  "id": "wf1972",
+  "authors": "Kenneth G. Wilson, Michael E. Fisher",
+  "year": 1972,
+  "title": "Critical Exponents in 3.99 Dimensions",
+  "journal": "Physical Review Letters",
+  "vol": "28",
+  "pages": "240–243",
+  "doi": "10.1103/PhysRevLett.28.240",
+  "arxiv": "",
+  "url": "",
+  "short": "Wilson & Fisher 1972",
+  "note": null
+ },
+ {
+  "id": "widom1965",
+  "authors": "B. Widom",
+  "year": 1965,
+  "title": "Equation of State in the Neighborhood of the Critical Point",
+  "journal": "The Journal of Chemical Physics",
+  "vol": "43",
+  "pages": "3898–3905",
+  "doi": "10.1063/1.1696618",
+  "arxiv": "",
+  "url": "",
+  "short": "Widom 1965",
+  "note": null
+ },
+ {
+  "id": "wilson1971a",
+  "authors": "Kenneth G. Wilson",
+  "year": 1971,
+  "title": "Renormalization Group and Critical Phenomena. I. Renormalization Group and the Kadanoff Scaling Picture",
+  "journal": "Physical Review B",
+  "vol": "4",
+  "pages": "3174–3183",
+  "doi": "10.1103/PhysRevB.4.3174",
+  "arxiv": "",
+  "url": "",
+  "short": "Wilson 1971a",
+  "note": null
+ },
+ {
+  "id": "wilson1971b",
+  "authors": "Kenneth G. Wilson",
+  "year": 1971,
+  "title": "Renormalization Group and Critical Phenomena. II. Phase-Space Cell Analysis of Critical Behavior",
+  "journal": "Physical Review B",
+  "vol": "4",
+  "pages": "3184–3205",
+  "doi": "10.1103/PhysRevB.4.3184",
+  "arxiv": "",
+  "url": "",
+  "short": "Wilson 1971b",
+  "note": null
+ },
+ {
+  "id": "wilson1983",
+  "authors": "Kenneth G. Wilson",
+  "year": 1983,
+  "title": "The renormalization group and critical phenomena",
+  "journal": "Reviews of Modern Physics",
+  "vol": "55",
+  "pages": "583–600",
+  "doi": "10.1103/RevModPhys.55.583",
+  "arxiv": "",
+  "url": "",
+  "short": "Wilson 1983",
+  "note": null
+ },
+ {
+  "id": "wk1974",
+  "authors": "K. G. Wilson, J. Kogut",
+  "year": 1974,
+  "title": "The renormalization group and the ε expansion",
+  "journal": "Physics Reports",
+  "vol": "12",
+  "pages": "75–199",
+  "doi": "10.1016/0370-1573(74)90023-4",
+  "arxiv": "",
+  "url": "",
+  "short": "Wilson & Kogut 1974",
+  "note": null
+ },
+ {
+  "id": "wolff1989",
+  "authors": "Ulli Wolff",
+  "year": 1989,
+  "title": "Collective Monte Carlo Updating for Spin Systems",
+  "journal": "Physical Review Letters",
+  "vol": "62",
+  "pages": "361–364",
+  "doi": "10.1103/PhysRevLett.62.361",
+  "arxiv": "",
+  "url": "",
+  "short": "Wolff 1989",
   "note": null
  },
  {

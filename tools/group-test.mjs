@@ -136,6 +136,25 @@ test('第十二章：Landau 理论的序参量和例题', () => {
   near(196884 - 196883, 1, 0);
 });
 
+test('第二章：贴 XYZ 判定点群：读法宽容，30 个分子随便转向、加 ±0.03 Å 误差在 0.1 Å 的容差下都判对，对称化以后误差变小', () => {
+  const p = M.parseXYZ('3\nwater\nO1, 0, 0, 0.1173\n8\t0 0.7572 -0.4692\nH 0 -0.7572 -0.4692 extra\nnot an atom line\n');
+  assert.equal(p.atoms.length, 3);
+  assert.equal(p.atoms.map((a) => a[0]).join(), 'O,O,H');
+  assert.equal(p.bad.join(), '6');
+  assert.equal(M.parseXYZ('H 0 0 0\nH 0 0 0.74\n').atoms.length, 2);
+  assert.equal(M.parseXYZ('5\nx\nC 0 0 0\n').mismatch, true);
+  assert.equal(M.parseXYZ(Array.from({ length: 130 }, (_, i) => `H ${i} 0 0`).join('\n')).tooMany, true);
+  let q = 12345; const rnd = () => { q = (q * 16807) % 2147483647; return q / 2147483647 - 0.5; };
+  for (const m of M.MOLS) {
+    const ax = M.unit([rnd(), rnd(), rnd()]), R = M.rot(ax, 7 * rnd());
+    const atoms = M.molecule(m.id).atoms.map(([el, x, y, z]) => { const v = M.mv(R, [x, y, z]); return { el, r: [v[0] + 3 + 0.06 * rnd(), v[1] - 1 + 0.06 * rnd(), v[2] + 0.06 * rnd()] }; });
+    const back = M.parseXYZ(M.toXYZ(atoms, m.en)).atoms, out = M.analyseXYZ(back, 0.1);
+    assert.equal(out.res.pg, m.pg, `${m.id}: ${out.res.pg} ≠ ${m.pg}`);
+    assert.ok(out.maxShift < 0.1, `${m.id}: shift ${out.maxShift}`);
+    assert.equal(M.classify(out.atoms, 0.002).pg, m.pg, `${m.id}: symmetrised coordinates should hold the group at a tight tolerance`);
+  }
+});
+
 test('生成的内容是最新的、十二章中英齐全、演示都登记了、文献都被引用', () => {
   const h = inputHash();
   for (const lang of ['zh', 'en']) assert.equal(stamp(outFile(lang)), h, `public/${DIR}gt-${lang}.js 不是最新的：运行 node tools/group-build.mjs`);
@@ -144,7 +163,7 @@ test('生成的内容是最新的、十二章中英齐全、演示都登记了�
   assert.deepEqual(zh.index.chapters.map((c) => c.id), ids); assert.deepEqual(en.index.chapters.map((c) => c.id), ids);
   const s = { window: {} }; vm.runInNewContext(read(DIR + 'gt-models.js') + '\n' + read(DIR + 'gt-demos.js'), s);
   const DEMOS = {}; s.window.MOLASTRIA_GROUP_DEMOS(new Proxy({}, { get: (_, k) => (k === 'L' ? (a) => a : () => '') }), DEMOS);
-  const names = ['aom', 'bands', 'cayley', 'cg', 'chartable', 'flow', 'huckel', 'landau', 'modes', 'reduce', 'restrict', 'su2', 'vib', 'wallpaper'];
+  const names = ['aom', 'bands', 'cayley', 'cg', 'chartable', 'flow', 'huckel', 'landau', 'modes', 'reduce', 'restrict', 'su2', 'vib', 'wallpaper', 'xyz'];
   assert.deepEqual([...Object.keys(DEMOS)].sort(), names);
   for (const C of [zh, en]) {
     for (const id of ids) { const ch = C.chapters[id]; assert.ok(ch.body.length >= 6, id); assert.ok(ch.points.length >= 4 && ch.math.length >= 3 && ch.example, id); for (const b of ch.body) if (b.demo) assert.ok(DEMOS[b.demo], b.demo); }

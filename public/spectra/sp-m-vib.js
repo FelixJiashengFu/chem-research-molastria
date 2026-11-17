@@ -41,7 +41,7 @@
         { vib: 'ethanol', mode: 'ir', pick: ['water', 'co2', 'methane', 'ammonia', 'formaldehyde', 'methanol', 'ethanol', 'acetaldehyde', 'acetone', 'aceticacid', 'ethylacetate', 'acetamide', 'acetonitrile', 'benzene', 'toluene', 'phenol', 'benzaldehyde', 'chloroform', 'dcm', 'ccl4', 'caffeine'],
           cap: T(`用密度泛函理论算出的气相红外谱（B3LYP，孤立分子，谐振近似，棒展宽成 12 cm⁻¹ 的洛伦兹线）。换一个分子看官能团的峰怎样出现和消失；灰色刻度是文献里的气相实验基频。凝聚相里氢键会把 O–H 伸缩拉宽并移到 3200–3400 cm⁻¹，这是孤立分子的计算里没有的。`, `Gas-phase infrared spectra from density functional theory (B3LYP, isolated molecule, harmonic approximation, sticks broadened to 12 cm⁻¹ Lorentzians). Switch molecules to watch group bands appear and vanish; the grey ticks are experimental gas-phase fundamentals from the literature. In condensed phases hydrogen bonding broadens the O–H stretch and moves it to 3200–3400 cm⁻¹, which an isolated-molecule calculation does not contain.`) },
       ],
-      table: 'ir-groups', see: [['code/#ir', T(`代码台的红外工具：把你自己的频率计算输出画成谱`, `The Code Desk IR tool: plot your own frequency calculation`)], ['#lab-vib', T(`动手实验室：红外和拉曼对照`, `Hands-on lab: infrared against Raman`)]],
+      table: 'ir-groups', see: [['code/#ir', T(`代码台的红外工具：把你自己的频率计算输出画成谱`, `The Code Desk IR tool: plot your own frequency calculation`)], ['#lab-vib', T(`动手实验室：红外和拉曼对照`, `Hands-on lab: infrared against Raman`)], ['quasiparticles/phonons/#c-measure', T(`声子馆：晶体的红外活性光学声子和 LO–TO 劈裂`, `Phonon hall: infrared-active optical phonons in crystals and LO–TO splitting`)]],
       refs: ['griffiths1983', 'stephens1994', 'scott1996', 'kesharwani2015'],
     },
     {
@@ -188,7 +188,7 @@
         { vib: 'ccl4', mode: 'raman', pick: ['ccl4', 'benzene', 'co2', 'methane', 'water', 'ethanol', 'acetone', 'acetonitrile', 'chloroform', 'dcm', 'methanol', 'ethylene', 'acetylene', 'n2', 'o2', 'h2'],
           cap: T(`用密度泛函理论算出的拉曼谱（B3LYP/def2-TZVPD，极化率对简正坐标的导数用有限差分求出；强度按 532 nm 激发、298 K 换算）。灰色刻度是文献里的实验基频。`, `Raman spectra from density functional theory (B3LYP/def2-TZVPD, polarisability derivatives along normal modes by finite differences; intensities converted for 532 nm excitation at 298 K). Grey ticks are experimental fundamentals from the literature.`) },
       ],
-      table: 'raman-bands', see: [['#lab-vib', T(`动手实验室：红外和拉曼对照`, `Hands-on lab: infrared against Raman`)]],
+      table: 'raman-bands', see: [['#lab-vib', T(`动手实验室：红外和拉曼对照`, `Hands-on lab: infrared against Raman`)], ['quasiparticles/phonons/#c-measure', T(`声子馆：晶体的拉曼声子和拉曼温度计`, `Phonon hall: Raman phonons in crystals and the Raman thermometer`)]],
       refs: ['raman1928', 'cowger2021', 'rappoport2010'],
     },
     {
@@ -254,6 +254,7 @@
       figs: [
         { gen: 'rotational', args: { mol: 'H35Cl', unit: 'cm' }, cap: T(`由实测光谱常数算出：HCl 的纯转动线（296 K）。J = 0 → 1 在 20.88 cm⁻¹，相邻线间隔约 2B₀ ≈ 20.9 cm⁻¹，离心畸变使间隔向高 J 略微变小。`, `From measured constants: the pure rotational lines of HCl at 296 K. J = 0 → 1 lies at 20.88 cm⁻¹ and the lines are about 2B₀ ≈ 20.9 cm⁻¹ apart, the spacing shrinking slightly at high J through centrifugal distortion.`) },
       ],
+      see: [['quasiparticles/phonons/#c-diatomic', T(`声子馆：光学支，远红外看到的晶格振动从哪里来`, `Phonon hall: optical branches, where the lattice vibrations seen in the far infrared come from`)]],
       refs: ['jepsen2011'],
     },
     {

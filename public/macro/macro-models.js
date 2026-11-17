@@ -61,6 +61,52 @@
   const lbCurl = (S) => { const { nx, ny, ux, uy } = S, out = new Float64Array(nx * ny); for (let y = 1; y < ny - 1; y++) for (let x = 1; x < nx - 1; x++) { const k = y * nx + x; out[k] = (uy[k + 1] - uy[k - 1] - ux[k + nx] + ux[k - nx]) / 2; } return out; };
   const lbDisc = (nx, ny, cx, cy, r) => { const bar = new Uint8Array(nx * ny); for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) if ((x - cx) ** 2 + (y - cy) ** 2 <= r * r) bar[y * nx + x] = 1; return bar; };
 
+  // ── 第四章：相变与重整化群 ─────────────────────────────────────────────
+  // 带热浴的二维 Ising 模型（J = k = 1，L × L 周期格子，外场 h）。s 是 Int8Array（±1），r 是 rng(seed) 给的随机数。
+  // Metropolis：逐格试翻，ΔE = 2 s_i (Σ 邻居 + h)，按 min(1, e^{−ΔE/T}) 接受。一次扫描试 L² 次，返回接受的次数。
+  const isingInit = (L, cold, seed) => { const r = rng(seed); return Int8Array.from({ length: L * L }, () => (cold || r() < 0.5 ? 1 : -1)); };
+  const nbSum = (s, L, i) => { const x = i % L, y = (i - x) / L; return s[y * L + ((x + 1) % L)] + s[y * L + ((x + L - 1) % L)] + s[((y + 1) % L) * L + x] + s[((y + L - 1) % L) * L + x]; };
+  const metropolisSweep = (s, L, T, h, r) => { let acc = 0; const n = L * L; for (let k = 0; k < n; k++) { const i = (r() * n) | 0, dE = 2 * s[i] * (nbSum(s, L, i) + h); if (dE <= 0 || r() < Math.exp(-dE / T)) { s[i] = -s[i]; acc++; } } return acc; };
+  // Wolff 1989：从一个随机格点长一团同号自旋，每条键以 p = 1 − e^{−2/T} 加进来，整团翻转（h = 0）。返回这一团的大小。
+  const wolffStep = (s, L, T, r) => { const n = L * L, p = 1 - Math.exp(-2 / T), i0 = (r() * n) | 0, sg = s[i0], stack = [i0]; s[i0] = -sg; let size = 1;
+    while (stack.length) { const i = stack.pop(), x = i % L, y = (i - x) / L; for (const j of [y * L + ((x + 1) % L), y * L + ((x + L - 1) % L), ((y + 1) % L) * L + x, ((y + L - 1) % L) * L + x]) if (s[j] === sg && r() < p) { s[j] = -sg; stack.push(j); size++; } }
+    return size; };
+  // 精确的期望：无穷大格子上每格的能量 u(T) 和自发磁化 |m|(T)（Onsager、Yang），以温度为自变量
+  const isingExactT = (T) => ({ u: isingU(1 / T), m: isingM(1 / T) });
+  // Binder 累积量 U = 1 − ⟨m⁴⟩ / (3⟨m²⟩²)：有序相趋于 2/3，无序相趋于 0
+  const binder = (m2, m4) => (m2 > 0 ? 1 - m4 / (3 * m2 * m2) : 0);
+  // Kadanoff 的块自旋：b × b 一块按多数票变成一个自旋（b 取奇数就没有平票）。L 要能被 b 整除。
+  const blockSpin = (s, L, b) => { const n = L / b, o = new Int8Array(n * n); for (let Y = 0; Y < n; Y++) for (let X = 0; X < n; X++) { let t = 0; for (let y = 0; y < b; y++) for (let x = 0; x < b; x++) t += s[(Y * b + y) * L + X * b + x]; o[Y * n + X] = t > 0 ? 1 : t < 0 ? -1 : 1; } return o; };
+  // 近邻自旋的关联（每格两条键的平均 ⟨s_i s_j⟩），等于 −u/2
+  const bondCorr = (s, L) => -q2rEnergy(s, L) / (2 * L * L);
+
+  // 一维 Ising 链的精确抽取和 Migdal–Kadanoff 近似（尺度因子 b，维数 d）：先把键挪到一起（K → b^{d−1} K），
+  // 再把 b 条串联的键精确抽成一条：tanh K' = tanh(b^{d−1} K)^b。d = 1 时第一步什么都不做，就是精确的抽取。
+  const mkMap = (K, b = 2, d = 1) => { const t = Math.tanh(b ** (d - 1) * K) ** b; return t >= 1 ? Infinity : Math.atanh(t); };
+  // 非平凡的不动点 K*（d ≥ 2 才有），本征值 λ = dK'/dK 和关联长度指数 ν = ln b / ln λ
+  const mkFixed = (b = 2, d = 2) => { if (d < 2) return null; let lo = 1e-6, hi = 5; for (let i = 0; i < 200; i++) { const mid = (lo + hi) / 2; if (mkMap(mid, b, d) > mid) hi = mid; else lo = mid; } const K = (lo + hi) / 2, e = 1e-6, lam = (mkMap(K + e, b, d) - mkMap(K - e, b, d)) / (2 * e); return { K, lam, nu: Math.log(b) / Math.log(lam) }; };
+  const mkOrbit = (K, b, d, n) => { const out = [K]; for (let i = 0; i < n; i++) { K = mkMap(K, b, d); if (!Number.isFinite(K) || K > 50) { out.push(Infinity); break; } out.push(K); } return out; };
+  // 一维链的精确关联长度（以格距为单位）：ξ = −1 / ln tanh K。抽取一次以后格距变成 b，ξ' = ξ / b。
+  const chainXi = (K) => -1 / Math.log(Math.tanh(K));
+
+  // 平均场（Weiss）：m = tanh((T_c m + h)/T)，T_c = zJ/k。返回和 h 同号的那个自洽解（h = 0 时取正的；用二分法）。
+  const meanFieldM = (T, Tc, h = 0) => { if (h < 0) return -meanFieldM(T, Tc, -h); const g = (m) => m - Math.tanh((Tc * m + h) / T);
+    if (h === 0 && T >= Tc) return 0; let lo = h === 0 ? 1e-300 : 0, hi = 1; if (h === 0) { lo = 0; for (let k = 1; k < 400; k++) { const x = 2 ** -k; if (g(x) < 0) { lo = x; break; } } }
+    for (let i = 0; i < 200; i++) { const mid = (lo + hi) / 2; if (g(mid) < 0) lo = mid; else hi = mid; } return (lo + hi) / 2; };
+  // Landau 自由能 f(m) = a m² + b m⁴ + c m⁶ − h m，a = t = T/T_c − 1。返回在 [−mmax, mmax] 上的全局最小点（扫描后用牛顿法磨尖）。
+  const landauF = (m, t, b, c, h) => t * m * m + b * m ** 4 + c * m ** 6 - h * m;
+  const landauMin = (t, b, c, h, mmax = 2) => { let best = 0, fb = Infinity; for (let i = 0; i <= 4000; i++) { const m = mmax - (2 * mmax * i) / 4000, f = landauF(m, t, b, c, h); if (f < fb - 1e-15) { fb = f; best = m; } }
+    for (let k = 0; k < 50; k++) { const d1 = 2 * t * best + 4 * b * best ** 3 + 6 * c * best ** 5 - h, d2 = 2 * t + 12 * b * best ** 2 + 30 * c * best ** 4; if (!(d2 > 0)) break; const nx = best - d1 / d2; if (Math.abs(nx - best) < 1e-15) break; best = nx; } return { m: best, f: landauF(best, t, b, c, h) }; };
+  // 一级相变（b < 0, c > 0）的跃变温度：两个极小值等高时 t_1 = b²/(4c)，跃变的序参量 m_1² = −b/(2c)
+  const landauFirst = (b, c) => ({ t1: (b * b) / (4 * c), m1: Math.sqrt(-b / (2 * c)) });
+
+  // 临界指数：由 ν、η 和维数 d 经标度关系算出其余四个（Fisher γ = ν(2 − η)、Josephson dν = 2 − α、β = ν(d − 2 + η)/2、δ = (d + 2 − η)/(d − 2 + η)）
+  const fromNuEta = (nu, eta, d) => ({ alpha: 2 - d * nu, beta: (nu * (d - 2 + eta)) / 2, gamma: nu * (2 - eta), delta: (d + 2 - eta) / (d - 2 + eta), nu, eta });
+  const scalingChecks = (e, d) => ({ rushbrooke: e.alpha + 2 * e.beta + e.gamma - 2, widom: e.gamma - e.beta * (e.delta - 1), fisher: e.gamma - e.nu * (2 - e.eta), josephson: d * e.nu - (2 - e.alpha) });
+  // ε = 4 − d 展开的第一阶（n 分量的 O(n) 模型）：Wilson & Fisher 1972
+  const epsExp = (n, eps) => ({ nu: 0.5 + ((n + 2) / (4 * (n + 8))) * eps, eta: ((n + 2) / (2 * (n + 8) ** 2)) * eps * eps, gamma: 1 + ((n + 2) / (2 * (n + 8))) * eps, beta: 0.5 - (3 / (2 * (n + 8))) * eps });
+
   window.MOLASTRIA_MACRO_MODELS = { TAU, rng, kacInit, kacStep, kacDelta, mixEntropy, q2rInit, q2rHalf, q2rStep, q2rEnergy, q2rMag, ellipK, ISING, isingU, isingM, isingMofU, levelsThermal,
-    hppInit, hppCollide, hppMove, hppStep, hppTotals, hppCoarse, latticeQuartic, LB, lbEq, lbInit, lbMoments, lbStep, lbCurl, lbDisc };
+    hppInit, hppCollide, hppMove, hppStep, hppTotals, hppCoarse, latticeQuartic, LB, lbEq, lbInit, lbMoments, lbStep, lbCurl, lbDisc,
+    isingInit, nbSum, metropolisSweep, wolffStep, isingExactT, binder, blockSpin, bondCorr, mkMap, mkFixed, mkOrbit, chainXi, meanFieldM, landauF, landauMin, landauFirst, fromNuEta, scalingChecks, epsExp };
 })();
