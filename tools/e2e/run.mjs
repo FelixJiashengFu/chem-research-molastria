@@ -4283,6 +4283,34 @@ check('Chemistry Disciplines: nav entry, fourteen halls, map, every chapter and 
   await finish(e);
 });
 
+check('Spectra Hall practice: three NMR problems, hidden solutions, redrawn spectra with provenance, 2D switch, English', async () => {
+  const p = await open();
+  await go(p, '/spectra/index.html#pr-tbe');
+  await p.waitForTimeout(400);
+  assert.equal(await p.locator('#sp-pr-tabs [data-pr]').count(), 3);
+  assert.equal(await p.getAttribute('#pr-tbe', 'aria-selected'), 'true', '#pr-tbe opens problem 2');
+  assert.equal(await p.locator('#sp-pr-panel .sp-pr-sol').evaluate((d) => d.open), false, 'the solution starts folded');
+  await p.locator('#sp-pr-panel .sp-fig').nth(1).scrollIntoViewIfNeeded();
+  await p.waitForFunction(() => document.querySelectorAll('#sp-pr-panel .sp-fig[data-done] svg.sp-plot').length >= 3);
+  const kinds = await p.$$eval('#sp-pr-panel .sp-fig', (fs) => fs.map((f) => f.dataset.kind));
+  assert.ok(kinds.every((k) => ['measured', 'computed', 'constants', 'sketch'].includes(k)), kinds.join());
+  assert.match(await p.locator('#sp-pr-panel .sp-out').nth(1).innerText(), /10\.63, 6\.83, 10\.63/);
+  await p.click('#sp-pr-panel .sp-pr-sol summary');
+  assert.match(await text(p, '#sp-pr-panel .sp-pr-answer'), /3,3-二甲基-1-丁烯/);
+  assert.ok(await p.locator('#sp-pr-panel .sp-struct svg').count() === 1, 'structure drawn');
+  await p.click('#sp-pr-tabs [data-pr=sbu]');
+  const fig2d = p.locator('#sp-pr-panel .sp-fig').nth(2);
+  await fig2d.scrollIntoViewIfNeeded();
+  await p.waitForFunction(() => document.querySelectorAll('#sp-pr-panel .sp-fig[data-done]').length >= 3);
+  await fig2d.locator('button', { hasText: 'HSQC' }).click();
+  assert.match(await fig2d.locator('.sp-out').innerText(), /65\.5/);
+  await go(p, '/spectra/index.html?lang=en#pr-etoac');
+  await p.waitForTimeout(600);
+  assert.match(await text(p, '#sp-practice-h'), /Practice/);
+  assert.match(await text(p, '#sp-pr-panel .sp-pr-ask'), /Deduce the structure and measure the coupling constant/);
+  await finish(p);
+});
+
 check('Spectra Hall: nav entry, 91 methods, filter and search, a method opens with drawn spectra, atlas, references, English', async () => {
   const p = await open();
   await go(p, '/spectra/index.html');

@@ -6842,5 +6842,7 @@
  "已经解锁，这台设备已登录。": "Unlocked. This device is now signed in.",
  "买到的内容绑定在付款邮箱上，换设备用这个邮箱登录就能再打开。": "Your purchase is tied to the email you paid with; sign in with it on another device to open it again.",
  "现在打开": "Open it now",
- "锁区 · 一次买断": "Locked section · one-time purchase"
+ "锁区 · 一次买断": "Locked section · one-time purchase",
+ "练习题": "Practice",
+ "练习：从核磁谱推结构": "Practice: structures from NMR spectra"
 }
