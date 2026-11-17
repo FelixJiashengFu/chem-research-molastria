@@ -74,6 +74,8 @@ jobs:
         run: node --test tools/quasi-test.mjs tools/phonon-test.mjs
       - name: Group theory models and content
         run: node --test tools/group-test.mjs
+      - name: Density functional theory models and content
+        run: node --test tools/dft-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
       - name: 3D molecule viewer helpers
