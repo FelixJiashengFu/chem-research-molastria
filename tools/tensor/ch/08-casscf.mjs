@@ -1,0 +1,55 @@
+const r = String.raw;
+export default {
+  id: 'casscf', level: 'tested', demos: ['dimer', 'cas'],
+  title: ['和 CASSCF 对照：活性空间、静态关联和动态关联', 'Against CASSCF: active spaces, static and dynamic correlation'],
+  summary: ['量子化学处理强关联的传统做法是 CASSCF：挑出一组活性轨道，在里面做全 CI，同时优化轨道。它的瓶颈是全 CI 的指数墙，大约止步于 20 个轨道。DMRG-SCF 把里面的全 CI 换成 DMRG，活性空间能放大好几倍；选择组态相互作用和 FCIQMC 是另外两条路。这一章从拉长一根键讲起，把这些方法放在一起比较。', 'Quantum chemistry’s traditional treatment of strong correlation is CASSCF: pick a set of active orbitals, do full CI inside them, and optimise the orbitals at the same time. Its bottleneck is the exponential wall of full CI, which stops it at about 20 orbitals. DMRG-SCF replaces the inner full CI with DMRG and enlarges the active space several times over; selected configuration interaction and FCIQMC are two other routes. Starting from stretching a single bond, this chapter compares these methods side by side.'],
+  body: [
+    [r`最简单的强关联发生在拉断一根化学键的时候。最小基组下的 H₂ 只有两个轨道（成键 $\sigma_g$ 和反键 $\sigma_u$）、两个电子。Hartree–Fock 把两个电子都放进 $\sigma_g$，这个行列式里有一半是两个电子挤在同一个原子上的离子组态 H⁺H⁻；键拉长后真实的态是两个中性的 H 原子，于是 RHF 的能量错得离谱。正确的波函数是两个行列式的组合 $a|\sigma_g^2\rangle - b|\sigma_u^2\rangle$，键断开时 $a$ 和 $b$ 一样大。这种“少数几个组态权重都很大”的关联叫**静态关联**（或非动态关联）。`,
+     r`The simplest strong correlation appears when a chemical bond is broken. H₂ in a minimal basis has just two orbitals (bonding $\sigma_g$ and antibonding $\sigma_u$) and two electrons. Hartree–Fock puts both electrons in $\sigma_g$; half of that determinant is the ionic configuration H⁺H⁻ with both electrons on one atom. When the bond is stretched the true state is two neutral H atoms, and the RHF energy goes badly wrong. The right wavefunction combines two determinants, $a|\sigma_g^2\rangle - b|\sigma_u^2\rangle$, with $a$ and $b$ equal once the bond is broken. Correlation in which a few configurations all carry large weight is called **static** (or non-dynamic) correlation.`],
+    { demo: 'dimer' },
+    [r`非限制的 UHF 可以把两个自旋分到两个原子上，能量对了，但态不再是自旋的本征态，$\langle S^2\rangle$ 偏离 0，这是“对称性破缺”的代价。只把 $\sigma_g$ 和 $\sigma_u$ 放进活性空间、在里面做全 CI，就是 CAS(2,2)，在这个模型里它是精确的。`,
+     r`Unrestricted UHF can put the two spins on different atoms; the energy is then right, but the state is no longer a spin eigenstate and $\langle S^2\rangle$ departs from 0: the price of “symmetry breaking”. Putting just $\sigma_g$ and $\sigma_u$ in an active space and doing full CI inside it is CAS(2,2), which is exact for this model.`],
+    { h: ['CASSCF', 'CASSCF'] },
+    [r`Roos、Taylor 和 Siegbahn 1980 年的**完全活性空间自洽场**（CASSCF）把这个想法推广开：轨道分成三类，非活性的（总是双占）、活性的、虚的（总是空），在 $n$ 个电子、$k$ 个活性轨道里做全 CI，同时变分地优化所有轨道 [@roos1980]。它写成 CAS($n$e, $k$o)。CASSCF 处理好了静态关联，是多参考量子化学的出发点，可是它有两个限制：`,
+     r`Roos, Taylor and Siegbahn’s 1980 **complete active space self-consistent field** method (CASSCF) generalises the idea: orbitals are split into inactive (always doubly occupied), active and virtual (always empty), full CI is done for $n$ electrons in $k$ active orbitals, and all orbitals are optimised variationally at the same time [@roos1980]. It is written CAS($n$e, $k$o). CASSCF handles static correlation and is the starting point of multireference quantum chemistry, but it has two limits:`],
+    { list: [
+      [r`**指数墙。** 活性空间里的组态数是 $\binom{k}{n/2}^2$ 量级。CAS(18,18) 有 23.6 亿个行列式，是传统程序的常见极限；Vogiatzis 等人用大规模并行把 CASSCF 推到了 (22e, 22o)，做了一次 (24e, 24o) 的 CI 迭代，后者近一万亿个行列式 [@vogiatzis2017]。`, r`**The exponential wall.** The number of configurations in the active space is of order $\binom{k}{n/2}^2$. CAS(18,18) has 2.36 billion determinants, the usual limit of conventional codes; with massive parallelism Vogiatzis et al. pushed CASSCF to (22e, 22o) and did a single CI iteration in (24e, 24o), the latter close to a trillion determinants [@vogiatzis2017].`],
+      [r`**缺动态关联。** 活性空间外面成百上千个轨道里的“动态关联”没有算。标准的补法是在 CASSCF 上做二阶微扰：CASPT2 [@andersson1990] 和 NEVPT2 [@angeli2001]。`, r`**Missing dynamic correlation.** The “dynamic correlation” from the hundreds or thousands of orbitals outside the active space is left out. The standard fix is second-order perturbation theory on top of CASSCF: CASPT2 [@andersson1990] and NEVPT2 [@angeli2001].`],
+    ] },
+    { demo: 'cas' },
+    { h: ['把里面的全 CI 换掉', 'Replacing the inner full CI'] },
+    [r`CASSCF 的轨道优化只需要活性空间的一阶和二阶约化密度矩阵，并不需要 CI 向量本身。所以里面的全 CI 可以换成任何能给出这两个密度矩阵的方法。2008 年 Zgid 和 Nooijen [@zgid2008]、Ghosh 等人 [@ghosh2008] 分别做出了 **DMRG-SCF**（也叫 DMRG-CASSCF），活性空间一下子扩大到 30–50 个轨道，后来到约 100 个。动态关联同样可以补上，比如 DMRG-NEVPT2，代价是要从 MPS 里算出三阶甚至四阶约化密度矩阵 [@guo2016]。`,
+     r`CASSCF’s orbital optimisation needs only the one- and two-body reduced density matrices of the active space, not the CI vector itself. So the inner full CI can be replaced by any method that delivers those two density matrices. In 2008 Zgid and Nooijen [@zgid2008] and Ghosh et al. [@ghosh2008] each produced **DMRG-SCF** (also called DMRG-CASSCF), immediately enlarging active spaces to 30–50 orbitals and later to about 100. Dynamic correlation can be added in the same way, for example DMRG-NEVPT2, at the cost of extracting three- or even four-body reduced density matrices from the MPS [@guo2016].`],
+    [r`另外两条路不用 MPS：**选择组态相互作用**只挑出权重大的行列式，热浴 CI（HCI）是其中最快的之一，它在几分钟内把 Cr₂（全电子、VDZ 基组）的全 CI 能量算到了 1 mEₕ 以内，全空间有约 $2\times10^{22}$ 个行列式 [@holmes2016]；**全组态相互作用量子蒙特卡罗**（FCIQMC）让一群带符号的“游走者”在行列式空间里繁殖、湮灭，平均出全 CI 的结果 [@booth2009]。它们都是靠波函数里真正重要的组态很少来省力，和 MPS 靠纠缠少来省力是两种不同的稀疏性。`,
+     r`Two other routes avoid MPS altogether. **Selected configuration interaction** keeps only the determinants with large weight; heat-bath CI (HCI), one of the fastest, reached the full-CI energy of Cr₂ (all electrons, VDZ basis) to within 1 mEₕ in a few minutes, in a full space of about $2\times10^{22}$ determinants [@holmes2016]. **Full configuration interaction quantum Monte Carlo** (FCIQMC) lets a population of signed “walkers” spawn and annihilate in determinant space and averages to the full-CI result [@booth2009]. Both save effort because few configurations really matter, a different kind of sparsity from the low entanglement that MPS exploit.`],
+    { table: { head: [['方法', 'Method'], ['活性空间', 'Active space'], ['靠什么省力', 'What it exploits'], ['误差怎么控制', 'How the error is controlled']], rows: [
+      [['CASSCF（全 CI）', 'CASSCF (full CI)'], ['约 20 个轨道', 'about 20 orbitals'], ['不省，精确', 'nothing; exact'], ['在活性空间内精确', 'exact within the active space']],
+      [['DMRG-SCF', 'DMRG-SCF'], ['约 100 个轨道', 'about 100 orbitals'], ['纠缠少（排成一维）', 'low entanglement (laid out in 1D)'], ['键维 χ，按截断误差外推', 'bond dimension χ, extrapolated in the truncation error']],
+      [['选择 CI（HCI 等）', 'Selected CI (HCI etc.)'], ['几十到上百个轨道', 'tens to a hundred-plus orbitals'], ['重要的行列式少', 'few important determinants'], ['选择阈值 + 微扰修正，外推', 'selection threshold + perturbative correction, extrapolated']],
+      [['FCIQMC', 'FCIQMC'], ['几十到上百个轨道', 'tens to a hundred-plus orbitals'], ['随机采样', 'stochastic sampling'], ['游走者数，统计误差', 'number of walkers, statistical error']],
+      [['CASPT2 / NEVPT2', 'CASPT2 / NEVPT2'], ['在上面任一种之上', 'on top of any of the above'], ['二阶微扰', 'second-order perturbation'], ['补动态关联，不是变分的', 'adds dynamic correlation; not variational']],
+    ], cap: ['轨道数是常见的规模，不是硬上限；具体看分子和硬件。', 'Orbital counts are typical sizes, not hard limits; they depend on the molecule and the hardware.'] } },
+    { note: ['**活性空间怎么选？** 这是多参考计算最依赖经验的一步。DMRG 的单轨道熵和互信息（第七章）给了一个比较客观的办法：先用大活性空间、小 χ 跑一次，再把熵很小的轨道移出去。可是“活性空间要包含什么”本身没有唯一的答案，FeMoco 就是例子（第九章）。', '**How to choose the active space?** This is the most experience-dependent step of a multireference calculation. DMRG’s single-orbital entropies and mutual information (chapter 7) give a more objective procedure: run once with a large active space and small χ, then move out orbitals with small entropy. But “what the active space must contain” has no unique answer, as FeMoco shows (chapter 9).'], kind: 'info' },
+  ],
+  points: [
+    [['静态关联', 'Static correlation'], ['少数几个组态权重都很大；单行列式（RHF）必然失败。', 'A few configurations all carry large weight; a single determinant (RHF) must fail.'], 'proved'],
+    [['UHF 的对称性破缺', 'UHF symmetry breaking'], ['能量变好，但 ⟨S²⟩ 不对；不是自旋本征态。', 'The energy improves but ⟨S²⟩ is wrong; not a spin eigenstate.'], 'proved'],
+    [['CASSCF 约 20 个轨道', 'CASSCF at about 20 orbitals'], ['全 CI 的指数墙；并行可到 (22e, 22o)。', 'The full-CI exponential wall; parallelism reaches (22e, 22o).'], 'tested'],
+    [['DMRG-SCF 约 100 个轨道', 'DMRG-SCF at about 100 orbitals'], ['只需一、二阶约化密度矩阵就能优化轨道。', 'Orbital optimisation needs only one- and two-body reduced density matrices.'], 'tested'],
+    [['动态关联', 'Dynamic correlation'], ['大活性空间上的 NEVPT2 / CASPT2 要高阶密度矩阵，是现在的主要瓶颈。', 'NEVPT2 / CASPT2 on large active spaces need high-order density matrices and are the main bottleneck today.'], 'frontier'],
+  ],
+  math: [
+    [r`E_\text{exact} = \frac U2 - \sqrt{4t^2 + \frac{U^2}{4}},\qquad E_\text{RHF} = -2t + \frac U2,\qquad E_\text{UHF} = -\frac{2t^2}{U}\ \ (t/U<\tfrac12)`, ['两格点 Hubbard（最小基组 H₂）模型的三个能量。', 'Three energies of the two-site Hubbard (minimal-basis H₂) model.']],
+    [r`N_\text{det} = \binom{k}{n_\alpha}\binom{k}{n_\beta},\qquad N_\text{CSF}(S) = \frac{2S+1}{k+1}\binom{k+1}{\frac n2 - S}\binom{k+1}{\frac n2 + S + 1}`, ['行列式和组态函数（CSF）的个数（Weyl–Paldus 公式）。', 'Numbers of determinants and of configuration state functions (CSFs) (the Weyl–Paldus formula).']],
+    [r`E_\text{CASSCF} = \min_{\kappa,\,\mathbf c}\ \langle\Psi(\mathbf c)|e^{-\hat\kappa}\hat H e^{\hat\kappa}|\Psi(\mathbf c)\rangle = \sum_{pq}h_{pq}\gamma_{pq} + \tfrac12\sum_{pqrs}(pq|rs)\,\Gamma_{pqrs}`, ['CASSCF 同时优化 CI 系数 c 和轨道转动 κ；能量只用到一、二阶密度矩阵 γ 和 Γ。', 'CASSCF optimises CI coefficients c and orbital rotations κ together; the energy uses only the one- and two-body density matrices γ and Γ.']],
+  ],
+  example: {
+    q: [r`CAS(16e, 16o)，单态，总 $S^z = 0$。有多少个行列式、多少个单态 CSF？CI 向量要多少内存？`, r`CAS(16e, 16o), singlet, total $S^z = 0$. How many determinants and singlet CSFs are there, and how much memory does the CI vector need?`],
+    steps: [
+      [r`行列式：$\binom{16}{8}^2 = 12\,870^2 = 165\,636\,900$。`, r`Determinants: $\binom{16}{8}^2 = 12\,870^2 = 165\,636\,900$.`],
+      [r`单态 CSF：$\frac{1}{17}\binom{17}{8}\binom{17}{9} = \frac{24\,310^2}{17} = 34\,763\,300$，约为行列式的 1/5。`, r`Singlet CSFs: $\frac{1}{17}\binom{17}{8}\binom{17}{9} = \frac{24\,310^2}{17} = 34\,763\,300$, about a fifth of the determinants.`],
+      [r`双精度每个数 8 字节：行列式的 CI 向量约 1.3 GB，迭代时要存好几份。`, r`At 8 bytes per number, the determinant CI vector takes about 1.3 GB, and the iterations keep several copies.`],
+    ],
+    a: [r`$1.66\times10^8$ 个行列式、$3.48\times10^7$ 个 CSF、约 1.3 GB。再加两个电子和两个轨道到 CAS(18,18)，行列式变成 $2.36\times10^9$，乘了 14 倍：这就是演示里那条红线的斜率。`, r`$1.66\times10^8$ determinants, $3.48\times10^7$ CSFs, about 1.3 GB. Adding two electrons and two orbitals to reach CAS(18,18) gives $2.36\times10^9$ determinants, 14 times as many: that is the slope of the red line in the demo.`],
+  },
+};
