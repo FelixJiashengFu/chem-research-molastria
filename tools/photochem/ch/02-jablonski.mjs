@@ -1,0 +1,50 @@
+const r = String.raw;
+export default {
+  id: 'jablonski', level: 'tested', demos: ['jablonski'],
+  title: ['Jablonski 图：激发态的五条出路', 'The Jablonski diagram: five ways out of an excited state'],
+  summary: ['被激发的分子不会一直待在那里：几皮秒内振动弛豫到 S₁ 的底，然后荧光、内转换、系间窜越在赛跑，到了三重态又有磷光和无辐射失活。这一章画出 Jablonski 图，把每条路写成一个速率常数，讲量子产率和寿命的关系、磷光为什么那么慢、氧气为什么是光化学的大敌。', 'An excited molecule does not stay put: within picoseconds it relaxes vibrationally to the bottom of S₁, then fluorescence, internal conversion and intersystem crossing race each other, and in the triplet come phosphorescence and radiationless decay. This chapter draws the Jablonski diagram, writes each pathway as a rate constant, and explains how quantum yields relate to lifetimes, why phosphorescence is so slow and why oxygen is photochemistry’s great enemy.'],
+  body: [
+    [r`1933 年 Jabłoński 为了解释染料的荧光和长寿命的“磷光”，画了一张能级图：除了荧光的激发态，还有一个更低的亚稳态，分子会掉进去、被热量再激发出来 [@jablonski1933]。1944 年 Lewis 和 Kasha 论证那个亚稳态是**三重态** [@lewis1944]，几年后 Lewis、Calvin 和 Kasha 又测到磷光态是顺磁的，证实了这一点。今天的 Jablonski 图把单重态 $S_0, S_1, S_2,\dots$ 排成一列，三重态 $T_1, T_2,\dots$ 排在旁边，用直线画发光的跃迁，用波浪线画无辐射的跃迁。`,
+     r`In 1933 Jabłoński drew an energy-level diagram to explain the fluorescence and long-lived “phosphorescence” of dyes: besides the fluorescent excited state there was a lower metastable state into which the molecule could fall and from which heat could lift it back out [@jablonski1933]. In 1944 Lewis and Kasha argued that this state is the **triplet** [@lewis1944]; a few years later Lewis, Calvin and Kasha measured the phosphorescent state to be paramagnetic, confirming it. Today’s Jablonski diagram places singlets $S_0, S_1, S_2,\dots$ in one column and triplets $T_1, T_2,\dots$ beside them, with straight lines for radiative transitions and wavy lines for radiationless ones.`],
+    { h: ['时间尺度', 'Time scales'] },
+    { table: { head: [['过程', 'Process'], ['典型时间', 'Typical time'], ['说明', 'Notes']], rows: [
+      [['吸收', 'Absorption'], '~10⁻¹⁵ s', ['电子跃迁，核来不及动（第三章）', 'An electronic jump; the nuclei cannot move (chapter 3)']],
+      [['振动弛豫', 'Vibrational relaxation'], '10⁻¹³–10⁻¹¹ s', ['把多余的振动能交给溶剂', 'Excess vibrational energy handed to the solvent']],
+      [['内转换 Sₙ → S₁', 'Internal conversion Sₙ → S₁'], '10⁻¹⁴–10⁻¹² s', ['能隙小，非常快（第四章）', 'Small gaps, very fast (chapter 4)']],
+      [['荧光 S₁ → S₀', 'Fluorescence S₁ → S₀'], '10⁻⁹–10⁻⁷ s', ['自旋允许', 'Spin allowed']],
+      [['系间窜越 S₁ → T₁', 'Intersystem crossing S₁ → T₁'], '10⁻¹¹–10⁻⁶ s', ['要靠旋–轨耦合', 'Needs spin–orbit coupling']],
+      [['磷光 T₁ → S₀', 'Phosphorescence T₁ → S₀'], '10⁻⁶–10 s', ['自旋禁阻，在溶液里常常被猝灭', 'Spin forbidden; often quenched in solution']],
+    ], cap: [r`数量级，具体分子可以差很多。`, r`Orders of magnitude; particular molecules can differ widely.`] } },
+    [r`因为 $S_n\to S_1$ 和振动弛豫都比发光快得多，分子几乎总是先落到 $S_1$ 的最低振动能级，再决定往哪里走：这就是第四章的 Kasha 规则 [@kasha1950]。于是光化学的大部分故事都发生在两个态上：$S_1$ 和 $T_1$。`,
+     r`Because $S_n\to S_1$ and vibrational relaxation are much faster than emission, a molecule almost always lands first at the lowest vibrational level of $S_1$ before deciding where to go: Kasha’s rule of chapter 4 [@kasha1950]. So most of photochemistry plays out on two states, $S_1$ and $T_1$.`],
+    { h: ['速率常数、产率和寿命', 'Rate constants, yields and lifetimes'] },
+    [r`每条路都是一阶过程。$S_1$ 的布居按总速率 $k_S = k_F + k_{IC} + k_{ISC}$ 指数衰减，寿命 $\tau_S = 1/k_S$。每条路分到的份额就是它的速率除以总速率：$\Phi_F = k_F/k_S = k_F\tau_S$。这个关系很有用：测出荧光量子产率和寿命，就能分别得到 $k_F$ 和非辐射的速率。荧光寿命一般是纳秒；磷光要过一次自旋禁阻的跃迁，$k_P$ 可以小到每秒几次，寿命几毫秒到几秒。`,
+     r`Each pathway is a first-order process. The $S_1$ population decays exponentially with the total rate $k_S = k_F + k_{IC} + k_{ISC}$ and lifetime $\tau_S = 1/k_S$. Each pathway’s share is its rate over the total: $\Phi_F = k_F/k_S = k_F\tau_S$. This is very useful: measure the fluorescence yield and lifetime and you get $k_F$ and the non-radiative rate separately. Fluorescence lifetimes are typically nanoseconds; phosphorescence must pass a spin-forbidden transition, so $k_P$ can be just a few per second, with lifetimes of milliseconds to seconds.`],
+    { demo: 'jablonski' },
+    { h: ['猝灭和氧气', 'Quenching and oxygen'] },
+    [r`另一个分子撞上激发态，可以把能量或电子拿走：**猝灭**。速率是 $k_q[Q]$，上限是扩散速率常数（约 $10^{10}\ \mathrm{M^{-1}s^{-1}}$）。寿命越长，在死之前撞上猝灭剂的机会越多：纳秒的荧光几乎不受溶液里 1–2 mM 的氧气影响，微秒到秒的三重态却会被它吃掉大半。氧气的基态本身是三重态，它和有机分子的 $T_1$ 发生能量转移，生成活泼的**单重态氧** $^1\Delta_g$（0.98 eV）：这是光动力疗法和很多光氧化的原理，也是做三重态实验要先除氧的原因。猝灭的定量分析见第九章的 Stern–Volmer 演示。`,
+     r`Another molecule colliding with the excited state can take its energy or an electron: **quenching**. Its rate is $k_q[Q]$, capped by the diffusion rate constant (about $10^{10}\ \mathrm{M^{-1}s^{-1}}$). The longer the lifetime, the better the chance of meeting a quencher before dying: nanosecond fluorescence hardly notices the 1–2 mM of oxygen in solution, but microsecond-to-second triplets are mostly eaten by it. Oxygen’s ground state is itself a triplet; energy transfer from an organic $T_1$ produces reactive **singlet oxygen** $^1\Delta_g$ (0.98 eV): the principle of photodynamic therapy and many photo-oxidations, and the reason triplet experiments start by removing oxygen. Quantitative quenching is the Stern–Volmer demo of chapter 9.`],
+    { note: [r`**去谱图馆看荧光和磷光谱。** [[spectra/#m-fluor|荧光与磷光光谱]]那一页讲激发谱、发射谱、量子产率的测法和内滤效应这些实验上的坑。`, r`**See fluorescence and phosphorescence spectra in the Spectra hall.** The [[spectra/#m-fluor|fluorescence and phosphorescence]] page covers excitation and emission spectra, how quantum yields are measured and experimental traps such as the inner-filter effect.`], kind: 'info' },
+  ],
+  points: [
+    [['Jablonski 图', 'The Jablonski diagram'], ['单重态和三重态两列能级，直线是辐射跃迁，波浪线是无辐射跃迁。', 'Two columns of singlet and triplet levels; straight lines radiative, wavy lines radiationless.'], 'history'],
+    [['三重态是磷光的来源', 'Triplets cause phosphorescence'], ['Lewis 和 Kasha 1944 年论证磷光态是三重态，后来测到的顺磁性证实了它。', 'Lewis and Kasha argued in 1944 that the phosphorescent state is a triplet; its paramagnetism, measured later, confirmed it.'], 'tested'],
+    [['产率等于速率之比', 'Yields are ratios of rates'], ['Φ_F = k_F τ_S；一阶竞争过程的直接结果。', 'Φ_F = k_F τ_S; a direct consequence of competing first-order processes.'], 'proved'],
+    [['寿命决定能不能被猝灭', 'Lifetime decides quenchability'], ['k_q[Q]τ 和 1 比；三重态最怕氧气。', 'Compare k_q[Q]τ with 1; triplets fear oxygen most.'], 'tested'],
+    [['单重态氧', 'Singlet oxygen'], ['T₁ 把能量交给基态的三重态氧，生成 ¹Δg，光动力疗法用的就是它。', 'T₁ hands its energy to ground-state triplet oxygen, giving ¹Δg, the agent of photodynamic therapy.'], 'tested'],
+  ],
+  math: [
+    [r`\tau_S = \frac{1}{k_F + k_{IC} + k_{ISC}}, \qquad \Phi_F = k_F\,\tau_S`, ['S₁ 的寿命和荧光量子产率。', 'S₁ lifetime and fluorescence quantum yield.']],
+    [r`\Phi_P = \Phi_{ISC}\,\frac{k_P}{k_P + k_T}`, ['磷光量子产率：先要窜越过去，再要在 T₁ 上发光。', 'Phosphorescence yield: first cross over, then emit from T₁.']],
+    [r`[T_1](t) = \frac{k_{ISC}}{k_T - k_S}\left(e^{-k_S t} - e^{-k_T t}\right)`, ['脉冲激发后三重态布居先升后降（k_T 是 T₁ 的总衰减速率）。', 'After a pulse the triplet population rises then falls (k_T is T₁’s total decay rate).']],
+  ],
+  example: {
+    q: [r`某分子荧光量子产率 0.20、荧光寿命 4.0 ns，窜越到三重态的产率是 0.70。求 $k_F$、$k_{ISC}$ 和 $k_{IC}$。`, r`A molecule has fluorescence quantum yield 0.20, fluorescence lifetime 4.0 ns and triplet yield 0.70. Find $k_F$, $k_{ISC}$ and $k_{IC}$.`],
+    steps: [
+      [r`$k_S = 1/\tau_S = 2.5\times10^8\ \mathrm{s^{-1}}$。`, r`$k_S = 1/\tau_S = 2.5\times10^8\ \mathrm{s^{-1}}$.`],
+      [r`$k_F = \Phi_F k_S = 5.0\times10^7\ \mathrm{s^{-1}}$，$k_{ISC} = \Phi_{ISC}k_S = 1.75\times10^8\ \mathrm{s^{-1}}$。`, r`$k_F = \Phi_F k_S = 5.0\times10^7\ \mathrm{s^{-1}}$, $k_{ISC} = \Phi_{ISC}k_S = 1.75\times10^8\ \mathrm{s^{-1}}$.`],
+      [r`剩下的 $\Phi_{IC} = 1 - 0.20 - 0.70 = 0.10$，$k_{IC} = 2.5\times10^7\ \mathrm{s^{-1}}$。`, r`What is left, $\Phi_{IC} = 1 - 0.20 - 0.70 = 0.10$, gives $k_{IC} = 2.5\times10^7\ \mathrm{s^{-1}}$.`],
+    ],
+    a: [r`$k_F = 5\times10^7$，$k_{ISC} = 1.75\times10^8$，$k_{IC} = 2.5\times10^7\ \mathrm{s^{-1}}$。在演示里把这三个数填进去，再把猝灭调到 $2\times10^7\ \mathrm{s^{-1}}$（通空气），荧光只少约 7 %，三重态却几乎全被猝灭。`, r`$k_F = 5\times10^7$, $k_{ISC} = 1.75\times10^8$, $k_{IC} = 2.5\times10^7\ \mathrm{s^{-1}}$. Enter these in the demo and set quenching to $2\times10^7\ \mathrm{s^{-1}}$ (air): fluorescence drops only about 7 %, while the triplet is almost entirely quenched.`],
+  },
+};
