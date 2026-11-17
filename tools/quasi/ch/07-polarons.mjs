@@ -1,0 +1,48 @@
+const r = String.raw;
+export default {
+  id: 'polarons', level: 'approx', demos: ['polaron'],
+  title: ['极化子：电子穿上晶格做的衣服', 'Polarons: an electron dressed in the lattice'],
+  summary: ['离子晶体和极性半导体里，一个电子会把周围的离子推开拉近，陷在自己造出的极化里。电子加上这团畸变就是极化子：它比裸电子重，能量更低，迁移率也不同。耦合弱时是“大极化子”，几乎自由；耦合强时电子可能被困在一个格点上，变成靠热激活跳跃的“小极化子”。Feynman 1955 年的路径积分解至今仍是这个问题的标杆。', 'In ionic crystals and polar semiconductors an electron pushes and pulls the surrounding ions and gets trapped in the polarisation it creates. The electron plus this distortion is a polaron: heavier than the bare electron, lower in energy, and with a different mobility. At weak coupling it is a nearly free “large polaron”; at strong coupling the electron may be trapped on one site, a “small polaron” that moves by thermally activated hopping. Feynman’s 1955 path-integral solution remains the benchmark for the problem.'],
+  body: [
+    [r`在 NaCl 这样的离子晶体里放进一个多余的电子。它把附近的 Na⁺ 拉向自己，把 Cl⁻ 推开，晶格局部极化，极化反过来在电子所在处产生一个吸引它的势阱。电子越慢，晶格越来得及跟上，势阱越深。电子和它拖着走的这团极化合起来，就是**极化子**。这个想法 1933 年由 Landau 提出，Pekar 在 1940 年代把它发展成强耦合理论。`,
+     r`Put an extra electron into an ionic crystal such as NaCl. It pulls nearby Na⁺ towards itself and pushes Cl⁻ away, polarising the lattice locally, and the polarisation in turn produces a potential well that attracts the electron where it sits. The slower the electron, the better the lattice keeps up and the deeper the well. The electron together with the polarisation it drags along is the **polaron**. Landau proposed the idea in 1933, and Pekar developed it into a strong-coupling theory in the 1940s.`],
+    { h: ['Fröhlich 模型', 'The Fröhlich model'] },
+    [r`Fröhlich 1954 年写出了“大极化子”的标准模型：一个连续介质里的电子，和一支频率为 $\omega_{\mathrm{LO}}$、没有色散的纵光学声子耦合 [@froehlich1954]。耦合的强弱只由一个无量纲数决定：`,
+     r`In 1954 Fröhlich wrote down the standard model of the “large polaron”: an electron in a continuum, coupled to a single dispersionless branch of longitudinal optical phonons at frequency $\omega_{\mathrm{LO}}$ [@froehlich1954]. The strength of the coupling is set by one dimensionless number:`],
+    { math: r`\alpha = \frac{e^2}{4\pi\varepsilon_0\hbar}\sqrt{\frac{m^*}{2\hbar\omega_{\mathrm{LO}}}}\,\Bigl(\frac{1}{\varepsilon_\infty} - \frac{1}{\varepsilon_0}\Bigr)` },
+    [r`$\varepsilon_\infty$ 和 $\varepsilon_0$ 是高频和静态介电常数，两者之差就是离子能跟上的那部分极化。GaAs 的 $\alpha \approx 0.07$，耦合很弱；碱卤化物 $\alpha$ 在 3 到 5 之间；一些氧化物更大。`,
+     r`$\varepsilon_\infty$ and $\varepsilon_0$ are the high-frequency and static dielectric constants, and their difference is the part of the polarisation the ions can follow. GaAs has $\alpha \approx 0.07$, very weak; alkali halides lie between 3 and 5; some oxides are larger.`],
+    [r`弱耦合时可以微扰：电子不时放出又吸收一个虚声子，能量降低 $\alpha\hbar\omega_{\mathrm{LO}}$，质量变成 $m^*(1 + \alpha/6)$。强耦合时电子把自己“挖”进一个坑里，坑的形状和电子的波函数互相决定（Pekar），能量 $\approx -0.1085\,\alpha^2\hbar\omega_{\mathrm{LO}}$，质量按 $\alpha^4$ 增长。两头都清楚，中间呢？`,
+     r`At weak coupling perturbation theory works: the electron keeps emitting and reabsorbing virtual phonons, its energy falls by $\alpha\hbar\omega_{\mathrm{LO}}$ and its mass becomes $m^*(1 + \alpha/6)$. At strong coupling the electron digs itself a pit whose shape and the electron’s wavefunction determine each other (Pekar), with energy $\approx -0.1085\,\alpha^2\hbar\omega_{\mathrm{LO}}$ and a mass growing as $\alpha^4$. Both ends are clear; what about the middle?`],
+    { h: ['Feynman 的变分', 'Feynman’s variational solution'] },
+    [r`Feynman 1955 年用他刚发明的路径积分给出了一个对所有 $\alpha$ 都适用的答案 [@feynman1955]。先把声子积分掉，得到电子和“自己过去的位置”之间的一个时间上非局域的吸引；然后用一个可以精确求解的模型去近似它：电子用一根弹簧连着一个假想的质量，两个参数 $v$、$w$ 调到让能量的上界最低。这个上界在弱耦合和强耦合两头都接近精确，中间的误差也只有百分之一左右，后来的数值方法（扩散蒙特卡洛、图形蒙特卡洛）证实了这一点。下面的演示当场做这个变分。`,
+     r`In 1955 Feynman used his newly invented path integrals to give an answer valid for every $\alpha$ [@feynman1955]. First integrate out the phonons, leaving a time-non-local attraction between the electron and “its own past positions”; then approximate this by an exactly solvable model in which the electron is tied by a spring to a fictitious mass, with the two parameters $v$, $w$ tuned to minimise an upper bound on the energy. The bound comes close to exact at both weak and strong coupling, with errors of only about one per cent in between, as later numerical methods (diffusion and diagrammatic Monte Carlo) confirmed. The demo below performs this variation on the spot.`],
+    { demo: 'polaron' },
+    { h: ['大极化子和小极化子', 'Large and small polarons'] },
+    [r`Fröhlich 模型假设畸变比晶格常数大得多，这是“大极化子”。如果电子和局域畸变的耦合足够强、能带又窄，电子可能被困在**一个**格点（或一个化学键）上，周围的原子发生明显的位移：这是**小极化子**（Holstein 模型描述的情形）。小极化子的输运方式完全不同：它不是以能带速度运动，而是靠热激活从一个格点跳到下一个格点，迁移率随温度**升高**。过渡金属氧化物（TiO₂、Fe₂O₃、BiVO₄）、有机半导体和卤化物钙钛矿里，极化子都是理解载流子行为的关键，现在可以从第一性原理直接计算 [@franchini2021]。`,
+     r`The Fröhlich model assumes a distortion much larger than the lattice constant: the “large polaron”. If the coupling to a local distortion is strong enough and the band narrow, the electron can be trapped on **one** site (or one bond), with clearly displaced atoms around it: the **small polaron** (the situation the Holstein model describes). Small polarons move in a completely different way: not at a band velocity but by thermally activated hops from site to site, so their mobility **rises** with temperature. In transition-metal oxides (TiO₂, Fe₂O₃, BiVO₄), organic semiconductors and halide perovskites polarons are key to understanding carrier behaviour, and they can now be computed directly from first principles [@franchini2021].`],
+    { note: [r`**极化子不只关于电子和声子。** 只要一个粒子在介质里拖着一团扰动走，就是极化子的思路：磁性材料里拖着自旋极化的“磁极化子”，冷原子气里浸在玻色–爱因斯坦凝聚体中的杂质原子（“玻色极化子”），都按同样的数学处理。`, r`**Polarons are not only about electrons and phonons.** Whenever a particle drags a cloud of disturbance through a medium, the polaron idea applies: “magnetic polarons” dragging spin polarisation in magnets, and impurity atoms immersed in a Bose–Einstein condensate of cold atoms (“Bose polarons”), are treated with the same mathematics.`], kind: 'info' },
+  ],
+  points: [
+    [['自陷', 'Self-trapping'], ['电子极化晶格，极化又吸引电子；电子加畸变是极化子。', 'The electron polarises the lattice and the polarisation attracts the electron; electron plus distortion is the polaron.'], 'tested'],
+    [['一个耦合常数 α', 'One coupling constant α'], ['Fröhlich 模型只有 α；GaAs 约 0.07，碱卤化物 3–5。', 'The Fröhlich model has only α: about 0.07 for GaAs, 3–5 for alkali halides.'], 'approx'],
+    [['弱耦合和强耦合', 'Weak and strong coupling'], ['弱耦合 E ≈ −αħω、m* ≈ 1 + α/6；强耦合（Pekar）E ≈ −0.1085α²ħω。', 'Weak coupling E ≈ −αħω, m* ≈ 1 + α/6; strong coupling (Pekar) E ≈ −0.1085α²ħω.'], 'proved'],
+    [['Feynman 变分', 'Feynman’s variation'], ['路径积分给出对所有 α 的能量上界，误差约 1 %。', 'Path integrals give an upper bound on the energy for every α, accurate to about 1 %.'], 'proved'],
+    [['小极化子跳跃', 'Small-polaron hopping'], ['强局域时迁移率随温度升高（热激活跳跃）；氧化物和有机半导体里常见。', 'With strong localisation the mobility rises with temperature (activated hopping); common in oxides and organic semiconductors.'], 'tested'],
+    [['第一性原理的极化子', 'First-principles polarons'], ['从电子–声子耦合直接算出极化子的形状和能量，正在快速发展。', 'Computing polaron shapes and energies directly from electron–phonon coupling is developing fast.'], 'frontier'],
+  ],
+  math: [
+    [r`H = \frac{p^2}{2m^*} + \sum_{\mathbf q}\hbar\omega_{\mathrm{LO}}\,a^\dagger_{\mathbf q}a_{\mathbf q} + \sum_{\mathbf q}\frac{V_0}{q}\bigl(a_{\mathbf q}e^{i\mathbf q\cdot\mathbf r} + \text{h.c.}\bigr), \quad |V_0|^2 \propto \alpha`, ['Fröhlich 哈密顿量。', 'The Fröhlich Hamiltonian.']],
+    [r`E \le \frac{3(v - w)^2}{4v} - \frac{\alpha v}{\sqrt\pi}\int_0^\infty\frac{e^{-\tau}\,d\tau}{\bigl[w^2\tau + \frac{v^2 - w^2}{v}(1 - e^{-v\tau})\bigr]^{1/2}}`, ['Feynman 的变分上界（单位 ħ = ω_LO = m* = 1）。', 'Feynman’s variational bound (units ħ = ω_LO = m* = 1).']],
+    [r`\frac{m_{\mathrm{pol}}}{m^*} = 1 + \frac{\alpha}{6} + \dots\ (\alpha \ll 1), \qquad \frac{m_{\mathrm{pol}}}{m^*} \approx 0.0200\,\alpha^4\ (\alpha \gg 1)`, ['极化子质量的两个极限。', 'The two limits of the polaron mass.']],
+    [r`\mu_{\text{hop}} \propto \frac{1}{T^{3/2}}\exp\Bigl(-\frac{E_a}{k_BT}\Bigr), \qquad E_a \approx \frac{E_b}{2}`, ['小极化子跳跃的迁移率（非绝热 Marcus–Holstein 形式，E_b 是极化子结合能）。', 'Small-polaron hopping mobility (non-adiabatic Marcus–Holstein form, E_b the polaron binding energy).']],
+  ],
+  example: {
+    q: [r`GaAs 的 $\alpha = 0.068$、$\hbar\omega_{\mathrm{LO}} = 36$ meV；一种碱卤化物 $\alpha = 3$、$\hbar\omega_{\mathrm{LO}} = 25$ meV。分别估计极化子结合能和质量增加。`, r`GaAs has $\alpha = 0.068$ and $\hbar\omega_{\mathrm{LO}} = 36$ meV; an alkali halide has $\alpha = 3$ and $\hbar\omega_{\mathrm{LO}} = 25$ meV. Estimate the polaron binding energy and mass increase for each.`],
+    steps: [
+      [r`GaAs：弱耦合，$E_b \approx \alpha\hbar\omega = 0.068\times36 = 2.4$ meV，$m_{\mathrm{pol}}/m^* \approx 1 + 0.068/6 = 1.011$，只重 1 %。`, r`GaAs: weak coupling, $E_b \approx \alpha\hbar\omega = 0.068\times36 = 2.4$ meV and $m_{\mathrm{pol}}/m^* \approx 1 + 0.068/6 = 1.011$, only 1 % heavier.`],
+      [r`$\alpha = 3$：微扰已经不可靠，用 Feynman 的结果（演示里拉到 3）：$E = -3.133\,\hbar\omega$，$m_{\mathrm{pol}}/m^* \approx 1.89$。结合能 $3.133\times25 = 78$ meV。`, r`$\alpha = 3$: perturbation theory is no longer reliable, so use Feynman’s result (slide the demo to 3): $E = -3.133\,\hbar\omega$ and $m_{\mathrm{pol}}/m^* \approx 1.89$. The binding energy is $3.133\times25 = 78$ meV.`],
+    ],
+    a: [r`GaAs 约 2.4 meV、重 1 %；$\alpha = 3$ 的离子晶体约 78 meV、重将近一倍。后者的结合能是室温 $k_BT$ 的三倍，极化子效应必须算进去。`, r`About 2.4 meV and 1 % heavier for GaAs; about 78 meV and nearly twice as heavy for the $\alpha = 3$ ionic crystal. The latter’s binding is three times room-temperature $k_BT$, so polaron effects must be included.`],
+  },
+};
