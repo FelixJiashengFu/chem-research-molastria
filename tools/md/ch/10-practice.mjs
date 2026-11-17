@@ -1,0 +1,57 @@
+const r = String.raw;
+export default {
+  id: 'practice', level: 'tested', demos: ['blocks'],
+  title: ['实践：误差棒、程序和机器学习势', 'In practice: error bars, programs and machine-learned potentials'],
+  summary: ['一次模拟给出的平均值必须带误差棒，而相邻帧高度相关，直接用 σ/√n 会把误差低估几倍到几十倍。分块分析和积分自相关时间给出诚实的误差；平衡期要扔掉，最好自动判断。最后一章介绍 GROMACS、OpenMM、LAMMPS 这几个主要程序，以及机器学习势和生成模型怎样改变分子动力学：一边是更准的力，一边是绕开长轨迹直接采样。', 'An average from a simulation needs an error bar, and because neighbouring frames are strongly correlated, plain σ/√n underestimates the error by a factor of several to tens. Block analysis and the integrated autocorrelation time give honest errors; the equilibration period must be discarded, preferably by an automatic test. The last chapter introduces the main programs GROMACS, OpenMM and LAMMPS, and how machine-learned potentials and generative models are changing molecular dynamics: more accurate forces on one side, sampling without long trajectories on the other.'],
+  body: [
+    [r`分子动力学轨迹上的帧不是独立样本：0.002 ps 一步的轨迹，一个二面角要几十到几千皮秒才“忘记”自己原来在哪。把 $n$ 帧当成 $n$ 个独立样本算出的标准误差 $\sigma/\sqrt n$ 会严重偏小。正确的样本数是 $n_{\text{eff}} = n / (2\tau_{\text{int}})$，$\tau_{\text{int}}$ 是以帧为单位的积分自相关时间。`,
+     r`Frames on a molecular-dynamics trajectory are not independent samples: with 0.002 ps steps, a dihedral angle needs tens to thousands of picoseconds to “forget” where it was. The standard error $\sigma/\sqrt n$ computed as if $n$ frames were $n$ independent samples is severely too small. The correct number of samples is $n_{\text{eff}} = n / (2\tau_{\text{int}})$, with $\tau_{\text{int}}$ the integrated autocorrelation time in frames.`],
+    { math: r`\varepsilon^2 = \frac{\sigma^2}{n}\,\big(2\tau_{\text{int}}\big), \qquad \tau_{\text{int}} = \frac12 + \sum_{t=1}^{\infty} \rho(t)`, cap: ['相关数据的均值误差；ρ(t) 是归一化自相关函数。', 'The error of the mean of correlated data; ρ(t) is the normalised autocorrelation function.'] },
+    [r`$\tau_{\text{int}}$ 的求和在长时间尾巴上噪声很大，直接算很难。Flyvbjerg 和 Petersen 1989 年的分块方法更稳健 [@flyvbjerg1989]：把数据两两平均、一层层变粗，每一层都按“独立样本”算一次误差。块比相关时间短时，算出的误差偏小；块够长以后，误差停在一个平台上，这个平台就是诚实的误差。平台一直不出现，说明模拟太短，连误差都估不出来。`,
+     r`The sum for $\tau_{\text{int}}$ is very noisy in its long-time tail and hard to compute directly. The blocking method of Flyvbjerg and Petersen (1989) is more robust [@flyvbjerg1989]: average the data in pairs, coarser and coarser, and at each level compute the error as if the blocks were independent. While blocks are shorter than the correlation time the error comes out too small; once they are long enough the error settles on a plateau, and that plateau is the honest error. If no plateau appears, the simulation is too short even to estimate its error.`],
+    { demo: 'blocks' },
+    [r`另一个常见错误是把平衡期算进平均。Chodera 2016 年提出的自动方法选择一个截断点，使剩下数据的有效样本数最大 [@chodera2016]：扔得太少，初始结构的偏差留在平均里；扔得太多，浪费样本。Grossfield 等人 2018 年的“最佳实践”是一份很实用的清单，讲怎样报告误差、怎样判断采样够不够 [@grossfield2018]；Braun 等人 2019 年的另一份讲整个模拟流程 [@braun2019]。`,
+     r`Another common mistake is to include the equilibration period in the average. The automatic method proposed by Chodera in 2016 picks the cut-off that maximises the effective number of samples in the remaining data [@chodera2016]: discard too little and the bias of the initial structure stays in the average; discard too much and samples are wasted. The “best practices” paper of Grossfield and co-workers (2018) is a very practical checklist on reporting errors and judging whether sampling is sufficient [@grossfield2018]; that of Braun and co-workers (2019) covers the whole simulation workflow [@braun2019].`],
+    { list: [
+      [r`同样的体系从不同初始速度独立跑三到五次，比一条长轨迹更能暴露没采到的态。`, r`Three to five independent runs from different initial velocities expose unsampled states better than one long trajectory.`],
+      [r`报告 $\tau_{\text{int}}$ 或者有效样本数，而不只是模拟时长。`, r`Report $\tau_{\text{int}}$ or the effective sample size, not just the simulation length.`],
+      [r`自由能计算报告正反两个方向（或者 BAR / MBAR 的重叠矩阵）。`, r`For free energies, report both directions (or the BAR / MBAR overlap matrix).`],
+    ] },
+    { h: ['用什么程序', 'Which program'] },
+    { table: { head: [['程序', 'Program'], ['擅长', 'Strengths'], ['许可证', 'Licence']], rows: [
+      [['GROMACS', 'GROMACS'], ['生物分子，CPU 和 GPU 上都很快，自由能工具完整 [@abraham2015]', 'Biomolecules, very fast on CPU and GPU, complete free-energy tools [@abraham2015]'], ['LGPL', 'LGPL']],
+      [['OpenMM', 'OpenMM'], ['Python 接口、GPU 优先，自定义力和积分器很方便 [@eastman2017]', 'Python interface, GPU first, easy custom forces and integrators [@eastman2017]'], ['MIT / LGPL', 'MIT / LGPL']],
+      [['LAMMPS', 'LAMMPS'], ['材料、粗粒化、各种势函数和机器学习势 [@thompson2022]', 'Materials, coarse graining, many potentials and machine-learned ones [@thompson2022]'], ['GPL', 'GPL']],
+      [['PLUMED', 'PLUMED'], ['接在上面任何一个程序上做增强采样和分析（{{ch:metad}}）', 'Plugs into any of the above for enhanced sampling and analysis ({{ch:metad}})'], ['LGPL', 'LGPL']],
+    ], cap: ['三个主要的分子动力学程序和增强采样插件。', 'Three main molecular-dynamics programs and the enhanced-sampling plug-in.'] } },
+    [r`本站的[[models/#protein|模型接口]]里有一个 OpenMM 驱动的蛋白质分子动力学窗口，可以按 PDB 编号下载结构、跑一段短轨迹看 RMSD；[[code/|开源代码台]]能写 xTB、CP2K 等程序的输入，包括从头算分子动力学。[[chemistry/computational/#c-md|计算化学馆的分子动力学一章]]是这个栏目的一页纸版本。`,
+     r`This site’s [[models/#protein|model interface]] has an OpenMM-driven protein molecular-dynamics window that downloads a structure by PDB code and runs a short trajectory to show the RMSD; the [[code/|Code Desk]] writes inputs for xTB, CP2K and other programs, including ab initio molecular dynamics. The [[chemistry/computational/#c-md|molecular-dynamics chapter of the computational chemistry hall]] is a one-page version of this module.`],
+    { h: ['机器学习正在改变什么', 'What machine learning is changing'] },
+    [r`第一处是力。等变神经网络势（[[nequip/|NequIP]] 一栏专门讲）用几百到几千个 DFT 构型训练，就能以接近 DFT 的精度、快几个数量级地给出力 [@batzner2022]。它们让“反应中的分子动力学”、溶液里的质子转移、材料的相变能用接近量子化学的精度跑到纳秒。代价是外推：模型在训练数据没覆盖的构型上可能悄悄出错，所以要监控不确定度、主动补充数据。`,
+     r`The first change is in forces. Equivariant neural-network potentials (the subject of the [[nequip/|NequIP]] module) trained on a few hundred to a few thousand DFT configurations give forces at close to DFT accuracy but orders of magnitude faster [@batzner2022]. They let reactive molecular dynamics, proton transfer in solution and phase transitions in materials run for nanoseconds at close to quantum-chemical accuracy. The price is extrapolation: a model may quietly go wrong on configurations its training data did not cover, so uncertainty must be monitored and data added actively.`],
+    [r`第二处是采样本身。Noé 等人 2019 年的 Boltzmann 生成器用一个可逆神经网络把简单的高斯分布变换成 $e^{-U/kT}$ 的近似，再用重加权修正成精确的 Boltzmann 分布 [@noe2019]；它一次性地产生独立样本，不必沿轨迹慢慢走。扩散模型和流匹配的后续工作把这条路推向更大的分子。它们是不是能在真正大的体系上取代分子动力学，还没有定论。`,
+     r`The second change is in sampling itself. The Boltzmann generators of Noé and co-workers (2019) use an invertible neural network to transform a simple Gaussian into an approximation of $e^{-U/kT}$ and correct it to the exact Boltzmann distribution by reweighting [@noe2019]; they produce independent samples in one shot instead of walking slowly along a trajectory. Follow-up work with diffusion models and flow matching pushes this route towards larger molecules. Whether such methods can replace molecular dynamics for truly large systems is still undecided.`],
+  ],
+  points: [
+    [['σ/√n 太乐观', 'σ/√n is too optimistic'], ['相关数据的有效样本数是 n/(2τ_int)。', 'The effective sample size of correlated data is n/(2τ_int).'], 'proved'],
+    [['分块分析找平台', 'Block analysis looks for a plateau'], ['平台就是诚实的误差；没有平台说明模拟太短。', 'The plateau is the honest error; no plateau means the run is too short.'], 'tested'],
+    [['平衡期要扔掉', 'Discard the equilibration period'], ['自动选截断点使有效样本数最大。', 'Choose the cut-off automatically to maximise the effective sample size.'], 'tested'],
+    [['机器学习势：接近 DFT 的力', 'Machine-learned potentials: forces near DFT'], ['快几个数量级；外推要监控。', 'Orders of magnitude faster; extrapolation must be monitored.'], 'frontier'],
+    [['生成模型能否取代长轨迹', 'Can generative models replace long trajectories'], ['小分子上可行；大体系还没有定论。', 'Feasible for small molecules; undecided for large systems.'], 'open'],
+  ],
+  math: [
+    [r`\varepsilon_{\text{naive}} = \sigma/\sqrt n, \qquad \varepsilon = \sigma\sqrt{2\tau_{\text{int}}/n}`, ['朴素误差和考虑相关的误差。', 'The naive error and the error accounting for correlation.']],
+    [r`x^{(k+1)}_i = \tfrac12\big(x^{(k)}_{2i-1} + x^{(k)}_{2i}\big), \qquad \varepsilon_k^2 = \frac{\operatorname{Var}(x^{(k)})}{n_k - 1}`, ['Flyvbjerg–Petersen 分块：每层两两平均。', 'Flyvbjerg–Petersen blocking: pairwise averaging at each level.']],
+    [r`x_{t+1} = \phi\, x_t + \sqrt{1 - \phi^2}\,\eta_t, \qquad \tau_{\text{int}} = \frac{1}{2}\frac{1 + \phi}{1 - \phi}`, ['演示用的 AR(1) 过程和它的精确积分自相关时间。', 'The AR(1) process of the demo and its exact integrated autocorrelation time.']],
+    [r`\langle A \rangle = \frac{\sum_i w_i A(\mathbf x_i)}{\sum_i w_i}, \qquad w_i = \frac{e^{-U(\mathbf x_i)/kT}}{q(\mathbf x_i)}`, ['Boltzmann 生成器的重加权：q 是网络给出的概率密度。', 'Reweighting in a Boltzmann generator: q is the probability density given by the network.']],
+  ],
+  example: {
+    q: [r`一条 10 ns 的轨迹每 1 ps 存一帧，测得某个距离的平均值 0.85 nm、标准差 0.12 nm，积分自相关时间 $\tau_{\text{int}} = 250$ ps。平均值的误差是多少？`, r`A 10 ns trajectory saved every 1 ps gives a distance with mean 0.85 nm, standard deviation 0.12 nm and integrated autocorrelation time $\tau_{\text{int}} = 250$ ps. What is the error of the mean?`],
+    steps: [
+      [r`$n = 10\,000$ 帧，朴素误差 $0.12/100 = 0.0012$ nm。`, r`$n = 10\,000$ frames; the naive error is $0.12/100 = 0.0012$ nm.`],
+      [r`$n_{\text{eff}} = 10\,000/(2 \times 250) = 20$。`, r`$n_{\text{eff}} = 10\,000/(2 \times 250) = 20$.`],
+      [r`$\varepsilon = 0.12/\sqrt{20} = 0.027$ nm。`, r`$\varepsilon = 0.12/\sqrt{20} = 0.027$ nm.`],
+    ],
+    a: ['误差约 0.027 nm，是朴素估计的 22 倍：10 000 帧只相当于 20 个独立样本。存帧更密不会改善它，只有跑得更长或者独立重复才行。', 'The error is about 0.027 nm, 22 times the naive estimate: 10 000 frames are worth only 20 independent samples. Saving frames more often does not help; only longer runs or independent repeats do.'],
+  },
+};

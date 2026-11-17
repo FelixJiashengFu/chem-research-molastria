@@ -1,0 +1,53 @@
+const r = String.raw;
+export default {
+  id: 'msm', level: 'tested', demos: ['msm'],
+  title: ['马尔可夫态模型：许多短轨迹拼成长时间的动力学', 'Markov state models: long-time kinetics from many short trajectories'],
+  summary: ['蛋白质折叠、配体结合这类过程要毫秒到秒，一条轨迹很难跑到；但几千条微秒长的短轨迹可以并行地跑。马尔可夫态模型把构型空间切成许多小态，数每隔 τ 时间从哪个态跳到哪个态，得到一个转移矩阵；它的本征值给出过程的特征时间，本征向量给出慢过程是什么。切得好、τ 取得够长时，隐含时间尺度不随 τ 变，这是检验模型的主要办法。', 'Processes such as protein folding and ligand binding take milliseconds to seconds and are hard to reach in a single trajectory, but thousands of microsecond-long trajectories can be run in parallel. A Markov state model divides configuration space into many small states and counts, every lag time τ, which state jumps to which, giving a transition matrix; its eigenvalues give the characteristic times of the processes and its eigenvectors say what the slow processes are. With a good partition and a long enough τ the implied timescales do not depend on τ, which is the main test of the model.'],
+  body: [
+    [r`在长时间的尺度上，分子的动力学往往像在几个“亚稳态”之间跳：在一个态里很快地涨落，偶尔翻过能垒跳到另一个态。如果把构型空间切成 $n$ 个小格（微观态），只看每隔 $\tau$ 时间体系在哪一格，就得到一串离散的状态序列。如果 $\tau$ 足够长，下一步去哪只取决于现在在哪，不取决于怎么来的，这串序列就是一个马尔可夫链。`,
+     r`On long timescales molecular dynamics often looks like hopping between a few “metastable states”: fast fluctuation within a state, occasional crossings of a barrier into another. Cut configuration space into $n$ small cells (microstates) and look only at which cell the system is in every $\tau$, and you get a sequence of discrete states. If $\tau$ is long enough that where the system goes next depends only on where it is now, not on how it got there, the sequence is a Markov chain.`],
+    { math: r`T_{ij}(\tau) = P\big(x(t+\tau) \in j \mid x(t) \in i\big) \approx \frac{C_{ij}(\tau)}{\sum_k C_{ik}(\tau)}`, cap: ['转移矩阵：Cᵢⱼ 是间隔 τ 的从 i 到 j 的跳跃计数。', 'The transition matrix: Cᵢⱼ counts jumps from i to j separated by τ.'] },
+    [r`转移矩阵的最大本征值是 1，对应的左本征向量是平衡分布。其余本征值 $0 < \lambda_k < 1$ 各对应一个弛豫过程，特征时间叫隐含时间尺度：`,
+     r`The largest eigenvalue of the transition matrix is 1, and its left eigenvector is the equilibrium distribution. Each remaining eigenvalue $0 < \lambda_k < 1$ corresponds to a relaxation process with a characteristic time, the implied timescale:`],
+    { math: r`t_k = -\frac{\tau}{\ln \lambda_k(\tau)}`, cap: ['隐含时间尺度；模型对的话它和 τ 无关。', 'The implied timescale; if the model is right it does not depend on τ.'] },
+    [r`本征向量告诉你慢过程是什么：第二个本征向量在两个最大的亚稳区符号相反，它就是“折叠 / 未折叠”或者“结合 / 解离”这个最慢的坐标。这是马尔可夫模型最吸引人的地方：它不需要事先选一个反应坐标，慢的方向是从数据里算出来的。`,
+     r`The eigenvectors tell you what the slow processes are: the second eigenvector has opposite signs on the two largest metastable regions, and it *is* the slowest coordinate, “folded / unfolded” or “bound / unbound”. This is the most attractive feature of Markov models: no reaction coordinate has to be chosen in advance; the slow direction is computed from the data.`],
+    { demo: 'msm' },
+    { h: ['怎样检验和改进', 'How to test and improve'] },
+    [r`演示里最重要的现象是：切分不好（把能垒切在格子中间）时，短 $\tau$ 下的隐含时间尺度严重偏短，随 $\tau$ 增大才慢慢爬向真值。原因是格子里混了两边的构型，跳跃有“记忆”，马尔可夫假设不成立。Prinz 等人 2011 年系统讨论了这种离散化误差、怎样选 $\tau$，以及 Chapman–Kolmogorov 检验 $T(k\tau) \approx T(\tau)^k$ [@prinz2011]。`,
+     r`The most important thing in the demo is this: with a poor partition (the barrier cut through the middle of a cell) the implied timescales at short $\tau$ are badly underestimated and creep up towards the true value only as $\tau$ grows. The cell mixes configurations from both sides, so jumps have “memory” and the Markov assumption fails. Prinz and co-workers (2011) discuss this discretisation error, how to choose $\tau$, and the Chapman–Kolmogorov test $T(k\tau) \approx T(\tau)^k$ systematically [@prinz2011].`],
+    { list: [
+      [r`特征：先把原子坐标变成距离、二面角这类不随平移转动变化的量。`, r`Features: first turn atomic coordinates into quantities such as distances and dihedrals that do not change under translation and rotation.`],
+      [r`降维：TICA 找出线性组合里自相关时间最长的方向 [@perez2013]。`, r`Dimensionality reduction: TICA finds the linear combinations with the longest autocorrelation times [@perez2013].`],
+      [r`聚类：在 TICA 空间里用 k-means 切出几百到几千个微观态。`, r`Clustering: cut a few hundred to a few thousand microstates in TICA space with k-means.`],
+      [r`估计：数间隔 τ 的跳跃，做细致平衡的最大似然估计，画隐含时间尺度随 τ 的曲线。`, r`Estimation: count jumps at lag τ, compute a reversible maximum-likelihood estimate and plot the implied timescales against τ.`],
+      [r`粗粒化：把微观态合成几个亚稳态（PCCA+），算态间的速率和通量。`, r`Coarse graining: lump microstates into a few metastable states (PCCA+) and compute rates and fluxes between them.`],
+    ] },
+    [r`Pande 等人 2010 年的入门文章 [@pande2010] 和 Husic 与 Pande 2018 年的综述 [@husic2018] 把这条流水线讲得很完整。Noé 等人 2009 年用这类模型从短的、不平衡的模拟里重建了一个小蛋白质的完整折叠路径网络 [@noe2009]；Folding@home 这样的分布式计算项目正是靠马尔可夫模型把成千上万台电脑上的短轨迹拼在一起。`,
+     r`The introduction by Pande and co-workers (2010) [@pande2010] and the review by Husic and Pande (2018) [@husic2018] lay out this pipeline thoroughly. Noé and co-workers (2009) used such models to reconstruct the full network of folding pathways of a small protein from short, non-equilibrium simulations [@noe2009]; distributed-computing projects such as Folding@home rely on Markov models to stitch together short trajectories from many thousands of computers.`],
+    [r`最新的发展把整条流水线换成一个神经网络。Mardt 等人 2018 年的 VAMPnets 直接从坐标学一个“软”的态分配，目标函数是变分马尔可夫过程（VAMP）分数：慢过程刻画得越好分数越高 [@mardt2018]。这和 {{ch:metad}} 里学集体变量是同一个问题的两面：都是在找最慢的方向。`,
+     r`The latest developments replace the whole pipeline with one neural network. The VAMPnets of Mardt and co-workers (2018) learn a “soft” state assignment directly from coordinates, with the variational approach for Markov processes (VAMP) score as the objective: the better the slow processes are captured, the higher the score [@mardt2018]. This is the other face of learning collective variables in {{ch:metad}}: both look for the slowest directions.`],
+  ],
+  points: [
+    [['短轨迹拼长时间', 'Short trajectories, long times'], ['只要短轨迹在局部平衡，转移计数就能拼成全局动力学。', 'As long as short trajectories are locally equilibrated, transition counts can be assembled into global kinetics.'], 'tested'],
+    [['本征值给时间，本征向量给机理', 'Eigenvalues give times, eigenvectors give mechanism'], ['第二个本征向量就是最慢的反应坐标。', 'The second eigenvector is the slowest reaction coordinate.'], 'proved'],
+    [['隐含时间尺度要和 τ 无关', 'Implied timescales must not depend on τ'], ['短 τ 下偏短是离散化误差，不是物理。', 'Short-τ underestimates are discretisation error, not physics.'], 'proved'],
+    [['切分决定一切', 'The partition decides everything'], ['能垒切在格子中间，跳跃就有记忆。', 'If a cell straddles the barrier, jumps have memory.'], 'tested'],
+    [['深度学习的 VAMPnets', 'Deep-learning VAMPnets'], ['用 VAMP 分数端到端地学态分配。', 'State assignment learned end to end with the VAMP score.'], 'frontier'],
+  ],
+  math: [
+    [r`\mathbf p(t + k\tau) = \mathbf p(t)\, T(\tau)^k`, ['马尔可夫链的演化；Chapman–Kolmogorov 检验比较 T(kτ) 和 T(τ)ᵏ。', 'Evolution of a Markov chain; the Chapman–Kolmogorov test compares T(kτ) with T(τ)ᵏ.']],
+    [r`\boldsymbol\pi\, T = \boldsymbol\pi, \qquad \pi_i T_{ij} = \pi_j T_{ji}`, ['平衡分布和细致平衡。', 'The equilibrium distribution and detailed balance.']],
+    [r`t_k = -\tau / \ln \lambda_k(\tau)`, ['隐含时间尺度。', 'The implied timescale.']],
+    [r`\partial_t p = \nabla\!\cdot\!\big(D\, e^{-\beta U}\, \nabla (e^{\beta U} p)\big)`, ['演示背后的 Smoluchowski 方程；它的本征值给出精确的时间尺度。', 'The Smoluchowski equation behind the demo; its eigenvalues give the exact timescales.']],
+  ],
+  example: {
+    q: [r`一个两态模型，$\tau = 10$ ns 时转移矩阵是 $T = \begin{pmatrix} 0.98 & 0.02 \\ 0.04 & 0.96 \end{pmatrix}$。平衡分布和弛豫时间是多少？`, r`A two-state model has, at $\tau = 10$ ns, the transition matrix $T = \begin{pmatrix} 0.98 & 0.02 \\ 0.04 & 0.96 \end{pmatrix}$. What are the equilibrium distribution and the relaxation time?`],
+    steps: [
+      [r`细致平衡 $\pi_1 \cdot 0.02 = \pi_2 \cdot 0.04$，所以 $\pi = (2/3, 1/3)$。`, r`Detailed balance $\pi_1 \cdot 0.02 = \pi_2 \cdot 0.04$ gives $\pi = (2/3, 1/3)$.`],
+      [r`两态矩阵的第二个本征值是 $\lambda_2 = 1 - 0.02 - 0.04 = 0.94$。`, r`The second eigenvalue of a two-state matrix is $\lambda_2 = 1 - 0.02 - 0.04 = 0.94$.`],
+      [r`$t_2 = -10/\ln 0.94 = 161.6$ ns。`, r`$t_2 = -10/\ln 0.94 = 161.6$ ns.`],
+    ],
+    a: ['π = (2/3, 1/3)，弛豫时间约 162 ns，对应正反两个速率之和 k₁₂ + k₂₁ ≈ 1/162 ns⁻¹。如果在 τ = 20 ns 重新估计得到的时间也在 160 ns 附近，模型就通过了最基本的检验。', 'π = (2/3, 1/3) and the relaxation time is about 162 ns, i.e. the sum of the forward and backward rates k₁₂ + k₂₁ ≈ 1/162 ns⁻¹. If re-estimating at τ = 20 ns also gives about 160 ns, the model passes the most basic test.'],
+  },
+};

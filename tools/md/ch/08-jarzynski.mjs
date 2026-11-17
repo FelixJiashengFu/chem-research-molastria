@@ -1,0 +1,47 @@
+const r = String.raw;
+export default {
+  id: 'jarzynski', level: 'proved', demos: ['jarz'],
+  title: ['Jarzynski 等式和非平衡功：从拉断里读出平衡', 'The Jarzynski equality and nonequilibrium work: equilibrium from pulling'],
+  summary: ['热力学第二定律说，把体系从一个态快速拉到另一个态做的平均功不小于自由能差：⟨W⟩ ≥ ΔF。Jarzynski 1997 年发现一个更强的等式：⟨e^{−W/kT}⟩ = e^{−ΔF/kT}，无论拉得多快都精确成立。Crooks 涨落定理把正反两个方向的功分布联系起来。它们让单分子拉伸实验和“操纵分子动力学”能给出平衡自由能，代价同样是指数平均：拉得越快，越依赖那些罕见的、功特别小的轨迹。', 'The second law of thermodynamics says that the average work done in quickly driving a system from one state to another is no less than the free-energy difference: ⟨W⟩ ≥ ΔF. In 1997 Jarzynski found a stronger equality, ⟨e^{−W/kT}⟩ = e^{−ΔF/kT}, exact however fast the driving. The Crooks fluctuation theorem relates the work distributions in the forward and reverse directions. Together they let single-molecule pulling experiments and “steered molecular dynamics” yield equilibrium free energies, at the price, again, of an exponential average: the faster the pulling, the more the result depends on rare trajectories with unusually small work.'],
+  body: [
+    [r`设想用光镊拉一个 RNA 发夹：一端固定，另一端连在一个谐振陷阱上，陷阱的位置 $\lambda$ 按一个固定的程序从 $\lambda_0$ 移到 $\lambda_1$。每次拉，外界对分子做的功 $W = \int (\partial H/\partial\lambda)\,\dot\lambda\,\mathrm dt$ 都不一样，因为热涨落每次不同。拉得无限慢时 $W = \Delta F$（可逆过程）；拉得快时多出来的部分耗散成热。`,
+     r`Imagine pulling an RNA hairpin with optical tweezers: one end fixed, the other attached to a harmonic trap whose position $\lambda$ moves from $\lambda_0$ to $\lambda_1$ according to a fixed protocol. The work done on the molecule, $W = \int (\partial H/\partial\lambda)\,\dot\lambda\,\mathrm dt$, differs from pull to pull because thermal fluctuations differ. Pulled infinitely slowly, $W = \Delta F$ (a reversible process); pulled fast, the excess is dissipated as heat.`],
+    { math: r`\big\langle e^{-W/kT} \big\rangle = e^{-\Delta F/kT}`, cap: ['Jarzynski 等式：对从平衡出发的任意拉法精确成立。', 'The Jarzynski equality: exact for any protocol starting from equilibrium.'] },
+    [r`Jarzynski 1997 年先对哈密顿动力学、随后对随机动力学证明了这个等式 [@jarzynski1997]。它最惊人的地方是对拉法没有任何要求：体系在终点不必处于平衡，甚至可以离平衡很远。由 Jensen 不等式 $\langle e^{-W/kT}\rangle \ge e^{-\langle W\rangle/kT}$ 立刻得到 $\langle W\rangle \ge \Delta F$，所以第二定律是它的推论。`,
+     r`Jarzynski proved the equality in 1997, first for Hamiltonian and soon for stochastic dynamics [@jarzynski1997]. Its most striking feature is that it places no demand on the protocol: the system need not be in equilibrium at the end, and can be far from it. Jensen’s inequality $\langle e^{-W/kT}\rangle \ge e^{-\langle W\rangle/kT}$ immediately gives $\langle W\rangle \ge \Delta F$, so the second law is a corollary.`],
+    [r`Crooks 1999 年给出了更细的版本：正向拉的功分布 $P_F(W)$ 和反向拉（从态 1 的平衡出发、按时间反演的程序拉回 $\lambda_0$）的功分布 $P_R(-W)$ 之比是 $e^{(W - \Delta F)/kT}$ [@crooks1999]。两个分布在 $W = \Delta F$ 处相交，这给了一个不用指数平均、只看交点的估计方法；用两边的功做 BAR（{{ch:fep}}）是最优的组合。`,
+     r`Crooks gave a finer version in 1999: the ratio of the forward work distribution $P_F(W)$ to that of the reverse process (starting from equilibrium in state 1 and driving back to $\lambda_0$ with the time-reversed protocol), $P_R(-W)$, is $e^{(W - \Delta F)/kT}$ [@crooks1999]. The two distributions cross at $W = \Delta F$, which gives an estimate that needs no exponential average, only the crossing point; BAR on the work from both sides ({{ch:fep}}) is the optimal combination.`],
+    { demo: 'jarz' },
+    { h: ['实验验证', 'Experimental tests'] },
+    [r`Liphardt 等人 2002 年用光镊反复拉开、折回 RNA 发夹，在拉得较慢、耗散只有几 $kT$ 的条件下，Jarzynski 估计和可逆拉伸得到的自由能在误差内一致 [@liphardt2002]。Collin 等人 2005 年在一个耗散更大的 RNA 三路连接上验证了 Crooks 定理，并用正反两个方向的功恢复出了折叠自由能 [@collin2005]。这两篇是非平衡统计力学从理论走进分子实验室的标志。`,
+     r`Liphardt and co-workers (2002) repeatedly unfolded and refolded an RNA hairpin with optical tweezers; pulling fairly slowly, with only a few $kT$ of dissipation, the Jarzynski estimate agreed within error with the free energy from reversible pulling [@liphardt2002]. Collin and co-workers (2005) verified the Crooks theorem on a more dissipative three-way RNA junction and recovered the folding free energy from work in both directions [@collin2005]. These two papers mark the arrival of nonequilibrium statistical mechanics in the molecular laboratory.`],
+    [r`Hummer 和 Szabo 2001 年说明了怎样从这类实验重建整条自由能曲线，而不只是两端的差：对拉伸过程中每个时刻的分子伸长做加权直方图 [@hummer2001]。在模拟里，这对应“操纵分子动力学”（SMD）：用一个移动的弹簧拉一个原子或一组原子。Park 和 Schulten 2004 年系统讨论了 SMD 求 PMF 时拉速、弹簧刚度和二阶累积量近似的取舍 [@park2004]。`,
+     r`Hummer and Szabo (2001) showed how to reconstruct the whole free-energy profile, not just the difference between the end points, from such experiments: a weighted histogram of the molecular extension at each moment of the pull [@hummer2001]. In simulation this corresponds to steered molecular dynamics (SMD): pulling an atom or a group of atoms with a moving spring. Park and Schulten (2004) discussed systematically the trade-offs of pulling speed, spring stiffness and the second-order cumulant approximation when SMD is used to obtain a PMF [@park2004].`],
+    { h: ['同样的陷阱：指数平均', 'The same trap: the exponential average'] },
+    [r`Jarzynski 等式和 Zwanzig 公式在数学上是同一类东西（瞬间“拉”完就是 FEP），所以它继承了同样的毛病。$\langle e^{-W/kT}\rangle$ 由 $W < \Delta F$ 的那些“违反第二定律”的罕见轨迹主导；耗散 $\langle W\rangle - \Delta F$ 每多几 $kT$，需要的轨迹数就指数增长。功分布近似高斯时有一个闭式：`,
+     r`The Jarzynski equality and the Zwanzig formula are mathematically the same kind of object (an instantaneous “pull” is FEP), so it inherits the same weakness. $\langle e^{-W/kT}\rangle$ is dominated by rare trajectories with $W < \Delta F$ that “violate the second law”; every few extra $kT$ of dissipation $\langle W\rangle - \Delta F$ multiplies the number of trajectories needed exponentially. If the work distribution is roughly Gaussian there is a closed form:`],
+    { math: r`\Delta F \approx \langle W\rangle - \frac{\sigma_W^2}{2kT}`, cap: ['二阶累积量近似；功分布是高斯时精确，此时耗散等于 σ²/2kT。', 'The second-order cumulant approximation; exact for a Gaussian work distribution, in which case the dissipation equals σ²/2kT.'] },
+  ],
+  points: [
+    [['等式对任意拉法成立', 'The equality holds for any protocol'], ['只要求从平衡出发；终点可以离平衡很远。', 'It only needs an equilibrium start; the end point may be far from equilibrium.'], 'proved'],
+    [['第二定律是推论', 'The second law is a corollary'], ['Jensen 不等式给出 ⟨W⟩ ≥ ΔF。', 'Jensen’s inequality gives ⟨W⟩ ≥ ΔF.'], 'proved'],
+    [['Crooks：正反分布在 ΔF 相交', 'Crooks: forward and reverse distributions cross at ΔF'], ['正反两边的功用 BAR 合并最省样本。', 'Combining work from both sides with BAR uses samples best.'], 'proved'],
+    [['在 RNA 拉伸上被实验验证', 'Verified on RNA pulling'], ['Liphardt 2002（Jarzynski）、Collin 2005（Crooks）。', 'Liphardt 2002 (Jarzynski) and Collin 2005 (Crooks).'], 'tested'],
+    [['耗散大时需要的轨迹指数增长', 'With large dissipation the trajectories needed grow exponentially'], ['和单步 FEP 一样，受罕见的小功轨迹主导。', 'Like single-step FEP, it is dominated by rare low-work trajectories.'], 'proved'],
+  ],
+  math: [
+    [r`W = \int_0^\tau \frac{\partial H(\mathbf x_t, \lambda_t)}{\partial \lambda}\, \dot\lambda_t\, \mathrm dt`, ['一条轨迹上外界做的功。', 'The work done on one trajectory.']],
+    [r`\big\langle e^{-W/kT}\big\rangle = e^{-\Delta F/kT} \;\Rightarrow\; \langle W \rangle \ge \Delta F`, ['Jarzynski 等式和它推出的第二定律。', 'The Jarzynski equality and the second law it implies.']],
+    [r`\frac{P_F(W)}{P_R(-W)} = e^{(W - \Delta F)/kT}`, ['Crooks 涨落定理。', 'The Crooks fluctuation theorem.']],
+    [r`\Delta F \approx \langle W \rangle - \frac{\sigma_W^2}{2kT}`, ['二阶累积量近似。', 'The second-order cumulant approximation.']],
+  ],
+  example: {
+    q: [r`拉一个分子 100 次，功的平均是 $\langle W\rangle = 12\,kT$，标准差 $\sigma_W = 3\,kT$。如果功分布近似高斯，$\Delta F$ 是多少？耗散多大？`, r`A molecule is pulled 100 times, with mean work $\langle W\rangle = 12\,kT$ and standard deviation $\sigma_W = 3\,kT$. If the work distribution is roughly Gaussian, what is $\Delta F$, and how large is the dissipation?`],
+    steps: [
+      [r`$\Delta F \approx \langle W\rangle - \sigma_W^2/2kT = 12 - 9/2 = 7.5\,kT$。`, r`$\Delta F \approx \langle W\rangle - \sigma_W^2/2kT = 12 - 9/2 = 7.5\,kT$.`],
+      [r`耗散 $\langle W\rangle - \Delta F = 4.5\,kT$。`, r`Dissipation $\langle W\rangle - \Delta F = 4.5\,kT$.`],
+      [r`$W \le \Delta F$ 的轨迹在高斯分布里偏离均值 1.5 个标准差，约占 7 %，100 次里有六七次，指数平均还算可靠。`, r`Trajectories with $W \le \Delta F$ lie 1.5 standard deviations below the mean, about 7 % of a Gaussian: six or seven out of 100, so the exponential average is still fairly reliable.`],
+    ],
+    a: ['ΔF ≈ 7.5 kT，耗散 4.5 kT。如果 σ_W 翻倍到 6 kT，ΔF 的估计要减去 18 kT，而 W ≤ ΔF 的轨迹在 3 个标准差以外，只占约 0.1 %：100 次就不够了。', 'ΔF ≈ 7.5 kT with 4.5 kT dissipated. If σ_W doubled to 6 kT, 18 kT would have to be subtracted and the trajectories with W ≤ ΔF would lie beyond 3 standard deviations, only about 0.1 %: 100 pulls would no longer be enough.'],
+  },
+};

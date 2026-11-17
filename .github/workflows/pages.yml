@@ -84,6 +84,8 @@ jobs:
         run: node --test tools/em-test.mjs
       - name: Tensor networks models and content
         run: node --test tools/tensor-test.mjs
+      - name: Molecular dynamics models and content
+        run: node --test tools/md-test.mjs
       - name: Photochemistry models and content
         run: node --test tools/photochem-test.mjs
       - name: Playground game physics

@@ -1,0 +1,52 @@
+const r = String.raw;
+export default {
+  id: 'umbrella', level: 'proved', demos: ['umbrella'],
+  title: ['伞形采样和 WHAM：把能垒摊平', 'Umbrella sampling and WHAM: flattening the barrier'],
+  summary: ['沿一个集体变量的自由能曲线 F(ξ) = −kT ln P(ξ) 在原理上只是一个直方图，但能垒顶上的构型在普通模拟里几乎不出现。伞形采样在 ξ 上排一串谐振势窗口，每个窗口把体系拴在一小段 ξ 附近；WHAM 或 MBAR 再把各窗口的偏置直方图去掉偏置、拼成一条曲线。方法本身精确，误差来自窗口之间的重叠、每个窗口的平衡和集体变量选得好不好。', 'The free-energy profile along a collective variable, F(ξ) = −kT ln P(ξ), is in principle just a histogram, but configurations at the top of a barrier almost never appear in an ordinary simulation. Umbrella sampling places a series of harmonic window potentials along ξ, each tethering the system to a short stretch of ξ; WHAM or MBAR then removes the bias from each window’s histogram and joins them into one curve. The method is exact; errors come from the overlap between windows, the equilibration of each window and how well the collective variable is chosen.'],
+  body: [
+    [r`很多化学问题可以归结成一条坐标：两个分子的距离、一个二面角、质子在两个氧之间的位置。把所有其他自由度积分掉，沿这条坐标 $\xi$ 的概率分布就给出“平均力势”（PMF），也就是自由能曲线 $F(\xi) = -kT \ln P(\xi) + C$。`,
+     r`Many chemical questions reduce to one coordinate: the distance between two molecules, a dihedral angle, the position of a proton between two oxygens. Integrating out every other degree of freedom, the probability distribution along this coordinate $\xi$ gives the “potential of mean force” (PMF), the free-energy profile $F(\xi) = -kT \ln P(\xi) + C$.`],
+    [r`问题在于 Boltzmann 因子。能垒高 10 $kT$ 时，垒顶的概率只有谷底的 $e^{-10} \approx 4.5\times10^{-5}$；20 $kT$（约 50 kJ/mol，很普通的化学能垒）时是 $2\times10^{-9}$。普通模拟会在一个谷里待上远超模拟时长的时间，直方图只有谷底那一段。`,
+     r`The trouble is the Boltzmann factor. With a 10 $kT$ barrier, the top is only $e^{-10} \approx 4.5\times10^{-5}$ as likely as the bottom; at 20 $kT$ (about 50 kJ/mol, a perfectly ordinary chemical barrier) it is $2\times10^{-9}$. An ordinary simulation stays in one well for far longer than the simulation lasts, and the histogram covers only the bottom of that well.`],
+    { h: ['加一把伞', 'Adding an umbrella'] },
+    [r`Torrie 和 Valleau 1977 年的办法是给势能加一个已知的偏置 $w(\xi)$，让本来很少去的区域变得常去，最后再把偏置精确地扣掉 [@torrie1977]。“伞”这个名字来自他们最初用的宽而平的偏置，它像一把伞盖住了整个要采的区间。现在通用的是一串谐振窗口 $w_i(\xi) = \tfrac12 k(\xi - \xi_i)^2$，每个窗口只负责一小段。`,
+     r`Torrie and Valleau’s 1977 idea was to add a known bias $w(\xi)$ to the potential so that rarely visited regions become common, and then remove the bias exactly afterwards [@torrie1977]. The name “umbrella” comes from the broad, flat bias they first used, which covered the whole interval to be sampled like an umbrella. Today one uses a series of harmonic windows $w_i(\xi) = \tfrac12 k(\xi - \xi_i)^2$, each responsible for a short stretch.`],
+    { math: r`P_i^{\text{unb}}(\xi) = P_i^{\text{b}}(\xi)\, e^{w_i(\xi)/kT}\, e^{-f_i/kT}, \qquad e^{-f_i/kT} = \big\langle e^{-w_i(\xi)/kT} \big\rangle`, cap: ['一个窗口的偏置分布怎样变回无偏分布；未知的只有每个窗口一个常数 fᵢ。', 'How one window’s biased distribution turns back into the unbiased one; the only unknown is one constant fᵢ per window.'] },
+    [r`每个窗口单独去掉偏置以后，得到的是同一条 $F(\xi)$ 的一小段，但每段差一个未知的常数 $f_i$。早期的做法是让相邻两段在重叠区对齐。Kumar 等人 1992 年的加权直方图分析方法（WHAM）把这件事做成了最优的：它把所有窗口的直方图按各自的统计权重合成一个分布，同时自洽地解出全部 $f_i$ [@kumar1992]。WHAM 的思想来自 Ferrenberg 和 Swendsen 为 Monte Carlo 做的多直方图重加权 [@ferrenberg1989]。`,
+     r`After removing the bias, each window gives a short piece of the same $F(\xi)$, but each piece is off by an unknown constant $f_i$. Early practice aligned neighbouring pieces in their overlap. The weighted histogram analysis method (WHAM) of Kumar and co-workers (1992) made this optimal: it combines every window’s histogram into one distribution, weighted by its statistics, and solves self-consistently for all the $f_i$ [@kumar1992]. The idea comes from the multiple-histogram reweighting of Ferrenberg and Swendsen for Monte Carlo [@ferrenberg1989].`],
+    { demo: 'umbrella' },
+    { h: ['窗口怎么排', 'How to place the windows'] },
+    [r`窗口的弹簧要够硬，才能把体系按在垒顶上：$k$ 至少要和 $F(\xi)$ 的最大负曲率相当。但弹簧太硬，每个窗口的分布就很窄，需要的窗口数变多。实用的判据是相邻窗口的直方图要明显重叠（演示里的“重叠”读数），否则 WHAM 解出的常数之间没有联系，曲线会在某处断开。Kästner 2011 年的综述把这些经验和误差分析写得很清楚 [@kastner2011]。`,
+     r`The window springs must be stiff enough to hold the system on top of the barrier: $k$ should be at least comparable to the largest negative curvature of $F(\xi)$. But if the springs are too stiff, each window’s distribution is narrow and more windows are needed. The practical criterion is that neighbouring histograms overlap clearly (the “overlap” readout in the demo); otherwise the constants WHAM solves for are not connected and the curve breaks somewhere. Kästner’s 2011 review sets out this experience and the error analysis clearly [@kastner2011].`],
+    { list: [
+      [r`每个窗口都要先平衡：从上一个窗口的终点出发，丢掉开头一段。`, r`Equilibrate every window: start from the end of the previous window and discard an initial stretch.`],
+      [r`误差要按相关时间算：一个窗口里相邻的帧不独立（{{ch:practice}} 的分块分析）。`, r`Compute errors with the correlation time in mind: neighbouring frames in a window are not independent (block analysis in {{ch:practice}}).`],
+      [r`正反两个方向各拉一次，曲线对不上通常说明有慢的正交自由度。`, r`Pull once in each direction; profiles that disagree usually signal a slow orthogonal degree of freedom.`],
+    ] },
+    [r`最后一条是伞形采样最根本的局限：它只把 $\xi$ 方向摊平了。如果反应还需要另一个慢变量（比如一个侧链要翻过去、一个水分子要进来），窗口里的体系就卡在那个变量的一个值上，算出来的 PMF 有滞后。这不是 WHAM 的问题，是集体变量的问题；下一章 {{ch:metad}} 的元动力学和 {{ch:msm}} 的马尔可夫模型都从不同角度处理它。`,
+     r`The last point is the deepest limitation of umbrella sampling: it flattens only the $\xi$ direction. If the reaction also needs another slow variable (a side chain that has to flip, a water molecule that has to enter), the system in a window gets stuck at one value of that variable and the PMF shows hysteresis. This is not WHAM’s fault but the collective variable’s; metadynamics in {{ch:metad}} and Markov models in {{ch:msm}} each attack it from a different angle.`],
+  ],
+  points: [
+    [['PMF 就是一条直方图', 'A PMF is a histogram'], ['F(ξ) = −kT ln P(ξ)；难的是把垒顶采到。', 'F(ξ) = −kT ln P(ξ); the hard part is sampling the barrier top.'], 'proved'],
+    [['偏置可以精确扣掉', 'Bias can be removed exactly'], ['每个窗口只多一个未知常数 fᵢ。', 'Each window adds just one unknown constant fᵢ.'], 'proved'],
+    [['WHAM / MBAR 自洽地合并', 'WHAM / MBAR combine self-consistently'], ['所有窗口的直方图按统计权重合成一条曲线。', 'All window histograms are combined into one curve by their statistical weight.'], 'proved'],
+    [['相邻窗口要重叠', 'Neighbouring windows must overlap'], ['不重叠时常数之间失去联系，曲线断开。', 'Without overlap the constants lose contact and the curve breaks.'], 'tested'],
+    [['隐藏的慢变量是主要风险', 'Hidden slow variables are the main risk'], ['正反拉曲线对不上，就要换或者加集体变量。', 'If forward and reverse pulls disagree, change or add collective variables.'], 'tested'],
+  ],
+  math: [
+    [r`F(\xi) = -kT \ln P(\xi) + C, \qquad P(\xi) = \big\langle \delta(\xi(\mathbf r) - \xi) \big\rangle`, ['平均力势的定义。', 'The definition of the potential of mean force.']],
+    [r`w_i(\xi) = \tfrac12 k\, (\xi - \xi_i)^2`, ['谐振窗口。', 'A harmonic window.']],
+    [r`P(\xi) = \frac{\sum_i n_i(\xi)}{\sum_i N_i\, e^{(f_i - w_i(\xi))/kT}}`, ['WHAM 的第一个方程：nᵢ 是窗口 i 的直方图计数，Nᵢ 是它的总样本数。', 'The first WHAM equation: nᵢ is window i’s histogram count and Nᵢ its total number of samples.']],
+    [r`e^{-f_i/kT} = \sum_\xi P(\xi)\, e^{-w_i(\xi)/kT}`, ['WHAM 的第二个方程；两式交替迭代到收敛。', 'The second WHAM equation; iterate the two alternately to convergence.']],
+    [r`k \gtrsim \max_\xi \big(-F''(\xi)\big)`, ['弹簧要够硬，才能在垒顶上留住体系。', 'The spring must be stiff enough to keep the system on the barrier top.']],
+  ],
+  example: {
+    q: [r`双势阱 $F(\xi)$ 的垒顶附近近似是 $F \approx F^\ddagger - \tfrac12 \kappa \xi^2$，$\kappa = 16\,kT$。中心在垒顶的窗口用 $k = 30\,kT$，体系在窗口里的分布宽度是多少？`, r`Near the top of a double-well $F(\xi)$, $F \approx F^\ddagger - \tfrac12 \kappa \xi^2$ with $\kappa = 16\,kT$. With a window of $k = 30\,kT$ centred on the top, how wide is the distribution of the system in the window?`],
+    steps: [
+      [r`窗口里的有效势是 $\tfrac12 (k - \kappa)\xi^2 = \tfrac12 \cdot 14\,kT\,\xi^2$。`, r`The effective potential in the window is $\tfrac12 (k - \kappa)\xi^2 = \tfrac12 \cdot 14\,kT\,\xi^2$.`],
+      [r`这是一个高斯分布，方差 $\sigma^2 = kT/(k-\kappa) = 1/14$。`, r`That is a Gaussian with variance $\sigma^2 = kT/(k-\kappa) = 1/14$.`],
+      [r`$\sigma = 0.27$；如果 $k < \kappa$，有效势开口向下，体系会滑出窗口。`, r`$\sigma = 0.27$; if $k < \kappa$ the effective potential opens downwards and the system slides out of the window.`],
+    ],
+    a: ['σ ≈ 0.27，所以相邻窗口间距取 0.2–0.3 左右就能重叠。k 必须大于 κ，这就是“弹簧要够硬”的定量说法。', 'σ ≈ 0.27, so windows spaced about 0.2–0.3 apart overlap. k must exceed κ: this is the quantitative form of “the spring must be stiff enough”.'],
+  },
+};
