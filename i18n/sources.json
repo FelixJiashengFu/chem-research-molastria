@@ -8654,6 +8654,12 @@
  "从 Thomas–Fermi、Hohenberg–Kohn 和 Kohn–Sham 到 Jacob 阶梯、离域误差、色散、平面波和 k 点、固体、TDDFT 和选泛函，十章，附十二个现算的演示": [
   "shared-nav.js"
  ],
+ "反应动力学": [
+  "shared-nav.js"
+ ],
+ "反应怎样越过势垒：势能面、NEB 和 IRC、过渡态理论、RRKM、隧穿、同位素效应、微观动力学和能量跨度，八章十三个演示": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -17909,6 +17915,15 @@
   "tools/build-seo.ts"
  ],
  "密度泛函理论十章：为什么用密度、Hohenberg–Kohn 定理、Kohn–Sham 方程和自洽场、Jacob 阶梯上的泛函、自相互作用和离域误差与带隙问题、色散修正、基组赝势和 k 点、固体的状态方程和带隙、含时 DFT 和激发态、格点和选泛函；十二个在浏览器里当场计算的演示和 70 篇按 DOI 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "反应动力学与过渡态 · Reaction Kinetics & Transition States": [
+  "tools/build-seo.ts"
+ ],
+ "反应动力学与过渡态八章：势能面和驻点、反应路径（NEB、IRC）、过渡态理论和 Eyring 公式、RRKM 和压力下降曲线、隧穿修正、动力学同位素效应、微观动力学和火山图、能量跨度模型；十三个在浏览器里当场计算的演示和 54 篇按 DOI 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "反应动力学与过渡态": [
   "tools/build-seo.ts"
  ],
  "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [
