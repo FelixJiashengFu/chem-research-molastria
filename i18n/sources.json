@@ -8647,6 +8647,13 @@
  "从对称操作到特征标表、分子振动、晶体场、空间群、李群、角动量和能带，十二章，附十四个演示（含点群判定流程图）": [
   "shared-nav.js"
  ],
+ "密度泛函理论": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "从 Thomas–Fermi、Hohenberg–Kohn 和 Kohn–Sham 到 Jacob 阶梯、离域误差、色散、平面波和 k 点、固体、TDDFT 和选泛函，十章，附十二个现算的演示": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -17896,6 +17903,12 @@
   "tools/build-seo.ts"
  ],
  "群论十二章：什么是群、分子点群和判定流程图、表示和特征标表、约化公式和直积、分子轨道、分子振动和红外拉曼选择定则、晶体场和配位场、晶体的对称（平面群、空间群）、李群和李代数、角动量和 Wigner–Eckart 定理、能带和拓扑、对称性破缺和今天的群论；十四个在浏览器里当场计算的演示和 54 篇按 DOI 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "密度泛函理论 · Density Functional Theory": [
+  "tools/build-seo.ts"
+ ],
+ "密度泛函理论十章：为什么用密度、Hohenberg–Kohn 定理、Kohn–Sham 方程和自洽场、Jacob 阶梯上的泛函、自相互作用和离域误差与带隙问题、色散修正、基组赝势和 k 点、固体的状态方程和带隙、含时 DFT 和激发态、格点和选泛函；十二个在浏览器里当场计算的演示和 70 篇按 DOI 核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [
