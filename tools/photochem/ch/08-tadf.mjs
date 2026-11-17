@@ -1,0 +1,48 @@
+const r = String.raw;
+export default {
+  id: 'tadf', level: 'tested', demos: ['tadf'],
+  title: ['热活化延迟荧光：把三重态借回来', 'Thermally activated delayed fluorescence: borrowing triplets back'],
+  summary: ['电流在有机发光二极管里生成的激子有四分之三是三重态，普通荧光分子只能用掉四分之一。磷光材料靠重金属把三重态直接发出来；热活化延迟荧光（TADF）则把单重–三重能隙压到几十 meV，让热涨落把三重态“反向系间窜越”送回单重态。这一章讲自旋统计、两态动力学和它的双指数衰减、为什么能隙小要求给体–受体分离、自旋–振动耦合对反向窜越的作用，以及 TADF 在光催化里的第二种用途。', 'Three quarters of the excitons that an electric current creates in an organic light-emitting diode are triplets, and an ordinary fluorescent molecule can use only a quarter. Phosphorescent materials use heavy metals to emit triplets directly; thermally activated delayed fluorescence (TADF) squeezes the singlet–triplet gap to tens of meV so that thermal fluctuations send triplets back to the singlet by “reverse intersystem crossing”. This chapter covers spin statistics, the two-state kinetics and its double-exponential decay, why a small gap demands donor–acceptor separation, the role of spin–vibronic coupling in reverse crossing, and the second use of TADF in photocatalysis.'],
+  body: [
+    { h: ['25 % 和 75 %', '25 % and 75 %'] },
+    [r`1987 年 Tang 和 VanSlyke 做出了第一个高效的双层有机发光二极管（OLED）[@tang1987]：电子和空穴从两边注入，在有机层里相遇形成激子。两个自旋 ½ 组合成一个单重态和三个三重态，如果复合是随机的，**只有 25 % 是单重态**。有机分子的三重态几乎不发光（{{ch:jablonski}}），所以荧光 OLED 的内量子效率上限是 25 %。`,
+     r`In 1987 Tang and VanSlyke made the first efficient bilayer organic light-emitting diode (OLED) [@tang1987]: electrons and holes injected from either side meet in the organic layer and form excitons. Two spin-½ particles combine into one singlet and three triplets; if recombination is random, **only 25 % are singlets**. Triplets of organic molecules hardly emit ({{ch:jablonski}}), so a fluorescent OLED has an internal quantum efficiency ceiling of 25 %.`],
+    [r`第一条出路是磷光：Baldo、Forrest 等人 1998 年把铂卟啉掺进 OLED，重原子的自旋–轨道耦合让三重态直接发光，效率上限变成 100 % [@baldo1998]。今天手机屏幕的红光和绿光大多是铱配合物的磷光。可是铱和铂贵，稳定的蓝色磷光材料至今难做。`,
+     r`The first way out is phosphorescence: in 1998 Baldo, Forrest and colleagues doped a platinum porphyrin into an OLED, and the heavy atom’s spin–orbit coupling let the triplets emit directly, raising the ceiling to 100 % [@baldo1998]. Today most red and green light in phone screens is iridium-complex phosphorescence. But iridium and platinum are expensive, and stable blue phosphors remain hard to make.`],
+    { h: ['把能隙压小', 'Shrinking the gap'] },
+    [r`第二条出路是把三重态送回单重态。早在 1961 年 Parker 和 Hatchard 就在曙红里看到一种发射谱和荧光完全相同、寿命却长得多、温度一低就消失的发光，他们称之为 E 型延迟荧光 [@parker1961]。它的速率由 Boltzmann 因子决定：$k_\text{RISC} \propto e^{-\Delta E_\text{ST}/k_BT}$。普通分子的 $\Delta E_\text{ST}$ 有 0.5–1 eV，室温下 $e^{-20}$ 级别，毫无用处。`,
+     r`The second way out is to send triplets back to the singlet. As early as 1961 Parker and Hatchard saw, in eosin, an emission with exactly the fluorescence spectrum but a much longer lifetime that vanished on cooling; they called it E-type delayed fluorescence [@parker1961]. Its rate is set by a Boltzmann factor: $k_\text{RISC} \propto e^{-\Delta E_\text{ST}/k_BT}$. In ordinary molecules $\Delta E_\text{ST}$ is 0.5–1 eV, giving factors of order $e^{-20}$ at room temperature, which is useless.`],
+    [r`单重和三重的能量差是**交换积分**的两倍，$\Delta E_\text{ST} = 2K$，而 $K$ 量的是 HOMO 和 LUMO 在空间上的重叠。要让 $K$ 小，就把 HOMO 放在给体上、LUMO 放在受体上，再让两者扭成接近垂直，激发就成了电荷转移态。2012 年安达千波矢组的 4CzIPN（四个咔唑给体围着一个二氰基苯受体）把 $\Delta E_\text{ST}$ 做到约 0.08 eV，OLED 的外量子效率接近 20 %，和磷光器件相当，而且不用贵金属 [@uoyama2012]。`,
+     r`The singlet–triplet splitting is twice the **exchange integral**, $\Delta E_\text{ST} = 2K$, and $K$ measures how much the HOMO and LUMO overlap in space. To make $K$ small, put the HOMO on a donor and the LUMO on an acceptor and twist the two nearly perpendicular, so the excitation becomes a charge-transfer state. In 2012 Adachi’s group made 4CzIPN (four carbazole donors around a dicyanobenzene acceptor) with $\Delta E_\text{ST}$ of about 0.08 eV and an OLED external quantum efficiency near 20 %, matching phosphorescent devices without precious metals [@uoyama2012].`],
+    { demo: 'tadf' },
+    { h: ['两个寿命', 'Two lifetimes'] },
+    [r`S₁ 和 T₁ 之间来回窜越，是一个两变量的线性动力学，衰减是两个指数之和。快的一个（几纳秒到几十纳秒）是**瞬时荧光**：S₁ 自己衰减和向 T₁ 窜越；慢的一个（微秒）是**延迟荧光**：布居停在 T₁ 上，偶尔被热涨落送回 S₁ 发光。两者发射谱一样，只是时间尺度相差上千倍。演示里把温度降到 77 K，延迟成分几乎消失，总量子产率掉回瞬时荧光的那一份。`,
+     r`Crossing back and forth between S₁ and T₁ is linear kinetics in two variables, and the decay is a sum of two exponentials. The fast one (nanoseconds to tens of nanoseconds) is the **prompt fluorescence**: S₁ decaying and crossing to T₁. The slow one (microseconds) is the **delayed fluorescence**: population parked on T₁ is occasionally kicked back to S₁ by thermal fluctuations and emits. The two have the same spectrum, only time scales a thousand times apart. In the demo, lower the temperature to 77 K and the delayed part nearly vanishes, dropping the total quantum yield back to the prompt share.`],
+    [r`可是能隙小还不够。¹CT 和 ³CT 的轨道构型相同，按 El-Sayed 规则它们之间的自旋–轨道耦合几乎为零。Etherington、Penfold 和 Monkman 等人 2016 年指出，反向窜越实际上要经过一个局域在给体或受体上的三重态 ³LE：振动把 ³CT 和 ³LE 混在一起，混进来的 ³LE 成分再和 ¹CT 有自旋–轨道耦合 [@etherington2016]。这种**自旋–振动耦合**解释了为什么分子的刚性、给体受体的扭转角和主体材料的极性都影响 $k_\text{RISC}$。系统的综述见 [@wong2017]。`,
+     r`But a small gap is not enough. ¹CT and ³CT share the same orbital configuration, so by El-Sayed’s rule their spin–orbit coupling is almost zero. Etherington, Penfold, Monkman and colleagues showed in 2016 that reverse crossing really passes through a triplet ³LE localised on the donor or acceptor: vibrations mix ³CT with ³LE, and the admixed ³LE has spin–orbit coupling to ¹CT [@etherington2016]. This **spin–vibronic coupling** explains why molecular rigidity, the donor–acceptor twist angle and host polarity all affect $k_\text{RISC}$. For a systematic review see [@wong2017].`],
+    [r`TADF 分子还有第二个用途：光催化。它们的激发态寿命长（延迟成分在微秒级），氧化还原电位又能靠换给体受体来调，4CzIPN 已经成为替代铱配合物的常用有机光催化剂（{{ch:photocat}}）。`,
+     r`TADF molecules have a second use: photocatalysis. Their excited states are long-lived (the delayed part lives microseconds) and their redox potentials can be tuned by swapping donors and acceptors; 4CzIPN has become a common organic photocatalyst replacing iridium complexes ({{ch:photocat}}).`],
+  ],
+  points: [
+    [['自旋统计 1 : 3', 'Spin statistics 1 : 3'], ['电注入时单重和三重激子按 1 : 3 生成（随机复合的近似）。', 'Electrical injection makes singlet and triplet excitons 1 : 3 (assuming random recombination).'], 'tested'],
+    [['ΔE_ST = 2K', 'ΔE_ST = 2K'], ['单组态近似下能隙是交换积分的两倍；HOMO–LUMO 分开它就小。', 'In the single-configuration picture the gap is twice the exchange integral; separating HOMO and LUMO makes it small.'], 'approx'],
+    [['k_RISC 服从 Arrhenius', 'k_RISC follows Arrhenius'], ['延迟荧光随温度升高而增强，77 K 时几乎消失。', 'Delayed fluorescence grows with temperature and nearly disappears at 77 K.'], 'tested'],
+    [['双指数衰减', 'Double-exponential decay'], ['纳秒的瞬时荧光加微秒的延迟荧光，发射谱相同。', 'Nanosecond prompt plus microsecond delayed fluorescence, with the same spectrum.'], 'tested'],
+    [['自旋–振动耦合', 'Spin–vibronic coupling'], ['¹CT ↔ ³CT 直接耦合太弱，要经过 ³LE 中转。', 'Direct ¹CT ↔ ³CT coupling is too weak; it goes via ³LE.'], 'frontier'],
+    [['稳定的蓝光', 'Stable blue'], ['高效又长寿命的深蓝 TADF 器件仍是难题。', 'Efficient and long-lived deep-blue TADF devices remain a problem.'], 'open'],
+  ],
+  math: [
+    [r`\frac{d}{dt}\begin{pmatrix} S \\ T \end{pmatrix} = \begin{pmatrix} -(k_r + k_{nr}^S + k_\text{ISC}) & k_\text{RISC} \\ k_\text{ISC} & -(k_\text{RISC} + k_{nr}^T) \end{pmatrix}\begin{pmatrix} S \\ T \end{pmatrix}`, ['S₁–T₁ 两态动力学；两个本征值给出瞬时和延迟两个寿命。', 'Two-state S₁–T₁ kinetics; the two eigenvalues give the prompt and delayed lifetimes.']],
+    [r`k_\text{RISC} = \frac{k_\text{ISC}}{3}\, e^{-\Delta E_\text{ST}/k_BT}`, ['细致平衡：三重态有三个分量，所以除以 3。', 'Detailed balance: the triplet has three components, hence the factor of 3.']],
+    [r`\Phi_F = \frac{\Phi_\text{PF}}{1 - \Phi_\text{ISC}\,\Phi_\text{RISC}}, \qquad \Phi_\text{PF} = \frac{k_r}{k_r + k_{nr}^S + k_\text{ISC}}`, ['来回窜越的几何级数：总荧光产率。', 'The geometric series of round trips: total fluorescence yield.']],
+  ],
+  example: {
+    q: [r`一个 TADF 分子 $k_r = 1.6\times10^7$ s⁻¹、$k_\text{ISC} = 5.0\times10^7$ s⁻¹、$\Delta E_\text{ST} = 0.083$ eV。室温（300 K）下 $k_\text{RISC}$ 是多少？在 77 K 呢？`, r`A TADF molecule has $k_r = 1.6\times10^7$ s⁻¹, $k_\text{ISC} = 5.0\times10^7$ s⁻¹ and $\Delta E_\text{ST} = 0.083$ eV. What is $k_\text{RISC}$ at room temperature (300 K)? At 77 K?`],
+    steps: [
+      [r`300 K 时 $k_BT = 0.02585$ eV，$\Delta E_\text{ST}/k_BT = 3.21$，$e^{-3.21} = 0.040$。`, r`At 300 K, $k_BT = 0.02585$ eV, $\Delta E_\text{ST}/k_BT = 3.21$ and $e^{-3.21} = 0.040$.`],
+      [r`$k_\text{RISC} = (5.0\times10^7/3)\times0.040 \approx 6.7\times10^5$ s⁻¹，延迟荧光寿命约 6 μs。`, r`$k_\text{RISC} = (5.0\times10^7/3)\times0.040 \approx 6.7\times10^5$ s⁻¹, and the delayed fluorescence lives about 6 μs.`],
+      [r`77 K 时 $k_BT = 0.00664$ eV，比值 12.5，$e^{-12.5} = 3.7\times10^{-6}$，$k_\text{RISC} \approx 62$ s⁻¹，比 T₁ 自己的无辐射衰减还慢。`, r`At 77 K, $k_BT = 0.00664$ eV, the ratio is 12.5, $e^{-12.5} = 3.7\times10^{-6}$ and $k_\text{RISC} \approx 62$ s⁻¹, slower than T₁’s own radiationless decay.`],
+    ],
+    a: [r`室温约 $7\times10^5$ s⁻¹，77 K 约 60 s⁻¹，差一万倍。演示里的“像 4CzIPN”预设用的就是这组数（另设 $k_{nr}^S = 3\times10^5$、$k_{nr}^T = 3\times10^3$ s⁻¹）：室温总荧光产率约 0.97，77 K 只剩瞬时的约 0.24。`, r`About $7\times10^5$ s⁻¹ at room temperature and about 60 s⁻¹ at 77 K, ten thousand times apart. The demo’s “4CzIPN-like” preset uses these numbers (plus $k_{nr}^S = 3\times10^5$ and $k_{nr}^T = 3\times10^3$ s⁻¹): total fluorescence yield about 0.97 at room temperature, and only the prompt share of about 0.24 at 77 K.`],
+  },
+};

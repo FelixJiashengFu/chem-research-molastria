@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -3879,6 +3879,46 @@ check('Reaction kinetics: nav entry, eight chapters, thirteen live demos (statio
   assert.deepEqual(e.errors, []);
   await finish(e);
 });
+check('Photochemistry: nav entry, eleven chapters, fifteen live demos, excited-state potentials and TADF presets, quiz, references, English', async () => {
+  const p = await open();
+  await go(p, '/photochem/index.html');
+  await p.waitForFunction(() => window.MOLASTRIA_PHOTOCHEM_READY);
+  const settle = () => p.waitForTimeout(250);
+  const read = (id) => text(p, `#chm-panel [data-demo=${id}] .fs-readout`);
+  const painted = () => p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; }));
+  assert.equal(await p.getAttribute('.cr-header a[data-id=photochem]', 'aria-current'), 'page', 'the nav entry is current');
+  assert.equal(await p.locator('.chm-ch').count(), 11);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 15);
+  for (const id of ['light', 'jablonski', 'franck', 'kasha', 'transfer', 'ci', 'marcus', 'tadf', 'photocat', 'life', 'measure']) {
+    await p.selectOption('#chm-select', id); await settle(); await p.waitForTimeout(300);
+    assert.equal(await p.evaluate(() => location.hash), `#c-${id}`);
+    assert.ok(await p.locator('#chm-panel math').count() >= 3, `MathML formulas render in ${id}`);
+    assert.ok(await painted(), `every canvas is painted in ${id}`);
+  }
+  // Chapter 9: Ru(bpy)₃²⁺ excited-state potentials from the Prier 2013 table.
+  await p.selectOption('#chm-select', 'photocat'); await settle();
+  assert.match(await read('redox'), /−0\.81 V|-0\.81 V/); assert.match(await read('redox'), /0\.77 V/);
+  // Chapter 8: the 4CzIPN-like preset at room temperature and at 77 K.
+  await p.selectOption('#chm-select', 'tadf'); await settle();
+  await p.click('#chm-panel [data-demo=tadf] [data-preset="0"]'); await settle();
+  assert.match(await read('tadf'), /10⁵/);
+  await p.click('#chm-panel [data-demo=tadf] [data-preset="2"]'); await settle();
+  assert.match(await read('tadf'), /10¹|6[12]\.?\d* s⁻¹/);
+  await p.check('#chm-quiz-list .chm-q[data-q="0"] input[value="1"]');
+  assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="0"] .chm-why'), /答对了/);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 72);
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  const e = await open();
+  await go(e, '/photochem/index.html?lang=en#c-marcus');
+  await e.waitForFunction(() => window.MOLASTRIA_PHOTOCHEM_READY && !document.documentElement.dataset.i18n);
+  await e.waitForTimeout(600);
+  assert.match(await text(e, '#chm-h1'), /Photochemistry/);
+  const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
+  assert.deepEqual(han, [], 'no Chinese left on the English page');
+  assert.deepEqual(e.errors, []);
+  await finish(e);
+});
 
 
 check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints, WL limit, BO, leakage), quiz, references, English', async () => {
@@ -4264,7 +4304,7 @@ check('quantum biology: under Quantum Carnival, seven directions, evidence ledge
 });
 
 check('arrows: the site draws its own metallic arrow icons, no ↗ characters are left, the 收藏夹 button is gold', async () => {
-  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html']) {
+  for (const path of ['/index.html', '/hub/index.html', '/train/index.html', '/manual/index.html', '/fundamental-science/index.html', '/quantum/biology/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html']) {
     const p = await open();
     await go(p, path);
     assert.ok(await p.locator('.ico-ext').count() > 0, `${path}: arrow icons`);
@@ -5781,7 +5821,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
