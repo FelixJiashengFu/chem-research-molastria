@@ -1,0 +1,50 @@
+const r = String.raw;
+export default {
+  id: 'vibrations', level: 'tested', demos: ['vib', 'modes'],
+  title: ['振动光谱：数一数不动的原子', 'Vibrational spectra: counting atoms that stay put'],
+  summary: ['一个 N 原子分子有 3N − 6 个振动。群论不用知道任何力常数，就能说出它们分成哪几种对称、哪些在红外里出现、哪些在拉曼里出现、哪些两边都看不到。这一章讲 Γ₃N 和 Γ_vib 的算法、红外和拉曼的选择定则、互斥规则，再真的解一次简正模，看对称性怎样自动出现在答案里。', 'An N-atom molecule has 3N − 6 vibrations. Without knowing any force constant, group theory says which symmetry species they fall into, which appear in the infrared, which in Raman and which in neither. This chapter covers how to compute Γ3N and Γvib, the IR and Raman selection rules and the mutual-exclusion rule, then actually solves for the normal modes and watches symmetry appear in the answer by itself.'],
+  body: [
+    [r`N 个原子各有 x、y、z 三个位移，一共 3N 个自由度，构成点群的一个 3N 维表示 $\Gamma_{3N}$。其中 3 个是整体平移，3 个是整体转动（直线分子只有 2 个），剩下的 $3N - 6$ 个是振动。简谐近似下振动分解成互不耦合的**简正模**，每个简正模按某个不可约表示变换：这是因为势能在对称操作下不变，Hessian 矩阵和每个操作对易（{{ch:what}}）。`,
+     r`Each of N atoms has three displacements x, y, z: 3N degrees of freedom forming a 3N-dimensional representation $\Gamma_{3N}$ of the point group. Three are overall translations and three overall rotations (two for a linear molecule), leaving $3N - 6$ vibrations. In the harmonic approximation the vibrations separate into uncoupled **normal modes**, each transforming as one irreducible representation: the potential energy is unchanged by symmetry operations, so the Hessian commutes with each of them ({{ch:what}}).`],
+    { h: ['三步算出 Γ_vib', 'Γvib in three steps'] },
+    { steps: [
+      [r`**数不动的原子。** 对每个类挑一个操作，数有几个原子留在原地。被移到别处的原子，它的三个位移也被移走，对迹没有贡献。`, r`**Count the atoms that stay put.** For each class pick one operation and count the atoms left in place. An atom moved elsewhere takes its three displacements with it and contributes nothing to the trace.`],
+      [r`**乘上每个不动原子的贡献。** 不动的原子，它的三个位移按 3 × 3 矩阵 $R$ 变换，贡献 $\mathrm{tr}\,R$：$E$ 是 3，$C_n$ 是 $1 + 2\cos\theta$，$\sigma$ 是 1，$i$ 是 −3，$S_n$ 是 $-1 + 2\cos\theta$。乘积就是 $\chi_{3N}$。`, r`**Multiply by each unmoved atom’s contribution.** An unmoved atom’s three displacements transform by the 3 × 3 matrix $R$ and contribute $\mathrm{tr}\,R$: 3 for $E$, $1 + 2\cos\theta$ for $C_n$, 1 for $\sigma$, −3 for $i$, $-1 + 2\cos\theta$ for $S_n$. The product is $\chi_{3N}$.`],
+      [r`**减掉平移和转动，再约化。** 平移按 $(x, y, z)$ 变换，转动按 $(R_x, R_y, R_z)$ 变换，两者都能直接从特征标表的右栏读出。$\Gamma_{\text{vib}} = \Gamma_{3N} - \Gamma_{\text{trans}} - \Gamma_{\text{rot}}$，用约化公式拆开（{{ch:reduce}}）。`, r`**Subtract translations and rotations, then reduce.** Translations transform as $(x, y, z)$ and rotations as $(R_x, R_y, R_z)$, both read straight from the right-hand columns of the character table. $\Gamma_{\text{vib}} = \Gamma_{3N} - \Gamma_{\text{trans}} - \Gamma_{\text{rot}}$, split with the reduction formula ({{ch:reduce}}).`],
+    ] },
+    [r`以水为例（$C_{2v}$，分子在 yz 平面里）：不动的原子数是 3、1、1、3（$E$、$C_2$、$\sigma_v(xz)$、$\sigma_v'(yz)$），每个原子的贡献是 3、−1、1、1，所以 $\chi_{3N} = (9, -1, 1, 3)$；减掉平移和转动，约化得 $\Gamma_{\text{vib}} = 2A_1 + B_2$：对称伸缩、弯曲（都是 $A_1$）和反对称伸缩（$B_2$）。演示里点表头的每一列，看看哪些原子不动。`,
+     r`Take water ($C_{2v}$, molecule in the yz plane): the numbers of unmoved atoms are 3, 1, 1, 3 ($E$, $C_2$, $\sigma_v(xz)$, $\sigma_v'(yz)$), each contributes 3, −1, 1, 1, so $\chi_{3N} = (9, -1, 1, 3)$; subtract translations and rotations and reduce to $\Gamma_{\text{vib}} = 2A_1 + B_2$: the symmetric stretch and the bend (both $A_1$) and the antisymmetric stretch ($B_2$). In the demo, click each column header to see which atoms stay put.`],
+    { demo: 'vib' },
+    { h: ['红外、拉曼和互斥规则', 'IR, Raman and mutual exclusion'] },
+    [r`一个振动基频在**红外**里有吸收，要求振动改变分子的偶极矩；在群论里就是：这个模的不可约表示和 $x$、$y$ 或 $z$ 之一相同。在**拉曼**里有散射，要求振动改变极化率；就是：不可约表示和某个二次函数（$x^2$、$xy$……）相同。两者都只是“对称性允许”，强度还要看具体的电子结构。都不满足的模叫**静默模**，在基频光谱里看不到（但可能出现在合频、中子散射或者对称性被破坏的环境里）。`,
+     r`A vibrational fundamental absorbs in the **infrared** if the vibration changes the dipole moment; in group-theory terms, if the mode’s irrep is that of $x$, $y$ or $z$. It scatters in **Raman** if it changes the polarisability: if its irrep is that of some quadratic function ($x^2$, $xy$, …). Both are only “allowed by symmetry”; intensities depend on the actual electronic structure. Modes satisfying neither are **silent** and absent from fundamental spectra (though they may appear in combination bands, in neutron scattering or in environments that break the symmetry).`],
+    [r`有对称中心的分子，$x, y, z$ 在反演下都变号（u），二次函数都不变（g），所以没有一个模能同时是红外和拉曼活性的：这是**互斥规则**。CO₂ 的对称伸缩（1388 cm⁻¹ 附近，和弯曲的倍频发生 Fermi 共振）只出现在拉曼里，反对称伸缩（2349 cm⁻¹）只出现在红外里。反过来，如果一个分子的红外谱和拉曼谱里有好几条带频率重合，它多半没有对称中心。在没有 X 射线结构的年代，化学家就是这样判断分子构型的。`,
+     r`In a centrosymmetric molecule $x, y, z$ all change sign under inversion (u) and quadratic functions do not (g), so no mode can be both IR and Raman active: the **mutual-exclusion rule**. The symmetric stretch of CO₂ (near 1388 cm⁻¹, in Fermi resonance with the bending overtone) appears only in Raman, the antisymmetric stretch (2349 cm⁻¹) only in IR. Conversely, if several IR and Raman bands coincide, the molecule very likely has no centre of symmetry. Before X-ray structures, this is how chemists decided molecular shapes.`],
+    { h: ['真的解一次：对称性自己出现', 'Solving it for real: symmetry appears by itself'] },
+    [r`上面的分析没有用到任何力常数。为了看清它和“真的计算”是什么关系，下面的演示写出一个最简单的价力场（键伸缩加键角弯曲），对角化质量加权的 Hessian，得到全部简正模；然后对每个模做一遍每个对称操作，量出它的特征标，对上特征标表的一行。程序从来没有被告诉分子的对称性，算出来的模却恰好按不可约表示分组，简并的 $E$、$T$ 模频率完全相等。力常数是粗调的，频率和实验值差 5–20 %，但对称类别和简并度是精确的：数字依赖模型，形状不依赖。Wilson 1934 年用这种分析给苯的 20 种振动编号 [@wilson1934]，后来又发展出把 Hessian 按对称性分块求解的 GF 矩阵法 [@wilson1939]。实验频率取自 Shimanouchi 的表 [@shimanouchi1972]。`,
+     r`The analysis above used no force constants at all. To see how it relates to a “real calculation”, the demo below writes down the simplest valence force field (bond stretches plus angle bends), diagonalises the mass-weighted Hessian and obtains all the normal modes; it then applies every symmetry operation to each mode, measures its character and matches a row of the character table. The program is never told the molecule’s symmetry, yet the modes come out grouped by irreps, and degenerate $E$ and $T$ modes have exactly equal frequencies. The force constants are rough, so frequencies are 5–20 % off experiment, but the symmetry species and degeneracies are exact: the numbers depend on the model, the shape does not. Wilson used this kind of analysis in 1934 to number benzene’s 20 kinds of vibration [@wilson1934], and later developed the GF matrix method that solves the Hessian block by symmetry block [@wilson1939]. Experimental frequencies are from Shimanouchi’s tables [@shimanouchi1972].`],
+    { demo: 'modes' },
+    { note: [r`**去谱图馆看真的谱。** [[spectra/#m-ir|红外]]和[[spectra/#m-raman|拉曼]]两种方法的页面里有实测谱和 PySCF 算的谱，可以对照这里数出来的谱带数。`, r`**See real spectra in the Spectra hall.** The [[spectra/#m-ir|infrared]] and [[spectra/#m-raman|Raman]] pages have measured spectra and spectra computed with PySCF, to compare with the band counts found here.`], kind: 'info' },
+  ],
+  points: [
+    [['3N − 6 个振动', '3N − 6 vibrations'], ['Γ_vib = Γ₃N − Γ_trans − Γ_rot；直线分子是 3N − 5。', 'Γvib = Γ3N − Γtrans − Γrot; 3N − 5 for linear molecules.'], 'proved'],
+    [['只数不动的原子', 'Count only atoms that stay put'], ['χ₃N(R) = 不动原子数 × tr R。', 'χ3N(R) = number of unmoved atoms × tr R.'], 'proved'],
+    [['红外和拉曼的选择定则', 'IR and Raman selection rules'], ['红外：和 x、y、z 同对称；拉曼：和二次函数同对称。只说“允许”，不说强度。', 'IR: same symmetry as x, y, z; Raman: same as a quadratic function. They say “allowed”, not how strong.'], 'proved'],
+    [['互斥规则', 'Mutual exclusion'], ['有对称中心时，没有一个基频同时是红外和拉曼活性的。', 'With a centre of symmetry, no fundamental is both IR and Raman active.'], 'proved'],
+    [['简谐近似', 'Harmonic approximation'], ['简正模和选择定则都是简谐近似下的；非谐性带来倍频、合频和 Fermi 共振。', 'Normal modes and selection rules are harmonic-approximation results; anharmonicity brings overtones, combinations and Fermi resonance.'], 'approx'],
+  ],
+  math: [
+    [r`\chi_{3N}(R) = N_{\text{unmoved}}(R)\times(\pm1 + 2\cos\theta)`, ['+ 号是真转动，− 号是象转动（σ、i、Sₙ）。', 'The + sign is for proper rotations, − for improper ones (σ, i, Sₙ).']],
+    [r`\Gamma_{\text{vib}} = \Gamma_{3N} - \Gamma_{x,y,z} - \Gamma_{R_x,R_y,R_z}`, ['减掉平移和转动。', 'Subtract translations and rotations.']],
+    [r`\mathbf F\,\mathbf L = \mathbf G^{-1}\mathbf L\,\boldsymbol\Lambda, \qquad \lambda_k = 4\pi^2c^2\tilde\nu_k^2`, ['Wilson 的 GF 方法：F 是力常数矩阵，G 是动能矩阵；按对称性分块。', 'Wilson’s GF method: F is the force-constant matrix and G the kinetic matrix; both block by symmetry.']],
+  ],
+  example: {
+    q: [r`平面正方形 $\mathrm{XeF_4}$（$D_{4h}$）有几条红外基频、几条拉曼基频？`, r`How many IR and how many Raman fundamentals does square-planar $\mathrm{XeF_4}$ ($D_{4h}$) have?`],
+    steps: [
+      [r`5 个原子，$3N - 6 = 9$ 个振动。演示里选 XeF₄，约化得 $\Gamma_{\text{vib}} = A_{1g} + B_{1g} + B_{2g} + A_{2u} + B_{2u} + 2E_u$（维数 1 + 1 + 1 + 1 + 1 + 4 = 9）。`, r`5 atoms, $3N - 6 = 9$ vibrations. Picking XeF₄ in the demo, the reduction gives $\Gamma_{\text{vib}} = A_{1g} + B_{1g} + B_{2g} + A_{2u} + B_{2u} + 2E_u$ (dimensions 1 + 1 + 1 + 1 + 1 + 4 = 9).`],
+      [r`查 $D_{4h}$ 表：$z$ 是 $A_{2u}$，$(x, y)$ 是 $E_u$，所以红外活性的是 $A_{2u} + 2E_u$，**3 条**。二次函数是 $A_{1g}$、$B_{1g}$、$B_{2g}$、$E_g$，所以拉曼活性的是 $A_{1g} + B_{1g} + B_{2g}$，**3 条**。`, r`From the $D_{4h}$ table: $z$ is $A_{2u}$ and $(x, y)$ is $E_u$, so the IR-active modes are $A_{2u} + 2E_u$, **3 bands**. Quadratic functions are $A_{1g}$, $B_{1g}$, $B_{2g}$, $E_g$, so the Raman-active ones are $A_{1g} + B_{1g} + B_{2g}$, **3 bands**.`],
+      [r`$B_{2u}$ 既不是 x、y、z，也不是二次函数：静默模。`, r`$B_{2u}$ is neither x, y, z nor a quadratic function: a silent mode.`],
+    ],
+    a: [r`红外 3 条、拉曼 3 条、一个静默模，红外和拉曼没有共同的谱带（$D_{4h}$ 有对称中心）。如果 XeF₄ 是四面体，$T_d$ 会给出 $A_1 + E + 2T_2$，两个 $T_2$ 在红外和拉曼里都出现：光谱一看就能区分两种构型。`, r`3 IR bands, 3 Raman bands and one silent mode, with no band in both ($D_{4h}$ is centrosymmetric). Were XeF₄ tetrahedral, $T_d$ would give $A_1 + E + 2T_2$, with both $T_2$ modes in IR and Raman: the spectra distinguish the two shapes at a glance.`],
+  },
+};
