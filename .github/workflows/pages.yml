@@ -76,6 +76,8 @@ jobs:
         run: node --test tools/group-test.mjs
       - name: Density functional theory models and content
         run: node --test tools/dft-test.mjs
+      - name: Reaction kinetics models and content
+        run: node --test tools/reaction-test.mjs
       - name: Playground game physics
         run: node --test tools/play-test.mjs
       - name: 3D molecule viewer helpers
