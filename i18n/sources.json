@@ -8681,6 +8681,13 @@
  "从吸收、Jablonski 图、Franck–Condon 和 Kasha 规则到锥形交叉、Marcus 电子转移、TADF、光催化和生命里的光化学，十一章，附十五个演示": [
   "shared-nav.js"
  ],
+ "分子动力学与自由能": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "从牛顿方程、积分器和恒温器讲到力场、炼金术自由能、伞形采样、元动力学、Jarzynski 等式和马尔可夫态模型，十章，附十二个现算的演示": [
+  "shared-nav.js"
+ ],
  "42 个物理理论和它们之间的关系图": [
   "shared-nav.js"
  ],
@@ -17940,6 +17947,12 @@
   "tools/build-seo.ts"
  ],
  "群论十二章：什么是群、分子点群和判定流程图、表示和特征标表、约化公式和直积、分子轨道、分子振动和红外拉曼选择定则、晶体场和配位场、晶体的对称（平面群、空间群）、李群和李代数、角动量和 Wigner–Eckart 定理、能带和拓扑、对称性破缺和今天的群论；十五个在浏览器里当场计算的演示（含贴 XYZ 坐标判定点群）和 54 篇按 DOI 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "分子动力学与自由能 · Molecular Dynamics & Free Energy": [
+  "tools/build-seo.ts"
+ ],
+ "分子动力学与自由能十章：模拟盒子和周期性边界、积分器和影子哈密顿量、恒温器和系综、力场、炼金术自由能（FEP、热力学积分、BAR、MBAR）、伞形采样和 WHAM、元动力学和增强采样、Jarzynski 等式和非平衡功、马尔可夫态模型、误差棒和机器学习势；十二个在浏览器里当场计算的演示和 78 篇按 DOI 核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "密度泛函理论 · Density Functional Theory": [
