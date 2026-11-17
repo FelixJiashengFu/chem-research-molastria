@@ -113,6 +113,38 @@
   $('#sp-case-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-case]'); if (!b) return; caseId = b.dataset.case; renderCase(); });
   renderCase();
 
+  // ── 练习题（sp-practice.js）：题目和数据在上，提示和解析折叠在下面 ─────────
+  const PR = window.MOLASTRIA_SPECTRA_PRACTICE;
+  let prId = PR ? PR.problems[0].id : '';
+  const prTable = (t) => `<div class="sp-scroll"><table class="sp-table" translate="no" lang="${lang}"><thead><tr>${t.cols.map((c) => `<th>${T(c)}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i ? `<td>${T(c)}</td>` : `<th>${T(c)}</th>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const prStruct = (k, cap) => (PR.svg[k] ? `<figure class="sp-struct">${PR.svg[k]}<figcaption translate="no" lang="${lang}">${T(cap)}</figcaption></figure>` : '');
+  const bold = (s) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  function renderPractice() {
+    const p = PR.problems.find((x) => x.id === prId) || PR.problems[0];
+    $('#sp-pr-tabs').innerHTML = PR.problems.map((x) => `<button type="button" class="fs-tab" role="tab" id="pr-${x.id}" data-pr="${x.id}" aria-selected="${x.id === p.id}" aria-controls="sp-pr-panel"><b translate="no">${L(`第 ${x.no} 题`, `Problem ${x.no}`)}</b>${C(esc(x.formula === '?' ? tx(x.name) : `${x.formula} · ${tx(x.name)}`))}</button>`).join('');
+    $('#sp-pr-panel').innerHTML = `<div class="fs-panel sp-pr" role="tabpanel" aria-labelledby="pr-${p.id}">
+      <section class="sp-pr-ask"><h3>${L('题目', 'Problem')}</h3><ul translate="no" lang="${lang}">${p.ask.map((a) => `<li>${T(a)}${en ? '' : `<span class="sp-pr-orig" lang="en">${rich(a.en)}</span>`}</li>`).join('')}</ul>
+        <dl class="sp-nums sp-pr-data" translate="no" lang="${lang}">${p.data.map(([a, b]) => `<div><dt>${T(a)}</dt><dd>${T(b)}</dd></div>`).join('')}</dl></section>
+      ${p.figs.map((f) => figHtml(f)).join('')}
+      <details class="fs-notes sp-pr-more"><summary>${L(`提示（${p.hints.length} 条）`, `Hints (${p.hints.length})`)}</summary><ol translate="no" lang="${lang}">${p.hints.map((h) => `<li>${T(h)}</li>`).join('')}</ol></details>
+      <details class="fs-notes sp-pr-more sp-pr-sol"><summary>${L('解析', 'Solution')}</summary>
+        <ol class="sp-steps">${p.steps.map((s, i) => `<li><div class="sp-step-t"><span class="sp-step-n">${i + 1}</span><p translate="no" lang="${lang}">${bold(T(s))}</p></div></li>`).join('')}</ol>
+        <div class="sp-pr-structs">${prStruct(p.struct, p.structCap)}${p.struct2 ? prStruct(p.struct2, p.struct2Cap) : ''}</div>
+        <h4>${L('归属', 'Assignment')}</h4>${prTable(p.table)}${p.table2 ? prTable(p.table2) : ''}${p.tableNote ? C(T(p.tableNote), 'p', 'muted') : ''}
+        <p class="sp-pr-answer"><strong>${L('答案', 'Answer')}</strong>${C(T(p.answer))}</p>
+        ${C(T(p.check), 'p', 'muted')}
+        ${p.see?.length ? `<p class="sp-chips">${p.see.map(([h, t]) => `<a class="sp-chip" href="${esc(href(h))}">${C(T(t))}${h.startsWith('#') ? '' : ` ${ext}`}</a>`).join('')}</p>` : ''}
+      </details></div>`;
+    arm($('#sp-pr-panel'));
+    $('.sp-pr-sol', $('#sp-pr-panel')).addEventListener('toggle', (e) => { if (e.target.open) { try { window.MolAstriaActivity && window.MolAstriaActivity('practice'); } catch { /* 记不上不要紧 */ } } });
+  }
+  if (PR) {
+    $('#sp-practice-intro').innerHTML = C(T(PR.intro));
+    $('#sp-practice-source').innerHTML = C(T(PR.source));
+    $('#sp-pr-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-pr]'); if (!b) return; prId = b.dataset.pr; renderPractice(); });
+    renderPractice();
+  } else $('#sp-practice').hidden = true;
+
   // ── 动手实验台 ────────────────────────────────────────────────────────
   $('#sp-lab-list').innerHTML = D.labs.map((l, i) => `<article class="fs-demo sp-lab" id="lab-${l.id}" aria-labelledby="lab-${l.id}-h"><header><p class="fs-demo-n">${L(`实验台 ${i + 1}`, `Bench ${i + 1}`)}</p><h3 id="lab-${l.id}-h">${C(esc(tx(l.title)))}</h3>${C(T(l.intro), 'p', 'muted')}</header>${figHtml(l.fig)}</article>`).join('');
   arm($('#sp-lab-list'));
@@ -169,6 +201,7 @@
     if (h.startsWith('m-')) { if (showMethod(h.slice(2), record)) setTimeout(() => scrollTo($('#sp-reader')), 60); return; }
     if (h.startsWith('t-')) { const d = document.getElementById(h); if (d) { d.open = true; fillTable(d); setTimeout(() => scrollTo(d), 60); } return; }
     if (h.startsWith('case-')) { if (D.cases.some((c) => `case-${c.id}` === h)) { caseId = h.slice(5); renderCase(); setTimeout(() => scrollTo($('#sp-cases')), 60); } return; }
+    if (h.startsWith('pr-')) { if (PR && PR.problems.some((p) => `pr-${p.id}` === h)) { prId = h.slice(3); renderPractice(); setTimeout(() => scrollTo($('#sp-practice')), 60); } return; }
     if (h.startsWith('ref-')) {
       if (!document.getElementById(h)) { areaSel.value = ''; renderRefs(); }
       const el = document.getElementById(h);

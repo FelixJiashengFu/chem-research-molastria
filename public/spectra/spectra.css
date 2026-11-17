@@ -185,3 +185,21 @@
 }
 @media (prefers-reduced-motion:reduce){.sp-card{transition:none}}
 @media print{.sp-ctl,.sp-find,.sp-pn,.fs-jump{display:none}.sp-fig{break-inside:avoid}}
+/* 练习题 */
+.sp-pr{display:grid;gap:16px;min-width:0}
+.sp-pr>*{min-width:0}
+.sp-pr h3{margin:0 0 6px;font-size:16px}
+.sp-pr-ask ul{margin:0 0 10px;padding-left:20px;line-height:1.8}
+.sp-pr-orig{display:block;font-size:12.5px;color:var(--muted)}
+.sp-pr-more ol{margin:8px 0 0;padding-left:20px;line-height:1.85}
+.sp-pr-sol>*+*{margin-top:12px}
+.sp-pr-sol .sp-steps{margin-top:10px}
+.sp-pr-sol .sp-step-t p{margin:0;line-height:1.85}
+.sp-pr-sol h4{margin:6px 0 0;font-size:14.5px}
+.sp-pr-structs{display:flex;flex-wrap:wrap;gap:16px}
+.sp-struct{margin:0;min-width:0;flex:1 1 260px;max-width:460px;color:var(--ink);text-align:center}
+.sp-struct svg{width:100%;height:auto;max-height:260px}
+.sp-struct figcaption{text-align:left;font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.sp-pr-answer{margin:0;padding:10px 14px;border-left:3px solid var(--accent);background:var(--surface-2);line-height:1.8}
+.sp-pr-answer strong{margin-right:8px}
+.sp-pr .sp-table td{white-space:normal}

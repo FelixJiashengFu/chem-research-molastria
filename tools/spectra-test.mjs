@@ -12,7 +12,7 @@ function load(lang) {
   win.document = { documentElement: { lang }, addEventListener() {} };
   win.addEventListener = () => {};
   const ctx = vm.createContext(win);
-  const files = ['sp-tables.js', 'sp-models.js', 'sp-macro.js', 'sp-computed.js', 'sp-data.js', ...readdirSync(dir).filter((f) => /^sp-m-.*\.js$/.test(f)).sort(), 'sp-atlas.js', 'sp-refs.js', 'sp-measured.js', 'sp-plot.js', 'sp-figs.js', 'sp-gens.js', 'sp-gens2.js', 'sp-gens3.js'];
+  const files = ['sp-tables.js', 'sp-models.js', 'sp-macro.js', 'sp-computed.js', 'sp-data.js', ...readdirSync(dir).filter((f) => /^sp-m-.*\.js$/.test(f)).sort(), 'sp-atlas.js', 'sp-refs.js', 'sp-measured.js', 'sp-plot.js', 'sp-figs.js', 'sp-gens.js', 'sp-gens2.js', 'sp-gens3.js', 'sp-practice.js'];
   for (const f of files) vm.runInContext(readFileSync(new URL(f, dir), 'utf8'), ctx, { filename: f });
   return win;
 }
@@ -209,6 +209,7 @@ test('figures: provenance on every one, and every one draws in both languages', 
     for (const l of DD.labs) figs.push([`lab:${l.id}`, l.fig]);
     const CMP = W.MOLASTRIA_SPECTRA_COMPUTED;   // the page leaves out a case step whose computed data is missing
     for (const c of DD.cases) for (const s of c.steps) if (s.fig && !(s.fig.vib && !CMP.vib[s.fig.vib]) && !(s.fig.uv && !CMP.uv[s.fig.uv])) figs.push([`case:${c.id}`, s.fig]);
+    for (const pr of win.MOLASTRIA_SPECTRA_PRACTICE.problems) for (const f of pr.figs) figs.push([`practice:${pr.id}`, f]);
     assert.ok(figs.length >= 125);
     let gens = 0;
     for (const [who, f] of figs) {
@@ -228,5 +229,85 @@ test('figures: provenance on every one, and every one draws in both languages', 
     }
     assert.ok(gens >= 60);
     assert.equal(new Set(figs.filter(([, f]) => f.gen).map(([, f]) => f.gen)).size, Object.keys(G).length, 'no unused generators');
+  }
+});
+
+// ── 练习题（sp-practice.js）：内容齐全、数字由题目读数算得出、第二题的精确拟合 ─────
+// 三自旋（I = ½）哈密顿量：H = Σ ν_i I_zi + Σ J_ij I_i·I_j（Hz），在乘积基里是实对称矩阵；Jacobi 对角化
+function jacobi(A) {
+  const n = A.length, a = A.map((r) => r.slice()), v = A.map((_, i) => A.map((__, j) => +(i === j)));
+  for (let sweep = 0; sweep < 100; sweep++) {
+    let off = 0; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += a[i][j] ** 2;
+    if (off < 1e-22) break;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) {
+      if (Math.abs(a[p][q]) < 1e-15) continue;
+      const th = (a[q][q] - a[p][p]) / (2 * a[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), sn = t * c;
+      for (let k = 0; k < n; k++) { const akp = a[k][p], akq = a[k][q]; a[k][p] = c * akp - sn * akq; a[k][q] = sn * akp + c * akq; }
+      for (let k = 0; k < n; k++) { const apk = a[p][k], aqk = a[q][k]; a[p][k] = c * apk - sn * aqk; a[q][k] = sn * apk + c * aqk; }
+      for (let k = 0; k < n; k++) { const vkp = v[k][p], vkq = v[k][q]; v[k][p] = c * vkp - sn * vkq; v[k][q] = sn * vkp + c * vkq; }
+    }
+  }
+  return { E: a.map((r, i) => r[i]), V: v };
+}
+function threeSpin(nu, J) { // nu: [ν1, ν2, ν3], J: {'01','02','12'} in Hz → transitions [freq, intensity]
+  const N = 8, bit = (s, k) => (s >> (2 - k)) & 1, mz = (s, k) => (bit(s, k) ? -0.5 : 0.5), H = Array.from({ length: N }, () => Array(N).fill(0));
+  for (let s = 0; s < N; s++) {
+    for (let k = 0; k < 3; k++) H[s][s] += nu[k] * mz(s, k);
+    for (const [pq, j] of Object.entries(J)) {
+      const p = +pq[0], q = +pq[1];
+      H[s][s] += j * mz(s, p) * mz(s, q);
+      if (bit(s, p) !== bit(s, q)) { const t = s ^ (1 << (2 - p)) ^ (1 << (2 - q)); H[s][t] += j / 2; }
+    }
+  }
+  const { E, V } = jacobi(H), Fx = Array.from({ length: N }, () => Array(N).fill(0));
+  for (let s = 0; s < N; s++) for (let k = 0; k < 3; k++) Fx[s][s ^ (1 << (2 - k))] += 0.5;
+  const out = [];
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    if (E[j] <= E[i]) continue;
+    let m = 0; for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) m += V[a][i] * Fx[a][b] * V[b][j];
+    if (m * m > 1e-4) out.push([E[j] - E[i], m * m]);
+  }
+  return out.sort((x, y) => y[0] - x[0]);
+}
+
+test('practice: three NMR problems, complete in both languages, numbers follow from the readings', () => {
+  const PR = W.MOLASTRIA_SPECTRA_PRACTICE, ids = new Set(METHODS.map((m) => m.id)), tables = new Set(ATLAS.TABLES.map((t) => t.id));
+  assert.equal(PR.problems.length, 3);
+  assert.ok(isT(PR.intro) && isT(PR.source));
+  for (const p of PR.problems) {
+    const texts = [p.name, ...p.ask, ...p.data.flat(), ...p.hints, ...p.steps, p.answer, p.check, p.structCap, ...p.figs.flatMap((f) => [f.title, f.cap])];
+    for (const t of texts) { assert.ok(isT(t), `${p.id}: bilingual text`); assert.ok(!han.test(t.en), `${p.id}: Chinese left in English: ${t.en.slice(0, 60)}`); }
+    for (const f of p.figs) assert.ok(['measured', 'computed', 'constants', 'sketch'].includes(f.kind), `${p.id}: provenance on every figure`);
+    for (const r of p.table.rows) assert.equal(r.length, p.table.cols.length, `${p.id}: table row width`);
+    assert.ok(PR.svg[p.struct] && /currentColor/.test(PR.svg[p.struct]) && !/#000000|#FFFFFF/i.test(PR.svg[p.struct]), `${p.id}: structure follows the theme colour`);
+    for (const [h] of p.see) { if (h.startsWith('#m-')) assert.ok(ids.has(h.slice(3)), h); else if (h.startsWith('#t-')) assert.ok(tables.has(h.slice(3)), h); else assert.ok(/^[a-z-]+\//.test(h), h); }
+  }
+  // ① ethyl acetate: J from the outer lines, shifts from the centres at 250.13 MHz
+  const [p1, p2, p3] = PR.problems, q = [1045.29, 1038.14, 1030.99, 1023.86], t = [325.60, 318.48, 311.31];
+  near((q[0] - q[3]) / 3, 7.14, 0.005, 'quartet J'); near((t[0] - t[2]) / 2, 7.15, 0.005, 'triplet J');
+  near((q[0] + q[3]) / 2 / 250.13, 4.136, 5e-4); near(t[1] / 250.13, 1.273, 5e-4);
+  assert.deepEqual([...p1.figs[0].args.groups[0].hz], q); assert.deepEqual([...p1.figs[0].args.groups[2].hz], t);
+  // ② 3,3-dimethylbut-1-ene: first-order reading, then the exact three-spin spectrum with the fitted parameters
+  const g = p2.figs[1].args.groups, hc = g[0].hz, hab = g[1].hz;
+  near(hc[0] - hc[2], 17.46, 0.005); near(hc[1] - hc[3], 17.46, 0.005); near(hc[0] - hc[1], 10.63, 0.005); near(hc[2] - hc[3], 10.63, 0.005);
+  near(hab[0] - hab[2], 17.46, 0.005); near(hab[0] - hab[1], 1.48, 0.005); near(hab[4] - hab[6], 10.62, 0.005); near(hab[6] - hab[7], 1.50, 0.005);
+  near((hc[0] + hc[3]) / 2 / 250.13, 5.853, 5e-4); near((hab[0] + hab[1] + hab[2] + hab[3]) / 4 / 250.13, 4.913, 5e-4); near((hab[4] + hab[5] + hab[6] + hab[7]) / 4 / 250.13, 4.829, 5e-4);
+  const lines = threeSpin([5.8509 * 250.13, 4.9141 * 250.13, 4.8295 * 250.13], { '01': 17.45, '02': 10.66, '12': 1.47 }).map((l) => l[0]);
+  for (const o of [...hc, ...hab]) assert.ok(Math.min(...lines.map((l) => Math.abs(l - o))) < 0.02, `exact fit reproduces ${o} Hz`);
+  assert.ok(p2.steps.some((s) => /0\.004 Hz/.test(s.zh) && /0\.004 Hz/.test(s.en)), 'fit quality quoted');
+  // first-order J against the exact fit: a different J pattern would not reproduce the lines
+  const wrong = threeSpin([5.8509 * 250.13, 4.9141 * 250.13, 4.8295 * 250.13], { '01': 10.66, '02': 17.45, '12': 1.47 }).map((l) => l[0]);
+  assert.ok([...hab].some((o) => Math.min(...wrong.map((l) => Math.abs(l - o))) > 1), 'swapping cis and trans breaks the fit');
+  // ③ C15H22O2: 15 carbons, 22 hydrogens, five degrees of unsaturation, every HSQC peak on a table row
+  const c13 = p3.figs[1].args.sticks.map((s) => s[0]), rows = p3.table.rows;
+  assert.equal(c13.length, 15); assert.equal(new Set(c13).size, 15);
+  assert.deepEqual(JSON.stringify(rows.map((r) => +r[1]).sort((a, b) => a - b)), JSON.stringify([...c13].sort((a, b) => a - b)), 'every carbon assigned once');
+  const H = p3.figs[0].args.bars.reduce((s, b) => s + b[1], 0); assert.equal(H, 22);
+  assert.equal((2 * 15 + 2 - H) / 2, 5);
+  for (const [h, c] of p3.figs[2].args.sets.hsqc.peaks) assert.ok(rows.some((r) => Math.abs(+r[1] - c) < 0.01), `HSQC ${h}/${c} on a row`);
+  // draw every 2D set in both languages
+  for (const win of [W, E]) {
+    const G = win.MOLASTRIA_SPECTRA_GENS, K = win.MOLASTRIA_SPECTRA_KIT, f = win.MOLASTRIA_SPECTRA_PRACTICE.problems[2].figs[2], view = G.pr2d(f.args);
+    for (const x of Object.keys(f.args.sets)) { const r = view.draw({ x }); const svg = K.plot(r.plots[0]).svg; assert.ok(!/NaN|undefined/.test(svg), x); }
   }
 });
