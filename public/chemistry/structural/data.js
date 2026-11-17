@@ -101,7 +101,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['4 个振动，红外活性 3 个（两条带，弯曲简并），拉曼活性 1 个（因 Fermi 共振出现两条）。', 'Four vibrations: three infrared active (two bands, the bend being degenerate) and one Raman active (appearing as two bands through Fermi resonance).'],
       },
-      site: [['qchem/index.html#play-vsepr', ['游乐场 · 价层电子对排布（立体馆）', 'Playground · electron-pair geometry (3D hall)']], ['spectra/index.html#m-ir', ['谱图馆 · 红外光谱', 'Spectra Hall · infrared']], ['spectra/index.html#m-raman', ['谱图馆 · 拉曼光谱', 'Spectra Hall · Raman']]],
+      site: [['qchem/index.html#play-vsepr', ['游乐场 · 价层电子对排布（立体馆）', 'Playground · electron-pair geometry (3D hall)']], ['spectra/index.html#m-ir', ['谱图馆 · 红外光谱', 'Spectra Hall · infrared']], ['spectra/index.html#m-raman', ['谱图馆 · 拉曼光谱', 'Spectra Hall · Raman']], ['quasiparticles/phonons/index.html#c-measure', ['声子馆 · 晶体里的振动怎样用拉曼和红外看见', 'Phonon hall · seeing lattice vibrations with Raman and infrared']]],
       refs: [],
     },
     {
@@ -126,7 +126,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['208.7、180.8、127.8 pm。', '208.7, 180.8 and 127.8 pm.'],
       },
-      site: [['qchem/index.html#play-miller', ['游乐场 · 密勒晶面（立体馆）', 'Playground · Miller planes (3D hall)']], ['qchem/index.html#play-cube', ['游乐场 · 晶胞', 'Playground · unit cells']]],
+      site: [['qchem/index.html#play-miller', ['游乐场 · 密勒晶面（立体馆）', 'Playground · Miller planes (3D hall)']], ['qchem/index.html#play-cube', ['游乐场 · 晶胞', 'Playground · unit cells']], ['quasiparticles/phonons/index.html#c-bz', ['声子馆 · 倒格子、布里渊区和晶格振动的色散', 'Phonon hall · the reciprocal lattice, the Brillouin zone and lattice-vibration dispersion']]],
       refs: ['shechtman1984'],
     },
     {
@@ -154,7 +154,7 @@ window.MOLASTRIA_CHEM = {
         ],
         a: ['2θ ≈ 43.3°；(100) 和 (110) 因面心格子的消光而缺失。', '2θ ≈ 43.3°; (100) and (110) are absent because of the face-centred lattice.'],
       },
-      site: [['optics/index.html#c-xray', ['光学 · X 射线与晶体衍射（布拉格和粉末衍射演示）', 'Optics · X-rays and crystal diffraction (Bragg and powder demos)']], ['spectra/index.html#m-scxrd', ['谱图馆 · 单晶 X 射线衍射', 'Spectra Hall · single-crystal X-ray diffraction']], ['spectra/index.html#m-pxrd', ['谱图馆 · 粉末衍射', 'Spectra Hall · powder diffraction']], ['atlas/index.html', ['数据库目录：CSD、ICSD、PDB', 'Database catalogue: CSD, ICSD, PDB']]],
+      site: [['optics/index.html#c-xray', ['光学 · X 射线与晶体衍射（布拉格和粉末衍射演示）', 'Optics · X-rays and crystal diffraction (Bragg and powder demos)']], ['spectra/index.html#m-scxrd', ['谱图馆 · 单晶 X 射线衍射', 'Spectra Hall · single-crystal X-ray diffraction']], ['spectra/index.html#m-pxrd', ['谱图馆 · 粉末衍射', 'Spectra Hall · powder diffraction']], ['atlas/index.html', ['数据库目录：CSD、ICSD、PDB', 'Database catalogue: CSD, ICSD, PDB']], ['quasiparticles/phonons/index.html#c-measure', ['声子馆 · 用中子和 X 射线的非弹性散射测声子', 'Phonon hall · measuring phonons by inelastic neutron and X-ray scattering']]],
       refs: ['friedrich1913', 'bragg1913', 'karle1950', 'sheldrick2008', 'groom2016', 'franklin1953', 'watson1953', 'kendrew1958'],
     },
     {

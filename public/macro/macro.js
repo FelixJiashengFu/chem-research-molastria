@@ -1,5 +1,5 @@
 'use strict';
-// 热、统计与流体（/macro/）：热力学、统计力学、流体力学三章，从可逆的元胞自动机讲到熵、系综和 Navier–Stokes 方程。
+// 热、统计与流体（/macro/）：热力学、统计力学、流体力学、相变与重整化群四章，从可逆的元胞自动机讲到熵、系综、Navier–Stokes 方程和临界现象。
 // 内容在 macro-zh.js / macro-en.js（node tools/macro-build.mjs 从 tools/macro/ 生成，公式已经转成 MathML，不要手改），按页面语言只载入一份；
 // 演示的数学在 macro-models.js，演示的定义在 macro-demos.js。写法照化学学科馆的阅读器（../chemistry/chem.js）：一次读一章，演示嵌在章里。
 // 地址 #c-<章>、#ref-<文献>。本机只存读过的章和答对的题（molastria-macro）。文字自带中英两版，整页 translate="no"。

@@ -126,6 +126,7 @@
   const cosets = (g, H) => { const out = [], used = new Set(); for (let x = 0; x < g.n; x++) { if (used.has(x)) continue; const c = H.map((h) => g.table[x][h]).sort((a, b) => a - b); c.forEach((y) => used.add(y)); out.push(c); } return out; };
 
   // ── 第二章：分子库（理想几何，单位 Å，按特征标表的标准取向放好）──────────
+  const ELEMENTS = 'H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn'.split(' ');
   const MASS = { H: 1.008, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998, P: 30.974, S: 32.06, Cl: 35.45, Br: 79.904, Xe: 131.29, Fe: 55.845, Co: 58.933, Pt: 195.08 };
   const RCOV = { H: 0.32, B: 0.84, C: 0.76, N: 0.71, O: 0.66, F: 0.57, P: 1.07, S: 1.05, Cl: 1.02, Br: 1.2, Xe: 1.4, Fe: 1.32, Co: 1.26, Pt: 1.36 };
   const ring = (el, r, z, n, phase = 0) => range(n).map((k) => [el, r * Math.cos(phase + (TAU * k) / n), r * Math.sin(phase + (TAU * k) / n), z]);
@@ -177,10 +178,11 @@
   const molecule = (id) => MOLS.find((m) => m.id === id);
   // 质心放到原点（对称的分子，质心在所有对称元素上，所以标准取向不变）
   function centred(m) {
-    const M = m.atoms.reduce((s, a) => s + MASS[a[0]], 0), c = [1, 2, 3].map((k) => m.atoms.reduce((s, a) => s + MASS[a[0]] * a[k], 0) / M);
-    return m.atoms.map(([el, x, y, z]) => ({ el, r: [x - c[0], y - c[1], z - c[2]], m: MASS[el] }));
+    const w = (el) => MASS[el] || 2 * (ELEMENTS.indexOf(el) + 1) || 1;
+    const M = m.atoms.reduce((s, a) => s + w(a[0]), 0), c = [1, 2, 3].map((k) => m.atoms.reduce((s, a) => s + w(a[0]) * a[k], 0) / M);
+    return m.atoms.map(([el, x, y, z]) => ({ el, r: [x - c[0], y - c[1], z - c[2]], m: w(el) }));
   }
-  const bonds = (atoms) => { const out = []; for (let i = 0; i < atoms.length; i++) for (let j = i + 1; j < atoms.length; j++) if (norm(sub(atoms[i].r, atoms[j].r)) < 1.18 * (RCOV[atoms[i].el] + RCOV[atoms[j].el])) out.push([i, j]); return out; };
+  const bonds = (atoms) => { const out = []; for (let i = 0; i < atoms.length; i++) for (let j = i + 1; j < atoms.length; j++) if (norm(sub(atoms[i].r, atoms[j].r)) < 1.18 * ((RCOV[atoms[i].el] || 1.3) + (RCOV[atoms[j].el] || 1.3))) out.push([i, j]); return out; };
   // 操作 R 把原子集合映回自己吗？返回原子的去向（不对称则 null）
   function mapAtoms(atoms, R, tol = 0.02) {
     const img = [];
@@ -195,8 +197,9 @@
 
   // ── 从坐标找对称元素，按流程图判定点群 ─────────────────────────────
   const SUB = { 1: '₁', 2: '₂', 3: '₃', 4: '₄', 5: '₅', 6: '₆', 7: '₇', 8: '₈', 9: '₉', 10: '₁₀', 12: '₁₂' };
-  const dedup = (vs) => { const out = []; for (const v of vs) { if (!(norm(v) > 1e-6)) continue; const u = unit(v); if (!out.some((w) => Math.abs(dot(w, u)) > 0.99995)) out.push(u); } return out; };
-  function symmetryElements(atoms, tol = 0.02) {
+  const dedup = (vs, dup = 0.99995) => { const out = []; for (const v of vs) { if (!(norm(v) > 1e-6)) continue; const u = unit(v); if (!out.some((w) => Math.abs(dot(w, u)) > dup)) out.push(u); } return out; };
+  // dup：两个方向的夹角余弦超过它就算同一个（坐标有误差时放宽，见 analyseXYZ）
+  function symmetryElements(atoms, tol = 0.02, dup = 0.99995) {
     const pts = atoms.map((a) => a.r), N = atoms.length;
     const ok = (R) => !!mapAtoms(atoms, R, tol);
     const far = pts.reduce((b, p) => (norm(p) > norm(b) ? p : b), [0, 0, 0]);
@@ -204,25 +207,37 @@
     const inv = ok(inversion());
     if (linear) return { linear: true, inv, axes: [{ ax: unit(far), n: Infinity }], planes: [], improper: [] };
     // 候选轴：原子方向、同种原子对的中点、同种原子对的叉积、惯量主轴
-    const cand = [];
+    const In = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    for (const a of atoms) { const [x, y, z] = a.r; In[0][0] += a.m * (y * y + z * z); In[1][1] += a.m * (x * x + z * z); In[2][2] += a.m * (x * x + y * y); In[0][1] -= a.m * x * y; In[0][2] -= a.m * x * z; In[1][2] -= a.m * y * z; }
+    In[1][0] = In[0][1]; In[2][0] = In[0][2]; In[2][1] = In[1][2];
+    // 主惯量不简并的主轴一定是对称元素的候选（对称轴和镜面法线都是主轴）；简并的那几条方向是随意的，放到最后
+    const eig = symEig(In), scaleI = Math.max(1e-9, ...eig.values.map(Math.abs)), lone = (k) => eig.values.every((v, q) => q === k || Math.abs(v - eig.values[k]) > 2e-3 * scaleI);
+    const principalAxes = eig.vectors.filter((_, k) => lone(k)), otherAxes = eig.vectors.filter((_, k) => !lone(k));
+    // 候选的先后有讲究：去重时留下排在前面的那个，坐标有误差时惯量主轴和同种原子的质心最准，所以放在最前面
+    const cand = [...principalAxes];
+    for (const el of new Set(atoms.map((a) => a.el))) cand.push(pts.filter((_, k) => atoms[k].el === el).reduce(add, [0, 0, 0]));
     for (let i = 0; i < N; i++) {
       cand.push(pts[i]);
       for (let j = i + 1; j < N; j++) if (atoms[i].el === atoms[j].el) { cand.push(add(pts[i], pts[j])); cand.push(cross(pts[i], pts[j])); }
     }
-    const In = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    for (const a of atoms) { const [x, y, z] = a.r; In[0][0] += a.m * (y * y + z * z); In[1][1] += a.m * (x * x + z * z); In[2][2] += a.m * (x * x + y * y); In[0][1] -= a.m * x * y; In[0][2] -= a.m * x * z; In[1][2] -= a.m * y * z; }
-    In[1][0] = In[0][1]; In[2][0] = In[0][2]; In[2][1] = In[1][2];
-    cand.push(...symEig(In).vectors, [0, 0, 1], [1, 0, 0], [0, 1, 0]);
-    const axes = [];
-    for (const u of dedup(cand)) { let best = 1; for (let n = 2; n <= 12; n++) if (ok(rot(u, TAU / n))) best = n; if (best > 1) axes.push({ ax: u, n: best }); }
+    cand.push(...otherAxes, [0, 0, 1], [1, 0, 0], [0, 1, 0]);
+    // 先用很紧的去重试一遍候选，再把方向差不多的结果合并（坐标有误差时同一条轴会被找到好几次），留阶最高、误差最小的那一条
+    const err = (R) => { const img = mapAtoms(atoms, R, tol); return img ? Math.max(...atoms.map((x, i) => norm(sub(mv(R, x.r), atoms[img[i]].r)))) : Infinity; };
+    const merge = (list) => { const out = []; for (const e of list.sort((p, q) => (q.n || 0) - (p.n || 0) || p.e - q.e)) { const d = e.ax || e.nrm; if (!out.some((o) => Math.abs(dot(o.ax || o.nrm, d)) > dup)) out.push(e); } return out; };
+    const found = [];
+    for (const u of dedup(cand)) { let best = 1; for (let n = 2; n <= 12; n++) if (ok(rot(u, TAU / n))) best = n; if (best > 1) found.push({ ax: u, n: best, e: err(rot(u, TAU / best)) }); }
+    const axes = merge(found).map(({ ax, n }) => ({ ax, n }));
     axes.sort((a, b) => b.n - a.n);
-    const pc = [];
+    const pc = [...principalAxes];
     for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (atoms[i].el === atoms[j].el) pc.push(sub(pts[i], pts[j]));
     for (const a of axes) { pc.push(a.ax); for (const p of pts) pc.push(cross(a.ax, p)); for (const b of axes) pc.push(cross(a.ax, b.ax)); }
-    pc.push([0, 0, 1], [1, 0, 0], [0, 1, 0]);
-    const planes = dedup(pc).filter((nrm) => ok(refl(nrm))).map((nrm) => ({ nrm }));
+    pc.push(...otherAxes, [0, 0, 1], [1, 0, 0], [0, 1, 0]); // 镜面的法线一定是惯量主轴之一（主惯量不简并时），排在最前面，随便怎么摆的分子都找得到它
+    const planes = merge(dedup(pc).filter((nrm) => ok(refl(nrm))).map((nrm) => ({ nrm, e: err(refl(nrm)) }))).map(({ nrm }) => ({ nrm }));
     const imp = [];
     for (const a of axes) { let best = 0; for (let n = 3; n <= 24; n++) if (ok(improper(a.ax, TAU / n))) best = n; if (best) imp.push({ ax: a.ax, n: best }); }
+    // 阶相同的几条轴里（D₂、D₂d 这类），和象转轴重合的那条排在前面当主轴
+    const withS = (a) => (imp.some((p) => Math.abs(Math.abs(dot(p.ax, a.ax)) - 1) < 1e-6) ? 1 : 0);
+    axes.sort((a, b) => b.n - a.n || withS(b) - withS(a));
     return { linear: false, inv, axes, planes, improper: imp };
   }
   // 点群的阶
@@ -239,8 +254,8 @@
   }
   const pretty = (pg) => pg.replace(/^([CDSTOI])(∞|\d+)?([hvds]?)$/, (_, a, n, s) => a + (n ? (n === '∞' ? '∞' : [...n].map((d) => SUB[d]).join('')) : '') + (s ? { h: 'ₕ', v: 'ᵥ', d: 'd', s: 'ₛ' }[s] : '')).replace(/^Ci$/, 'Cᵢ');
   // 按 Harris 和 Bertolucci 那张流程图的顺序走一遍。返回每一步问了什么、答了什么，用到哪些对称元素（elements 里的下标）。
-  function classify(atoms, tol = 0.02) {
-    const S = symmetryElements(atoms, tol), steps = [], els = [];
+  function classify(atoms, tol = 0.02, dup) {
+    const S = symmetryElements(atoms, tol, dup), steps = [], els = [];
     const addEl = (e) => { els.push(e); return els.length - 1; };
     const step = (node, ans, use = []) => steps.push({ node, ans, use });
     if (S.linear) {
@@ -618,10 +633,75 @@
     return best;
   }
 
+  // ── 用户贴进来的 XYZ：读坐标、对称化、判点群 ─────────────────────────
+  // 元素符号按原子序数排（1–86），既用来认“8”这样的写法，也用来给没有列在 MASS 里的元素一个权重（只要同种原子权重相同，质心就在全部对称元素上）
+  const elementSymbol = (t) => { if (/^\d+$/.test(t)) return ELEMENTS[Number(t) - 1] || null; const m = /^([A-Za-z])([A-Za-z]?)/.exec(t); if (!m) return null; const one = m[1].toUpperCase(), two = one + m[2].toLowerCase(); return m[2] && ELEMENTS.includes(two) ? two : ELEMENTS.includes(one) ? one : null; };
+  // 读 XYZ 文本：可以有标准 XYZ 的头两行（原子数和注释），也可以只有“元素 x y z”的行；逗号、制表符都行；元素可以写原子序数，后面可以带编号（C1、H12）。
+  function parseXYZ(text, maxAtoms = 120) {
+    const lines = String(text || '').replace(/\r/g, '').split('\n'), atoms = [], bad = [];
+    let start = 0, declared = null, comment = '';
+    const first = lines.findIndex((l) => l.trim());
+    if (first >= 0 && /^\s*\d+\s*$/.test(lines[first])) { declared = Number(lines[first]); comment = (lines[first + 1] || '').trim(); start = first + 2; }
+    for (let i = start; i < lines.length; i++) {
+      const raw = lines[i].trim(); if (!raw || raw.startsWith('#')) continue;
+      const tok = raw.split(/[\s,;]+/).filter(Boolean), el = elementSymbol(tok[0] || ''), xyz = tok.slice(1, 4).map(Number);
+      if (!el || xyz.length < 3 || !xyz.every(Number.isFinite)) { bad.push(i + 1); continue; }
+      atoms.push([el, xyz[0], xyz[1], xyz[2]]);
+    }
+    return { atoms: atoms.slice(0, maxAtoms), bad, declared, comment, tooMany: atoms.length > maxAtoms, mismatch: declared !== null && declared !== atoms.length };
+  }
+  const centredList = (list) => centred({ atoms: list.map(([el, x, y, z]) => [el, x, y, z]) });
+  // 和 closure 一样，但矩阵在 tolM 之内就算同一个：坐标有误差时找到的元素不是精确的，乘出来的矩阵会差一点
+  function closureLoose(mats, tolM = 0.05, max = 240) {
+    const out = [I3()], has = (M) => out.some((X) => sameM(X, M, tolM));
+    for (const M of mats) if (!has(M)) out.push(M);
+    for (let i = 0; i < out.length && out.length <= max; i++) for (let j = 0; j < out.length && out.length <= max; j++) { const P = mm(out[i], out[j]); if (!has(P)) out.push(P); }
+    return out;
+  }
+  // 对称化：r_i′ = (1/|G|) Σ_g g⁻¹ r_{g(i)}。G 是找到的元素生成的群；有一个操作找不到原子的去向就放弃（返回 null）。
+  // 生成元一个一个加：加上以后群还闭合（阶 ≤ 120）、每个操作都找得到原子的去向才留下；误差大的元素（坐标噪声让它和别的元素对不齐）就被丢掉，下一轮在更对称的坐标上再找。
+  function symmetrize(atoms, S, tol, tolM = 0.05) {
+    const ok = (G) => G.length <= 120 && G.every((g) => mapAtoms(atoms, g, tol * 1.5));
+    let G = [I3()];
+    const gens = [];
+    for (const M of elementMatrices(S)) {
+      if (G.some((X) => sameM(X, M, tolM))) continue;
+      const G2 = closureLoose([...gens, M], tolM);
+      if (ok(G2)) { gens.push(M); G = G2; }
+    }
+    if (G.length < 2) return null;
+    const acc = atoms.map(() => [0, 0, 0]);
+    for (const g of G) { const img = mapAtoms(atoms, g, tol * 1.5); const gt = transpose(g); img.forEach((j, i) => { acc[i] = add(acc[i], mv(gt, atoms[j].r)); }); }
+    return { atoms: atoms.map((a, i) => ({ ...a, r: scale(acc[i], 1 / G.length) })), order: G.length };
+  }
+  // 整个流程：居中 → 在容差 tol（Å）之内找对称元素 → 对称化 → 再找（最多六轮）→ 在对称化后的坐标上按流程图判定。
+  // 返回判定结果、对称化后的坐标、每个原子挪了多少（最大值和均方根）。
+  function analyseXYZ(list, tol = 0.05) {
+    const atoms0 = centredList(list);
+    if (!atoms0.length) return null;
+    const size = Math.max(1, ...atoms0.map((a) => norm(a.r))), dup = Math.cos(Math.min(0.12, Math.max(0.01, (2 * tol) / size)));
+    let cur = atoms0, rounds = 0;
+    for (; rounds < 6; rounds++) {
+      const S = symmetryElements(cur, tol, dup);
+      if (S.linear) { const u = S.axes[0].ax; cur = cur.map((a) => ({ ...a, r: scale(u, dot(a.r, u)) })); if (S.inv) { const inv = mapAtoms(cur, inversion(), tol * 1.5); if (inv) cur = cur.map((a, i) => ({ ...a, r: scale(sub(a.r, cur[inv[i]].r), 0.5) })); } rounds++; break; }
+      const sym = symmetrize(cur, S, tol, Math.max(0.05, (3 * tol) / size));
+      if (!sym) break;
+      const moved = Math.max(...sym.atoms.map((a, i) => norm(sub(a.r, cur[i].r))));
+      cur = sym.atoms;
+      if (moved < 1e-9) { rounds++; break; }
+    }
+    let res = classify(cur, Math.max(0.005, Math.min(tol, 0.02)));
+    if (rounds === 0) res = classify(cur, tol, dup); // 对称化没成功：直接在原坐标上、按给定的容差判
+    const d = cur.map((a, i) => norm(sub(a.r, atoms0[i].r)));
+    return { res, atoms: cur, original: atoms0, maxShift: Math.max(...d), rmsShift: Math.sqrt(d.reduce((s2, x) => s2 + x * x, 0) / d.length), rounds, order: groupOrder(res.pg), closed: Number.isFinite(groupOrder(res.pg)) ? closureLoose(elementMatrices(res.S), 1e-3).length : Infinity };
+  }
+  const toXYZ = (atoms, comment = '') => `${atoms.length}\n${comment}\n${atoms.map((a) => `${a.el.padEnd(2)} ${a.r.map((v) => (Math.abs(v) < 5e-7 ? 0 : v).toFixed(6).padStart(12)).join(' ')}`).join('\n')}\n`;
+
   window.MOLASTRIA_GROUP_MODELS = {
     TAU, dot, cross, norm, unit, sub, add, scale, mv, mm, tr, det, transpose, I3, sameM, rot, refl, inversion, improper, opMatrix, symEig, range, deg,
     FINITE, finiteGroup, checkAxioms, cosets, pmul,
     MASS, RCOV, MOLS, molecule, centred, bonds, mapAtoms, symmetryElements, groupOrder, pretty, classify, closure, elementMatrices, partial, orbit,
+    ELEMENTS, elementSymbol, parseXYZ, centredList, closureLoose, symmetrize, analyseXYZ, toXYZ,
     TABLES, tableIds, tableOrder, reduce, inner, product, fmtIrrep, decompName, vecChars, rotChars, quadChars,
     gammaVib, normalModes, FF, EXP,
     huckelLevels, huckelMatrix, huckelCoeffs, huckelFill, BENZENE_PI,

@@ -302,7 +302,7 @@
         { gen: 'bars', args: { unit: 'barn', xl: T(`中子总散射截面（靶恩）`, `total neutron scattering cross-section (barn)`), rows: [[T(`H`, `H`), 82.02, 82.02], [T(`D`, `D`), 7.64, 7.64], [T(`C`, `C`), 5.55, 5.55], [T(`N`, `N`), 11.51, 11.51], [T(`O`, `O`), 4.23, 4.23], [T(`Al`, `Al`), 1.50, 1.50], [T(`Si`, `Si`), 2.17, 2.17], [T(`V`, `V`), 5.10, 5.10], [T(`Fe`, `Fe`), 11.62, 11.62], [T(`Pd`, `Pd`), 4.48, 4.48]] },
           cap: T(`文献数值：几种元素的中子总散射截面。氢远远高出其他元素，所以非弹性中子散射的谱主要是氢的运动；铝的截面小，适合做样品容器。`, `Literature values: total neutron scattering cross-sections of some elements. Hydrogen far exceeds the rest, so inelastic neutron spectra show mainly hydrogen motion; aluminium, with a small cross-section, suits sample containers.`) },
       ],
-      see: [['#m-ir', T(`红外光谱`, `Infrared spectroscopy`)], ['#m-raman', T(`拉曼光谱`, `Raman spectroscopy`)], ['#m-ednd', T(`中子衍射`, `Neutron diffraction`)]],
+      see: [['#m-ir', T(`红外光谱`, `Infrared spectroscopy`)], ['#m-raman', T(`拉曼光谱`, `Raman spectroscopy`)], ['#m-ednd', T(`中子衍射`, `Neutron diffraction`)], ['quasiparticles/phonons/#c-measure', T(`声子馆：用中子散射量出整条声子色散`, `Phonon hall: measuring whole phonon dispersions with neutron scattering`)]],
       refs: ['parker2011'],
     },
   );

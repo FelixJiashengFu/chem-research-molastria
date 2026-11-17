@@ -1,5 +1,5 @@
 'use strict';
-// 群论（/group-theory/）的十四个演示。数学都在 gt-models.js（纯函数，tools/group-test.mjs 测）。gt.js 用 window.MOLASTRIA_GROUP_DEMOS(K, DEMOS) 把它们登记进去。
+// 群论（/group-theory/）的十五个演示。数学都在 gt-models.js（纯函数，tools/group-test.mjs 测）。gt.js 用 window.MOLASTRIA_GROUP_DEMOS(K, DEMOS) 把它们登记进去。
 // 写法同准粒子的 quasi-demos.js：title，kind，intro，sel，ctl，chk，btn，state，autoplay，fps + tick(s)，changed，figs，note，draw(s, 图, 颜色) 返回读数。
 // 读数的值按 HTML 放进页面，只放这里自己算出来的数字和固定的文字。'html' 图里的内容也只用这里的固定文字和算出来的数字拼。
 // 点群流程图是照 Harris & Bertolucci《Symmetry and Spectroscopy》图 1-33 的判定顺序自己重画的（SVG），不是扫描图。
@@ -261,6 +261,86 @@ window.MOLASTRIA_GROUP_DEMOS = (K, DEMOS) => {
         [L('选中的元素', 'Selected element'), el ? esc(elLabel(el)) : '—'],
         [L('做完后原子都落到同种原子上', 'After the operation every atom lands on a like atom'), el ? (ok ? L('是', 'yes') : L('否', 'no')) : '—'],
         [L('分子', 'Molecule'), esc(m.f)],
+      ];
+    },
+  };
+
+  // ── 2′. 贴一个分子进来：XYZ → 点群 ──────────────────────────────
+  // 示例由 30 个分子里挑几个，随便转一个方向、平移，再加一点确定的“噪声”，像真实计算出来的坐标那样不完美
+  const xyzExample = (id, noise, seed) => {
+    let q = seed; const r = () => { q = (q * 16807) % 2147483647; return q / 2147483647 - 0.5; };
+    const a = 0.3 + seed % 5, b = 0.7 + (seed % 3), R = M.mm(M.rot([0, 0, 1], a), M.rot([1, 0, 0], b)), m = M.molecule(id);
+    return M.toXYZ(m.atoms.map(([el, x, y, z]) => { const v = M.mv(R, [x, y, z]); return { el, r: [v[0] + 1.5 + 2 * noise * r(), v[1] - 0.7 + 2 * noise * r(), v[2] + 0.4 + 2 * noise * r()] }; }), `${m.en}, rotated${noise ? `, ±${noise} Å noise` : ''}`);
+  };
+  const XYZ_EX = [
+    [L('水（几何优化给出的坐标）', 'Water (coordinates from a geometry optimisation)'), '3\nwater, B3LYP-like geometry\nO   0.000000   0.000000   0.117300\nH   0.000000   0.757200  -0.469200\nH   0.000000  -0.757200  -0.469200\n'],
+    [L('甲烷，随便摆，±0.01 Å', 'Methane, any orientation, ±0.01 Å'), xyzExample('ch4', 0.01, 11)],
+    [L('二茂铁（交错式），±0.02 Å', 'Ferrocene (staggered), ±0.02 Å'), xyzExample('ferrocene-s', 0.02, 7)],
+    [L('丙二烯，随便摆', 'Allene, any orientation'), xyzExample('allene', 0, 5)],
+    [L('[Co(en)₃]³⁺ 骨架，±0.02 Å', '[Co(en)₃]³⁺ skeleton, ±0.02 Å'), xyzExample('coen3', 0.02, 3)],
+  ];
+  let xyzMemo = { key: '' };
+  const xyzRun = (text, tol) => {
+    const key = `${tol}|${text}`;
+    if (xyzMemo.key === key) return xyzMemo;
+    const parsed = M.parseXYZ(text), out = parsed.atoms.length ? M.analyseXYZ(parsed.atoms, tol) : null;
+    xyzMemo = { key, id: (xyzMemo.id || 0) + 1, parsed, out, bonds: out ? M.bonds(out.atoms) : [] };
+    return xyzMemo;
+  };
+  DEMOS.xyz = {
+    title: L('贴一个分子进来：从 XYZ 坐标判定点群', 'Paste a molecule: the point group from XYZ coordinates'), kind: 'exact',
+    intro: L('把任何一个分子的笛卡儿坐标（XYZ 格式，单位 Å）贴进下面的框里，程序在给定的容差之内找出全部对称元素，把坐标对称化，再沿上面那张流程图走一遍。真实计算或晶体结构给出的坐标总有一点误差，容差就是“差多少还算对称”：太小会漏掉对称性，太大会把不对称的东西当成对称。', 'Paste the Cartesian coordinates of any molecule (XYZ format, in Å) into the box below. The program finds every symmetry element within the given tolerance, symmetrises the coordinates, and walks the flow chart above. Coordinates from a real calculation or crystal structure always carry some error; the tolerance says how much error still counts as symmetric: too small misses symmetry, too large mistakes something asymmetric for symmetric.'),
+    ctl: [['tol', L('容差', 'Tolerance'), 0.005, 0.3, 0.005, 0.1, (v) => `${v.toFixed(3)} Å`]],
+    chk: [['sym', L('画对称化以后的坐标', 'Draw the symmetrised coordinates'), true], ['all', L('同时淡淡地画出全部对称元素', 'Also show every symmetry element faintly'), true]],
+    act: XYZ_EX.map(([lab, text]) => [lab, (s) => { s.text = text; s.ver += 1; s.el = -1; s.step = -1; }]),
+    state: () => ({ yaw: 0.55, pitch: 0.42, el: -1, step: -1, text: XYZ_EX[1][1], ver: 0 }),
+    changed(s, k) { if (k === 'tol' || k === '') { s.el = -1; s.step = -1; } },
+    figs: [['html', L('输入', 'Input')], [0.8, L('三维分子（拖动旋转）。金线是转动轴，绿色的面是镜面，红点是对称中心，紫色虚线是象转轴。', 'The molecule in 3D (drag to rotate). Gold lines are rotation axes, green sheets mirror planes, the red dot the centre of symmetry, violet dashes improper axes.')], ['html', L('判定的过程', 'How the group was found')]],
+    note: L('格式：可以有标准 XYZ 的头两行（原子数、注释），也可以只有“元素 x y z”的行；元素可以写符号或原子序数，后面带的编号（C1、H12）会被忽略；逗号、制表符都可以；最多 120 个原子。做法：把质心移到原点；候选轴取惯量主轴、同种原子的质心方向、同种原子对的中点和叉积，候选镜面取同种原子对的连线和由轴生成的方向；在容差之内试转动、反映、反演和象转；方向差不多的结果合并成一个。然后用找到的元素生成整个群，把每个原子换成“所有操作把它的像拉回来的平均”，重复几轮直到不再变化（对称化），最后在对称化以后的坐标上按流程图判定。测试把 30 个分子随便转个方向、每个坐标加上 ±0.03 Å 以内的随机误差，容差取 0.1 Å 时全部判对（误差在 ±0.01 Å 以内时 0.05 Å 就够）。容差比的是原子和它的像之间的距离。坐标只在你的浏览器里计算，不会发到任何地方。', 'Format: the two header lines of a standard XYZ file (atom count, comment) are optional; lines are “element x y z”; elements may be symbols or atomic numbers, trailing labels (C1, H12) are ignored; commas and tabs are fine; up to 120 atoms. Method: move the centre of mass to the origin; candidate axes are the principal axes of inertia, the centroid directions of each element, and midpoints and cross products of pairs of like atoms; candidate mirrors are lines joining like atoms and directions built from the axes; rotations, reflections, inversion and improper rotations are tried within the tolerance, and results pointing in nearly the same direction are merged. The elements found then generate the whole group; each atom is replaced by the average of its images pulled back by every operation, repeated for a few rounds until nothing changes (symmetrisation), and the flow chart is walked on the symmetrised coordinates. In the tests, the 30 molecules of the demo above, turned to random orientations with random errors of up to ±0.03 Å added to every coordinate, are all classified correctly at a tolerance of 0.1 Å (0.05 Å suffices when the errors are within ±0.01 Å). The tolerance is compared with the distance between an atom and its image. The coordinates are processed only in your browser and are sent nowhere.'),
+    draw(s, [inBox, cv, box], c) {
+      if (inBox.dataset.ready !== '1') {
+        inBox.dataset.ready = '1';
+        inBox.innerHTML = `<label class="gt-xyz-l" for="gt-xyz-in">${esc(L('XYZ 坐标（Å）', 'XYZ coordinates (Å)'))}</label><textarea id="gt-xyz-in" class="gt-xyz" rows="9" wrap="off" spellcheck="false" autocomplete="off" translate="no"></textarea><p class="gt-xyz-msg muted" aria-live="polite"></p>`;
+        const ta = inBox.querySelector('textarea'); let t = 0;
+        ta.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { s.text = ta.value; s.el = -1; s.step = -1; s.redraw?.(); }, 250); });
+      }
+      const ta = inBox.querySelector('textarea');
+      if (inBox.dataset.ver !== String(s.ver)) { inBox.dataset.ver = String(s.ver); ta.value = s.text; }
+      const { parsed, out, bonds } = xyzRun(s.text, s.tol), msg = inBox.querySelector('.gt-xyz-msg');
+      const warn = [];
+      if (parsed.bad.length) warn.push(L(`第 ${parsed.bad.slice(0, 5).join('、')} 行读不出来，跳过了。`, `Line${parsed.bad.length > 1 ? 's' : ''} ${parsed.bad.slice(0, 5).join(', ')} could not be read and ${parsed.bad.length > 1 ? 'were' : 'was'} skipped.`));
+      if (parsed.mismatch) warn.push(L(`第一行写的是 ${parsed.declared} 个原子，读到 ${parsed.atoms.length} 个。`, `The first line says ${parsed.declared} atoms; ${parsed.atoms.length} were read.`));
+      if (parsed.tooMany) warn.push(L('超过 120 个原子，只用了前 120 个。', 'More than 120 atoms; only the first 120 were used.'));
+      msg.textContent = (parsed.atoms.length ? L(`读到 ${parsed.atoms.length} 个原子。`, `${parsed.atoms.length} atoms read. `) : L('还没有读到原子。每行写“元素 x y z”。', 'No atoms read yet. Write one “element x y z” per line.')) + warn.join(' ');
+      if (!out) { fit(cv); box.innerHTML = ''; box.dataset.key = ''; return [[L('点群', 'Point group'), '—', true]]; }
+      const res = out.res, atoms = s.sym ? out.atoms : out.original;
+      if (s.el < 0) { const lastYes = [...res.steps].reverse().find((st) => st.ans && st.use.length); s.step = lastYes ? res.steps.indexOf(lastYes) : -1; s.el = lastYes ? lastYes.use[0] : -1; }
+      drawMolecule(cv, s, atoms, c, { bonds, ghost: s.sym && out.maxShift > 0.005 ? out.original : null, els: res.els, sel: s.el, showAll: s.all });
+      const focus = res.steps[s.step]?.node, key = `${xyzMemo.id}|${s.el}|${s.step}|${c.gold}|${c.ink}`;
+      if (box.dataset.key !== key) {
+        box.dataset.key = key;
+        const elChips = res.els.map((e, k) => `<button type="button" class="gt-chip${k === s.el ? ' is-on' : ''}" data-el="${k}">${esc(elLabel(e))}</button>`).join('');
+        box.innerHTML = `<div class="gt-flow-wrap">${flowSVG(res, c, focus)}</div>
+          <ol class="gt-steps">${res.steps.map((st, i) => `<li${i === s.step ? ' class="is-on"' : ''}><button type="button" data-step="${i}">${esc(stepText(st, res))}</button></li>`).join('')}</ol>
+          <p class="gt-chips-h">${esc(L(`找到的对称元素（${res.els.length} 个，点一个画出来）`, `Symmetry elements found (${res.els.length}; click one to draw it)`))}</p><div class="gt-chips">${elChips}</div>
+          <details class="gt-xyz-out"><summary>${esc(L('对称化以后的坐标（可以复制）', 'Symmetrised coordinates (copy them)'))}</summary><textarea class="gt-xyz" rows="8" wrap="off" readonly spellcheck="false" translate="no">${esc(M.toXYZ(out.atoms, `symmetrised to ${res.pg}, centre of mass at the origin`))}</textarea></details>`;
+      }
+      box.onclick = (e) => {
+        const b = e.target.closest('[data-step],[data-el],[data-node]');
+        if (!b) return;
+        if (b.dataset.step) { const st = res.steps[+b.dataset.step]; s.step = +b.dataset.step; if (st.use.length) s.el = st.use[0]; }
+        else if (b.dataset.el) s.el = +b.dataset.el;
+        else if (b.dataset.node) { const i = res.steps.findIndex((st) => st.node === b.dataset.node); if (i >= 0) { s.step = i; if (res.steps[i].use.length) s.el = res.steps[i].use[0]; } }
+        s.redraw?.();
+      };
+      const ord = M.groupOrder(res.pg), nC = count(res.els, (e) => e.kind === 'C'), nS = count(res.els, (e) => e.kind === 's');
+      return [
+        [L('点群', 'Point group'), esc(M.pretty(res.pg)), true],
+        [L('群的阶', 'Order'), Number.isFinite(ord) ? String(ord) : '∞'],
+        [L('转动轴 · 镜面 · 对称中心', 'Axes · mirrors · centre'), `${nC} · ${nS} · ${res.S.inv ? L('有', 'yes') : L('无', 'no')}`],
+        [L('对称化时原子最多挪了', 'Largest shift when symmetrising'), `${fix(out.maxShift, 4)} Å`],
+        [L('均方根位移', 'RMS shift'), `${fix(out.rmsShift, 4)} Å`],
+        [L('原子数', 'Atoms'), String(out.atoms.length)],
       ];
     },
   };

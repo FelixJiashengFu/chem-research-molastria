@@ -57,3 +57,12 @@
 .gt-ct th button{all:unset;cursor:pointer;padding:0 4px;border-bottom:1px dashed var(--muted)}
 .gt-ct th.is-col button{border-bottom-color:var(--gold);font-weight:700}
 .gt-result{margin:10px 0 0;font-size:15px;font-weight:600;color:var(--ink)}
+
+/* 贴 XYZ 判定点群 */
+.gt-xyz-l { display: block; font-size: .85rem; color: var(--muted); margin: 0 0 .3rem; }
+.gt-xyz { display: block; box-sizing: border-box; width: 100%; min-height: 9.5em; resize: vertical; font: .82rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; padding: .55rem .65rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface, var(--bg)); color: var(--ink); tab-size: 4; }
+.gt-xyz:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.gt-xyz[readonly] { margin-top: .5rem; color: var(--muted); }
+.gt-xyz-msg { margin: .35rem 0 0; font-size: .82rem; }
+.gt-xyz-out { margin-top: .8rem; }
+.gt-xyz-out summary { cursor: pointer; font-size: .9rem; }

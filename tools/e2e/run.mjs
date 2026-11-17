@@ -3498,15 +3498,15 @@ check('Frontier AI Maths: nav entry, 44 topics and 12 appendices, working demos,
   await finish(e);
 });
 
-check('Heat, Statistics and Flow: nav entry, three chapters, five live demos, quiz, references, English', async () => {
+check('Heat, Statistics and Flow: nav entry, four chapters, ten live demos (Ising Monte Carlo, block spins, RG flow), quiz, references, English', async () => {
   const p = await open();
   await go(p, '/macro/index.html');
   await p.waitForFunction(() => window.MOLASTRIA_MACRO_READY);
   const settle = () => p.waitForTimeout(150);
   const read = () => text(p, '#chm-panel .fs-readout');
   assert.equal(await p.getAttribute('.cr-header a[data-id=macro]', 'aria-current'), 'page', 'the nav entry is current');
-  assert.equal(await p.locator('.chm-ch').count(), 3);
-  assert.equal(await p.locator('#chm-demo-list li').count(), 5);
+  assert.equal(await p.locator('.chm-ch').count(), 4);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 10);
   // Chapter 1 is open: MathML, the Kac ring painted; reversing it returns exactly to all white.
   assert.ok(await p.locator('#chm-panel math').count() >= 10, 'MathML formulas render');
   assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas is painted');
@@ -3528,10 +3528,23 @@ check('Heat, Statistics and Flow: nav entry, three chapters, five live demos, qu
   await p.click(`${lg} [data-play]`); await p.waitForTimeout(800); await p.click(`${lg} [data-play]`);
   assert.match(await text(p, `${lg} .fs-readout`), /没变/);
   assert.equal(await p.locator('#chm-panel [data-demo=lbm] canvas').count(), 2);
+  // Chapter 4: five demos painted; the 3D Ising exponents give the worked example's β; the 2D Migdal–Kadanoff fixed point; Ising Monte Carlo runs.
+  await p.selectOption('#chm-select', 'critical'); await settle(); await p.waitForTimeout(300);
+  assert.equal(await p.evaluate(() => location.hash), '#c-critical');
+  assert.equal(await p.locator('#chm-panel article[data-demo]').count(), 5);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; })), 'every canvas in chapter 4 is painted');
+  assert.match(await text(p, '#chm-panel [data-demo=exponents]'), /0\.326/);
+  await p.selectOption('#chm-panel [data-demo=rgflow] select[data-k=model]', 'mk2'); await settle();
+  assert.match(await text(p, '#chm-panel [data-demo=rgflow] .fs-readout'), /0\.30[45]/);
+  const ising = '#chm-panel [data-demo=ising]';
+  const before = await text(p, `${ising} .fs-readout`);
+  await p.click(`${ising} [data-play]`); await p.waitForTimeout(800); await p.click(`${ising} [data-play]`);
+  assert.notEqual(await text(p, `${ising} .fs-readout`), before, 'the Monte Carlo moves');
   // Quiz and references.
   await p.check('#chm-quiz-list .chm-q[data-q="1"] input[value="1"]');
   assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="1"] .chm-why'), /答对了/);
-  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 56);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 88);
+  await p.selectOption('#chm-select', 'fluid'); await settle();
   await p.click('#chm-panel a[data-ref=fhp1986]');
   assert.match(await text(p, '#ref-fhp1986'), /Frisch[\s\S]*1986/);
   assert.deepEqual(p.errors, []);
@@ -3724,7 +3737,7 @@ check('Phonon hall: under Quasiparticles in the nav, nine chapters, eleven live 
   await finish(e);
 });
 
-check('Group theory: nav entry, twelve chapters, fourteen live demos (the clickable point-group flow chart), quiz, references, English', async () => {
+check('Group theory: nav entry, twelve chapters, fifteen live demos (the clickable point-group flow chart, paste XYZ for a point group), quiz, references, English', async () => {
   const p = await open();
   await go(p, '/group-theory/index.html');
   await p.waitForFunction(() => window.MOLASTRIA_GROUP_READY);
@@ -3733,7 +3746,7 @@ check('Group theory: nav entry, twelve chapters, fourteen live demos (the clicka
   const painted = () => p.evaluate(() => [...document.querySelectorAll('#chm-panel canvas')].every((c) => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i]) return true; return false; }));
   assert.equal(await p.getAttribute('.cr-header a[data-id=group]', 'aria-current'), 'page', 'the nav entry is current');
   assert.equal(await p.locator('.chm-ch').count(), 12);
-  assert.equal(await p.locator('#chm-demo-list li').count(), 14);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 15);
   // Every chapter: formulas render and every demo canvas is painted.
   for (const id of ['what', 'pointgroups', 'reps', 'reduce', 'orbitals', 'vibrations', 'ligand', 'crystals', 'lie', 'angular', 'bands', 'beyond']) {
     await p.selectOption('#chm-select', id); await settle(); await p.waitForTimeout(300);
@@ -3750,6 +3763,13 @@ check('Group theory: nav entry, twelve chapters, fourteen live demos (the clicka
   await p.click('#chm-panel [data-demo=flow] .gt-steps li:first-child button'); await settle();
   await p.click('#chm-panel [data-demo=flow] .gt-chip >> nth=0'); await settle();
   assert.match(await read('flow'), /做完后原子都落到同种原子上是/);
+  // Paste XYZ: noisy methane is Td; typed benzene with a bad line is D6h and the bad line is reported.
+  const xyz = '#chm-panel [data-demo=xyz]';
+  assert.match(await read('xyz'), /T[dｄ][\s\S]*24/);
+  await p.fill(`${xyz} textarea.gt-xyz >> nth=0`, '6\nbenzene\nC 1.39 0 0\nC 0.695 1.204 0\nC -0.695 1.204 0\nC -1.39 0 0\nC -0.695 -1.204 0\nC 0.695 -1.204 0\nnot an atom\n');
+  await p.waitForTimeout(600);
+  assert.match(await read('xyz'), /D₆ₕ[\s\S]*24/);
+  assert.match(await text(p, `${xyz} .gt-xyz-msg`), /第 9 行/);
   // Chapter 12: the Landau example.
   await p.selectOption('#chm-select', 'beyond'); await settle();
   await p.click('#chm-panel [data-demo=landau] [data-preset="1"]'); await settle();
