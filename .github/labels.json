@@ -1,0 +1,22 @@
+[
+ {"name": "priority: high", "color": "b60205", "description": "先做：会影响用户或正在出错"},
+ {"name": "bug", "color": "d73a4a", "description": "不对的地方：显示、数据或行为有误"},
+ {"name": "verify", "color": "fbca04", "description": "要人在真机上看一次（iPad、iPhone、Mac、Windows）"},
+ {"name": "feature", "color": "a2eeef", "description": "新功能"},
+ {"name": "site", "color": "1f6feb", "description": "网站 public/，推到 main 就上线"},
+ {"name": "desktop", "color": "8250df", "description": "桌面版 desktop/，打 desktop-v 标签发布"},
+ {"name": "worker", "color": "f66a0a", "description": "账号服务 deploy/，推送不会部署，要跑 wrangler"},
+ {"name": "models", "color": "1b7c83", "description": "在线模型与模型接口（tools/uma-server、/models/）"},
+ {"name": "radar", "color": "c5a3e8", "description": "预印本雷达（public/radar/）"},
+ {"name": "agent", "color": "5319e7", "description": "chemdb-agent（agent/chemdb-agent/）"},
+ {"name": "content", "color": "0e8a16", "description": "内容与数据：手册、目录、期刊、价格"},
+ {"name": "payments", "color": "d4a72c", "description": "收款、Pro 订阅与售后"},
+ {"name": "growth", "color": "2da44e", "description": "增长：搜索引擎、统计、访问速度"},
+ {"name": "ops", "color": "6e7781", "description": "运维与外部服务配置（DNS、邮件、Cloudflare）"},
+ {"name": "tests", "color": "bfd4f2", "description": "测试（e2e、单元测试、CI）"},
+ {"name": "a11y", "color": "0052cc", "description": "无障碍：对比度、键盘、读屏"},
+ {"name": "chore", "color": "d0d7de", "description": "代码整理，不改行为"},
+ {"name": "scheduled", "color": "e99695", "description": "到了日期才做"},
+ {"name": "later", "color": "ededed", "description": "以后再说：有触发条件时再开工"},
+ {"name": "epic", "color": "3e1f79", "description": "汇总：下面挂着一组子 issue"}
+]
