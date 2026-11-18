@@ -98,6 +98,26 @@
 
   const fine = `<p class="om-fine">${C(T(`许可证按 GitHub 仓库识别的结果写（${D.checked} 核对），模型参数另有条款的单独标出；论文在 arXiv 或 OpenAlex 核对过。名称和商标归各自的公司所有，MolAstria 与这些公司没有隶属关系。用于商业项目前，请读各项目自己的许可文件。`, `Licences are as detected on each GitHub repository (checked ${D.checked}), with separate weight terms noted; papers were checked on arXiv or OpenAlex. Names and trademarks belong to their companies; MolAstria is not affiliated with any of them. Read each project's own licence before commercial use.`))}</p>`;
 
+  // ── “怎么用”一节（可选，orgs[].howto）：步骤、可复制的命令、显存表
+  const howto = (h) => {
+    if (!h) return '';
+    const step = (x, i) => `<li class="om-step">${C(esc(tx(x.h)), 'h3')}${x.p ? C(esc(tx(x.p)), 'p') : ''}${x.code ? `<div class="om-code"><button type="button" class="om-copy" data-i="${i}" translate="no">${T('复制', 'Copy')}</button><pre translate="no"><code>${esc(x.code)}</code></pre></div>` : ''}</li>`;
+    const m = h.mem;
+    const mem = m ? `<li class="om-step">${C(esc(tx(m.h)), 'h3')}${C(esc(tx(m.p)), 'p')}<div class="om-mem-wrap"><table class="om-mem" translate="no" lang="${lang}"><thead><tr>${m.head.map((c) => `<th>${esc(tx(c))}</th>`).join('')}</tr></thead><tbody>${m.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></li>` : '';
+    return `<section class="om-howto" id="om-howto" aria-labelledby="om-howto-h"><div class="mx-head"><p class="eyebrow" translate="no">HOW TO USE</p><h2 id="om-howto-h">${C(esc(tx(h.title)))}</h2>${h.intro ? C(esc(tx(h.intro)), 'p', 'muted') : ''}</div><ol class="om-steps">${h.steps.map(step).join('')}${mem}</ol></section>`;
+  };
+  const wireCopy = (root, h) => {
+    if (!root || !h) return;
+    root.addEventListener('click', async (e) => {
+      const b = e.target.closest('.om-copy'); if (!b) return;
+      const code = h.steps[+b.dataset.i]?.code || '';
+      let ok = false;
+      try { await navigator.clipboard.writeText(code); ok = true; } catch { /* no clipboard permission */ }
+      b.textContent = ok ? T('已复制', 'Copied') : T('请手动选中复制', 'Select and copy by hand');
+      setTimeout(() => { b.textContent = T('复制', 'Copy'); }, 1600);
+    });
+  };
+
   if (org) {
     // ── 一家公司的展馆
     document.title = `${tx(org.name)} · ${T('开放模型馆', 'Open Model Hall')} · MolAstria`;
@@ -107,7 +127,7 @@
         <p class="eyebrow" translate="no">OPEN MODEL HALL · ${esc(String(tx(org.lab)).toUpperCase())}</p>
         <h1>${C(esc(tx(org.name)))}<span class="om-h1-sub" translate="no">${esc(tx(org.lab))} · ${esc(tx(org.country))}</span></h1>
         ${C(esc(tx(org.lead)), 'p', 'lead')}
-        <div class="actions"><a class="button primary" href="#om-open">${T('浏览模型与数据', 'Browse models and data')} <i class="ico-ext ico-down" aria-hidden="true"></i></a><a class="button" href="#om-live">${T('最近的版本', 'Latest releases')}</a><a class="button ghost" href="${hubHref}#om-tasks">${T('按任务和其他家比较', 'Compare with other labs by task')}</a></div>
+        <div class="actions"><a class="button primary" href="#om-open">${T('浏览模型与数据', 'Browse models and data')} <i class="ico-ext ico-down" aria-hidden="true"></i></a>${org.howto ? `<a class="button" href="#om-howto">${T('怎么用', 'How to use')}</a>` : ''}<a class="button" href="#om-live">${T('最近的版本', 'Latest releases')}</a><a class="button ghost" href="${hubHref}#om-tasks">${T('按任务和其他家比较', 'Compare with other labs by task')}</a></div>
       </div>
       <figure class="mx-stack"><figcaption>${C(T(`在 MolAstria 里接着用`, 'Carry on in MolAstria'))}</figcaption><ol>${(org.site || []).map((s) => `<li><span class="mx-k" translate="no">MolAstria</span>${C(esc(tx(s)), 'b')}<a href="${esc(safeUrl(s.href))}">${T('打开', 'Open')} <i class="ico-ext ico-right" aria-hidden="true"></i></a></li>`).join('')}</ol></figure>
     </section>
@@ -117,6 +137,7 @@
       <div class="mx-grid" id="om-grid">${org.items.map((it) => card(it, org)).join('')}</div>
       <p class="mx-empty" hidden>${C(T('没有匹配的条目，换个关键词试试。', 'Nothing matches; try another word.'))}</p>
     </section>
+    ${howto(org.howto)}
     <section class="mx-live" id="om-live" aria-labelledby="om-live-h"><div><p class="eyebrow" translate="no">LIVE · GITHUB</p><h2 id="om-live-h">${C(T('最近的版本', 'Latest releases'))}</h2>${C(T(`打开页面时从 GitHub 读取 ${org.repo}，一小时内不重复请求。`, `Read from GitHub (${org.repo}) when the page opens, at most once an hour.`), 'p', 'muted small')}</div><ul class="mx-releases" id="om-rel"><li class="muted">${T('正在读取…', 'Loading…')}</li></ul></section>
     <section class="om-switch" id="om-switch" aria-label="${T('其他展馆', 'Other pavilions')}"></section>
     <footer class="mx-foot"><strong translate="no">MolAstria · ${T('开放模型馆', 'Open Model Hall')} · ${esc(tx(org.name))}</strong>${fine}</footer>`;
@@ -125,6 +146,7 @@
     crumbs($('om-crumbs'));
     switcher($('om-switch'));
     releases($('om-rel'), org.repo);
+    wireCopy($('om-howto'), org.howto);
     return;
   }
 

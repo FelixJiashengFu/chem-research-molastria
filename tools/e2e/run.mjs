@@ -1640,12 +1640,12 @@ check('header order and account: groups and buttons drag into a new order that i
   await finish(p);
 });
 
-check('open model hall: twelve pavilions (Shanghai AI Lab with Sage-S2.1-Flash), task comparison, filters; a pavilion page with crumbs, releases and the switcher; Meta joins in; English', async () => {
+check('open model hall: thirteen pavilions (Shanghai AI Lab with Sage-S2.1-Flash, SenseTime with SenseNova-Loop-9B and its how-to), task comparison, filters; a pavilion page with crumbs, releases and the switcher; Meta joins in; English', async () => {
   const p = await open({ viewport: { width: 1366, height: 900 } });
   await p.context().route(/^https:\/\/api\.github\.com\/repos\/[^/]+\/[^/]+\/releases/, (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify([{ tag_name: 'v9.9.9', name: 'Stand-in release', html_url: 'https://github.com/example/example/releases/tag/v9.9.9', published_at: '2026-11-01T00:00:00Z' }]) }));
   await go(p, '/open-models/index.html');
   assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page');
-  assert.equal(await p.locator('.om-org-card').count(), 12);
+  assert.equal(await p.locator('.om-org-card').count(), 13);
   assert.match(await p.getAttribute('.om-org-card[data-org=meta]', 'href'), /^\.\.\/meta\/index\.html$/);
   const all = await p.locator('#om-all .om-item').count();
   assert.ok(all >= 50, `${all} entries`);
@@ -1668,7 +1668,7 @@ check('open model hall: twelve pavilions (Shanghai AI Lab with Sage-S2.1-Flash),
   await p.click('#om-switch a[href$="meta/index.html"]');
   await p.waitForURL(/\/meta\/index\.html/);
   assert.match(await text(p, '#om-crumbs'), /开放模型馆/);
-  assert.equal(await p.locator('#om-switch a').count(), 13);
+  assert.equal(await p.locator('#om-switch a').count(), 14);
   assert.equal(await p.getAttribute('.cr-mega a[data-id=openmodels]', 'aria-current'), 'page', 'Meta counts as part of the hall');
   await finish(p);
   const e = await open({ viewport: { width: 390, height: 844 } });
@@ -1686,6 +1686,17 @@ check('open model hall: twelve pavilions (Shanghai AI Lab with Sage-S2.1-Flash),
   assert.match(await text(e, '#om-grid'), /320B total and 18B active/);
   assert.doesNotMatch(await e.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English (shlab)');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone (shlab)');
+  // the SenseTime pavilion: a small multimodal model with a how-to (download, Transformers, vLLM, memory table)
+  await go(e, '/open-models/sensetime/index.html?lang=en');
+  assert.match(await text(e, 'main h1'), /SenseTime/);
+  assert.ok(await e.locator('#om-grid .om-item[data-key="sensetime:sensenova-loop-9b"][data-kind=mm][data-use=open]').count());
+  assert.equal(await e.locator('#om-howto .om-code').count(), 4);
+  assert.match(await text(e, '#om-howto'), /hf download sensenova\/SenseNova-Loop-9B/);
+  assert.match(await text(e, '#om-howto'), /vllm serve/);
+  assert.equal(await e.locator('#om-howto .om-mem tbody tr').count(), 3);
+  assert.match(await text(e, '#om-howto'), /vendor-reported|not a measurement/);
+  assert.doesNotMatch(await e.innerText('main'), /[一-鿿]{4}/, 'no Chinese left in English (sensetime)');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone (sensetime)');
   await finish(e);
 });
 
