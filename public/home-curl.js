@@ -211,7 +211,7 @@ float a=u_dark*pow(1.0-clamp(d/w,0.0,1.0),1.7);gl_FragColor=vec4(0.0,0.0,0.0,a);
     function play(dir, to) {
       if (T) end(true); // a turn under way finishes at once
       if (lost) { host.turn(dir, to); return; }
-      const t = begin(dir, to), MS = 1050, t0 = performance.now();
+      const t = begin(dir, to), MS = 1800, t0 = performance.now();
       const step = (now) => {
         if (T !== t) return;
         const u = Math.min(1, (now - t0) / MS), e = inOut(u), p = C.path(dir > 0 ? e : 1 - e, W, H);

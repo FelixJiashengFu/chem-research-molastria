@@ -1956,7 +1956,7 @@ check('home hero: the book of figures draws a real plot for each of its plates, 
   // By itself the page turns after a while.
   const a = await open({ viewport: { width: 1440, height: 900 } });
   await go(a, '/index.html'); await a.mouse.move(200, 300);
-  await a.waitForFunction(() => document.getElementById('st-no').textContent === 'FIG. 02', null, { timeout: 14000 });
+  await a.waitForFunction(() => document.getElementById('st-no').textContent === 'FIG. 02', null, { timeout: 22000 });
   await finish(a);
   // The site's own zoom and text size: the headline keeps to two lines, the plate stays inside the page; the dark plate differs from the light one.
   const z = await open({ viewport: { width: 1440, height: 900 }, init: () => { try { localStorage.setItem('molastria-zoom', '1.25'); localStorage.setItem('molastria-text', '1.15'); } catch {} } });

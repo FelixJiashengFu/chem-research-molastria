@@ -17,7 +17,7 @@
   const en = document.documentElement.lang === 'en', tx = (zh, e) => (en ? e : zh);
   const fmt = (n) => Math.round(n).toLocaleString('zh-CN');
   const TAU = Math.PI * 2, clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
-  const DWELL = 9;
+  const DWELL = 15;
 
   // A quick keyword: app.js runs the search (its [data-query] handler); here the bar shows the word.
   hero?.querySelector('.hero-try')?.addEventListener('click', (e) => { const b = e.target.closest('[data-query]'); if (b && input) input.value = b.dataset.query; });
@@ -315,7 +315,7 @@
       const leaf = page.cloneNode(true), c2 = leaf.querySelector('canvas'); leaf.removeAttribute('id'); leaf.className = 'st-page st-leaf' + (dir < 0 ? ' is-back' : ''); leaf.setAttribute('aria-hidden', 'true'); leaf.inert = true;
       leaf.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
       c2.width = canvas.width; c2.height = canvas.height; c2.getContext('2d').drawImage(canvas, 0, 0);
-      plate.append(leaf); leaf.addEventListener('animationend', () => leaf.remove()); setTimeout(() => leaf.remove(), 1400);
+      plate.append(leaf); leaf.addEventListener('animationend', () => leaf.remove()); setTimeout(() => leaf.remove(), 2300);
     }
     swap(i);
   }
