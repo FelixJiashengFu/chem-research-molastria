@@ -5,8 +5,9 @@
    字段：
    orgs[].id         展馆的目录名（public/open-models/<id>/），Meta 用 path 指向 ../meta/
    orgs[].repo       “最近的版本”读哪个 GitHub 仓库的 releases
-   items[].kind      model 原子模型与机器学习势 · gen 生成与设计 · bio 生物分子结构 · qm 电子结构与 DFT · data 数据集 · tool 工具与平台 · llm 科学大模型（能读科学数据的语言模型）
+   items[].kind      model 原子模型与机器学习势 · gen 生成与设计 · bio 生物分子结构 · qm 电子结构与 DFT · data 数据集 · tool 工具与平台 · llm 科学大模型（能读科学数据的语言模型） · mm 通用的多模态小模型（能在自己电脑上跑）
    items[].use       open 宽松许可可商用 · copyleft 开源但有传染性条款 · nc 仅限非商业 / 需申请 · service 在线服务或商业平台
+   orgs[].howto      可选：“怎么用”一节（intro、steps[{h,p,code}]、mem 显存表），代码里的注释写英文
    items[].links     [标签, 地址]；标签是中英两版的键（paper、code、docs、data、site、weights、demo、modelscope） */
 window.MOLASTRIA_OM = {
   checked: '2026-11-10',
@@ -18,6 +19,7 @@ window.MOLASTRIA_OM = {
     data: { zh: '数据集', en: 'Dataset' },
     tool: { zh: '工具与平台', en: 'Tools & platforms' },
     llm: { zh: '科学大模型', en: 'Scientific LLM' },
+    mm: { zh: '多模态小模型', en: 'Multimodal small LLM' },
   },
   uses: {
     open: { zh: '宽松许可，可商用', en: 'Permissive, commercial use OK' },
@@ -312,6 +314,100 @@ window.MOLASTRIA_OM = {
         { id: 'intern-s2', kind: 'llm', use: 'open', year: '2026', name: 'Intern-S2', desc: { zh: '书生 S2 系列（35B、397B）：直接从科学文献的原始页面做视觉预训练，面向科学推理、多模态理解和长流程智能体任务；官方 API 可以直接接入智能体框架。', en: 'The Intern-S2 series (35B, 397B): visual pre-training directly on raw pages of scientific papers, for scientific reasoning, multimodal understanding and long-horizon agent tasks; the official API plugs into agent frameworks.' }, lic: 'Apache 2.0', links: [['weights', 'https://huggingface.co/collections/internlm/intern-s2'], ['code', 'https://github.com/InternLM/Intern-S1']] },
         { id: 'intern-s1', kind: 'llm', use: 'open', year: '2025', name: 'Intern-S1', desc: { zh: '科学多模态基础模型（约 241B 总参数、激活 28B），读论文里的图表和化学结构图，动态分词器原生处理分子式和蛋白序列；另有 8B 的 Intern-S1-mini 和万亿参数的 Intern-S1-Pro。', en: 'A scientific multimodal foundation model (about 241B total, 28B active) that reads figures and chemical structure drawings in papers, with a dynamic tokenizer that handles molecular formulas and protein sequences natively; also Intern-S1-mini (8B) and the trillion-parameter Intern-S1-Pro.' }, lic: 'Apache 2.0', links: [['paper', 'https://arxiv.org/abs/2508.15763'], ['weights', 'https://huggingface.co/internlm/Intern-S1'], ['code', 'https://github.com/InternLM/Intern-S1']] },
       ],
+    },
+    {
+      id: 'sensetime', repo: 'OpenSenseNova/SenseNova-Loop', country: { zh: '中国', en: 'China' },
+      name: { zh: '商汤科技', en: 'SenseTime' }, lab: 'SenseNova · 日日新',
+      glyph: 'SenseNova-Loop-9B',
+      blurb: {
+        zh: '日日新（SenseNova）系列的出品方。2026 年 11 月 17 日开源的 SenseNova-Loop-9B 是 9B 参数、能看图的循环层语言模型，Apache 2.0 许可，4 位量化后约 4.9 GB，一张消费级显卡就能跑长上下文。',
+        en: 'The company behind the SenseNova (日日新) family. SenseNova-Loop-9B, open-sourced on 17 November 2026, is a 9B looped-layer language model that also reads images; Apache 2.0, about 4.9 GB at 4-bit, so long contexts fit on one consumer GPU.',
+      },
+      lead: {
+        zh: '这一馆放的是通用的多模态小模型，不是化学专用模型：收进来，是因为它小到能装进自己的电脑，适合给计算化学当本地助手（写输入、读输出、跑脚本），数据不出本机。SenseNova-Loop-9B 的“循环”是指同一组层算两遍：32 个解码层里，第 0–3 层算一遍，第 4–27 层用同一份权重连算两遍，第 28–31 层再算一遍，所以只存 32 层的参数，每次前向却执行 56 层，推理时相当于约 14.6B 参数的计算量；层与层之间用两路 mHC 残差连接。注意力是混合的，每四层里三层线性注意力、一层全注意力，上下文最长 512K token；输入可以是文字和图片，输出是文字。商汤模型卡列出的成绩（厂商自报，没有公开评测记录）：比 10 月 31 日的 Preview 版，NL2Repo 从 19.91 到 41.36，AutomationBench 从 14.33 到 36.67，GAIA 从 37.86 到 69.90，Terminal-Bench 2.1 从 40.45 到 59.55；和 Qwen3.8-27B 比，AutomationBench 同为 36.67，AIDABench 65.31 对 65.01，NL2Repo 41.36 对 44.60 还落后一点，宣传里的“和 27B 模型有竞争力”指的是这种互有胜负。模型卡自己列的不足：复杂指令跟随、编程和智能体任务表现不稳定，复杂网页生成还要人改。下面的用法照模型卡写（2026-11-18 按 Hugging Face 模型卡和 GitHub 核对）。',
+        en: 'This pavilion holds a general multimodal small model, not a chemistry model: it is here because it is small enough for your own computer, which makes it a local assistant for computational chemistry (writing inputs, reading outputs, running scripts) without data leaving the machine. "Loop" means the same layers run twice: of 32 decoder layers, layers 0–3 run once, layers 4–27 run twice with the same weights, and layers 28–31 run once, so only 32 layers are stored but 56 are executed per forward pass, about 14.6B parameters\' worth of compute at inference; layers are joined by two-stream mHC residual connections. Attention is hybrid, three linear-attention layers and one full-attention layer in every four, with up to 512K tokens of context; input is text and images, output is text. Scores on SenseTime\'s model card (vendor-reported, no published evaluation logs): against the 31 October Preview, NL2Repo 19.91 to 41.36, AutomationBench 14.33 to 36.67, GAIA 37.86 to 69.90, Terminal-Bench 2.1 40.45 to 59.55; against Qwen3.8-27B, a tie on AutomationBench at 36.67, AIDABench 65.31 vs 65.01, and NL2Repo 41.36 vs 44.60, still a little behind, which is what "competitive with a 27B model" means here. Limitations the card lists itself: complex instruction following, uneven coding and agent performance, and complex web pages that still need human fixes. The usage below follows the model card (checked against the Hugging Face card and GitHub on 2026-11-18).',
+      },
+      facts: [['9B', { zh: '参数，推理时相当于约 14.6B', en: 'parameters, about 14.6B equivalent at inference' }], ['32 / 56', { zh: '存下的层 / 每次前向执行的层', en: 'stored layers / layers executed per forward pass' }], ['512K', { zh: 'token 上下文，文字和图片输入', en: 'tokens of context, text and image input' }], ['Apache 2.0', { zh: '代码和模型参数', en: 'code and weights' }]],
+      site: [{ zh: '开源代码台：生成计算化学程序的输入、解读输出，可以和本地模型配合用', en: 'Code Desk: inputs and output reading for chemistry codes, a good partner for a local model', href: '../../code/index.html' }, { zh: '科学大模型：27 个模型的规模、许可和价格对比', en: 'Science LLMs: size, licence and prices for 27 models', href: '../../scimodels/index.html' }],
+      items: [
+        { id: 'sensenova-loop-9b', kind: 'mm', use: 'open', year: '2026', name: 'SenseNova-Loop-9B', desc: { zh: '9B 参数的循环层多模态语言模型：第 4–27 层共用权重算两遍，存 32 层、执行 56 层；混合注意力，最长 512K 上下文，读文字和图片。4 位量化权重约 4.9 GB，64K 上下文估计最少约 9 GiB 显存（4 位 KV 缓存）。下载要先在 Hugging Face 同意共享账号信息。', en: 'A 9B looped-layer multimodal language model: layers 4–27 share weights and run twice, 32 stored, 56 executed; hybrid attention, up to 512K context, text and image input. 4-bit weights are about 4.9 GB; 64K context needs an estimated minimum of about 9 GiB of GPU memory (4-bit KV cache). Downloading needs you to agree to share your Hugging Face account details first.' }, lic: { zh: 'Apache 2.0（代码和模型参数）', en: 'Apache 2.0 (code and weights)' }, links: [['weights', 'https://huggingface.co/sensenova/SenseNova-Loop-9B'], ['modelscope', 'https://www.modelscope.cn/models/SenseNova/SenseNova-Loop-9B'], ['code', 'https://github.com/OpenSenseNova/SenseNova-Loop']] },
+        { id: 'sensenova-loop-9b-preview', kind: 'mm', use: 'open', year: '2026', name: 'SenseNova-Loop-9B-Preview', desc: { zh: '10 月 31 日发布的预览版，同样两遍循环，训练上下文最长 262,144 token。下载不用登记；社区已经做了 GGUF、MLX 等量化版（不是商汤官方的）。正式版各项成绩都比它高，新项目用正式版。', en: 'The preview released on 31 October, also looping twice, trained on contexts up to 262,144 tokens. No sign-up to download; the community has made GGUF, MLX and other quantised versions (not official). The release beats it on every listed score, so new projects should use the release.' }, lic: 'Apache 2.0', links: [['weights', 'https://huggingface.co/sensenova/SenseNova-Loop-9B-Preview'], ['modelscope', 'https://modelscope.cn/models/SenseNova/SenseNova-Loop-9B-Preview'], ['code', 'https://github.com/OpenSenseNova/SenseNova-Loop']] },
+      ],
+      // 用法：照 Hugging Face 模型卡（2026-11-18）。代码里的注释一律英文（<pre> 不翻译）
+      howto: {
+        title: { zh: '怎么用 SenseNova-Loop-9B', en: 'How to use SenseNova-Loop-9B' },
+        intro: { zh: '模型卡核对过的环境是 Transformers 5.18.0、PyTorch 2.11.0、CUDA 13.0。加载要 trust_remote_code（模型结构的代码在仓库里），先读一遍再跑。vLLM 和 SGLang 的支持还在各自的合并请求里，要从源码装；模型卡说引擎版本会随模型更新，合并以后直接 pip 安装就行。', en: 'The model card was checked with Transformers 5.18.0, PyTorch 2.11.0 and CUDA 13.0. Loading needs trust_remote_code (the architecture code ships in the repository), so read it before running. vLLM and SGLang support still lives in pull requests and has to be installed from source; the card says engine versions will be updated with the model, after which a plain pip install will do.' },
+        steps: [
+          { h: { zh: '1. 下载模型参数', en: '1. Download the weights' }, p: { zh: '正式版在 Hugging Face 上要先打开模型页、同意共享账号信息，再登录下载；在国内可以从魔搭下载。', en: 'On Hugging Face, open the model page and agree to share your account details, then log in and download; ModelScope is the mirror for mainland China.' }, code: `# Hugging Face (accept the terms on the model page first)
+pip install -U huggingface_hub
+hf auth login
+hf download sensenova/SenseNova-Loop-9B --local-dir SenseNova-Loop-9B
+
+# or ModelScope
+pip install -U modelscope
+modelscope download --model SenseNova/SenseNova-Loop-9B --local_dir SenseNova-Loop-9B` },
+          { h: { zh: '2. 用 Transformers 跑一问', en: '2. One question with Transformers' }, p: { zh: '一张显卡就够。enable_thinking=True 先想再答，改成 False 关掉思考；模型卡的例子用贪心解码。', en: 'One GPU is enough. enable_thinking=True thinks before answering; set it to False to turn thinking off. The card\'s example uses greedy decoding.' }, code: `pip install "transformers==5.18.0" accelerate safetensors
+
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_id = "SenseNova-Loop-9B"   # the folder from step 1
+device = "cuda:0"
+tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id, trust_remote_code=True, dtype=torch.bfloat16,
+    device_map={"": device}).eval()
+
+messages = [{"role": "user", "content": "What is 13 times 7?"}]
+inputs = tok.apply_chat_template(
+    messages, add_generation_prompt=True, enable_thinking=True,
+    return_dict=True, return_tensors="pt").to(device)
+with torch.inference_mode():
+    out = model.generate(**inputs, max_new_tokens=512, do_sample=False, use_cache=True)
+print(tok.decode(out[0, inputs["input_ids"].shape[1]:], skip_special_tokens=True))` },
+          { h: { zh: '3. 用 vLLM 开一个 OpenAI 兼容的服务', en: '3. An OpenAI-compatible server with vLLM' }, p: { zh: '模型卡的例子按四张卡写（--tensor-parallel-size 4），只有一张卡就改成 1。服务起来以后，任何 OpenAI 兼容的客户端都能连，图片放在 image_url 里。', en: 'The card\'s example assumes four GPUs (--tensor-parallel-size 4); with one GPU, set it to 1. Once the server is up, any OpenAI-compatible client can connect, with images passed as image_url.' }, code: `git clone https://github.com/vllm-project/vllm.git
+cd vllm
+git fetch origin pull/64832/head
+git checkout -b sensenova-loop FETCH_HEAD
+python -m pip install -e .
+
+vllm serve /path/to/SenseNova-Loop-9B \\
+  --served-model-name sensenova_loop \\
+  --tensor-parallel-size 4 \\
+  --dtype bfloat16
+
+# ask it about an image
+curl http://localhost:8000/v1/chat/completions -H "Content-Type: application/json" -d '{
+  "model": "sensenova_loop",
+  "messages": [{"role": "user", "content": [
+    {"type": "text", "text": "Describe this image in one sentence."},
+    {"type": "image_url", "image_url": {"url": "https://example.com/spectrum.png"}}
+  ]}]
+}'` },
+          { h: { zh: '4. 或者用 SGLang、LightLLM', en: '4. Or SGLang and LightLLM' }, p: { zh: 'SGLang 同样从合并请求装；LightLLM 用官方 Docker 镜像，不用自己编译。', en: 'SGLang also installs from its pull request; LightLLM uses the official Docker image, no build needed.' }, code: `# SGLang
+git clone https://github.com/sgl-project/sglang.git
+cd sglang
+git fetch origin pull/47281/head
+git checkout -b sensenova-loop FETCH_HEAD
+python -m pip install -e ./python
+sglang serve --model-path /path/to/SenseNova-Loop-9B
+
+# LightLLM (four GPUs; change --tp for fewer)
+docker pull ghcr.io/modeltc/lightllm:main
+docker run --rm --gpus all --ipc=host -p 8000:8000 \\
+  -v /path/to/SenseNova-Loop-9B:/model \\
+  -e LOADWORKER=4 -e LIGHTLLM_TRITON_AUTOTUNE_LEVEL=1 \\
+  ghcr.io/modeltc/lightllm:main \\
+  python -m lightllm.server.api_server --model_dir /model \\
+    --model_name SenseNova-Loop-9B --tp 4 --host 0.0.0.0 --port 8000` },
+        ],
+        mem: {
+          h: { zh: '5. 显存不够时：4 位权重和低精度 KV 缓存', en: '5. Short on GPU memory: 4-bit weights and a low-precision KV cache' },
+          p: { zh: '4 位量化后权重约 4.9 GB。下表是模型卡给的“估计最少显存”（4 位权重），不是某条命令的实测，也没写用哪个引擎。宣传里说首日就有官方 AWQ 4 位版，但 2026-11-18 核对时 Hugging Face 上 sensenova 名下还没有 AWQ 仓库，只有正式版和 Preview；出来以后按它自己的模型卡跑。vLLM 里把 KV 缓存降到 8 位的通用参数是 --kv-cache-dtype fp8（vLLM 自己的参数，模型卡没写）。', en: '4-bit weights take about 4.9 GB. The table gives the card\'s "estimated minimum GPU memory" (4-bit weights), not a measurement of any particular command, and it names no engine. The announcement promised an official 4-bit AWQ release on day one, but when checked on 2026-11-18 the sensenova account on Hugging Face had no AWQ repository yet, only the release and the Preview; once it appears, follow its own card. In vLLM the generic flag for an 8-bit KV cache is --kv-cache-dtype fp8 (a vLLM option, not from the model card).' },
+          head: [{ zh: '上下文', en: 'Context' }, { zh: '8 位 KV 缓存', en: '8-bit KV cache' }, { zh: '4 位 KV 缓存', en: '4-bit KV cache' }],
+          rows: [['64K', '~10 GiB', '~9 GiB'], ['128K', '~12 GiB', '~10 GiB'], ['256K', '~15 GiB', '~12 GiB']],
+        },
+      },
     },
   ],
 };

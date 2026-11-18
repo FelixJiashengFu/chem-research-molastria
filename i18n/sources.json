@@ -2133,6 +2133,9 @@
  "联合解谱": [
   "spectra/index.html"
  ],
+ "练习题": [
+  "spectra/index.html"
+ ],
  "动手实验台": [
   "spectra/index.html"
  ],
@@ -2170,6 +2173,9 @@
   "spectra/index.html"
  ],
  "真正解决问题时很少只看一张谱。下面四个分子各用几种谱一步步推出结构，每一步都写明这张谱是实测的还是计算的。": [
+  "spectra/index.html"
+ ],
+ "练习：从核磁谱推结构": [
   "spectra/index.html"
  ],
  "九个可以自己输入、自己调的工具。曲线和数字都在浏览器里现算，每个工具上方标明数据属于哪一类。": [
@@ -8709,10 +8715,10 @@
  "开放模型馆": [
   "shared-nav.js"
  ],
- "Meta、DeepMind、微软、英伟达等 12 家机构的开放科学模型": [
+ "Meta、DeepMind、微软、英伟达等 13 家机构的开放科学模型": [
   "shared-nav.js"
  ],
- "meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 书生 intern sage 上海人工智能实验室 open models": [
+ "meta uma omol25 deepmind alphafold microsoft mattergen nvidia 深势 字节 书生 intern sage 上海人工智能实验室 商汤 sensetime sensenova loop open models": [
   "shared-nav.js"
  ],
  "微软": [
@@ -8724,7 +8730,7 @@
  "深势科技": [
   "shared-nav.js"
  ],
- "全部 12 家": [
+ "全部 13 家": [
   "shared-nav.js"
  ],
  "AI 化学企业图谱": [
@@ -18051,7 +18057,7 @@
  "开放模型馆 · Open Model Hall": [
   "tools/build-seo.ts"
  ],
- "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan、上海人工智能实验室开放给科研的化学、材料与生物分子 AI 模型、科学大模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。": [
+ "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan、上海人工智能实验室、商汤科技开放给科研的化学、材料与生物分子 AI 模型、科学大模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。": [
   "tools/build-seo.ts"
  ],
  "工业革命2.5：我愿成为“曼哈顿计划2.0”的一份子": [
