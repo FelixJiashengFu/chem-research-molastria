@@ -17,7 +17,7 @@
   const en = document.documentElement.lang === 'en', tx = (zh, e) => (en ? e : zh);
   const fmt = (n) => Math.round(n).toLocaleString('zh-CN');
   const TAU = Math.PI * 2, clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
-  const DWELL = 15;
+  const DWELL = 9;
 
   // A quick keyword: app.js runs the search (its [data-query] handler); here the bar shows the word.
   hero?.querySelector('.hero-try')?.addEventListener('click', (e) => { const b = e.target.closest('[data-query]'); if (b && input) input.value = b.dataset.query; });
