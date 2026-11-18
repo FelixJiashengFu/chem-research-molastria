@@ -315,7 +315,7 @@
       const leaf = page.cloneNode(true), c2 = leaf.querySelector('canvas'); leaf.removeAttribute('id'); leaf.className = 'st-page st-leaf' + (dir < 0 ? ' is-back' : ''); leaf.setAttribute('aria-hidden', 'true'); leaf.inert = true;
       leaf.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
       c2.width = canvas.width; c2.height = canvas.height; c2.getContext('2d').drawImage(canvas, 0, 0);
-      plate.append(leaf); leaf.addEventListener('animationend', () => leaf.remove()); setTimeout(() => leaf.remove(), 1400);
+      plate.append(leaf); leaf.addEventListener('animationend', () => leaf.remove()); setTimeout(() => leaf.remove(), 2300);
     }
     swap(i);
   }
