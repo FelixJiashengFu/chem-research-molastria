@@ -397,9 +397,9 @@ class MaceBackend:
 
 
 class Service:
-    def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform=""):
+    def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
-        self.xtb, self.openmm_platform = xtb, openmm_platform
+        self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
         self.loading = True
@@ -460,9 +460,11 @@ class Service:
             except Exception as e:  # noqa: BLE001 - no openmm / pdbfixer in this environment: protein MD is off
                 self.errors["openmm"] = f"{type(e).__name__}: {e}"[:400]
             try:
-                self.backends["quacc"] = qb.QuaccBackend(xtb=self.backends.get("xtb"))
+                self.backends["quacc"] = qb.QuaccBackend(xtb=self.backends.get("xtb"), psi4_python=self.psi4_python)
                 q = self.backends["quacc"]
                 print(f"quacc {q.version}: " + ", ".join(m for m in ("quacc-gfn2", "quacc-psi4", "quacc-emt") if q.ready(m)), flush=True)
+                if q.psi4_error:
+                    self.errors["psi4"] = q.psi4_error
             except Exception as e:  # noqa: BLE001 - no quacc in this environment: its recipes are off
                 self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
         self.loading = False
@@ -900,6 +902,8 @@ def main():
     ap.add_argument("--mace-python", default=os.environ.get("MOLASTRIA_MACE_PYTHON", ""),
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
     ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
+    ap.add_argument("--psi4-python", default=os.environ.get("MOLASTRIA_PSI4_PYTHON", ""),
+                    help="python.exe of a conda environment with psi4 and quacc (quacc-psi4 is off without it, unless this environment imports psi4)")
     ap.add_argument("--openmm-platform", default="", choices=["", "CUDA", "OpenCL", "CPU"],
                     help="OpenMM platform for protein MD (default: the fastest there is)")
     ap.add_argument("--cache", default="", help="result cache (default cache.local.json; cache.fake.local.json with --fake)")
@@ -912,7 +916,7 @@ def main():
         sys.exit("No secret: run  node tools/uma-server/new-secret.mjs  first (it also gives the account service the same value).")
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
     service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
-                      openmm_platform=args.openmm_platform)
+                      openmm_platform=args.openmm_platform, psi4_python=args.psi4_python)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)
     try:

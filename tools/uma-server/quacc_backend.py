@@ -12,7 +12,10 @@ Engines, all free to run on the owner's computer:
                  (pip install tblite works on Linux and macOS); otherwise the same quacc Runner + Summarize /
                  VibSummarize calls, with the xtb program (xtb_backend.py) as the calculator. Windows takes the second
                  road, since tblite has no Windows wheel.
-    quacc-psi4   Psi4 (LGPL-3.0, conda install psi4) through quacc's psi4 static_job: single points only.
+    quacc-psi4   Psi4 (LGPL-3.0, conda install psi4) through quacc's psi4 static_job: single points only. Psi4 only
+                 comes from conda; when this environment cannot import it (the owner's uma-env is a plain venv),
+                 server.py --psi4-python points at a conda environment with psi4 + quacc, and each molecule runs there
+                 through psi4_worker.py (a new process per molecule, given the time left in the job).
     quacc-emt    ASE's effective-medium theory through quacc's EMT recipes: relax the bulk and its cell, cut the low-
                  index slabs with quacc's bulk_to_slabs_flow, relax each, and give the surface energies. EMT is a
                  teaching potential for seven fcc metals; quacc itself calls these recipes "mainly for demonstration".
@@ -24,10 +27,14 @@ server's disk does not fill up. test_quacc_backend.py checks the helpers without
 always, GFN2 when tblite or xtb is there) when quacc is installed.
 """
 import io
+import json
 import math
+import os
+import subprocess
 import sys
 import tempfile
 import threading
+import time
 
 import numpy as np
 
@@ -164,7 +171,9 @@ def _quiet():
 class QuaccBackend:
     """Runs quacc recipes. xtb is an xtb_backend.XtbBackend (or None), used for GFN2 when tblite is missing."""
 
-    def __init__(self, xtb=None, toy_ef=None):
+    WORKER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "psi4_worker.py")
+
+    def __init__(self, xtb=None, toy_ef=None, psi4_python=""):
         self.version = quacc_version()
         if not self.version:
             raise RuntimeError("quacc is not installed in this environment (pip install quacc)")
@@ -175,6 +184,15 @@ class QuaccBackend:
         self.tblite = has_module("tblite") and toy_ef is None
         self.psi4 = has_module("psi4") and toy_ef is None
         self.xtb = xtb
+        # Psi4 only comes from conda, so on a plain venv it runs in its own environment through psi4_worker.py
+        self.psi4_python, self.psi4_worker_version, self.psi4_error = "", "", ""
+        self._psi4_try = psi4_python
+        if psi4_python and not self.psi4 and toy_ef is None:
+            try:
+                v = self._worker({"op": "version"}, timeout=180)
+                self.psi4_python, self.psi4_worker_version = psi4_python, v["psi4"]
+            except Exception as e:  # noqa: BLE001 - quacc-psi4 stays off; the reason shows in /health errors
+                self.psi4_error = f"{type(e).__name__}: {e}"[:400]
 
     def ready(self, model):
         if model == "quacc-emt":
@@ -182,7 +200,7 @@ class QuaccBackend:
         if model == "quacc-gfn2":
             return bool(self.toy_ef or self.tblite or self.xtb)
         if model == "quacc-psi4":
-            return bool(self.toy_ef or self.psi4)
+            return bool(self.toy_ef or self.psi4 or self.psi4_python)
         return False
 
     def gfn2_engine(self):
@@ -203,7 +221,25 @@ class QuaccBackend:
             return cj.EFCalculator(self.toy_ef)
         return cj.EFCalculator(self.xtb.ef("gfn2-xtb"))
 
-    def molecule(self, model, atoms, recipe, charge, spin, prm, hook):
+    def _worker(self, req, timeout=None):
+        """One request to psi4_worker.py in the Psi4 environment; a new process each time (Psi4 keeps global state)."""
+        python = self.psi4_python or self._psi4_try
+        try:
+            p = subprocess.run([python, "-X", "utf8", self.WORKER], input=json.dumps(req) + "\n", capture_output=True,
+                               text=True, timeout=timeout, encoding="utf-8")
+        except subprocess.TimeoutExpired:
+            import chemjobs as cj
+
+            raise cj.JobTimeout(f"Psi4 took longer than the {timeout:.0f} s left for this job") from None
+        lines = [x for x in p.stdout.splitlines() if x.strip()]
+        if not lines:
+            raise RuntimeError(f"psi4 worker gave no answer (exit {p.returncode}): {p.stderr.strip()[-300:]}")
+        out = json.loads(lines[-1])
+        if not out.get("ok"):
+            raise RuntimeError(out.get("error") or "psi4 worker failed")
+        return out
+
+    def molecule(self, model, atoms, recipe, charge, spin, prm, hook, timeout=None):
         """One molecule through one recipe. Returns the trimmed result (energy, converged, steps, fmax, frequencies,
         thermochemistry, final XYZ)."""
         from quacc import change_settings
@@ -214,7 +250,16 @@ class QuaccBackend:
         temperature = prm.get("temperature", 298.15)
         with tempfile.TemporaryDirectory(prefix="molastria-quacc-") as d, \
                 change_settings({"RESULTS_DIR": d, "GZIP_FILES": False, "CREATE_UNIQUE_DIR": True}):
-            if model == "quacc-psi4" and not self.toy_ef:
+            if model == "quacc-psi4" and not self.toy_ef and not self.psi4 and self.psi4_python:
+                from ase import Atoms
+
+                r = self._worker({"op": "static", "symbols": atoms.get_chemical_symbols(),
+                                  "positions": atoms.get_positions().tolist(), "charge": int(charge), "spin": int(spin),
+                                  "method": prm["method"], "basis": prm["basis"], "mem": "4GB", "threads": 4},
+                                 timeout=timeout)
+                out = {"energy_ev": _f(r["energy_ev"])}
+                final = Atoms(r["symbols"], positions=r["positions"])
+            elif model == "quacc-psi4" and not self.toy_ef:
                 from quacc.recipes.psi4.core import static_job
 
                 doc = static_job(atoms, charge=int(charge), spin_multiplicity=int(spin), method=prm["method"],
@@ -280,8 +325,9 @@ class QuaccBackend:
 
             row = {"smiles": it["smiles"], "charge": it["charge"], "spin": it["spin"], "formula": it.get("formula", "")}
             try:
+                left = budget.limit - (time.time() - budget.start) if getattr(budget, "limit", 0) else None
                 row.update(self.molecule(model, Atoms(it["symbols"], positions=it["positions"]), recipe, it["charge"],
-                                         it["spin"], prm, hook))
+                                         it["spin"], prm, hook, timeout=max(1.0, left) if left is not None else None))
                 row["ok"] = True
             except Exception as e:  # noqa: BLE001 - recorded on this row; a time-out stops the batch below
                 if type(e).__name__ == "JobTimeout":
@@ -294,8 +340,9 @@ class QuaccBackend:
         return {"recipe": recipe, "engine": engine, "quacc_version": self.version, "items": done,
                 "n_ok": sum(1 for r in done if r["ok"])}
 
-    @staticmethod
-    def psi4_version():
+    def psi4_version(self):
+        if self.psi4_worker_version and not self.psi4:
+            return self.psi4_worker_version
         try:
             import psi4
 

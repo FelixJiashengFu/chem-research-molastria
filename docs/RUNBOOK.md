@@ -308,7 +308,7 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 ## 在线模型：站长电脑的 GPU，对所有访客开放（UMA、OMol25、MACE、ANI-2x）
 
-**quacc 通道（2026-11-19）：** 三个模型 `quacc-gfn2`（批量优化 / 频率 / 单点）、`quacc-psi4`（单点）、`quacc-emt`（金属表面能），代码台 `#quacc` 用。装法：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install quacc`（不装时这三个模型在健康检查里是“未就绪”，别的不受影响）。GFN2 在 Windows 上用已有的 xtb 程序（tblite 没有 Windows 的 pip 包）；Psi4 可选，要用 conda（`conda install -c conda-forge psi4`），装在别的环境里时这一个模型就一直未就绪。测：`python tools/uma-server/test_quacc_backend.py`、`python tools/uma-server/test_server_fake.py`，网页端 `node --test tools/quacc-test.mjs`（`QUACC_PYTHON` 指向装了 quacc 的 Python 时真跑生成的脚本）。
+**quacc 通道（2026-11-19）：** 三个模型 `quacc-gfn2`（批量优化 / 频率 / 单点）、`quacc-psi4`（单点）、`quacc-emt`（金属表面能），代码台 `#quacc` 用。装法：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install quacc`（不装时这三个模型在健康检查里是“未就绪”，别的不受影响）。GFN2 在 Windows 上用已有的 xtb 程序（tblite 没有 Windows 的 pip 包）；Psi4 只有 conda 版，所以单独装一个 conda 环境 `D:\ChemDraw\psi4-env`（Miniforge：`conda create -p D:\ChemDraw\psi4-env -c conda-forge python=3.12 psi4`，再在里面 `pip install quacc==1.10.0`），启动时加 `-Psi4Python D:\ChemDraw\psi4-env\python.exe`（`start.ps1` 和 `autostart.ps1 -Install` 都认，也可以设环境变量 `MOLASTRIA_PSI4_PYTHON`）；服务每算一个分子就用那个 Python 起一次 `psi4_worker.py`（标准输入输出各一行 JSON），和 torch 不在一个进程里。没给这个参数、Psi4 也不在 uma-env 里时 `quacc-psi4` 一直未就绪，启动日志的 errors.psi4 写着原因。测：`python tools/uma-server/test_quacc_backend.py`、`python tools/uma-server/test_server_fake.py`，网页端 `node --test tools/quacc-test.mjs`（`QUACC_PYTHON` 指向装了 quacc 的 Python 时真跑生成的脚本）。
 
 链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、决定谁能用哪个模型、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，每个模型一次只给一个人算，每人同时只能有一个任务，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
 
