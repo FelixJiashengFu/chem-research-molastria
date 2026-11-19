@@ -4789,7 +4789,7 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 12);
+  assert.equal(await p.locator('#run-jobs tr').count(), 14);
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
   assert.equal(models.length, 14); // ten machine-learning potentials and the four xTB models (#123)
@@ -5194,6 +5194,66 @@ check('code desk: cheminformatics with RDKit (descriptors, Lipinski, SMARTS, sim
   await e.waitForFunction(() => /6 molecules/.test(document.getElementById('ci-status').textContent), null, { timeout: 60000 });
   assert.match(await text(e, '#ci-table tbody tr[data-i="0"]'), /aspirin/);
   assert.doesNotMatch(await e.evaluate(() => document.getElementById('p-chem').innerText), /[㐀-鿿]/, 'no Chinese left on the cheminformatics tab');
+  await finish(e);
+});
+
+check('code desk: quacc pipelines (recipe cards, batch sent to the fake computer, table, CSV, slabs chart, Psi4 and ORCA), English', async () => {
+  const p = await open({ acceptDownloads: true });
+  const posts = [];
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) posts.push(JSON.parse(r.postData() || '{}')); });
+  await go(p, '/code/index.html#quacc');
+  assert.equal(await p.getAttribute('#t-quacc', 'aria-selected'), 'true');
+  assert.equal(await p.locator('#qc-recipes [data-recipe]').count(), 4);
+  await p.click('[data-recipe="relax_freq"]');
+  assert.equal(await p.getAttribute('[data-recipe="relax_freq"]', 'aria-checked'), 'true');
+  await p.click('#qc-sample');
+  assert.match(await text(p, '#qc-count'), /共 5 个分子/);
+  await p.waitForFunction(() => /用掉今天在线计算次数 15 次/.test(document.getElementById('qc-cost').textContent), null, { timeout: 30000 });
+  assert.match(await text(p, '#qc-script'), /from quacc\.recipes\.tblite\.core import freq_job, relax_job[\s\S]*"\[CH3\]",/);
+  await p.click('#qc-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('qc-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.at(-1).model, 'quacc-gfn2');
+  assert.equal(posts.at(-1).job, 'qflow');
+  assert.equal(posts.at(-1).params.recipe, 'relax_freq');
+  assert.equal(posts.at(-1).params.items.length, 5);
+  assert.equal(await p.locator('#qc-table tbody tr').count(), 5);
+  assert.match(await text(p, '#qc-table tbody tr:first-child'), /ethanol[\s\S]*C2H6O[\s\S]*C2v/);
+  assert.match(await text(p, '#qc-meta'), /成功 5\/5[\s\S]*测试用的假数据/);
+  const dl = p.waitForEvent('download');
+  await p.click('#qc-csv');
+  const csv = readFileSync(await (await dl).path(), 'utf8');
+  assert.match(csv, /^smiles,name,/);
+  assert.match(csv, /\nCCO,ethanol,/);
+  // a broken line is pointed out; more than 8 molecules turns the online button off
+  await p.fill('#qc-list', 'CCO\n乙醇\n' + Array.from({ length: 8 }, (_, i) => 'C'.repeat(i + 1)).join('\n'));
+  assert.match(await text(p, '#qc-count'), /不是 SMILES 的行：2[\s\S]*在线一批最多 8/);
+  assert.equal(await p.isDisabled('#qc-run'), true);
+  // Psi4 is single-point only; ORCA only gives a local script
+  await p.click('[data-recipe="static"]');
+  await p.selectOption('#qc-engine', 'psi4');
+  assert.equal(await p.isVisible('#qc-basis'), true);
+  assert.match(await text(p, '#qc-script'), /quacc\.recipes\.psi4\.core import static_job/);
+  await p.click('[data-recipe="relax"]');
+  await p.selectOption('#qc-engine', 'orca');
+  assert.match(await text(p, '#qc-cost'), /只给本机脚本/);
+  assert.equal(await p.isDisabled('#qc-run'), true);
+  assert.match(await text(p, '#qc-script'), /QUACC_ORCA_CMD/);
+  // EMT surface energies: three facets, (111) lowest, drawn as bars
+  await p.click('[data-recipe="slabs"]');
+  assert.equal(await p.isVisible('#qc-slab'), true);
+  await p.selectOption('#qc-metal', 'Cu');
+  await p.waitForFunction(() => !document.getElementById('qc-run').disabled, null, { timeout: 10000 });
+  await p.click('#qc-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('qc-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.at(-1).job, 'qslab');
+  assert.equal(posts.at(-1).params.element, 'Cu');
+  assert.match(await text(p, '#qc-table tbody tr:first-child'), /\(111\)[\s\S]*1\.044/);
+  assert.equal(await p.locator('#qc-chart svg rect.qc-svg-b').count(), 3);
+  await finish(p);
+  const e = await open();
+  await go(e, '/code/index.html?lang=en#quacc');
+  await e.waitForFunction(() => /online runs/.test(document.getElementById('qc-cost').textContent), null, { timeout: 30000 });
+  assert.doesNotMatch(await e.evaluate(() => document.getElementById('p-quacc').innerText), /[㐀-鿿]/, 'no Chinese left on the quacc tab');
   await finish(e);
 });
 

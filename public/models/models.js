@@ -442,7 +442,7 @@
     if (!health) return;
     if (health.configured === false || !umaApi()) { box.innerHTML = '<span class="chip warn">! 在线计算服务还没有开通</span>'; return; }
     if (!online) { box.innerHTML = '<span class="chip warn">! 站长的 GPU 现在离线，请稍后再来；也可以用 <a href="../meta/index.html#uma">Meta 页的脚本</a>在自己的电脑上算</span>'; return; }
-    const ready = Object.values(health.models || {}).filter((m) => m.ready).length;
+    const ready = Object.entries(health.models || {}).filter(([id, m]) => m.ready && MODELS[id]).length;   // 只数这一页的模型（quacc 的三个在代码台）
     const M = MODELS[$('m-model').value], s = st($('m-model').value);
     box.innerHTML = `<span class="chip ok">✓ 在线 · ${ready} 个模型${health.gpu ? ` · ${esc(health.gpu)}` : ''}</span>${s ? `<span class="chip" id="m-queue">${esc(M.name)}：${s.running ? '正在为一位访客计算' : '空闲'}，排队 ${Number(s.queue) || 0} 个</span>` : ''}`;
   }

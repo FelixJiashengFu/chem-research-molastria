@@ -542,7 +542,8 @@
   "atlas/index.html"
  ],
  "个": [
-  "atlas/index.html"
+  "atlas/index.html",
+  "code/quacc.js"
  ],
  "已有数据源接入模块": [
   "atlas/index.html"
@@ -2897,7 +2898,8 @@
   "code/cheminf.js"
  ],
  "下载 .py": [
-  "lab/index.html"
+  "lab/index.html",
+  "code/index.html"
  ],
  "2 · 导入计算结果": [
   "lab/index.html"
@@ -3206,12 +3208,14 @@
   "lab/index.html",
   "api/compute.js",
   "models/models.js",
-  "pro/account-page.js"
+  "pro/account-page.js",
+  "code/quacc-core.js"
  ],
  "单点能": [
   "lab/index.html",
   "code/index.html",
-  "code/code-core.js"
+  "code/code-core.js",
+  "code/quacc-core.js"
  ],
  "Rapid（网页默认）": [
   "lab/index.html"
@@ -3223,7 +3227,8 @@
   "lab/index.html"
  ],
  "方法": [
-  "lab/index.html"
+  "lab/index.html",
+  "code/index.html"
  ],
  "还原电位 MAE（V，N = 192）": [
   "lab/index.html"
@@ -3537,7 +3542,8 @@
   "code/index.html",
   "meta/meta.js",
   "train/train.js",
-  "code/code.js"
+  "code/code.js",
+  "code/quacc.js"
  ],
  "下载": [
   "meta/index.html",
@@ -4278,7 +4284,8 @@
  "许可证": [
   "train/index.html",
   "scimodels/scimodels.js",
-  "code/code.js"
+  "code/code.js",
+  "code/quacc.js"
  ],
  "发布": [
   "train/index.html"
@@ -6255,7 +6262,8 @@
   "download/index.html"
  ],
  "安装": [
-  "download/index.html"
+  "download/index.html",
+  "code/quacc.js"
  ],
  "安装 MolAstria": [
   "download/index.html"
@@ -7939,7 +7947,8 @@
  "分子": [
   "qchem/index.html",
   "code/index.html",
-  "models/models.js"
+  "models/models.js",
+  "code/quacc.js"
  ],
  "三维的分子：拖动电子对改变位置，拖动空白处转动视角；键盘上方向键转动，空格选一个电子对，W A S D 推动它": [
   "qchem/index.html"
@@ -8130,6 +8139,12 @@
   "code/index.html"
  ],
  "RDKit 描述符、子结构、相似度": [
+  "code/index.html"
+ ],
+ "quacc 流水线": [
+  "code/index.html"
+ ],
+ "批量优化、频率、表面能": [
   "code/index.html"
  ],
  "软件体检": [
@@ -8334,6 +8349,54 @@
  "“相似结构”按 PubChem 自己的 881 位二维指纹（PubChem fingerprint）的 Tanimoto 筛选，PubChem 不返回具体分数；表里的“Morgan 相似度”是 RDKit 在你的浏览器里用 Morgan 指纹（半径 2，2048 位）重算的，表格按它从高到低排。两种指纹看的东西不一样，过了 PubChem 的下限、Morgan 值却不高是正常的。“含有这个子结构”最多列 20 个，PubChem 不保证是哪 20 个。": [
   "code/index.html"
  ],
+ "用 quacc 的配方批量计算": [
+  "code/index.html"
+ ],
+ "是基于 ASE 的高通量计算工作流库：把“优化”“算频率”“切表面”这样的步骤写成一个个配方（recipe），同一个配方可以换引擎（xTB、Psi4、ORCA、VASP、机器学习势等），也可以交给 Parsl、Dask、Prefect、Jobflow 这些调度器在集群上铺开。这里挑了几个不花钱的配方：小批量可以直接交给站长的电脑算，多的拿走脚本在自己的电脑上跑。": [
+  "code/index.html"
+ ],
+ "配方和分子": [
+  "code/index.html"
+ ],
+ "引擎": [
+  "code/index.html"
+ ],
+ "分子：一行一个，先写 SMILES，空一格再写名字（可以不写）": [
+  "code/index.html"
+ ],
+ "温度（K）": [
+  "code/index.html",
+  "quantum/biology/qb.js",
+  "models/models.js"
+ ],
+ "金属": [
+  "code/index.html"
+ ],
+ "切到多高的晶面指数": [
+  "code/index.html"
+ ],
+ "2：再加 (210)、(211)、(221) 等": [
+  "code/index.html"
+ ],
+ "在站长的电脑上算": [
+  "code/index.html"
+ ],
+ "在自己的电脑上跑": [
+  "code/index.html"
+ ],
+ "结果": [
+  "code/index.html",
+  "lab/lab.js"
+ ],
+ "下载 JSON（quacc 的结果字段）": [
+  "code/index.html"
+ ],
+ "在线计算在站长电脑的 CPU 上排队进行，尽力而为，可能离线；一批最多 8 个分子，花的是在线模型每天的次数。quacc 由 Andrew S. Rosen 和贡献者开发，按 BSD 3-Clause 许可发布，本页和站长电脑上的服务只是调用它，没有拷贝它的代码，也不代表 quacc 的作者认可本站（许可证全文见": [
+  "code/index.html"
+ ],
+ "）。GFN2-xTB 来自 tblite 或 xtb 程序（LGPL-3.0），Psi4 是 LGPL-3.0，EMT 是 ASE 自带的（LGPL-2.1）；ORCA 只对学术用户免费，所以只给本机脚本。": [
+  "code/index.html"
+ ],
  "查一个软件": [
   "code/index.html"
  ],
@@ -8402,7 +8465,7 @@
  "（BSD-3），化学信息学用 RDKit.js（BSD-3），3D 显示用 3Dmol.js（BSD-3，py3Dmol 背后就是它）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
- "开源代码台的五个工具": [
+ "开源代码台的六个工具": [
   "code/index.html"
  ],
  "示例分子": [
@@ -8418,6 +8481,12 @@
   "code/index.html"
  ],
  "加一个分子": [
+  "code/index.html"
+ ],
+ "配方": [
+  "code/index.html"
+ ],
+ "quacc 脚本": [
   "code/index.html"
  ],
  "MolAstria 开源代码台：从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。": [
@@ -8945,7 +9014,8 @@
   "shared-nav.js"
  ],
  "完成": [
-  "shared-nav.js"
+  "shared-nav.js",
+  "code/quacc.js"
  ],
  "分组和按钮已恢复默认顺序": [
   "shared-nav.js"
@@ -9250,7 +9320,8 @@
   "models/models.js",
   "train/train.js",
   "code/code.js",
-  "code/cheminf.js"
+  "code/cheminf.js",
+  "code/quacc.js"
  ],
  "单点能与受力": [
   "api/compute.js",
@@ -9296,6 +9367,12 @@
   "api/compute.js",
   "models/models.js",
   "pro/account-page.js"
+ ],
+ "quacc 批量计算（每个分子 1 次，带频率 3 次，Psi4 2 次）": [
+  "api/compute.js"
+ ],
+ "quacc 表面能（EMT，最大晶面指数 2 时 5 次）": [
+  "api/compute.js"
  ],
  "必填": [
   "api/compute.js"
@@ -10462,10 +10539,6 @@
  ],
  "D（无隧穿）": [
   "quantum/biology/qb.js"
- ],
- "温度（K）": [
-  "quantum/biology/qb.js",
-  "models/models.js"
  ],
  "含隧穿": [
   "quantum/biology/qb.js"
@@ -11900,7 +11973,8 @@
   "hub/app.js"
  ],
  "共": [
-  "hub/app.js"
+  "hub/app.js",
+  "code/quacc.js"
  ],
  "条真实条目": [
   "hub/app.js"
@@ -12340,7 +12414,8 @@
  ],
  "分子式": [
   "lab/lab.js",
-  "code/cheminf.js"
+  "code/cheminf.js",
+  "code/quacc.js"
  ],
  "重原子": [
   "lab/lab.js",
@@ -12350,9 +12425,6 @@
   "lab/lab.js"
  ],
  "最近种子": [
-  "lab/lab.js"
- ],
- "结果": [
   "lab/lab.js"
  ],
  "RDKit 载入中…": [
@@ -13547,10 +13619,12 @@
   "models/models.js"
  ],
  "等了 20 分钟还没算完，请稍后再试": [
-  "models/models.js"
+  "models/models.js",
+  "code/quacc.js"
  ],
  "计算失败": [
-  "models/models.js"
+  "models/models.js",
+  "code/quacc.js"
  ],
  "第 1 步 · 优化与频率": [
   "models/models.js"
@@ -13588,7 +13662,8 @@
  ],
  "原子": [
   "models/models.js",
-  "ai/ai.js"
+  "ai/ai.js",
+  "code/quacc.js"
  ],
  "每个原子的部分电荷（e）": [
   "models/models.js"
@@ -16584,7 +16659,8 @@
   "code/code.js"
  ],
  "复制失败": [
-  "code/code.js"
+  "code/code.js",
+  "code/quacc.js"
  ],
  "没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。": [
   "code/code.js"
@@ -17310,6 +17386,156 @@
  "CC(=O)Oc1ccccc1C(=O)O 阿司匹林 CN1C=NC2=C1C(=O)N(C(=O)N2C)C 咖啡因 CC(C)Cc1ccc(cc1)C(C)C(=O)O 布洛芬 CC(=O)Nc1ccc(O)cc1 对乙酰氨基酚 OC(=O)c1ccccc1O 水杨酸 c1ccccc1 苯": [
   "code/cheminf-core.js"
  ],
+ "只在本机": [
+  "code/quacc.js"
+ ],
+ "个分子": [
+  "code/quacc.js"
+ ],
+ "不是 SMILES 的行": [
+  "code/quacc.js"
+ ],
+ "在线一批最多": [
+  "code/quacc.js"
+ ],
+ "本机脚本最多": [
+  "code/quacc.js"
+ ],
+ "这个引擎只给本机脚本": [
+  "code/quacc.js"
+ ],
+ "正在看站长的电脑在不在线…": [
+  "code/quacc.js"
+ ],
+ "站长的电脑现在离线，可以先用右边的脚本": [
+  "code/quacc.js"
+ ],
+ "站长的电脑上还没有装这个引擎": [
+  "code/quacc.js"
+ ],
+ "用掉今天在线计算次数": [
+  "code/quacc.js"
+ ],
+ "次": [
+  "code/quacc.js"
+ ],
+ "前面排队": [
+  "code/quacc.js"
+ ],
+ "已提交，正在排队…": [
+  "code/quacc.js"
+ ],
+ "quacc 正在计算": [
+  "code/quacc.js"
+ ],
+ "排队中，前面还有": [
+  "code/quacc.js"
+ ],
+ "个任务": [
+  "code/quacc.js"
+ ],
+ "完成（这批以前算过，直接给了存下的结果，没有再算）": [
+  "code/quacc.js"
+ ],
+ "测试用的假数据": [
+  "code/quacc.js"
+ ],
+ "晶面": [
+  "code/quacc.js"
+ ],
+ "相对最低": [
+  "code/quacc.js"
+ ],
+ "原子数": [
+  "code/quacc.js"
+ ],
+ "面积": [
+  "code/quacc.js"
+ ],
+ "优化": [
+  "code/quacc.js"
+ ],
+ "未收敛": [
+  "code/quacc.js"
+ ],
+ "步": [
+  "code/quacc.js"
+ ],
+ "γ = (E_slab − N·E_bulk) / 2A，上下两个表面都算在里面。EMT 是给七种 fcc 金属拟合的教学用势：(111) 最低、(100) 次之、(110) 最高这个顺序是对的，绝对值比实验和 DFT 低（铜的实验平均值约 1.8 J/m²）。": [
+  "code/quacc.js"
+ ],
+ "成功": [
+  "code/quacc.js"
+ ],
+ "虚频": [
+  "code/quacc.js"
+ ],
+ "点群": [
+  "code/quacc.js"
+ ],
+ "热化学按理想气体、1 bar 算，对称数和点群由 quacc 从结构判断；自由基的电子熵按 SMILES 的自旋多重度补上。分子不同，G 不能直接相减成反应能，除非原子守恒。GFN2-xTB 是半经验方法，频率和能量适合筛选，不能代替 DFT。": [
+  "code/quacc.js"
+ ],
+ "能量是这个引擎的总能量（eV），只有同一种方法、原子守恒的物种之间才能相减。": [
+  "code/quacc.js"
+ ],
+ "各晶面的表面能": [
+  "code/quacc.js"
+ ],
+ "从 RDKit 生成的三维结构出发，用 ASE 的优化器优化到受力小于 fmax。": [
+  "code/quacc-core.js"
+ ],
+ "优化 + 频率与热化学": [
+  "code/quacc-core.js"
+ ],
+ "先优化，再用有限差分算振动频率，按理想气体给出 ZPE、H、S、G；对称数和点群由 quacc 自己判断。": [
+  "code/quacc-core.js"
+ ],
+ "不动结构，只算一次能量。": [
+  "code/quacc-core.js"
+ ],
+ "金属表面能": [
+  "code/quacc-core.js"
+ ],
+ "先连晶胞一起优化体相，再切出低指数晶面、逐个优化，最后算每个晶面的表面能 γ。": [
+  "code/quacc-core.js"
+ ],
+ "tblite 的 pip 包只有 Linux 和 macOS 版；Windows 上用 WSL，或者 conda install -c conda-forge tblite-python。站长电脑是 Windows，在线计算用同样的 quacc 调用接 xtb 程序。": [
+  "code/quacc-core.js"
+ ],
+ "quacc 的 Psi4 配方只有单点。": [
+  "code/quacc-core.js"
+ ],
+ "EMT（ASE 自带）": [
+  "code/quacc-core.js"
+ ],
+ "EMT 是只给七种 fcc 金属拟合的教学用势，quacc 自己也说这组配方“主要用来演示”。数值看趋势，不要当成 DFT。": [
+  "code/quacc-core.js"
+ ],
+ "ORCA（只在本机）": [
+  "code/quacc-core.js"
+ ],
+ "学术免费，商用要买授权": [
+  "code/quacc-core.js"
+ ],
+ "pip install quacc rdkit；ORCA 要到 orcaforum.kofo.mpg.de 注册下载，再设 QUACC_ORCA_CMD": [
+  "code/quacc-core.js"
+ ],
+ "ORCA 只对学术用户免费，所以站长的电脑不替别人跑它；这里只给你在自己电脑上用的脚本。": [
+  "code/quacc-core.js"
+ ],
+ "{0} 的“{1}”不能在线运行，请用下面的脚本在自己的电脑上跑": [
+  "code/quacc-core.js"
+ ],
+ "EMT 只认这七种金属：{0}": [
+  "code/quacc-core.js"
+ ],
+ "先写至少一个分子的 SMILES": [
+  "code/quacc-core.js"
+ ],
+ "在线一批最多 {0} 个分子（现在 {1} 个）；多的请用下面的脚本在自己的电脑上跑": [
+  "code/quacc-core.js"
+ ],
  "中文维基": [
   "websearch/web.js"
  ],
@@ -17500,6 +17726,12 @@
   "deploy/account-worker.js"
  ],
  "蛋白质动力学按 PDB 编号取结构，不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "quacc 批量计算的分子写在参数 items 里，不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "表面能计算按金属元素建结构，不要另给 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
  "SMILES 和 XYZ 只能给一个": [

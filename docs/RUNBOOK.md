@@ -308,6 +308,8 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 ## 在线模型：站长电脑的 GPU，对所有访客开放（UMA、OMol25、MACE、ANI-2x）
 
+**quacc 通道（2026-11-19）：** 三个模型 `quacc-gfn2`（批量优化 / 频率 / 单点）、`quacc-psi4`（单点）、`quacc-emt`（金属表面能），代码台 `#quacc` 用。装法：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install quacc`（不装时这三个模型在健康检查里是“未就绪”，别的不受影响）。GFN2 在 Windows 上用已有的 xtb 程序（tblite 没有 Windows 的 pip 包）；Psi4 可选，要用 conda（`conda install -c conda-forge psi4`），装在别的环境里时这一个模型就一直未就绪。测：`python tools/uma-server/test_quacc_backend.py`、`python tools/uma-server/test_server_fake.py`，网页端 `node --test tools/quacc-test.mjs`（`QUACC_PYTHON` 指向装了 quacc 的 Python 时真跑生成的脚本）。
+
 链路：访客 → `api.molastria.com/uma/*`（账号服务：检查来源网站、决定谁能用哪个模型、按访客每天限次、挡住受全面制裁的地区、加上共享暗号）→ Cloudflare Tunnel → 站长电脑上的 `tools/uma-server/server.py`（只监听 127.0.0.1，只认带暗号的请求，每个模型一次只给一个人算，每人同时只能有一个任务，算过的分子按规范 SMILES 缓存）。电脑关着时 Meta 页显示“站长的 GPU 现在离线”。
 
 **20 个在线模型**（Meta 页“在线运行”面板；`server.py` 的 `MODELS`、账号服务的 `UMA_MODELS`、`meta.js` 的 `ONLINE` 三处要一致）：

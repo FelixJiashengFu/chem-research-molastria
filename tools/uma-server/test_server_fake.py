@@ -30,12 +30,17 @@ D = ["mace-mdp"]
 X = ["gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb"]  # xTB with charges and spins, no ipea
 XN = ["gfn-ff"]
 P = ["openmm-amber14"]  # protein MD from a PDB ID
+# quacc recipes: a batch of molecules, or EMT bulk -> slabs. Only where quacc is installed (pip install quacc).
+QUACC = bool(server.qb.quacc_version())
+QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
+QS = ["quacc-emt"] if QUACC else []
 A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"]
 BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
-GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS))
+GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS),
+          (QF, ["qflow"]), (QS, ["qslab"]))
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
 FIELDS = {
@@ -56,7 +61,15 @@ FIELDS = {
     "pmd": {"pdb_id", "chains", "residues", "atoms", "sequence", "fixes", "force_field", "platform", "openmm_version",
             "ps", "temperature_k", "timestep_fs", "energy_start_kj", "energy_minimised_kj", "ns_per_day", "series",
             "mean_temperature_k", "final_rmsd_a", "rmsf", "trajectory_pdb", "final_pdb", "seconds_total"},
+    "qflow": {"recipe", "engine", "quacc_version", "items", "n_ok"},
+    "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
+              "slabs", "lowest"},
 }
+# what each molecule of a batch carries, by recipe
+QITEM = {"smiles", "charge", "spin", "formula", "ok", "energy_ev", "xyz"}
+QOPT = {"converged", "steps", "fmax_ev_a"}
+QFREQ = {"frequencies_cm1", "n_imag", "zpe_ev", "temperature_k", "h_ev", "s_ev_k", "g_ev", "point_group",
+         "symmetry_number", "thermo_spin"}
 ITEMS = {
     ("freq", "thermo"): {"temperature_k", "h_corr_ev", "s_ev_k", "g_corr_ev", "h_ev", "g_ev"},
     ("conf", "conformers"): {"rank", "energy_ev", "rel_kcal", "weight", "xyz"},
@@ -68,12 +81,14 @@ ITEMS = {
     ("spin", "states"): {"spin", "energy_ev", "xyz"},
     ("bde", "fragments"): {"smiles", "spin", "energy_ev"},
     ("pa", "energies"): {"base_ev", "acid_ev"},
+    ("qslab", "slabs"): {"miller", "family", "atoms", "energy_ev", "area_a2", "gamma_j_m2", "gamma_ev_a2", "converged", "steps"},
 }
 DEFAULTS = {
     "sp": {}, "ir": {}, "opt": {"fmax": 0.02}, "freq": {"temperature": 298.15, "symmetry": 1},
     "conf": {"n": 10, "temperature": 298.15, "window_kcal": 10.0},
     "md": {"temperature": 300.0, "timestep_fs": 0.5, "steps": 1000, "friction": 0.01},
     "ipea": {"mode": "adiabatic"}, "polar": {"average": False, "n": 8},
+    "qslab": {"element": "Cu", "max_index": 1},
 }
 # One request per job (small parameters where they cost time). Ethanol, CCO: heavy atoms C0 C1 O2, then H3-H5 on C0,
 # H6 H7 on C1, H8 on O2.
@@ -86,11 +101,14 @@ REQUESTS = {
     "ipea": {"smiles": "CCO"}, "spin": {"smiles": "O=O"}, "bde": {"smiles": "CCO", "params": {"bond": [1, 2]}},
     "pa": {"smiles": "CCO", "params": {"site": 2}}, "polar": {"smiles": "CCO"}, "ir": {"smiles": "CCO"},
     "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
+    "qflow": {"params": {"items": ["CCO", "O"]}},
+    "qslab": {"params": {"element": "Cu"}},
 }
 
 
 def expected_keys(model, job, params):
-    keys = (COMMON - {"xyz"} if job == "pmd" else COMMON) | FIELDS[job]  # a protein comes back as PDB text
+    # a protein comes back as PDB text; a quacc batch has one XYZ per molecule, a slab job none
+    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab") else COMMON) | FIELDS[job]
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -211,7 +229,8 @@ class FakeServer(unittest.TestCase):
             for model in group:
                 self.assertEqual(h["models"][model]["jobs"], jobs, model)
                 self.assertTrue(h["models"][model]["ready"])
-        self.assertEqual(set(h["models"]), set(A + B + C + D + X + XN + P))
+        self.assertEqual(set(h["models"]) - set(QF + QS) if not QUACC else set(h["models"]),
+                         set(A + B + C + D + X + XN + P + QF + QS))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -224,9 +243,11 @@ class FakeServer(unittest.TestCase):
                     r = self.run_job(body)
                     params = dict(DEFAULTS.get(job, {}))
                     params.update(self.full_params(job, body.get("params", {})))
+                    if model == "quacc-psi4":  # single points only, with the default level of theory
+                        params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1)
+        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1 + (3 if QUACC else 0))
 
     @staticmethod
     def full_params(job, given):
@@ -239,6 +260,8 @@ class FakeServer(unittest.TestCase):
             out = {"spins": [1, 3], **given}
         if job == "pmd":
             out = {"chains": "", "temperature": 300.0, **given}
+        if job == "qflow":
+            out = {"recipe": "relax", "fmax": 0.01, "temperature": 298.15, **given}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -299,6 +322,46 @@ class FakeServer(unittest.TestCase):
         self.assertEqual(sorted(f["smiles"] for f in r["fragments"]), ["[CH3]", "[H]"])
         r = self.run_job({"model": UMA, "job": "md", "smiles": "CCO", "params": {"steps": 2000, "timestep_fs": 0.1}})
         self.assertEqual((len(r["series"]), r["xyz"].count(" t = ")), (200, 100))
+
+    @unittest.skipUnless(QUACC, "quacc is not installed")
+    def test_quacc(self):
+        """A batch through each recipe (the toy calculator through quacc's own Runner and schemas), Psi4 forced to
+        single points, and the EMT slabs of copper (real: EMT is part of ASE)."""
+        for recipe, extra in (("static", set()), ("relax", QOPT), ("relax_freq", QOPT | QFREQ)):
+            r = self.run_job({"model": "quacc-gfn2", "job": "qflow",
+                              "params": {"items": ["OCC", "[CH3]", "[NH4+]"], "recipe": recipe}})
+            self.assertEqual([i["smiles"] for i in r["items"]], ["CCO", "[CH3]", "[NH4+]"])  # canonical
+            self.assertEqual([(i["charge"], i["spin"]) for i in r["items"]], [(0, 1), (0, 2), (1, 1)])
+            self.assertEqual(r["n_ok"], 3)
+            for item in r["items"]:
+                self.assertEqual(set(item), QITEM | extra, recipe)
+            self.assertEqual(r["items"][0]["formula"], "C2H6O")
+            if recipe == "relax_freq":
+                self.assertEqual(r["items"][1]["thermo_spin"], 2)  # the radical's electronic entropy
+        r = self.run_job({"model": "quacc-psi4", "job": "qflow", "params": {"items": ["O"], "recipe": "relax_freq"}})
+        self.assertEqual((r["recipe"], r["params"]["method"], r["params"]["basis"]), ("static", "b3lyp-d3bj", "def2-svp"))
+        self.assertEqual(set(r["items"][0]), QITEM)
+        r = self.run_job({"model": "quacc-emt", "job": "qslab", "params": {"element": "Cu"}})
+        self.assertEqual([s["family"] for s in r["slabs"]], [[1, 1, 1], [1, 0, 0], [1, 1, 0]])  # fcc: 111 lowest
+        self.assertAlmostEqual(r["a_angstrom"], 3.59, places=2)  # EMT copper
+        self.assertEqual(r["lowest"], [1, 1, 1])
+
+    @unittest.skipUnless(QUACC, "quacc is not installed")
+    def test_quacc_refusals(self):
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "smiles": "C", "params": {"items": ["C"]}}, text="params.items")
+        self.refused({"model": "quacc-gfn2", "job": "qflow"}, text="params.items")
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "params": {"items": []}}, text="params.items")
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "params": {"items": ["C"] * 9}}, text="1 to 8")
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "params": {"items": ["C", "C("]}}, text="cannot parse")
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "params": {"items": ["C" * 31]}}, text="at most 30 heavy")
+        self.refused({"model": "quacc-psi4", "job": "qflow", "params": {"items": ["C" * 13]}}, text="at most 12 heavy")
+        self.refused({"model": "quacc-psi4", "job": "qflow", "params": {"items": ["[Rb+]"]}}, text="does not know Rb")
+        self.refused({"model": "quacc-gfn2", "job": "qflow", "params": {"items": ["C"], "recipe": "md"}}, text="params.recipe")
+        self.refused({"model": "quacc-psi4", "job": "qflow", "params": {"items": ["C"], "method": "ccsd(t)"}}, text="params.method")
+        self.refused({"model": "quacc-gfn2", "job": "qslab", "params": {"element": "Cu"}}, text="supports only")
+        self.refused({"model": "quacc-emt", "job": "qslab", "params": {"element": "Fe"}}, text="params.element")
+        self.refused({"model": "quacc-emt", "job": "qslab", "params": {"element": "Cu", "max_index": 3}}, text="params.max_index")
+        self.refused({"model": "quacc-emt", "job": "qslab", "xyz": "1\n\nCu 0 0 0", "params": {"element": "Cu"}}, text="params.element")
 
     def test_refusals(self):
         self.refused({"model": "nope", "job": "sp", "smiles": "C"}, text="unknown model")
@@ -426,10 +489,10 @@ class Contract(unittest.TestCase):
         for group, jobs in GROUPS:
             for model in group:
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
-                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X, model)
+                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 20)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900})
+        self.assertEqual(len(server.MODELS), 23)
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
 
     def test_mace_proxy(self):
