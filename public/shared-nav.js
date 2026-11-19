@@ -96,6 +96,7 @@
     ] },
     { id: 'make', zh: '工具', en: 'Tools', hint: ['写输入、投稿、接数据、装桌面版', 'Write inputs, publish, use the data, get the app'], items: [
       ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标'],
+      ['extract', 'extract/index.html', '文献信息抽取', 'Literature Extractor', '一组分工的 AI 智能体从反应图和 PDF 读出反应、条件、产率和底物表，规则代入 R 基团、核对打分，导出 JSON / CSV', 'A team of AI agents reads reactions, conditions, yields and scope tables from figures and PDFs; rules fill R groups, check and score; export JSON / CSV', 1, 'extract extraction literature paper pdf figure scheme reaction scope table ocr chemeagle agent multi-agent smiles yield 抽取 提取 文献 论文 反应图 底物表 智能体 识别'],
       ['journals', 'journals/index.html', '期刊发表', 'Journals', '期刊选择与投稿指导', 'Choosing a journal and submitting', 0, 'journal submit 投稿'],
       ['api', 'api/index.html', '开放数据接口', 'Open Data API', '程序可读的数据集、JS / Python 库与计算接口', 'Machine-readable datasets, JS / Python clients and the compute API', 1, 'api json openapi python'],
       ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],
