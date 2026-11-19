@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'quacc', date: '2026-11-19', path: 'code/index.html#p-quacc', group: 'make', icon: 'atoms',
+      zh: '开源代码台 · quacc 流水线', en: 'Code Desk · quacc pipelines',
+      note: ['一次交一批分子：优化、频率、表面能，用 quacc 的配方', 'Hand in a batch of molecules: relax, frequencies, surface energies, with quacc recipes'],
+      more: ['quacc（BSD 3-Clause，Andrew Rosen）是一套把计算写成作业和流程的 Python 库。代码台的新标签能选配方和免费引擎（GFN2-xTB、Psi4、EMT），一次最多 8 个分子交给在线服务，也能拿到一段在自己电脑上跑的脚本。ORCA 只写脚本，不在线跑（学术许可）。',
+        'quacc (BSD 3-Clause, Andrew Rosen) is a Python library that writes calculations as jobs and flows. The new Code Desk tab picks a recipe and a free engine (GFN2-xTB, Psi4, EMT), sends up to 8 molecules to the online service, or gives you a script to run on your own computer. ORCA is script-only, never run online (academic licence).'],
+    },
+    {
       id: 'extract', date: '2026-11-19', path: 'extract/index.html', group: 'make', icon: 'extract',
       zh: '文献信息抽取', en: 'Literature Extractor',
       note: ['一组 AI 智能体从反应图读出反应、条件和产率', 'A team of AI agents reads reactions, conditions and yields from a figure'],

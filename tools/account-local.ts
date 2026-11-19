@@ -58,12 +58,31 @@ function fakeProtein(p: any) {
   };
 }
 
+/** quacc as tools/uma-server/quacc_backend.py returns it: a batch (one row per molecule) or EMT slabs. Numbers made up. */
+function fakeQuacc(b: any) {
+  const p = b.params || {};
+  if (b.job === "qslab") {
+    const slabs = [[[1, 1, 1], 80, 89.27, 1.0441], [[1, 0, 0], 72, 77.31, 1.1339], [[1, 1, 0], 96, 109.33, 1.2305]].map(([m, n, a, g]: any) => ({ miller: m, family: m, atoms: n, energy_ev: 11.07, area_a2: a, gamma_j_m2: g, gamma_ev_a2: +(g / 16.0217663).toFixed(6), converged: true, steps: 2 }));
+    return { element: p.element || "Cu", engine: "ASE EMT (quacc.recipes.emt)", quacc_version: "1.10.0", max_index: p.max_index ?? 1, a_angstrom: 3.5895, e_bulk_ev_atom: -0.007036, bulk_converged: true, slabs, lowest: [1, 1, 1] };
+  }
+  const recipe = b.model === "quacc-psi4" ? "static" : p.recipe || "relax";
+  const items = (p.items || []).map((smi: string, i: number) => {
+    if (smi === "C1CC1C1CC1C1CC1") return { smiles: smi, charge: 0, spin: 1, formula: "C9H14", ok: false, error: "RuntimeError: the optimiser did not converge in 500 steps" };
+    const row: any = { smiles: smi, charge: 0, spin: smi.includes("[CH3]") ? 2 : 1, formula: ["C2H6O", "H2O", "C2H4O2", "C6H6", "CH3"][i % 5], ok: true, energy_ev: -137.98 - 50 * i, xyz: "3\nfake\nO 0 0 0\nH 0 0 0.96\nH 0.93 0 -0.24\n" };
+    if (recipe !== "static") Object.assign(row, { converged: true, steps: 3 + i, fmax_ev_a: 0.004 });
+    if (recipe === "relax_freq") Object.assign(row, { frequencies_cm1: [1539.0, 3642.7, 3651.0], n_imag: 0, zpe_ev: 0.548, temperature_k: p.temperature ?? 298.15, h_ev: -137.33 - 50 * i, s_ev_k: 0.00195, g_ev: -137.91 - 50 * i, point_group: "C2v", symmetry_number: 2, thermo_spin: row.spin });
+    return row;
+  });
+  return { recipe, engine: b.model === "quacc-psi4" ? `Psi4 1.10 ${p.method}/${p.basis} (quacc.recipes.psi4)` : "xtb 6.8.0 program through quacc's Runner", quacc_version: "1.10.0", items, n_ok: items.filter((x: any) => x.ok).length };
+}
+
 /** A result with the fields of API v3 for each job; the numbers are made up (fake: true). */
 function fakeResult(b: any) {
   const p = b.params || {}, job = b.job || "ipea", model = b.model || "uma-s-1p2p1";
   const xyz = "3\nfake\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
   const E = -2079.62, T = p.temperature ?? 298.15, kcal = 23.0605;
   if (job === "pmd") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 4.2, fake: true, ...fakeProtein(p) };
+  if (job === "qflow" || job === "qslab") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 2.1, fake: true, ...fakeQuacc(b) };
   const base: any = { model, job, smiles: b.smiles ?? null, charge: b.charge ?? 0, spin: b.spin ?? 1, params: p, seconds: 1, fake: true, xyz };
   if (/direct/.test(model)) base.direct_forces = true;
   // server.py adds what the xtb run prints to xTB single points and optimisations
@@ -118,7 +137,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
     const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"], charged = [...geom, "ipea", "spin", "bde", "pa"], xtb = charged.filter((j) => j !== "ipea");
     const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x", "gfn-ff"] };
-    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb, "openmm-amber14": ["pmd"] };
+    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb, "openmm-amber14": ["pmd"], "quacc-gfn2": ["qflow"], "quacc-psi4": ["qflow"], "quacc-emt": ["qslab"] };
     if (url.pathname === "/health") return reply({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
     if (url.pathname === "/jobs") {
       umaLast = JSON.parse(String(init?.body ?? (input instanceof Request ? await input.clone().text() : "{}")));

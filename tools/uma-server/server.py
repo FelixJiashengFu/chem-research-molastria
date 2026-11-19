@@ -14,13 +14,16 @@ mace-torch and fairchem need different e3nn versions. GFN2-xTB (also with ALPB w
 xtb program (grimme-lab/xtb, LGPL-3.0) once per energy and gradient on the CPU (xtb_backend.py; --xtb or found on
 PATH / in this Python environment). Protein MD runs OpenMM (Amber ff14SB + GBSA-OBC2 implicit water) on a PDB
 entry downloaded from RCSB by its ID (openmm_backend.py; needs openmm and pdbfixer in this environment, uses CUDA,
-then OpenCL, then the CPU). A model whose package or environment is missing is simply
+then OpenCL, then the CPU). quacc (Quantum-Accelerators/quacc, BSD 3-Clause, pip install quacc) runs small batches
+through its recipes (quacc_backend.py): GFN2-xTB with tblite or the xtb program, Psi4 single points, and EMT bulk-to-
+slab surface energies. A model whose package or environment is missing is simply
 reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Five lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, the MACE models (one GPU process, taking turns), xTB (the CPU) and OpenMM (protein MD). A visitor has at
+Six lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), xTB (the CPU), OpenMM (protein MD) and quacc
+(its recipes, on the CPU). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
 
@@ -30,8 +33,10 @@ environment variable MOLASTRIA_UMA_SECRET (with --fake the environment variable 
 API v3 (JSON; every request carries the header X-MolAstria-Key):
     GET  /health      {ok, api: 3, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
     POST /jobs        {model, job, smiles? | xyz?, charge?, spin?, params?, who?}  ->  {id, status, position} or a cached result
-                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd. pmd (model openmm-amber14)
-                      takes no structure: params {pdb_id, chains?, ps?, temperature?}. The old form {smiles, model?, job:
+                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd qflow qslab. pmd (model
+                      openmm-amber14) takes no structure: params {pdb_id, chains?, ps?, temperature?}. qflow (quacc-gfn2,
+                      quacc-psi4) takes a batch in params {items: [SMILES, up to 8], recipe: static | relax | relax_freq,
+                      fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -59,6 +64,7 @@ import numpy as np
 
 import chemjobs as cj
 import openmm_backend as ob
+import quacc_backend as qb
 import xtb_backend as xb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -74,10 +80,11 @@ D_JOBS = ("polar", "ir")
 # 9.2 / 10.5 / 12.6 eV; the methods were never fitted to vertical charge changes), so no ipea. GFN-FF has no spin.
 X_JOBS = tuple(j for j in A_JOBS if j != "ipea")
 P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
-JOBS = A_JOBS + D_JOBS + P_JOBS
+Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
+JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -125,6 +132,13 @@ MODELS = {
     # proteins only: the structure comes from the PDB by its ID, not from SMILES or XYZ
     "openmm-amber14": {"name": "OpenMM Amber ff14SB + OBC2", "lane": "openmm", "jobs": P_JOBS, "charged": False,
                        "elements": (), "direct": False},
+    # quacc recipes (quacc_backend.py); the molecules come in params.items, the metal in params.element
+    "quacc-gfn2": {"name": "quacc · GFN2-xTB", "lane": "quacc", "jobs": ("qflow",), "charged": True,
+                   "elements": OMOL_ELEMENTS, "direct": False},
+    "quacc-psi4": {"name": "quacc · Psi4", "lane": "quacc", "jobs": ("qflow",), "charged": True,
+                   "elements": tuple(cj.chemical_symbols[1:37]), "direct": False},  # H to Kr: the small bases stop there
+    "quacc-emt": {"name": "quacc · EMT", "lane": "quacc", "jobs": ("qslab",), "charged": False,
+                  "elements": qb.EMT_METALS, "direct": False},
 }
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
@@ -247,6 +261,18 @@ def job_params(job, raw):
         return {"pdb_id": pdb_id.upper(), "chains": "".join(dict.fromkeys(chains)),
                 "ps": _number(raw, "ps", 1, ob.PS_MAX, ob.PS_DEFAULT, True),
                 "temperature": _number(raw, "temperature", 250, 400, 300)}
+    if job == "qflow":
+        items = raw.get("items")
+        if not (isinstance(items, list) and 1 <= len(items) <= qb.MAX_ITEMS and all(isinstance(x, str) for x in items)):
+            raise BadRequest(f"params.items must be a list of 1 to {qb.MAX_ITEMS} SMILES")
+        out = {"items": [x.strip() for x in items], "recipe": _choice(raw, "recipe", qb.RECIPES, "relax"),
+               "fmax": _number(raw, "fmax", 0.001, 0.1, qb.OPT_FMAX), "temperature": temperature()}
+        if "method" in raw or "basis" in raw:  # Psi4 only; checked against the model in parse()
+            out["method"] = _choice(raw, "method", qb.PSI4_METHODS, "b3lyp-d3bj")
+            out["basis"] = _choice(raw, "basis", qb.PSI4_BASES, "def2-svp")
+        return out
+    if job == "qslab":
+        return {"element": _choice(raw, "element", qb.EMT_METALS, "Cu"), "max_index": _number(raw, "max_index", 1, 2, 1, True)}
     return {}  # sp, ir
 
 
@@ -378,7 +404,7 @@ class Service:
         self.backends, self.errors = {}, {}
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm")}
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm", "quacc")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -396,7 +422,11 @@ class Service:
     def load(self):
         if self.fake:  # for tests: no models; a toy calculator, numbers marked as made up
             self.device = "fake"
-            self.backends = {lane: None for lane in self.queues}
+            self.backends = {lane: None for lane in self.queues if lane != "quacc"}
+            try:  # quacc's own Runner and schemas around the toy calculator; EMT is real (it is part of ASE)
+                self.backends["quacc"] = qb.QuaccBackend(toy_ef=cj.toy_ef)
+            except Exception as e:  # noqa: BLE001 - quacc not installed here: that lane is not ready
+                self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
         else:
             import torch
 
@@ -429,13 +459,22 @@ class Service:
                 print(f"OpenMM {self.backends['openmm'].version} on {self.backends['openmm'].platform}", flush=True)
             except Exception as e:  # noqa: BLE001 - no openmm / pdbfixer in this environment: protein MD is off
                 self.errors["openmm"] = f"{type(e).__name__}: {e}"[:400]
+            try:
+                self.backends["quacc"] = qb.QuaccBackend(xtb=self.backends.get("xtb"))
+                q = self.backends["quacc"]
+                print(f"quacc {q.version}: " + ", ".join(m for m in ("quacc-gfn2", "quacc-psi4", "quacc-emt") if q.ready(m)), flush=True)
+            except Exception as e:  # noqa: BLE001 - no quacc in this environment: its recipes are off
+                self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
         self.loading = False
         for lane in self.backends:
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
-        print("Ready: " + ", ".join(m for m, v in MODELS.items() if v["lane"] in self.backends), flush=True)
+        print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
 
     def ready(self, model):
-        return MODELS[model]["lane"] in self.backends
+        lane = MODELS[model]["lane"]
+        if lane == "quacc":  # one lane, three engines: Psi4 or GFN2 may be missing while EMT works
+            return lane in self.backends and self.backends[lane].ready(model)
+        return lane in self.backends
 
     def calculator(self, model):
         """The model as one ASE calculator."""
@@ -503,6 +542,17 @@ class Service:
         if job == "pmd":
             run = (lambda *a: ob.toy_run(*a)) if self.fake else self.backends["openmm"].run
             r = run(prm["pdb_id"], prm["chains"], prm["ps"], prm["temperature"], budget)
+        elif job == "qflow":
+            items = []
+            for smi in prm["items"]:  # each molecule built the same way as every other SMILES input
+                mol_h = Chem.AddHs(Chem.MolFromSmiles(smi))
+                symbols, positions = cj.embed(mol_h)
+                q_i, s_i = cj.species_of(mol_h)
+                items.append({"smiles": smi, "symbols": symbols, "positions": positions, "charge": q_i, "spin": s_i,
+                              "formula": cj.Atoms(symbols).get_chemical_formula("hill")})
+            r = self.backends["quacc"].flow(model, items, prm["recipe"], prm, budget)
+        elif job == "qslab":
+            r = self.backends["quacc"].slabs(prm["element"], prm["max_index"], budget)
         elif job in D_JOBS:
             geo = self.calculator("mace-off23-medium")
             if job == "polar":
@@ -578,10 +628,12 @@ class Service:
         smiles, xyz = body.get("smiles"), body.get("xyz")
         has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
-        if job in ("rxn", "pmd"):
+        if job in ("rxn", "pmd", "qflow", "qslab"):
             if has_smiles or has_xyz:
-                raise BadRequest("rxn takes the reaction in params.reaction, not smiles or xyz" if job == "rxn"
-                                 else "pmd takes the PDB ID in params, not smiles or xyz")
+                raise BadRequest({"rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
+                                  "pmd": "pmd takes the PDB ID in params, not smiles or xyz",
+                                  "qflow": "qflow takes its molecules in params.items, not smiles or xyz",
+                                  "qslab": "qslab takes the metal in params.element, not smiles or xyz"}[job])
         elif has_smiles == has_xyz:
             raise BadRequest("give exactly one of smiles and xyz")
         if has_xyz and (job in SMILES_JOBS or (job == "polar" and params["average"])):
@@ -606,6 +658,34 @@ class Service:
         mol_h, symbols = None, None
         if job == "pmd":
             spec.update(charge=0, spin=None, input="pdb:" + params["pdb_id"])
+        elif job == "qslab":
+            spec.update(charge=0, spin=None, input="slab:" + params["element"])
+        elif job == "qflow":
+            psi4 = model == "quacc-psi4"
+            if psi4:
+                params["recipe"] = "static"  # Psi4 through quacc: single points only
+                params.setdefault("method", "b3lyp-d3bj")
+                params.setdefault("basis", "def2-svp")
+            else:
+                params.pop("method", None)
+                params.pop("basis", None)
+            limit = qb.PSI4_MAX_HEAVY if psi4 else MAX_HEAVY
+            canon = []
+            for smi in params["items"]:
+                if not SMILES_OK.match(smi):
+                    raise BadRequest(f"SMILES has unsupported characters or is too long: {smi[:40]}")
+                mol = Chem.MolFromSmiles(smi)
+                if mol is None:
+                    raise BadRequest(f"RDKit cannot parse this SMILES: {smi[:40]}")
+                if mol.GetNumHeavyAtoms() > limit or Chem.AddHs(mol).GetNumAtoms() > MAX_ATOMS:
+                    raise BadRequest(f"each molecule may have at most {limit} heavy atoms and {MAX_ATOMS} atoms in all ({smi[:40]})")
+                check_elements(a.GetSymbol() for a in mol.GetAtoms())
+                q_i, s_i = cj.species_of(Chem.AddHs(mol))
+                if not (-2 <= q_i <= 2 and 1 <= s_i <= 4):
+                    raise BadRequest(f"each molecule needs charge -2..2 and spin multiplicity 1..4 ({smi[:40]})")
+                canon.append(Chem.MolToSmiles(mol))
+            params["items"] = canon
+            spec.update(charge=0, spin=None, input="batch:" + "|".join(canon))
         elif job == "rxn":
             species, canonical = self.reaction(params["reaction"], m)
             params["reaction"] = canonical
@@ -752,7 +832,7 @@ class Service:
                 lane = m["lane"]
                 waiting = sum(1 for j in self.queues[lane] if self.jobs.get(j, {}).get("spec", {}).get("model") == mid)
                 run = self.running[lane]
-                models[mid] = {"ready": lane in self.backends, "jobs": list(m["jobs"]), "queue": waiting,
+                models[mid] = {"ready": self.ready(mid), "jobs": list(m["jobs"]), "queue": waiting,
                                "running": bool(run and self.jobs.get(run, {}).get("spec", {}).get("model") == mid)}
             return {"ok": not self.loading and bool(self.backends), "api": 3, "ready": bool(self.backends),
                     "loading": self.loading, "errors": self.errors, "model": UMA, "device": self.device, "gpu": self.gpu,

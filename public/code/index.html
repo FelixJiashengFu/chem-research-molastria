@@ -25,6 +25,9 @@
   <script src="ir.js" defer></script>
   <script src="code.js" defer></script>
   <script src="cheminf.js" defer></script>
+  <script src="../pay/config.js" defer></script>
+  <script src="quacc-core.js" defer></script>
+  <script src="quacc.js" defer></script>
 </head>
 <body data-section="code">
 <main class="cd">
@@ -34,10 +37,11 @@
     <p class="cd-lead">计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。</p>
   </header>
 
-  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的五个工具">
+  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的六个工具">
     <button type="button" role="tab" id="t-input" aria-controls="p-input" aria-selected="true" data-tab="input"><b>写输入</b><small>九个程序 + QCSchema</small></button>
     <button type="button" role="tab" id="t-output" aria-controls="p-output" aria-selected="false" data-tab="output"><b>读输出</b><small>能量、收敛、虚频、结构</small></button>
     <button type="button" role="tab" id="t-chem" aria-controls="p-chem" aria-selected="false" data-tab="chem"><b>化学信息学</b><small>RDKit 描述符、子结构、相似度</small></button>
+    <button type="button" role="tab" id="t-quacc" aria-controls="p-quacc" aria-selected="false" data-tab="quacc"><b>quacc 流水线</b><small>批量优化、频率、表面能</small></button>
     <button type="button" role="tab" id="t-check" aria-controls="p-check" aria-selected="false" data-tab="check"><b>软件体检</b><small>版本、许可证、漏洞</small></button>
     <button type="button" role="tab" id="t-search" aria-controls="p-search" aria-selected="false" data-tab="search"><b>搜代码</b><small>五个代码搜索引擎</small></button>
   </nav>
@@ -200,6 +204,70 @@
       <div class="cd-tablewrap"><table class="ci-table" id="ss-table"><tbody><tr><td class="cd-empty">还没有搜索。</td></tr></tbody></table></div>
       <p class="cd-small">“相似结构”按 PubChem 自己的 881 位二维指纹（PubChem fingerprint）的 Tanimoto 筛选，PubChem 不返回具体分数；表里的“Morgan 相似度”是 RDKit 在你的浏览器里用 Morgan 指纹（半径 2，2048 位）重算的，表格按它从高到低排。两种指纹看的东西不一样，过了 PubChem 的下限、Morgan 值却不高是正常的。“含有这个子结构”最多列 20 个，PubChem 不保证是哪 20 个。</p>
     </div>
+  </section>
+
+  <!-- quacc 流水线 -->
+  <section class="cd-panel" id="p-quacc" role="tabpanel" aria-labelledby="t-quacc" hidden>
+    <div class="cd-box qc-intro">
+      <h2 class="cd-h2">用 quacc 的配方批量计算</h2>
+      <p class="cd-p"><a href="https://github.com/Quantum-Accelerators/quacc" target="_blank" rel="noopener noreferrer">quacc <i class="ico-ext" aria-hidden="true"></i></a> 是基于 ASE 的高通量计算工作流库：把“优化”“算频率”“切表面”这样的步骤写成一个个配方（recipe），同一个配方可以换引擎（xTB、Psi4、ORCA、VASP、机器学习势等），也可以交给 Parsl、Dask、Prefect、Jobflow 这些调度器在集群上铺开。这里挑了几个不花钱的配方：小批量可以直接交给站长的电脑算，多的拿走脚本在自己的电脑上跑。</p>
+    </div>
+    <div class="cd-grid">
+      <div class="cd-box">
+        <h2 class="cd-h2">配方和分子</h2>
+        <div class="qc-recipes" id="qc-recipes" role="radiogroup" aria-label="配方"></div>
+        <div class="cd-row qc-opts">
+          <label class="cd-grow">引擎<select id="qc-engine"></select></label>
+          <label id="qc-method-l">方法<select id="qc-method" translate="no"></select></label>
+          <label id="qc-basis-l">基组<select id="qc-basis" translate="no"></select></label>
+        </div>
+        <p class="cd-small qc-note" id="qc-engine-note"></p>
+        <div id="qc-mols">
+          <label class="cd-field" for="qc-list">分子：一行一个，先写 SMILES，空一格再写名字（可以不写）</label>
+          <textarea id="qc-list" rows="6" spellcheck="false" autocomplete="off" autocapitalize="off" translate="no" placeholder="CCO ethanol"></textarea>
+          <div class="cd-row">
+            <button type="button" class="cd-btn" id="qc-sample">填入示例</button>
+            <span class="cd-small qc-count" id="qc-count"></span>
+          </div>
+          <div class="cd-row qc-opts">
+            <label id="qc-fmax-l">fmax（eV/Å）<input id="qc-fmax" type="number" min="0.001" max="0.1" step="0.005" value="0.01"></label>
+            <label id="qc-temp-l">温度（K）<input id="qc-temp" type="number" min="10" max="2000" step="1" value="298.15"></label>
+          </div>
+        </div>
+        <div id="qc-slab" hidden>
+          <div class="cd-row qc-opts">
+            <label>金属<select id="qc-metal" translate="no"></select></label>
+            <label class="cd-grow">切到多高的晶面指数<select id="qc-index"><option value="1">1：(111)、(100)、(110)</option><option value="2">2：再加 (210)、(211)、(221) 等</option></select></label>
+          </div>
+        </div>
+        <div class="cd-row qc-runrow">
+          <button type="button" class="cd-btn primary" id="qc-run">在站长的电脑上算</button>
+          <span class="cd-small qc-cost" id="qc-cost"></span>
+        </div>
+        <p class="cd-status" id="qc-status" role="status"></p>
+      </div>
+      <div class="cd-box">
+        <h2 class="cd-h2">在自己的电脑上跑</h2>
+        <p class="cd-p" id="qc-install"></p>
+        <pre class="cd-code" id="qc-script" tabindex="0" translate="no" aria-label="quacc 脚本"></pre>
+        <div class="cd-row">
+          <button type="button" class="cd-btn" id="qc-copy">复制</button>
+          <button type="button" class="cd-btn" id="qc-save">下载 .py</button>
+        </div>
+      </div>
+    </div>
+    <div class="cd-box" id="qc-result" hidden>
+      <h2 class="cd-h2">结果</h2>
+      <p class="cd-p" id="qc-meta"></p>
+      <div class="cd-tablewrap"><table class="ci-table qc-table" id="qc-table"></table></div>
+      <div id="qc-chart" class="qc-chart"></div>
+      <div class="cd-row">
+        <button type="button" class="cd-btn" id="qc-csv">下载 CSV</button>
+        <button type="button" class="cd-btn" id="qc-json">下载 JSON（quacc 的结果字段）</button>
+      </div>
+      <p class="cd-small" id="qc-caveat"></p>
+    </div>
+    <p class="cd-small qc-credit">在线计算在站长电脑的 CPU 上排队进行，尽力而为，可能离线；一批最多 8 个分子，花的是在线模型每天的次数。quacc 由 Andrew S. Rosen 和贡献者开发，按 BSD 3-Clause 许可发布，本页和站长电脑上的服务只是调用它，没有拷贝它的代码，也不代表 quacc 的作者认可本站（许可证全文见 <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/tools/uma-server/THIRD-PARTY-quacc.md" target="_blank" rel="noopener noreferrer">THIRD-PARTY-quacc.md <i class="ico-ext" aria-hidden="true"></i></a>）。GFN2-xTB 来自 tblite 或 xtb 程序（LGPL-3.0），Psi4 是 LGPL-3.0，EMT 是 ASE 自带的（LGPL-2.1）；ORCA 只对学术用户免费，所以只给本机脚本。</p>
   </section>
 
   <!-- 软件体检 -->

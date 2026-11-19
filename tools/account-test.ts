@@ -684,6 +684,10 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ smiles: "CCN", job: "pa", model: "allscaip-md-direct-all-omol", params: { site: 2, mode: "protonate", thermo: true, temperature: 300 } }, { smiles: "CCN", job: "pa", model: "allscaip-md-direct-all-omol", params: { site: 2, mode: "protonate", thermo: true, temperature: 300 } }],
     [{ smiles: "CCO", job: "polar", model: M, academic: true, params: { average: true, n: 8 } }, { smiles: "CCO", job: "polar", model: M, params: { average: true, n: 8 } }],
     [{ xyz: WATER, job: "ir", model: M, academic: true, params: { anything: 1 } }, { xyz: WATER, job: "ir", model: M }],
+    // quacc: a batch of SMILES in params, trimmed; Psi4's level of theory; EMT slabs by element
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: [" CCO ", "[CH3]"], recipe: "relax_freq", temperature: 350, bogus: 1 } }, { job: "qflow", model: "quacc-gfn2", params: { items: ["CCO", "[CH3]"], recipe: "relax_freq", temperature: 350 } }],
+    [{ job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }, { job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }],
+    [{ job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }, { job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }],
   ];
   for (const [body, want] of cases) {
     const r = await call("POST", "/uma/jobs", body);
@@ -749,6 +753,20 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ xyz: long, job: "sp" }, "XYZ over 12000 characters"],
     [{ xyz: "3\nwater\nO 0 0 0\nH 0 0 x\nH 1 0 0\n", job: "sp" }, "a coordinate that is not a number"],
     [{ xyz: "3\nwater\nO 0 0 0\nH 0 0 1\n", job: "sp" }, "fewer atom lines than the count"],
+    [{ job: "qflow", model: "quacc-gfn2" }, "a quacc batch needs items"],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: [] } }, "an empty batch"],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: Array(9).fill("C") } }, "at most 8 molecules"],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C; rm -rf"] } }, "SMILES charset in a batch"],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: "CCO" } }, "items must be a list"],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C"], recipe: "md" } }, "only the three recipes"],
+    [{ job: "qflow", model: "quacc-psi4", params: { items: ["C"], method: "ccsd(t)" } }, "only the listed Psi4 methods"],
+    [{ smiles: "CCO", job: "qflow", model: "quacc-gfn2", params: { items: ["C"] } }, "a batch takes no top-level SMILES"],
+    [{ job: "qslab", model: "quacc-emt", params: { element: "Fe" } }, "EMT knows seven fcc metals"],
+    [{ job: "qslab", model: "quacc-emt", params: { element: "Cu", max_index: 3 } }, "slabs up to index 2"],
+    [{ job: "qslab", model: "quacc-emt" }, "slabs need an element"],
+    [{ job: "qslab", model: "quacc-gfn2", params: { element: "Cu" } }, "the GFN2 batch has no slabs"],
+    [{ job: "qflow", model: "quacc-emt", params: { items: ["C"] } }, "EMT does slabs only"],
+    [{ smiles: "CCO", job: "opt", model: "quacc-gfn2" }, "quacc models take batches only"],
   ];
   for (const [body, why] of refused) {
     const r = await call("POST", "/uma/jobs", body);
@@ -788,6 +806,10 @@ await test("API v3: uses are counted by cost, a job that does not fit is refused
     [{ smiles: "CCO", job: "pa", params: { site: 2, mode: "deprotonate" } }, 2], [{ smiles: "CCO", job: "pa", params: { site: 2, mode: "deprotonate", thermo: true } }, 5],
     [{ smiles: "CCO", job: "freq" }, 3], [{ job: "rxn", params: { reaction: "C=C.[H][H]>>CC" } }, 3], [{ job: "rxn", params: { reaction: "C=C.[H][H]>>CC", thermo: true } }, 5],
     [{ smiles: "CCO", job: "conf" }, 5], [{ smiles: "CCCO", job: "scan", params: { atoms: [0, 1, 2, 3] } }, 5], [{ smiles: "CCO", job: "md" }, 5],
+    // quacc batches cost per molecule: 1 (single point or relaxation), 3 (with frequencies), Psi4 2; slabs 3 or 5
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O"] } }, 3], [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O", "F"], recipe: "relax_freq" } }, 12],
+    [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C"], recipe: "static" } }, 1], [{ job: "qflow", model: "quacc-psi4", params: { items: ["C", "O"], recipe: "relax_freq" } }, 4],
+    [{ job: "qslab", model: "quacc-emt", params: { element: "Au" } }, 3], [{ job: "qslab", model: "quacc-emt", params: { element: "Au", max_index: 2 } }, 5],
   ];
   for (const [body, cost] of costs) {
     const n0 = used("uma:local");
@@ -910,7 +932,9 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14")], [15, 0, true, true, true], "the fifteen models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt")], [18, 0, true, true, true, true], "the eighteen models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "quacc-psi4")?.jobs, ["qflow"], "quacc: batches through one recipe");
+  eq(models.data.quacc_costs, { per_molecule: { static: 1, relax: 1, relax_freq: 3 }, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, "what a batch costs");
   eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
   eq(models.data.models[0], { id: "uma-s-1p2p1", ready: true, queue: 1, charged: true, jobs: ["opt", "md", "ipea", "bde"] }, "a model's jobs as the computer reports them");
   eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn"] }, "not loaded right now");
@@ -920,7 +944,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|PROTEIN)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|PROTEIN|QFLOW|QSLAB)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
   for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
@@ -983,7 +1007,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 15, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 18, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

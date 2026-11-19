@@ -1,4 +1,4 @@
-/* 开源代码台的界面：四个标签（写输入、读输出、软件体检、搜代码）。逻辑都在 code-core.js（MolAstriaCode）。
+/* 开源代码台的界面：六个标签（写输入、读输出、化学信息学、quacc 流水线、软件体检、搜代码）；化学信息学和 quacc 各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
    从 SMILES 生成坐标用 viewer/smiles3d.js（MolAstriaSmiles3D），“读输出”的示例在 code-demos.js。
    上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页把算好的结构放在 molastria-code-import，这里读一次就删掉。 */
 (function () {
@@ -16,7 +16,7 @@
   const link = (href, text) => { const u = safeUrl(href); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>` : esc(text); };
 
   // ── 标签 ──
-  const TABS = ['input', 'output', 'chem', 'check', 'search'];
+  const TABS = ['input', 'output', 'chem', 'quacc', 'check', 'search'];
   function show(tab, push) {
     if (!TABS.includes(tab)) tab = 'input';
     for (const t of TABS) {
@@ -473,7 +473,7 @@
   if (st.search) $('sr-q').value = st.search;
   links(); ready = true;
 
-  const hash = location.hash.slice(1);
+  const hash = location.hash.slice(1).replace(/^p-/, '');   // #quacc 和 #p-quacc（面板的 id）都打开那个标签
   show(TABS.includes(hash) ? hash : st.tab || 'input', false);
   if (document.body.dataset.tab === 'check') { checked = true; check($('ck-q').value); }
 })();

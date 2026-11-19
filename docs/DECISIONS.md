@@ -2,6 +2,13 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-19 quacc：做在线计算的作业层，只用免费引擎，按分子计次数
+站长要把 quacc（Quantum-Accelerators/quacc，BSD 3-Clause，Andrew S. Rosen）放进 MolAstria。做法：站长电脑上的 `server.py` 加第六条通道 `quacc`，由 `quacc_backend.py` 调 quacc 的配方（tblite / Psi4 / EMT）和 `Runner` + `Summarize`；代码台加“quacc 流水线”标签，小批量交给在线服务，其余给本机脚本。
+**原因：** quacc 的价值是“同一个配方换引擎、换调度器”，在线服务只该跑不花钱、许可证允许替别人跑的引擎：GFN2-xTB（LGPL）、Psi4（LGPL）、EMT（ASE 自带）。ORCA 只对学术用户免费，不替访客跑，只给本机脚本。
+- 一批是一个任务（每个访客同时只有一个），次数按分子算：优化、单点每个 1 次，带频率 3 次，Psi4 每个 2 次；表面能 3 次，晶面指数到 2 时 5 次。一批最多 8 个分子，Psi4 最多 12 个重原子。
+- Windows 上没有 tblite 的 pip 包，所以站长电脑上 GFN2 用 quacc 的 `Runner` 接现有的 xtb 程序；结果字段照 quacc 的 `Summarize` / `VibSummarize`。quacc 从计算器的磁矩取自旋，xtb 不给，所以自由基的热化学用 `ThermoSummarize` 按 SMILES 的多重度重算。
+- 不复制 quacc 的代码，只调用它；许可证全文放在 `tools/uma-server/THIRD-PARTY-quacc.md`，页面上写明不代表作者认可本站。
+
 ## 2026-11-18 最近更新面板：借 App Store 更新列表的版式，自己重做；进度圈是真的阅读进度
 站长要把 iPad App Store “App Updates” 的核心做进来。只借通用的版式（浮层卡片、左上返回、右上圆形关闭、顶上一行“全部…+ 数字”、每行图标 + 名字 + 日期 + 进度圈 + 一行说明 + 更多），不用 Apple 的图标、SF Symbols、SF Pro 和截图里的图，配色是站里的墨绿、金和玻璃。入口放在账号面板第一行（App Store 的更新也在头像下面），账号按钮上亮小点，不再往顶栏加按钮；“全部更新”换成“全部标为已看”。进度圈不是装饰：有分章的栏目按本机存的读过的章算，没有分章的打开过就满。首页对老访客每一版只自动弹一次；第一次来的人看的是进场动画，不弹也不亮点。条目手写在 updates-data.js，只收新栏目和大功能，不从提交记录自动生成（提交信息太碎，也不总适合给读者看）。
 

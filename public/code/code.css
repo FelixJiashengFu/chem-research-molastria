@@ -14,7 +14,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .cd-lead{max-width:44em;margin:16px auto 0;color:var(--ink-2);font-size:15.5px;line-height:1.9}
 
 /* 标签 */
-.cd-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:22px 0 4px}
+.cd-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:22px 0 4px}
 .cd-tabs button{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
 .cd-tabs button b{font-size:15.5px}
 .cd-tabs button small{font-size:12px;color:var(--muted);line-height:1.4}
@@ -128,6 +128,9 @@ b.no{color:var(--danger)}
 .cd-credits{margin-top:28px;font-size:12.5px;line-height:1.8;color:var(--muted)}
 .cd-credits p{margin:0}
 
+@media (max-width:1180px){
+  .cd-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 @media (max-width:860px){
   .cd-grid{grid-template-columns:minmax(0,1fr)}
   .cd-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -234,3 +237,38 @@ b.no{color:var(--danger)}
 .ir-box .ir-controls input[type=number],.ir-box .ir-controls select{min-height:0;height:32px;margin:0;padding:3px 8px;font-size:13px;width:auto}
 .ir-box .ir-controls input[type=number]{width:5.4em}
 .ir-box .ir-controls input[type=range]{min-height:0;height:24px;padding:0;margin:0;border:0;background:none}
+
+/* quacc 流水线（quacc.js） */
+.qc-intro .cd-p{margin:0;max-width:78ch}
+.qc-recipes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qc-recipe{display:grid;gap:3px;align-content:start;padding:11px 13px;border:1px solid var(--line-strong);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
+.qc-recipe b{font-size:14px}
+.qc-recipe code{font-size:11.5px;color:var(--accent-text);background:none;padding:0;overflow-wrap:anywhere}
+.qc-recipe small{font-size:12px;line-height:1.55;color:var(--muted)}
+.qc-recipe:hover{border-color:var(--accent)}
+.qc-recipe[aria-checked=true]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent);background:var(--accent-soft)}
+.qc-opts{margin-top:12px;align-items:end}
+.qc-opts label{display:grid;gap:4px;font-size:13px;color:var(--ink-2);min-width:120px}
+.qc-opts label[hidden]{display:none}
+#qc-mols{margin-top:14px}
+.qc-count{margin:0}
+.qc-runrow{margin-top:16px;align-items:center}
+.qc-cost{margin:0}
+.qc-note{margin-top:8px}
+#p-quacc .cd-p code{font-size:12.5px;overflow-wrap:anywhere}
+.qc-table td code{display:inline;max-width:none}
+.qc-table .cd-num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.qc-table .qc-err{color:var(--danger)}
+.qc-table .qc-3d{text-align:right}
+.qc-table .qc-3d .button{min-height:28px;padding:2px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;font:600 12px var(--font-sans)}
+.qc-chart{margin-top:12px}
+.qc-svg{width:100%;max-width:560px;height:auto;display:block}
+.qc-svg-l{font:600 13px var(--font-sans);fill:var(--ink)}
+.qc-svg-v,.qc-svg-a{font:12px var(--font-sans);fill:var(--muted)}
+.qc-svg-b{fill:var(--accent-2);opacity:.55}
+.qc-svg-b.low{fill:var(--accent);opacity:1}
+.qc-credit{margin-top:16px}
+@media (max-width:560px){
+  .qc-recipes{grid-template-columns:minmax(0,1fr)}
+  .qc-opts label{min-width:0;flex:1 1 140px}
+}
