@@ -8896,6 +8896,9 @@
  "从顶栏取下": [
   "shared-nav.js"
  ],
+ "更新记录": [
+  "shared-nav.js"
+ ],
  "锁区": [
   "shared-nav.js"
  ],
@@ -8975,6 +8978,12 @@
   "shared-nav.js"
  ],
  "已打开 · {0} h ago": [
+  "shared-nav.js"
+ ],
+ "最近更新": [
+  "shared-nav.js"
+ ],
+ "新栏目和新功能，看看你读到哪了": [
   "shared-nav.js"
  ],
  "登录": [

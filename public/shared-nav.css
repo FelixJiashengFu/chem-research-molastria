@@ -542,3 +542,6 @@ body:not(.no-cr-nav):not(:has(> .cr-header))::before{content:"";display:block;he
 .cr-legal .cr-lock{display:inline-flex;vertical-align:-2px;margin-left:6px;padding:4px;color:inherit;opacity:.45;text-decoration:none;border-radius:6px;transition:opacity .2s,color .2s}
 .cr-legal .cr-lock:hover,.cr-legal .cr-lock:focus-visible,.cr-legal .cr-lock[aria-current=page]{opacity:1;color:var(--gold-ink)}
 @media print{.cr-legal .cr-lock{display:none}}
+/* 最近更新（updates/）：账号按钮上的小点和账号面板里的“新”字 */
+.cr-up-dot{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--surface);pointer-events:none}
+.cr-up-new{display:inline-block;margin-left:6px;padding:0 6px;border-radius:99px;background:var(--gold);color:#fff;font-size:10px;line-height:16px;font-weight:650;letter-spacing:.04em;vertical-align:1px}

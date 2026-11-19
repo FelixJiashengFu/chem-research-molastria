@@ -144,6 +144,27 @@
   // Pro account summary cached by pay/account.js; signed-in Pro users go straight to their account page.
   const readAccount = () => { try { return localStorage.getItem('molastria-session') ? JSON.parse(localStorage.getItem('molastria-account') || 'null') : null; } catch { return null; } };
 
+  // ── 最近更新（updates/）：UPDATES_LATEST 是 updates/updates-data.js 里最新一条的日期（tools/updates-test.mjs 核对两边一致）。
+  //    每页载入时把这一页记进 molastria-updates.p（进度圈用：打开过就算看过；同一套写法在 updates-core.js 的 normPath / visit）；
+  //    第一次来的人（首页进场动画是 full，或者本机没有任何 MolAstria 存档）直接记成看过最新一版，不弹也不亮小点。
+  const UPDATES_LATEST = '2026-11-18', UKEY = 'molastria-updates';
+  const readUp = () => { try { const v = JSON.parse(localStorage.getItem(UKEY) || 'null'); return v && typeof v === 'object' && !Array.isArray(v) ? v : null; } catch { return null; } };
+  const firstVisit = (() => {
+    if (document.documentElement.dataset.entrance === 'full') return true;
+    try { return !Object.keys(localStorage).some((k) => /^(molastria|chemhub)-/.test(k) && !['molastria-entrance', 'molastria-lang-restore', UKEY].includes(k)); } catch { return false; }
+  })();
+  if (!window.__CHEM_LINK__) {
+    try {
+      const up = readUp() || (firstVisit ? { v: 1, seen: UPDATES_LATEST, pop: UPDATES_LATEST } : { v: 1 });
+      const rel = location.pathname.startsWith(base.pathname) ? location.pathname.slice(base.pathname.length) : '';
+      const here = decodeURIComponent(rel).replace(/(^|\/)index\.html$/, '$1');
+      const list = Array.isArray(up.p) ? up.p.filter((x) => typeof x === 'string' && x !== here) : [];
+      up.p = list.concat(here).slice(-300);
+      localStorage.setItem(UKEY, JSON.stringify(up));
+    } catch { /* private mode: no progress rings, no dot */ }
+  }
+  const upUnseen = () => { const u = readUp(); return !!u && !(typeof u.seen === 'string' && u.seen >= UPDATES_LATEST); };
+
   // The buttons on the right, by id; drawn in each person's saved order. The account button replaces the old "Pro" pill: it
   // reads "登录 / Sign in" until someone signs in, then shows their initial; it opens a small glass panel (see "Account" below).
   // the lock: the one-off-purchase section (vault/). No name on it, on purpose, and out of the way on purpose: a small glyph at the end
@@ -430,7 +451,7 @@
   {
     const legal = document.createElement('p');
     legal.className = 'cr-legal';
-    legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">阿斯特赖亚科技（Morning Glory）旗下项目</a> · <a href="${link('vision/index.html')}">愿景：工业革命2.5</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a> · <a href="${link('api/index.html')}">开放数据接口</a> <a class="cr-lock" id="cr-lock" href="${link('vault/index.html')}" aria-label="${L('锁区', 'Locked section')}"${section === 'vault' ? ' aria-current="page"' : ''}>${(readAccount()?.owns?.includes('v1') ? lockOpen : lockShut).replace('width="17" height="17"', 'width="12" height="12"')}</a>`;
+    legal.innerHTML = `© ${new Date().getFullYear()} MolAstria · <a href="${link('about/index.html')}">阿斯特赖亚科技（Morning Glory）旗下项目</a> · <a href="${link('vision/index.html')}">愿景：工业革命2.5</a> · <span>由 Jiasheng Fu 运营；MolAstria 名称、徽标与吉祥物归 16513778 Canada Inc. 所有，保留所有权利；网站代码以 MIT 许可开源</span> · <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/TRADEMARKS.md" target="_blank" rel="noopener noreferrer">品牌说明</a> · <a href="${link('api/index.html')}">开放数据接口</a> · <a href="${link('index.html?updates=1')}" data-updates translate="no">${L('更新记录', 'What’s new')}</a> <a class="cr-lock" id="cr-lock" href="${link('vault/index.html')}" aria-label="${L('锁区', 'Locked section')}"${section === 'vault' ? ' aria-current="page"' : ''}>${(readAccount()?.owns?.includes('v1') ? lockOpen : lockShut).replace('width="17" height="17"', 'width="12" height="12"')}</a>`;
     const placeLegal = () => {
       if (document.body.classList.contains('radar-page')) return;
       const foot = [...document.querySelectorAll('footer')].filter((f) => !f.closest('.cr-header, dialog, aside')).pop();
@@ -791,6 +812,7 @@
     card: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 14.5h4"/></svg>',
     shield: '<svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>',
     chart: '<svg viewBox="0 0 24 24"><path d="M4 19.5h16"/><rect x="5.5" y="11" width="3" height="6" rx="1"/><rect x="10.5" y="7" width="3" height="10" rx="1"/><rect x="15.5" y="4" width="3" height="13" rx="1"/></svg>',
+    gift: '<svg viewBox="0 0 24 24"><path d="M12 3.5c.6 3.4 2.1 4.9 5.5 5.5-3.4.6-4.9 2.1-5.5 5.5-.6-3.4-2.1-4.9-5.5-5.5 3.4-.6 4.9-2.1 5.5-5.5Z"/><path d="M18.5 14.5c.3 1.6 1 2.3 2.5 2.5-1.5.2-2.2.9-2.5 2.5-.3-1.6-1-2.3-2.5-2.5 1.5-.2 2.2-.9 2.5-2.5ZM5.5 15.5c.2 1.2.8 1.8 2 2-1.2.2-1.8.8-2 2-.2-1.2-.8-1.8-2-2 1.2-.2 1.8-.8 2-2Z"/></svg>',
     sync: '<svg viewBox="0 0 24 24"><path d="M7.5 18.5h9a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 6.6 9.2 4.7 4.7 0 0 0 7.5 18.5Z"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5M12 11v5"/></svg>',
   };
   // Cloud sync (sync/sync.js): on when molastria-sync is "on"; the last result is in molastria-sync-status.
@@ -807,6 +829,7 @@
     return min < 1 ? L('已打开 · 刚刚同步', 'On · synced just now') : min < 60 ? L(`已打开 · ${min} 分钟前同步`, `On · synced ${min} min ago`)
       : L(`已打开 · ${Math.round(min / 60)} 小时前同步`, `On · synced ${Math.round(min / 60)} h ago`);
   };
+  const upRow = () => `<a class="cr-ap-row" href="${link('index.html?updates=1')}" data-updates><i aria-hidden="true">${IC.gift}</i><span><b>${L('最近更新', 'What’s new')}${upUnseen() ? `<span class="cr-up-new">${L('新', 'New')}</span>` : ''}</b><small>${L('新栏目和新功能，看看你读到哪了', 'New sections and features, and how far you’ve read')}</small></span></a>`;
   function paintAcct() {
     const a = readAccount();
     const p = a && planOf(a);
@@ -821,6 +844,7 @@
       acctBtn.setAttribute('aria-label', L(`我的账号：${a.email}（${p.label}）`, `My account: ${a.email} (${p.label})`));
       acctBtn.title = `${a.email} · ${p.label}`;
     }
+    if (upUnseen()) acctBtn.insertAdjacentHTML('beforeend', `<i class="cr-up-dot" aria-hidden="true"></i>`);
     if (!acctPop.hidden) fillAcct();
   }
   function fillAcct() {
@@ -828,7 +852,7 @@
     if (!a) {
       acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar cr-ghost" aria-hidden="true">${person}</span><div><b>${L('登录 MolAstria', 'Sign in to MolAstria')}</b><small>${L('邮箱收一个 6 位验证码就能登录，不需要密码。所有内容不登录也能看。', 'A 6-digit code by email, no password. Everything on the site works without an account too.')}</small></div></div>`
         + `<a class="cr-ap-go" href="${link('pro/account.html')}">${L('用邮箱登录', 'Sign in with email')}</a>`
-        + `<div class="cr-ap-list">${apRow('pro/index.html', IC.star, L('Pro 支持者', 'Pro supporter'), L('支持 MolAstria，AI 托管额度和在线模型次数更多', 'Support MolAstria and get more hosted AI and online-model runs'))}`
+        + `<div class="cr-ap-list">${upRow()}${apRow('pro/index.html', IC.star, L('Pro 支持者', 'Pro supporter'), L('支持 MolAstria，AI 托管额度和在线模型次数更多', 'Support MolAstria and get more hosted AI and online-model runs'))}`
         + apRow('api/index.html', IC.key, L('开放数据接口与计算接口', 'Open data and compute API'), L('登录后可以生成自己的 API key', 'Sign in to create your own API keys'))
         + apRow('me/index.html', IC.chart, L('我的学习', 'My study'), L('连续打卡、每周目标和各栏目进度', 'Streak, weekly goal and progress across the site'))
         + apRow('digest/index.html', IC.mail, L('每周精选', 'Weekly Picks'), L('登录后可以订阅邮件', 'Sign in to get it by email'))
@@ -844,7 +868,7 @@
     const gifted = p.kind === 'vip' || p.kind === 'admin';
     acctPop.innerHTML = `<div class="cr-ap-head"><span class="cr-avatar" data-plan="${p.kind}" aria-hidden="true">${esc((String(a.email || '?').trim()[0] || '?').toUpperCase())}</span><div><b class="cr-ap-mail">${esc(a.email)}</b><small><span class="cr-ap-plan" data-plan="${p.kind}">${esc(p.label)}</span>${a.status === 'past_due' ? ` <span class="cr-ap-warn">${L('付款未成功', 'Payment failed')}</span>` : ''}</small></div></div>`
       + meter
-      + `<div class="cr-ap-list">${apRow('pro/account.html', IC.user, L('我的账号', 'My account'), L('套餐、额度、课题组成员', 'Plan, allowance, lab members'))}`
+      + `<div class="cr-ap-list">${upRow()}${apRow('pro/account.html', IC.user, L('我的账号', 'My account'), L('套餐、额度、课题组成员', 'Plan, allowance, lab members'))}`
       + apRow('me/index.html', IC.chart, L('我的学习', 'My study'), L('连续打卡、每周目标和各栏目进度', 'Streak, weekly goal and progress across the site'))
       + apRow('pro/account.html#sync-card', IC.sync, L('云同步', 'Cloud sync'), syncLine())
       + apRow('pro/account.html#keys-card', IC.key, 'API key', L('给程序用的计算接口，今天的用量', 'For the compute API, with today’s usage'))
@@ -1173,6 +1197,54 @@
     let want = false;
     try { want = !!localStorage.getItem('molastria-pet') && localStorage.getItem('molastria-pet-buddy') !== 'off' && sessionStorage.getItem('molastria-pet-buddy-hide') !== '1'; } catch { /* private mode */ }
     if (want) (window.MolAstriaPetCore ? Promise.resolve() : addScript('pet/pet-core.js')).then(() => addScript('pet/pet-buddy.js')).catch(() => {});
+  }
+  // 最近更新的面板：点了才载入（updates/ 的四个文件，约 20 KB）
+  let upLoading = null;
+  const loadUpdates = () => {
+    if (window.MolAstriaUpdates) return Promise.resolve(window.MolAstriaUpdates);
+    if (!upLoading) {
+      if (!document.querySelector('link[data-updates-css]')) {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet'; css.href = link('updates/updates.css'); css.dataset.updatesCss = '';
+        document.head.append(css);
+      }
+      upLoading = (window.MOLASTRIA_UPDATES_CORE ? Promise.resolve() : addScript('updates/updates-core.js'))
+        .then(() => window.MOLASTRIA_UPDATES || addScript('updates/updates-data.js'))
+        .then(() => window.MolAstriaUpdates || addScript('updates/updates.js'))
+        .then(() => window.MolAstriaUpdates)
+        .catch((e) => { upLoading = null; throw e; });
+    }
+    return upLoading;
+  };
+  const openUpdates = (opts) => loadUpdates().then((u) => u.open(opts)).catch(() => {});
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a[data-updates]');
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+    e.preventDefault();
+    const fromAcct = !!a.closest('.cr-acct-pop');
+    if (fromAcct) closeAcct();
+    openUpdates(fromAcct ? { opener: acctBtn, onBack: openAcct } : { opener: a });
+  });
+  window.addEventListener('molastria:updates', () => paintAcct());
+  window.MolAstriaOpenUpdates = openUpdates;
+  {
+    const q = new URLSearchParams(location.search);
+    if (q.get('updates') === '1') {
+      const go = () => openUpdates();
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go, { once: true }); else go();
+      // 地址里不留 ?updates=1，刷新或分享时不再弹
+      try { q.delete('updates'); history.replaceState(history.state, '', `${location.pathname}${q.toString() ? `?${q}` : ''}${location.hash}`); } catch { /* file:// */ }
+    } else if (section === 'search' && !firstVisit && !navigator.webdriver && !window.__CHEM_LINK__ && location.protocol !== 'file:') {
+      // 首页：每一版自动弹一次，等进场动画（约 1.2 秒）收完、页面闲下来再弹；别的面板开着就不打扰
+      const u = readUp();
+      if (u && u.pop !== UPDATES_LATEST && upUnseen()) {
+        setTimeout(() => {
+          if (document.hidden || document.querySelector('dialog[open], .cr-mega:not([hidden]), .cr-acct-pop:not([hidden])')) return;
+          try { const v = readUp() || {}; v.pop = UPDATES_LATEST; localStorage.setItem(UKEY, JSON.stringify(v)); } catch { return; }
+          openUpdates();
+        }, document.documentElement.dataset.entrance ? 2600 : 1400);
+      }
+    }
   }
   const loadAI = () => {
     if (window.ChemAI) return Promise.resolve(window.ChemAI);

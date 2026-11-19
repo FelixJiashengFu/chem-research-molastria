@@ -223,7 +223,7 @@ check('paying signs the buyer in', async () => {
   await p.waitForSelector('#activate.ok');
   await p.waitForSelector('#cr-acct[data-state=pro]');
   await p.click('#cr-acct');
-  assert.match(await p.getAttribute('.cr-acct-pop .cr-ap-row', 'href'), /pro\/account\.html$/);
+  assert.match(await p.getAttribute('.cr-acct-pop .cr-ap-row:not([data-updates])', 'href'), /pro\/account\.html$/);
   await go(p, '/pro/account.html');
   await p.waitForSelector('#acct-main:not([hidden])');
   assert.equal(await text(p, '#plan-badge'), 'Pro');
@@ -1638,6 +1638,62 @@ check('header order and account: groups and buttons drag into a new order that i
   assert.ok(box.l >= 0 && box.r <= 390, `panel inside the screen: ${box.l}–${box.r}`);
   await finish(m);
   await finish(p);
+});
+
+check('what’s new: a dot on the account button, a row in its panel, the sheet with rings, more, mark all, back to the panel; once-per-release popup on the home page; never for a first visit', async () => {
+  const returning = () => { if (!sessionStorage.getItem('seeded')) { sessionStorage.setItem('seeded', '1'); localStorage.setItem('chemhub-theme', 'light'); localStorage.setItem('molastria-dft', JSON.stringify({ seen: ['why', 'hk', 'ks'] })); } };
+  const p = await open({ init: returning });
+  await go(p, '/dft/index.html');
+  assert.equal(await p.locator('#cr-acct .cr-up-dot').count(), 1, 'a returning visitor sees the dot');
+  await p.click('#cr-acct');
+  assert.equal(await p.locator('.cr-acct-pop [data-updates] .cr-up-new').count(), 1);
+  await p.click('.cr-acct-pop [data-updates]');
+  await p.waitForSelector('.up-scrim.open');
+  assert.ok(await p.locator('.up-back').isVisible(), 'back button when opened from the account panel');
+  assert.equal(await p.locator('#cr-acct .cr-up-dot').count(), 0, 'opening the sheet clears the dot');
+  assert.equal(await p.getAttribute('.up-row[data-id=dft] .up-ring', 'aria-label'), '已读 3 / 10 章');
+  assert.ok((await p.locator('.up-row').count()) >= 10);
+  await p.click('.up-row[data-id=dft] .up-more');
+  assert.ok(await p.locator('#up-m-dft').isVisible());
+  assert.match(await p.getAttribute('#up-m-dft .up-go', 'href'), /\/dft\/index\.html$/);
+  const n = Number(await text(p, '.up-all-n'));
+  assert.ok(n > 0);
+  await p.click('.up-all-btn');
+  assert.equal(await text(p, '.up-all-n'), '0');
+  assert.equal(await p.locator('.up-new').count(), 0);
+  await p.click('.up-back');
+  await p.waitForSelector('#cr-acct-pop:not([hidden])');
+  await p.waitForSelector('.up-scrim', { state: 'hidden' });
+  await p.keyboard.press('Escape');
+  // footer link on any page; Esc closes
+  await p.click('.cr-legal a[data-updates]');
+  await p.waitForSelector('.up-scrim.open');
+  assert.ok(await p.locator('.up-back').isHidden());
+  await p.keyboard.press('Escape');
+  await p.waitForSelector('.up-scrim', { state: 'hidden' });
+  // ?updates=1 opens it and leaves the address clean
+  await go(p, '/spectra/index.html?updates=1');
+  await p.waitForSelector('.up-scrim.open');
+  assert.ok(!p.url().includes('updates=1'));
+  // English
+  await go(p, '/dft/index.html?lang=en&updates=1');
+  await p.waitForSelector('.up-scrim.open');
+  assert.equal(await text(p, '#up-title'), 'What’s new');
+  assert.ok(!/[一-鿿]/.test(await text(p, '.up-sheet')), 'no Chinese in the English sheet');
+  assert.deepEqual(p.errors, []);
+  // the home page pops it once per release for returning visitors (automation is told apart by navigator.webdriver, so hide it)
+  const q = await open({ init: () => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); if (!sessionStorage.getItem('s')) { sessionStorage.setItem('s', '1'); localStorage.setItem('chemhub-theme', 'light'); localStorage.setItem('molastria-entrance', '1'); sessionStorage.setItem('molastria-entrance', '1'); } } });
+  await go(q, '/index.html');
+  await q.waitForSelector('.up-scrim.open', { timeout: 6000 });
+  await q.keyboard.press('Escape');
+  await q.reload({ waitUntil: 'networkidle' });
+  await q.waitForTimeout(3200);
+  assert.equal(await q.locator('.up-scrim.open').count(), 0, 'only once');
+  // a first visit: no dot, no popup
+  const r = await open({ init: () => Object.defineProperty(navigator, 'webdriver', { get: () => false }) });
+  await go(r, '/dft/index.html');
+  assert.equal(await r.locator('#cr-acct .cr-up-dot').count(), 0);
+  assert.deepEqual([...q.errors, ...r.errors], []);
 });
 
 check('open model hall: thirteen pavilions (Shanghai AI Lab with Sage-S2.1-Flash, SenseTime with SenseNova-Loop-9B and its how-to), task comparison, filters; a pavilion page with crumbs, releases and the switcher; Meta joins in; English', async () => {
