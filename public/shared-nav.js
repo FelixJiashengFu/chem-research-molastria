@@ -148,7 +148,7 @@
   // ── 最近更新（updates/）：UPDATES_LATEST 是 updates/updates-data.js 里最新一条的日期（tools/updates-test.mjs 核对两边一致）。
   //    每页载入时把这一页记进 molastria-updates.p（进度圈用：打开过就算看过；同一套写法在 updates-core.js 的 normPath / visit）；
   //    第一次来的人（首页进场动画是 full，或者本机没有任何 MolAstria 存档）直接记成看过最新一版，不弹也不亮小点。
-  const UPDATES_LATEST = '2026-11-18', UKEY = 'molastria-updates';
+  const UPDATES_LATEST = '2026-11-19', UKEY = 'molastria-updates';
   const readUp = () => { try { const v = JSON.parse(localStorage.getItem(UKEY) || 'null'); return v && typeof v === 'object' && !Array.isArray(v) ? v : null; } catch { return null; } };
   const firstVisit = (() => {
     if (document.documentElement.dataset.entrance === 'full') return true;
