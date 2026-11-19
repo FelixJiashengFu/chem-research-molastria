@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 文献信息抽取：把化学论文里的一张反应图或一页 PDF 交给一组分工的智能体，读出反应物、产物、条件、产率和底物表，R 基团由规则代入枚举，SMILES 用 RDKit 核对，每条反应打分，结果是一张能改的表，可以导出 JSON 和 CSV。思路来自 ChemEAGLE（arXiv:2507.20230）。">
+  <meta name="theme-color" content="#173f34">
+  <title>文献信息抽取 · 从反应图读出反应、条件和产率 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="extract.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../ai/config.js" defer></script>
+  <script src="../ai/ai.js" defer></script>
+  <script src="../lab/chem.js" defer></script>
+  <script src="extract-core.js" defer></script>
+  <script src="extract-demo.js" defer></script>
+  <script src="extract.js" defer></script>
+</head>
+<body data-section="extract" class="js-render">
+<!-- Everything here is drawn by extract.js in both languages (translate="no"), so the page does not wait for the site dictionary. -->
+<main class="ex" id="ex" translate="no">
+  <noscript><p class="ex-noscript">文献信息抽取需要 JavaScript 才能使用。</p></noscript>
+</main>
+</body>
+</html>

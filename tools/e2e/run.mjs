@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -6377,6 +6377,65 @@ check('vault: a stranger sees only a lock; the one-off payment opens the reader,
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
   await finish(e);
   await finish(b);
+});
+
+check('literature extractor: demo without AI, a real run through a fake model (plan check, R-group enumeration, scoring), editing, exports, English phone', async () => {
+  const p = await open({ init: studyKey, reducedMotion: 'reduce' });
+  await go(p, '/extract/index.html');
+  // the demo replays prewritten replies; everything after the model steps is computed in the page
+  await p.click('#ex-demo');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done', null, { timeout: 60000 });
+  assert.equal(await p.locator('#ex-table tbody tr').count(), 7, 'template + six products');
+  assert.match(await text(p, '#ex-sum'), /7 条反应.*高 7/);
+  assert.equal(await p.locator('[data-step=molecules]').getAttribute('data-status'), 'skip');
+  assert.equal(await p.locator('[data-step=scope]').getAttribute('data-status'), 'skip', 'R table and scope panel never both');
+  assert.equal(await p.inputValue('#ex-table tr[data-row="2"] .ex-smi >> nth=-1'), 'CC(=O)c1ccc(c2ccc(OC)cc2)cc1', '3b enumerated by rule');
+  // a real run: the fake model answers each agent by its task, like the demo but with a broken SMILES in the R table
+  const asked = [];
+  const D = await p.evaluate(() => window.MOLASTRIA_EXTRACT_DEMO.replies);
+  D.rtable.rows[5].values.Ar = 'unobtainium';
+  await p.route('https://api.deepseek.com/**', async (r) => {
+    const body = JSON.parse(r.request().postData());
+    const sys = body.messages[0].content;
+    const id = /^You plan/.test(sys) ? 'planner' : /main reaction scheme/.test(sys) ? 'template' : /R-group table/.test(sys) ? 'rtable' : /reaction conditions/.test(sys) ? 'conditions' : /text below/.test(sys) ? 'text' : /check an extraction/.test(sys) ? 'verify' : 'other';
+    asked.push({ id, image: Array.isArray(body.messages[1].content), json: body.response_format?.type });
+    const reply = id === 'verify' ? { reactions: [{ id: '2_1', reactants: 'yes', products: 'no', conditions: 'yes', yield: 'yes', note: 'methoxy is meta' }] } : D[id];
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: '```json\n' + JSON.stringify(reply) + '\n```' } }], usage: { prompt_tokens: 900, completion_tokens: 200 } }) });
+  });
+  await p.check('#ex-verify');
+  await p.click('#ex-run');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done' && !document.querySelector('#ex-stop:not([hidden])'), null, { timeout: 60000 });
+  assert.deepEqual(asked.map((a) => a.id).sort(), ['conditions', 'planner', 'rtable', 'template', 'text', 'verify']);
+  assert.ok(asked.filter((a) => a.id !== 'text').every((a) => a.image) && !asked.find((a) => a.id === 'text').image, 'the figure goes to the image agents only');
+  assert.ok(asked.every((a) => a.json === 'json_object'));
+  assert.match(await text(p, '#ex-status'), /调用模型 6 次/);
+  assert.match(await text(p, '#ex-table tr[data-row="6"] .ex-c-conf'), /低[\s\S]*认不出这个取代基/);
+  assert.match(await text(p, '#ex-table tr[data-row="2"] .ex-c-conf'), /模型复核说不对：products · methoxy is meta/);
+  // edit: fix the unknown substituent's product by hand, the row is rechecked
+  const smi = p.locator('#ex-table tr[data-row="6"] td:nth-child(4) .ex-smi');
+  await smi.fill('CC(=O)c1ccc(-c2cccs2)cc1');
+  await smi.press('Tab');
+  await p.waitForFunction(() => !/R 基团没有代完：3f/.test(document.querySelector('#ex-table tr[data-row="6"] .ex-c-conf').textContent));
+  // exports
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#ex-json')]);
+  const json = JSON.parse(readFileSync(await dl.path(), 'utf8'));
+  assert.equal(json.format, 'molastria-extract/1');
+  assert.equal(json.reactions.length, 7);
+  assert.equal(json.reactions[6].products[0].smiles, 'CC(=O)c1ccc(-c2cccs2)cc1');
+  const [dc] = await Promise.all([p.waitForEvent('download'), p.click('#ex-csv')]);
+  const csv = readFileSync(await dc.path(), 'utf8');
+  assert.equal(csv.charCodeAt(0), 0xfeff, 'BOM for Excel');
+  assert.equal(csv.trim().split('\r\n').length, 8);
+  await finish(p);
+  // English, phone width
+  const e = await open({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  await go(e, '/extract/index.html?lang=en');
+  await e.click('#ex-demo');
+  await e.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done', null, { timeout: 60000 });
+  assert.match(await text(e, 'h1'), /Literature Extractor/);
+  assert.doesNotMatch(await e.innerText('#ex'), /[一-鿿]/, 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(e);
 });
 
 // ── run ─────────────────────────────────────────────────────────────────

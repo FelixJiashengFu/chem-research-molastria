@@ -8804,6 +8804,15 @@
  "pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标": [
   "shared-nav.js"
  ],
+ "文献信息抽取": [
+  "shared-nav.js"
+ ],
+ "一组分工的 AI 智能体从反应图和 PDF 读出反应、条件、产率和底物表，规则代入 R 基团、核对打分，导出 JSON / CSV": [
+  "shared-nav.js"
+ ],
+ "extract extraction literature paper pdf figure scheme reaction scope table ocr chemeagle agent multi-agent smiles yield 抽取 提取 文献 论文 反应图 底物表 智能体 识别": [
+  "shared-nav.js"
+ ],
  "期刊选择与投稿指导": [
   "shared-nav.js"
  ],
@@ -17851,6 +17860,12 @@
   "tools/build-seo.ts"
  ],
  "站内各栏目推荐、逐本核对过的计算化学、量子物理、量子算法和数学教材，加上讲解手册 25 册；放上自己的书架，标在读、读完，写笔记，导出 BibTeX。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 文献信息抽取 · Literature Extractor": [
+  "tools/build-seo.ts"
+ ],
+ "把化学论文里的反应图、底物表或一页 PDF 交给一组分工的 AI 智能体，读出反应物、产物、条件和产率；R 基团由规则代入枚举，SMILES 用 RDKit 核对，每条反应打分，导出 JSON 和 CSV。思路来自 ChemEAGLE（arXiv:2507.20230）。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [

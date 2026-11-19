@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'extract', date: '2026-11-19', path: 'extract/index.html', group: 'make', icon: 'extract',
+      zh: '文献信息抽取', en: 'Literature Extractor',
+      note: ['一组 AI 智能体从反应图读出反应、条件和产率', 'A team of AI agents reads reactions, conditions and yields from a figure'],
+      more: ['照 ChemEAGLE（arXiv:2507.20230）的分工重写：规划先看图，再分别读反应式、分子、底物表、条件和图注；R 基团由规则代入枚举，SMILES 用 RDKit 核对，每条反应打分。表格能改，导出 JSON 和 CSV；“看示范”不用 AI。',
+        'Rebuilt after ChemEAGLE (arXiv:2507.20230): a planner looks at the figure, then agents read the scheme, molecules, scope table, conditions and caption; R groups are filled by rule, SMILES checked with RDKit, every reaction scored. Edit the table, export JSON or CSV; the demo needs no AI.'],
+    },
+    {
       id: 'om-sensetime', date: '2026-11-18', path: 'open-models/sensetime/index.html', group: 'models', icon: 'loop',
       zh: '开放模型馆 · 商汤科技', en: 'Open Model Hall · SenseTime',
       note: ['第十三个展馆：能装进自己电脑的 SenseNova-Loop-9B', 'Pavilion 13: SenseNova-Loop-9B, small enough for your own computer'],
