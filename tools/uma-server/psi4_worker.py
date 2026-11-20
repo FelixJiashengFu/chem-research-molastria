@@ -34,11 +34,37 @@ def versions():
     return {"psi4": psi4.__version__, "quacc": quacc.__version__}
 
 
+def close_output_after_each_run():
+    """On Windows, Psi4 keeps <label>.dat open after a run and quacc's Runner then can't delete its tmp-quacc-*
+    directory (WinError 32). Close Psi4's output file after every ASE calculate()."""
+    import psi4
+    from ase.calculators.psi4 import Psi4
+
+    if getattr(Psi4.calculate, "_molastria", False):
+        return
+    original = Psi4.calculate
+
+    def calculate(self, *args, **kwargs):
+        try:
+            return original(self, *args, **kwargs)
+        finally:
+            try:
+                psi4.core.close_outfile()
+            except Exception:  # noqa: BLE001 - nothing open is fine
+                pass
+
+    calculate._molastria = True
+    Psi4.calculate = calculate
+
+
 def static(req):
+    import psi4
     from ase import Atoms
     from quacc import change_settings
     from quacc.recipes.psi4.core import static_job
 
+    close_output_after_each_run()
+    psi4.set_num_threads(int(req.get("threads", 4)))  # otherwise Psi4 takes every core on the PC
     atoms = Atoms(req["symbols"], positions=req["positions"])
     with tempfile.TemporaryDirectory(prefix="molastria-psi4-") as d:
         os.environ.setdefault("PSI_SCRATCH", d)
@@ -52,7 +78,7 @@ def static(req):
 
 def main():
     try:
-        req = json.loads(sys.stdin.readline() or "{}")
+        req = json.loads(sys.stdin.readline().lstrip("\ufeff") or "{}")  # PowerShell 5.1 pipes add a BOM
         op = req.get("op")
         if op == "version":
             reply({"ok": True, **versions()})
