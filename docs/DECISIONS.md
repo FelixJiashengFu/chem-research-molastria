@@ -2,6 +2,10 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-19 Psi4 单独一个 conda 环境，经子进程调用
+
+Psi4 在 Windows 上只有 conda-forge 的包，uma-env 是普通 venv；硬装进去会和 torch 抢 MKL / OpenMP 的 DLL。所以照 MACE 的做法：Psi4 和 quacc 装在 `D:\ChemDraw\psi4-env`，`quacc_backend.py` 每个分子起一次 `psi4_worker.py`，超时直接结束子进程。多出的启动开销（约几秒）比单点计算本身小。
+
 ## 2026-11-19 quacc：做在线计算的作业层，只用免费引擎，按分子计次数
 站长要把 quacc（Quantum-Accelerators/quacc，BSD 3-Clause，Andrew S. Rosen）放进 MolAstria。做法：站长电脑上的 `server.py` 加第六条通道 `quacc`，由 `quacc_backend.py` 调 quacc 的配方（tblite / Psi4 / EMT）和 `Runner` + `Summarize`；代码台加“quacc 流水线”标签，小批量交给在线服务，其余给本机脚本。
 **原因：** quacc 的价值是“同一个配方换引擎、换调度器”，在线服务只该跑不花钱、许可证允许替别人跑的引擎：GFN2-xTB（LGPL）、Psi4（LGPL）、EMT（ASE 自带）。ORCA 只对学术用户免费，不替访客跑，只给本机脚本。

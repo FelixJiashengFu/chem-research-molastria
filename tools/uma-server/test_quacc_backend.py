@@ -1,6 +1,7 @@
 """quacc_backend.py: the helpers with numpy only (surface energy, Miller families, schema trimming, batch cost, the
 quiet stdout), and, when quacc is installed, its real EMT recipes on copper and the GFN2 recipes on water (tblite, or
-the xtb program when tblite is missing and xtb is on PATH).
+the xtb program when tblite is missing and xtb is on PATH); quacc-psi4 through psi4_worker.py with a stub worker,
+and for real when MOLASTRIA_PSI4_PYTHON names a conda environment with psi4 and quacc.
 
     python -X utf8 -m unittest tools/uma-server/test_quacc_backend.py -v
 """
@@ -103,6 +104,91 @@ class RealRecipes(unittest.TestCase):
         self.assertAlmostEqual(row["frequencies_cm1"][0], 1539, delta=15)
         self.assertAlmostEqual(row["frequencies_cm1"][2], 3651, delta=25)
         self.assertEqual((row["point_group"], row["symmetry_number"]), ("C2v", 2))
+
+
+STUB = """
+import json, sys, time
+req = json.loads(sys.stdin.readline())
+print("psi4 chatter that must not break the protocol")
+if req["op"] == "version":
+    print(json.dumps({"ok": True, "psi4": "1.11-stub", "quacc": "1.10.0"}))
+elif req.get("method") == "slow":
+    time.sleep(30)
+elif req.get("method") == "bad":
+    print(json.dumps({"ok": False, "error": "PsiException: SCF did not converge"}))
+else:
+    n = len(req["symbols"])
+    print(json.dumps({"ok": True, "energy_ev": -2000.0 - n + req["charge"], "symbols": req["symbols"],
+                      "positions": req["positions"]}))
+"""
+
+
+@unittest.skipUnless(QUACC, "quacc is not installed (pip install quacc)")
+class Psi4Worker(unittest.TestCase):
+    """quacc-psi4 through psi4_worker.py in another environment (a stub worker run by this Python)."""
+
+    def setUp(self):
+        import tempfile
+
+        self.dir = tempfile.TemporaryDirectory()
+        self.stub = os.path.join(self.dir.name, "stub_worker.py")
+        with open(self.stub, "w", encoding="utf-8") as f:
+            f.write(STUB)
+        self.old, qb.QuaccBackend.WORKER = qb.QuaccBackend.WORKER, self.stub
+
+    def tearDown(self):
+        qb.QuaccBackend.WORKER = self.old
+        self.dir.cleanup()
+
+    def backend(self, python=None):
+        b = qb.QuaccBackend(psi4_python=python if python is not None else sys.executable)
+        if b.psi4:
+            self.skipTest("psi4 imports in this environment, so the worker road is not taken")
+        return b
+
+    def item(self):
+        return {"smiles": "O", "symbols": ["O", "H", "H"], "positions": [[0, 0, 0], [0, 0, 0.96], [0.93, 0, -0.24]],
+                "charge": 0, "spin": 1, "formula": "H2O"}
+
+    def test_ready_and_batch(self):
+        b = self.backend()
+        self.assertTrue(b.ready("quacc-psi4"))
+        r = b.flow("quacc-psi4", [self.item()], "static", {"method": "hf", "basis": "sto-3g"}, Budget())
+        self.assertEqual(r["engine"], "Psi4 1.11-stub hf/sto-3g (quacc.recipes.psi4)")
+        row = r["items"][0]
+        self.assertTrue(row["ok"], row)
+        self.assertEqual(row["energy_ev"], -2003.0)
+        self.assertTrue(row["xyz"].startswith("3\n"))
+
+    def test_failure_is_one_row(self):
+        r = self.backend().flow("quacc-psi4", [self.item(), self.item()], "static", {"method": "bad", "basis": "sto-3g"},
+                                Budget())
+        self.assertEqual(r["n_ok"], 0)
+        self.assertIn("SCF did not converge", r["items"][0]["error"])
+
+    def test_time_limit(self):
+        import chemjobs as cj
+
+        b = self.backend()
+        with self.assertRaises(cj.JobTimeout):
+            b.flow("quacc-psi4", [self.item()], "static", {"method": "slow", "basis": "sto-3g"}, cj.Budget(limit=2))
+
+    def test_missing_environment_stays_off(self):
+        b = self.backend(os.path.join(self.dir.name, "no-such-python.exe"))
+        self.assertFalse(b.ready("quacc-psi4"))
+        self.assertTrue(b.psi4_error)
+
+
+@unittest.skipUnless(QUACC and os.environ.get("MOLASTRIA_PSI4_PYTHON"), "set MOLASTRIA_PSI4_PYTHON to a conda env with psi4 + quacc")
+class RealPsi4Worker(unittest.TestCase):
+    def test_water_hf_sto3g(self):
+        b = qb.QuaccBackend(psi4_python=os.environ["MOLASTRIA_PSI4_PYTHON"])
+        self.assertTrue(b.ready("quacc-psi4"), b.psi4_error)
+        it = {"smiles": "O", "symbols": ["O", "H", "H"],
+              "positions": [[0, 0, 0.1173], [0, 0.7572, -0.4692], [0, -0.7572, -0.4692]], "charge": 0, "spin": 1}
+        row = b.flow("quacc-psi4", [it], "static", {"method": "hf", "basis": "sto-3g"}, Budget())["items"][0]
+        self.assertTrue(row["ok"], row)
+        self.assertAlmostEqual(row["energy_ev"] / 27.211386, -74.96, delta=0.02)  # RHF/STO-3G water, about -74.96 Eh
 
 
 if __name__ == "__main__":
