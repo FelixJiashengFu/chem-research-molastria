@@ -90,7 +90,7 @@ async function build() {
       .replace(/\[@([\w-]+(?:\s*,\s*[\w-]+)*)\]/g, (_, list) => `<span class="chm-cites">[${list.split(',').map((x) => cite(x.trim())).filter(Boolean).join('; ')}]</span>`)
       .replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, (_, p, t) => {
         if (/^https?:/.test(p)) return `<a href="${p}" target="_blank" rel="noopener noreferrer">${t}</a>`;
-        const file = path.join(ROOT, 'public', p.replace(/#.*$/, ''), p.replace(/#.*$/, '').endsWith('/') ? 'index.html' : '');
+        const bare = p.replace(/[?#].*$/, ''), file = path.join(ROOT, 'public', bare, bare.endsWith('/') ? 'index.html' : ''); // a query (?job=ts) or anchor is not part of the file
         if (!fs.existsSync(file)) bad(`站内链接不存在：${p}`);
         return `<a href="../${p}">${t}</a>`;
       })

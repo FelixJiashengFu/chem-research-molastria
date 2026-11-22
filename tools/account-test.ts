@@ -671,6 +671,8 @@ await test("UMA: embargoed regions are refused, an optional Access token is sent
 const used = (key: string) => (sqlite.prepare("SELECT n FROM throttle WHERE key = ?").get(key) as any)?.n ?? 0;
 const resetUses = () => sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'uma:%' OR key LIKE 'asl:%'").run();
 const WATER = "3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
+// transition states: a guess for HCN <-> HNC, and the two isomers for neb (same atoms, same order)
+const HCN = "3\nHCN\nH -1.07 0 0\nC 0 0 0\nN 1.16 0 0\n", HNC = "3\nHNC\nH 2.15 0 0\nC 0 0 0\nN 1.17 0 0\n", TS_GUESS = "3\nguess\nH 0.6 1.0 0\nC 0 0 0\nN 1.17 0 0\n";
 const sentBody = () => { const b = { ...(umaCalls.at(-1)?.body as any) }; delete b.who; return b; };
 
 await test("API v3: every job passes with valid params and only the checked fields reach the computer", async () => {
@@ -700,6 +702,9 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ job: "qflow", model: "quacc-gfn2", params: { items: [" CCO ", "[CH3]"], recipe: "relax_freq", temperature: 350, bogus: 1 } }, { job: "qflow", model: "quacc-gfn2", params: { items: ["CCO", "[CH3]"], recipe: "relax_freq", temperature: 350 } }],
     [{ job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }, { job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }],
     [{ job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }, { job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }],
+    // transition states: coordinates only; the product's XYZ in params is tidied the same way as the main one
+    [{ xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80, bogus: 1 } }, { xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80 } }],
+    [{ xyz: HCN, job: "neb", model: "mace-off23-small", academic: true, params: { product_xyz: "\r\n" + HNC.replace(/\n/g, "\r\n"), images: 5, irc: false } }, { xyz: HCN, job: "neb", model: "mace-off23-small", params: { irc: false, images: 5, product_xyz: HNC } }],
   ];
   for (const [body, want] of cases) {
     const r = await call("POST", "/uma/jobs", body);
@@ -779,6 +784,20 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ job: "qslab", model: "quacc-gfn2", params: { element: "Cu" } }, "the GFN2 batch has no slabs"],
     [{ job: "qflow", model: "quacc-emt", params: { items: ["C"] } }, "EMT does slabs only"],
     [{ smiles: "CCO", job: "opt", model: "quacc-gfn2" }, "quacc models take batches only"],
+    [{ smiles: "C#N", job: "ts" }, "a TS needs coordinates, not SMILES"],
+    [{ job: "ts" }, "a TS needs a structure"],
+    [{ xyz: `51\nbig\n${"H 0 0 0\n".repeat(51)}`, job: "ts" }, "at most 50 atoms for a TS"],
+    [{ xyz: "1\nH\nH 0 0 0\n", job: "ts", spin: 2 }, "a TS needs two atoms"],
+    [{ xyz: TS_GUESS, job: "ts", params: { fmax: 0.1 } }, "the TS fmax tops out at 0.05"],
+    [{ xyz: TS_GUESS, job: "ts", params: { irc_steps: 201 } }, "at most 200 IRC steps"],
+    [{ xyz: TS_GUESS, job: "ts", params: { irc: "yes" } }, "irc is true or false"],
+    [{ xyz: HCN, job: "neb" }, "neb needs the product"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: WATER } }, "the product has other atoms"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: "3\nHNC\nC 0 0 0\nH 2.15 0 0\nN 1.17 0 0\n" } }, "the product's atoms in another order"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: "3\nbad\nH 0 0 x\nC 0 0 0\nN 1 0 0\n" } }, "a broken product XYZ"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: HNC, images: 12 } }, "at most 11 images"],
+    [{ xyz: TS_GUESS, job: "ts", model: "mace-mdp", academic: true }, "MACE-MDP has no forces for a TS"],
+    [{ xyz: TS_GUESS, job: "ts", model: "openmm-amber14" }, "protein MD has no TS"],
   ];
   for (const [body, why] of refused) {
     const r = await call("POST", "/uma/jobs", body);
@@ -822,6 +841,8 @@ await test("API v3: uses are counted by cost, a job that does not fit is refused
     [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O"] } }, 3], [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O", "F"], recipe: "relax_freq" } }, 12],
     [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C"], recipe: "static" } }, 1], [{ job: "qflow", model: "quacc-psi4", params: { items: ["C", "O"], recipe: "relax_freq" } }, 4],
     [{ job: "qslab", model: "quacc-emt", params: { element: "Au" } }, 3], [{ job: "qslab", model: "quacc-emt", params: { element: "Au", max_index: 2 } }, 5],
+    // transition states: a search, a Hessian and two IRCs 5; the band from reactant and product 8
+    [{ xyz: TS_GUESS, job: "ts" }, 5], [{ xyz: TS_GUESS, job: "ts", params: { irc: false } }, 5], [{ xyz: HCN, job: "neb", params: { product_xyz: HNC } }, 8],
   ];
   for (const [body, cost] of costs) {
     const n0 = used("uma:local");
@@ -947,9 +968,9 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt")], [18, 0, true, true, true, true], "the eighteen models whose licence allows it");
   eq(models.data.models.find((m: any) => m.id === "quacc-psi4")?.jobs, ["qflow"], "quacc: batches through one recipe");
   eq(models.data.quacc_costs, { per_molecule: { static: 1, relax: 1, relax_freq: 3 }, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, "what a batch costs");
-  eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
+  eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
   eq(models.data.models[0], { id: "uma-s-1p2p1", ready: true, queue: 1, charged: true, jobs: ["opt", "md", "ipea", "bde"] }, "a model's jobs as the computer reports them");
-  eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn"] }, "not loaded right now");
+  eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"] }, "not loaded right now");
   eq([models.data.costs.md, models.data.costs.polar, models.data.costs.ir, models.data.cost_with_thermo], [5, undefined, undefined, 5], "only the jobs these models do");
   if (JSON.stringify(models.data).includes("secret")) throw new Error("the model list leaked the secret");
   // The documentation page (public/api/compute.js) lists the same jobs, costs and models as the service.

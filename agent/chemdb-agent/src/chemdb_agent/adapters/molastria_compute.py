@@ -28,7 +28,7 @@ MODELS = (
     "gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb", "gfn-ff", "openmm-amber14",
     "quacc-gfn2", "quacc-psi4", "quacc-emt",
 )
-JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa", "pmd", "qflow", "qslab")
+JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa", "pmd", "qflow", "qslab")
 POLL_S = 3.0
 NOTE = "算力是站长电脑上的 RTX 2080，尽力而为，可能离线；不要用在有时限的任务上。"
 

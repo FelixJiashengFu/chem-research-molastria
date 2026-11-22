@@ -461,7 +461,7 @@ const UMA_MODELS = {
   'quacc-gfn2': 'open', 'quacc-psi4': 'open', 'quacc-emt': 'open'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
-const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, pmd: 5, qflow: 1, qslab: 3 };
+const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, ts: 5, neb: 8, pmd: 5, qflow: 1, qslab: 3 };
 // A quacc batch costs per molecule (tools/uma-server/quacc_backend.py ITEM_COST): a single point or a relaxation 1, a
 // relaxation and frequencies 3; Psi4 2 per molecule (single points only). Slabs up to (2,1,1) cost 5 instead of 3.
 const QUACC_ITEM_COST = { static: 1, relax: 1, relax_freq: 3 };
@@ -469,7 +469,11 @@ const QUACC_MAX_ITEMS = 8;
 const QUACC_JOBS = { 'quacc-gfn2': ['qflow'], 'quacc-psi4': ['qflow'], 'quacc-emt': ['qslab'] };
 const quaccCost = (model, job, params) => job === 'qslab' ? ((params.max_index ?? 1) > 1 ? 5 : 3)
   : (params.items?.length || 1) * (model === 'quacc-psi4' ? 2 : QUACC_ITEM_COST[params.recipe ?? 'relax']);
-const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
+const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'];
+// Transition states (tools/uma-server/tsjobs.py, Sella): XYZ input only, at most this many atoms; neb also takes the
+// product's XYZ in params, the same atoms in the same order.
+const TS_JOBS = new Set(['ts', 'neb']);
+const TS_MAX_ATOMS = 50;
 const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
   'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 // xTB takes ions and radicals but its IP / EA are several eV off (tools/uma-server/server.py X_JOBS), so no ipea.
@@ -513,10 +517,14 @@ const UMA_PARAMS = {
   qflow: { items: (v) => (Array.isArray(v) && v.length >= 1 && v.length <= QUACC_MAX_ITEMS && v.every((x) => typeof x === 'string' && SMILES_RE.test(x.trim())) ? v.map((x) => x.trim()) : undefined),
     recipe: pone('static', 'relax', 'relax_freq'), fmax: pnum(0.001, 0.1), temperature: TEMP,
     method: pone('hf', 'b3lyp-d3bj', 'pbe0', 'wb97x-d'), basis: pone('sto-3g', '6-31g*', 'def2-svp') },
-  qslab: { element: pone('Al', 'Cu', 'Ag', 'Au', 'Ni', 'Pd', 'Pt'), max_index: pnum(1, 2, true) }
+  qslab: { element: pone('Al', 'Cu', 'Ag', 'Au', 'Ni', 'Pd', 'Pt'), max_index: pnum(1, 2, true) },
+  // transition states: Sella saddle point, then frequencies and the IRC both ways; neb starts from reactant + product
+  ts: { fmax: pnum(0.001, 0.05), irc: pbool, irc_steps: pnum(10, 200, true) },
+  neb: { fmax: pnum(0.001, 0.05), irc: pbool, irc_steps: pnum(10, 200, true), images: pnum(3, 11, true),
+    product_xyz: (v) => { try { return umaXyz(v); } catch { return undefined; } } }
 };
 // No default for these; spins and pa's mode have one on the computer (the two lowest multiplicities, protonate).
-const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'], pmd: ['pdb_id'], qflow: ['items'], qslab: ['element'] };
+const UMA_REQUIRED = { scan: ['atoms'], rxn: ['reaction'], bde: ['bond'], pa: ['site'], pmd: ['pdb_id'], qflow: ['items'], qslab: ['element'], neb: ['product_xyz'] };
 function umaParams(job, raw) {
   if (raw !== undefined && raw !== null && (typeof raw !== 'object' || Array.isArray(raw))) throw fail(400, '参数（params）必须是一个对象', 'params must be an object');
   const out = {};
@@ -619,6 +627,12 @@ async function uma(request, env, cors, path, ip, api = null) {
       if (UMA_SMILES_ONLY.has(job) || (job === 'polar' && body.params?.average === true)) throw fail(400, '这项计算要从 SMILES 生成结构，不接受 XYZ', 'This calculation builds its structures from SMILES and does not take XYZ');
       out.xyz = umaXyz(body.xyz);
     }
+    if (TS_JOBS.has(job) && !out.xyz) throw fail(400, '过渡态计算要给 XYZ 坐标（过渡态的猜测结构，或反应物）：从 SMILES 生成的是能量极小点，不是过渡态', 'Transition-state jobs need XYZ coordinates (a guess of the TS, or the reactant): a structure built from SMILES is a minimum, not a TS');
+    const xyzAtoms = (t) => t.split('\n').slice(2, 2 + Number(t.split('\n')[0])).map((l) => l.trim().split(/\s+/)[0]);
+    if (TS_JOBS.has(job)) {
+      const n = xyzAtoms(out.xyz).length;
+      if (n < 2 || n > TS_MAX_ATOMS) throw fail(400, `过渡态计算要 2 到 ${TS_MAX_ATOMS} 个原子`, `Transition-state jobs take 2 to ${TS_MAX_ATOMS} atoms`);
+    }
     Object.assign(out, { job, model }); // the same field order as API v2, so old requests reach the computer unchanged
     for (const [k, lo, hi] of [['charge', -2, 2], ['spin', 1, 4]]) {
       if (body[k] === undefined || body[k] === null || body[k] === '') continue;
@@ -628,6 +642,7 @@ async function uma(request, env, cors, path, ip, api = null) {
     }
     if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1', 'This model takes neutral closed-shell molecules only: charge 0 and multiplicity 1');
     const params = umaParams(job, body.params);
+    if (job === 'neb' && xyzAtoms(params.product_xyz).join(' ') !== xyzAtoms(out.xyz).join(' ')) throw fail(400, '产物要和反应物是同样的原子、同样的顺序', 'The product must have the same atoms as the reactant, in the same order');
     if (Object.keys(params).length) out.params = params;
     // Conformer-averaged polarisability and the thermochemistry options need frequency runs: 5 uses each.
     // Protein MD longer than the default 20 ps holds the GPU longer: 10 uses.

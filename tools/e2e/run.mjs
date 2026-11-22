@@ -980,11 +980,11 @@ check('AI Lab demo data: the long note can be closed, the status row still says 
 
 // ── models page (public/models/): the online model API v3 through the account service and the fake computer ──
 const MODEL_WINDOWS = {
-  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
-  neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
-  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
+  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
+  neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
+  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
-  xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'spin', 'bde', 'pa'] },
+  xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'spin', 'bde', 'pa'] },
   protein: { models: ['openmm-amber14'], jobs: ['pmd'] },
 };
 /** Opens the models page once the fake computer is online and RDKit has checked the sample SMILES; records each job sent. */
@@ -1028,7 +1028,7 @@ check('models page: each window lists only its own models and jobs, and the butt
     assert.equal(await p.locator('#m-cards .md-model').count(), want.models.length, `${win} model cards`);
   }
   await p.click('#m-tabs [data-win=charged]');
-  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ipea: 1, spin: 2, bde: 2, pa: 2, flow: 4 };
+  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ts: 5, neb: 8, ipea: 1, spin: 2, bde: 2, pa: 2, flow: 4 };
   for (const [job, n] of Object.entries(costs)) {
     await p.selectOption('#m-job', job);
     assert.equal(await text(p, '#m-run'), `运行 · 消耗 ${n} 次`, job);
@@ -1094,6 +1094,48 @@ check('models page: every job runs once and its result is shown', async () => {
   await p.check('#m-result input[value=raman]');
   assert.match(await p.getAttribute('#m-result .md-spec svg', 'aria-label'), /拉曼/);
   await finish(p);
+});
+
+check('models page: transition state search and IRC, and NEB from the HCN example; ?job=ts opens it', async () => {
+  const p = await openModels('xtb');
+  const last = () => p.posts.at(-1);
+  await p.selectOption('#m-job', 'ts');
+  assert.ok(await runOff(p), 'a SMILES is not a transition state');
+  assert.match(await text(p, '#m-why'), /要用 XYZ 坐标/);
+  await p.click('#m-params [data-act=ts-sample]');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次');
+  let r = await runJob(p, 'ts');
+  assert.deepEqual([last().job, last().smiles, last().params], ['ts', undefined, { fmax: 0.01, irc: true, irc_steps: 60 }]);
+  assert.match(last().xyz, /^3\n/);
+  assert.match(r, V(/一个虚频 -1426 cm⁻¹：是一阶鞍点/, /是一阶鞍点|虚频/));
+  if (V(true, false)) { assert.match(r, /73\.20/); assert.match(r, /53\.20/); }
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), 1, 'the IRC profile');
+  assert.equal(await p.locator('#m-result .md-freqs span.neg').count(), V(1, 1));
+  await p.click('#m-result [data-act=ts-anim][data-what=mode]');
+  await p.waitForSelector('#m-result .md-3d[data-ready]', { timeout: 30000 });
+  assert.equal(await p.getAttribute('#m-result [data-act=ts-anim][data-what=mode]', 'aria-pressed'), 'true');
+  assert.match(await text(p, '#m-result .m3-fnum'), /\/ 16 帧/);
+  await p.click('#m-result [data-act=ts-anim][data-what=mode]');
+  assert.equal(await p.getAttribute('#m-result [data-act=ts-anim][data-what=mode]', 'aria-pressed'), 'false', 'a second click stops it');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#m-result [data-act=ts-xyz]')]);
+  assert.match(dl.suggestedFilename(), /_ts\.xyz$/);
+  // NEB: reactant and product must have the same atoms in the same order.
+  await p.selectOption('#m-job', 'neb');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 8 次');
+  await p.click('#m-params [data-act=ts-sample]');
+  await p.fill('#m-params textarea[data-k=product_xyz]', '3\nbad\nH 2.1 0.3 0\nN 1.17 0 0\nC 0 0 0\n');
+  assert.ok(await runOff(p)); assert.match(await text(p, '#m-why'), /同样的顺序排/);
+  await p.click('#m-params [data-act=ts-sample]');
+  r = await runJob(p, 'neb', () => p.fill('#m-params input[data-k=images]', '5'));
+  assert.equal(last().job, 'neb'); assert.equal(last().params.images, 5); assert.match(last().params.product_xyz, /^3\nHNC\n/);
+  assert.match(r, /交给 Sella 精修/);
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), V(2, 2), 'the IRC profile and the NEB band');
+  await finish(p);
+  // The reaction-dynamics zone links here: ?job=ts fills the example.
+  const q = await open();
+  await go(q, '/models/index.html?job=ts#xtb');
+  await q.waitForFunction(() => document.getElementById('m-job').value === 'ts' && /HCN/.test(document.getElementById('m-xyz').value), null, { timeout: 15000 });
+  await finish(q);
 });
 
 check('models page: the one-click pipeline runs frequencies, then IP / EA on the optimised structure, and stops at an imaginary frequency', async () => {
@@ -4882,7 +4924,7 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 14);
+  assert.equal(await p.locator('#run-jobs tr').count(), 16); // with ts and neb
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
   assert.equal(models.length, 14); // ten machine-learning potentials and the four xTB models (#123)

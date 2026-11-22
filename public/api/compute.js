@@ -18,6 +18,8 @@
     ['scan', '二面角扫描', 5, 'atoms*, start, end, points'],
     ['md', '分子动力学', 5, 'temperature, timestep_fs, steps, friction'],
     ['rxn', '反应能', 3, 'reaction*, thermo, temperature'],
+    ['ts', '过渡态搜索与 IRC（只收 XYZ）', 5, 'fmax, irc, irc_steps'],
+    ['neb', 'NEB 找过渡态与 IRC（反应物 XYZ + 产物 XYZ）', 8, 'product_xyz*, images, fmax, irc, irc_steps'],
     ['ipea', '电离能与电子亲和能', 1, 'mode'],
     ['spin', '自旋态能隙', 2, 'spins'],
     ['bde', '键解离能', 2, 'bond*, thermo, temperature'],
@@ -29,7 +31,7 @@
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
   // Until the service answers: the models the API offers and whether each handles charge and spin (GET /v1/models says the same).
-  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
+  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
   const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
   const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   const QFLOW = ['qflow'], QSLAB = ['qslab']; // quacc recipes: a batch of SMILES in params.items; EMT slabs by element

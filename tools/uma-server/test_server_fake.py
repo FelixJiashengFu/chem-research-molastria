@@ -34,8 +34,8 @@ P = ["openmm-amber14"]  # protein MD from a PDB ID
 QUACC = bool(server.qb.quacc_version())
 QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
 QS = ["quacc-emt"] if QUACC else []
-A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"]
-BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"]
+A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa"]
+BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
@@ -62,6 +62,9 @@ FIELDS = {
             "ps", "temperature_k", "timestep_fs", "energy_start_kj", "energy_minimised_kj", "ns_per_day", "series",
             "mean_temperature_k", "final_rmsd_a", "rmsf", "trajectory_pdb", "final_pdb", "seconds_total"},
     "qflow": {"recipe", "engine", "quacc_version", "items", "n_ok"},
+    "ts": {"ts_steps", "ts_converged", "ts_fmax_ev_a", "method", "ts_energy_ev", "frequencies_cm1", "n_imag",
+           "n_imag_significant", "imag_cm1", "is_first_order_saddle", "ts_xyz", "imag_mode", "irc", "profile",
+           "path_xyz", "n_path_frames", "reaction_energy_kcal"},
     "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
               "slabs", "lowest"},
 }
@@ -81,6 +84,9 @@ ITEMS = {
     ("spin", "states"): {"spin", "energy_ev", "xyz"},
     ("bde", "fragments"): {"smiles", "spin", "energy_ev"},
     ("pa", "energies"): {"base_ev", "acid_ev"},
+    ("ts", "profile"): {"s", "energy_ev", "rel_kcal"},
+    ("neb", "profile"): {"s", "energy_ev", "rel_kcal"},
+    ("ts", "irc"): {"forward", "reverse"},
     ("qslab", "slabs"): {"miller", "family", "atoms", "energy_ev", "area_a2", "gamma_j_m2", "gamma_ev_a2", "converged", "steps"},
 }
 DEFAULTS = {
@@ -89,7 +95,15 @@ DEFAULTS = {
     "md": {"temperature": 300.0, "timestep_fs": 0.5, "steps": 1000, "friction": 0.01},
     "ipea": {"mode": "adiabatic"}, "polar": {"average": False, "n": 8},
     "qslab": {"element": "Cu", "max_index": 1},
+    "ts": {"fmax": 0.01, "irc": True, "irc_steps": 60},
 }
+TS_GUESS = "3\nguess\nO 0 0 0\nH 0.1 0 0.95\nH 0 0 -0.95\n"  # the toy calculator: a bent triangle -> the linear saddle
+NEB_R = "3\nreactant\nO 0 0 0\nH 0.9 0 0.3\nH -0.2 0 0.95\n"
+NEB_P = "3\n\nO 0.00000000 0.00000000 0.00000000\nH -0.90000000 0.00000000 0.30000000\nH 0.20000000 0.00000000 0.95000000\n"
+IRC_END = {"irc_steps", "irc_converged", "irc_note", "energy_ev", "relax_steps", "relax_converged", "fmax_ev_a",
+           "barrier_kcal", "xyz"}
+NEB_KEYS = {"images", "neb_steps", "neb_converged", "ci_steps", "ci_converged", "highest_image", "energies_rel_kcal",
+            "reactant_energy_ev", "product_energy_ev", "reactant_relaxed", "product_relaxed", "band_xyz"}
 # One request per job (small parameters where they cost time). Ethanol, CCO: heavy atoms C0 C1 O2, then H3-H5 on C0,
 # H6 H7 on C1, H8 on O2.
 REQUESTS = {
@@ -103,7 +117,10 @@ REQUESTS = {
     "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
     "qflow": {"params": {"items": ["CCO", "O"]}},
     "qslab": {"params": {"element": "Cu"}},
+    "ts": {"xyz": TS_GUESS, "params": {"irc_steps": 15}},
+    "neb": {"xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 3, "irc_steps": 15}},
 }
+FIELDS["neb"] = FIELDS["ts"] | {"neb"}
 
 
 def expected_keys(model, job, params):
@@ -216,6 +233,18 @@ class FakeServer(unittest.TestCase):
         if job == "pmd":
             self.assertEqual(r["trajectory_pdb"].count("MODEL "), len(r["series"]))
             self.assertEqual(len(r["rmsf"]), r["residues"])
+        if job in ("ts", "neb"):
+            for side in r["irc"].values():
+                self.assertEqual(set(side), IRC_END)
+            self.assertEqual(r["path_xyz"].count(" s = "), r["n_path_frames"])
+            self.assertEqual(len(r["imag_mode"]), 3)
+            s = [p["s"] for p in r["profile"]]
+            self.assertEqual(s, sorted(s))  # reverse end -> TS (s = 0) -> forward end
+            self.assertIn(0.0, s)
+            if job == "neb":
+                self.assertEqual(set(r["neb"]), NEB_KEYS)
+                self.assertEqual(len(r["neb"]["energies_rel_kcal"]), params["images"] + 2)
+                self.assertEqual(r["neb"]["band_xyz"].count("NEB image"), params["images"] + 2)
         if job in ("ir",):
             self.assertEqual(len(r["frequencies_cm1"]), len(r["ir_intensity_km_mol"]))
             self.assertEqual(len(r["frequencies_cm1"]), len(r["raman_activity_a4_amu"]))
@@ -229,7 +258,7 @@ class FakeServer(unittest.TestCase):
             for model in group:
                 self.assertEqual(h["models"][model]["jobs"], jobs, model)
                 self.assertTrue(h["models"][model]["ready"])
-        self.assertEqual(set(h["models"]) - set(QF + QS) if not QUACC else set(h["models"]),
+        self.assertEqual(set(h["models"]) - ({"quacc-gfn2", "quacc-psi4", "quacc-emt"} - set(QF + QS)),
                          set(A + B + C + D + X + XN + P + QF + QS))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
@@ -247,7 +276,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1 + (3 if QUACC else 0))
+        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + (3 if QUACC else 0))
 
     @staticmethod
     def full_params(job, given):
@@ -262,6 +291,8 @@ class FakeServer(unittest.TestCase):
             out = {"chains": "", "temperature": 300.0, **given}
         if job == "qflow":
             out = {"recipe": "relax", "fmax": 0.01, "temperature": 298.15, **given}
+        if job in ("ts", "neb"):
+            out = {"fmax": 0.01, "irc": True, "irc_steps": 60, **given}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -433,6 +464,29 @@ class FakeServer(unittest.TestCase):
         self.refused({"model": UMA, "job": "sp", "smiles": "C(", "who": "0123456789abcdef"}, text="cannot parse")
         self.refused({"model": UMA, "job": "sp", "smiles": "C", "who": "bad"}, text="bad visitor id")
 
+    def test_ts_refusals(self):
+        self.refused({"model": UMA, "job": "ts", "smiles": "CCO"}, text="needs coordinates")
+        self.refused({"model": UMA, "job": "neb", "smiles": "CCO", "params": {"product_xyz": NEB_P}}, text="needs coordinates")
+        self.refused({"model": UMA, "job": "ts", "xyz": "1\n\nH 0 0 0"}, text="at least 2 atoms")
+        big = "51\n\n" + "".join(f"H {i % 10 * 1.0} {i // 10 * 1.0} 0\n" for i in range(51))
+        self.refused({"model": UMA, "job": "ts", "xyz": big}, text="at most 50 atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R}, text="params.product_xyz")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": "2\n\nO 0 0 0\nH 0 0 1"}},
+                     text="same atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": NEB_P.replace("\nO ", "\nS ")}},
+                     text="same atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": "3\n\nO 0 0 0\nH 0 0 x\nH 1 0 0"}},
+                     text="product_xyz:")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 12}}, text="params.images")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"irc_steps": 500}}, text="params.irc_steps")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"fmax": 0.08}}, text="params.fmax")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"irc": "yes"}}, text="params.irc")
+        self.refused({"model": "mace-mdp", "job": "ts", "xyz": TS_GUESS}, text="supports only")
+        self.refused({"model": "ani-2x", "job": "ts", "xyz": TS_GUESS, "charge": 1}, text="neutral closed-shell")
+        r = self.run_job({"model": "gfn2-xtb", "job": "ts", "xyz": TS_GUESS, "params": {"irc": False}})
+        self.assertNotIn("irc", r)
+        self.assertIn("imag_cm1", r)
+
     def test_key(self):
         status, data = self.call("GET", "/health", key="")
         self.assertEqual((status, data), (401, {"error": "unauthorized"}))
@@ -492,7 +546,7 @@ class Contract(unittest.TestCase):
                 self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
         self.assertEqual(len(server.MODELS), 23)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300})
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
 
     def test_mace_proxy(self):

@@ -36,7 +36,10 @@ API v3 (JSON; every request carries the header X-MolAstria-Key):
                       job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd qflow qslab. pmd (model
                       openmm-amber14) takes no structure: params {pdb_id, chains?, ps?, temperature?}. qflow (quacc-gfn2,
                       quacc-psi4) takes a batch in params {items: [SMILES, up to 8], recipe: static | relax | relax_freq,
-                      fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. The old form {smiles, model?, job:
+                      fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. ts and neb
+                      (every model with forces; XYZ only, at most 50 atoms; Sella): ts takes the TS guess as xyz, params
+                      {fmax?, irc?, irc_steps?}; neb takes the reactant as xyz and params {product_xyz, images?, fmax?,
+                      irc?, irc_steps?}. The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -65,6 +68,7 @@ import numpy as np
 import chemjobs as cj
 import openmm_backend as ob
 import quacc_backend as qb
+import tsjobs as tj
 import xtb_backend as xb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -72,8 +76,8 @@ UMA = "uma-s-1p2p1"
 OFF_ELEMENTS = ("H", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I")
 OMOL_ELEMENTS = tuple(cj.chemical_symbols[1:84])  # H to Bi, the elements of OMol25
 # Jobs by kind of model: A takes charges and spin states, B and C neutral closed-shell molecules only, D is MACE-MDP.
-A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa")
-B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn")
+A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa")
+B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb")
 D_JOBS = ("polar", "ir")
 # xTB takes charges and spin states, but its IP / EA are far off (measured 2026-11-11 with xtb 6.7.1, adiabatic, at
 # the ETKDG start: GFN2 benzene / ethanol / water 14.2 / 14.4 / 18.1 eV, GFN1 15.0 / 15.9 / 20.5 eV; experiment about
@@ -83,8 +87,9 @@ P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
 Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
 JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
+TS_JOBS = ("ts", "neb")  # transition states with Sella (tsjobs.py); XYZ input only, at most tj.MAX_ATOMS atoms
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -273,6 +278,15 @@ def job_params(job, raw):
         return out
     if job == "qslab":
         return {"element": _choice(raw, "element", qb.EMT_METALS, "Cu"), "max_index": _number(raw, "max_index", 1, 2, 1, True)}
+    if job in TS_JOBS:
+        out = {"fmax": _number(raw, "fmax", 0.001, 0.05, tj.TS_FMAX), "irc": _flag(raw, "irc", True),
+               "irc_steps": _number(raw, "irc_steps", 10, tj.IRC_STEPS_MAX, tj.IRC_STEPS, True)}
+        if job == "neb":
+            product = raw.get("product_xyz")
+            if not isinstance(product, str) or not product.strip():
+                raise BadRequest("params.product_xyz must be the product's XYZ (the same atoms in the same order)")
+            out.update(product_xyz=product, images=_number(raw, "images", tj.NEB_IMAGES_MIN, tj.NEB_IMAGES_MAX, tj.NEB_IMAGES, True))
+        return out
     return {}  # sp, ir
 
 
@@ -402,6 +416,7 @@ class Service:
         self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
+        self.sella = ""
         self.loading = True
         self.lock = threading.Lock()
         self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm", "quacc")}
@@ -467,10 +482,17 @@ class Service:
                     self.errors["psi4"] = q.psi4_error
             except Exception as e:  # noqa: BLE001 - no quacc in this environment: its recipes are off
                 self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
+        self.sella = tj.sella_version()  # transition states (ts, neb) need Sella; without it those two jobs are off
+        if not self.sella:
+            self.errors["sella"] = "no sella package (pip install sella): no transition-state jobs"
         self.loading = False
         for lane in self.backends:
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
         print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
+
+    def jobs_of(self, model):
+        """The model's jobs this computer can run now: without Sella, no ts and neb."""
+        return [j for j in MODELS[model]["jobs"] if j not in TS_JOBS or self.sella]
 
     def ready(self, model):
         lane = MODELS[model]["lane"]
@@ -575,6 +597,12 @@ class Service:
                 r = cj.run_scan(st, calc, budget, label, prm["atoms"], prm["start"], prm["end"], prm["points"])
             elif job == "md":
                 r = cj.run_md(st, calc, budget, label, prm["temperature"], prm["timestep_fs"], prm["steps"], prm["friction"])
+            elif job == "ts":
+                r = tj.run_ts(st, calc, budget, label, prm["fmax"], prm["irc"], prm["irc_steps"])
+            elif job == "neb":
+                _, product = cj.parse_xyz(prm["product_xyz"])
+                r = tj.run_neb(st, product, lambda: self.calculator(model), budget, label, prm["images"], prm["fmax"],
+                               prm["irc"], prm["irc_steps"])
             elif job == "rxn":
                 species, _ = cj.parse_reaction(prm["reaction"])
                 r = cj.run_rxn(species, calc, budget, prm["thermo"], prm["temperature"])
@@ -638,6 +666,8 @@ class Service:
                                   "qslab": "qslab takes the metal in params.element, not smiles or xyz"}[job])
         elif has_smiles == has_xyz:
             raise BadRequest("give exactly one of smiles and xyz")
+        if has_smiles and job in TS_JOBS:
+            raise BadRequest(f"{job} needs coordinates (xyz): a structure built from SMILES is a minimum, not a transition state")
         if has_xyz and (job in SMILES_JOBS or (job == "polar" and params["average"])):
             raise BadRequest(f"{job}{' with average' if job == 'polar' else ''} needs a SMILES, not xyz")
 
@@ -730,6 +760,20 @@ class Service:
             spec.update(xyz=f"{len(symbols)}\n\n{text}", charge=charge, spin=spin,
                         input="xyz:" + hashlib.sha256(text.encode()).hexdigest())
         n_atoms = len(symbols) if symbols else 0
+        if job in TS_JOBS:
+            if n_atoms > tj.MAX_ATOMS:
+                raise BadRequest(f"{job} takes at most {tj.MAX_ATOMS} atoms")
+            if n_atoms < 2:
+                raise BadRequest(f"{job} needs at least 2 atoms")
+        if job == "neb":
+            try:
+                p_symbols, p_positions = cj.parse_xyz(params["product_xyz"])
+            except ValueError as e:
+                raise BadRequest(f"product_xyz: {e}") from None
+            if not tj.same_atoms(symbols, p_symbols):
+                raise BadRequest("the product must have the same atoms as the reactant, in the same order")
+            params["product_xyz"] = f"{len(p_symbols)}\n\n" + "".join(
+                f"{s} {x:.8f} {y:.8f} {z:.8f}\n" for s, (x, y, z) in zip(p_symbols, p_positions))
         if job == "scan" and max(params["atoms"]) >= n_atoms:
             raise BadRequest(f"params.atoms must be atom indices below {n_atoms}")
         if job == "spin":
@@ -781,6 +825,8 @@ class Service:
         m = MODELS[model]
         if job not in m["jobs"]:
             return 400, {"error": f"{m['name']} supports only: {', '.join(m['jobs'])}"}
+        if job in TS_JOBS and not self.loading and not self.sella:
+            return 503, {"error": "transition-state jobs need the sella package, which is not installed on this computer"}
         if not self.ready(model):
             return 503, {"error": "the model is still loading" if self.loading else f"{m['name']} is not available on this computer"}
         if who and not WHO_OK.match(who):
@@ -834,7 +880,7 @@ class Service:
                 lane = m["lane"]
                 waiting = sum(1 for j in self.queues[lane] if self.jobs.get(j, {}).get("spec", {}).get("model") == mid)
                 run = self.running[lane]
-                models[mid] = {"ready": self.ready(mid), "jobs": list(m["jobs"]), "queue": waiting,
+                models[mid] = {"ready": self.ready(mid), "jobs": self.jobs_of(mid), "queue": waiting,
                                "running": bool(run and self.jobs.get(run, {}).get("spec", {}).get("model") == mid)}
             return {"ok": not self.loading and bool(self.backends), "api": 3, "ready": bool(self.backends),
                     "loading": self.loading, "errors": self.errors, "model": UMA, "device": self.device, "gpu": self.gpu,
