@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 世界模型（`/world-models/`，2026-11-22，站长：“把世界模型的模组也加进去 并且说明和化学研究的联系”，又补了一句“记得所有世界物理模型哦”；**草稿 PR，等站长说上线再合并**）：顶栏“模型与 AI”组，化学机器学习之后。十一章（什么是世界模型、潜空间、在想象里学、用模型规划、JEPA、视频和交互式世界、学出来的物理模拟器、天气和气候、分子和材料、实验室和反应、什么时候该相信），十三个演示，首页一张“和化学研究的联系”表，“世界物理模型总览”71 个（七类，Sora、Genie 2、Genie 3 只有官方博客），80 篇文献按 DOI / arXiv 核对。没测：Safari、真机触屏；桌面版等下一个标签。后续可以加：总览随新模型更新（每条带核对日期）、一个用 NequIP 式势当世界模型跑分子动力学的演示。
 - 用 Google 登录（账号页，2026-11-22，站长：“可以给我加上谷歌登录吗”）：账号服务走 OpenID Connect 授权码 + PKCE，按 Google 确认过的邮箱登录，和验证码登录是同一个账号。**上线要站长做：** 在 Google Cloud 建 OAuth 客户端（重定向 URI `https://api.molastria.com/auth/google/callback`），合并后在 main 上跑 D1 迁移（`handoffs` 表）、放两个 secret、部署 Worker（RUNBOOK“用 Google 登录”）。没测：真 Google（只对着假的测过）、Safari / iPhone。桌面版暂不显示按钮，以后可以用深链接接上。
 - quacc 流水线（代码台新标签 `#quacc`，2026-11-19，站长：“那就放进 MolAstria”）：quacc（BSD 3-Clause）做站长电脑上在线计算的作业层，第六条通道 `quacc`、三个模型 `quacc-gfn2`、`quacc-psi4`、`quacc-emt`，两种任务 `qflow`（一批最多 8 个分子的优化 / 频率 / 单点）和 `qslab`（EMT 金属表面能），也进了计算接口 `/v1`。**草稿 PR，等站长同意再合并；账号服务要从合并后的 main 部署；站长电脑要先装 quacc**（RUNBOOK“quacc 通道”）。没测过：站长电脑上真跑（Windows 没有 tblite，走 xtb 程序；Psi4 要 conda 装）。
 - 最近更新面板（`updates/`，2026-11-18，App Store 式的更新列表）：账号面板第一行、账号按钮小点、页脚“更新记录”、首页每版自动弹一次；第一版收了 11 月 16–18 日的 16 条。草稿 PR，等站长说“上”。没测：真机 Safari / iPad、桌面版里的自动弹出。以后每上线一个新栏目，记得在 updates-data.js 加一条并改 UPDATES_LATEST。
