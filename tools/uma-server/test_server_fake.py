@@ -23,8 +23,11 @@ import server  # noqa: E402
 
 UMA = "uma-s-1p2p1"
 DIRECT = {"allscaip-md-direct-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol"}
-A = ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"]
-B = ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0"]
+# The UMA checkpoints with the inorganic-materials task (omat) also do phonons of crystals (phon)
+AM = ["uma-s-1p2p1", "uma-s-1p2"]
+A = ["uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"]
+BM = ["uma-s-1p1"]
+B = ["esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0"]
 C = ["mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"]
 D = ["mace-mdp"]
 X = ["gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb"]  # xTB with charges and spins, no ipea
@@ -35,14 +38,22 @@ I = ["aimnet2"]  # AIMNet2: ions, but closed-shell only, so of the charge jobs o
 QUACC = bool(server.qb.quacc_version())
 QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
 QS = ["quacc-emt"] if QUACC else []
+# phonons (phonon_backend.py): phonopy, spglib and seekpath (pip install phonopy spglib seekpath); EMT is part of ASE
+PHONOPY = bool(server.pb.versions())
+PH = ["phonopy-emt"]
 A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa"]
 BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
 I_JOBS = BC_JOBS + ["pa"]
-GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS),
-          (QF, ["qflow"]), (QS, ["qslab"]))
+GROUPS = ((AM, A_JOBS + ["phon"]), (A, A_JOBS), (BM, BC_JOBS + ["phon"]), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS),
+          (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS), (QF, ["qflow"]), (QS, ["qslab"]), (PH, ["phon"]))
+
+
+def live(jobs):
+    """The jobs the fake server offers here: phon only where phonopy is installed."""
+    return [j for j in jobs if j != "phon" or PHONOPY]
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
 FIELDS = {
@@ -69,6 +80,10 @@ FIELDS = {
            "path_xyz", "n_path_frames", "reaction_energy_kcal"},
     "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
               "slabs", "lowest"},
+    "phon": {"method", "versions", "source", "formula", "symmetry", "supercell", "n_supercell", "n_displacements",
+             "displacement_a", "lattice_input", "relax", "lattice", "poscar", "max_residual_force_ev_a", "band", "dos",
+             "thermal", "gamma_thz", "min_frequency_thz", "max_frequency_thz", "imaginary", "imag_threshold_thz",
+             "n_imaginary_mesh"},
 }
 # what each molecule of a batch carries, by recipe
 QITEM = {"smiles", "charge", "spin", "formula", "ok", "energy_ev", "xyz"}
@@ -99,6 +114,7 @@ DEFAULTS = {
     "qslab": {"element": "Cu", "max_index": 1},
     "ts": {"fmax": 0.01, "irc": True, "irc_steps": 60},
 }
+PHON = {"supercell": [2, 2, 2], "displacement": 0.01, "relax": True, "mesh": 16, "t_max": 1000}
 TS_GUESS = "3\nguess\nO 0 0 0\nH 0.1 0 0.95\nH 0 0 -0.95\n"  # the toy calculator: a bent triangle -> the linear saddle
 NEB_R = "3\nreactant\nO 0 0 0\nH 0.9 0 0.3\nH -0.2 0 0.95\n"
 NEB_P = "3\n\nO 0.00000000 0.00000000 0.00000000\nH -0.90000000 0.00000000 0.30000000\nH 0.20000000 0.00000000 0.95000000\n"
@@ -119,6 +135,7 @@ REQUESTS = {
     "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
     "qflow": {"params": {"items": ["CCO", "O"]}},
     "qslab": {"params": {"element": "Cu"}},
+    "phon": {"params": {"preset": "Cu", "mesh": 8, "t_max": 300}},
     "ts": {"xyz": TS_GUESS, "params": {"irc_steps": 15}},
     "neb": {"xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 3, "irc_steps": 15}},
 }
@@ -127,7 +144,7 @@ FIELDS["neb"] = FIELDS["ts"] | {"neb"}
 
 def expected_keys(model, job, params):
     # a protein comes back as PDB text; a quacc batch has one XYZ per molecule, a slab job none
-    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab") else COMMON) | FIELDS[job]
+    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "phon") else COMMON) | FIELDS[job]
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -247,6 +264,13 @@ class FakeServer(unittest.TestCase):
                 self.assertEqual(set(r["neb"]), NEB_KEYS)
                 self.assertEqual(len(r["neb"]["energies_rel_kcal"]), params["images"] + 2)
                 self.assertEqual(r["neb"]["band_xyz"].count("NEB image"), params["images"] + 2)
+        if job == "phon":  # the fake server's calculator is EMT for copper: real numbers
+            self.assertEqual((r["symmetry"]["international"], r["symmetry"]["number"]), ("Fm-3m", 225))
+            self.assertEqual((r["n_supercell"], r["n_displacements"], r["thermal"]["atoms_per_cell"]), (32, 1, 1))
+            self.assertFalse(r["imaginary"])
+            self.assertTrue(all(abs(f) < 0.01 for f in r["gamma_thz"]))
+            self.assertEqual(r["band"]["ticks"][0]["label"], "Γ")
+            self.assertEqual(len(r["thermal"]["temperature_k"]), len(r["thermal"]["heat_capacity_j_k_mol"]))
         if job in ("ir",):
             self.assertEqual(len(r["frequencies_cm1"]), len(r["ir_intensity_km_mol"]))
             self.assertEqual(len(r["frequencies_cm1"]), len(r["raman_activity_a4_amu"]))
@@ -258,10 +282,10 @@ class FakeServer(unittest.TestCase):
         self.assertEqual(h["api"], 3)
         for group, jobs in GROUPS:
             for model in group:
-                self.assertEqual(h["models"][model]["jobs"], jobs, model)
-                self.assertTrue(h["models"][model]["ready"])
+                self.assertEqual(h["models"][model]["jobs"], live(jobs), model)
+                self.assertEqual(h["models"][model]["ready"], model not in PH or PHONOPY, model)
         self.assertEqual(set(h["models"]) - ({"quacc-gfn2", "quacc-psi4", "quacc-emt"} - set(QF + QS)),
-                         set(A + B + C + D + X + XN + P + I + QF + QS))
+                         set(AM + A + BM + B + C + D + X + XN + P + I + QF + QS + PH))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -269,7 +293,7 @@ class FakeServer(unittest.TestCase):
         count = 0
         for group, jobs in GROUPS:
             for model in group:
-                for job in jobs:
+                for job in live(jobs):
                     body = dict(REQUESTS[job], model=model, job=job)
                     r = self.run_job(body)
                     params = dict(DEFAULTS.get(job, {}))
@@ -278,7 +302,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0))
+        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0) + (4 if PHONOPY else 0))
 
     @staticmethod
     def full_params(job, given):
@@ -295,6 +319,8 @@ class FakeServer(unittest.TestCase):
             out = {"recipe": "relax", "fmax": 0.01, "temperature": 298.15, **given}
         if job in ("ts", "neb"):
             out = {"fmax": 0.01, "irc": True, "irc_steps": 60, **given}
+        if job == "phon":
+            out = {**PHON, **given}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -500,6 +526,44 @@ class FakeServer(unittest.TestCase):
         self.assertNotIn("irc", r)
         self.assertIn("imag_cm1", r)
 
+    @unittest.skipUnless(PHONOPY, "phonopy / spglib / seekpath are not installed")
+    def test_phonons(self):
+        """A crystal as POSCAR text and as CIF, the same answer either way, and the refusals before anything is queued."""
+        poscar = "Cu fcc\n1.0\n0 1.8 1.8\n1.8 0 1.8\n1.8 1.8 0\nCu\n1\nDirect\n0 0 0\n"
+        r = self.run_job({"model": "phonopy-emt", "job": "phon", "params": {"structure": poscar, "format": "poscar",
+                                                                             "supercell": [2, 2, 2], "relax": False, "mesh": 8}})
+        # the primitive cell is standardised to the conventional one first: 4 atoms, 2 x 2 x 2 -> 32
+        self.assertEqual((r["symmetry"]["n_input"], r["symmetry"]["n_conventional"], r["n_supercell"]), (1, 4, 32))
+        self.assertNotIn("relax", r)
+        cif = ("data_Cu\n_cell_length_a 3.6\n_cell_length_b 3.6\n_cell_length_c 3.6\n_cell_angle_alpha 90\n"
+               "_cell_angle_beta 90\n_cell_angle_gamma 90\n_symmetry_space_group_name_H-M 'F m -3 m'\n"
+               "loop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n"
+               "_atom_site_fract_z\nCu1 Cu 0 0 0\n")
+        r2 = self.run_job({"model": "phonopy-emt", "job": "phon", "params": {"structure": cif, "format": "cif",
+                                                                              "relax": False, "mesh": 8}})
+        self.assertEqual(r2["n_supercell"], 32)
+        self.assertAlmostEqual(r2["max_frequency_thz"], r["max_frequency_thz"], places=3)  # a = 3.6 both times
+        pm = "phonopy-emt"
+        self.refused({"model": pm, "job": "phon"}, text="exactly one of params.preset")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "structure": poscar}}, text="exactly one")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Fe"}}, text="params.preset")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "NaCl"}}, text="does not take Cl, Na")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "supercell": [5, 1, 1]}}, text="params.supercell")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "supercell": [4, 4, 4]}}, text="at most 216")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "displacement": 0.2}}, text="params.displacement")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "mesh": 64}}, text="params.mesh")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "t_max": 5000}}, text="params.t_max")
+        self.refused({"model": pm, "job": "phon", "params": {"structure": "not a poscar"}}, text="could not read")
+        self.refused({"model": pm, "job": "phon", "params": {"structure": poscar, "format": "xyz"}}, text="params.format")
+        self.refused({"model": pm, "job": "phon", "smiles": "C", "params": {"preset": "Cu"}}, text="not smiles or xyz")
+        self.refused({"model": UMA, "job": "phon", "charge": 1, "params": {"preset": "Si"}}, text="no charge or spin")
+        self.refused({"model": "esen-sm-conserving-all-omol", "job": "phon", "params": {"preset": "Si"}}, text="supports only")
+        # a cell without symmetry: 16 atoms in P1 need 3 x 16 x 2 = 96 displaced supercells
+        rng = __import__("random").Random(7)
+        p1 = "P1\n1.0\n5.1 0 0\n0.3 5.3 0\n0.2 0.4 5.6\nCu\n16\nDirect\n" + "".join(
+            f"{rng.random():.4f} {rng.random():.4f} {rng.random():.4f}\n" for _ in range(16))
+        self.refused({"model": pm, "job": "phon", "params": {"structure": p1, "supercell": [1, 1, 1]}}, text="at most 48")
+
     def test_key(self):
         status, data = self.call("GET", "/health", key="")
         self.assertEqual((status, data), (401, {"error": "unauthorized"}))
@@ -556,11 +620,12 @@ class Contract(unittest.TestCase):
         for group, jobs in GROUPS:
             for model in group:
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
-                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF or group is I, model)
+                self.assertEqual(server.MODELS[model]["charged"], group in (A, AM) or group is X or group is QF or group is I, model)
                 self.assertEqual(bool(server.MODELS[model].get("closed")), group is I, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 24)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200})
+        self.assertEqual(len(server.MODELS), 25)
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200,
+                                              "phon": 900})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
 
     def test_aimnet_proxy(self):
@@ -613,6 +678,7 @@ class Contract(unittest.TestCase):
     def test_param_defaults(self):
         for job, want in DEFAULTS.items():
             self.assertEqual(server.job_params(job, {}), want, job)
+        self.assertEqual(server.job_params("phon", {"preset": "Cu"}), {**PHON, "preset": "Cu"})
 
 
 if __name__ == "__main__":

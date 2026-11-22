@@ -42,7 +42,9 @@ API v3 (JSON; every request carries the header X-MolAstria-Key):
                       fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. ts and neb
                       (every model with forces; XYZ only, at most 50 atoms; Sella): ts takes the TS guess as xyz, params
                       {fmax?, irc?, irc_steps?}; neb takes the reactant as xyz and params {product_xyz, images?, fmax?,
-                      irc?, irc_steps?}. The old form {smiles, model?, job:
+                      irc?, irc_steps?}. phon (phonopy-emt, and the UMA checkpoints with the inorganic-materials task
+                      omat; phonon_backend.py) takes a crystal in params {preset | structure + format (poscar | cif),
+                      supercell?, displacement?, relax?, mesh?, t_max?}, not smiles or xyz. The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -70,6 +72,7 @@ import numpy as np
 
 import chemjobs as cj
 import openmm_backend as ob
+import phonon_backend as pb
 import quacc_backend as qb
 import tsjobs as tj
 import xtb_backend as xb
@@ -92,11 +95,12 @@ I_JOBS = B_JOBS + ("pa",)
 X_JOBS = tuple(j for j in A_JOBS if j != "ipea")
 P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
 Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
-JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS
+PH_JOBS = ("phon",)  # phonons of a crystal (phonopy + spglib + seekpath; phonon_backend.py): UMA's omat task, or EMT
+JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
 TS_JOBS = ("ts", "neb")  # transition states with Sella (tsjobs.py); XYZ input only, at most tj.MAX_ATOMS atoms
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -109,8 +113,11 @@ DEFAULT_LIMIT = 600
 #   UMA-S 1.1 9.26 / 5.11 / 5.89, eSEN-sm conserving 9.21 / 4.84 / 0.03, eSEN direct models about 0, MACE-OMOL-0
 #   9.11 / 5.02 / 0.04: neutral only. UMA-M 1.1 (an 11 GB checkpoint) does not fit this computer (15 GB RAM, 8 GB GPU).
 # "direct" models predict forces directly instead of as the energy gradient; their results say so.
-def _fair(name, charged, direct=False):
-    return {"name": name, "lane": "fair", "jobs": A_JOBS if charged else B_JOBS, "charged": charged,
+# omat: the UMA checkpoints that also carry the inorganic-materials task (OMat24; fairchem's pretrained_models.json lists
+# form_elem_refs for them), so they compute periodic crystals: phonons. The D4rev fine-tune and the OMol25-only
+# eSEN / AllScAIP models do not.
+def _fair(name, charged, direct=False, omat=False):
+    return {"name": name, "lane": "fair", "jobs": (A_JOBS if charged else B_JOBS) + (PH_JOBS if omat else ()), "charged": charged,
             "elements": OMOL_ELEMENTS, "direct": direct}
 
 
@@ -119,10 +126,10 @@ def _mace(name, jobs, elements):
 
 
 MODELS = {
-    UMA: _fair("UMA-S 1.2.1", True),
-    "uma-s-1p2": _fair("UMA-S 1.2", True),
+    UMA: _fair("UMA-S 1.2.1", True, omat=True),
+    "uma-s-1p2": _fair("UMA-S 1.2", True, omat=True),
     "uma-s-1p2p1-ft-d4rev": _fair("UMA-S 1.2.1 D4rev", True),
-    "uma-s-1p1": _fair("UMA-S 1.1", False),
+    "uma-s-1p1": _fair("UMA-S 1.1", False, omat=True),
     "allscaip-md-conserving-all-omol": _fair("AllScAIP-md conserving (OMol25)", True),
     "allscaip-md-direct-all-omol": _fair("AllScAIP-md direct (OMol25)", True, direct=True),
     "esen-sm-conserving-all-omol": _fair("eSEN-sm conserving (OMol25)", False),
@@ -156,6 +163,9 @@ MODELS = {
                    "elements": tuple(cj.chemical_symbols[1:37]), "direct": False},  # H to Kr: the small bases stop there
     "quacc-emt": {"name": "quacc · EMT", "lane": "quacc", "jobs": ("qslab",), "charged": False,
                   "elements": qb.EMT_METALS, "direct": False},
+    # phonons of crystals on the CPU with ASE's EMT (its seven fcc metals): the fully local path, no model weights
+    "phonopy-emt": {"name": "phonopy · EMT", "lane": "phonon", "jobs": PH_JOBS, "charged": False,
+                    "elements": pb.EMT_METALS, "direct": False},
 }
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
@@ -299,6 +309,25 @@ def job_params(job, raw):
                 raise BadRequest("params.product_xyz must be the product's XYZ (the same atoms in the same order)")
             out.update(product_xyz=product, images=_number(raw, "images", tj.NEB_IMAGES_MIN, tj.NEB_IMAGES_MAX, tj.NEB_IMAGES, True))
         return out
+    if job == "phon":
+        preset, structure = raw.get("preset"), raw.get("structure")
+        if (preset in (None, "")) == (structure in (None, "")):
+            raise BadRequest("give exactly one of params.preset and params.structure")
+        sc = raw.get("supercell", [2, 2, 2])
+        if not (isinstance(sc, list) and len(sc) == 3 and all(isinstance(x, int) and not isinstance(x, bool)
+                                                              and 1 <= x <= pb.SUPERCELL_MAX for x in sc)):
+            raise BadRequest(f"params.supercell must be three integers from 1 to {pb.SUPERCELL_MAX}")
+        out = {"supercell": [int(x) for x in sc],
+               "displacement": _number(raw, "displacement", pb.DISP[0], pb.DISP[1], pb.DISP[2]),
+               "relax": _flag(raw, "relax", True), "mesh": _number(raw, "mesh", pb.MESH[0], pb.MESH[1], pb.MESH[2], True),
+               "t_max": _number(raw, "t_max", pb.TMAX[0], pb.TMAX[1], pb.TMAX[2], True)}
+        if preset not in (None, ""):
+            out["preset"] = _choice(raw, "preset", tuple(pb.PRESETS), "Cu")
+        else:
+            if not isinstance(structure, str) or len(structure) > pb.MAX_TEXT:
+                raise BadRequest(f"params.structure must be POSCAR or CIF text of at most {pb.MAX_TEXT} characters")
+            out.update(structure=structure.replace("\r", ""), format=_choice(raw, "format", pb.FORMATS, "poscar"))
+        return out
     return {}  # sp, ir
 
 
@@ -329,6 +358,12 @@ class FairchemBackend:
         self.units[model] = pretrained_mlip.get_predict_unit(model, device=self.device, inference_settings=uma_settings())
         print(f"  loaded {model} in {time.time() - t:.1f} s", flush=True)
         return self.units[model]
+
+    def periodic(self, model):
+        """The checkpoint's inorganic-materials task as an ASE calculator, for crystals (cell and pbc set)."""
+        from fairchem.core import FAIRChemCalculator
+
+        return FAIRChemCalculator(self.unit(model), task_name="omat")
 
     def ef(self, model):
         from ase import Atoms
@@ -443,9 +478,10 @@ class Service:
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
         self.sella = ""
+        self.phonopy = {}
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "xtb", "openmm", "quacc")}
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "xtb", "openmm", "quacc", "phonon")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -515,14 +551,21 @@ class Service:
         self.sella = tj.sella_version()  # transition states (ts, neb) need Sella; without it those two jobs are off
         if not self.sella:
             self.errors["sella"] = "no sella package (pip install sella): no transition-state jobs"
+        self.phonopy = pb.versions()  # phonons need phonopy, spglib and seekpath; EMT itself is part of ASE
+        if self.phonopy:
+            self.backends["phonon"] = None
+            print("phonopy " + ", ".join(f"{k} {v}" for k, v in self.phonopy.items()), flush=True)
+        else:
+            self.backends.pop("phonon", None)
+            self.errors["phonopy"] = "no phonopy / spglib / seekpath (pip install phonopy spglib seekpath): no phonon jobs"
         self.loading = False
         for lane in self.backends:
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
         print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
 
     def jobs_of(self, model):
-        """The model's jobs this computer can run now: without Sella, no ts and neb."""
-        return [j for j in MODELS[model]["jobs"] if j not in TS_JOBS or self.sella]
+        """The model's jobs this computer can run now: without Sella, no ts and neb; without phonopy, no phon."""
+        return [j for j in MODELS[model]["jobs"] if (j not in TS_JOBS or self.sella) and (j not in PH_JOBS or self.phonopy)]
 
     def ready(self, model):
         lane = MODELS[model]["lane"]
@@ -535,6 +578,16 @@ class Service:
         if self.fake:
             return cj.EFCalculator(cj.toy_ef)
         return cj.EFCalculator(self.backends[MODELS[model]["lane"]].ef(model))
+
+    def periodic_calculator(self, model):
+        """For phon: symbols -> an ASE calculator for a periodic cell."""
+        if self.fake:
+            return pb.toy_calculator
+        if model == "phonopy-emt":
+            from ase.calculators.emt import EMT
+
+            return lambda symbols: EMT()
+        return lambda symbols: self.backends["fair"].periodic(model)
 
     def dp(self):
         return cj.toy_dp if self.fake else self.backends["mace"].dp
@@ -607,6 +660,8 @@ class Service:
             r = self.backends["quacc"].flow(model, items, prm["recipe"], prm, budget)
         elif job == "qslab":
             r = self.backends["quacc"].slabs(prm["element"], prm["max_index"], budget)
+        elif job == "phon":
+            r = pb.run_phonon(prm, self.periodic_calculator(model), budget, MODELS[model]["name"], MODELS[model]["elements"])
         elif job in D_JOBS:
             geo = self.calculator("mace-off23-medium")
             if job == "polar":
@@ -688,9 +743,10 @@ class Service:
         smiles, xyz = body.get("smiles"), body.get("xyz")
         has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
-        if job in ("rxn", "pmd", "qflow", "qslab"):
+        if job in ("rxn", "pmd", "qflow", "qslab", "phon"):
             if has_smiles or has_xyz:
-                raise BadRequest({"rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
+                raise BadRequest({"phon": "phon takes the crystal in params.preset or params.structure, not smiles or xyz",
+                                  "rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
                                   "pmd": "pmd takes the PDB ID in params, not smiles or xyz",
                                   "qflow": "qflow takes its molecules in params.items, not smiles or xyz",
                                   "qslab": "qslab takes the metal in params.element, not smiles or xyz"}[job])
@@ -722,6 +778,15 @@ class Service:
             spec.update(charge=0, spin=None, input="pdb:" + params["pdb_id"])
         elif job == "qslab":
             spec.update(charge=0, spin=None, input="slab:" + params["element"])
+        elif job == "phon":
+            if body.get("charge") not in (None, "", 0) or body.get("spin") not in (None, "", 1):
+                raise BadRequest("phon takes a neutral crystal: no charge or spin")
+            try:
+                prep = pb.prepare(params, m["elements"])
+            except pb.PhononError as e:
+                raise BadRequest(str(e)) from None
+            crystal = params.get("preset") or hashlib.sha256((params["format"] + "\n" + params["structure"]).encode()).hexdigest()
+            spec.update(charge=0, spin=None, input=f"crystal:{crystal}:{prep['n_supercell']}:{prep['n_displacements']}")
         elif job == "qflow":
             psi4 = model == "quacc-psi4"
             if psi4:
@@ -863,6 +928,8 @@ class Service:
             return 400, {"error": f"{m['name']} supports only: {', '.join(m['jobs'])}"}
         if job in TS_JOBS and not self.loading and not self.sella:
             return 503, {"error": "transition-state jobs need the sella package, which is not installed on this computer"}
+        if job in PH_JOBS and not self.loading and not self.phonopy:
+            return 503, {"error": "phonon jobs need phonopy, spglib and seekpath, which are not installed on this computer"}
         if not self.ready(model):
             return 503, {"error": "the model is still loading" if self.loading else f"{m['name']} is not available on this computer"}
         if who and not WHO_OK.match(who):

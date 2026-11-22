@@ -14,7 +14,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .cd-lead{max-width:44em;margin:16px auto 0;color:var(--ink-2);font-size:15.5px;line-height:1.9}
 
 /* 标签 */
-.cd-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:22px 0 4px}
+.cd-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:22px 0 4px}
 .cd-tabs button{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
 .cd-tabs button b{font-size:15.5px}
 .cd-tabs button small{font-size:12px;color:var(--muted);line-height:1.4}
@@ -129,7 +129,7 @@ b.no{color:var(--danger)}
 .cd-credits p{margin:0}
 
 @media (max-width:1180px){
-  .cd-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cd-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media (max-width:860px){
   .cd-grid{grid-template-columns:minmax(0,1fr)}
@@ -271,4 +271,55 @@ b.no{color:var(--danger)}
 @media (max-width:560px){
   .qc-recipes{grid-template-columns:minmax(0,1fr)}
   .qc-opts label{min-width:0;flex:1 1 140px}
+}
+
+/* ── 晶体声子（phonon.js）：图借用谱图馆的 sp-plot.js，这里抄一份它要的样式（谱图馆的 spectra.css 没有载入这一页） ── */
+#p-phonon .sp-c0{--c:var(--accent-text)}#p-phonon .sp-c1{--c:var(--gold-ink)}#p-phonon .sp-c2{--c:var(--info)}#p-phonon .sp-c3{--c:var(--danger)}#p-phonon .sp-c4{--c:var(--violet)}#p-phonon .sp-c5{--c:var(--muted)}
+.ph-plot-host .sp-plot{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-family:var(--font-sans);-webkit-user-select:none;user-select:none}
+.ph-plot-host .sp-plot text{fill:var(--muted);font-size:11px}
+.ph-plot-host .sp-plot .sp-axis{fill:var(--ink-2);font-size:12px}
+.ph-plot-host .sp-plot .sp-tick{font-family:var(--font-num);font-size:11px}
+.ph-plot-host .sp-plot .sp-lbl{fill:var(--c,var(--ink-2));font-size:10.5px;font-weight:600;paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
+.ph-plot-host .sp-plot .sp-cur{fill:var(--ink);font:600 11.5px/1 var(--font-num);paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+.ph-plot-host .sp-grid{stroke:var(--line);stroke-width:1;opacity:.55}
+.ph-plot-host .sp-frame{fill:none;stroke:var(--line-strong);stroke-width:1}
+.ph-plot-host .sp-zero{stroke:var(--line-strong);stroke-width:1}
+.ph-plot-host .sp-line{fill:none;stroke:var(--c);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.ph-plot-host .sp-fill{fill:var(--c);opacity:.13;stroke:none}
+.ph-plot-host .sp-vl{stroke:var(--c);stroke-width:1;opacity:.8;fill:none}
+.ph-plot-host .sp-band{fill:var(--c)}
+.ph-plot-host .sp-cross{stroke:var(--ink-2);stroke-width:1;opacity:.5;pointer-events:none}
+.ph-plot-host .sp-legend{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--ink-2)}
+.ph-plot-host .sp-legend li{display:flex;align-items:center;gap:6px}
+.ph-plot-host .sp-key{width:18px;height:0;border-top:2.4px solid var(--c);flex:0 0 auto}
+.ph-plot-host .sp-key.is-dash{border-top-style:dashed}
+.ph-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ph-preset{display:grid;gap:1px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:10px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;font:inherit;min-width:0}
+.ph-preset b{font-size:14px}
+.ph-preset small{font-size:11.5px;color:var(--muted);line-height:1.4}
+.ph-preset:hover{border-color:var(--accent)}
+.ph-preset[aria-checked=true]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent);background:var(--accent-soft)}
+.ph-preset.own{grid-column:span 2}
+#ph-own{margin-top:12px}
+#ph-text{width:100%;box-sizing:border-box;font:12.5px/1.5 var(--font-mono,ui-monospace,monospace)}
+.ph-sc{align-items:center}
+.ph-sc label{min-width:70px;flex:0 1 90px}
+.ph-sc-l{font-size:13px;color:var(--ink-2);flex:1 1 100%}
+.ph-check{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:13.5px;color:var(--ink-2)}
+.ph-check input{margin-top:3px}
+.ph-plots{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;margin-top:8px}
+.ph-plot-host{min-width:0}
+.ph-plot-host:last-child{grid-column:1/-1;max-width:760px}
+.ph-unit-row label{flex:0 0 auto}
+.ph-preset .ph-a{white-space:nowrap;font-family:var(--font-num)}
+.ph-plot-t{margin:10px 0 4px;font-size:13px;font-weight:600;color:var(--ink)}
+.ph-verdict{margin:8px 0;padding:8px 12px;border-radius:8px;border:1px solid var(--line);font-size:13.5px;line-height:1.6}
+.ph-verdict.ok{border-color:var(--accent);background:var(--accent-soft)}
+.ph-verdict.warn{border-color:var(--warn);background:var(--gold-soft);color:var(--ink)}
+#ph-meta code{font-size:12.5px}
+@media (max-width:860px){
+  .ph-plots{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .ph-presets{grid-template-columns:repeat(2,minmax(0,1fr))}
 }

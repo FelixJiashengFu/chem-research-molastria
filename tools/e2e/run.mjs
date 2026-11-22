@@ -5413,6 +5413,74 @@ check('code desk: quacc pipelines (recipe cards, batch sent to the fake computer
   await finish(e);
 });
 
+check('code desk: crystal phonons (presets, EMT job sent to the fake computer, space group, dispersion, DOS, thermal table, CSV, limits, own POSCAR)', async () => {
+  const p = await open({ acceptDownloads: true });
+  const posts = [];
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) posts.push(JSON.parse(r.postData() || '{}')); });
+  await go(p, '/code/index.html#phonon');
+  assert.equal(await p.getAttribute('#t-phonon', 'aria-selected'), 'true');
+  assert.equal(await p.locator('#ph-presets [data-preset]').count(), 12);
+  await p.click('[data-preset="Cu"]');
+  await p.selectOption('#ph-engine', 'emt');
+  assert.match(await text(p, '#ph-estimate'), /晶胞 4 个原子，超胞 32 个原子/);
+  await p.waitForFunction(() => /用掉今天在线计算次数 5 次/.test(document.getElementById('ph-cost').textContent), null, { timeout: 30000 });
+  assert.match(await text(p, '#ph-script'), /bulk\("Cu", "fcc", a=3\.615, cubic=True\)[\s\S]*calc = EMT\(\)[\s\S]*auto_band_structure/);
+  await p.click('#ph-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('ph-status').textContent), null, { timeout: 30000 });
+  const b = posts.at(-1);
+  assert.equal(b.job, 'phon');
+  assert.equal(b.model, 'phonopy-emt');
+  assert.deepEqual(b.params, { preset: 'Cu', supercell: [2, 2, 2], displacement: 0.01, relax: true, mesh: 16, t_max: 1000 });
+  assert.match(await text(p, '#ph-meta'), /空间群 Fm-3m[\s\S]*No\. 225[\s\S]*a = 3\.5898 Å[\s\S]*32 个原子/);
+  assert.match(await text(p, '#ph-verdict'), /没有虚频/);
+  // the dispersion: 6 segments (Γ-X, X-U, K-Γ, Γ-L, L-W, W-X) x 3 branches, Γ X U|K Γ L W X along the bottom
+  assert.equal(await p.locator('#ph-band path.sp-line').count(), 18);
+  const ticks = await p.locator('#ph-band text.sp-tick').allTextContents();
+  for (const l of ['Γ', 'X', 'U|K', 'L', 'W']) assert.ok(ticks.includes(l), `band tick ${l}`);
+  assert.equal(await p.locator('#ph-dos path.sp-fill').count(), 1);
+  assert.equal(await p.locator('#ph-thermal path.sp-line').count(), 2);
+  assert.deepEqual(await p.locator('#ph-table tbody tr:last-child td').allTextContents().then((c) => c.slice(0, 3)), ['1000', '24.791', '0.994']);
+  // units: cm-1 relabels the axis
+  await p.selectOption('#ph-unit', 'cm1');
+  assert.match(await text(p, '#ph-band'), /cm⁻¹/);
+  const dl = p.waitForEvent('download');
+  await p.click('#ph-csv');
+  const csv = readFileSync(await (await dl).path(), 'utf8');
+  assert.match(csv, /^distance,segment,band1_thz,band2_thz,band3_thz\n0\.00000,Γ-X,/);
+  assert.match(csv, /\ntemperature_k,free_energy_kj_mol,entropy_j_k_mol,heat_capacity_j_k_mol\n/);
+  // limits: Si with a 3x3x4 supercell is 288 atoms; EMT does not take Si
+  await p.click('[data-preset="Si"]');
+  assert.equal(await p.inputValue('#ph-engine'), 'uma');
+  await p.fill('#ph-sc', '4'); await p.fill('#ph-sa', '3'); await p.fill('#ph-sb', '3');
+  assert.match(await text(p, '#ph-estimate'), /超胞有 288 个原子，在线计算最多 216 个/);
+  assert.equal(await p.isDisabled('#ph-run'), true);
+  await p.fill('#ph-sc', '2'); await p.fill('#ph-sa', '2'); await p.fill('#ph-sb', '2');
+  await p.selectOption('#ph-engine', 'emt');
+  assert.match(await text(p, '#ph-estimate'), /EMT 只算/);
+  assert.equal(await p.isDisabled('#ph-run'), true);
+  // own structure: the sample POSCAR goes out as text with its format
+  await p.click('[data-preset="__own"]');
+  assert.equal(await p.isVisible('#ph-text'), true);
+  await p.click('#ph-sample-poscar');
+  await p.selectOption('#ph-engine', 'uma');
+  assert.match(await text(p, '#ph-estimate'), /晶胞 2 个原子，超胞 16 个原子（估算）/);
+  assert.match(await text(p, '#ph-script'), /STRUCTURE = "Si primitive cell[\s\S]*format="vasp"[\s\S]*task_name="omat"/);
+  await p.waitForFunction(() => !document.getElementById('ph-run').disabled, null, { timeout: 10000 });
+  await p.click('#ph-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('ph-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.at(-1).model, 'uma-s-1p2p1');
+  assert.equal(posts.at(-1).params.format, 'poscar');
+  assert.match(posts.at(-1).params.structure, /^Si primitive cell/);
+  await finish(p);
+  // the tab is linked from the phonon hall and from group theory
+  const g = await open();
+  await go(g, '/quasiparticles/phonons/index.html#c-compute');
+  await g.waitForSelector('a[href$="code/#phonon"]', { state: 'attached', timeout: 15000 });
+  await go(g, '/group-theory/index.html#c-crystals');
+  await g.waitForSelector('a[href$="code/#phonon"]', { state: 'attached', timeout: 15000 });
+  await finish(g);
+});
+
 check('code desk: structure search asks PubChem (mocked) by drawing or SMILES, ranks by Morgan similarity, adds a hit to the list', async () => {
   const p = await open();
   const asked = [];

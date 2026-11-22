@@ -674,6 +674,8 @@ const used = (key: string) => (sqlite.prepare("SELECT n FROM throttle WHERE key 
 const resetUses = () => sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'uma:%' OR key LIKE 'asl:%'").run();
 const WATER = "3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
 // transition states: a guess for HCN <-> HNC, and the two isomers for neb (same atoms, same order)
+// phonons: a primitive silicon cell as POSCAR text
+const POSCAR_SI = "Si\n1.0\n0 2.7155 2.7155\n2.7155 0 2.7155\n2.7155 2.7155 0\nSi\n2\nDirect\n0 0 0\n0.25 0.25 0.25\n";
 const HCN = "3\nHCN\nH -1.07 0 0\nC 0 0 0\nN 1.16 0 0\n", HNC = "3\nHNC\nH 2.15 0 0\nC 0 0 0\nN 1.17 0 0\n", TS_GUESS = "3\nguess\nH 0.6 1.0 0\nC 0 0 0\nN 1.17 0 0\n";
 const sentBody = () => { const b = { ...(umaCalls.at(-1)?.body as any) }; delete b.who; return b; };
 
@@ -708,6 +710,9 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80, bogus: 1 } }, { xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80 } }],
     [{ smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }, { smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }], // AIMNet2: protons move, no radicals
     [{ xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }, { xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }],
+    // phonons: a preset or POSCAR / CIF text, never smiles or xyz; the computer reads and standardises the crystal
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800, bogus: 1 } }, { job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800 } }],
+    [{ job: "phon", model: "uma-s-1p2p1", charge: 0, params: { structure: POSCAR_SI.replace(/\n/g, "\r\n"), format: "poscar" } }, { job: "phon", model: "uma-s-1p2p1", charge: 0, params: { format: "poscar", structure: POSCAR_SI } }],
     [{ xyz: HCN, job: "neb", model: "mace-off23-small", academic: true, params: { product_xyz: "\r\n" + HNC.replace(/\n/g, "\r\n"), images: 5, irc: false } }, { xyz: HCN, job: "neb", model: "mace-off23-small", params: { irc: false, images: 5, product_xyz: HNC } }],
   ];
   for (const [body, want] of cases) {
@@ -806,6 +811,23 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ xyz: HCN, job: "neb", params: { product_xyz: "3\nbad\nH 0 0 x\nC 0 0 0\nN 1 0 0\n" } }, "a broken product XYZ"],
     [{ xyz: HCN, job: "neb", params: { product_xyz: HNC, images: 12 } }, "at most 11 images"],
     [{ xyz: TS_GUESS, job: "ts", model: "mace-mdp", academic: true }, "MACE-MDP has no forces for a TS"],
+    [{ job: "phon", model: "phonopy-emt" }, "phon needs a crystal"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu", structure: POSCAR_SI } }, "a preset or a structure, not both"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Si" } }, "EMT does fcc metals only"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Fe" } }, "no such preset"],
+    [{ job: "phon", model: "phonopy-emt", smiles: "[Cu]", params: { preset: "Cu" } }, "no SMILES for a crystal"],
+    [{ job: "phon", model: "uma-s-1p2p1", xyz: WATER, params: { preset: "Si" } }, "no XYZ for a crystal"],
+    [{ job: "phon", model: "uma-s-1p2p1", charge: 1, params: { preset: "Si" } }, "a crystal has no charge"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", supercell: [5, 1, 1] } }, "at most 4 per axis"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", supercell: [2, 2] } }, "three multipliers"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", displacement: 0.1 } }, "displacement up to 0.05"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", mesh: 40 } }, "mesh up to 32"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", t_max: 3000 } }, "t_max up to 2000"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: "x".repeat(8001) } }, "at most 8000 characters"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: POSCAR_SI.replace("Si\n2", "Сі\n2") } }, "ASCII only"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: POSCAR_SI, format: "xyz" } }, "POSCAR or CIF"],
+    [{ job: "phon", model: "uma-s-1p2p1-ft-d4rev", params: { preset: "Si" } }, "the D4rev fine-tune has no omat task"],
+    [{ job: "phon", model: "gfn2-xtb", params: { preset: "Si" } }, "xTB does no crystals here"],
     [{ xyz: TS_GUESS, job: "ts", model: "openmm-amber14" }, "protein MD has no TS"],
   ];
   for (const [body, why] of refused) {
@@ -852,6 +874,8 @@ await test("API v3: uses are counted by cost, a job that does not fit is refused
     [{ job: "qslab", model: "quacc-emt", params: { element: "Au" } }, 3], [{ job: "qslab", model: "quacc-emt", params: { element: "Au", max_index: 2 } }, 5],
     // transition states: a search, a Hessian and two IRCs 5; the band from reactant and product 8
     [{ xyz: TS_GUESS, job: "ts" }, 5], [{ xyz: TS_GUESS, job: "ts", params: { irc: false } }, 5], [{ xyz: HCN, job: "neb", params: { product_xyz: HNC } }, 8],
+    // phonons: 5 whatever the crystal (the computer bounds atoms and displacements)
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu" } }, 5], [{ job: "phon", params: { preset: "NaCl", supercell: [3, 3, 3] } }, 5],
   ];
   for (const [body, cost] of costs) {
     const n0 = used("uma:local");
@@ -974,7 +998,10 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2")], [19, 0, true, true, true, true, true], "the nineteen models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt")], [20, 0, true, true, true, true, true, true], "the twenty models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "phonopy-emt"), { id: "phonopy-emt", ready: false, queue: 0, charged: false, jobs: ["phon"] }, "phonopy with EMT: phonons only");
+  eq(models.data.models.find((m: any) => m.id === "uma-s-1p1")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "phon"], "UMA's omat task does crystals");
+  eq(models.data.costs.phon, 5, "a phonon job costs 5");
   eq(models.data.models.find((m: any) => m.id === "aimnet2"), { id: "aimnet2", ready: false, queue: 0, charged: true, closed_shell: true, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "pa"] }, "AIMNet2: ions, closed-shell only");
   eq(models.data.models.find((m: any) => m.id === "quacc-psi4")?.jobs, ["qflow"], "quacc: batches through one recipe");
   eq(models.data.quacc_costs, { per_molecule: { static: 1, relax: 1, relax_freq: 3 }, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, "what a batch costs");
@@ -987,8 +1014,8 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
-  for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)(?:_PH)?\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
   const wanted = spec.components.schemas.ComputeJobRequest.properties;
@@ -1050,7 +1077,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 19, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 20, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

@@ -1,4 +1,4 @@
-/* 开源代码台的界面：六个标签（写输入、读输出、化学信息学、quacc 流水线、软件体检、搜代码）；化学信息学和 quacc 各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
+/* 开源代码台的界面：七个标签（写输入、读输出、化学信息学、quacc 流水线、晶体声子、软件体检、搜代码）；化学信息学、quacc 和声子各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
    从 SMILES 生成坐标用 viewer/smiles3d.js（MolAstriaSmiles3D），“读输出”的示例在 code-demos.js。
    上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页和计算工作台把结构放在 molastria-code-import，这里读一次就删掉。 */
 (function () {
@@ -16,7 +16,7 @@
   const link = (href, text) => { const u = safeUrl(href); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>` : esc(text); };
 
   // ── 标签 ──
-  const TABS = ['input', 'output', 'chem', 'quacc', 'check', 'search'];
+  const TABS = ['input', 'output', 'chem', 'quacc', 'phonon', 'check', 'search'];
   function show(tab, push) {
     if (!TABS.includes(tab)) tab = 'input';
     for (const t of TABS) {

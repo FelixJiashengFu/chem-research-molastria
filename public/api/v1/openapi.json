@@ -2071,10 +2071,11 @@
        "pa",
        "pmd",
        "qflow",
-       "qslab"
+       "qslab",
+       "phon"
       ],
       "default": "ipea",
-      "description": "sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ts transition-state search from a guess (Sella saddle point, harmonic frequencies, IRC both ways; xyz only, at most 50 atoms), neb the same from reactant and product (xyz is the reactant, params.product_xyz the product with the same atoms in the same order; IDPP, NEB, climbing-image NEB, then Sella), ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity, pmd protein molecular dynamics (model openmm-amber14 only: Amber ff14SB + implicit water on a PDB entry), qflow a batch of up to 8 molecules through one quacc recipe (models quacc-gfn2 and quacc-psi4), qslab surface energies of an fcc metal from the EMT bulk-to-slabs flow of quacc (model quacc-emt). GET /v1/models says which model does which."
+      "description": "sp single point, opt optimisation, freq frequencies and thermochemistry, conf conformer search, scan dihedral scan, md molecular dynamics, rxn reaction energy, ts transition-state search from a guess (Sella saddle point, harmonic frequencies, IRC both ways; xyz only, at most 50 atoms), neb the same from reactant and product (xyz is the reactant, params.product_xyz the product with the same atoms in the same order; IDPP, NEB, climbing-image NEB, then Sella), ipea ionisation energy and electron affinity, spin spin-state gaps, bde bond dissociation energy, pa proton affinity, pmd protein molecular dynamics (model openmm-amber14 only: Amber ff14SB + implicit water on a PDB entry), qflow a batch of up to 8 molecules through one quacc recipe (models quacc-gfn2 and quacc-psi4), qslab surface energies of an fcc metal from the EMT bulk-to-slabs flow of quacc (model quacc-emt), phon phonons of a crystal with phonopy (spglib space group and standardised cell, optional relaxation, finite displacements, band structure along the seekpath path, DOS, Cv / S / F against T, an imaginary-mode flag; models uma-s-1p2p1, uma-s-1p2 and uma-s-1p1 through their inorganic-materials task omat, and phonopy-emt for the fcc metals Al Cu Ag Au Ni Pd Pt). GET /v1/models says which model does which."
      },
      "model": {
       "type": "string",
@@ -2097,7 +2098,8 @@
        "quacc-gfn2",
        "quacc-psi4",
        "quacc-emt",
-       "aimnet2"
+       "aimnet2",
+       "phonopy-emt"
       ],
       "default": "uma-s-1p2p1"
      },
@@ -2125,7 +2127,7 @@
      },
      "params": {
       "type": "object",
-      "description": "Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ts {fmax (0.001-0.05, default 0.01), irc (default true), irc_steps (10-200 per direction, default 60)} costs 5 uses; neb {product_xyz (required), images (3-11, default 7), fmax, irc, irc_steps} costs 8 uses; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}; pmd {pdb_id (required, e.g. 1L2Y), chains (e.g. A; empty for every protein chain), ps (1-100, default 20; over 20 costs 10 uses), temperature (250-400 K)}; qflow {items (required, 1-8 SMILES), recipe (static | relax | relax_freq, default relax; quacc-psi4 does static only), fmax, temperature, method and basis (quacc-psi4: hf | b3lyp-d3bj | pbe0 | wb97x-d, sto-3g | 6-31g* | def2-svp)} costs per molecule: 1, 3 with frequencies, 2 with Psi4; qslab {element (required: Al, Cu, Ag, Au, Ni, Pd or Pt), max_index (1 or 2; 2 costs 5 uses instead of 3)}. qflow and qslab take no smiles or xyz."
+      "description": "Per job, all optional unless marked: opt {fmax}; freq {temperature, symmetry}; conf {n, temperature, window_kcal}; scan {atoms (required, four atom indices), start, end, points}; md {temperature, timestep_fs, steps, friction}; rxn {reaction (required, reaction SMILES), thermo, temperature}; ts {fmax (0.001-0.05, default 0.01), irc (default true), irc_steps (10-200 per direction, default 60)} costs 5 uses; neb {product_xyz (required), images (3-11, default 7), fmax, irc, irc_steps} costs 8 uses; ipea {mode}; spin {spins}; bde {bond (required, two atom indices), thermo, temperature}; pa {site (required, atom index), mode, thermo, temperature}; pmd {pdb_id (required, e.g. 1L2Y), chains (e.g. A; empty for every protein chain), ps (1-100, default 20; over 20 costs 10 uses), temperature (250-400 K)}; qflow {items (required, 1-8 SMILES), recipe (static | relax | relax_freq, default relax; quacc-psi4 does static only), fmax, temperature, method and basis (quacc-psi4: hf | b3lyp-d3bj | pbe0 | wb97x-d, sto-3g | 6-31g* | def2-svp)} costs per molecule: 1, 3 with frequencies, 2 with Psi4; qslab {element (required: Al, Cu, Ag, Au, Ni, Pd or Pt), max_index (1 or 2; 2 costs 5 uses instead of 3)}; phon {preset (Cu, Al, Ag, Au, Ni, Pd, Pt, Si, C, NaCl, MgO) or structure (POSCAR or CIF text, at most 8000 characters) with format (poscar | cif); supercell (three integers 1-4 multiplying the standardised conventional cell, default [2, 2, 2]; at most 32 atoms in that cell, 216 in the supercell and 48 displaced supercells), displacement (0.005-0.05 A, default 0.01), relax (default true), mesh (4-32, default 16), t_max (100-2000 K, default 1000)} costs 5 uses. qflow, qslab and phon take no smiles or xyz."
      }
     },
     "required": [
@@ -2238,7 +2240,8 @@
           "quacc-gfn2",
           "quacc-psi4",
           "quacc-emt",
-          "aimnet2"
+          "aimnet2",
+          "phonopy-emt"
          ]
         },
         "ready": {
@@ -2275,7 +2278,8 @@
            "pa",
            "pmd",
            "qflow",
-           "qslab"
+           "qslab",
+           "phon"
           ]
          }
         }
