@@ -131,8 +131,8 @@
   function cardMode(on) {
     $('card-field').hidden = !on;
     $('card-toggle').hidden = on;
-    $('login-h').textContent = T(on ? '用 VIP 卡开通 Pro' : '用邮箱登录');
-    $('login-sub').textContent = T(on ? '填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。' : '我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。');
+    $('login-sub').hidden = !on;
+    if (on) $('login-h').textContent = T('用 VIP 卡开通 Pro');
     googleBox();
   }
   $('card-toggle').addEventListener('click', () => { cardMode(true); $('login-card').focus(); });
