@@ -2,6 +2,15 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-22 用 Google 登录：服务端换 code，账号仍按邮箱认
+
+站长要加 Google 登录。做法：账号服务自己走 OpenID Connect 的授权码流程（PKCE + state + nonce，state 放在 api.molastria.com 的 HttpOnly cookie 里防登录 CSRF），用客户端密钥直接向 Google 换 ID token，再核对 iss、aud、exp、nonce 和 `email_verified`。没有用 Google Identity Services 的前端按钮库。
+**原因：**
+- 账号本来就按邮箱认（Pro、课题组、VIP 卡、云同步、API key、买断都挂在邮箱上），Google 确认过的邮箱直接当这个邮箱用，老用户不用“绑定”，什么都不丢。不存 Google 的 sub 和访问令牌，也不申请 email 以外的权限。
+- 服务端换 code、TLS 直连 Google，就不用在 Worker 里验 JWT 签名（OpenID Connect Core 3.1.3.7），代码小、不拉 JWKS；也不给每个页面加 Google 的第三方脚本（隐私、首屏、中国大陆加载不了 gsi 脚本）。
+- 回到页面时只带一个两分钟、只能用一次的交接码，放在 `#` 后面（不发给服务器、不进 Referer），页面再换成正常的登录令牌，登录令牌从不出现在地址里。回来的页面只能是 ALLOWED_ORIGINS 里的网站（不做开放跳转）。
+- 桌面版先不显示按钮：从 Google 回来会落在系统浏览器里而不是应用里，要做得等以后用深链接或本机回环地址。邮箱验证码照旧，是所有人的兜底。
+
 ## 2026-11-19 Psi4 单独一个 conda 环境，经子进程调用
 
 Psi4 在 Windows 上只有 conda-forge 的包，uma-env 是普通 venv；硬装进去会和 torch 抢 MKL / OpenMP 的 DLL。所以照 MACE 的做法：Psi4 和 quacc 装在 `D:\ChemDraw\psi4-env`，`quacc_backend.py` 每个分子起一次 `psi4_worker.py`，超时直接结束子进程。多出的启动开销（约几秒）比单点计算本身小。

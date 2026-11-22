@@ -190,6 +190,28 @@ deno run --allow-read --allow-write --allow-env=DEEPSEEK_API_KEY tools/i18n-tran
 - **成绩** 只存在浏览器的 `molastria-play` 里。
 - **计算器** 仍按“刷新数据”里的方式从 qchem-web 复制；它在“量子化学计算器”标签里，`#lab` 打开，其他未知的 `#…` 原样交给它。
 
+## 用 Google 登录
+
+账号页 `pro/account.html` 的“用 Google 登录”。流程：页面跳到账号服务 `GET /auth/google/start` → Google → `GET /auth/google/callback`（账号服务拿 code 向 Google 换 ID token，核对 iss / aud / exp / nonce / `email_verified`）→ 回到账号页，地址 `#google=<一次性交接码>` → 页面 `POST /auth/google/finish` 换登录令牌。账号仍然按邮箱认，所以和验证码登录是同一个账号。state、PKCE 和 nonce 放在 api.molastria.com 的 HttpOnly cookie 里（10 分钟）；交接码在表 `handoffs`（两分钟、一次）。桌面版不显示按钮（从 Google 回来会落在系统浏览器里），VIP 卡模式也不显示（卡要跟验证码一起兑换）。
+
+**开通（只做一次，站长自己做）：**
+
+1. 打开 https://console.cloud.google.com/ ，用站长的 Google 账号登录；左上角项目选择器 → 新建项目，名字 `MolAstria`，创建后切到这个项目。
+2. 左上角菜单 → “Google Auth Platform”（旧界面叫“API 和服务 → OAuth 同意屏幕”）→ “开始”：应用名称 `MolAstria`，用户支持邮箱选自己；受众（Audience）选“外部”（External）；联系邮箱填自己；勾选同意 → 创建。
+3. “品牌塑造”（Branding）：应用首页 `https://molastria.com`，隐私权政策 `https://molastria.com/pro/privacy.html`，服务条款 `https://molastria.com/pro/terms.html`；已获授权的网域加 `molastria.com`；保存。**不要上传徽标**（上传了就要等 Google 审核品牌）。
+4. “数据访问”（Data Access）不用加范围：只用 `openid` 和 `email`，都是非敏感范围，不用审核。
+5. “受众”（Audience）→ 发布状态点“发布应用”（Publish app）→ 确认，变成“正式版”（In production）。不发布的话只有“测试用户”里列的邮箱能登录。
+6. “客户端”（Clients）→ “创建客户端”：应用类型“Web 应用”，名称 `MolAstria web`；“已获授权的 JavaScript 来源”不用填；“已获授权的重定向 URI”添加 **`https://api.molastria.com/auth/google/callback`**（一字不差，不要末尾斜杠）→ 创建。弹窗里的“客户端 ID”和“客户端密钥”马上复制或点“下载 JSON”（新界面关掉后看不到密钥原文，只能重新生成）。
+7. 在站长电脑的 `deploy/` 目录里（PowerShell 用 `npx.cmd`）：`npx.cmd wrangler secret put GOOGLE_CLIENT_ID`、`npx.cmd wrangler secret put GOOGLE_CLIENT_SECRET`，按提示粘贴。两个都是 Worker 的 secret，不进仓库、不经过 Claude。
+
+**上线顺序：** 网站和账号服务的改动合并到 main → 在最新的 main 上 `npx.cmd wrangler d1 execute molastria --remote --file schema.sql`（建 `handoffs` 表）→ 第 7 步放两个 secret → `npx.cmd wrangler deploy`。没放 secret 时 `GET /auth/google` 回答 `{on:false}`，按钮不出现，所以网站先上线也没关系。
+
+**检查：** 打开 https://molastria.com/pro/account.html ，看到“用 Google 登录”；用一个以前用验证码登录过的 Gmail 登录，账号页显示的套餐和以前一样。报 `redirect_uri_mismatch` 就是第 6 步的地址没写对；报 `access_denied` / “此应用未经验证”多半是第 5 步没发布。
+
+**换密钥：** Google Cloud → Clients → 这个客户端 → 添加新密钥，`wrangler secret put GOOGLE_CLIENT_SECRET` 换上新的、部署，再删旧密钥。**关掉：** `npx.cmd wrangler secret delete GOOGLE_CLIENT_SECRET`，按钮自动消失。
+
+**测试：** `deno run --allow-read tools/account-test.ts`（PKCE、state、nonce、受众、未验证邮箱、交接码只能用一次、回来的页面只能是允许的网站）、`node tools/e2e/run.mjs "Google"`（浏览器里假装 Google 走一遍）。真 Google 只能上线后试。
+
 ## 云同步（学习记录和收藏）
 
 登录后在账号页 `#sync-card` 打开，只对打开的那台设备生效（本机 `molastria-sync = on`）。同步哪些存档写在 `public/sync/sync-core.js` 的 `KEYS`（键名、用到它的页面、中英文名字）；合并规则和一轮同步（`syncOnce`）也在那里，`public/sync/sync.js` 只管什么时候同步、提示刷新和状态。服务端是账号服务的 `GET / POST / DELETE /sync`，表 `sync_items`。

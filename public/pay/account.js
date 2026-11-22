@@ -1,7 +1,7 @@
 /* MolAstria Pro 账号（浏览器端）：付款后自动登录、邮箱验证码登录、订阅与 AI 托管额度。
    服务端是 deploy/account-worker.js，地址来自 pay/config.js 的 accountApi；留空时账号功能显示“正在开通”。
    登录令牌存在本机 localStorage 的 molastria-session；账号摘要缓存在 molastria-account，导航与 AI 助手直接读这份缓存。
-   Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), fromCheckout(), signOut(), addMember(), removeMember(),
+   Public API: MolAstriaAccount.{enabled, token(), cached(), refresh(), start(), verify(), googleOn(), googleUrl(), googleFinish(), fromCheckout(), signOut(), addMember(), removeMember(),
      redeemCard(), premium(), restorePurchases(), digest(), digestSubscribe(), digestSendMe(), keys(), createKey(), revokeKey(), and for the site admin cards(), createCards(), revokeCard(), digestBuild(), growth(), netMisses(), dropNetMiss(), clearNetMisses()} */
 (() => {
   'use strict';
@@ -53,6 +53,11 @@
     start: (email, card) => call('/auth/start', { method: 'POST', auth: false, body: { email, card: card || undefined, lang: document.documentElement.lang === 'en' ? 'en' : 'zh' } }),
     verify: (email, code) => call('/auth/verify', { method: 'POST', auth: false, body: { email, code } }).then((r) => signedIn(r)),
     fromCheckout: (sessionId) => call('/auth/checkout', { method: 'POST', auth: false, body: { session_id: sessionId } }).then((r) => signedIn(r)),
+    // 用 Google 登录：googleOn() 问账号服务开通了没有；googleUrl(back) 是按钮要去的地址（先到账号服务、再到 Google，最后回到 back，
+    // # 后面带一次性交接码）；googleFinish(交接码) 换成登录令牌。
+    googleOn: () => call('/auth/google', { auth: false }).then((r) => !!r.on).catch(() => false),
+    googleUrl: (back) => `${api()}/auth/google/start?back=${encodeURIComponent(back)}&lang=${document.documentElement.lang === 'en' ? 'en' : 'zh'}`,
+    googleFinish: (handoff) => call('/auth/google/finish', { method: 'POST', auth: false, body: { handoff } }).then((r) => signedIn(r)),
     signOut: () => (token() ? call('/auth/signout', { method: 'POST' }).catch(() => {}) : Promise.resolve()).finally(clear),
     addMember: (email) => call('/team/members', { method: 'POST', body: { email } }).then(updated),
     removeMember: (email) => call('/team/members', { method: 'DELETE', body: { email } }).then(updated),

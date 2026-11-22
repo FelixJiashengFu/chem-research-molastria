@@ -5616,6 +5616,15 @@
   "pro/account.html",
   "pro/account-page.js"
  ],
+ "用 Google 登录": [
+  "pro/account.html"
+ ],
+ "Google 账号的邮箱和你以前登录、付款用的邮箱一样，就是同一个账号：Pro、云同步、API key 都还在。": [
+  "pro/account.html"
+ ],
+ "或者用邮箱验证码": [
+  "pro/account.html"
+ ],
  "邮箱": [
   "pro/account.html"
  ],
@@ -6080,6 +6089,12 @@
   "shared-nav.js"
  ],
  "用邮箱登录（免费账号）或购买 Pro、课题组版后，账号服务（运行在 Cloudflare 上）会保存：你的邮箱；从 Stripe 查到的订阅状态（套餐、席位数、续费或到期时间）；登录会话（只保存不可逆的摘要）；AI 托管额度和在线模型的使用次数；课题组购买者添加的成员邮箱。登录验证码和课题组邀请通过 Resend 发送到你的邮箱。": [
+  "pro/privacy.html"
+ ],
+ "选择“用 Google 登录”时，你在 Google 的页面上登录并同意后，Google 只把你的邮箱和“这个邮箱已经验证过”告诉账号服务（我们只申请 openid 和 email 两项权限，拿不到你的通讯录、云端硬盘、邮件和其他信息）。账号服务用这个邮箱找到或建立你的账号，和用验证码登录完全一样，不保存 Google 给的其他内容和访问令牌。Google 按其": [
+  "pro/privacy.html"
+ ],
+ "处理你在它那边的登录。": [
   "pro/privacy.html"
  ],
  "订阅每周精选邮件时，账号服务会保存你的邮箱、语言和发送记录，邮件通过 Resend 发出；退订后删除这些记录。每封邮件都有退订链接。": [
@@ -14822,6 +14837,27 @@
  "还没有添加成员。": [
   "pro/account-page.js"
  ],
+ "用 Google 登录还没有开通，请先用邮箱验证码登录。": [
+  "pro/account-page.js"
+ ],
+ "已取消用 Google 登录。": [
+  "pro/account-page.js"
+ ],
+ "Google 登录没有完成（可能超过了 10 分钟，或者换了浏览器），请再试一次。": [
+  "pro/account-page.js"
+ ],
+ "这个 Google 账号的邮箱还没有验证，请改用邮箱验证码登录。": [
+  "pro/account-page.js"
+ ],
+ "登录尝试太频繁，请稍后再试。": [
+  "pro/account-page.js"
+ ],
+ "Google 登录失败，请再试一次，或者改用邮箱验证码登录。": [
+  "pro/account-page.js"
+ ],
+ "正在用 Google 登录…": [
+  "pro/account-page.js"
+ ],
  "用 VIP 卡开通 Pro": [
   "pro/account-page.js"
  ],
@@ -17851,6 +17887,15 @@
  "网页搜索暂时连不上": [
   "deploy/account-worker.js"
  ],
+ "回来的页面不对": [
+  "deploy/account-worker.js"
+ ],
+ "Google 登录的交接码格式不对": [
+  "deploy/account-worker.js"
+ ],
+ "Google 登录已过期，请再点一次“用 Google 登录”": [
+  "deploy/account-worker.js"
+ ],
  "内容太大：图片太多或太大，少附几张再试": [
   "deploy/account-worker.js"
  ],
@@ -19538,6 +19583,9 @@
  "欧洲电子结构计算社区的职位、研讨会与学校公告（官网 RSS）": [
   "sources"
  ],
+ "本次失败，保留上次缓存": [
+  "sources"
+ ],
  "arXiv 化学物理": [
   "sources"
  ],
@@ -19560,9 +19608,6 @@
   "sources"
  ],
  "计算化学开源软件与工具库（GitHub 官方 API，按 Star 排序）": [
-  "sources"
- ],
- "本次失败，保留上次缓存": [
   "sources"
  ],
  "主流程序发布说明": [

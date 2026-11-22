@@ -66,3 +66,5 @@ CHAT_REPORT_MAIL = "1"                             # 讨论室：有举报没处
 #   STRIPE_KEY        Stripe 受限密钥，只读：Customers、Checkout Sessions、Subscriptions
 #   RESEND_API_KEY    Resend 发信密钥（molastria.com 需在 Resend 验证）
 #   DEEPSEEK_API_KEY  托管额度使用的 DeepSeek key
+#   GOOGLE_CLIENT_ID      用 Google 登录：Google Cloud 控制台里 OAuth 客户端的“客户端 ID”（本身不是密钥，和下面那个放在一起好管）
+#   GOOGLE_CLIENT_SECRET  同一个客户端的“客户端密钥”。两个都有时账号页才显示 Google 按钮（docs/RUNBOOK.md“用 Google 登录”）

@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'google-signin', date: '2026-11-22', path: 'pro/account.html', group: 'make', icon: 'key',
+      zh: '用 Google 登录', en: 'Sign in with Google',
+      note: ['不用等验证码邮件，点一下就登录', 'No waiting for a code email: one click and you are in'],
+      more: ['账号页多了“用 Google 登录”。账号仍然按邮箱认：Google 账号的邮箱和你以前用验证码登录、付款用的邮箱一样，就是同一个账号，Pro、云同步、API key 和买过的内容都还在。邮箱验证码登录照旧可以用；桌面版暂时只能用验证码。',
+        'The account page now has “Sign in with Google”. Accounts are still keyed by email: if your Google account uses the email you signed in or paid with before, it is the same account, with Pro, cloud sync, API keys and purchases all still there. Email codes still work; the desktop app uses codes for now.'],
+    },
+    {
       id: 'quacc', date: '2026-11-19', path: 'code/index.html#p-quacc', group: 'make', icon: 'atoms',
       zh: '开源代码台 · quacc 流水线', en: 'Code Desk · quacc pipelines',
       note: ['一次交一批分子：优化、频率、表面能，用 quacc 的配方', 'Hand in a batch of molecules: relax, frequencies, surface energies, with quacc recipes'],
