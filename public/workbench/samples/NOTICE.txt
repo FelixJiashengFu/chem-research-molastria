@@ -1,0 +1,17 @@
+Sample files for the MolAstria workbench (/workbench/).
+
+formaldehyde.molden
+  B3LYP/def2-SVP orbitals of formaldehyde, written by PySCF (tools/workbench/samples.py). Part of MolAstria, MIT licence.
+
+water-dimer.molden
+  B3LYP/def2-SVP orbitals of the water dimer at the S22 geometry, written by PySCF (tools/workbench/samples.py), for IGMH. Part of MolAstria, MIT licence.
+
+dvb-raman-g16.out, dvb-td-g16.out, dvb-opt-g16.out, dvb-raman-orca5.out
+  Unchanged copies of Gaussian 16 and ORCA 5 outputs for divinylbenzene from the cclib regression data
+  (https://github.com/cclib/cclib, data/Gaussian/basicGaussian16 and data/ORCA/basicORCA5.0).
+  Copyright (c) 2024, the cclib development team. BSD 3-Clause licence, reproduced in cclib-LICENSE.txt.
+
+dvb-scan-g16.log
+  Excerpt of data/Gaussian/basicGaussian16/dvb_scan_relaxed.log from the same cclib regression data: only the route
+  line, the last standard orientation, SCF energy and "Stationary point found" line of each scan point are kept,
+  numbers unchanged (tools/workbench/cclib-excerpt.py). Same copyright and licence as above.

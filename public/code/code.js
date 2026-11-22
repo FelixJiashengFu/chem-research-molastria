@@ -1,6 +1,6 @@
 /* 开源代码台的界面：六个标签（写输入、读输出、化学信息学、quacc 流水线、软件体检、搜代码）；化学信息学和 quacc 各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
    从 SMILES 生成坐标用 viewer/smiles3d.js（MolAstriaSmiles3D），“读输出”的示例在 code-demos.js。
-   上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页把算好的结构放在 molastria-code-import，这里读一次就删掉。 */
+   上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页和计算工作台把结构放在 molastria-code-import，这里读一次就删掉。 */
 (function () {
   'use strict';
   const C = window.MolAstriaCode;
@@ -251,10 +251,13 @@
     const note = $('in-import');
     note.textContent = '';
     const part = (tag, text, raw) => { const el = document.createElement(tag); el.textContent = text; if (raw) el.setAttribute('translate', 'no'); note.append(el); };
-    part('span', tr('这个结构来自模型接口：'));
-    if (typeof d.model === 'string') part('b', d.model.slice(0, 60)); // 有的模型名带中文（“eSEN-sm 直接受力型”），要跟着翻译
-    if (typeof d.job === 'string') { note.append(' · '); part('span', d.job.slice(0, 40)); }
-    part('span', tr('。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。'));
+    if (d.from === 'workbench') part('span', tr('这个结构来自计算工作台。电荷和多重度照那边填好了。'));
+    else {
+      part('span', tr('这个结构来自模型接口：'));
+      if (typeof d.model === 'string') part('b', d.model.slice(0, 60)); // 有的模型名带中文（“eSEN-sm 直接受力型”），要跟着翻译
+      if (typeof d.job === 'string') { note.append(' · '); part('span', d.job.slice(0, 40)); }
+      part('span', tr('。电荷和多重度照那次计算填好了；坐标是机器学习势算的，正式计算前请检查。'));
+    }
     note.hidden = false;
     return true;
   }

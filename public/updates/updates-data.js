@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'workbench', date: '2026-11-22', path: 'workbench/index.html', group: 'make', icon: 'bench',
+      zh: '计算工作台', en: 'Workbench',
+      note: ['结构、晶体、反应路径、构象、轨道、弱相互作用、光谱和批量作业，一页做完', 'Structures, crystals, reaction paths, conformers, orbitals, weak interactions, spectra and batch jobs on one page'],
+      more: ['功能清单参照 Ester Studio，代码是按公开的文件格式和文献自己写的。读写九种结构格式，搭超胞和表面；写扫描、过渡态、IRC、NEB 的输入并画能量曲线；构象按 RMSD 归簇、算 Boltzmann 布居；标 R/S 和 E/Z；从 Molden 画分子轨道和电子密度，做 Hirshfeld 面、指纹图和 IGM / IGMH / IRI；读红外、拉曼、紫外和优化收敛；每一帧写一份输入，加一个 Slurm 或 PBS 作业脚本。文件只在浏览器里读。',
+        'The feature list follows Ester Studio; the code is our own, written from public file formats and papers. Read and write nine structure formats, build supercells and surfaces; write scan, TS, IRC and NEB inputs and plot the energy profile; cluster conformers by RMSD with Boltzmann populations; label R/S and E/Z; draw orbitals and densities from Molden files, Hirshfeld surfaces with fingerprints, and IGM / IGMH / IRI; read IR, Raman, UV–vis and convergence; write one input per frame plus a Slurm or PBS script. Files stay in your browser.'],
+    },
+    {
       id: 'world-models', date: '2026-11-22', path: 'world-models/index.html', group: 'models', icon: 'world', store: 'molastria-world', chapters: 11,
       zh: '世界模型', en: 'World Models',
       note: ['十一章、十三个现算的演示，和化学研究连在一起讲', 'Eleven chapters and thirteen live demos, tied to chemistry research throughout'],
