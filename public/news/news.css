@@ -105,6 +105,10 @@
 .nw-ar.nw-c0,.nw-ar.nw-c1,.nw-ar.nw-c2,.nw-ar.nw-c3,.nw-ar.nw-c4{fill:none}
 text.nw-c0,text.nw-c1,text.nw-c2,text.nw-c3,text.nw-c4{stroke:none}
 .nw-dot{fill:var(--gold);stroke:var(--paper);stroke-width:1}
+.nw-box{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.4}
+.nw-box.nw-box-hot{stroke:var(--gold-ink);stroke-width:2.4}
+.nw-bt{fill:var(--ink);font-weight:600;font-size:13.5px}
+.nw-cell{stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 4}
 .nw-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .nw-nums{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
 .nw-nums th,.nw-nums td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:normal}

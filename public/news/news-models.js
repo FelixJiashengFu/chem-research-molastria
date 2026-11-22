@@ -1,7 +1,8 @@
 'use strict';
 // 化学与材料新闻 · 演示用的数学（纯函数，没有 DOM；tools/news-test.mjs 测）。
 // 1. 自由基对的单重态–T0 混合（两能级，高场近似）；2. 三重态（S = 1）在 X 波段的粉末 EPR 谱，带自旋极化；
-// 3. 三重态的零场能级、ODMR 跃迁和弱磁场下的能级（3×3 精确对角化）；4. 两个电子自旋的点偶极 D 值。
+// 3. 三重态的零场能级、ODMR 跃迁和弱磁场下的能级（3×3 精确对角化）；4. 两个电子自旋的点偶极 D 值；
+// 6. 二维玩具表面上的吸附：真实势上的弛豫、近平衡才准的“机器学习势”、周期布朗桥（DBCata 的演示）。
 // 单位：频率 MHz，磁场 mT，时间 ns 或 μs（各函数注明）。
 (() => {
   // g = 2.0023 的电子：γ = gμB/h，单位 MHz/mT（μB/h = 13.996 245 GHz/T）
@@ -142,5 +143,128 @@
   // ── 5. 两条路竞争：k1/(k1 + k2) ──────────────────────────────────────────
   const branch = (tau1, tau2) => (1 / tau1) / (1 / tau1 + 1 / tau2);
 
-  window.MOLASTRIA_NEWS_MODELS = { MUB_H, gamma, stMix, qFromDg, stYield, gaussAvg, stMixAvg, stYieldAvg, sphere, tripletSticks, broaden, spanMT, zeroField, fromLines, eig3, levelsAt, DIP, dipD, rFromD, branch };
+  // ── 6. 吸附结构：一个二维玩具表面上的力弛豫和布朗桥（DBCata 那一条的演示） ──────────────────
+  // 一个吸附原子在周期为 1 的正方形表面上的位置 (x, y)。势能 V 是几口周期排列的高斯井：空位（0.5, 0.5）最深，
+  // 两个桥位（0.5, 0）、（0, 0.5）是浅井，顶位（0, 0）是一个鼓包。“DFT”就是在 V 上最速下降到局部极小。
+  // “机器学习势”在极小附近和 V 一样（训练数据都是近平衡的），离极小远了就叠上一个固定的起伏误差 ε·S(d)·G(x, y)。
+  // 布朗桥：训练数据是 N 对（初猜 y，弛豫后的 x），初猜按“规则位点 + 高斯偏移”生成；去噪器用这批数据的
+  // 经验分布的最优去噪器（核回归），也就是一个训练好的网络想逼近的那个函数。采样走 ODE（σ_t = 0），K 步。
+  const SURF = [
+    { c: [0.5, 0.5], a: -1.0, s: 0.16, name: 'hollow' },
+    { c: [0.5, 0], a: -0.4, s: 0.10, name: 'bridge' },
+    { c: [0, 0.5], a: -0.4, s: 0.10, name: 'bridge' },
+    { c: [0, 0], a: 0.6, s: 0.12, name: 'top' },
+  ];
+  const SITES = [[0, 0], [0.5, 0], [0, 0.5], [0.5, 0.5]]; // 规则枚举的位点：顶、桥、桥、空
+  const MINIMA = [[0.5, 0.5], [0.5, 0], [0, 0.5]];
+  const wrap1 = (v) => v - Math.floor(v);
+  const mimg = (d) => d - Math.round(d); // 最小像：差值折到 [−½, ½]
+  const pdist = (a, b) => Math.hypot(mimg(a[0] - b[0]), mimg(a[1] - b[1]));
+  function surfV(x, y) {
+    x = wrap1(x); y = wrap1(y); // 先折回晶胞，九个像就够，而且严格周期
+    let e = 0;
+    for (const w of SURF) for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+      const dx = x - w.c[0] - i, dy = y - w.c[1] - j;
+      e += w.a * Math.exp(-(dx * dx + dy * dy) / (2 * w.s * w.s));
+    }
+    return e;
+  }
+  function surfGrad(x, y) {
+    x = wrap1(x); y = wrap1(y); // 先折回晶胞，九个像就够，而且严格周期
+    let gx = 0, gy = 0;
+    for (const w of SURF) for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+      const dx = x - w.c[0] - i, dy = y - w.c[1] - j, s2 = w.s * w.s, f = w.a * Math.exp(-(dx * dx + dy * dy) / (2 * s2));
+      gx -= (f * dx) / s2; gy -= (f * dy) / s2;
+    }
+    return [gx, gy];
+  }
+  const minDist = (x, y) => Math.min(...MINIMA.map((c) => pdist([x, y], c)));
+  const smoothstep = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+  // 误差只在离最近的极小超过 0.07 之后出现，0.19 以外全开；G 是整数频率的三角函数，所以 V_ML 仍然是周期的
+  const mlipErr = (x, y) => smoothstep((minDist(x, y) - 0.07) / 0.12) * Math.sin(2 * Math.PI * (2 * x + y) + 1.3) * Math.cos(2 * Math.PI * (x - 2 * y) + 0.4);
+  const mlipV = (x, y, eps) => surfV(x, y) + eps * mlipErr(x, y);
+  function mlipGrad(x, y, eps) {
+    const h = 1e-5, f = (a, b) => mlipV(a, b, eps);
+    return [(f(x + h, y) - f(x - h, y)) / (2 * h), (f(x, y + h) - f(x, y - h)) / (2 * h)];
+  }
+  // 最速下降：步长 η·|∇V|，每步最多 0.02，|∇V| < tol 停；坐标不折回（画轨迹用），终点另外折回到 [0, 1)
+  function descend(grad, x, y, { eta = 0.003, steps = 6000, tol = 1e-4, every = 5 } = {}) {
+    const path = [[x, y]];
+    let k = 0;
+    for (; k < steps; k++) {
+      const [gx, gy] = grad(x, y), n = Math.hypot(gx, gy);
+      if (n < tol) break;
+      let sx = eta * gx, sy = eta * gy;
+      const m = Math.hypot(sx, sy);
+      if (m > 0.02) { sx *= 0.02 / m; sy *= 0.02 / m; }
+      x -= sx; y -= sy;
+      if (k % every === 0) path.push([x, y]);
+    }
+    path.push([x, y]);
+    return { x: [wrap1(x), wrap1(y)], end: [x, y], path, steps: k };
+  }
+  const relaxTrue = (y) => descend(surfGrad, y[0], y[1]);
+  const relaxML = (y, eps) => descend((a, b) => mlipGrad(a, b, eps), y[0], y[1]);
+  // 可复现的随机数（mulberry32）和 Box–Muller
+  function rng(seed) {
+    let s = seed >>> 0;
+    return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  // N 对训练数据：第 i 个初猜放在规则位点 SITES[i mod 4]，加标准差 sig 的高斯偏移；弛豫用真实的 V
+  function adsPairs(n, seed = 7, sig = 0.08) {
+    const r = rng(seed), g = () => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.PI * r()), out = [];
+    for (let i = 0; i < n; i++) {
+      const s = SITES[i % 4], y = [wrap1(s[0] + sig * g()), wrap1(s[1] + sig * g())];
+      out.push({ y, x: relaxTrue(y).x });
+    }
+    return out;
+  }
+  // 桥的方差 δ_t = 2s(m_t − m_t²)，m_t = t/T（论文式 2）
+  const bridgeVar = (m, s) => 2 * s * (m - m * m);
+  // 周期插值：从 x0 到 y 的第 m 处。nearest = true 用最小像位移（论文式 8），false 是直接线性插值
+  const periodicInterp = (x0, y, m, nearest = true) => [0, 1].map((k) => { const d = y[k] - x0[k]; return x0[k] + m * (nearest ? mimg(d) : d); });
+  // 经验分布的最优去噪器：给定 x_t，预测 x_t − x0 的条件期望。每对数据在 t 处的桥均值 μ_i = x0_i + m·mimg(y_i − x0_i)，
+  // 方差 δ_t + h²（h 是核宽，δ_t = 0 的两端靠它不退化）。返回 [εx, εy]，都按最小像算
+  function denoise(data, xt, m, s, h) {
+    const v2 = 2 * (bridgeVar(m, s) + h * h), n = data.length, lw = new Float64Array(n);
+    let wmax = -Infinity;
+    for (let i = 0; i < n; i++) {
+      const p = data[i], mx = p.x[0] + m * mimg(p.y[0] - p.x[0]), my = p.x[1] + m * mimg(p.y[1] - p.x[1]);
+      const dx = mimg(xt[0] - mx), dy = mimg(xt[1] - my), l = -(dx * dx + dy * dy) / v2;
+      lw[i] = l; if (l > wmax) wmax = l;
+    }
+    let sw = 0, ex = 0, ey = 0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.exp(lw[i] - wmax);
+      if (w < 1e-12) continue;
+      sw += w; ex += w * mimg(xt[0] - data[i].x[0]); ey += w * mimg(xt[1] - data[i].x[1]);
+    }
+    return [ex / sw, ey / sw];
+  }
+  // 反向 ODE 采样（论文式 10，σ_t = 0）：x̂0 = x_t − ε̂；x_{t−1} = (1 − m_{t−1}) x̂0 + m_{t−1} y + √(δ_{t−1}/δ_t)·(x_t − (1 − m_t) x̂0 − m_t y)。
+  // y 取离 x̂0 最近的像（最近原子插值）。返回终点（折回 [0, 1)）和每一步的位置
+  function bridgeSample(data, y, { K = 20, s = 0.02, h = 0.035 } = {}) {
+    let xt = [y[0], y[1]];
+    const path = [[xt[0], xt[1]]], preds = [];
+    for (let k = K; k >= 1; k--) {
+      const m = k / K, mp = (k - 1) / K, dt = bridgeVar(m, s), e = denoise(data, xt, m, s, h);
+      const x0 = [xt[0] - e[0], xt[1] - e[1]], yy = [x0[0] + mimg(y[0] - x0[0]), x0[1] + mimg(y[1] - x0[1])];
+      const r = dt > 0 ? Math.sqrt(bridgeVar(mp, s) / dt) : 0;
+      const res = [0, 1].map((q) => mimg(xt[q] - ((1 - m) * x0[q] + m * yy[q])));
+      xt = [0, 1].map((q) => (1 - mp) * x0[q] + mp * yy[q] + r * res[q]);
+      path.push([xt[0], xt[1]]); preds.push(x0);
+    }
+    return { x: [wrap1(xt[0]), wrap1(xt[1])], end: xt, path, preds };
+  }
+  // 一批初猜上的成功率：终点离真实弛豫结果（同一个初猜在 V 上最速下降）不到 tol 算成功
+  function adsScore(data, tests, { eps = 0.5, K = 20, s = 0.02, h = 0.035, tol = 0.03 } = {}) {
+    let b = 0, ml = 0;
+    for (const p of tests) {
+      if (pdist(bridgeSample(data, p.y, { K, s, h }).x, p.x) < tol) b++;
+      if (pdist(relaxML(p.y, eps).x, p.x) < tol) ml++;
+    }
+    return { bridge: b / tests.length, mlip: ml / tests.length, n: tests.length };
+  }
+
+  window.MOLASTRIA_NEWS_MODELS = { SURF, SITES, MINIMA, wrap1, mimg, pdist, surfV, surfGrad, mlipErr, mlipV, mlipGrad, descend, relaxTrue, relaxML, rng, adsPairs, bridgeVar, periodicInterp, denoise, bridgeSample, adsScore, MUB_H, gamma, stMix, qFromDg, stYield, gaussAvg, stMixAvg, stYieldAvg, sphere, tripletSticks, broaden, spanMT, zeroField, fromLines, eig3, levelsAt, DIP, dipD, rFromD, branch };
 })();

@@ -4356,12 +4356,15 @@ check('U of T zone and company map: nav entries, graph, filters, cross-links bot
   }
 });
 
-check('News explainers: nav entry, item list and filter, two explainers with key numbers, three working demos, English', async () => {
+check('News explainers: nav entry, item list and filter, three explainers with key numbers, five working demos, English', async () => {
   const p = await open();
   await go(p, '/news/index.html');
   assert.equal(await p.getAttribute('.cr-header a[data-id=news]', 'aria-current'), 'page', 'the news nav entry is current');
-  assert.equal(await p.locator('.nw-card').count(), 2);
-  assert.equal(await p.locator('.nw-item').count(), 2);
+  assert.equal(await p.locator('.nw-card').count(), 3);
+  assert.equal(await p.locator('.nw-item').count(), 3);
+  assert.match(await text(p, '#n-dbcata-adsorption .nw-paper'), /10\.1038\/s41467-026-79243-9[\s\S]*GPL-3\.0/);
+  assert.equal(await p.locator('#n-dbcata-adsorption .nw-paper-l', { hasText: '新闻报道' }).count(), 0, 'no empty coverage row');
+  assert.match(await text(p, '#n-dbcata-adsorption .nw-nums'), /68\.9%/);
   assert.match(await text(p, '#n-mof-radical-pairs .nw-paper'), /10\.1038\/s41467-026-79262-6/);
   assert.match(await text(p, '#n-mof-odmr .nw-nums'), /920 MHz, 150 MHz/);
   await p.click('#nw-filter button[data-f=spectroscopy]');
@@ -4369,7 +4372,19 @@ check('News explainers: nav entry, item list and filter, two explainers with key
   assert.equal(await p.isVisible('#n-mof-odmr'), true);
   await p.click('#nw-filter button[data-f=""]');
   await p.evaluate(() => window.MOLASTRIA_NEWS_START());
-  assert.equal(await p.locator('.nw-demo .sp-plot').count(), 6, 'every demo draws');
+  assert.equal(await p.locator('.nw-demo .sp-plot').count(), 8, 'every demo draws');
+  // Demo: DBCata bridge. Near a rule site with wrong forces the bridge is right and the ML potential wrong; off the rule the bridge fails too.
+  const br = p.locator('#demo-dbcata-adsorption-bridge');
+  const rows = async () => (await br.locator('.sp-out').innerText()).split('\n');
+  let out = (await rows()).join(' ');
+  assert.match(out, /机器学习势的终点离答案\s*0\.\d+（错/);
+  assert.match(out, /布朗桥的终点离答案\s*0\.000（对/);
+  assert.match(out, /桥 \/ 机器学习势答对\s*90% \/ 67%/);
+  await br.locator('button[data-k=pre][data-v=ood]').click();
+  assert.match((await rows()).join(' '), /布朗桥的终点离答案\s*0\.\d+（错/);
+  assert.match(await br.locator('image.nw-heat').getAttribute('href'), /^data:image\/png;base64,/, 'the surface is shaded');
+  // Demo: periodic interpolation. 0.95 → 0.05 is 0.90 cells straight, 0.10 by the nearest image.
+  assert.match(await p.locator('#demo-dbcata-adsorption-pbc .sp-out').innerText(), /0\.90 个晶胞 = 2\.49 Å[\s\S]*0\.10 个晶胞 = 0\.28 Å/);
   // Demo: radical pair. A large J suppresses the T₀ yield.
   const rp = p.locator('#demo-mof-radical-pairs-rp');
   const yieldOf = async () => +(await rp.locator('.sp-out').innerText()).match(/([\d.]+)%/)[1];

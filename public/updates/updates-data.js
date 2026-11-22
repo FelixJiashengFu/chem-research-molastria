@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'news-dbcata', date: '2026-11-22', path: 'news/index.html', group: 'find', icon: 'atoms',
+      zh: '新闻图解 · DBCata 生成吸附结构', en: 'News explained · DBCata generates adsorption structures',
+      note: ['扩散模型直接给出吸附物在合金表面上的落点，两个能动手调的演示', 'A diffusion model goes straight to where an adsorbate settles on an alloy surface; two hands-on demos'],
+      more: ['上海交通大学 Huo 和 Cao 的 DBCata（Nature Communications 2026）：从规则摆出的初猜出发，用周期布朗桥走 20 步得到 DFT 优化后的结构，坐标误差 0.035 Å，比 UMA 直接优化小三倍；配上离群检测，94% 的吸附能落在 0.1 eV 以内。图解讲清楚它怎么做、哪些数字是论文原文、哪些是算出来的、还差什么；演示里能看布朗桥和力算错了的优化在二维表面上谁走对，以及周期边界上为什么要按最近的像插值。9 篇文献按 DOI 在 OpenAlex 核对过。',
+        'DBCata by Huo and Cao at Shanghai Jiao Tong University (Nature Communications 2026) starts from a rule-placed guess and walks a periodic Brownian bridge for 20 steps to the DFT-relaxed structure, with a coordinate error of 0.035 Å, three times smaller than relaxing directly with UMA; with outlier detection, 94% of adsorption energies land within 0.1 eV. The explainer covers how it works, which numbers are the paper’s and which are computed, and what is still missing; the demos show a bridge and a wrong-force optimisation racing on a 2D surface, and why interpolation across a periodic boundary must follow the nearest image. 9 references checked by DOI on OpenAlex.'],
+    },
+    {
       id: 'workbench', date: '2026-11-22', path: 'workbench/index.html', group: 'make', icon: 'bench',
       zh: '计算工作台', en: 'Workbench',
       note: ['结构、晶体、反应路径、构象、轨道、弱相互作用、光谱和批量作业，一页做完', 'Structures, crystals, reaction paths, conformers, orbitals, weak interactions, spectra and batch jobs on one page'],
