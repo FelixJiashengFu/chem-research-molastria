@@ -5595,9 +5595,6 @@
   "pro/account.html",
   "shared-nav.js"
  ],
- "账号免费，不用密码。Pro 权益跟着付款邮箱走。": [
-  "pro/account.html"
- ],
  "账号服务正在开通": [
   "pro/account.html"
  ],
@@ -5618,7 +5615,7 @@
  "用 Google 登录": [
   "pro/account.html"
  ],
- "或者": [
+ "邮箱登录": [
   "pro/account.html"
  ],
  "邮箱": [
@@ -5636,9 +5633,6 @@
  "发送验证码": [
   "pro/account.html",
   "pro/account-page.js"
- ],
- "付过款的请用付款邮箱登录，用 Google 也一样，Pro 会自动生效。": [
-  "pro/account.html"
  ],
  "看看 Pro 支持者": [
   "pro/account.html"
