@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'world-models', date: '2026-11-22', path: 'world-models/index.html', group: 'models', icon: 'world', store: 'molastria-world', chapters: 11,
+      zh: '世界模型', en: 'World Models',
+      note: ['十一章、十三个现算的演示，和化学研究连在一起讲', 'Eleven chapters and thirteen live demos, tied to chemistry research throughout'],
+      more: ['从 Ha 和 Schmidhuber 的 World Models、Dreamer、MuZero、JEPA、Genie 讲到学出来的物理模拟器、GraphCast 天气模型、马尔可夫态模型和自驱实验室；一张表把每个世界模型的概念对到分子动力学、机器学习势和反应优化里，另有约七十个世界物理模型的总览。80 篇文献按 DOI / arXiv 核对过。',
+        'From Ha and Schmidhuber’s World Models, Dreamer, MuZero, JEPA and Genie to learned physics simulators, GraphCast weather, Markov state models and self-driving labs; one table maps each world-model idea onto molecular dynamics, ML potentials and reaction optimisation, plus an overview of about seventy physical world models. 80 references checked by DOI or arXiv.'],
+    },
+    {
       id: 'google-signin', date: '2026-11-22', path: 'pro/account.html', group: 'make', icon: 'key',
       zh: '用 Google 登录', en: 'Sign in with Google',
       note: ['不用等验证码邮件，点一下就登录', 'No waiting for a code email: one click and you are in'],

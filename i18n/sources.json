@@ -8851,6 +8851,16 @@
  "chemistry machine learning 化学机器学习 ml 指纹 fingerprint ecfp tanimoto smiles 高斯过程 gaussian process 贝叶斯优化 bayesian optimization 主动学习 active learning 生成模型 generative 自驱实验室 self-driving lab qsar 骨架划分 scaffold split 数据泄漏 leakage 校准 calibration": [
   "shared-nav.js"
  ],
+ "世界模型": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "会在脑子里“想”下一步的模型：从 Dreamer、JEPA、Genie 到学出来的模拟器，以及它们和分子动力学、机器学习势、自驱实验室的联系，十一章十三个演示": [
+  "shared-nav.js"
+ ],
+ "world model 世界模型 dreamer jepa v-jepa genie sora cosmos 视频生成 video generation 学出来的模拟器 learned simulator gns graphcast 天气 weather 想象 imagination 规划 planning mpc model-based reinforcement learning 强化学习 koopman dmd sindy 马尔可夫态模型 msm 自驱实验室 self-driving lab 代理模型 surrogate": [
+  "shared-nav.js"
+ ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
   "shared-nav.js"
  ],
@@ -18286,6 +18296,12 @@
   "tools/build-seo.ts"
  ],
  "化学机器学习十章：为什么用机器学习、分子表示（SMILES、指纹、Coulomb 矩阵）、高斯过程、神经网络和消息传递、贝叶斯优化、主动学习、生成模型、自驱实验室、评估的陷阱（骨架划分、数据泄漏、校准）、前沿；十七个在浏览器里当场计算的演示和 64 篇核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "世界模型 · World Models": [
+  "tools/build-seo.ts"
+ ],
+ "世界模型十一章：什么是世界模型、潜空间和状态空间模型、在想象里学（Dyna、World Models、Dreamer）、用模型规划（MPC、MuZero）、JEPA 和自监督表征、视频世界模型（Genie、Cosmos）、学出来的物理模拟器（GNS、DMD、力匹配）、天气和地球系统（GraphCast、GenCast）、分子世界（马尔可夫态模型、学出来的传播器、机器学习势）、实验室世界模型（贝叶斯优化、自驱实验室）、什么时候该相信世界模型；每章写明和化学研究的联系，附约七十个世界物理模型的总览、十三个在浏览器里当场计算的演示和 80 篇按 DOI / arXiv 核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "前沿 AI 数学 · Frontier AI Mathematics": [

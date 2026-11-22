@@ -23,6 +23,7 @@
   const GROUP = { find: ['发现', 'Discover'], learn: ['学习', 'Learn'], explore: ['探索', 'Explore'], models: ['模型与 AI', 'Models & AI'], make: ['工具', 'Tools'] };
   // 每条一枚自己画的小图（24 × 24 的线稿，白色画在分组颜色的底上）
   const ICONS = {
+    world: '<circle cx="11" cy="13" r="6.5"/><path d="M4.5 13h13M11 6.5c-2.2 1.8-2.2 11.2 0 13M11 6.5c2.2 1.8 2.2 11.2 0 13"/><path d="M15.5 3.5c2.6.4 4.6 2.4 5 5M18.8 3.2l-3.3.3.6 3"/>',
     key: '<circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H20M17 12v3M20 12v2.5"/>',
     extract: '<path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4"/><path d="M12 10.5l2.2 1.3v2.5L12 15.6l-2.2-1.3v-2.5z"/><path d="M8.5 18h7"/>',
     loop: '<path d="M7 8.5a5 5 0 0 1 8.6-1.2M17 15.5a5 5 0 0 1-8.6 1.2"/><path d="M15.8 4.5v3h-3M8.2 19.5v-3h3"/><circle cx="12" cy="12" r="1.3"/>',

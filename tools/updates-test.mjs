@@ -52,7 +52,7 @@ test('every path exists, and anchors are on the page', () => {
 });
 
 test('chapter counts and chapter ids match the module sources', () => {
-  const SRC = { 'molastria-md': 'md', 'molastria-tensor': 'tensor', 'molastria-photochem': 'photochem', 'molastria-em': 'em', 'molastria-chemml': 'chemml',
+  const SRC = { 'molastria-md': 'md', 'molastria-tensor': 'tensor', 'molastria-photochem': 'photochem', 'molastria-em': 'em', 'molastria-chemml': 'chemml', 'molastria-world': 'wm',
     'molastria-reaction': 'reaction', 'molastria-dft': 'dft', 'molastria-macro': 'macro', 'molastria-group': 'group', 'molastria-quasi': 'quasi', 'molastria-nequip': 'nequip', 'molastria-optics': 'optics' };
   for (const x of items.filter((y) => y.store)) {
     const dir = SRC[x.store];

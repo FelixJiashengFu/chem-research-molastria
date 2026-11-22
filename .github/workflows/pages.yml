@@ -80,6 +80,8 @@ jobs:
         run: node --test tools/reaction-test.mjs
       - name: Chemistry machine learning models and content
         run: node --test tools/chemml-test.mjs
+      - name: World models demos and content
+        run: node --test tools/wm-test.mjs
       - name: Electromagnetism models and content
         run: node --test tools/em-test.mjs
       - name: Tensor networks models and content
