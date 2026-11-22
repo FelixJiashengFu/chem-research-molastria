@@ -11,7 +11,7 @@ self.onmessage = (ev) => {
   const d = ev.data || {};
   const progress = (k, n) => self.postMessage({ id: d.id, type: 'progress', k, n });
   try {
-    const q = QUALITY[d.quality] || QUALITY.medium;
+    const q = Object.hasOwn(QUALITY, d.quality) ? QUALITY[d.quality] : QUALITY.medium;
     if (d.job === 'mo' || d.job === 'density') {
       const w = F.parseMolden(d.molden);
       const g = F.gridFor(w.atoms.map((a) => [a.x, a.y, a.z]), { margin: d.job === 'mo' ? 5 : 4.5, ...q });

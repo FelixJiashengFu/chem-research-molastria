@@ -342,6 +342,8 @@ test('作业脚本：Slurm / PBS 作业数组和 bash 过 bash -n，CREST 在自
       if (scheduler === 'pbs' && n > 1) assert.match(text, /#PBS -J 1-3/);
       if (program === 'crest') assert.match(text, /mkdir -p mol_1 && cp mol_1\.xyz mol_1\//);
     }
+    // 不认识的程序名（包括 toString 这类对象自带的键）按 ORCA 写，不去调用别的东西
+    assert.match(C.jobScript({ scheduler: 'bash', program: 'toString', files: ['a.inp'] }), /"\$\(which orca\)" a\.inp > a\.out/);
     // 作业数组里第 2 个任务真的跑第 2 条命令（把命令换成 echo 实际跑一遍）
     const t = C.jobScript({ scheduler: 'slurm', program: 'xtb', files: ['a.xyz', 'b.xyz'], commands: ["echo 'first'", "echo \"it's second\""], module: false });
     const out = execFileSync('bash', ['-c', t.split('\n').filter((l) => !/^cd /.test(l)).join('\n')], { env: { ...process.env, SLURM_ARRAY_TASK_ID: '2' } }).toString().trim();

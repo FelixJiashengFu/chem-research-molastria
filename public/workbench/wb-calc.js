@@ -503,7 +503,7 @@
     if (!files.length) throw new Error('job:nofiles');
     const cores = Math.max(1, Math.min(256, Math.round(o.cores || 8))), mem = Math.max(1, Math.round(o.memGB || 16)), hours = Math.max(1, Math.min(720, Math.round(o.hours || 24)));
     const name = String(o.name || 'molastria').replace(/[^\w.-]+/g, '_').slice(0, 40);
-    const prog = RUN[o.program] ? o.program : 'orca';
+    const prog = Object.hasOwn(RUN, o.program) ? o.program : 'orca';
     const cmds = files.map((f, i) => (o.commands && o.commands[i] ? String(o.commands[i]) : RUN[prog](f, { ...o, cores })));
     const own = OWN_DIR.has(prog);
     const wrap = (f, c) => (own ? `mkdir -p ${stem(f)} && cp ${f} ${stem(f)}/ && (cd ${stem(f)} && ${c})` : c);

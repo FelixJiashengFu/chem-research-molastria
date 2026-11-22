@@ -233,7 +233,7 @@
       pub: () => ({ stick: { radius: 0.15, colorscheme: 'Jmol' }, sphere: { scale: 0.27, colorscheme: 'Jmol' } }),
     };
     function applyStyle() {
-      const make = STY[S.style] || STY.ballstick;
+      const make = Object.hasOwn(STY, S.style) ? STY[S.style] : STY.ballstick; // 存档里的样式名只认自己的几个键
       const spec = make();
       if (S.tint) { const f = (atom) => S.tint[atom.index] ?? '#cccccc'; for (const k of Object.keys(spec)) { delete spec[k].colorscheme; spec[k].colorfunc = f; } }
       v.setStyle({}, spec);
