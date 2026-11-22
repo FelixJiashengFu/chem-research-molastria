@@ -1,0 +1,41 @@
+ File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      2 Scr=      1
+ Normal termination of Gaussian 09 at Thu Mar 17 13:19:07 2016.
+ Charge =  0 Multiplicity = 1
+ RotChk:  IX=0 Diff= 3.95D-16
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.000000    0.000000    1.314179
+      2          1           0        0.000000    0.933149    1.886367
+      3          1           0        0.000000   -0.933149    1.886367
+      4          6           0        0.000000    0.000000    0.000000
+      5          6           0        0.000000    0.000000   -1.314179
+      6          1           0       -0.933149    0.000000   -1.886367
+      7          1           0        0.933149    0.000000   -1.886367
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):    143.9694888      8.7816212      8.7816212
+ There are    28 symmetry adapted cartesian basis functions of A1  symmetry.
+ SCF Done:  E(RB97D) =  -116.569605044     A.U. after    1 cycles
+                      E                      E                      E
+ Frequencies --    367.0845               367.0845               825.7080
+ IR Inten    --      2.8687                 2.8687                57.4779
+ Frequencies --    825.7080               867.7508              1006.9126
+ Frequencies --   1006.9126              1091.0853              1417.8645
+     7   1     0.01   0.06   0.04    -0.09   0.00  -0.46    -0.27   0.00  -0.42
+ Frequencies --   1471.1467              2017.6145              3061.9725
+                     13                     14                     15
+                     A1                      E                      E
+ Frequencies --   3065.8859              3136.1497              3136.1497
+ Atom     1 has atomic number  6 and mass  12.00000
+ Atom     2 has atomic number  1 and mass   1.00783
+ Atom     3 has atomic number  1 and mass   1.00783
+ Atom     4 has atomic number  6 and mass  12.00000
+ Atom     5 has atomic number  6 and mass  12.00000
+ Atom     6 has atomic number  1 and mass   1.00783
+ Atom     7 has atomic number  1 and mass   1.00783
+           Y            0.00000  -0.56482   0.82522
+ Rotational symmetry number  4.
+ Rotational temperatures (Kelvin)      6.90944     0.42145     0.42145
+ Zero-point correction=                           0.053913 (Hartree/Particle)

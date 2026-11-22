@@ -123,6 +123,10 @@ jobs:
         run: node --test tools/extract-test.mjs
       - name: Workbench (formats, crystals, paths, conformers, R/S vs RDKit, Molden vs PySCF, cube, Hirshfeld, IGM/IGMH, spectra vs cclib, job scripts)
         run: node --test tools/workbench-test.mjs
+      - name: Thermochemistry (GoodVibes port, compared with the real GoodVibes 4.4.0 on real outputs)
+        run: |
+          python -m pip install goodvibes==4.4.0
+          node --test tools/thermo-test.mjs
       - name: Code desk cheminformatics (the generated RDKit script runs for real)
         run: |
           python -m pip install rdkit pandas

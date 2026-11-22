@@ -6672,6 +6672,81 @@ check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from 
   await finish(e);
 });
 
+check('thermochemistry (GoodVibes port): code desk and workbench show ZPE, H, T·S, G for a frequency output; options move the numbers; σ from the point group; English phone', async () => {
+  const fix = (f) => readFileSync(join(ROOT, 'tools/thermo-fixtures', f), 'utf8');
+  const ref = JSON.parse(fix('goodvibes-ref.json')).files['gaussian-h2o.out'];
+  const shots = process.env.THERMO_SHOTS; // a folder: also save screenshots there (light, dark, English phone)
+  const p = await open();
+  await go(p, '/code/index.html#output');
+  await p.fill('#out-text', fix('gaussian-h2o.out'));
+  await p.waitForSelector('#out-thermo .th-table');
+  const cell = (row, col) => p.locator(`#out-thermo .th-result tbody tr:nth-child(${row}) td:nth-of-type(${col})`).textContent();
+  assert.equal(await cell(5, 1), ref['rrho-grimme'].gibbs_free_energy.toFixed(6), 'G (RRHO) as GoodVibes gives it');
+  assert.equal(await cell(5, 2), ref['rrho-grimme'].qh_gibbs_free_energy.toFixed(6), 'quasi-RRHO G');
+  assert.equal(await cell(2, 1), ref['rrho-grimme'].zpe.toFixed(6), 'ZPE');
+  assert.match(await text(p, '#out-thermo .th-sig'), /程序印的/);
+  const corr = async () => Number(await text(p, '#out-thermo [data-th=qhcorr]'));
+  const gas = await corr();
+  await p.selectOption('#out-thermo [data-k=std]', '1M');
+  const sol = await corr();
+  assert.ok(Math.abs(sol - gas - 1.89) < 0.011, `1 atm → 1 M adds about 1.89 kcal/mol (${gas} → ${sol})`);
+  await p.fill('#out-thermo [data-k=T]', '350');
+  assert.equal(await cell(5, 2), ref['T350-1M'].qh_gibbs_free_energy.toFixed(6), '350 K and 1 M');
+  await p.selectOption('#out-thermo [data-k=std]', '1atm');
+  await p.fill('#out-thermo [data-k=T]', '298.15');
+  await p.check('#out-thermo [data-k=qh]');
+  await p.fill('#out-thermo [data-k=hCutoff]', '150');
+  await p.fill('#out-thermo [data-k=sCutoff]', '50');
+  assert.equal(await cell(3, 2), ref['qh-150-s50'].qh_enthalpy.toFixed(6), 'Head-Gordon quasi-harmonic H');
+  assert.equal(await cell(5, 2), ref['qh-150-s50'].qh_gibbs_free_energy.toFixed(6));
+  // the options are remembered
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-thermo'))).qh, true);
+  if (shots) await p.locator('#out-thermo').screenshot({ path: join(shots, 'code-light.png') });
+  // a TS-like output: the imaginary mode is left out and said so; it can be counted as real
+  await p.fill('#out-text', fix('gaussian-hcn-triplet.out'));
+  await p.waitForSelector('#out-thermo .th-warn');
+  assert.match(await text(p, '#out-thermo .th-warn'), /1 个虚频（1327\.0i）/);
+  assert.match(await text(p, '#out-thermo .th-facts'), /直线形分子[\s\S]*多重度 3/);
+  await p.uncheck('#out-thermo [data-k=qh]');
+  await p.fill('#out-thermo [data-k=sCutoff]', '100');
+  await p.check('#out-thermo [data-k=invert]');
+  await p.fill('#out-thermo [data-k=invertAt]', '-1500');
+  assert.equal(await cell(5, 1), JSON.parse(fix('goodvibes-ref.json')).files['gaussian-hcn-triplet.out']['invert-1500'].gibbs_free_energy.toFixed(6));
+  // no symmetry number printed: it comes from the point group of the geometry (group-theory/gt-models.js, loaded on demand)
+  await p.fill('#out-text', fix('gaussian-h2o.out').replace(/^ Rotational symmetry number.*\n/m, ''));
+  await p.waitForFunction(() => /按结构判为 C2v/.test(document.querySelector('#out-thermo .th-sig')?.textContent || ''), null, { timeout: 15000 });
+  assert.equal(await p.inputValue('#out-thermo [data-k=sigma]'), '2');
+  assert.equal(await cell(5, 2), ref['rrho-grimme'].qh_gibbs_free_energy.toFixed(6), 'same G as with the printed σ');
+  // frequencies but no geometry (the NWChem demo is an excerpt): the panel says what is missing
+  await p.fill('#out-text', '');
+  await p.selectOption('#out-demo-prog', 'nwchem');
+  assert.match(await text(p, '#out-thermo .th-result'), /没有结构/);
+  await finish(p);
+
+  // dark theme, then the workbench's outputs tab with its Gaussian 16 sample
+  const d = await open({ colorScheme: 'dark' });
+  await go(d, '/workbench/index.html#spec');
+  await d.click('#wb-t-spec');
+  await d.click('#wb-p-spec button:has-text("二乙烯基苯：Gaussian 16 频率和拉曼")');
+  await d.waitForSelector('#wb-p-spec .th-table');
+  assert.match(await d.innerText('#wb-p-spec .th-box'), /热化学[\s\S]*G\(298\.15 K\)/);
+  if (shots) await d.locator('#wb-p-spec .th-box').screenshot({ path: join(shots, 'workbench-dark.png') });
+  await finish(d);
+
+  // English on a phone: no Chinese, nothing wider than the screen
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await go(e, '/code/index.html?lang=en#output');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.click('#t-output');
+  await e.fill('#out-text', fix('orca5-dvb-freq.out'));
+  await e.waitForSelector('#out-thermo .th-table');
+  assert.doesNotMatch(await e.innerText('#out-thermo'), HAN, 'no Chinese in the English thermochemistry panel');
+  assert.match(await e.innerText('#out-thermo'), /as printed by the program \(C2h\)/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  if (shots) await e.locator('#out-thermo').screenshot({ path: join(shots, 'code-en-phone.png') });
+  await finish(e);
+});
+
 // ── run ─────────────────────────────────────────────────────────────────
 let failed = 0;
 try {

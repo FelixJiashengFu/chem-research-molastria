@@ -1,0 +1,93 @@
+ -------------------
+ Charge =  0 Multiplicity = 1
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.269445    1.410118    0.000000
+      2          6           0       -1.064785    0.920662   -0.000000
+      3          6           0       -1.325389   -0.457058   -0.000000
+      4          6           0       -0.269445   -1.410118    0.000000
+      5          6           0        1.064785   -0.920662    0.000000
+      6          1           0       -1.904470    1.627522   -0.000000
+      7          1           0       -2.364759   -0.813041   -0.000000
+      8          1           0        1.904470   -1.627522    0.000000
+      9          6           0       -0.603688   -2.869960   -0.000000
+     10          6           0        0.269445   -3.892070   -0.000000
+     11          1           0        1.355175   -3.742314   -0.000000
+     12          1           0       -1.681859   -3.090152   -0.000000
+     13          1           0       -0.074247   -4.933029   -0.000000
+     14          6           0        0.603688    2.869960   -0.000000
+     15          1           0        1.681859    3.090152   -0.000000
+     16          6           0       -0.269445    3.892070   -0.000000
+     17          1           0       -1.355175    3.742314   -0.000000
+     18          1           0        0.074247    4.933029   -0.000000
+     19          6           0        1.325389    0.457058   -0.000000
+     20          1           0        2.364759    0.813041   -0.000000
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):           4.6266363           0.6849065           0.5965900
+ (Enter /software/Gaussian16/g16_sse4/g16/l303.exe)
+
+ SCF Done:  E(RB3LYP) =  -382.308266602     A.U. after    1 cycles
+                     AU                     BG                     AU
+ Frequencies --     53.1981                84.7415               149.4005
+ Red. masses --      3.2266                 2.4837                 2.0822
+ Frequencies --    179.3403               263.3734               298.4125
+ Frequencies --    407.5760               424.1455               467.7542
+ Red. masses --      4.7968                 3.0368                 2.2518
+                     BU                     AG                     BG
+ Frequencies --    486.7028               578.5256               656.3315
+                     AG                     AU                     BU
+ Frequencies --    673.6048               706.3769               735.1513
+ Frequencies --    810.2004               862.7014               895.2722
+ Red. masses --      3.3325                 4.4427                 1.2562
+ Frequencies --    897.2895               980.3970               980.5050
+ Red. masses --      1.6957                 1.3643                 1.3669
+                     BG                     AU                     BU
+ Frequencies --   1019.6139              1038.1332              1073.4696
+ Frequencies --   1101.5128              1106.0043              1106.1583
+                     AG                     BU                     AG
+ Frequencies --   1109.9487              1204.9400              1262.9307
+ Red. masses --      1.5056                 1.3530                 1.2423
+                     BU                     AG                     BU
+ Frequencies --   1284.8921              1296.1971              1351.4086
+ Red. masses --      2.3326                 2.8288                 5.2228
+ Frequencies --   1398.7635              1420.6926              1426.7905
+ Frequencies --   1515.0584              1565.6748              1575.3215
+ Red. masses --      2.5521                 1.3010                 1.2967
+                     BU                     AG                     AG
+ Frequencies --   1641.3151              1691.3872              1740.0942
+                     AG                     BU                     BU
+ Frequencies --   1814.4584              1815.3382              3396.4292
+ Frequencies --   3397.1474              3437.7395              3437.7857
+ Red. masses --      1.0629                 1.0978                 1.0978
+ Frequencies --   3447.2135              3450.7344              3467.0890
+ Red. masses --      1.0917                 1.0916                 1.0986
+                     AG                     BU                     AG
+ Frequencies --   3470.0274              3548.3199              3548.3320
+ Atom     1 has atomic number  6 and mass  12.00000
+ Atom     2 has atomic number  6 and mass  12.00000
+ Atom     3 has atomic number  6 and mass  12.00000
+ Atom     4 has atomic number  6 and mass  12.00000
+ Atom     5 has atomic number  6 and mass  12.00000
+ Atom     6 has atomic number  1 and mass   1.00783
+ Atom     7 has atomic number  1 and mass   1.00783
+ Atom     8 has atomic number  1 and mass   1.00783
+ Atom     9 has atomic number  6 and mass  12.00000
+ Atom    10 has atomic number  6 and mass  12.00000
+ Atom    11 has atomic number  1 and mass   1.00783
+ Atom    12 has atomic number  1 and mass   1.00783
+ Atom    13 has atomic number  1 and mass   1.00783
+ Atom    14 has atomic number  6 and mass  12.00000
+ Atom    15 has atomic number  1 and mass   1.00783
+ Atom    16 has atomic number  6 and mass  12.00000
+ Atom    17 has atomic number  1 and mass   1.00783
+ Atom    18 has atomic number  1 and mass   1.00783
+ Atom    19 has atomic number  6 and mass  12.00000
+ Atom    20 has atomic number  1 and mass   1.00783
+                           1         2         3
+ Rotational symmetry number  2.
+ Zero-point correction=                           0.177132 (Hartree/Particle)
+ Job cpu time:       0 days  0 hours  1 minutes  9.8 seconds.
+ Normal termination of Gaussian 16 at Wed Apr  4 10:22:29 2018.
