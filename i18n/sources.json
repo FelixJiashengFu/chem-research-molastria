@@ -5595,7 +5595,7 @@
   "pro/account.html",
   "shared-nav.js"
  ],
- "任何邮箱都能登录，账号本身免费。Pro 支持者的权益绑定在付款邮箱上，换设备或换浏览器时用这个邮箱收验证码登录即可。": [
+ "账号免费，不用密码。Pro 权益跟着付款邮箱走。": [
   "pro/account.html"
  ],
  "账号服务正在开通": [
@@ -5607,22 +5607,18 @@
  "返回 Pro 页面": [
   "pro/account.html"
  ],
- "用邮箱登录": [
+ "登录": [
   "pro/account.html",
   "shared-nav.js",
   "pro/account-page.js"
  ],
- "我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。": [
-  "pro/account.html",
-  "pro/account-page.js"
+ "填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。": [
+  "pro/account.html"
  ],
  "用 Google 登录": [
   "pro/account.html"
  ],
- "Google 账号的邮箱和你以前登录、付款用的邮箱一样，就是同一个账号：Pro、云同步、API key 都还在。": [
-  "pro/account.html"
- ],
- "或者用邮箱验证码": [
+ "或者": [
   "pro/account.html"
  ],
  "邮箱": [
@@ -5641,7 +5637,7 @@
   "pro/account.html",
   "pro/account-page.js"
  ],
- "想支持 MolAstria？": [
+ "付过款的请用付款邮箱登录，用 Google 也一样，Pro 会自动生效。": [
   "pro/account.html"
  ],
  "看看 Pro 支持者": [
@@ -9080,10 +9076,6 @@
  "新栏目和新功能，看看你读到哪了": [
   "shared-nav.js"
  ],
- "登录": [
-  "shared-nav.js",
-  "pro/account-page.js"
- ],
  "登录、Pro 与桌面版": [
   "shared-nav.js"
  ],
@@ -9095,6 +9087,10 @@
  ],
  "邮箱收一个 6 位验证码就能登录，不需要密码。所有内容不登录也能看。": [
   "shared-nav.js"
+ ],
+ "用邮箱登录": [
+  "shared-nav.js",
+  "pro/account-page.js"
  ],
  "支持 MolAstria，AI 托管额度和在线模型次数更多": [
   "shared-nav.js"
@@ -14859,9 +14855,6 @@
   "pro/account-page.js"
  ],
  "用 VIP 卡开通 Pro": [
-  "pro/account-page.js"
- ],
- "填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。": [
   "pro/account-page.js"
  ],
  "请填写 VIP 卡号。": [
