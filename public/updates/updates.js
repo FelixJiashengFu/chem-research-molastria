@@ -66,8 +66,8 @@
     const fresh = C.isNew(x, s, p);
     const href = link(x.path);
     return `<li class="up-row" data-id="${esc(x.id)}">`
-      + `<div class="up-top"><a class="up-tile" href="${href}" data-g="${esc(x.group)}" tabindex="-1" aria-hidden="true">${svg(ICONS[x.icon] || ICONS.page)}</a>`
-      + `<a class="up-name" href="${href}"><b>${esc(en ? x.en : x.zh)}${fresh ? `<i class="up-new">NEW</i>` : ''}</b><small><span class="up-tag" data-g="${esc(x.group)}">${esc(T(GROUP[x.group] || ['', '']))}</span><span class="up-path">/${esc(x.path.replace(/index\.html/, '').replace(/#.*/, ''))}</span></small></a>`
+      + `<div class="up-top">`
+      + `<a class="up-name" href="${href}"><b>${esc(en ? x.en : x.zh)}${fresh ? `<i class="up-new">New</i>` : ''}</b><small><span class="up-tag" data-g="${esc(x.group)}">${esc(T(GROUP[x.group] || ['', '']))}</span><span class="up-path">/${esc(x.path.replace(/index\.html/, '').replace(/#.*/, ''))}</span></small></a>`
       + ring(p) + '</div>'
       + `<p class="up-note"><span>${esc(T(x.note))}</span><button type="button" class="up-more" aria-expanded="false" aria-controls="up-m-${esc(x.id)}">${L('更多', 'more')}</button></p>`
       + `<div class="up-more-box" id="up-m-${esc(x.id)}" hidden><p>${esc(T(x.more))}</p><a class="up-go" href="${href}">${L('打开看看', 'Take a look')}<i class="ico-ext ico-right" aria-hidden="true"></i></a></div>`
@@ -105,7 +105,7 @@
     scrim.hidden = true;
     scrim.innerHTML = `<div class="up-sheet" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="up-title" translate="no">`
       + `<header class="up-head"><button type="button" class="up-round up-back" aria-label="${L('返回账号面板', 'Back to the account panel')}">${chevL}</button>`
-      + `<div class="up-titles"><h2 id="up-title">${L('最近更新', 'What’s new')}</h2><p class="up-sub">CHANGELOG · ${items.length} ${L('条', 'entries')} · ${items[0] ? items[0].date : ''}</p></div>`
+      + `<div class="up-titles"><h2 id="up-title">${L('最近更新', 'What’s new')}</h2><p class="up-sub">Changelog · <span class="up-n">${items.length}</span> ${L('条', 'entries')} · <span class="up-n">${items[0] ? items[0].date : ''}</span></p></div>`
       + `<button type="button" class="up-round up-x" aria-label="${L('关闭', 'Close')}">${cross}</button></header>`
       + '<div class="up-body"></div></div>';
     document.body.append(scrim);
