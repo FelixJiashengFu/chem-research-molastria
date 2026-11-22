@@ -48,14 +48,15 @@
   const chevL = svg('<path d="m14.5 5.5-6.5 6.5 6.5 6.5"/>');
   const cross = svg('<path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>');
 
-  // 进度圈：灰色的轨道，金色的弧；满了画一个对勾
+  // 进度圈：细的轨道和弧，左边一行等宽数字读数（3/10、100%、—）
   const ring = (p) => {
     const r = 10.5, c = 2 * Math.PI * r, full = p.frac >= 1;
+    const read = p.total > 1 ? `${p.done}/${p.total}` : p.frac ? '100%' : '—';
     const tip = p.total > 1 ? L(`已读 ${p.done} / ${p.total} 章`, `${p.done} of ${p.total} chapters read`) : p.frac ? L('打开过', 'Opened') : L('还没打开', 'Not opened yet');
-    return `<span class="up-ring${full ? ' up-full' : ''}" role="img" aria-label="${esc(tip)}" title="${esc(tip)}"><svg viewBox="0 0 28 28" aria-hidden="true"><circle class="up-ring-track" cx="14" cy="14" r="${r}"/>`
+    return `<span class="up-meter"><span class="up-read" aria-hidden="true">${read}</span><span class="up-ring${full ? ' up-full' : ''}" role="img" aria-label="${esc(tip)}" title="${esc(tip)}"><svg viewBox="0 0 28 28" aria-hidden="true"><circle class="up-ring-track" cx="14" cy="14" r="${r}"/>`
       + (p.frac > 0 ? `<circle class="up-ring-arc" cx="14" cy="14" r="${r}" stroke-dasharray="${(c * Math.min(1, p.frac)).toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 14 14)"/>` : '')
       + (full ? '<path class="up-ring-tick" d="m9.5 14.3 3 3 6-6.3"/>' : '')
-      + '</svg></span>';
+      + '</svg></span></span>';
   };
 
   let scrim = null, sheet = null, opener = null, onBack = null;
@@ -66,7 +67,7 @@
     const href = link(x.path);
     return `<li class="up-row" data-id="${esc(x.id)}">`
       + `<div class="up-top"><a class="up-tile" href="${href}" data-g="${esc(x.group)}" tabindex="-1" aria-hidden="true">${svg(ICONS[x.icon] || ICONS.page)}</a>`
-      + `<a class="up-name" href="${href}"><b>${fresh ? `<i class="up-new" aria-label="${L('新', 'New')}"></i>` : ''}${esc(en ? x.en : x.zh)}</b><small>${esc(T(GROUP[x.group] || ['', '']))}${p.total > 1 ? ` · ${esc(L(`已读 ${p.done} / ${p.total} 章`, `${p.done} of ${p.total} chapters read`))}` : x.store ? ` · ${esc(p.frac ? L('读过这一章', 'Chapter read') : L('新的一章', 'New chapter'))}` : ''}</small></a>`
+      + `<a class="up-name" href="${href}"><b>${esc(en ? x.en : x.zh)}${fresh ? `<i class="up-new">NEW</i>` : ''}</b><small><span class="up-tag" data-g="${esc(x.group)}">${esc(T(GROUP[x.group] || ['', '']))}</span><span class="up-path">/${esc(x.path.replace(/index\.html/, '').replace(/#.*/, ''))}</span></small></a>`
       + ring(p) + '</div>'
       + `<p class="up-note"><span>${esc(T(x.note))}</span><button type="button" class="up-more" aria-expanded="false" aria-controls="up-m-${esc(x.id)}">${L('更多', 'more')}</button></p>`
       + `<div class="up-more-box" id="up-m-${esc(x.id)}" hidden><p>${esc(T(x.more))}</p><a class="up-go" href="${href}">${L('打开看看', 'Take a look')}<i class="ico-ext ico-right" aria-hidden="true"></i></a></div>`
@@ -78,12 +79,14 @@
     const n = C.newCount(items, s, read);
     const body = sheet.querySelector('.up-body');
     const keepOpen = new Set([...body.querySelectorAll('.up-more[aria-expanded="true"]')].map((b) => b.closest('.up-row').dataset.id));
-    body.innerHTML = `<div class="up-all"><button type="button" class="up-all-btn"${n ? '' : ' disabled'}>${n ? L('全部标为已看', 'Mark all as seen') : L('都看过了', 'All caught up')}</button><span class="up-all-n" aria-label="${esc(L(`还有 ${n} 条没看`, `${n} not seen yet`))}">${n}</span></div>`
+    const done = items.filter((x) => C.progress(x, s, read).frac >= 1).length;
+    body.innerHTML = `<div class="up-all"><dl class="up-stats"><div><dt>${L('未读', 'Unseen')}</dt><dd class="up-all-n" aria-label="${esc(L(`还有 ${n} 条没看`, `${n} not seen yet`))}">${n}</dd></div><div><dt>${L('条目', 'Entries')}</dt><dd>${items.length}</dd></div><div><dt>${L('已读完', 'Completed')}</dt><dd>${done}</dd></div></dl>`
+      + `<button type="button" class="up-all-btn"${n ? '' : ' disabled'}>${n ? L('全部标为已看', 'Mark all as seen') : L('都看过了', 'All caught up')}</button></div>`
       + C.byDay(items).map((g) => {
         const day = C.relDay(g.date, now), [, m, d] = g.date.split('-').map(Number);
         const exact = L(`${m} 月 ${d} 日`, `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}`);
         const label = en ? day.en : day.zh;
-        return `<section class="up-day"><h3>${esc(label)}${label === exact ? '' : `<small>${esc(exact)}</small>`}</h3><ul class="up-card">${g.items.map((x) => row(x, s, now)).join('')}</ul></section>`;
+        return `<section class="up-day"><h3><time datetime="${g.date}">${g.date}</time>${label === exact ? '' : `<small>${esc(label)}</small>`}<span class="up-count">${g.items.length}</span></h3><ul class="up-card">${g.items.map((x) => row(x, s, now)).join('')}</ul></section>`;
       }).join('')
       + `<p class="up-foot">${L('这里只列新栏目和大的新功能；每一处小改动都在', 'Only new sections and bigger features are listed here; every small change is in the')} <a href="https://github.com/FelixJiashengFu/chem-research-molastria/commits/main" target="_blank" rel="noopener noreferrer">${L('GitHub 的提交记录', 'GitHub commit history')}</a>${L('里。', '.')}</p>`;
     keepOpen.forEach((id) => { const b = body.querySelector(`.up-row[data-id="${CSS.escape(id)}"] .up-more`); if (b) toggle(b, true); });
@@ -102,7 +105,7 @@
     scrim.hidden = true;
     scrim.innerHTML = `<div class="up-sheet" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="up-title" translate="no">`
       + `<header class="up-head"><button type="button" class="up-round up-back" aria-label="${L('返回账号面板', 'Back to the account panel')}">${chevL}</button>`
-      + `<h2 id="up-title">${L('最近更新', 'What’s new')}</h2>`
+      + `<div class="up-titles"><h2 id="up-title">${L('最近更新', 'What’s new')}</h2><p class="up-sub">CHANGELOG · ${items.length} ${L('条', 'entries')} · ${items[0] ? items[0].date : ''}</p></div>`
       + `<button type="button" class="up-round up-x" aria-label="${L('关闭', 'Close')}">${cross}</button></header>`
       + '<div class="up-body"></div></div>';
     document.body.append(scrim);
@@ -156,7 +159,7 @@
     scrim.classList.remove('open');
     document.documentElement.classList.remove('up-lock');
     const done = () => { if (!scrim.classList.contains('open')) scrim.hidden = true; };
-    if (reduced()) done(); else setTimeout(done, 260);
+    if (reduced()) done(); else setTimeout(done, 200);
     if (focusBack && opener && opener.isConnected) opener.focus?.({ preventScroll: true });
   }
 
