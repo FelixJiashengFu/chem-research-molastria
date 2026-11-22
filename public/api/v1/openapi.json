@@ -2096,7 +2096,8 @@
        "openmm-amber14",
        "quacc-gfn2",
        "quacc-psi4",
-       "quacc-emt"
+       "quacc-emt",
+       "aimnet2"
       ],
       "default": "uma-s-1p2p1"
      },
@@ -2236,7 +2237,8 @@
           "openmm-amber14",
           "quacc-gfn2",
           "quacc-psi4",
-          "quacc-emt"
+          "quacc-emt",
+          "aimnet2"
          ]
         },
         "ready": {
@@ -2248,6 +2250,10 @@
         "charged": {
          "type": "boolean",
          "description": "Handles charge and spin"
+        },
+        "closed_shell": {
+         "type": "boolean",
+         "description": "Present and true for a model that takes ions but only closed-shell molecules (aimnet2): multiplicity 1, so no ipea, spin or bde"
         },
         "jobs": {
          "type": "array",

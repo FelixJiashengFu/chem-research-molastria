@@ -980,7 +980,7 @@ check('AI Lab demo data: the long note can be closed, the status row still says 
 
 // ── models page (public/models/): the online model API v3 through the account service and the fake computer ──
 const MODEL_WINDOWS = {
-  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
+  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol', 'aimnet2'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
   neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
   organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
@@ -1182,6 +1182,27 @@ check('models page: window 5 runs xTB on an ion and shows the gap, dipole and ch
   await finish(p);
 });
 
+check('models page: AIMNet2 in window 1 takes a closed-shell ion, refuses a radical and offers no IP / EA', async () => {
+  const p = await openModels('charged');
+  await p.selectOption('#m-model', 'aimnet2');
+  assert.match(await text(p, '#m-about'), /只读总电荷、不读自旋多重度/);
+  assert.match(await text(p, '#m-fine'), /Chem\. Sci\. 2025, 16, 10228/);
+  const off = await p.$$eval('#m-job option', (os) => os.filter((o) => o.disabled).map((o) => o.value));
+  assert.deepEqual(off.sort(), ['bde', 'flow', 'ipea', 'spin'], 'only the jobs that need a radical are off');
+  await p.fill('#m-smiles', 'CC(=O)[O-]');
+  await p.waitForFunction(() => /C2H3O2/.test(document.getElementById('m-check').textContent));
+  await p.fill('#m-charge', '-1');
+  await p.fill('#m-spin', '3');
+  await p.selectOption('#m-job', 'opt');
+  assert.ok(await runOff(p));
+  assert.match(await text(p, '#m-why'), /AIMNet2 只算闭壳层分子/);
+  await p.fill('#m-spin', '1');
+  const r = await runJob(p, 'opt');
+  assert.match(r, /能量/);
+  assert.deepEqual([p.posts.at(-1).model, p.posts.at(-1).charge, p.posts.at(-1).spin], ['aimnet2', -1, 1]);
+  await finish(p);
+});
+
 check('models page: window 6 runs protein MD from a PDB ID: curves, fluctuation, 3D trajectory, downloads', async () => {
   const p = await openModels('protein');
   assert.equal(await p.isVisible('#m-struct'), false, 'no SMILES or XYZ box');
@@ -1322,7 +1343,7 @@ check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and p
 check('English: the models page has no Chinese left in its windows and a result', async () => {
   const p = await openModels('', {});
   await go(p, '/models/index.html?lang=en#charged');
-  await p.waitForFunction(() => /20/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /21/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
   await runJob(p, 'freq');
   const left = new Set();
   for (const win of ['charged', 'neutral', 'organic', 'props', 'xtb', 'protein']) {
@@ -4927,7 +4948,7 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.equal(await p.locator('#run-jobs tr').count(), 16); // with ts and neb
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
-  assert.equal(models.length, 14); // ten machine-learning potentials and the four xTB models (#123)
+  assert.equal(models.length, 15); // ten machine-learning potentials, the four xTB models (#123) and AIMNet2
   assert.ok(!models.some((m) => m.startsWith('mace')), 'no MACE model is offered');
   // The code follows the form and never holds the key.
   await p.fill('#run-key', key);

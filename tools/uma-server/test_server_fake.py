@@ -30,6 +30,7 @@ D = ["mace-mdp"]
 X = ["gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb"]  # xTB with charges and spins, no ipea
 XN = ["gfn-ff"]
 P = ["openmm-amber14"]  # protein MD from a PDB ID
+I = ["aimnet2"]  # AIMNet2: ions, but closed-shell only, so of the charge jobs only pa
 # quacc recipes: a batch of molecules, or EMT bulk -> slabs. Only where quacc is installed (pip install quacc).
 QUACC = bool(server.qb.quacc_version())
 QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
@@ -39,7 +40,8 @@ BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
-GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS),
+I_JOBS = BC_JOBS + ["pa"]
+GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS),
           (QF, ["qflow"]), (QS, ["qslab"]))
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
@@ -259,7 +261,7 @@ class FakeServer(unittest.TestCase):
                 self.assertEqual(h["models"][model]["jobs"], jobs, model)
                 self.assertTrue(h["models"][model]["ready"])
         self.assertEqual(set(h["models"]) - ({"quacc-gfn2", "quacc-psi4", "quacc-emt"} - set(QF + QS)),
-                         set(A + B + C + D + X + XN + P + QF + QS))
+                         set(A + B + C + D + X + XN + P + I + QF + QS))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -276,7 +278,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + (3 if QUACC else 0))
+        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0))
 
     @staticmethod
     def full_params(job, given):
@@ -464,6 +466,17 @@ class FakeServer(unittest.TestCase):
         self.refused({"model": UMA, "job": "sp", "smiles": "C(", "who": "0123456789abcdef"}, text="cannot parse")
         self.refused({"model": UMA, "job": "sp", "smiles": "C", "who": "bad"}, text="bad visitor id")
 
+    def test_closed_shell_refusals(self):
+        """AIMNet2 takes ions but no radicals: SMILES, XYZ and reaction species."""
+        self.refused({"model": "aimnet2", "job": "opt", "smiles": "[CH3]"}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "opt", "smiles": "C", "charge": 1, "spin": 2}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "sp", "xyz": "3\n\nO 0 0 0\nH 0 0 0.96\nH 0.93 0 -0.24", "charge": 1, "spin": 2}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "rxn", "params": {"reaction": "[CH3].[CH3]>>CC"}}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "ipea", "smiles": "CCO"}, text="supports only")
+        self.refused({"model": "aimnet2", "job": "sp", "smiles": "[Na+]"}, text="does not know Na")
+        r = self.run_job({"model": "aimnet2", "job": "opt", "smiles": "CC(=O)[O-]"})
+        self.assertEqual((r["charge"], r["spin"]), (-1, 1))  # an anion, closed-shell: fine
+
     def test_ts_refusals(self):
         self.refused({"model": UMA, "job": "ts", "smiles": "CCO"}, text="needs coordinates")
         self.refused({"model": UMA, "job": "neb", "smiles": "CCO", "params": {"product_xyz": NEB_P}}, text="needs coordinates")
@@ -543,11 +556,35 @@ class Contract(unittest.TestCase):
         for group, jobs in GROUPS:
             for model in group:
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
-                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF, model)
+                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF or group is I, model)
+                self.assertEqual(bool(server.MODELS[model].get("closed")), group is I, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 23)
+        self.assertEqual(len(server.MODELS), 24)
         self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
+
+    def test_aimnet_proxy(self):
+        """AIMNet2 reaches chemjobs through aimnet_worker.py with the same JSON lines as MACE (stubbed here)."""
+        sent = []
+
+        def call(req, timeout=None):
+            sent.append(req)
+            return {"ok": True, "energy_ev": -10.0 + req["charge"], "forces": [[0.0, 0.1, 0.0]] * len(req["symbols"]), "charges": []}
+
+        backend = server.AimnetBackend.__new__(server.AimnetBackend)
+        backend.call = call
+        self.assertEqual((backend.SCRIPT, backend.NAME), ("aimnet_worker.py", "AIMNet2"))
+        calc = server.cj.EFCalculator(backend.ef("aimnet2"))
+        atoms = server.cj.new_atoms(["N", "H", "H", "H", "H"], server.np.zeros((5, 3)) + server.np.arange(5)[:, None], 1, 1, calc)
+        self.assertEqual(atoms.get_potential_energy(), -9.0)
+        self.assertEqual(sent[-1]["model"], "aimnet2")
+        self.assertEqual((sent[-1]["charge"], sent[-1]["spin"]), (1, 1))
+        with self.assertRaises(RuntimeError):
+            backend.dp(["H"], server.np.zeros((1, 3)))
+        # the elements the server checks are the worker's own list
+        import aimnet_worker
+        self.assertEqual(server.AIMNET_ELEMENTS, aimnet_worker.ELEMENTS)
+        self.assertEqual(tuple(server.MODELS["aimnet2"]["elements"]), aimnet_worker.ELEMENTS)
 
     def test_mace_proxy(self):
         """The MACE models reach chemjobs as an ASE calculator through mace_worker.py's 'calc' op (stubbed here)."""

@@ -51,7 +51,13 @@
   const xtb = (name, about, cite, more = {}) => ({ name, tier: 'open', elements: null, dft: '半经验紧束缚，参数拟合到 DFT 和实验数据', license: 'LGPL-3.0（xtb 程序）', about, ...more,
     fine: `${name} 由开源程序 xtb（grimme-lab/xtb，LGPL-3.0）计算；论文里请引用 ${cite}。` });
   const UMA_CITE = 'UMA（Meta FAIR Chemistry）', ALLSCAIP = 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）', ESEN = 'eSEN 和 OMol25 数据集（Levine et al., 2025）';
+  const AIMNET = ['H', 'B', 'C', 'N', 'O', 'F', 'Si', 'P', 'S', 'Cl', 'As', 'Se', 'Br', 'I'];
   const MODELS = {
+    // AIMNet2 (isayevlab/aimnetcentral, MIT) in its own environment on the owner's computer. It reads the charge but
+    // not the multiplicity, so it takes closed-shell molecules only (closed): ions yes, radicals no.
+    aimnet2: { name: 'AIMNet2', tier: 'open', closed: true, elements: AIMNET, dft: 'ωB97M-D3(BJ)/def2-TZVPP', license: 'MIT',
+      about: 'Isayev 组的 AIMNet2 神经网络势（ωB97M-D3 精度），覆盖 H B C N O F Si P S Cl As Se Br I 十四种元素，能算中性和带电荷的闭壳层分子（铵离子、羧酸根、两性离子都可以），速度很快。它只读总电荷、不读自旋多重度，所以不算自由基和开壳层分子，也就没有电离能、电子亲和能、自旋态能隙和键解离能；质子亲和能两边都是闭壳层，可以算。',
+      fine: 'AIMNet2 采用 MIT 许可；论文里请引用 Anstine, Zubatyuk, Isayev, Chem. Sci. 2025, 16, 10228（AIMNet2）。' },
     'openmm-amber14': { name: 'OpenMM · Amber ff14SB + 隐式水', tier: 'open', elements: null, kind: 'ff', dft: 'Amber ff14SB 蛋白质力场 + GBSA-OBC2 隐式溶剂（经典力场，不是量子化学）', license: 'MIT（OpenMM、PDBFixer）',
       about: '开源分子模拟引擎 OpenMM 在站长电脑的显卡上跑蛋白质分子动力学：按 PDB 编号从 RCSB 取结构，PDBFixer 补齐缺失的原子和链内短缺口、加氢（pH 7），去掉配体和水，用 Amber ff14SB 力场和隐式水先能量最小化，再跑一段 Langevin 动力学。',
       fine: '论文里请引用 OpenMM 8（Eastman et al., J. Phys. Chem. B 2024）、Amber ff14SB（Maier et al., J. Chem. Theory Comput. 2015）和所用的 PDB 条目。' },
@@ -85,8 +91,8 @@
   const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'];
   const TS = window.MolAstriaTS; // ts-core.js: limits, checks and the profile of the two transition-state jobs
   const GROUPS = {
-    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa', 'flow'],
-      intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。' },
+    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol', 'aimnet2'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa', 'flow'],
+      intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。AIMNet2 也算离子，但只算闭壳层分子（不算自由基）。' },
     neutral: { name: '中性分子通用模型', charged: false, models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: GEOM,
       intro: '② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。' },
     organic: { name: '有机分子力场', charged: false, models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: GEOM,
@@ -348,6 +354,8 @@
           if (!d) return `RDKit 无法解析反应里的物种 ${s}。`;
           d.elements.forEach((e) => symbols.add(e));
           if (!G().charged && (d.charge !== 0 || electrons(d.counts, d.charge) % 2)) return `${G().name}只算中性闭壳层分子：${s} 带电荷或有未成对电子，请换到窗口 ① 计算。`;
+          const shut = models.find((id) => MODELS[id].closed);
+          if (shut && electrons(d.counts, d.charge) % 2) return `${MODELS[shut].name} 只算闭壳层分子：${s} 有未成对电子。`;
         }
         symbols = [...symbols];
       }
@@ -372,6 +380,8 @@
     if (j !== 'rxn' && j !== 'pmd') {
       if (!G().charged && (ionCharge !== 0 || electronCount % 2)) return `${G().name}只算中性闭壳层分子：这个结构带电荷或有未成对电子，请换到窗口 ① 计算。`;
       if (G().charged && electronCount !== null && (electronCount % 2 === 1) !== (spin() % 2 === 0)) return `电荷 ${charge()} 时有 ${electronCount} 个电子，和自旋多重度 ${spin()} 不相容。`;
+      const shut = models.find((id) => MODELS[id].closed);
+      if (shut && G().charged && spin() !== 1) return `${MODELS[shut].name} 只算闭壳层分子：离子可以，自由基和开壳层分子不行，自旋多重度要为 1。`;
     }
     for (const f of JOBS[j].fields) {
       if ((f.type === 'num' || f.type === 'int') && !(p[f.k] >= f.lo && p[f.k] <= f.hi && (f.type !== 'int' || Number.isInteger(p[f.k])))) return `${f.label}要在 ${f.lo} 到 ${f.hi} 之间${f.type === 'int' ? '，取整数' : ''}。`;

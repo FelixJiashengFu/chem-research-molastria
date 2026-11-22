@@ -241,7 +241,7 @@ function schemaOf(samples, depth = 0) {
 // tools/account-test.ts checks these lists against what the service itself offers.
 const COMPUTE_MODELS = ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'uma-s-1p1', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
   'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'ani-2x',
-  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'gfn-ff', 'openmm-amber14', 'quacc-gfn2', 'quacc-psi4', 'quacc-emt'];
+  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'gfn-ff', 'openmm-amber14', 'quacc-gfn2', 'quacc-psi4', 'quacc-emt', 'aimnet2'];
 const COMPUTE_JOBS = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'ipea', 'spin', 'bde', 'pa', 'pmd', 'qflow', 'qslab'];
 const COMPUTE_NOTE = "The compute is the RTX 2080 in the site owner's computer: best effort, and it may be offline. Do not build anything with a deadline on it.";
 function computePaths() {
@@ -286,7 +286,7 @@ function computePaths() {
     ComputeMe: { type: 'object', properties: { tier: { type: 'string', enum: ['free', 'pro'] }, usage: { $ref: '#/components/schemas/ComputeUsage' }, key: { type: 'object', properties: { prefix: { type: 'string' }, name: { type: 'string' }, created: { type: 'integer' } } } } },
     ComputeModels: { type: 'object', properties: {
       online: { type: 'boolean' }, gpu: { type: 'string' },
-      models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string', enum: COMPUTE_MODELS }, ready: { type: 'boolean' }, queue: { type: 'integer' }, charged: { type: 'boolean', description: 'Handles charge and spin' }, jobs: { type: 'array', items: { type: 'string', enum: COMPUTE_JOBS } } } } },
+      models: { type: 'array', items: { type: 'object', properties: { id: { type: 'string', enum: COMPUTE_MODELS }, ready: { type: 'boolean' }, queue: { type: 'integer' }, charged: { type: 'boolean', description: 'Handles charge and spin' }, closed_shell: { type: 'boolean', description: 'Present and true for a model that takes ions but only closed-shell molecules (aimnet2): multiplicity 1, so no ipea, spin or bde' }, jobs: { type: 'array', items: { type: 'string', enum: COMPUTE_JOBS } } } } },
       costs: { type: 'object', additionalProperties: { type: 'integer' }, description: 'Uses per job' }, cost_with_thermo: { type: 'integer' }, note,
     } },
     ComputeStatus: { type: 'object', properties: {

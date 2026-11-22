@@ -447,6 +447,7 @@ const inviteMail = (owner) => [
 //   open: xTB (GFN2-xTB, GFN1-xTB, GFN-FF; LGPL-3.0 program run on the owner's CPU), OpenMM protein MD (MIT, a PDB
 //         entry by its ID, Amber ff14SB + implicit water) and the quacc recipes (BSD-3-Clause workflow library: a batch
 //         of up to 8 molecules through GFN2-xTB or Psi4, or EMT bulk -> slab surface energies), counted exactly like fair.
+//         AIMNet2 (MIT, isayevlab/aimnetcentral; wB97M-D3 quality for neutral and charged closed-shell molecules) too.
 //   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
 //        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
@@ -458,7 +459,8 @@ const UMA_MODELS = {
   'mace-off23-small': 'asl', 'mace-off23-medium': 'asl', 'mace-off23-large': 'asl', 'mace-omol-0': 'asl', 'mace-mdp': 'asl',
   'gfn2-xtb': 'open', 'gfn2-xtb-alpb-water': 'open', 'gfn1-xtb': 'open', 'gfn-ff': 'open',
   'openmm-amber14': 'open',
-  'quacc-gfn2': 'open', 'quacc-psi4': 'open', 'quacc-emt': 'open'
+  'quacc-gfn2': 'open', 'quacc-psi4': 'open', 'quacc-emt': 'open',
+  'aimnet2': 'open'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
 const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, ts: 5, neb: 8, pmd: 5, qflow: 1, qslab: 3 };
@@ -475,12 +477,15 @@ const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb']
 const TS_JOBS = new Set(['ts', 'neb']);
 const TS_MAX_ATOMS = 50;
 const UMA_CHARGED = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol',
-  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
+  'gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb', 'aimnet2']);
+// Charged but closed-shell (AIMNet2 reads the charge, not the multiplicity): ions yes, radicals no, so of the charge
+// jobs only the proton affinity, whose species all stay closed-shell (tools/uma-server/server.py I_JOBS).
+const UMA_CLOSED = new Set(['aimnet2']);
 // xTB takes ions and radicals but its IP / EA are several eV off (tools/uma-server/server.py X_JOBS), so no ipea.
 const UMA_NO_IPEA = new Set(['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 // Which jobs each kind of model does: charge-and-spin molecular models, neutral models, and MACE-MDP's properties.
 const umaJobsOf = (model) => (QUACC_JOBS[model] || (model === 'mace-mdp' ? ['polar', 'ir'] : model === 'openmm-amber14' ? ['pmd']
-  : UMA_CHARGED.has(model) ? [...UMA_GEOM, ...(UMA_NO_IPEA.has(model) ? [] : ['ipea']), 'spin', 'bde', 'pa'] : UMA_GEOM));
+  : UMA_CLOSED.has(model) ? [...UMA_GEOM, 'pa'] : UMA_CHARGED.has(model) ? [...UMA_GEOM, ...(UMA_NO_IPEA.has(model) ? [] : ['ipea']), 'spin', 'bde', 'pa'] : UMA_GEOM));
 const SMILES_RE = /^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/;
 const UMA_SMILES_ONLY = new Set(['conf', 'rxn', 'bde', 'pa']);
 // params: the allowed keys per job and how each is checked; anything else is dropped, a bad value is refused.
@@ -641,6 +646,7 @@ async function uma(request, env, cors, path, ip, api = null) {
       out[k] = v;
     }
     if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1', 'This model takes neutral closed-shell molecules only: charge 0 and multiplicity 1');
+    if (UMA_CLOSED.has(model) && (out.spin ?? 1) !== 1) throw fail(400, '这个模型只算闭壳层分子（离子可以，自由基不行）：自旋多重度要为 1', 'This model takes closed-shell molecules only (ions are fine, radicals are not): multiplicity 1');
     const params = umaParams(job, body.params);
     if (job === 'neb' && xyzAtoms(params.product_xyz).join(' ') !== xyzAtoms(out.xyz).join(' ')) throw fail(400, '产物要和反应物是同样的原子、同样的顺序', 'The product must have the same atoms as the reactant, in the same order');
     if (Object.keys(params).length) out.params = params;
@@ -848,7 +854,7 @@ async function v1(request, env, path, ip) {
     const live = health?.models && typeof health.models === 'object' ? health.models : {};
     const models = v1Models.map((id) => {
       const v = live[id] && typeof live[id] === 'object' ? live[id] : {};
-      return { id, ready: !!v.ready, queue: Number(v.queue) || 0, charged: UMA_CHARGED.has(id), jobs: umaJobsOf(id).filter((j) => !Array.isArray(v.jobs) || v.jobs.includes(j)) };
+      return { id, ready: !!v.ready, queue: Number(v.queue) || 0, charged: UMA_CHARGED.has(id), ...(UMA_CLOSED.has(id) ? { closed_shell: true } : {}), jobs: umaJobsOf(id).filter((j) => !Array.isArray(v.jobs) || v.jobs.includes(j)) };
     });
     return json({ online: !!health?.ready, gpu: String(health?.gpu || ''), models, costs: v1Costs, cost_with_thermo: 5, quacc_costs: { per_molecule: QUACC_ITEM_COST, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, note: V1_NOTE }, cors);
   }

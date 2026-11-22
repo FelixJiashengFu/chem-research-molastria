@@ -33,6 +33,7 @@
   // Until the service answers: the models the API offers and whether each handles charge and spin (GET /v1/models says the same).
   const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
   const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
+  const IONS = [...GEOM, 'pa']; // AIMNet2: closed-shell ions, no radicals, so of the charge jobs only the proton affinity
   const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   const QFLOW = ['qflow'], QSLAB = ['qslab']; // quacc recipes: a batch of SMILES in params.items; EMT slabs by element
   let models = [
@@ -40,7 +41,7 @@
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
     ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
     ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM], ['openmm-amber14', PROTEIN],
-    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB]
+    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['aimnet2', IONS]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {

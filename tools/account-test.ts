@@ -639,6 +639,8 @@ await test("online models: ANI-2x free like UMA, MACE free and the same for ever
   eq((umaCalls.at(-1)?.body as any).model, "ani-2x");
   eq((await call("POST", "/uma/jobs", { smiles: "[NH4+]", job: "opt", model: "gfn2-xtb", charge: 1 }, pro)).status, 202, "xTB takes ions, on the same allowance");
   eq((umaCalls.at(-1)?.body as any).model, "gfn2-xtb");
+  eq((await call("POST", "/uma/jobs", { smiles: "CC(=O)[O-]", job: "opt", model: "aimnet2", charge: -1 })).status, 202, "AIMNet2 (MIT) takes closed-shell ions, free for everyone");
+  eq((umaCalls.at(-1)?.body as any).charge, -1);
   eq((await call("POST", "/uma/jobs", { job: "pmd", model: "openmm-amber14", params: { pdb_id: "1l2y", chains: "A", ps: 10 } }, pro)).status, 202, "protein MD by PDB ID");
   eq((umaCalls.at(-1)?.body as any).params, { pdb_id: "1L2Y", chains: "A", ps: 10 }, "the ID is upper-cased, nothing else added");
   eq([(umaCalls.at(-1)?.body as any).smiles, (umaCalls.at(-1)?.body as any).xyz], [undefined, undefined]);
@@ -704,6 +706,8 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }, { job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }],
     // transition states: coordinates only; the product's XYZ in params is tidied the same way as the main one
     [{ xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80, bogus: 1 } }, { xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80 } }],
+    [{ smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }, { smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }], // AIMNet2: protons move, no radicals
+    [{ xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }, { xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }],
     [{ xyz: HCN, job: "neb", model: "mace-off23-small", academic: true, params: { product_xyz: "\r\n" + HNC.replace(/\n/g, "\r\n"), images: 5, irc: false } }, { xyz: HCN, job: "neb", model: "mace-off23-small", params: { irc: false, images: 5, product_xyz: HNC } }],
   ];
   for (const [body, want] of cases) {
@@ -725,6 +729,11 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ smiles: "CCO", job: "ir", model: "uma-s-1p2p1" }, "IR is MACE-MDP's"],
     [{ smiles: "CCO", job: "ipea", model: "uma-s-1p1" }, "neutral model has no IP / EA"],
     [{ smiles: "CCO", job: "ipea", model: "gfn2-xtb" }, "xTB has no IP / EA"],
+    [{ smiles: "CCO", job: "ipea", model: "aimnet2" }, "AIMNet2 is closed-shell: no IP / EA"],
+    [{ smiles: "O=O", job: "spin", model: "aimnet2" }, "AIMNet2 has no spin gaps"],
+    [{ smiles: "CCO", job: "bde", model: "aimnet2", params: { bond: [1, 2] } }, "AIMNet2 has no BDE (radicals)"],
+    [{ smiles: "CCO", job: "opt", model: "aimnet2", charge: 1, spin: 2 }, "AIMNet2 refuses a doublet cation"],
+    [{ smiles: "O=O", job: "opt", model: "aimnet2", spin: 3 }, "AIMNet2 refuses a triplet"],
     [{ job: "pmd", model: "openmm-amber14" }, "protein MD needs a PDB ID"],
     [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y; rm -rf" } }, "a PDB ID is four characters"],
     [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "0ABC" } }, "a PDB ID starts with 1-9"],
@@ -965,7 +974,8 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt")], [18, 0, true, true, true, true], "the eighteen models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2")], [19, 0, true, true, true, true, true], "the nineteen models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "aimnet2"), { id: "aimnet2", ready: false, queue: 0, charged: true, closed_shell: true, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "pa"] }, "AIMNet2: ions, closed-shell only");
   eq(models.data.models.find((m: any) => m.id === "quacc-psi4")?.jobs, ["qflow"], "quacc: batches through one recipe");
   eq(models.data.quacc_costs, { per_molecule: { static: 1, relax: 1, relax_freq: 3 }, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, "what a batch costs");
   eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
@@ -977,7 +987,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|PROTEIN|QFLOW|QSLAB)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
   for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
@@ -1040,7 +1050,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 18, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 19, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

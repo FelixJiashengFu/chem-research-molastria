@@ -5,12 +5,15 @@ Runs on the owner's computer in the UMA environment. Cloudflare Tunnel connects 
 use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, blocks embargoed regions and adds the
 shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
-    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH] [--xtb PATH]
+    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
+        [--aimnet-python PATH] [--xtb PATH]
 
 Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and AllScAIP trained on OMol25) and
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
 MACE-OMOL-0 and MACE-MDP run in mace_worker.py under the MACE environment's Python (--mace-python), because
-mace-torch and fairchem need different e3nn versions. GFN2-xTB (also with ALPB water), GFN1-xTB and GFN-FF run the
+mace-torch and fairchem need different e3nn versions. AIMNet2 (isayevlab/aimnetcentral, MIT) runs in aimnet_worker.py
+under its own environment's Python (--aimnet-python), because it needs a newer torch than fairchem; it takes neutral
+and charged closed-shell molecules. GFN2-xTB (also with ALPB water), GFN1-xTB and GFN-FF run the
 xtb program (grimme-lab/xtb, LGPL-3.0) once per energy and gradient on the CPU (xtb_backend.py; --xtb or found on
 PATH / in this Python environment). Protein MD runs OpenMM (Amber ff14SB + GBSA-OBC2 implicit water) on a PDB
 entry downloaded from RCSB by its ID (openmm_backend.py; needs openmm and pdbfixer in this environment, uses CUDA,
@@ -21,8 +24,8 @@ reported as not ready. Every model is one ASE calculator (charge and spin multip
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Six lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, the MACE models (one GPU process, taking turns), xTB (the CPU), OpenMM (protein MD) and quacc
+Seven lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), xTB (the CPU), OpenMM (protein MD) and quacc
 (its recipes, on the CPU). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
@@ -75,10 +78,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 UMA = "uma-s-1p2p1"
 OFF_ELEMENTS = ("H", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I")
 OMOL_ELEMENTS = tuple(cj.chemical_symbols[1:84])  # H to Bi, the elements of OMol25
+AIMNET_ELEMENTS = ("H", "B", "C", "N", "O", "F", "Si", "P", "S", "Cl", "As", "Se", "Br", "I")  # aimnet_worker.ELEMENTS
 # Jobs by kind of model: A takes charges and spin states, B and C neutral closed-shell molecules only, D is MACE-MDP.
 A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa")
 B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb")
 D_JOBS = ("polar", "ir")
+# Closed-shell models that take ions (AIMNet2): moving a proton keeps every species closed-shell, so pa works; IP / EA,
+# spin gaps and bond dissociation need radicals and are left out.
+I_JOBS = B_JOBS + ("pa",)
 # xTB takes charges and spin states, but its IP / EA are far off (measured 2026-11-11 with xtb 6.7.1, adiabatic, at
 # the ETKDG start: GFN2 benzene / ethanol / water 14.2 / 14.4 / 18.1 eV, GFN1 15.0 / 15.9 / 20.5 eV; experiment about
 # 9.2 / 10.5 / 12.6 eV; the methods were never fitted to vertical charge changes), so no ipea. GFN-FF has no spin.
@@ -128,6 +135,11 @@ MODELS = {
     "mace-off23-large": _mace("MACE-OFF23 large", B_JOBS, OFF_ELEMENTS),
     "mace-omol-0": _mace("MACE-OMOL-0", B_JOBS, OMOL_ELEMENTS),  # 83 elements, H to Bi
     "mace-mdp": _mace("MACE-MDP", D_JOBS, OFF_ELEMENTS),
+    # AIMNet2 (isayevlab, MIT; aimnet_worker.py in aimnet-env): wB97M-D3 quality for neutral and charged closed-shell
+    # molecules of 14 elements. It reads the charge but not the multiplicity, so radicals are refused ("closed").
+    # Its charge-state energies were checked with aimnet_selftest.py before it was offered (docs/RUNBOOK.md).
+    "aimnet2": {"name": "AIMNet2 (wB97M-D3)", "lane": "aimnet", "jobs": I_JOBS, "charged": True, "closed": True,
+                "elements": AIMNET_ELEMENTS, "direct": False},
     # GFN2 / GFN1 parametrise H to Rn (Z 1-86); GFN-FF too. Elements past Bi rarely matter and keep the list as OMol25.
     "gfn2-xtb": {"name": "GFN2-xTB", "lane": "xtb", "jobs": X_JOBS, "charged": True, "elements": OMOL_ELEMENTS, "direct": False},
     "gfn2-xtb-alpb-water": {"name": "GFN2-xTB (ALPB water)", "lane": "xtb", "jobs": X_JOBS, "charged": True,
@@ -357,13 +369,15 @@ class AniBackend:
 class MaceBackend:
     """mace_worker.py in the MACE environment, one JSON line per request; restarted if it dies or hangs."""
 
+    SCRIPT, NAME = "mace_worker.py", "MACE"
+
     def __init__(self, python):
         self.python, self.proc, self.lines = python, None, None
         self.info = self.call({"op": "ping"}, timeout=180)
 
     def start(self):
         env = dict(os.environ, PYTHONUTF8="1")
-        self.proc = subprocess.Popen([self.python, "-X", "utf8", "-u", os.path.join(HERE, "mace_worker.py")],
+        self.proc = subprocess.Popen([self.python, "-X", "utf8", "-u", os.path.join(HERE, self.SCRIPT)],
                                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None, env=env,
                                      text=True, encoding="utf-8", bufsize=1)
         self.lines = queue_mod.Queue()
@@ -386,13 +400,13 @@ class MaceBackend:
         except queue_mod.Empty:
             self.proc.kill()
             self.proc = None
-            raise RuntimeError(f"the MACE process took longer than {timeout} s and was restarted")
+            raise RuntimeError(f"the {self.NAME} process took longer than {timeout} s and was restarted")
         if line is None:
             self.proc = None
-            raise RuntimeError("the MACE process stopped; it starts again with the next job")
+            raise RuntimeError(f"the {self.NAME} process stopped; it starts again with the next job")
         reply = json.loads(line)
         if not reply.get("ok"):
-            raise RuntimeError(reply.get("error") or "MACE failed")
+            raise RuntimeError(reply.get("error") or f"{self.NAME} failed")
         return reply
 
     def ef(self, model):
@@ -410,16 +424,28 @@ class MaceBackend:
         return np.array(r["dipole"], float), np.array(r["polarizability"], float) * cj.POL_TO_A3
 
 
+class AimnetBackend(MaceBackend):
+    """aimnet_worker.py in aimnet-env (AIMNet2 needs torch 2.10 or later, fairchem an older one): the same JSON
+    lines as the MACE worker, energies and forces only."""
+
+    SCRIPT, NAME = "aimnet_worker.py", "AIMNet2"
+
+    def dp(self, symbols, positions):
+        raise RuntimeError("AIMNet2 does not predict polarizabilities")
+
+
 class Service:
-    def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python=""):
+    def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python="",
+                 aimnet_python=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
+        self.aimnet_python = aimnet_python
         self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
         self.sella = ""
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm", "quacc")}
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "xtb", "openmm", "quacc")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -450,9 +476,13 @@ class Service:
             else:
                 self.device = "cpu"
             for lane, make in (("fair", lambda: FairchemBackend(self.device)), ("ani", lambda: AniBackend(self.device)),
-                               ("mace", lambda: MaceBackend(self.mace_python) if self.mace_python else None)):
+                               ("mace", lambda: MaceBackend(self.mace_python)),
+                               ("aimnet", lambda: AimnetBackend(self.aimnet_python))):
                 if lane == "mace" and not self.mace_python:
                     self.errors[lane] = "no MACE environment (start with --mace-python)"
+                    continue
+                if lane == "aimnet" and not self.aimnet_python:
+                    self.errors[lane] = "no AIMNet2 environment (start with --aimnet-python)"
                     continue
                 print(f"Loading the {lane} models on {self.device} {self.gpu}".rstrip(), flush=True)
                 try:
@@ -738,6 +768,8 @@ class Service:
             charge, spin = charge_spin(Chem.GetFormalCharge(mol), lambda _: radicals + 1)
             if not m["charged"] and (charge != 0 or spin != 1 or radicals):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            if m.get("closed") and (spin != 1 or radicals):
+                raise BadRequest(f"{m['name']} handles closed-shell molecules only (ions are fine, radicals are not)")
             canonical = Chem.MolToSmiles(mol)
             symbols = [a.GetSymbol() for a in mol_h.GetAtoms()]
             # Atom indices in params follow the SMILES as sent, so those jobs build the molecule from it (and cache
@@ -756,6 +788,8 @@ class Service:
                 raise BadRequest("this charge and spin multiplicity do not fit the number of electrons")
             if not m["charged"] and (charge != 0 or spin != 1):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            if m.get("closed") and spin != 1:
+                raise BadRequest(f"{m['name']} handles closed-shell molecules only (ions are fine, radicals are not)")
             text = "".join(f"{s} {x:.8f} {y:.8f} {z:.8f}\n" for s, (x, y, z) in zip(symbols, positions))
             spec.update(xyz=f"{len(symbols)}\n\n{text}", charge=charge, spin=spin,
                         input="xyz:" + hashlib.sha256(text.encode()).hexdigest())
@@ -813,6 +847,8 @@ class Service:
                 raise BadRequest(f"{m['name']} does not know {', '.join(outside)}")
             if not m["charged"] and (sp["charge"] != 0 or sp["spin"] != 1):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell species only ({sp['smiles']})")
+            if m.get("closed") and sp["spin"] != 1:
+                raise BadRequest(f"{m['name']} handles closed-shell species only ({sp['smiles']})")
             if not (-2 <= sp["charge"] <= 2 and 1 <= sp["spin"] <= 4):
                 raise BadRequest(f"each species needs charge -2..2 and spin multiplicity 1..4 ({sp['smiles']})")
         return species, canonical
@@ -947,6 +983,8 @@ def main():
     ap.add_argument("--device", default="auto", choices=["auto", "cuda", "cpu"])
     ap.add_argument("--mace-python", default=os.environ.get("MOLASTRIA_MACE_PYTHON", ""),
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
+    ap.add_argument("--aimnet-python", default=os.environ.get("MOLASTRIA_AIMNET_PYTHON", ""),
+                    help="python.exe of the environment with aimnet (AIMNet2 is off without it)")
     ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
     ap.add_argument("--psi4-python", default=os.environ.get("MOLASTRIA_PSI4_PYTHON", ""),
                     help="python.exe of a conda environment with psi4 and quacc (quacc-psi4 is off without it, unless this environment imports psi4)")
@@ -962,7 +1000,8 @@ def main():
         sys.exit("No secret: run  node tools/uma-server/new-secret.mjs  first (it also gives the account service the same value).")
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
     service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
-                      openmm_platform=args.openmm_platform, psi4_python=args.psi4_python)
+                      openmm_platform=args.openmm_platform, psi4_python=args.psi4_python,
+                      aimnet_python=args.aimnet_python)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)
     try:
