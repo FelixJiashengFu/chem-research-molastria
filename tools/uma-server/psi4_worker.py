@@ -68,6 +68,7 @@ def static(req):
     atoms = Atoms(req["symbols"], positions=req["positions"])
     with tempfile.TemporaryDirectory(prefix="molastria-psi4-") as d:
         os.environ.setdefault("PSI_SCRATCH", d)
+        os.chdir(d)  # Psi4 writes timer.dat into the working directory, which is the (public) repo otherwise
         with change_settings({"RESULTS_DIR": d, "GZIP_FILES": False, "CREATE_UNIQUE_DIR": True}):
             doc = static_job(atoms, charge=int(req["charge"]), spin_multiplicity=int(req["spin"]), method=req["method"],
                              basis=req["basis"], mem=req.get("mem", "4GB"), num_threads=int(req.get("threads", 4)))
