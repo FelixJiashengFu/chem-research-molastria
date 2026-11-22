@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -6588,6 +6588,87 @@ check('literature extractor: demo without AI, a real run through a fake model (p
   assert.match(await text(e, 'h1'), /Literature Extractor/);
   assert.doesNotMatch(await e.innerText('#ex'), /[一-鿿]/, 'no Chinese left on the English page');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(e);
+});
+
+check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from real outputs, a Slurm batch zip, hand-off to the code desk, English phone', async () => {
+  const p = await open({ reducedMotion: 'reduce' });
+  await localOCL(p.context());
+  await go(p, '/workbench/index.html?smiles=' + encodeURIComponent('C[C@@H](O)/C=C/C(=O)O'));
+  await p.waitForFunction(() => window.MolAstriaWorkbench?.S.smiles === 'C[C@@H](O)/C=C/C(=O)O', null, { timeout: 60000 });
+  const S = () => p.evaluate(() => { const s = window.MolAstriaWorkbench.S; return { n: s.frames[s.frame]?.atoms.length, cip: s.cip, tab: document.body.dataset.tab }; });
+  assert.equal((await S()).n, 16, "C5H8O3");
+  assert.match(await p.locator('#wb-p-build').innerText(), /-?\d+\.\d{3} kcal\/mol \(MMFF94s\+\)/, 'a force-field energy is shown in kcal/mol, not as Eh');
+  const panel = (id) => `#wb-p-${id}`;
+  const statusIn = (id) => p.locator(`${panel(id)} .wb-status:not(:empty)`);
+  // R/S and E/Z from the 3D coordinates (OpenChemLib served from tools/e2e)
+  await p.click(`${panel('build')} button:has-text("标出 R/S 和 E/Z")`);
+  await p.waitForFunction(() => window.MolAstriaWorkbench.S.cip, null, { timeout: 30000 });
+  const cip = (await S()).cip;
+  assert.deepEqual(cip.centres.map((c) => c[1]), ['R']);
+  assert.deepEqual(cip.bonds.map((b) => b[2]), ['E']);
+  assert.match(await statusIn('build').first().textContent(), /找到 1 个手性中心、1 个有 E\/Z 之分的双键/);
+  // wavefunction tab: the water-dimer Molden sample, a closed Hirshfeld surface, then IGMH on its real density
+  await p.click('#wb-t-wfn');
+  await p.click(`${panel('wfn')} button:has-text("示例：水二聚体（试 IGMH）")`);
+  await p.waitForFunction(() => window.MolAstriaWorkbench.S.frames[0]?.atoms.length === 6);
+  await p.click(`${panel('wfn')} button:has-text("画 Hirshfeld 面")`);
+  await p.waitForFunction(() => [...document.querySelectorAll('#wb-p-wfn .wb-status')].some((e) => e.textContent === '画好了。'), null, { timeout: 90000 });
+  assert.match(await p.locator('#wb-p-wfn').innerText(), /H···O/);
+  await p.selectOption(`${panel('wfn')} select:has(option[value=igmh])`, 'igmh');
+  await p.click(`${panel('wfn')} button:has-text("计算并画面")`);
+  await p.waitForFunction(() => [...document.querySelectorAll('#wb-p-wfn .wb-status')].some((e) => /等值 0\.005/.test(e.textContent)), null, { timeout: 90000 });
+  // spectra tab: a Gaussian TD-DFT output → UV–vis with ten states, then an ORCA Raman output
+  await p.click('#wb-t-spec');
+  await p.click(`${panel('spec')} button:has-text("二乙烯基苯：Gaussian 16 TD-DFT")`);
+  await p.waitForFunction(() => document.querySelectorAll('#wb-p-spec .wb-table tbody tr').length >= 5, null, { timeout: 30000 });
+  assert.ok(await p.locator('#wb-p-spec svg').count() >= 1, 'the UV–vis spectrum is drawn');
+  await p.click(`${panel('spec')} button:has-text("二乙烯基苯：ORCA 5 频率和拉曼")`);
+  await p.waitForFunction(() => /拉曼/.test(document.querySelector('#wb-p-spec').innerText));
+  // batch tab: ORCA inputs for every frame plus a Slurm array script, all in one zip
+  await p.click('#wb-t-batch');
+  await p.click(`${panel('batch')} button:has-text("写输入和脚本")`);
+  await p.waitForFunction(() => /写好了/.test(document.querySelector('#wb-p-batch .wb-status:not(:empty)')?.textContent || ''));
+  assert.match(await p.locator('#wb-p-batch').innerText(), /#SBATCH|#!\/bin\/bash/);
+  const zipBtn = p.locator(`${panel('batch')} button:has-text("全部打成 zip")`);
+  if (await zipBtn.count()) {
+    const [dl] = await Promise.all([p.waitForEvent('download'), zipBtn.first().click()]);
+    const zip = readFileSync(await dl.path());
+    assert.equal(zip.readUInt32LE(0), 0x04034b50, 'a zip file');
+  }
+  // nothing on the page reads null / undefined / NaN (a null passed to the DOM's append() turns into the text "null")
+  const junk = await p.evaluate(() => { const t = document.createTreeWalker(document.querySelector('.wb') || document.body, NodeFilter.SHOW_TEXT), bad = []; for (let n; (n = t.nextNode());) if (/^(null|undefined|NaN|false|\[object Object\])$/.test(n.textContent.trim())) bad.push(`${n.parentElement.className}: ${n.textContent}`); return bad; });
+  assert.deepEqual(junk, []);
+  // hand-off: the current structure goes to the code desk with its charge and multiplicity
+  await p.click('#wb-t-build');
+  await p.click(`${panel('build')} button:has-text("送进开源代码台写输入")`);
+  await p.waitForURL(/\/code\/(index\.html)?#input/);
+  await p.waitForFunction(() => !document.getElementById('in-import').hidden);
+  assert.equal(await text(p, '#in-import'), '这个结构来自计算工作台。电荷和多重度照那边填好了。');
+  assert.match(await p.inputValue('#in-xyz'), /^20\n/, 'divinylbenzene from the last output read');
+  await finish(p);
+  // the structure can change while OpenChemLib is still loading: the labels follow the structure now on screen
+  const q = await open({ reducedMotion: 'reduce' });
+  await localOCL(q.context(), 2000);
+  await go(q, '/workbench/index.html');
+  await q.waitForFunction(() => window.MolAstriaWorkbench?.S.frames.length);
+  const ala = JSON.parse(readFileSync(join(ROOT, 'tools/workbench/fixtures/cip.json'), 'utf8')).cases.find((c) => /alanine$/.test(c.name));
+  await q.click('#wb-p-build button:has-text("标出 R/S 和 E/Z")');
+  await q.evaluate((atoms) => window.MolAstriaWorkbench.setFrames([{ atoms: atoms.map(([el, x, y, z]) => ({ el, x, y, z })) }], { name: 'ala' }), ala.atoms);
+  await q.waitForFunction(() => window.MolAstriaWorkbench.S.cip, null, { timeout: 30000 });
+  assert.deepEqual(await q.evaluate(() => window.MolAstriaWorkbench.S.cip.centres.map((c) => c[1])), ['S'], 'L-alanine, not the aspirin that was on screen when the button was pressed');
+  await finish(q);
+  // English, phone width, dark
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await localOCL(e.context());
+  await go(e, '/workbench/index.html?lang=en');
+  await e.waitForFunction(() => window.MolAstriaWorkbench?.S.frames.length);
+  assert.match(await text(e, 'h1'), /Workbench/);
+  for (const id of ['build', 'crystal', 'path', 'conf', 'wfn', 'spec', 'batch', 'project']) {
+    await e.click(`#wb-t-${id}`);
+    assert.doesNotMatch(await e.innerText(`#wb-p-${id}`), /[一-鿿]/, `no Chinese left on the English ${id} tab`);
+    assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no sideways scroll on a phone (${id})`);
+  }
   await finish(e);
 });
 

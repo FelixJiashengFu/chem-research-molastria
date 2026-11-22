@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MolAstria 计算工作台：在浏览器里读写九种结构格式、搭晶体和表面、写反应路径（扫描、过渡态、IRC、NEB）的输入并画能量曲线、生成和归簇构象、标 R/S 和 E/Z、画分子轨道和电子密度、Hirshfeld 面和指纹图、IGM / IGMH / IRI 弱相互作用图、读红外拉曼紫外光谱和优化收敛、批量写输入和作业脚本。功能清单参照 Ester Studio，代码是 MolAstria 自己按公开的格式和文献写的。">
+  <meta name="theme-color" content="#173f34">
+  <title>计算工作台 · 结构、路径、构象、轨道和弱相互作用 · MolAstria</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>try{var d=document.documentElement,s=localStorage,t=s.getItem("chemhub-theme"),l=(location.search.match(/[?&]lang=(en|zh)/)||[])[1]||s.getItem("chemhub-lang");if(t==="dark"||t==="light")d.dataset.theme=t;d.dataset.bg=s.getItem("chemhub-bg")||"stars";var z=+s.getItem("molastria-zoom");if(z&&z!==1&&!window.__MOLASTRIA_DESKTOP__)d.style.zoom=z;var x=+s.getItem("molastria-text");if(x&&x!==1)d.style.setProperty("--cr-text-zoom",x);var f=s.getItem("molastria-font");if(f)d.dataset.font=f;var g=s.getItem("chemhub-bg-strength");if(g)d.style.setProperty("--bg-strength",g);if(l==="en"){d.lang="en";d.dataset.i18n="pending";setTimeout(function(){delete d.dataset.i18n},3000)}}catch(e){}</script>
+  <script src="../i18n.js" defer></script>
+  <script src="../backdrop.js" defer></script>
+  <link rel="stylesheet" href="../shared-nav.css">
+  <link rel="stylesheet" href="../viewer/mol3d.css">
+  <link rel="stylesheet" href="workbench.css">
+  <script src="../shared-nav.js" defer></script>
+  <script src="../viewer/mol3d.js" defer></script>
+  <script src="../viewer/smiles3d.js" defer></script>
+  <script src="../viewer/sketch.js" defer></script>
+  <script src="../lab/chem.js" defer></script>
+  <script src="../code/code-core.js" defer></script>
+  <script src="../code/ir-core.js" defer></script>
+  <script src="wb-struct.js" defer></script>
+  <script src="wb-calc.js" defer></script>
+  <script src="wb-wfn.js" defer></script>
+  <script src="wb-tab-path.js" defer></script>
+  <script src="wb-tab-wfn.js" defer></script>
+  <script src="wb-tab-spec.js" defer></script>
+  <script src="workbench.js" defer></script>
+</head>
+<body data-section="workbench" class="js-render">
+<!-- Everything here is drawn by workbench.js in both languages (translate="no"), so the page does not wait for the site dictionary. -->
+<main class="wb" id="wb" translate="no">
+  <noscript><p class="wb-noscript">计算工作台需要 JavaScript 才能使用。</p></noscript>
+</main>
+</body>
+</html>

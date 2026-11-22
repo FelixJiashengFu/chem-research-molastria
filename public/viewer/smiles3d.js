@@ -59,7 +59,9 @@
       const target = M.fromSmiles(M.fromSmiles(source).toIsomericSmiles()).getIDCode();
       const stereoSmiles = fixed || smi; // 写进 XYZ 注释的：原样的 SMILES，或者补上构型的那一个
       // 力场在浏览器里算得慢（大约和原子数的平方成正比），大分子少搭几个构象、少迭代几步
-      const want = Math.max(1, Math.min(o.conformers, total <= 40 ? 8 : total <= 80 ? 4 : total <= 150 ? 2 : 1));
+      // wide：计算工作台的构象页要多搭一些（小分子最多 30 个）
+      const cap = o.wide ? (total <= 40 ? 30 : total <= 80 ? 12 : total <= 150 ? 4 : 1) : (total <= 40 ? 8 : total <= 80 ? 4 : total <= 150 ? 2 : 1);
+      const want = Math.max(1, Math.min(o.conformers, cap));
       const maxIts = total > 100 ? 500 : 2000;
       const gen = new OCL.ConformerGenerator(o.seed);
       if (!gen.initializeConformers(M.fromSmiles(source))) return { error: 'embed' };

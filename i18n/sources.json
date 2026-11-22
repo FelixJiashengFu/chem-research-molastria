@@ -8897,6 +8897,15 @@
  "extract extraction literature paper pdf figure scheme reaction scope table ocr chemeagle agent multi-agent smiles yield 抽取 提取 文献 论文 反应图 底物表 智能体 识别": [
   "shared-nav.js"
  ],
+ "计算工作台": [
+  "shared-nav.js"
+ ],
+ "读写九种结构格式、搭晶体和表面、写反应路径和批量作业的输入、构象归簇、R/S 标记，画分子轨道、Hirshfeld 面和 IGM / IGMH 弱相互作用，读红外拉曼紫外和优化收敛": [
+  "shared-nav.js"
+ ],
+ "workbench ester studio structure xyz cif poscar pdb mol sdf crystal surface slab supercell scan ts irc neb idpp conformer rmsd boltzmann molden orbital homo lumo cube esp hirshfeld fingerprint igm igmh iri nci raman uv tddft convergence slurm pbs batch job cip chirality 工作台 结构 晶体 表面 反应路径 过渡态 构象 轨道 静电势 弱相互作用 拉曼 紫外 批量 作业脚本 手性": [
+  "shared-nav.js"
+ ],
  "期刊选择与投稿指导": [
   "shared-nav.js"
  ],
@@ -16767,6 +16776,9 @@
  "正在用 MMFF94 优化第 {0} 个构象（共 {1} 个）…": [
   "code/code.js"
  ],
+ "这个结构来自计算工作台。电荷和多重度照那边填好了。": [
+  "code/code.js"
+ ],
  "这个结构来自模型接口：": [
   "code/code.js"
  ],
@@ -18140,6 +18152,12 @@
   "tools/build-seo.ts"
  ],
  "把化学论文里的反应图、底物表或一页 PDF 交给一组分工的 AI 智能体，读出反应物、产物、条件和产率；R 基团由规则代入枚举，SMILES 用 RDKit 核对，每条反应打分，导出 JSON 和 CSV。思路来自 ChemEAGLE（arXiv:2507.20230）。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 计算工作台 · Workbench": [
+  "tools/build-seo.ts"
+ ],
+ "在浏览器里读写九种结构格式（XYZ、PDB、MOL、CIF、POSCAR、Gaussian、ORCA、CDXML、cube），搭超胞和表面；写扫描、过渡态、IRC、NEB 的输入并画能量曲线；构象按 RMSD 归簇；标 R/S 和 E/Z；从 Molden 画分子轨道和电子密度，做 Hirshfeld 面、指纹图和 IGM / IGMH / IRI 弱相互作用图；读红外、拉曼、紫外和优化收敛；批量写输入和 Slurm / PBS 作业脚本。功能清单参照 Ester Studio，代码是独立重写的。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [
