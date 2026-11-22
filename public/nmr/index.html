@@ -34,6 +34,7 @@
       <a class="button" href="#nmr-families">方法对比</a>
       <a class="button" href="#nmr-milestones">发展时间线</a>
       <a class="button" href="#nmr-lab">动手实验室</a>
+      <a class="button" href="nmrium/index.html">在 NMRium 里处理谱图 <i class="ico-ext" aria-hidden="true"></i></a>
       <a class="button" href="#nmr-ledger">说法核对</a>
       <a class="button" href="#nmr-library">科研文献</a>
     </nav>
@@ -73,6 +74,18 @@
   <section class="fs-block fs-lab" id="nmr-lab" aria-labelledby="nmr-lab-h" tabindex="-1">
     <h2 id="nmr-lab-h">动手实验室</h2>
     <p class="muted">五个演示都在浏览器里直接计算对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画，也不是实测的谱。每个演示下方写明模型的假设和适用范围。</p>
+
+    <article class="fs-demo nmr-real" id="demo-nmrium" aria-labelledby="demo-nmrium-h">
+      <header><p class="fs-demo-n">真实数据</p><h3 id="demo-nmrium-h">用 NMRium 处理一张真实的谱</h3>
+        <p class="muted">下面五个演示是模型；这里是实测数据。开源的 NMRium 在你的浏览器里读 JCAMP-DX、Bruker 的原始 FID 和二维数据，做傅里叶变换、调相位、校基线、积分、找峰。文件不上传。NMRium 的界面是英文的，适合在电脑上用。</p></header>
+      <div class="fs-btns nmr-real-btns">
+        <a class="button primary" href="nmrium/index.html#sample=aspirin">打开示例：阿司匹林 ¹H 原始 FID <i class="ico-ext" aria-hidden="true"></i></a>
+        <a class="button" href="nmrium/index.html#sample=indometacin">吲哚美辛 ¹H 和结构</a>
+        <a class="button" href="nmrium/index.html#sample=cyclosporin">环孢素 ¹H 和 COSY</a>
+        <a class="button" href="nmrium/index.html">处理自己的数据</a>
+      </div>
+      <p class="muted nmr-real-note">示例是 cheminfo 的开放测试数据（MIT 许可）。谱图馆的练习题也能一键送进 NMRium：<a href="../spectra/index.html#sp-practice">谱图馆 · 练习题</a>。</p>
+    </article>
 
     <article class="fs-demo" id="demo-ft" aria-labelledby="demo-ft-h">
       <header><p class="fs-demo-n">演示 1</p><h3 id="demo-ft-h">从自由感应衰减到谱：傅里叶变换</h3>

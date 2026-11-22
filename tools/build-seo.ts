@@ -303,6 +303,7 @@ const mains = [
   await injectHead("news/index.html", "news/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "化学与材料新闻 · Chemistry & Materials News, Explained", inLanguage: ["zh-CN", "en"], url: SITE + "news/", isAccessibleForFree: true, description: "最新的化学和材料研究图解：做了什么、怎么做到的、还差什么，配交互演示；每条链接原始论文，DOI 逐条核对。", about: ["metal-organic frameworks", "quantum sensing", "electron paramagnetic resonance", "optically detected magnetic resonance", "radical pairs", "spin polarization"] }, crumbs([["首页", ""], ["化学与材料新闻", "news/"]])] }),
   await injectHead("toronto/index.html", "toronto/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "多伦多大学 · AI 化学与材料 · U of T AI for Chemistry & Materials", inLanguage: ["zh-CN", "en"], url: SITE + "toronto/", isAccessibleForFree: true, description: "多伦多大学里做 AI 化学、材料发现、自驱实验室和计算化学的组织：加速联盟、Matter Lab、清洁能源实验室、A3MD、von Lilienfeld 组、Vector 研究所、SciNet Trillium 等，每条事实带出处。", about: ["self-driving laboratories", "materials discovery", "Acceleration Consortium", "University of Toronto", "machine learning for chemistry"] }, crumbs([["首页", ""], ["多伦多大学 · AI 化学与材料", "toronto/"]])] }),
   await injectHead("industry/index.html", "industry/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "AI 化学与材料企业图谱 · AI Chemistry & Materials Companies", inLanguage: ["zh-CN", "en"], url: SITE + "industry/", isAccessibleForFree: true, description: "做 AI 化学、材料发现、计算化学软件、量子化学计算和实验自动化的八十多家公司，各一句话，标出和多伦多大学有据可查的关系。", about: ["AI for chemistry", "materials informatics", "computational chemistry software", "quantum computing", "laboratory automation"] }, crumbs([["首页", ""], ["AI 化学与材料企业图谱", "industry/"]])] }),
+  await injectHead("nmr/nmrium/index.html", "nmr/nmrium/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "NMRium 谱图处理 · MolAstria", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: ["zh-CN", "en"], url: SITE + "nmr/nmrium/", isAccessibleForFree: true, codeRepository: "https://github.com/cheminfo/nmrium", description: "在浏览器里用开源的 NMRium 处理核磁数据：JCAMP-DX、Bruker、原始 FID，傅里叶变换、相位、基线、积分、找峰和二维谱；数据不上传。" }, crumbs([["首页", ""], ["核磁共振", "nmr/"], ["NMRium 谱图处理", "nmr/nmrium/"]])] }),
   await injectHead("spectra/index.html", "spectra/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "谱图馆 · Spectra Hall", inLanguage: ["zh-CN", "en"], url: SITE + "spectra/", isAccessibleForFree: true, description: "91 种分析方法的谱图怎么来、怎么读：红外、拉曼、紫外、荧光、质谱、GC-MS、LC-MS、色谱、核磁、顺磁、X 射线衍射、光电子能谱、原子光谱、热分析、电化学，以及冷冻电镜、测序、凝胶电泳、光散射、超速离心等大分子与高分子的方法；开放许可的实测质谱、量化计算的红外拉曼紫外谱、78 个交互演示、16 张速查表和 178 篇文献，每张图都写明来源。", about: ["analytical chemistry", "spectroscopy", "infrared spectroscopy", "Raman spectroscopy", "mass spectrometry", "GC-MS", "LC-MS", "chromatography", "X-ray diffraction", "X-ray photoelectron spectroscopy", "thermal analysis", "cyclic voltammetry"] }, crumbs([["首页", ""], ["谱图馆", "spectra/"]])] }),
   await injectHead("quasiparticles/index.html", "quasiparticles/", { jsonld: [{ "@context": "https://schema.org", "@type": "Course", name: "准粒子 · Quasiparticles", inLanguage: ["zh-CN", "en"], url: SITE + "quasiparticles/", isAccessibleForFree: true, provider: { "@type": "Organization", name: "MolAstria", url: SITE }, description: "准粒子十二章：什么是准粒子（谱函数判据）、声子、空穴和有效质量、费米液体、磁振子、激子、极化子、等离激元、极化激元、库珀对和 Bogoliubov 准粒子、任意子和 Majorana、怎样测量准粒子（中子、光谱、ARPES）；十三个在浏览器里当场计算的演示和 57 篇按 DOI 核对过的文献。", about: ["quasiparticles", "phonons", "holes", "Fermi liquid", "magnons", "excitons", "polarons", "plasmons", "polaritons", "BCS theory", "anyons", "Majorana zero modes", "ARPES"] }, crumbs([["首页", ""], ["准粒子", "quasiparticles/"]])] }),
   await injectHead("quasiparticles/phonons/index.html", "quasiparticles/phonons/", { jsonld: [{ "@context": "https://schema.org", "@type": "Course", name: "声子 · Phonons", inLanguage: ["zh-CN", "en"], url: SITE + "quasiparticles/phonons/", isAccessibleForFree: true, provider: { "@type": "Organization", name: "MolAstria", url: SITE }, description: "声子馆九章：一维原子链、双原子链和光学支、三维晶体和布里渊区、声子的量子化和态密度、热容（Einstein 和 Debye）、中子散射和拉曼、非谐性与热膨胀、晶格热导率、冻结声子和机器学习势；十一个在浏览器里当场计算的演示和 53 篇核对过的文献。", about: ["phonons", "lattice dynamics", "Brillouin zone", "density of states", "Debye model", "neutron scattering", "Raman spectroscopy", "thermal conductivity", "phonopy", "machine-learned interatomic potentials"] }, crumbs([["首页", ""], ["准粒子", "quasiparticles/"], ["声子", "quasiparticles/phonons/"]])] }),
@@ -386,6 +387,7 @@ const urls = [
   ["quantum/algorithms/", "0.8", "monthly"],
   ["quantum/computing/", "0.8", "monthly"],
   ["nmr/", "0.8", "monthly"],
+  ["nmr/nmrium/", "0.6", "monthly"],
   ["macro/", "0.8", "monthly"],
   ["optics/", "0.8", "monthly"],
   ["news/", "0.8", "weekly"],
@@ -445,7 +447,7 @@ await write(".nojekyll", "");
 // ── installable web app (PWA): head tags on every page, a fresh sw.js version per deploy ─────────────────
 // Manifest, home-screen icon, standalone mode and status bar for iPad / iPhone / Android, and viewport-fit=cover so
 // shared-nav.css can keep the top bar clear of the status bar. The media theme-colors come before a page's own one.
-// Skipped: radar/app, qchem/app and research-atlas/app (copied apps shown in frames) and offline.html (sw.js shows it under other pages'
+// Skipped: radar/app, qchem/app, research-atlas/app and nmr/nmrium/app (copied apps shown in frames) and offline.html (sw.js shows it under other pages'
 // addresses, so it has its own head). tools/bundle-single.ts strips the block again.
 const pwaHead = (rel: string) => `<!-- pwa:start -->
   <link rel="manifest" href="${rel}manifest.webmanifest">
@@ -460,7 +462,7 @@ const htmlFiles = async (dir: string): Promise<string[]> => {
   const out: string[] = [];
   for await (const e of Deno.readDir(new URL(dir, pub))) {
     const path = dir + e.name;
-    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app" && path !== "research-atlas/app") out.push(...await htmlFiles(path + "/"));
+    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app" && path !== "research-atlas/app" && path !== "nmr/nmrium/app") out.push(...await htmlFiles(path + "/"));
     else if (e.isFile && path.endsWith(".html") && path !== "offline.html") out.push(path);
   }
   return out;
