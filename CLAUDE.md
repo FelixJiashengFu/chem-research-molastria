@@ -262,6 +262,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **PySCF 的解析 DFT Hessian 漏了积分格点的响应：** 重原子的低频弯曲振动会算错，而且换更细的格点也不收敛（二氯甲烷的 CCl₂ 剪式振动在 (75,302) 格点上是 401 cm⁻¹、(99,590) 上 273，实验 282；CCl₄、CHCl₃ 也错）。`tools/spectra/calcs.py` 只用解析 Hessian 取一组初始模式，再沿这些模式对解析梯度（`grid_response = True`）做中心差分重建 Hessian；JSON 里留着 `analytic_freq` 可以对照。
 - **SVG 的 `clip-path="inset(…)"`：** 加在 `<g>` 上时按这个组自己的包围盒裁，基线和峰底会被切掉；谱图馆的 `sp-plot.js` 用真正的 `<clipPath>` 矩形。
 - **工具输入里的 `\uXXXX` 会被解码：** 云端会话用 Write 或 heredoc 写文件时，`\u200B` 这类转义会变成真的不可见字符（正则因此坏过一次，报 `Invalid regular expression: missing /`）。要在文件里留下反斜杠转义，用 Python 的 `chr(92) + "u200B"` 拼，或者从已有文件里复制那一行。
+- **`.gitignore` 忽略所有 `*.log`：** Gaussian 的输出正是 `.log`，拿它做示例或测试数据时本地测试照样通过，CI 却找不到文件（计算工作台合并后发布失败过一次）。新的 `.log` 数据要在 `.gitignore` 里放行（照 `public/workbench/samples/*.log` 那两行写），提交前用 `git status --ignored` 看一眼。
 - **只发不读的 fetch：** 页面发出请求后不读响应体的话，Chromium 一直把这个请求挂着，Playwright 的 `networkidle` 永远等不到（网状查询上报没找到的词时遇到过）。就算用不到结果，也要 `.then((r) => r.text())` 读掉。
 - **e2e 端口：** `tools/e2e/run.mjs` 固定用 8840 端口，两个会话同时跑时一边结束会关掉另一边的服务器（`ERR_CONNECTION_REFUSED`）。一次只跑一个；自己预览用别的端口。
 - **云端会话连不上 YouTube 和哔哩哔哩：** 教学视频的搜索和核对（`tools/video-search.mjs`）要在站长电脑或 GitHub Actions 上跑，做法见 RUNBOOK“教学视频”。哔哩哔哩对 GitHub 的服务器可以用（搜索要 wbi 签名和 buvid3 cookie），频繁请求会返回 -412，脚本遇到连续限流就停。
