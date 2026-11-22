@@ -2179,6 +2179,45 @@ check('catalogue: international sources outnumber Chinese ones, the topic chart 
   await finish(p);
 });
 
+check('sign in with Google: the button, the round trip to (a pretend) Google and back, the same account as codes; Cancel and unverified emails say why', async () => {
+  const p = await open();
+  // Plays Google's sign-in page: straight back to the account service with a code that says which email Google confirmed.
+  let as = 'pro@example.com', deny = false;
+  await p.context().route(/^https:\/\/accounts\.google\.com\/o\/oauth2\/v2\/auth/, (route) => {
+    const q = new URL(route.request().url()).searchParams;
+    const mail = Buffer.from(as).toString('base64url');
+    const back = deny ? `${q.get('redirect_uri')}?error=access_denied&state=${q.get('state')}` : `${q.get('redirect_uri')}?code=e2e.${mail}.${q.get('nonce')}&state=${q.get('state')}`;
+    assert.equal(q.get('code_challenge_method'), 'S256');
+    return route.fulfill({ status: 302, headers: { Location: back } });
+  });
+  // Playwright does not see requests a redirect leads to, so the account service's redirect to Google becomes a page that goes there.
+  await p.context().route(`${API}/auth/google/start?*`, async (route) => {
+    const res = await route.fetch({ maxRedirects: 0 });
+    const h = res.headers();
+    return route.fulfill({ status: 200, headers: { 'Content-Type': 'text/html', 'Set-Cookie': h['set-cookie'] }, body: `<script>location.replace(${JSON.stringify(h.location)})</script>` });
+  });
+  await go(p, '/pro/account.html');
+  await p.waitForSelector('#google-box:not([hidden])');
+  assert.equal(await text(p, '#login-h'), '登录');
+  await p.click('#google-btn');
+  await p.waitForSelector('#acct-main:not([hidden])');
+  assert.equal(await text(p, '#acct-email'), 'pro@example.com');
+  assert.equal(await p.evaluate(() => location.hash), '', 'the one-time code is gone from the address');
+  assert.ok(await p.evaluate(() => !!localStorage.getItem('molastria-session')));
+  await p.click('#signout');
+  await p.waitForSelector('#acct-login:not([hidden])');
+  deny = true;
+  await p.click('#google-btn');
+  await p.waitForFunction(() => /已取消/.test(document.getElementById('login-msg').textContent));
+  deny = false; as = 'unverified@example.com';
+  await p.click('#google-btn');
+  await p.waitForFunction(() => /还没有验证/.test(document.getElementById('login-msg').textContent));
+  // a VIP card needs the emailed code, so the Google button steps aside
+  await p.click('#card-toggle');
+  assert.ok(await p.locator('#google-box').isHidden());
+  await finish(p);
+});
+
 check('English: account page and radar are translated, paper-free UI has no Chinese left', async () => {
   const p = await open();
   await go(p, '/pro/account.html?lang=en');

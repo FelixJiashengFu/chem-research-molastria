@@ -9,6 +9,10 @@
      POST /auth/start {email, lang, card?}  给任何邮箱发 6 位验证码（没付费也能登录，就是免费账号）；
                                         带上未使用的 VIP 卡时，验证通过后卡才算兑换
      POST /auth/verify {email, code}    用验证码换登录令牌
+     GET  /auth/google                  {on}：用 Google 登录开通了没有（要 GOOGLE_CLIENT_ID 和 secret GOOGLE_CLIENT_SECRET）
+     GET  /auth/google/start?back=&lang=   页面跳到这里，再跳到 Google；回来是 GET /auth/google/callback，最后回到 back（只能是允许的网站），
+                                        地址 # 后面带一次性交接码 google=…，出错时是 google-error=off|denied|state|failed|unverified|busy
+     POST /auth/google/finish {handoff} 用交接码换登录令牌（两分钟内、只能用一次）；账号按 Google 确认过的邮箱认，和验证码登录是同一个账号
      POST /auth/signout                 退出这台设备
      GET  /me                           订阅、额度、课题组成员，owns 是单独买断的专区（现在只有 v1）
      GET  /premium/<专区>?part=&lang=   买断专区的正文（现在只有 v1：锁区 /vault/，一次性 ¥199，Pro 不包含）。正文不在公开仓库里，
@@ -997,6 +1001,111 @@ async function webSearch(request, env, cors, body) {
   return json({ results, used, limit: daily }, cors);
 }
 
+// ── 用 Google 登录 ─────────────────────────────────────────────────────
+// OpenID Connect, authorization-code flow with PKCE. The site sends the browser to /auth/google/start (a plain navigation,
+// so it comes before the origin check), Google sends it back to /auth/google/callback, and the worker swaps the code for an
+// ID token over its own TLS connection to Google (with the client secret), so the token's signature need not be checked
+// (OpenID Connect Core 3.1.3.7). Accounts are still keyed by email: a Google account whose verified email is the same as
+// the one used with codes is the same account (Pro, cloud sync, API keys, purchases all carry over). The browser comes back
+// to the page it left with a one-time handoff code after '#' (never sent to a server, kept out of Referer); the page trades
+// it for an ordinary session token at POST /auth/google/finish. The state, PKCE verifier and nonce sit in a short-lived
+// HttpOnly cookie on this domain, which ties the callback to the browser that started it (no login CSRF).
+// Needs GOOGLE_CLIENT_ID (a var) and the secret GOOGLE_CLIENT_SECRET; without them the button stays hidden.
+const GOOGLE_AUTH = 'https://accounts.google.com/o/oauth2/v2/auth', GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';
+const GOOGLE_ISS = ['https://accounts.google.com', 'accounts.google.com'];
+const HANDOFF_SECONDS = 120, GOOGLE_COOKIE_SECONDS = 600;
+const googleOn = (env) => !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+const b64url = (bytes) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64url = (s) => atob(String(s).replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(String(s).length / 4) * 4, '='));
+const googleCookieName = (url) => (url.protocol === 'https:' ? '__Host-molastria-google' : 'molastria-google');
+function googleCookie(url, value, maxAge) {
+  return `${googleCookieName(url)}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${url.protocol === 'https:' ? '; Secure' : ''}`;
+}
+function readCookie(request, name) {
+  for (const part of (request.headers.get('Cookie') || '').split(';')) {
+    const i = part.indexOf('=');
+    if (i > 0 && part.slice(0, i).trim() === name) return part.slice(i + 1).trim();
+  }
+  return '';
+}
+/** The page to come back to: only pages of the sites allowed to use this service (no open redirect), without its '#…'. */
+function googleBack(env, raw) {
+  let u;
+  try { u = new URL(String(raw || '')); } catch { return ''; }
+  const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(u.hostname);
+  if (!(u.protocol === 'https:' || (u.protocol === 'http:' && local))) return '';
+  if (!list(env.ALLOWED_ORIGINS || DEFAULT_ORIGINS).includes(u.origin)) return '';
+  u.hash = '';
+  return u.href;
+}
+const siteHome = (env) => `${list(env.ALLOWED_ORIGINS || DEFAULT_ORIGINS).find((o) => o.startsWith('https://')) || 'https://molastria.com'}/pro/account.html`;
+const redirect = (to, headers = {}) => new Response(null, { status: 302, headers: { Location: to, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', ...headers } });
+
+async function googleStart(request, env, url) {
+  const back = googleBack(env, url.searchParams.get('back'));
+  if (!back) return reply(400, '回来的页面不对', {});
+  if (!googleOn(env)) return redirect(`${back}#google-error=off`);
+  const ip = request.headers.get('CF-Connecting-IP') || 'local';
+  if (!(await allow(env, `google-start:${ip}`, 30, 3600))) return redirect(`${back}#google-error=busy`);
+  const state = randomToken(), verifier = randomToken(), nonce = randomToken();
+  const challenge = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
+  const q = new URLSearchParams({
+    client_id: env.GOOGLE_CLIENT_ID, redirect_uri: `${url.origin}/auth/google/callback`, response_type: 'code',
+    scope: 'openid email', state, nonce, code_challenge: challenge, code_challenge_method: 'S256', prompt: 'select_account'
+  });
+  if (url.searchParams.get('lang') === 'en') q.set('hl', 'en'); else q.set('hl', 'zh-CN');
+  const value = [state, verifier, nonce, b64url(new TextEncoder().encode(back))].join('.');
+  return redirect(`${GOOGLE_AUTH}?${q}`, { 'Set-Cookie': googleCookie(url, value, GOOGLE_COOKIE_SECONDS) });
+}
+
+async function googleCallback(request, env, url) {
+  const [state, verifier, nonce, backB64] = readCookie(request, googleCookieName(url)).split('.');
+  let back = '';
+  try { back = googleBack(env, new TextDecoder().decode(Uint8Array.from(fromB64url(backB64 || ''), (c) => c.charCodeAt(0)))); } catch { /* none */ }
+  const clear = { 'Set-Cookie': googleCookie(url, '', 0) };
+  const out = (frag) => redirect(`${back || siteHome(env)}#${frag}`, clear);
+  if (!state || !back) return out('google-error=state'); // no cookie: started in another browser, or more than 10 minutes ago
+  if (url.searchParams.get('error')) return out('google-error=denied'); // e.g. the person pressed Cancel at Google
+  if (url.searchParams.get('state') !== state) return out('google-error=state');
+  const code = url.searchParams.get('code') || '';
+  if (!code || !googleOn(env)) return out('google-error=failed');
+  let tok = null;
+  try {
+    const res = await fetch(GOOGLE_TOKEN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+      body: new URLSearchParams({ code, client_id: env.GOOGLE_CLIENT_ID, client_secret: env.GOOGLE_CLIENT_SECRET, redirect_uri: `${url.origin}/auth/google/callback`, grant_type: 'authorization_code', code_verifier: verifier })
+    });
+    tok = await res.json().catch(() => null);
+    if (!res.ok) { console.error('google token exchange failed', res.status, tok?.error); tok = null; }
+  } catch (e) { console.error('google token exchange failed', e); }
+  let claims = null;
+  try { claims = JSON.parse(new TextDecoder().decode(Uint8Array.from(fromB64url(String(tok?.id_token || '').split('.')[1] || ''), (c) => c.charCodeAt(0)))); } catch { /* bad token */ }
+  const t = now();
+  if (!claims || !GOOGLE_ISS.includes(claims.iss) || claims.aud !== env.GOOGLE_CLIENT_ID || !(Number(claims.exp) > t) || claims.nonce !== nonce) return out('google-error=failed');
+  const email = normEmail(claims.email);
+  if (!email || claims.email_verified !== true) return out('google-error=unverified');
+  const handoff = randomToken();
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM handoffs WHERE expires < ?1').bind(t),
+    env.DB.prepare('INSERT INTO handoffs (hash, email, expires) VALUES (?1, ?2, ?3)').bind(await sha256(handoff), email, t + HANDOFF_SECONDS)
+  ]);
+  return out(`google=${handoff}`);
+}
+
+/** POST /auth/google/finish {handoff}: the one-time code from the callback, traded once for a session token. */
+async function googleFinish(env, body, cors) {
+  const handoff = String(body.handoff || '');
+  if (!/^[A-Za-z0-9_-]{20,100}$/.test(handoff)) throw fail(400, 'Google 登录的交接码格式不对');
+  const row = await env.DB.prepare('DELETE FROM handoffs WHERE hash = ?1 RETURNING email, expires').bind(await sha256(handoff)).first();
+  if (!row || row.expires < now()) throw fail(400, 'Google 登录已过期，请再点一次“用 Google 登录”');
+  const email = row.email;
+  await account(env, email, { fresh: true }).catch(() => {}); // the same as /auth/verify: a fresh look at Stripe
+  await restorePurchases(env, email).catch(() => {});
+  const token = await createSession(env, email);
+  return json({ token, account: await view(env, await access(env, email)) }, cors);
+}
+
 async function route(request, env, cors) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -1080,6 +1189,9 @@ async function route(request, env, cors) {
     const token = await createSession(env, email);
     return json({ token, account: await view(env, await access(env, email)) }, cors);
   }
+
+  if (key === 'GET /auth/google') return json({ on: googleOn(env) }, cors); // whether the page shows the Google button
+  if (key === 'POST /auth/google/finish') return googleFinish(env, body, cors);
 
   if (key === 'POST /auth/signout') {
     const token = bearer(request);
@@ -1296,6 +1408,15 @@ export default {
   async fetch(request, env) {
     // Linked from emails and posted to by mail apps, so it comes before the check of which sites may call this service.
     if (new URL(request.url).pathname.replace(/\/+$/, '') === '/digest/unsubscribe' && ['GET', 'POST'].includes(request.method)) return unsubscribe(request, env);
+    // Signing in with Google: page navigations (to Google and back), not calls from a page, so no Origin to check.
+    {
+      const url = new URL(request.url);
+      const p = url.pathname.replace(/\/+$/, '');
+      if (request.method === 'GET' && (p === '/auth/google/start' || p === '/auth/google/callback')) {
+        try { return await (p === '/auth/google/start' ? googleStart(request, env, url) : googleCallback(request, env, url)); }
+        catch (e) { console.error('google sign-in failed', e); return redirect(`${siteHome(env)}#google-error=failed`); }
+      }
+    }
     // The compute API for programs: the key is the permission, so any origin may call it (and no cookie is involved).
     const path = new URL(request.url).pathname.replace(/\/+$/, '');
     if (path === '/v1' || path.startsWith('/v1/')) {

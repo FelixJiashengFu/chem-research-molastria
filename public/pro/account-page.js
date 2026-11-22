@@ -1,4 +1,4 @@
-/* 账号页：邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、API key（给程序用的计算接口）、云同步（../sync/sync.js）、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
+/* 账号页：用 Google 登录、邮箱验证码登录、订阅状态、AI 托管额度、课题组成员、API key（给程序用的计算接口）、云同步（../sync/sync.js）、VIP 卡（兑换；站长还能生成和收回）。数据来自 ../pay/account.js。 */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -96,11 +96,44 @@
 
   // ── sign-in ────────────────────────────────────────────────────────────
   const form = $('login-form'), msg = $('login-msg'), btn = $('login-btn');
+  // Sign in with Google: shown once the account service says it is set up; not in the desktop app (the way back from Google
+  // lands in a browser, not in the app) and not while a VIP card is being entered (that needs the emailed code).
+  const desktop = !!(window.__MOLASTRIA_DESKTOP__ || window.__TAURI__ || window.__TAURI_INTERNALS__);
+  let googleReady = false;
+  const googleBox = () => {
+    const off = !googleReady || desktop || !$('card-field').hidden;
+    $('google-box').hidden = off;
+    if ($('card-field').hidden) $('login-h').textContent = T(off ? '用邮箱登录' : '登录');
+  };
+  $('google-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    $('google-btn').setAttribute('aria-disabled', 'true');
+    location.href = A.googleUrl(location.href.split('#')[0]);
+  });
+  const GOOGLE_ERRORS = {
+    off: '用 Google 登录还没有开通，请先用邮箱验证码登录。',
+    denied: '已取消用 Google 登录。',
+    state: 'Google 登录没有完成（可能超过了 10 分钟，或者换了浏览器），请再试一次。',
+    unverified: '这个 Google 账号的邮箱还没有验证，请改用邮箱验证码登录。',
+    busy: '登录尝试太频繁，请稍后再试。',
+    failed: 'Google 登录失败，请再试一次，或者改用邮箱验证码登录。'
+  };
+  /** Back from Google: '#google=<handoff>' signs in, '#google-error=<code>' says why not. → a promise when it signed in. */
+  function googleReturn() {
+    const m = /^#google(-error)?=([A-Za-z0-9_-]+)$/.exec(location.hash);
+    if (!m) return null;
+    history.replaceState(null, '', location.pathname + location.search); // the code is used once; keep it out of history
+    if (m[1]) { show('acct-login'); say(msg, T(GOOGLE_ERRORS[m[2]] || GOOGLE_ERRORS.failed), 'err'); return null; }
+    show('acct-login');
+    say(msg, T('正在用 Google 登录…'), '');
+    return A.googleFinish(m[2]).then((a) => { say(msg, ''); paint(a); }).catch((err) => { show('acct-login'); say(msg, err.message, 'err'); });
+  }
   function cardMode(on) {
     $('card-field').hidden = !on;
     $('card-toggle').hidden = on;
     $('login-h').textContent = T(on ? '用 VIP 卡开通 Pro' : '用邮箱登录');
     $('login-sub').textContent = T(on ? '填你的邮箱和 VIP 卡号，我们会发一个 6 位验证码；验证通过后 Pro 立即生效。' : '我们会给这个邮箱发一个 6 位验证码，不需要密码。没付过款也能登录：免费账号可以订阅每周精选，在线模型每天次数更多，还有少量免配 key 的 AI 问答。付过款的请用付款邮箱。');
+    googleBox();
   }
   $('card-toggle').addEventListener('click', () => { cardMode(true); $('login-card').focus(); });
   function codeStep(on) {
@@ -469,6 +502,9 @@
     const card = new URLSearchParams(location.search).get('card');
     if (card) { $('login-card').value = card; $('redeem-code').value = card; cardMode(true); }
     if (!A?.enabled) { show('acct-off'); return; }
+    if (!desktop) A.googleOn().then((on) => { googleReady = on; googleBox(); });
+    const back = googleReturn();
+    if (back) { back.then(jump); return; }
     if (!A.token()) { show('acct-login'); jump(); return; }
     if (A.cached()) paint(A.cached()); else show('acct-main');
     A.refresh().then((a) => { $('synced').textContent = ''; paint(a); }).catch((err) => {

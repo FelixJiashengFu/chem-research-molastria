@@ -211,3 +211,12 @@ CREATE TABLE IF NOT EXISTS premium (
   updated INTEGER NOT NULL,
   PRIMARY KEY (product, part, lang)
 );
+
+-- 用 Google 登录（GET /auth/google/start → Google → GET /auth/google/callback）：Google 确认过邮箱以后，账号服务把浏览器带回原来的页面，
+-- 地址的 # 后面是一次性的交接码；页面再用 POST /auth/google/finish 换成正常的登录令牌。这里只存交接码的 SHA-256，两分钟内有效、只能用一次。
+-- 账号仍然按邮箱认：Google 账号的邮箱和以前用验证码登录的邮箱一样，就是同一个账号（Pro、云同步、API key 都在）。
+CREATE TABLE IF NOT EXISTS handoffs (
+  hash TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  expires INTEGER NOT NULL
+);

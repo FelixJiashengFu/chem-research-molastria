@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 用 Google 登录（账号页，2026-11-22，站长：“可以给我加上谷歌登录吗”）：账号服务走 OpenID Connect 授权码 + PKCE，按 Google 确认过的邮箱登录，和验证码登录是同一个账号。**上线要站长做：** 在 Google Cloud 建 OAuth 客户端（重定向 URI `https://api.molastria.com/auth/google/callback`），合并后在 main 上跑 D1 迁移（`handoffs` 表）、放两个 secret、部署 Worker（RUNBOOK“用 Google 登录”）。没测：真 Google（只对着假的测过）、Safari / iPhone。桌面版暂不显示按钮，以后可以用深链接接上。
 - quacc 流水线（代码台新标签 `#quacc`，2026-11-19，站长：“那就放进 MolAstria”）：quacc（BSD 3-Clause）做站长电脑上在线计算的作业层，第六条通道 `quacc`、三个模型 `quacc-gfn2`、`quacc-psi4`、`quacc-emt`，两种任务 `qflow`（一批最多 8 个分子的优化 / 频率 / 单点）和 `qslab`（EMT 金属表面能），也进了计算接口 `/v1`。**草稿 PR，等站长同意再合并；账号服务要从合并后的 main 部署；站长电脑要先装 quacc**（RUNBOOK“quacc 通道”）。没测过：站长电脑上真跑（Windows 没有 tblite，走 xtb 程序；Psi4 要 conda 装）。
 - 最近更新面板（`updates/`，2026-11-18，App Store 式的更新列表）：账号面板第一行、账号按钮小点、页脚“更新记录”、首页每版自动弹一次；第一版收了 11 月 16–18 日的 16 条。草稿 PR，等站长说“上”。没测：真机 Safari / iPad、桌面版里的自动弹出。以后每上线一个新栏目，记得在 updates-data.js 加一条并改 UPDATES_LATEST。
 - 分子动力学与自由能（`/md/`，2026-11-17，站长要把八个新模组都详细加进去，这是第二个；八个一起合并上线、一起出桌面版）：顶栏“探索”组，群论之后。十章，十二个现算的演示（LJ 盒子、积分器和影子能量、恒温器、力场的对势和二面角、FEP/BAR、TI 和软核、伞形采样 + WHAM、元动力学、Jarzynski 正反拉、马尔可夫模型对照精确本征值、分块误差），78 篇文献按 DOI 在 OpenAlex 核对。草稿 PR，等八个一起上线。没测：Safari、真机触屏。后续可以加：NPT 和恒压器的演示、MBAR 的多窗口演示、二维集体变量的元动力学。

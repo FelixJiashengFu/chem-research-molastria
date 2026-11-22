@@ -19,6 +19,8 @@ let lastUpstream: any = null;
 let stripeCalls = 0;
 const umaCalls: { path: string; key: string | null; access: string | null; body: unknown }[] = [];
 let umaOffline = false;
+const googleCalls: Record<string, string>[] = [];
+const googleCodes: Record<string, { challenge: string; claims: Record<string, unknown> }> = {};
 function addCustomer(id: string, email: string, sub?: { quantity?: number; status?: string; interval?: string; cancel?: boolean }) {
   customers[id] = { id, email };
   subs[id] = sub ? [{ status: sub.status ?? "active", cancel_at_period_end: !!sub.cancel, items: { data: [{ quantity: sub.quantity ?? 1, current_period_end: nowS() + 86400 * 300, price: { recurring: { interval: sub.interval ?? "year" } } }] } }] : [];
@@ -84,6 +86,16 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
       { title: "PySCF <strong>docs</strong>", url: "https://pyscf.org/", description: "The <strong>PySCF</strong> manual &amp;lt;b&amp;gt; <scr<script>ipt>", profile: { name: "pyscf.org" } },
       { title: "Bad scheme", url: "javascript:alert(1)", description: "x" },
     ] } });
+  }
+  if (url.hostname === "oauth2.googleapis.com") { // Google's token endpoint: hands back an ID token for the code it issued
+    const f = new URLSearchParams(await req.text());
+    googleCalls.push(Object.fromEntries(f));
+    const c = googleCodes[f.get("code") || ""];
+    if (!c || f.get("client_secret") !== "g-secret" || f.get("redirect_uri") !== "https://api.test/auth/google/callback") return ok({ error: "invalid_grant" }, 400);
+    const challenge = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(f.get("code_verifier") || ""))))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    if (challenge !== c.challenge) return ok({ error: "invalid_grant", error_description: "PKCE" }, 400);
+    const enc = (o: unknown) => btoa(JSON.stringify(o)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return ok({ access_token: "ya29.x", id_token: `${enc({ alg: "RS256" })}.${enc(c.claims)}.sig` });
   }
   if (url.hostname === "api.deepseek.com") {
     const b = await req.json();
@@ -1523,6 +1535,82 @@ await test("premium: signing in or 'restore' finds a payment whose confirmation 
   delete env.V1_AMOUNT;
   const off = await call("POST", "/auth/checkout", { session_id: "cs_test_v1x3" }); // nothing configured: not on sale
   eq([sessions.cs_test_v1x3.payment_link, off.data.sponsor], ["plink_real", true]);
+});
+
+
+// ── 用 Google 登录 ──────────────────────────────────────────────────────
+/** Plays the browser: start → (Google) → callback with this browser's cookie. Returns the final redirect. */
+async function googleRound(claims: (nonce: string) => Record<string, unknown>, opts: { back?: string; tamperState?: boolean; noCookie?: boolean; deny?: boolean } = {}) {
+  const back = opts.back ?? "https://molastria.com/pro/account.html?x=1#vip";
+  const start = await worker.fetch(new Request(`https://api.test/auth/google/start?back=${encodeURIComponent(back)}&lang=en`), env);
+  if (start.status !== 302) return { start, end: null as Response | null };
+  const to = new URL(start.headers.get("Location") || "");
+  if (to.hostname !== "accounts.google.com") return { start, end: null };
+  const cookie = (start.headers.get("Set-Cookie") || "").split(";")[0];
+  const code = `4/${crypto.randomUUID()}`;
+  googleCodes[code] = { challenge: to.searchParams.get("code_challenge") || "", claims: claims(to.searchParams.get("nonce") || "") };
+  const state = opts.tamperState ? "someone-else" : to.searchParams.get("state");
+  const q = opts.deny ? "error=access_denied" : `code=${encodeURIComponent(code)}&state=${state}`;
+  const end = await worker.fetch(new Request(`https://api.test/auth/google/callback?${q}&state=${state}`, { headers: opts.noCookie ? {} : { Cookie: `other=1; ${cookie}` } }), env);
+  return { start, end, to, cookie };
+}
+const good = (email: string, extra: Record<string, unknown> = {}) => (nonce: string) => ({ iss: "https://accounts.google.com", aud: "g-client.apps.googleusercontent.com", sub: "1234", email, email_verified: true, exp: nowS() + 3600, nonce, ...extra });
+const fragment = (r: Response | null) => new URL(r?.headers.get("Location") || "https://x/").hash.slice(1);
+
+await test("google: off without a client id and secret; the button stays hidden", async () => {
+  eq((await call("GET", "/auth/google")).data, { on: false });
+  const r = await worker.fetch(new Request(`https://api.test/auth/google/start?back=${encodeURIComponent("https://molastria.com/pro/account.html")}`), env);
+  eq([r.status, r.headers.get("Location")], [302, "https://molastria.com/pro/account.html#google-error=off"]);
+  Object.assign(env, { GOOGLE_CLIENT_ID: "g-client.apps.googleusercontent.com", GOOGLE_CLIENT_SECRET: "g-secret" });
+  eq((await call("GET", "/auth/google")).data, { on: true });
+});
+
+await test("google: start sends the browser to Google with PKCE, a nonce and an HttpOnly cookie; only allowed sites can be the way back", async () => {
+  const { start, to, cookie } = await googleRound(good("x@example.com"));
+  eq(start.status, 302);
+  eq([to!.searchParams.get("client_id"), to!.searchParams.get("redirect_uri"), to!.searchParams.get("scope"), to!.searchParams.get("code_challenge_method"), to!.searchParams.get("hl")],
+    ["g-client.apps.googleusercontent.com", "https://api.test/auth/google/callback", "openid email", "S256", "en"]);
+  const set = start.headers.get("Set-Cookie") || "";
+  eq([/HttpOnly/.test(set), /Secure/.test(set), /SameSite=Lax/.test(set), cookie!.startsWith("__Host-molastria-google=")], [true, true, true, true]);
+  for (const bad of ["https://evil.example/pro/account.html", "javascript:alert(1)", "http://molastria.com/", "tauri://localhost/pro/account.html", ""]) {
+    const r = await worker.fetch(new Request(`https://api.test/auth/google/start?back=${encodeURIComponent(bad)}`), env);
+    eq(r.status, 400, bad);
+  }
+});
+
+await test("google: a verified Google email signs in to the same account as codes (Pro carries over); the handoff works once", async () => {
+  addCustomer("cus_google", "gpro@example.com", { interval: "month" }); // a Pro supporter who paid with this email
+  const { end } = await googleRound(good("GPro@Example.com"));
+  eq(end!.status, 302);
+  const loc = new URL(end!.headers.get("Location") || "");
+  eq([loc.origin + loc.pathname + loc.search, /Max-Age=0/.test(end!.headers.get("Set-Cookie") || "")], ["https://molastria.com/pro/account.html?x=1", true]);
+  const handoff = /^google=([A-Za-z0-9_-]+)$/.exec(loc.hash.slice(1))?.[1] || "";
+  eq(handoff.length > 20, true, "handoff");
+  eq(googleCalls.at(-1)?.grant_type, "authorization_code");
+  const fin = await call("POST", "/auth/google/finish", { handoff });
+  eq([fin.status, fin.data.account.email, fin.data.account.role], [200, "gpro@example.com", "pro"]);
+  eq((await call("GET", "/me", undefined, fin.data.token)).data.email, "gpro@example.com");
+  eq((await call("POST", "/auth/google/finish", { handoff })).status, 400, "second use");
+  const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(handoff)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM handoffs WHERE hash = ?1").get(hash).n, 0, "handoff row deleted");
+});
+
+await test("google: unverified email, wrong audience, wrong nonce, wrong state, no cookie, Cancel, stale handoff all refuse", async () => {
+  eq(fragment((await googleRound(good("u@example.com", { email_verified: false }))).end), "google-error=unverified");
+  eq(fragment((await googleRound(good("u@example.com", { aud: "someone-else" }))).end), "google-error=failed");
+  eq(fragment((await googleRound(good("u@example.com", { iss: "https://evil.example" }))).end), "google-error=failed");
+  eq(fragment((await googleRound(good("u@example.com", { exp: nowS() - 5 }))).end), "google-error=failed");
+  eq(fragment((await googleRound(() => good("u@example.com")("not-the-nonce"))).end), "google-error=failed");
+  eq(fragment((await googleRound(good("u@example.com"), { tamperState: true })).end), "google-error=state");
+  const nc = (await googleRound(good("u@example.com"), { noCookie: true })).end!;
+  eq(nc.headers.get("Location"), "https://molastria.com/pro/account.html#google-error=state");
+  eq(fragment((await googleRound(good("u@example.com"), { deny: true })).end), "google-error=denied");
+  eq(sqlite.prepare("SELECT COUNT(*) AS n FROM sessions WHERE email = 'u@example.com'").get().n, 0);
+  const { end } = await googleRound(good("late@example.com"));
+  const handoff = fragment(end).slice("google=".length);
+  sqlite.prepare("UPDATE handoffs SET expires = ?1").run(nowS() - 1);
+  eq((await call("POST", "/auth/google/finish", { handoff })).status, 400);
+  eq((await call("POST", "/auth/google/finish", { handoff: "<script>" })).status, 400);
 });
 
 console.log(failed ? `\n${failed} failed` : "\nall passed");
