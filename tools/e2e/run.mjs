@@ -7199,10 +7199,11 @@ check('thermochemistry (GoodVibes port): code desk and workbench show ZPE, H, T�
   await p.waitForFunction(() => /按结构判为 C2v/.test(document.querySelector('#out-thermo .th-sig')?.textContent || ''), null, { timeout: 15000 });
   assert.equal(await p.inputValue('#out-thermo [data-k=sigma]'), '2');
   assert.equal(await cell(5, 2), ref['rrho-grimme'].qh_gibbs_free_energy.toFixed(6), 'same G as with the printed σ');
-  // frequencies but no geometry (the NWChem demo is an excerpt): the panel says what is missing
+  // frequencies but no geometry and no rotational constants (the NWChem demo is an excerpt): the panel is not drawn at all
   await p.fill('#out-text', '');
   await p.selectOption('#out-demo-prog', 'nwchem');
-  assert.match(await text(p, '#out-thermo .th-result'), /没有结构/);
+  await p.waitForFunction(() => !document.querySelector('#out-thermo .th-table'), null, { timeout: 10000 });
+  assert.equal(await p.locator('#out-thermo .th-result').count(), 0, 'no half-drawn thermochemistry panel for an excerpt');
   await finish(p);
 
   // dark theme, then the workbench's outputs tab with its Gaussian 16 sample
