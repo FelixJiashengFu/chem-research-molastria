@@ -416,13 +416,13 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 **加一个在线模型：** 先在 GPU 上测：能加载、FEC 优化收敛，再在 ETKDG 结构上算苯、乙醇、水的垂直 IP（实验约 9.2 / 10.5 / 12.6 eV）。接近的才开放 IP/EA；偏差大（OMol-0 时期的模型常见）就只开放中性分子的几何优化（`charged: False`）。然后改 `server.py` 的 `MODELS`、`deploy/account-worker.js` 的 `UMA_MODELS`（新许可要想清楚放哪一档）、`public/meta/meta.js` 的 `ONLINE` 和 `index.html` 的选项、`tools/account-local.ts` 的假电脑；跑测试，部署账号服务，重启 `start.ps1`。
 
-### DBCata 通道（合金表面吸附结构，还没开放）
+### DBCata 通道（合金表面吸附结构，2026-11-22 开放）
 
-模型接口页的“⑦ 合金表面吸附结构”：访客选两种金属、比例（A₃B / AB / AB₃）、晶面（111 / 110）和 12 种吸附物之一，站长电脑搭出每个不等价位点的初始结构，DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9）一步生成接近 DFT 弛豫的结构，四条规则（原子相撞、吸附物解离、脱附、表面重构）和分类器（有权重时）标异常，UMA-S 1.1 的 oc20 任务算能量（默认再做一段 fmax 0.05、最多 100 步的短程优化）。模型 `dbcata`，计算 `adsgen`，次数 5（不做短程优化 3），免费账号也能用，一次最多 32 个位点、900 秒。
+模型接口页的“⑦ 合金表面吸附结构”：访客选两种金属、比例（A₃B / AB / AB₃）、晶面（只有 111：训练集里没有 fcc(110)，见下面“训练范围”）和 12 种吸附物之一，站长电脑搭出每个不等价位点的初始结构，DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9）一步生成接近 DFT 弛豫的结构，四条规则（原子相撞、吸附物解离、脱附、表面重构）和分类器（有权重时）标异常，UMA-S 1.1 的 oc20 任务算能量（默认再做一段 fmax 0.05、最多 100 步的短程优化）。模型 `dbcata`，计算 `adsgen`，次数 5（不做短程优化 3），免费账号也能用，一次最多 32 个位点、900 秒。结果里每个位点除了起始位点（kind、atoms）还有 `landing`（DBCata 和短程优化之后结合原子在表面上方最靠近的顶位、桥位或空位，按表面内的位置判断，不看高度和键长；没有一个表面原子在 1.3 倍共价半径和以内时是 none）和 `same_as`（落到同一处的位点：同一种终止、能量差 0.01 eV 以内，并且结合原子相距 0.2 Å 以内或者 landing 相同（等价空位的另一份拷贝可以离好几 Å），指向这一组里第一个可靠的位点），`distinct` 是不同结构的个数；站长电脑上第一次试 Pt₃Ni(111)+O 时 9 个起始位点只落成 4 个结构。
 
 **许可：** DBCata 的代码是 GPL-3.0，Figshare 上的权重标的是“GPL”（没写版本）。仓库里不放 DBCata 的任何代码、权重和数据，也不进桌面版；`tools/uma-server/dbcata_worker.py` 这一个文件是 GPL-3.0-or-later（文件头的 SPDX 行），在 DBCata 自己的环境里作为单独的进程运行，`server.py` 只和它交换 JSON 行。出处和许可全文的位置写在 `tools/uma-server/THIRD-PARTY-DBCata.md`。决定见 `docs/DECISIONS.md` 2026-11-22。
 
-**装（站长电脑）：** DBCata 用自己的 venv（实测 `D:\ChemDraw\DBCata\.venv`：Python 3.12、torch 2.6.0+cu124、torch_geometric 2.7.0、lightning 2.2.5、fairchem-core 2.13.0），权重放在 checkout 的 `checkpoints\`。启动时加两个参数（两个都给才启用，只给一个 `start.ps1` 会提示）：
+**装（站长电脑）：** DBCata 用自己的 venv（实测 `D:\ChemDraw\DBCata\.venv`：Python 3.12、torch 2.6.0+cu124、torch_geometric 2.7.0、lightning 2.2.5、fairchem-core 2.13.0），权重放在 checkout 的 `checkpoints\`。fairchem 2.13 的推理预设只有 `default` 和 `turbo`（uma-env 的 2.25 才有 `batch`），没有 Triton 时 `dbcata_worker.py` 自己挑（`dbcata_core.uma_setting`，2.13 的 `default` 不编译）；以前写死 `batch` 时载入报 “inference setting name must be one of …”，健康检查里 dbcata 一直是未就绪。站长电脑的自启动是“启动”文件夹里的快捷方式（不是计划任务），`autostart.ps1 -Install` 要带上全部原参数（`-KeepAlive -Python … -Tunnel molastria-uma -MacePython … -Xtb … -Psi4Python …`）再加下面两个。启动时加两个参数（两个都给才启用，只给一个 `start.ps1` 会提示）：
 
 ```powershell
 .\tools\uma-server\start.ps1 -DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata
@@ -437,11 +437,13 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 D:\ChemDraw\DBCata\.venv\Scripts\python.exe tools\uma-server\dbcata_domain_check.py D:\ChemDraw\DBCata\data\cathub\val.pkl
 ```
 
-它报出吸附物名单、每块板的原子数和固定原子数、真空层、晶面、吸附物初始高度、晶格常数和 Vegard 估计的差别；名单或 12 原子 / 8 固定对不上时退出码是 1。要看的：吸附物是不是那 12 种、真空是每边 10 Å 还是一共 10 Å、初始结构里结合原子离位点多高（这里放在位点上方 1.5 Å）。对不上就改 `dbcata_core.py` 的常量和 `test_dbcata.py`。
+它报出吸附物名单、每块板的原子数和固定原子数、真空层、晶面、吸附物初始高度、晶格常数和 Vegard 估计的差别；名单、12 原子、晶面对不上，或者固定 8 个原子的板不到 98 % 时退出码是 1。
 
-**开放（站长决定之后）：** 账号服务里这条通道默认关着：`deploy/wrangler.toml` 的 `DBCATA_ENABLED = "0"` 时 `/uma/jobs` 和 `/v1/jobs` 对 `dbcata` 一律回 503（`not_open`），健康检查和 `/v1/models` 里也不列它，网页上不显示这个页签。开放的步骤：
+2026-11-22 对 `val.pkl`（14,728 个结构）的结果：12 种吸附物、每块 12 原子、真空每边 10 Å（c − 板厚中位数 20.0 Å）、结合原子初始高度中位数 1.497 Å 都对得上；14,596 块固定 8 个原子，131 块一个都不固定、1 块固定 9 个（数据本身的情况，只提示）。**晶面只有 (111)：** A₃B / AB₃ 是 L1₂ (111)，纯金属 347 个，AB 是 L1₀ (111)，c/a 从约 0.55 到 1.3（两个峰在 0.71 和 1.0；c/a = 1/√2 时几何上就是 bcc(110)，约 1,900 块看起来像 bcc(110)），没有一块是 fcc(110) 的长方形晶胞，所以通道只开放 (111)。训练集里 Ni 只有 78 个结构（Fe 1、Co 5、Mn 2），这些金属的结果要更小心。要看的：吸附物是不是那 12 种、真空是每边 10 Å 还是一共 10 Å、初始结构里结合原子离位点多高（这里放在位点上方 1.5 Å）。对不上就改 `dbcata_core.py` 的常量和 `test_dbcata.py`。
 
-1. Figshare 上权重的许可确认（GPL 哪个版本），站长同意；
+**开放：** 站长 2026-11-22 决定开放，`deploy/wrangler.toml` 的 `DBCATA_ENABLED` 改成了 `"1"`；要关掉就改回 `"0"` 再部署。关着时 `/uma/jobs` 和 `/v1/jobs` 对 `dbcata` 一律回 503（`not_open`），健康检查和 `/v1/models` 里也不列它，网页上不显示这个页签。开放的步骤（2026-11-22 都做过）：
+
+1. Figshare 上权重的许可（只标“GPL”，没写版本），站长看过并同意；
 2. 站长电脑上按上面装好，跑一次 `dbcata_domain_check.py`，在网页上用站长账号试几个体系（打开 `/models/#dbcata` 能直接看到面板，只是按钮不可用）；
 3. 把 `DBCATA_ENABLED` 改成 `"1"`，用 `/ship-worker` 部署；
 4. 再补上计算接口的文档：`public/api/compute.js`、`node tools/build-api.mjs` 生成的 openapi 和 chemdb-agent 的模型清单，以及 `tools/account-test.ts`、`tools/api-test.mjs` 里 `/v1/models` 的数目。

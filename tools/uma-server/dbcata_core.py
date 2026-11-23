@@ -7,9 +7,12 @@ DBCata (Huo & Cao, Nat. Commun. 2026, doi:10.1038/s41467-026-79243-9; github.com
 periodic Brownian-bridge diffusion model with a PaiNN network that maps an unrelaxed adsorbate-slab structure to a
 near-DFT-relaxed one. It was trained on one narrow kind of system, and this lane accepts only that kind:
 
-    MamunHighT2019 (Catalysis-Hub, BEEF-vdW): fcc binary alloys A3B / AB / AB3 (L1_2 and L1_0 orderings), (111) and
-    (110) facets, 3-layer slabs with the bottom 2 layers fixed and 10 A of vacuum, and the 12 adsorbates H, C, CH,
-    CH2, CH3, N, NH, O, OH, H2O, S, SH. The paper's own alloy screen (its section 2.4) used 3d / 4d / 5d transition
+    MamunHighT2019 (Catalysis-Hub, BEEF-vdW): fcc binary alloys A3B / AB / AB3 (L1_2 and L1_0 orderings), 3-layer
+    slabs with the bottom 2 layers fixed and 10 A of vacuum, and the 12 adsorbates H, C, CH, CH2, CH3, N, NH, O, OH,
+    H2O, S, SH. The paper names (111) and (110) facets, but dbcata_domain_check.py on DBCata's own validation set
+    (14,728 structures, 2026-11-22) found (111) slabs only: L1_2 (111), pure-metal A1 (111) and L1_0 (111) with c/a
+    anywhere from about 0.55 to 1.3 (at c/a = 1/sqrt 2 the L1_0 cell is the B2 / bcc one, so about 1,900 of those slabs
+    look like bcc(110); none has the rectangular fcc(110) cell). So this lane offers (111) only. The paper's own alloy screen (its section 2.4) used 3d / 4d / 5d transition
     metals and Al, Ga, In, Tl at ratios 0.25 / 0.5 / 0.75. We take that element list without Tc (radioactive), Hg
     (liquid at room temperature) and La (not counted as a 5d transition metal here).
 
@@ -19,9 +22,9 @@ How a request becomes structures (the paper's section 4.2.3, rewritten here; no 
     law over each element's fcc-equivalent lattice constant (A_FCC: (4 V)^(1/3) from the experimental volume per atom
     in ASE's reference states), and the worker then relaxes the cell with UMA's omat task (PBE, which is also the level
     of the Materials Project bulks OC20 was built on). Either way the number used is in the result.
-  * slab: the conventional lattice cut along (111) or (110), in-plane cell with four atoms per layer (p(2x2) of
-    fcc(111); 2 x 1 of the rectangular fcc(110) cell), three atomic layers, bottom two fixed, 10 A of vacuum on each
-    side. Every distinct termination (which layer is on top) is a slab of its own.
+  * slab: the conventional lattice cut along (111), in-plane cell with four atoms per layer (p(2x2) of fcc(111)),
+    three atomic layers, bottom two fixed, 10 A of vacuum on each side. (FACET_CELL still knows the rectangular
+    fcc(110) cut, which the tests use; the lane does not offer it.) Every distinct termination (which layer is on top) is a slab of its own.
   * sites: periodic Delaunay triangulation of the top layer: atoms (top), edge midpoints (bridge), triangle centroids
     (hollow; fcc / hcp on (111)), reduced to symmetry-distinct sites by their distances to the slab atoms. The binding
     atom is placed 1.5 A above the site, the molecule's axis along the surface normal.
@@ -52,7 +55,7 @@ LEFT_OUT = {
     "La": "La is not among the 3d / 4d / 5d transition metals of the paper's screen",
 }
 RATIOS = (0.25, 0.5, 0.75)  # atomic fraction of metal_a
-FACETS = ("111", "110")
+FACETS = ("111",)  # the training set has no fcc(110): see the module docstring
 ADSORBATES = ("H", "C", "CH", "CH2", "CH3", "N", "NH", "O", "OH", "H2O", "S", "SH")
 STEPS = (20, 50, 100)  # DBCata's sampling steps; the paper: 20 gives the same DMAE as 100 (0.0353 vs 0.0349 A)
 LATTICE = ("uma", "vegard")
@@ -149,7 +152,8 @@ def check(raw):
     x = min(RATIOS, key=lambda r: abs(r - x))
     facet = str(raw.get("facet", "")).strip().strip("()")
     if facet not in FACETS:
-        raise DomainError("params.facet must be 111 or 110: DBCata was trained on those two fcc facets only")
+        raise DomainError("params.facet must be 111: DBCata's training set has (111) slabs only (L1_2, L1_0 and pure "
+                          "metals); it has no fcc(110)")
     ads = raw.get("adsorbate")
     hit = next((n for n in ADSORBATES if isinstance(ads, str) and n.lower() == ads.strip().lower()), None)
     if not hit:
@@ -333,16 +337,15 @@ def _home(xy, inv2):
     return bool(np.all(fr > -1e-6) and np.all(fr < 1 - 1e-6))
 
 
-def sites(slab):
-    """Symmetry-distinct adsorption sites on the top layer: {kind, xy, atoms (elements around it), multiplicity}."""
-    cell = slab["cell"]
+def _candidates(pos, symbols, tags, cell):
+    """Every top, bridge and hollow point of the top layer (tag 1) in the home cell: [(kind, xy, elements)]. Works
+    on a relaxed slab too: the second layer is the slab atoms (tag 0) within 0.6 A of the highest of them."""
     c2 = cell[:2, :2]
     inv2 = np.linalg.inv(c2)
-    pos, symbols, tags = slab["positions"], slab["symbols"], slab["tags"]
     top = [i for i, t in enumerate(tags) if t == 1]
-    z_top = float(np.mean(pos[top, 2]))
-    zs = sorted({round(float(z), 3) for z in pos[:, 2]})
-    second = [i for i in range(len(symbols)) if abs(pos[i, 2] - zs[-2]) < 1e-2]
+    under = [i for i, t in enumerate(tags) if t == 0]
+    z2 = max(pos[i, 2] for i in under)
+    second = [i for i in under if abs(pos[i, 2] - z2) < 0.6]
     pts = pos[top, :2]
     q, tris = delaunay_periodic(pts, c2)
     qsym = [symbols[top[m % len(top)]] for m in range(len(q))]
@@ -376,6 +379,16 @@ def sites(slab):
         if hexagonal:  # (111): a second-layer atom right below makes it an hcp hollow
             kind = "hollow-hcp" if any(_pbc2(pos[i, :2] - cen, c2) < 0.5 for i in second) else "hollow-fcc"
         cand.append((kind, cen, sorted(qsym[m] for m in t)))
+    return cand
+
+
+def sites(slab):
+    """Symmetry-distinct adsorption sites on the top layer: {kind, xy, atoms (elements around it), multiplicity}."""
+    cell = slab["cell"]
+    c2 = cell[:2, :2]
+    pos, symbols, tags = slab["positions"], slab["symbols"], slab["tags"]
+    z_top = float(np.mean(pos[[i for i, t in enumerate(tags) if t == 1], 2]))
+    cand = _candidates(pos, symbols, tags, cell)
     # one site per equivalence class: the same distances to the same elements of the slab
     out, envs = [], []
     for kind, xy, els in cand:
@@ -538,6 +551,68 @@ def flags(initial, positions, reference_slab=None):
     return out
 
 
+LANDING_BOND = 1.3  # the binding atom touches the surface: some top-layer atom within 1.3 x the sum of covalent radii
+SAME_XYZ, SAME_EV = 0.2, 0.01  # two sites ended at one place: binding atoms within 0.2 A, or the same kind of site, and energies within 0.01 eV
+
+
+def landing(atoms, positions):
+    """Where the adsorbate's binding atom ended up: {kind, atoms}, named like the starting sites (top, bridge,
+    hollow-fcc, ...), or kind "none" when no top-layer atom is within LANDING_BOND x the covalent sum. The kind is
+    that of the top, bridge or hollow point of the final top layer nearest to the binding atom in the surface plane,
+    so neither the height nor unequal bond lengths (a short Ni-O and a long Pt-O) change it. DBCata and the polish
+    can move an adsorbate away from the site it started on, so the result says both."""
+    symbols, tags, cell = atoms["symbols"], atoms["tags"], np.asarray(atoms["cell"], float)
+    pos = np.asarray(positions, float)
+    b = next(i for i, t in enumerate(tags) if t == 2)
+    top = [i for i, t in enumerate(tags) if t == 1]
+    d = distances(pos, cell)[b]
+    if all(d[i] >= LANDING_BOND * (COVALENT[symbols[b]] + COVALENT[symbols[i]]) for i in top):
+        return {"kind": "none", "atoms": ""}
+    c2 = cell[:2, :2]
+    kind, _, els = min(_candidates(pos, symbols, tags, cell), key=lambda c: _pbc2(c[1] - pos[b, :2], c2))
+    return {"kind": kind, "atoms": "-".join(els)}
+
+
+def same_place(items):
+    """items: [{termination, position (of the binding atom), energy, cell, landing, ok}] -> for each, the index of
+    the item that leads the group of items that ended at the same place, or None for a leader. Same place: same
+    termination, energies within SAME_EV, and either binding atoms within SAME_XYZ by the minimum image or the same
+    landing (kind and atoms; an equivalent copy of one hollow sits several A from the copy another site went to).
+    The leader is the group's first ok item (its first item when none is ok), so a reliable row is never shown as
+    a copy of a flagged one."""
+    def same(x, y):
+        if x["termination"] != y["termination"] or abs(x["energy"] - y["energy"]) >= SAME_EV:
+            return False
+        if distances(np.array([x["position"], y["position"]]), x["cell"])[0, 1] < SAME_XYZ:
+            return True
+        return x["landing"]["kind"] != "none" and x["landing"] == y["landing"]
+
+    groups = []
+    for j, it in enumerate(items):
+        g = next((g for g in groups if same(items[g[0]], it)), None)
+        if g is None:
+            groups.append([j])
+        else:
+            g.append(j)
+    out = [None] * len(items)
+    for g in groups:
+        lead = next((k for k in g if items[k].get("ok", True)), g[0])
+        for k in g:
+            out[k] = None if k == lead else lead
+    return out
+
+
+def uma_setting(names, have_triton):
+    """fairchem's inference preset: "default" with Triton (it compiles); without (Windows) "batch" (no compile, full
+    precision), as server.py, but fairchem 2.13 (DBCata's environment) has only "default" and "turbo", and its
+    "default" does not compile, so that one. names: the presets this fairchem has (None: not known)."""
+    if have_triton:
+        return "default"
+    if names is None or "batch" in names:
+        return "batch"
+    return "default"
+
+
 def adsorption_energy(e_adslab, e_slab, adsorbate):
     """E(adslab) - E(slab) - sum of OC20's gas references, or None when OC20 has no reference (S)."""
     els = [s for s, _ in ADSORBATE_ATOMS[adsorbate]]
@@ -598,7 +673,7 @@ def run(params, engine, progress=None, limit=0.0):
                          "energy_ev": _r(r["energy"], 5), "steps": r["steps"], "converged": r["converged"],
                          "positions": r["positions"],
                          "xyz": extxyz(slab["symbols"], r["positions"], slab["cell"], energy=_r(r["energy"], 5))})
-    sites_out = []
+    sites_out, ends = [], []
     for i, it in enumerate(items):
         step(i, n, f"UMA {i + 1}/{n}")
         at, g = it["atoms"], unwrap(gen[i], it["atoms"]["positions"], it["atoms"]["cell"])
@@ -610,7 +685,7 @@ def run(params, engine, progress=None, limit=0.0):
                 "confidence": _r(conf[i], 3) if conf is not None else None, "energy_sp_ev": _r(e_sp, 5)}
         frames = [extxyz(at["symbols"], at["positions"], at["cell"], frame="initial"),
                   extxyz(at["symbols"], g, at["cell"], frame="DBCata", energy=_r(e_sp, 5))]
-        e_final = e_sp
+        e_final, fin = e_sp, g
         if p["polish"]:
             r = engine.relax(dict(at, positions=g), FMAX, POLISH_STEPS)
             fin = unwrap(r["positions"], g, at["cell"])
@@ -619,11 +694,18 @@ def run(params, engine, progress=None, limit=0.0):
                         steps=r["steps"], converged=r["converged"])
             frames.append(extxyz(at["symbols"], fin, at["cell"], frame="DBCata+UMA", energy=_r(e_final, 5)))
         e_slab = slab_out[it["termination"]]["energy_ev"]
+        b = next(k for k, t in enumerate(at["tags"]) if t == 2)
+        site["landing"] = landing(at, fin)
+        ends.append({"termination": it["termination"], "position": np.asarray(fin, float)[b], "energy": float(e_final),
+                     "cell": at["cell"], "landing": site["landing"]})
         site.update(energy_ev=_r(e_final, 5), e_bind_raw_ev=_r(e_final - e_slab),
                     e_ads_ev=_r(adsorption_energy(e_final, e_slab, p["adsorbate"])), xyz="".join(frames))
         site["ok"] = not site["flags"] and not site.get("flags_polished") and (site["confidence"] is None or site["confidence"] >= 0.5)
+        ends[-1]["ok"] = site["ok"]
         sites_out.append(site)
     step(n, n, "done")
+    for s, k in zip(sites_out, same_place(ends)):
+        s["same_as"] = sites_out[k]["id"] if k is not None else None
     pool = [s for s in sites_out if s["ok"]] or sites_out
     best = min(pool, key=lambda s: s["e_bind_raw_ev"]) if pool else None
     for s in sites_out:
@@ -636,6 +718,7 @@ def run(params, engine, progress=None, limit=0.0):
                    "adsorbate": p["adsorbate"], "formula": formula(p["metal_a"], p["metal_b"], p["ratio"]),
                    "structure": built["bulk"]["structure"]},
         "lattice": lat, "slabs": slab_out, "sites": sites_out, "truncated": built["truncated"],
+        "distinct": sum(1 for s in sites_out if s["same_as"] is None),
         "best": best["id"] if best else None, "best_ok": bool(best and best["ok"]),
         "reference": {"scheme": "oc20", "available": refs, "refs_ev": {k: OC20_REFS[k] for k in sorted({e for e, _ in ADSORBATE_ATOMS[p['adsorbate']]}) if k in OC20_REFS},
                       "note": None if refs else "OC20 has no gas-phase reference for S: e_ads_ev is null, e_bind_raw_ev = E(adslab) - E(slab) ranks the sites"},

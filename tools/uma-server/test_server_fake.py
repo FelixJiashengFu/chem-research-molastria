@@ -89,11 +89,11 @@ FIELDS = {
              "displacement_a", "lattice_input", "relax", "lattice", "poscar", "max_residual_force_ev_a", "band", "dos",
              "thermal", "gamma_thz", "min_frequency_thz", "max_frequency_thz", "imaginary", "imag_threshold_thz",
              "n_imaginary_mesh"},
-    "adsgen": {"system", "lattice", "slabs", "sites", "truncated", "best", "best_ok", "reference", "engine",
+    "adsgen": {"system", "lattice", "slabs", "sites", "truncated", "distinct", "best", "best_ok", "reference", "engine",
                "seconds_worker"},
 }
 ADS_SITE = {"id", "termination", "kind", "atoms", "multiplicity", "xy", "dmae_init_gen", "flags", "confidence",
-            "energy_sp_ev", "energy_ev", "e_bind_raw_ev", "e_ads_ev", "xyz", "ok", "rel_ev"}
+            "energy_sp_ev", "energy_ev", "e_bind_raw_ev", "e_ads_ev", "xyz", "ok", "rel_ev", "landing", "same_as"}
 ADS_POLISH = {"dmae_gen_final", "flags_polished", "steps", "converged"}
 # what each molecule of a batch carries, by recipe
 QITEM = {"smiles", "charge", "spin", "formula", "ok", "energy_ev", "xyz"}
@@ -461,18 +461,19 @@ class FakeServer(unittest.TestCase):
     def test_dbcata(self):
         """The whole lane in toy mode: the worker process, the protocol, the structures and the result."""
         body = {"model": "dbcata", "job": "adsgen",
-                "params": {"metal_a": "Au", "metal_b": "Cu", "ratio": 0.5, "facet": "110", "adsorbate": "H2O"}}
+                "params": {"metal_a": "Au", "metal_b": "Cu", "ratio": 0.5, "facet": "111", "adsorbate": "H2O"}}
         r = self.run_job(body)
         self.assertEqual(r["engine"]["dbcata"], "toy")
         self.assertEqual(r["system"]["formula"], "AuCu")
-        self.assertEqual(sorted(s["top"] for s in r["slabs"]), ["Au4", "Cu4"])
+        self.assertEqual(sorted(s["top"] for s in r["slabs"]), ["Au2Cu2"])
+        self.assertEqual(r["distinct"], sum(s["same_as"] is None for s in r["sites"]))
         self.assertTrue(r["reference"]["available"])
         self.assertIn(r["best"], [s["id"] for s in r["sites"]])
         for s in r["sites"]:
             self.assertEqual(s["xyz"].count("Lattice="), 3)
         # the same system in the other order is the same job: cached
         status, again = self.call("POST", "/jobs", dict(body, params={"metal_a": "cu", "metal_b": "AU", "ratio": 0.5,
-                                                                        "facet": "(110)", "adsorbate": "h2o"}))
+                                                                        "facet": "(111)", "adsorbate": "h2o"}))
         self.assertEqual((status, again.get("cached")), (200, True))
         r = self.run_job({"model": "dbcata", "job": "adsgen",
                           "params": {"metal_a": "Pd", "metal_b": "Ga", "ratio": 0.75, "facet": "111", "adsorbate": "S",
@@ -488,7 +489,7 @@ class FakeServer(unittest.TestCase):
         ok = {"metal_a": "Ni", "metal_b": "Pt", "ratio": 0.25, "facet": "111", "adsorbate": "OH"}
         for change, text in (({"metal_a": "Tc"}, "radioactive"), ({"metal_b": "Ni"}, "two different metals"),
                              ({"metal_a": "Na"}, "training domain"), ({"ratio": 0.4}, "0.25, 0.5 or 0.75"),
-                             ({"facet": "100"}, "111 or 110"), ({"adsorbate": "CO"}, "12 adsorbates"),
+                             ({"facet": "110"}, "no fcc(110)"), ({"adsorbate": "CO"}, "12 adsorbates"),
                              ({"steps": 10}, "params.steps"), ({"polish": 1}, "params.polish"),
                              ({"lattice": "pbe"}, "params.lattice")):
             self.refused({"model": "dbcata", "job": "adsgen", "params": dict(ok, **change)}, text=text)

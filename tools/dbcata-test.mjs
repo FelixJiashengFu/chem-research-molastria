@@ -46,8 +46,8 @@ test('the lists are the same on the page, on the computer and in the account ser
 test('check: the canonical form, case and brackets, and every way out of the domain', () => {
   assert.deepEqual(plain(C.check({ metal_a: 'Pt', metal_b: 'Ni', ratio: 0.75, facet: '111', adsorbate: 'OH' })),
     { params: { metal_a: 'Ni', metal_b: 'Pt', ratio: 0.25, facet: '111', adsorbate: 'OH', polish: true, steps: 20, lattice: 'uma' } });
-  assert.deepEqual(plain(C.check({ metal_a: 'cu', metal_b: 'AU', ratio: '0.5', facet: '(110)', adsorbate: 'h2o', polish: false, steps: 50, lattice: 'vegard' })).params,
-    { metal_a: 'Au', metal_b: 'Cu', ratio: 0.5, facet: '110', adsorbate: 'H2O', polish: false, steps: 50, lattice: 'vegard' });
+  assert.deepEqual(plain(C.check({ metal_a: 'cu', metal_b: 'AU', ratio: '0.5', facet: '(111)', adsorbate: 'h2o', polish: false, steps: 50, lattice: 'vegard' })).params,
+    { metal_a: 'Au', metal_b: 'Cu', ratio: 0.5, facet: '111', adsorbate: 'H2O', polish: false, steps: 50, lattice: 'vegard' });
   for (const [raw, zh] of [
     [{ metal_a: 'Tc', metal_b: 'Pt' }, '列表'], [{ metal_a: 'Pt', metal_b: 'Pt' }, '不同'], [{ metal_a: 'Pt', metal_b: 'Ni', ratio: 0.3 }, '比例'],
     [{ metal_a: 'Pt', metal_b: 'Ni', ratio: 0.5, facet: '100' }, '晶面'], [{ metal_a: 'Pt', metal_b: 'Ni', ratio: 0.5, facet: '111', adsorbate: 'CO' }, '12 种'],
@@ -91,8 +91,12 @@ test('rows, frames and CSV of the stand-in result', () => {
   assert.equal(csv.length, 5);
   assert.match(csv[0], /^formula,facet,adsorbate,site_id/);
   assert.match(csv[1], /^NiPt3,111,OH,3,NiPt3,hollow-fcc,Pt-Pt-Pt,/);
-  assert.match(csv[4], /,desorbed,0$/);
-  for (const k of new Set(fixture.sites.map((s) => s.kind))) assert.ok(C.KINDS[k], k);
+  assert.match(csv[0], /,landing_kind,landing_atoms,same_as$/);
+  assert.match(csv[1], /,hollow-fcc,Pt-Pt-Pt,2$/, 'the best site ended where site 2 ended');
+  assert.match(csv[4], /,desorbed,0,none,,$/);
+  assert.equal(rows[0].sameAs, 2);
+  for (const k of new Set(fixture.sites.flatMap((s) => [s.kind, s.landing.kind]))) assert.ok(C.KINDS[k], k);
+  assert.equal(fixture.distinct, fixture.sites.filter((s) => s.same_as == null).length);
   const sulfur = { ...fixture, reference: { ...fixture.reference, available: false } };
   assert.equal(C.rows(sulfur)[0].energy, sulfur.sites.find((s) => s.id === C.rows(sulfur)[0].id).e_bind_raw_ev, 'E - E_slab for S');
   assert.equal(C.refsAvailable('SH'), false);
@@ -106,7 +110,7 @@ test('the page loads the window before models.js and the account service gates i
   assert.ok(order.every((i, k) => i > 0 && (k === 0 || i > order[k - 1])), 'dbcata-core.js, dbcata.js, then models.js');
   assert.match(html, /href="dbcata\.css"/);
   assert.match(worker, /const dbcataOn = \(env\) => env\.DBCATA_ENABLED === '1';/);
-  assert.match(read('../deploy/wrangler.toml'), /^DBCATA_ENABLED = "0"/m, 'closed until the site owner opens it');
+  assert.match(read('../deploy/wrangler.toml'), /^DBCATA_ENABLED = "1"/m, 'open: the site owner opened it on 2026-11-22');
   const ui = read('../public/models/dbcata.js');
   assert.match(ui, /GPL-3\.0/);
   assert.match(ui, /C\.DOI|doi\.org/);
@@ -115,7 +119,7 @@ test('the page loads the window before models.js and the account service gates i
 const PY = process.env.DBCATA_SKIP_PYTHON ? null : ['python3', 'python'].find((p) => spawnSync(p, ['-c', 'import numpy'], { stdio: 'ignore' }).status === 0);
 test('the canonical form is the computer\'s (python3 + numpy)', { skip: !PY && 'no python3 with numpy' }, () => {
   const raws = [];
-  for (const a of ['Pt', 'ni', 'Au']) for (const b of ['Ni', 'CU', 'Tl']) for (const x of C.RATIOS) raws.push({ metal_a: a, metal_b: b, ratio: x, facet: x === 0.5 ? '(110)' : '111', adsorbate: x === 0.25 ? 'ch3' : 'S', polish: x !== 0.5 });
+  for (const a of ['Pt', 'ni', 'Au']) for (const b of ['Ni', 'CU', 'Tl']) for (const x of C.RATIOS) raws.push({ metal_a: a, metal_b: b, ratio: x, facet: x === 0.5 ? '(111)' : '111', adsorbate: x === 0.25 ? 'ch3' : 'S', polish: x !== 0.5 });
   const script = `import json, sys\nsys.path.insert(0, 'tools/uma-server')\nimport dbcata_core as c\nout = []\nfor r in json.load(sys.stdin):\n    try: out.append(c.check(r))\n    except c.DomainError as e: out.append({'error': str(e)})\nprint(json.dumps(out))`;
   const res = spawnSync(PY, ['-c', script], { input: JSON.stringify(raws), cwd: new URL('..', import.meta.url), encoding: 'utf8' });
   assert.equal(res.status, 0, res.stderr);
@@ -128,7 +132,7 @@ test('the canonical form is the computer\'s (python3 + numpy)', { skip: !PY && '
 });
 
 test('a whole toy result from the worker turns into rows and frames (python3 + numpy)', { skip: !PY && 'no python3 with numpy' }, () => {
-  const lines = [{ op: 'run', params: { metal_a: 'Ga', metal_b: 'Pd', ratio: 0.25, facet: '110', adsorbate: 'SH', polish: false, steps: 20, lattice: 'vegard' } }];
+  const lines = [{ op: 'run', params: { metal_a: 'Ga', metal_b: 'Pd', ratio: 0.25, facet: '111', adsorbate: 'SH', polish: false, steps: 20, lattice: 'vegard' } }];
   const res = spawnSync(PY, ['-X', 'utf8', 'tools/uma-server/dbcata_worker.py'], { input: lines.map((l) => JSON.stringify(l)).join('\n') + '\n', cwd: new URL('..', import.meta.url),
     encoding: 'utf8', env: { ...process.env, MOLASTRIA_DBCATA_TOY: '1', PYTHONUTF8: '1' } });
   assert.equal(res.status, 0, res.stderr);

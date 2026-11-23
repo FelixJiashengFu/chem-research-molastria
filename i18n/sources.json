@@ -9585,6 +9585,9 @@
  "结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）": [
   "api/compute.js"
  ],
+ "DBCata 合金表面吸附结构（默认带 UMA 短程优化 5 次，不优化 3 次）": [
+  "api/compute.js"
+ ],
  "必填": [
   "api/compute.js"
  ],
@@ -18349,7 +18352,7 @@
  "参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75": [
   "deploy/account-worker.js"
  ],
- "参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面": [
+ "参数 facet 只能是 111：DBCata 的训练集里只有 (111) 面（A3B、AB、AB3 和纯金属），没有 fcc(110)": [
   "deploy/account-worker.js"
  ],
  "参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：{0}": [

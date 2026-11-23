@@ -1009,9 +1009,9 @@ await test("DBCata: closed until DBCATA_ENABLED is 1, then only its training dom
   eq(ok.status, 202);
   eq(sentBody(), { job: "adsgen", model: "dbcata", charge: 0, params: { metal_a: "Ni", metal_b: "Pt", ratio: 0.25, facet: "111", adsorbate: "OH" } }, "metals in alphabetical order, the ratio with them");
   eq(used("uma:local"), 5, "with the UMA polish (the default): 5 uses");
-  const lean = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { metal_a: "cu", metal_b: "AU", ratio: 0.5, facet: "(110)", adsorbate: "h2o", polish: false, steps: 50, lattice: "vegard" } });
+  const lean = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { metal_a: "cu", metal_b: "AU", ratio: 0.5, facet: "(111)", adsorbate: "h2o", polish: false, steps: 50, lattice: "vegard" } });
   eq(lean.status, 202);
-  eq(sentBody().params, { metal_a: "Au", metal_b: "Cu", ratio: 0.5, facet: "110", adsorbate: "H2O", polish: false, steps: 50, lattice: "vegard" }, "case and brackets normalised");
+  eq(sentBody().params, { metal_a: "Au", metal_b: "Cu", ratio: 0.5, facet: "111", adsorbate: "H2O", polish: false, steps: 50, lattice: "vegard" }, "case and brackets normalised");
   eq(used("uma:local"), 8, "without the polish: 3 uses");
   const sent = umaCalls.filter((c) => c.path === "/jobs").length;
   const refused: [any, string, string][] = [
@@ -1021,7 +1021,8 @@ await test("DBCata: closed until DBCATA_ENABLED is 1, then only its training dom
     [{ ...P, metal_a: "" }, "invalid_request", "metal symbol"],
     [{ ...P, ratio: 0.3 }, "out_of_domain", "0.25, 0.5 or 0.75"],
     [{ ...P, ratio: "0.75" }, "out_of_domain", "0.25, 0.5 or 0.75"],
-    [{ ...P, facet: "100" }, "out_of_domain", "111 or 110"],
+    [{ ...P, facet: "100" }, "out_of_domain", "must be 111"],
+    [{ ...P, facet: "110" }, "out_of_domain", "no fcc(110)"],
     [{ ...P, adsorbate: "CO" }, "out_of_domain", "12 adsorbates"],
     [{ ...P, adsorbate: "OOH" }, "out_of_domain", "12 adsorbates"],
     [{ ...P, steps: 10 }, "invalid_request", "20, 50 or 100"],
@@ -1083,10 +1084,11 @@ await test("compute API: every refusal a program can get has an English sentence
 const root_endpoints = () => ["/v1/status", "/v1/me", "/v1/models", "/v1/jobs", "/v1/jobs/{id}"];
 await test("compute API: models without MACE, jobs on the account's own allowance, polling", async () => {
   const elsewhere = "https://someone-elses-lab.example";
+  env.DBCATA_ENABLED = "1"; // as deploy/wrangler.toml sets it: the DBCata lane is open, so the documentation lists it
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt"), ids.includes("molnextr")], [21, 0, true, true, true, true, true, true, true], "the twenty-one models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt"), ids.includes("molnextr"), ids.includes("dbcata")], [22, 0, true, true, true, true, true, true, true, true], "the twenty-two models whose licence allows it");
   eq(models.data.models.find((m: any) => m.id === "molnextr"), { id: "molnextr", ready: false, queue: 0, charged: false, jobs: ["ocsr"] }, "MolNexTR (Apache-2.0): structure images only, in the API too");
   eq(models.data.costs.ocsr, 1, "one use per image");
   eq(models.data.models.find((m: any) => m.id === "phonopy-emt"), { id: "phonopy-emt", ready: false, queue: 0, charged: false, jobs: ["phon"] }, "phonopy with EMT: phonons only");
@@ -1104,7 +1106,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON|OCSR)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON|OCSR|ADSGEN)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
   for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)(?:_PH)?\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
@@ -1120,6 +1122,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   eq(quoted(adapter.match(/^JOBS = \(([^)]+)\)/m)![1]), Object.keys(models.data.costs).sort(), "the jobs in chemdb-agent");
   eq(quoted(tools.match(/^    model: Annotated\[Literal\[([^\]]+)\]/m)![1]), [...ids].sort(), "the models run_calculation accepts");
   eq(quoted(tools.match(/^    job: Annotated\[Literal\[([^\]]+)\]/m)![1]), Object.keys(models.data.costs).sort(), "the jobs run_calculation accepts");
+  delete env.DBCATA_ENABLED;
   // A job: same checks as the site, the account's counter, and what is left comes back with the answer.
   const job = await call("POST", "/v1/jobs", { smiles: "CCO", job: "freq", model: "uma-s-1p2p1", extra: "dropped", academic: true }, freeKey, elsewhere);
   eq([job.status, job.data.id, job.data.status, job.data.cost], [202, "0123456789abcdef", "queued", 3]);

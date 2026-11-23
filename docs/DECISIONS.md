@@ -54,6 +54,16 @@
 - 计费：每次 5 次，不按位移数算，这样前端能先告诉用户花多少。
 - 英文：标签按钮自带中英两版（translate="no"），这样别的标签的英文页面不用等这一页补译文。面板正文仍走 i18n。
 
+## 2026-11-22 DBCata 通道开放：只开放 (111)，落到同一处的位点合并
+
+站长在决定卡片上选了“都上，并打开在线窗口”。`DBCATA_ENABLED` 改成 "1"，计算接口的文档（compute.js、openapi、chemdb-agent）加上 `dbcata` / `adsgen`。
+**原因和取舍：**
+- **只开放 (111)：** 论文写训练集有 (111) 和 (110) 两种面，但站长电脑上对 DBCata 公开的验证集（`val.pkl`，14,728 个结构）逐个核对，只有 (111)：A₃B / AB₃ 的 L1₂ (111)、纯金属的 (111)、AB 的 L1₀ (111)（c/a 从约 0.55 到 1.3，c/a = 1/√2 时几何上就是 bcc(110)，约 1,900 块看起来像 bcc(110)），没有一块 fcc(110) 的长方形晶胞。我们搭的 fcc(110) 板 DBCata 从没见过，所以去掉（搭法留在 `FACET_CELL` 里给测试用）。AB 的 c/a 交给 UMA omat 弛豫体相去定，不假设 c = a。
+- **位点合并：** 站长电脑上第一次试 Pt₃Ni(111)+O，9 个起始位点里有几个被 DBCata 挪到了同一处（top 上的 O 滑进 hcp 空位），四条规则不会标这种情况，表里只写起始位点会误导。现在每个位点另给 `landing`（结合原子最后在哪个顶位、桥位或空位上方：按表面内最近的那个点算，因为按距离比例数“挨着几个原子”会把偏一点的低空位、或者一长一短的键（Pt₃Y 的 Pt–O 和 Y–O）算成桥位）和 `same_as`（等价位点的不同拷贝也算同一处；一组里由第一个可靠的位点领头），页面写“最后落在”和“同 #n”，并说 9 个起始位点落成几个不同的结构。没有把重复的删掉：起始位点和它的轨迹本身也有用。
+- **fairchem 版本：** DBCata 的环境是 fairchem 2.13，没有 `batch` 预设，worker 改成按版本挑，挑错了还会退回 `default` 再试一次。
+- **没有异常分类器：** Figshare 上没找到分类器的权重，信心一栏是 —，只用四条规则。
+- 训练集里 Ni 只有 78 个结构，Fe、Co、Mn 更少；名单不删这些金属（它们在训练集里出现过），RUNBOOK 写明要更小心。
+
 ## 2026-11-22 GPU 粒子力场（Particle HIVE）：直接收入改良后的 MIT 构建并外包双语壳
 
 结论：采用 `0ffz/particle-hive`（MIT 许可，作者 Danielle Voznyy）并合入我们提交给上游的修复（PR #11：非 2 的幂次粒数归约越界、DBSCAN 簇索引映射、空 `lennardJones` 边界墙回退、直方图分桶防越界、未命名项目编辑保存、`Mode.PRODUCTION` 包体减半、加载遮罩与 WebGPU 兼容性提示），由 `tools/vendor-particles.ts` 将精简构建（去掉 2.3 MB `.map`，保留 `LICENSE` 与 `NOTICE.txt`，共约 2.2 MB）放入 `public/particles/app/`；外层 `public/particles/`（`translate="no"`）负责中英双语顶栏、WebGPU 检测徽章、五组物理化学 YAML 预设写入 `localStorage`（`paths/<name>.yml` + `recentProjectPaths`）以及力场指南抽屉。
@@ -65,7 +75,7 @@
 站长要把 DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9；github.com/Songze1019/DBCata，GPL-3.0）接进在线模型。做法：站长电脑的 `server.py` 加第七条通道 `dbcata`（计算 `adsgen`），由 `dbcata_worker.py` 在 DBCata 自己的环境里生成结构，UMA 的 oc20 任务算能量；模型接口页加“⑦ 合金表面吸附结构”。
 **原因：**
 - **GPL 隔离：** MolAstria 是 MIT，桌面版要打包网页。DBCata 的代码不复制进仓库，权重和数据也不放；唯一 import DBCata 的 `dbcata_worker.py` 自己标 GPL-3.0-or-later，在单独的进程里运行，和 MIT 的 `server.py` 只经标准输入输出交换 JSON 行。结构、规则、能量这些自己写的部分在 `dbcata_core.py`（MIT，只用 numpy），不 import DBCata，测试会查这一点。网页和账号服务不碰 DBCata。
-- **只在训练范围内：** DBCata 只学过 Catalysis-Hub 上 Mamun 等的数据：fcc 二元合金 A₃B / AB / AB₃（L1₂、L1₀）的 (111) 和 (110)，12 原子的三层板（下面 8 个固定），12 种吸附物。所以不接受上传的结构，只能从列表里选；名单在网页、账号服务、电脑三处各有一份，`tools/dbcata-test.mjs` 核对它们一致。金属取 3d、4d（不含 Tc）、5d 的 Hf–Au 和 Al、Ga、In、Tl；Tc（放射性）、Hg（室温是液体，有序的 fcc 合金表面意义不大）、La（不算论文筛选里的 3d / 4d / 5d 过渡金属）不放。
+- **只在训练范围内：** DBCata 只学过 Catalysis-Hub 上 Mamun 等的数据：fcc 二元合金 A₃B / AB / AB₃（L1₂、L1₀）的 (111)（论文还写了 (110)，开放前核对发现训练集里没有，见上一条），12 原子的三层板（下面 8 个固定），12 种吸附物。所以不接受上传的结构，只能从列表里选；名单在网页、账号服务、电脑三处各有一份，`tools/dbcata-test.mjs` 核对它们一致。金属取 3d、4d（不含 Tc）、5d 的 Hf–Au 和 Al、Ga、In、Tl；Tc（放射性）、Hg（室温是液体，有序的 fcc 合金表面意义不大）、La（不算论文筛选里的 3d / 4d / 5d 过渡金属）不放。
 - **能量的参考：** E_ads = E(吸附结构) − E(同一个模型弛豫的干净表面) − Σ OC20 的气相参考（H −3.477、C −7.282、N −8.083、O −7.204 eV），和 UMA 的 oc20 任务训练时一致。OC20 没有 S 的参考（它也没有含 S 的吸附物），所以 S、SH 只给 E(吸附结构) − E(表面)，只用来比较位点，页面写明。
 - **晶格常数：** 论文用 Catalysis-Hub 里 BEEF-vdW 的晶格常数，站长电脑上离线拿不到。先按 Vegard 定律（fcc 等效的实验晶格常数）估计，再用 UMA 的 omat 任务弛豫体相（L1₂ 只改体积）；离 Vegard 超过 8 % 或弛豫失败时退回 Vegard，结果里写明用的是哪个。
 - **异常标记：** 四条规则照论文第 4.2.2 节和 AdsorbML / fairchem 的定义（相撞 0.8 倍共价半径之和、吸附物分成几块、离表面太远、表面重构）；带标记的位点不算“能量最低”。初始结构在顶位上本来就会触发“相撞”（结合原子放在位点上方 1.5 Å），只检查 DBCata 生成和优化之后的结构。

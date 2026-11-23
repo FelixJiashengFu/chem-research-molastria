@@ -1400,6 +1400,12 @@ check('models page: the DBCata window (hidden while closed, the domain only, a r
   assert.match(await text(p, '#db-result tbody tr:last-child'), /脱附/);
   assert.match(await text(p, '#db-result'), /测试用的假数字/);
   assert.match(await text(p, '#db-result .md-db-best'), /fcc 空位 · Pt-Pt-Pt/);
+  assert.match(await text(p, '#db-result'), /4 个起始位点，落成 3 个不同的结构/);
+  assert.match(await text(p, '#db-result tbody tr:first-child'), /同 #2/, 'the best site ended where site 2 ended');
+  assert.equal(await p.getAttribute('#db-result tbody tr:first-child', 'data-same'), 'true');
+  assert.match(await text(p, '#db-result tbody tr:last-child'), /没有接触表面/, 'where the desorbed one ended');
+  assert.match(await text(p, '#m-dbcata .md-db-domain'), /没有一块 fcc\(110\) 板/);
+  assert.equal(await p.locator('input[name=db-facet]').count(), 1, '(111) only');
   assert.equal(await p.isVisible('#db-view'), true);
   assert.match(await text(p, '#db-view-frames'), /帧 3: DBCata \+ UMA 短程优化/);
   await p.waitForSelector('#db-3d .m3-stage');
@@ -5122,8 +5128,9 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 18); // with ts, neb, phon and ocsr
+  assert.equal(await p.locator('#run-jobs tr').count(), 19); // with ts, neb, phon, ocsr and adsgen
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
+  assert.match(await text(p, '#run-jobs tr:last-child'), /^adsgenDBCata 合金表面吸附结构/, 'the DBCata lane, open since 2026-11-22');
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
   assert.equal(models.length, 15); // ten machine-learning potentials, the four xTB models (#123) and AIMNet2
   assert.ok(!models.some((m) => m.startsWith('mace')), 'no MACE model is offered');

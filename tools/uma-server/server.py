@@ -1144,7 +1144,8 @@ class Service:
         except BadRequest as e:
             return 400, {"error": str(e)}
         # v3: input, charge, spin and params all decide the answer; results cached before v3 lack the new fields.
-        key = "|".join(["v3", model, job, spec.pop("input"), str(spec["charge"]), str(spec["spin"]),
+        # adsgen v4: landing, same_as and distinct (2026-11-23).
+        key = "|".join(["v4" if job == "adsgen" else "v3", model, job, spec.pop("input"), str(spec["charge"]), str(spec["spin"]),
                         json.dumps(spec["params"], sort_keys=True)])
         lane = m["lane"]
         with self.lock:
