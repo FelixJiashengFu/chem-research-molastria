@@ -1,7 +1,7 @@
 // 化学机器学习 · 结构–性质图（第九章的 Chemiscope 演示）：node --test tools/chemml-map-test.mjs
 // 查三样：tools/chemml-map/build.py 算出的数据（个数、来源和方法记录、三维结构和 SMILES 对得上、键长合理、性质合理）、
 // 生成的 public/chem-ml/cml-map-data.js 是最新的、cml-map-core.js 的纯逻辑（主成分、划分、近邻、Chemiscope 数据集），
-// 以及第九章正文里关于这份数据的说法（骨架划分让相似度下降；logP 变难，能隙和偶极矩不变难）。
+// 以及第九章正文里关于这份数据的说法（骨架划分让相似度下降；logP 变难，能隙不变难，偶极矩因为苯骨架进不了测试集反而变容易）。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -69,6 +69,7 @@ test('数据：性质合理', () => {
 
 test('生成的 cml-map-data.js 是最新的，和重新生成的一字不差', () => {
   assert.equal(stamp(), inputHash(), 'public/chem-ml/cml-map-data.js 不是最新的：运行 node tools/chemml-map.mjs');
+  assert.match(fs.readFileSync(new URL('./chemml-map.mjs', import.meta.url), 'utf8'), /\[SRC, CORE, MODELS,/, '指纹用的 cml-models.js 也要算进输入的哈希，否则 --check 看不出过期');
   assert.equal(fs.readFileSync(OUT, 'utf8'), build());
   assert.equal(D.mols.length, 284);
   assert.equal(D.pca.ecfp.xy.length, 284); assert.equal(D.pca.desc.xy.length, 284);
@@ -131,7 +132,7 @@ test('Chemiscope 数据集：结构和性质的个数、设置', () => {
   assert.match(C.toXYZ(D.mols[0]), /^12\nc1ccccc1\nC /);
 });
 
-test('第九章的说法：骨架划分降低相似度；logP 变难，能隙和偶极矩不变难', () => {
+test('第九章的说法：骨架划分降低相似度；logP 变难，能隙不变，偶极矩因为测试集里没有对位二取代苯反而变小', () => {
   const fps = C.fingerprints(D.mols.map((m) => m.s), M);
   const mae = (key, how) => M.mean(M.range(12).map((k) => { const S = C.split(D.mols, how, k + 1); return C.knn(fps, D.mols.map((m) => m[key]), S.train, S.test, M, 5).mae; }));
   for (let seed = 1; seed <= 12; seed++) {
@@ -140,7 +141,24 @@ test('第九章的说法：骨架划分降低相似度；logP 变难，能隙和
   }
   const lr = mae('logp', 'random'), ls = mae('logp', 'scaffold');
   assert.ok(ls > 1.3 * lr && ls < 1.6 * lr, `logP：骨架 ${ls} 比随机 ${lr} 大四成左右`);
-  for (const k of ['gap', 'dip']) assert.ok(mae(k, 'scaffold') < 1.05 * mae(k, 'random'), `${k} 的骨架划分不更难`);
+  const gr = mae('gap', 'random'), gs = mae('gap', 'scaffold');
+  assert.ok(gs > 0.9 * gr && gs < 1.1 * gr, `能隙：骨架 ${gs} 和随机 ${gr} 差不多`);
+  near(gr, 0.81, 0.02, '能隙随机划分的 MAE（正文写约 0.81 eV）'); near(gs, 0.80, 0.02, '能隙骨架划分的 MAE（正文写约 0.80 eV）');
+  const dr = mae('dip', 'random'), ds = mae('dip', 'scaffold');
+  assert.ok(ds > 0.55 * dr && ds < 0.75 * dr, `偶极矩：骨架 ${ds} 比随机 ${dr} 小三分之一左右`);
+  near(dr, 1.20, 0.02, '偶极矩随机划分的 MAE（正文写约 1.20 D）'); near(ds, 0.79, 0.02, '偶极矩骨架划分的 MAE（正文写约 0.79 D）');
+  // 正文给的原因：苯骨架（72 个）比测试集（57 个）大，骨架划分从不把它放进测试集；对位二取代苯是偶极矩最难猜的
+  const bz = D.mols.filter((m) => m.scaf === 'c1ccccc1');
+  assert.equal(bz.length, 72); assert.equal(D.mols.filter((m) => m.f === 'benzene' && m.subs.length === 2).length, 55);
+  assert.ok(bz.length > Math.round(0.2 * 284) * 1.15, '苯骨架比测试集的上限还大');
+  for (let k = 1; k <= 12; k++) assert.ok(C.split(D.mols, 'scaffold', k).test.every((i) => D.mols[i].scaf !== 'c1ccccc1'), `种子 ${k}：骨架划分的测试集里没有苯`);
+  const para = [], rest = [], y = D.mols.map((m) => m.dip);
+  for (let k = 1; k <= 12; k++) {
+    const S = C.split(D.mols, 'random', k), K = C.knn(fps, y, S.train, S.test, M, 5);
+    K.err.forEach((e, q) => { const m = D.mols[S.test[q]]; (m.f === 'benzene' && m.subs.length === 2 ? para : rest).push(Math.abs(e)); });
+  }
+  near(M.mean(para), 2.0, 0.1, '随机划分下对位二取代苯的偶极矩误差（正文写约 2.0 D）');
+  near(M.mean(rest), 1.0, 0.1, '随机划分下其余分子的偶极矩误差（正文写约 1.0 D）');
 });
 
 test('页面接线：Chemiscope 的版本写死、和 e2e 装的一致，脚本按顺序载入', () => {

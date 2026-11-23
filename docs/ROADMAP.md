@@ -111,7 +111,7 @@
 
 开源八项的后续：
 - 站长电脑：uma-env 装 `sella==2.6.0` 和 `phonopy==4.11.0 spglib==2.8.0 seekpath==2.2.2`；建 aimnet-env 跑 `aimnet_selftest.py`、建 molnextr-env 跑 `molnextr_selftest.py --download`，通过后用 `start.ps1 -AimnetPython … -MolnextrPython …` 重启；用 UMA 的 omat 真跑一次 Cu 和 Si 的声子（Windows 上还没跑过）；然后部署 Worker。
-- 重新打包 `public/atlas/downloads/chemdb-agent.zip`（`python tools/pack-chemdb-agent.py`）：adapter 加了 ts、neb、aimnet2、phon、phonopy-emt、ocsr，几次都没重新打包；chemdb-agent 自己的测试也没跑。
+- chemdb-agent：adapter 加了 ts、neb、aimnet2、phon、phonopy-emt、ocsr（`public/atlas/downloads/chemdb-agent.zip` 已重新打包），chemdb-agent 自己的测试还没跑。
 - 桌面版：NMRium 页（约多 13 MB，离线、module 脚本、文件选择）和 Mol* 的断网提示都没在桌面版里试过，下一个桌面版本发出前在 Win / Mac 上各开一次。
 - NMRium：想用 0.61+ 要先定许可（读写和处理数据的库是 CC BY-NC-SA 4.0，需要 Zakodium 的商用许可，或者站长确认本站这样用不算商用），在那之前停在 0.56.0。可选：把谱图馆练习题的二维谱（pr2d 的交叉峰）写成 JCAMP-DX 的 NTUPLES 送进去。
 - 热化学：找一份真实的 xTB --hess 输出加进 `tools/thermo-fixtures/` 对照 GoodVibes（云端没能跑 xtb 二进制）；一份输出里有多个频率任务时 code-core 会把所有频率都读进来，应该只取最后一组；可以考虑加 GoodVibes 的单点能校正（--spc）和多个构象的 Boltzmann 汇总。

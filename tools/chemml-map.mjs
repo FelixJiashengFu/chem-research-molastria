@@ -17,7 +17,8 @@ const norm = (f) => fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
 
 export function inputHash() {
   const h = crypto.createHash('sha256');
-  for (const f of [SRC, CORE, fileURLToPath(import.meta.url)]) h.update(`${path.basename(f)}\n`).update(norm(f));
+  // 指纹（ecfp、parseSmiles）来自 MODELS，主成分来自 CORE，所以两个脚本都算输入
+  for (const f of [SRC, CORE, MODELS, fileURLToPath(import.meta.url)]) h.update(`${path.basename(f)}\n`).update(norm(f));
   return h.digest('hex').slice(0, 16);
 }
 export const stamp = () => (fs.existsSync(OUT) ? (norm(OUT).match(/inputs ([0-9a-f]{16})/) || [])[1] : '');

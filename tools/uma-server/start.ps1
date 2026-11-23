@@ -1,7 +1,7 @@
 # Starts the MolAstria online models and their Cloudflare Tunnel. Closing this window (or Ctrl+C) takes both
 # offline; the site then shows "the owner's GPU is offline". Do not run it as administrator: the service needs no
 # rights beyond reading its secret and model files and writing its result cache in this folder.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\Scripts\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
 # -KeepAlive starts the service again when it stops by itself (a crash, a driver reset) and the tunnel when it has
 # gone; restarts are written to keepalive.log in this folder. autostart.ps1 uses it to start the models at sign-in.
 param(

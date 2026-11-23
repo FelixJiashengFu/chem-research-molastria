@@ -548,6 +548,7 @@
     const models = runModels(), j = job();
     busy = true; sync();
     shown = [];
+    dropMolstar();
     $('m-result').innerHTML = '';
     try {
       for (const [i, model] of models.entries()) {
@@ -842,8 +843,11 @@
       + `<p class="muted small">同一个结构走完两步：第 1 步优化并算频率${T ? `（热化学按 ${f(T, 2)} K）` : ''}，第 2 步在第 1 步优化好的结构上算电离能和电子亲和能。IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自再优化，垂直值都用中性分子的结构。已完成 ${n} 步。</p>`
       + `<div class="btns"><button type="button" class="button small" data-act="flow-csv">复制汇总 CSV</button></div></div>`;
   }
+  /** Mol* viewers in the results hold a WebGL context and observers on <html>: dispose them before the results are redrawn. */
+  function dropMolstar() { for (const b of $('m-result').querySelectorAll('.md-ms')) b.ms?.destroy(); }
   function paint() {
     const box = $('m-result');
+    dropMolstar();
     if (!shown.length) { box.innerHTML = ''; return; }
     let html = '';
     if (shown.some((x) => x.flow)) html += flowTable();
@@ -899,9 +903,11 @@
       if (again) { delete box.dataset.src; return; }
       box.dataset.src = want;
       const r = x.r, rmsf = r.rmsf || [];
-      const opts = want === 'traj' ? { pdbText: x.view.pdb, rmsf, label: `${r.pdb_id} 的 Cα 轨迹`, name: `${stem}_trajectory` }
-        : want === 'final' ? { pdbText: x.view.finalPdb, rmsf, color: 'chain-id', label: `${r.pdb_id} 模拟结束时的结构`, name: `${stem}_final` }
-          : { pdbId: r.pdb_id, label: `${r.pdb_id}（RCSB PDB）`, name: r.pdb_id };
+      // the Mol* box is translate="no", so its aria-label has to be in the page language already
+      const en = document.documentElement.lang === 'en', id = r.pdb_id || '';
+      const opts = want === 'traj' ? { pdbText: x.view.pdb, rmsf, label: en ? `Cα trajectory of ${id}` : `${id} 的 Cα 轨迹`, name: `${stem}_trajectory` }
+        : want === 'final' ? { pdbText: x.view.finalPdb, rmsf, color: 'chain-id', label: en ? `${id} at the end of the simulation` : `${id} 模拟结束时的结构`, name: `${stem}_final` }
+          : { pdbId: r.pdb_id, label: en ? `${id} (RCSB PDB)` : `${id}（RCSB PDB）`, name: r.pdb_id };
       window.MolAstriaMolstar?.open(box, opts).catch(() => { /* the box says why */ });
     }
     if (b.dataset.act === 'pdb-traj') save(`${stem}_trajectory_ca.pdb`, x.view.pdb, 'chemical/x-pdb');

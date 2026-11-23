@@ -114,6 +114,53 @@ test('a real result: dispersion, DOS, thermal curves, the verdict and the CSV', 
   assert.ok(lines.includes('temperature_k,free_energy_kj_mol,entropy_j_k_mol,heat_capacity_j_k_mol'));
 });
 
+test('the Γ-point check looks only at the three acoustic branches', () => {
+  // Si, diamond, NaCl and MgO have two atoms per primitive cell: six modes at Γ, three of them optical at 5–40 THz
+  const si = { ...FIX, gamma_thz: [-0.0004, 0.0002, 0.0003, 15.2, 15.2, 15.2] };
+  assert.deepEqual(plain(P.acousticGamma(si)), [0.0002, 0.0003, 0.0004]);
+  assert.deepEqual(plain(P.verdict(si).map((v) => v[0])), ['ok'], 'a converged two-atom crystal gets no warning');
+  const broken = { ...FIX, gamma_thz: [-0.4, 0.0002, 0.3, 15.2, 15.2, 15.2] };
+  const w = P.verdict(broken).find(([k, t]) => k === 'warn' && /声学支/.test(t));
+  assert.ok(w, 'acoustic branches off zero still warn');
+  assert.match(w[1], /最大 0\.400 THz/);
+  assert.deepEqual(plain(P.acousticGamma({})), []);
+});
+
+test('lane: the run button only when the owner\'s computer can do phonon jobs', () => {
+  assert.equal(P.lane(null, 'uma-s-1p2p1'), 'checking');
+  assert.equal(P.lane({ online: false }, 'uma-s-1p2p1'), 'offline');
+  assert.equal(P.lane({ online: true, models: { 'uma-s-1p2p1': { ready: false } } }, 'uma-s-1p2p1'), 'missing');
+  // server.py leaves phon out of jobs when phonopy, spglib or seekpath is missing, while the UMA lane stays ready
+  assert.equal(P.lane({ online: true, models: { 'uma-s-1p2p1': { ready: true, jobs: ['energy', 'opt'] } } }, 'uma-s-1p2p1'), 'missing');
+  assert.equal(P.lane({ online: true, models: { 'uma-s-1p2p1': { ready: true, jobs: ['energy', 'phon'] } } }, 'uma-s-1p2p1'), 'ready');
+  assert.equal(P.lane({ online: true, models: { 'uma-s-1p2p1': { ready: true } } }, 'uma-s-1p2p1'), 'ready'); // an older server without jobs
+  assert.equal(P.lane({ online: true, models: {} }, 'uma-s-1p2p1'), 'ready');
+  assert.match(server, /def jobs_of\(/, 'server.py still reports jobs per model');
+  const page = readFileSync(new URL('../public/code/phonon.js', import.meta.url), 'utf8');
+  assert.match(page, /P\.lane\(health, E\.model\)/, 'phonon.js decides with P.lane');
+});
+
+test('UMA scripts use uma_settings() so they run without Triton (Windows)', () => {
+  for (const engine of P.ENGINES.filter((e) => !e.emtOnly).map((e) => e.id)) {
+    const sc = P.script(state({ preset: 'NaCl', engine }));
+    assert.match(sc, /^def uma_settings\(\):/m, engine);
+    assert.match(sc, /import triton/);
+    assert.match(sc, /get_predict_unit\("[^"]+", device="cuda", inference_settings=uma_settings\(\)\)/, engine);
+  }
+  assert.doesNotMatch(P.script(state()), /uma_settings|fairchem/, 'the EMT script does not load UMA');
+});
+
+test('English visitors: i18n-extract reads both phonon files', () => {
+  const extract = readFileSync(new URL('./i18n-extract.ts', import.meta.url), 'utf8');
+  for (const f of ['code/phonon.js', 'code/phonon-core.js']) assert.ok(extract.includes(`"${f}"`), f);
+  // i18n-extract cuts literals at "<…" and "…>" (it takes them for HTML tags), so no Chinese literal may hold them
+  const src = readFileSync(new URL('../public/code/phonon-core.js', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  for (const m of src.matchAll(/'([^'\n]*)'|`([^`]*)`/g)) {
+    const t = m[1] ?? m[2];
+    if (/[\u3400-\u9fff]/.test(t)) assert.ok(!/[<>]/.test(t), `no < or > in a Chinese message: ${t}`);
+  }
+});
+
 const PYTHON = process.env.PHONON_PYTHON || 'python3';
 const hasPhonopy = !process.env.PHONON_SKIP_PYTHON && spawnSync(PYTHON, ['-c', 'import phonopy, spglib, seekpath, ase'], { encoding: 'utf8' }).status === 0;
 const hasPython = !process.env.PHONON_SKIP_PYTHON && spawnSync(PYTHON, ['--version']).status === 0;

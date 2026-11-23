@@ -66,11 +66,11 @@
     if (why || bad) parts.push(tr(why || bad));
     $('ph-estimate').textContent = parts.join(' · ');
     $('ph-estimate').dataset.bad = String(!!(why || bad));
-    const h = health?.models?.[E.model];
-    $('ph-run').disabled = busy || !!bad || (health && health.online === false) || (h && !h.ready);
-    $('ph-cost').textContent = health === null ? tr('正在看站长的电脑在不在线…')
-      : !health.online ? tr('站长的电脑现在离线，可以先用右边的脚本')
-      : h && !h.ready ? tr('站长的电脑上还没有装这个引擎')
+    const h = health?.models?.[E.model], ln = P.lane(health, E.model);
+    $('ph-run').disabled = busy || !!bad || ln === 'offline' || ln === 'missing';
+    $('ph-cost').textContent = ln === 'checking' ? tr('正在看站长的电脑在不在线…')
+      : ln === 'offline' ? tr('站长的电脑现在离线，可以先用右边的脚本')
+      : ln === 'missing' ? tr('站长的电脑上还没有装这个引擎')
       : `${tr('用掉今天在线计算次数')} ${P.COST} ${tr('次')}${h && (h.queue || h.running) ? ` · ${tr('前面排队')} ${(h.queue || 0) + (h.running ? 1 : 0)} ${tr('个')}` : ''}`;
     $('ph-install').innerHTML = `${esc(tr('安装'))}：<code translate="no">pip install phonopy spglib seekpath ase${E.emtOnly ? '' : ' fairchem-core'}</code>${E.emtOnly ? '' : `。${esc(tr('UMA 要先在 Hugging Face 上同意许可证并登录'))}`}`;
     $('ph-script').textContent = P.script(s);

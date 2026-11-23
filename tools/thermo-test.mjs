@@ -182,3 +182,59 @@ test('the browser files are wired up on both pages', () => {
   assert.match(read('code/THIRD-PARTY-goodvibes.md'), /Copyright 2017 Robert Paton/);
   assert.match(read('code/thermo.js'), /translate', 'no'|translate="no"/);
 });
+
+test('σ for T, O, I and S2n: the rotational subgroup order (GoodVibes 4.4.0 has T = 6, O = 12, I = 30, S4/S6/S8 = 4/6/8)', () => {
+  for (const [pg, s] of Object.entries({ T: 12, Th: 12, O: 24, I: 60, S4: 2, S6: 3, S8: 4 })) assert.equal(TH.symmetryNumber(pg), s, pg);
+  // the notice lists every entry where we differ from GoodVibes' pg_sm table
+  const note = readFileSync(new URL('../public/code/THIRD-PARTY-goodvibes.md', import.meta.url), 'utf8');
+  assert.match(note, /S4、S6、S8、T、O、I 分别是 2、3、4、12、24、60/);
+  assert.match(note, /4、6、8、6、12、30/);
+});
+
+test('no electronic energy: energy stays null (not 0) and H, G are the corrections only', () => {
+  const atoms = [{ el: 'O', x: 0, y: 0, z: 0.12 }, { el: 'H', x: 0, y: 0.76, z: -0.48 }, { el: 'H', x: 0, y: -0.76, z: -0.48 }];
+  for (const energy of [null, undefined, '']) {
+    const r = TH.compute({ energy, freqs: [1600, 3700, 3800], atoms, sigma: 2 }, {});
+    assert.equal(r.energy, null, String(energy));
+    assert.ok(Math.abs(r.H - r.corr.H) < 1e-15 && Math.abs(r.G - r.corr.G) < 1e-15);
+  }
+  assert.equal(TH.compute({ energy: 0, freqs: [1600, 3700, 3800], atoms, sigma: 2 }, {}).energy, 0, 'a real 0 is kept');
+  // a real output with the energy taken away (as for a CP2K frequency run, whose energy is in the replica files)
+  const t = fixture('gaussian-h2o.out'), parsed = { ...Code.parseOutput(t), energy: null };
+  const { info, r } = ours('gaussian-h2o.out', {}), noE = TH.compute(TH.molOf(TH.fromOutput(t, parsed)), {});
+  assert.equal(noE.energy, null);
+  assert.ok(Math.abs(noE.corr.G - r.corr.G) < 1e-12 && info.energy !== null);
+});
+
+test('only frequencies, no geometry or mass (an excerpt): the panel is not offered', () => {
+  const demos = require('../public/code/code-demos.js');
+  for (const [k, t] of Object.entries(demos)) {
+    const parsed = Code.parseOutput(t), info = TH.fromOutput(t, parsed);
+    if (TH.usable(info)) assert.doesNotThrow(() => TH.compute(TH.molOf(info), {}), k);
+    else assert.throws(() => TH.compute(TH.molOf(info), {}), /结构/, k);
+  }
+  assert.equal(TH.usable(TH.fromOutput(demos['gaussian-ir'], Code.parseOutput(demos['gaussian-ir']))), false);
+  for (const f of readdirSync(DIR).filter((x) => x.endsWith('.out'))) { const { info } = ours(f, {}); assert.equal(TH.usable(info), info.freqs.length > 0, f); }
+  assert.equal(TH.usable(null), false);
+  assert.equal(TH.usable({ freqs: [100], atoms: [], mass: 18 }), false, 'a printed mass without rotational constants is not enough');
+  const printed = { freqs: [1600, 3700, 3800], atoms: [], mass: 18.0106, rotTemps: [40.1, 20.9, 13.4], linear: false };
+  assert.equal(TH.usable(printed), true, 'a printed mass and rotational constants are enough');
+  const r = TH.compute(TH.molOf(printed), {});
+  for (const k of ['zpe', 'H', 'S', 'TS', 'G']) assert.ok(Number.isFinite(r[k]), `${k} is a number, not NaN`);
+  assert.match(readFileSync(new URL('../public/code/thermo.js', import.meta.url), 'utf8'), /if \(!TH\.usable\(info\)\)/);
+});
+
+test('two frequency jobs in one Gaussian log (Link1 at another temperature): only the last is used', () => {
+  const one = fixture('gaussian-h2o.out');
+  const head = ' Harmonic frequencies (cm**-1), IR intensities (KM/Mole), Raman scattering\n';
+  const job = (txt) => txt.replace(/^ Frequencies --/m, `${head} Frequencies --`);
+  const first = job(one).replace('1694.8284', '1500.0000');
+  const both = `${first}\n Link1:  Proceeding to internal job step number  3.\n${job(one)}`;
+  const a = ours('gaussian-h2o.out', {}).r;
+  const parsed = Code.parseOutput(both);
+  assert.equal(parsed.freqs.length, 3);
+  assert.equal(parsed.freqs[0], 1694.8284);
+  const b = TH.compute(TH.molOf(TH.fromOutput(both, parsed)), {});
+  assert.ok(Math.abs(b.zpe - a.zpe) < 1e-12, `${b.zpe} vs ${a.zpe}`);
+  assert.equal(b.warnings.filter((w) => w.id === 'count').length, 0);
+});

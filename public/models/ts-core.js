@@ -75,7 +75,8 @@
     return { left: num(b?.barrier_kcal), right: num(f?.barrier_kcal), reaction: num(r?.reaction_energy_kcal) };
   }
 
-  /** 这个结构是不是一阶鞍点、该提醒什么：返回 [种类, 中文] 的列表，种类是 ok / warn。 */
+  /** 这个结构是不是一阶鞍点、该提醒什么：返回 [种类, 中文] 的列表，种类是 ok / warn。
+      中文由 i18n.js 按 i18n/en.json 译成英文（tools/i18n-extract.ts 抽这个文件），所以字面量里不写 < 和 >：抽取时会当成标签切掉。 */
   function verdict(r) {
     const out = [];
     if (r?.ts_converged === false) out.push(['warn', `鞍点搜索没有收敛（${r.ts_steps ?? '?'} 步后最大受力 ${num(r.ts_fmax_ev_a).toFixed(3)} eV/Å），下面的结构只是最后一步。`]);
@@ -83,7 +84,7 @@
     if (big === 1) out.push(['ok', `一个虚频 ${num(r.imag_cm1).toFixed(0)} cm⁻¹：是一阶鞍点（过渡态）。`]);
     else if (big === 0) out.push(['warn', '没有明显的虚频：这个结构更像能量极小点，不是过渡态。换一个更靠近过渡态的猜测结构再试。']);
     else if (big > 1) out.push(['warn', `有 ${big} 个明显的虚频：这是高阶鞍点，不是过渡态。沿多出来的虚频方向扰动结构后再算一次。`]);
-    for (const [d, name] of [['reverse', '左端（s < 0）'], ['forward', '右端（s > 0）']]) {
+    for (const [d, name] of [['reverse', '左端（s 为负）'], ['forward', '右端（s 为正）']]) {
       const e = r?.irc?.[d];
       if (e && e.irc_converged === false && e.irc_note) out.push(['warn', `${name}的 IRC 在第 ${e.irc_steps} 步停下（${e.irc_note}），之后直接优化到极小点。`]);
       if (e && e.relax_converged === false) out.push(['warn', `${name}的终点没有优化到收敛。`]);

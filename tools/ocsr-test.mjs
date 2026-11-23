@@ -80,6 +80,60 @@ test('the request: bare PNG / JPEG base64 under the limits, one use per image', 
   fails(['iVBORw0KGgo' + 'A'.repeat(200001)], 'big');
   fails(Array(4).fill('iVBORw0KGgo' + 'A'.repeat(133468 - 11)), 'total');
   assert.equal(O.b64Bytes('iVBORw0KGgo' + 'A'.repeat(133332 - 11)), 99999);
+  // every refusal carries an English line too (the page is translate="no", so i18n.js cannot translate it)
+  for (const [images, code] of [[[], 'none'], [Array(9).fill(png), 'many'], [['x'], 'format'], [['iVBORw0KGgo' + 'A'.repeat(200001)], 'big'], [Array(4).fill('iVBORw0KGgo' + 'A'.repeat(133468 - 11)), 'total']]) {
+    assert.throws(() => O.body(images), (e) => e.code === code && /[\u4e00-\u9fff]/.test(e.message) && e.en && !/[\u4e00-\u9fff]/.test(e.en), code);
+  }
+});
+
+test('account-service errors (Chinese only on the site path) get an English line', () => {
+  const W = readFileSync(ROOT + 'deploy/account-worker.js', 'utf8');
+  const cases = [
+    [429, '今天还剩 3 次，这项计算要用 8 次（每天 40 次，登录免费账号每天更多）；换一项花费少的计算，或明天再来', '3 uses left today and this calculation needs 8 (40 a day; sign in to a free account for more); choose a cheaper calculation or come back tomorrow'],
+    [429, '今天还剩 3 次，这项计算要用 8 次（每天 100 次，Pro 支持者每天更多）；换一项花费少的计算，或明天再来', '3 uses left today and this calculation needs 8 (100 a day; Pro supporters get more); choose a cheaper calculation or come back tomorrow'],
+    [429, '今天的在线模型计算次数已用完（每天 200 次），明天再来', "Today's online model uses are used up (200 a day); come back tomorrow"],
+    [503, '站长的 GPU 现在离线，请稍后再试', "The site owner's GPU is offline right now, try again later"],
+    [429, '你已经有一个任务在排队或计算，等它完成再提交下一个', 'You already have a job queued or running; wait for it to finish before submitting the next one'],
+    [400, '计算服务：queue full', 'Calculation service: queue full'],
+    [413, '请求内容过大', 'Request too large'],
+    [404, '没有找到这个任务（完成后保留一小时）', 'No such job (finished jobs are kept for an hour)']
+  ];
+  for (const [st, zh, en] of cases) assert.equal(O.errorEn(st, zh), en, zh);
+  // the English lines are the ones the worker gives on /v1, so the two stay in step
+  for (const en of ["The site owner's GPU is offline right now, try again later", 'You already have a job queued or running; wait for it to finish before submitting the next one', 'Request too large', 'No such job (finished jobs are kept for an hour)', 'choose a cheaper calculation or come back tomorrow', 'Calculation service: ']) assert.ok(W.includes(en), en);
+  for (const zh of ['站长的 GPU 现在离线', '你已经有一个任务在排队或计算', '请求内容过大', '没有找到这个任务', '计算服务：', '今天还剩 ${left} 次，这项计算要用 ${cost} 次（每天 ${limit} 次${more}）', '次数已用完', '，Pro 支持者每天更多', '，登录免费账号每天更多']) assert.ok(W.includes(zh), zh);
+  // unknown text: an English line by status, the Chinese kept in brackets; English text passes through
+  assert.match(O.errorEn(500, '出了点奇怪的事'), /^The account service refused the request \(HTTP 500\) \(出了点奇怪的事\)$/);
+  assert.match(O.errorEn(503, ''), /not available/);
+  assert.equal(O.errorEn(502, 'HTTP 502'), 'HTTP 502');
+});
+
+test('pack: crops fit one job, oversized ones are retried smaller, every drop is counted', () => {
+  const b64 = (bytes) => 'A'.repeat(Math.ceil(bytes / 3) * 4); // decodes to about that many bytes
+  // eight crops of ~120 kB at full size, ~40 kB at half size; three fit at full size, the rest only smaller
+  const sizes = { [O.CROP_SIDE]: 120000, [O.CROP_SIDE / 2]: 40000, [O.CROP_SIDE / 4]: 12000 };
+  const calls = [];
+  const crop = (t, max, side) => { calls.push([t, max, side]); if (t === 'tiny') return null; const s = b64(sizes[side]); return O.b64Bytes(s) <= max ? s : null; };
+  const list = ['a', 'b', 'c', 'd', 'tiny', 'e', 'f', 'g'];
+  const p = O.pack(list, crop);
+  const total = p.images.reduce((n, s) => n + O.b64Bytes(s), 0);
+  assert.ok(total <= O.LIMITS.maxTotal, 'under the total');
+  assert.ok(p.images.every((s) => O.b64Bytes(s) <= O.LIMITS.maxBytes), 'each under the per-image limit');
+  assert.equal(p.sent.length + p.dropped, list.length, 'every target sent or counted');
+  assert.equal(p.sent.length, p.images.length);
+  assert.ok(!p.sent.includes('tiny') && p.dropped >= 1, 'a crop that cannot be made is counted');
+  assert.deepEqual(plain(p.sent.slice(0, 3)), ['a', 'b', 'c']);
+  // 360 kB at full size leaves 40 kB: d, e, f shrink to a quarter (12 kB) and fit; g finds no room and is counted
+  assert.deepEqual(plain(p.sent), ['a', 'b', 'c', 'd', 'e', 'f'], 'later crops shrink to fit instead of being dropped');
+  assert.equal(p.dropped, 2);
+  assert.ok(calls.every(([, max]) => max <= O.LIMITS.maxBytes && max > 0));
+  // nothing left: dropped, not sent
+  const full = O.pack(['x', 'y', 'z', 'w'], () => b64(150000));
+  assert.equal(full.sent.length, 2); assert.equal(full.dropped, 2);
+  // body() takes what pack chose (real PNG headers)
+  const png = (n) => 'iVBORw0KGgo' + 'A'.repeat(Math.ceil(n / 3) * 4 - 11);
+  const q = O.pack([1, 2, 3, 4], () => png(140000));
+  assert.doesNotThrow(() => O.body(q.images));
 });
 
 const result = () => ({

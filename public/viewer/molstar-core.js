@@ -91,7 +91,13 @@
     return [lo, hi];
   }
 
-  const fx = (v, w, d) => (Number.isFinite(v) ? v.toFixed(d) : (0).toFixed(d)).padStart(w).slice(-w);
+  /** 定宽数字列：放不下时少写小数位（B = 1289.63 写成 1289.6，不能切成 289.63），连整数都放不下才夹到这一列能写的最大 / 最小值。 */
+  function fx(v, w, d) {
+    const x = Number.isFinite(v) ? v : 0;
+    for (let k = d; k >= 0; k--) { const s = x.toFixed(k); if (s.length <= w) return s.padStart(w); }
+    const big = 10 ** (x < 0 ? w - 1 : w) - 1;
+    return String(x < 0 ? -big : big).padStart(w);
+  }
   /** 一个原子写回 PDB 的 ATOM 行（80 列）。 */
   function atomLine(serial, a, b = a.b) {
     const name = a.name.length < 4 && !/^\d/.test(a.name) ? ` ${a.name.padEnd(3)}` : a.name.padEnd(4).slice(0, 4);

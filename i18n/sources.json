@@ -543,7 +543,8 @@
  ],
  "个": [
   "atlas/index.html",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "已有数据源接入模块": [
   "atlas/index.html"
@@ -2015,7 +2016,8 @@
   "nmr/index.html"
  ],
  "估算": [
-  "nmr/index.html"
+  "nmr/index.html",
+  "code/phonon.js"
  ],
  "小分子": [
   "nmr/index.html"
@@ -3591,7 +3593,8 @@
   "meta/meta.js",
   "train/train.js",
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "下载": [
   "meta/index.html",
@@ -4344,7 +4347,8 @@
   "train/index.html",
   "scimodels/scimodels.js",
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "发布": [
   "train/index.html"
@@ -6327,7 +6331,8 @@
  ],
  "安装": [
   "download/index.html",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "安装 MolAstria": [
   "download/index.html"
@@ -8274,7 +8279,8 @@
  "频率": [
   "code/index.html",
   "radar/app/app.js",
-  "code/code-core.js"
+  "code/code-core.js",
+  "code/phonon.js"
  ],
  "优化 + 频率": [
   "code/index.html",
@@ -8535,10 +8541,12 @@
   "code/index.html"
  ],
  "声子态密度": [
-  "code/index.html"
+  "code/index.html",
+  "code/phonon.js"
  ],
  "热容和熵": [
-  "code/index.html"
+  "code/index.html",
+  "code/phonon.js"
  ],
  "下载 CSV（色散、态密度、热学量）": [
   "code/index.html"
@@ -9204,7 +9212,8 @@
  ],
  "完成": [
   "shared-nav.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "分组和按钮已恢复默认顺序": [
   "shared-nav.js"
@@ -9510,7 +9519,8 @@
   "train/train.js",
   "code/code.js",
   "code/cheminf.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "单点能与受力": [
   "api/compute.js",
@@ -13652,7 +13662,8 @@
   "models/models.js"
  ],
  "先粘贴或上传一个 XYZ 结构。": [
-  "models/models.js"
+  "models/models.js",
+  "models/ts-core.js"
  ],
  "XYZ 结构最多 12000 个字符。": [
   "models/models.js"
@@ -13664,7 +13675,8 @@
   "models/models.js"
  ],
  "XYZ 的原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致。": [
-  "models/models.js"
+  "models/models.js",
+  "models/ts-core.js"
  ],
  "不认识的元素符号：{0}": [
   "models/models.js"
@@ -13869,11 +13881,13 @@
  ],
  "等了 20 分钟还没算完，请稍后再试": [
   "models/models.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "计算失败": [
   "models/models.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "第 1 步 · 优化与频率": [
   "models/models.js"
@@ -14068,7 +14082,8 @@
   "models/models.js"
  ],
  "熵 S": [
-  "models/models.js"
+  "models/models.js",
+  "code/phonon.js"
  ],
  "生成 {0} 个构象，去重后 {1} 个；Boltzmann 权重按 {2} K 计算。": [
   "models/models.js"
@@ -14428,6 +14443,57 @@
  ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。": [
   "models/models.js"
+ ],
+ "XYZ 的第一行要是原子数。": [
+  "models/ts-core.js"
+ ],
+ "过渡态计算至少要 2 个原子。": [
+  "models/ts-core.js"
+ ],
+ "过渡态计算最多 {0} 个原子（要算 Hessian 和两个方向的 IRC），这个结构有 {1} 个。": [
+  "models/ts-core.js"
+ ],
+ "反应物：{0}": [
+  "models/ts-core.js"
+ ],
+ "再给出产物的 XYZ（和反应物同样的原子、同样的顺序）。": [
+  "models/ts-core.js"
+ ],
+ "产物：{0}": [
+  "models/ts-core.js"
+ ],
+ "产物有 {0} 个原子，反应物有 {1} 个；两边要一样多。": [
+  "models/ts-core.js"
+ ],
+ "第 {0} 个原子在反应物里是 {1}，在产物里是 {2}：两边的原子要按同样的顺序排。": [
+  "models/ts-core.js"
+ ],
+ "产物和反应物几乎一样，没有可以连起来的反应路径。": [
+  "models/ts-core.js"
+ ],
+ "鞍点搜索没有收敛（{0} 步后最大受力 {1} eV/Å），下面的结构只是最后一步。": [
+  "models/ts-core.js"
+ ],
+ "一个虚频 {0} cm⁻¹：是一阶鞍点（过渡态）。": [
+  "models/ts-core.js"
+ ],
+ "没有明显的虚频：这个结构更像能量极小点，不是过渡态。换一个更靠近过渡态的猜测结构再试。": [
+  "models/ts-core.js"
+ ],
+ "有 {0} 个明显的虚频：这是高阶鞍点，不是过渡态。沿多出来的虚频方向扰动结构后再算一次。": [
+  "models/ts-core.js"
+ ],
+ "左端（s 为负）": [
+  "models/ts-core.js"
+ ],
+ "右端（s 为正）": [
+  "models/ts-core.js"
+ ],
+ "{0}的 IRC 在第 {1} 步停下（{2}），之后直接优化到极小点。": [
+  "models/ts-core.js"
+ ],
+ "{0}的终点没有优化到收敛。": [
+  "models/ts-core.js"
  ],
  "DeepSeek V4.1 Flash-1017 · 快速": [
   "ai/ai.js"
@@ -17017,7 +17083,8 @@
  ],
  "复制失败": [
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。": [
   "code/code.js"
@@ -17765,40 +17832,50 @@
   "code/quacc.js"
  ],
  "正在看站长的电脑在不在线…": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "站长的电脑现在离线，可以先用右边的脚本": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "站长的电脑上还没有装这个引擎": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "用掉今天在线计算次数": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "次": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "前面排队": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "已提交，正在排队…": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "quacc 正在计算": [
   "code/quacc.js"
  ],
  "排队中，前面还有": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "个任务": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "完成（这批以前算过，直接给了存下的结果，没有再算）": [
   "code/quacc.js"
  ],
  "测试用的假数据": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "晶面": [
   "code/quacc.js"
@@ -17831,7 +17908,8 @@
   "code/quacc.js"
  ],
  "点群": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "热化学按理想气体、1 bar 算，对称数和点群由 quacc 从结构判断；自由基的电子熵按 SMILES 的自旋多重度补上。分子不同，G 不能直接相减成反应能，除非原子守恒。GFN2-xTB 是半经验方法，频率和能量适合筛选，不能代替 DFT。": [
   "code/quacc.js"
@@ -17895,6 +17973,225 @@
  ],
  "在线一批最多 {0} 个分子（现在 {1} 个）；多的请用下面的脚本在自己的电脑上跑": [
   "code/quacc-core.js"
+ ],
+ "自己的结构": [
+  "code/phonon.js"
+ ],
+ "POSCAR 或 CIF": [
+  "code/phonon.js"
+ ],
+ "晶胞": [
+  "code/phonon.js"
+ ],
+ "个原子": [
+  "code/phonon.js"
+ ],
+ "超胞": [
+  "code/phonon.js"
+ ],
+ "UMA 要先在 Hugging Face 上同意许可证并登录": [
+  "code/phonon.js"
+ ],
+ "文件太大：结构文字最多": [
+  "code/phonon.js"
+ ],
+ "个字符": [
+  "code/phonon.js"
+ ],
+ "读不了这个文件": [
+  "code/phonon.js"
+ ],
+ "phonopy 正在计算": [
+  "code/phonon.js"
+ ],
+ "完成（这个晶体以前算过，直接给了存下的结果，没有再算）": [
+  "code/phonon.js"
+ ],
+ "画图工具没有载入": [
+  "code/phonon.js"
+ ],
+ "声子色散曲线": [
+  "code/phonon.js"
+ ],
+ "态密度": [
+  "code/phonon.js"
+ ],
+ "定容热容 C_V": [
+  "code/phonon.js"
+ ],
+ "空间群": [
+  "code/phonon.js"
+ ],
+ "优化前": [
+  "code/phonon.js"
+ ],
+ "原胞": [
+  "code/phonon.js"
+ ],
+ "惯用胞": [
+  "code/phonon.js"
+ ],
+ "个位移超胞": [
+  "code/phonon.js"
+ ],
+ "位移": [
+  "code/phonon.js"
+ ],
+ "每摩尔原胞": [
+  "code/phonon.js"
+ ],
+ "零点能": [
+  "code/phonon.js"
+ ],
+ "最高频率": [
+  "code/phonon.js"
+ ],
+ "谐振近似：频率不随温度变，没有热膨胀（要的话用准谐近似，在几个体积上各算一次）。热学量对每摩尔原胞，F 含零点能。力来自所选的模型，不是 DFT；EMT 只适合教学和检查流程。超胞太小时，远处的力常数被截掉，布里渊区边上的频率会偏；加大超胞看看收不收敛。": [
+  "code/phonon.js"
+ ],
+ "铜": [
+  "code/phonon-core.js"
+ ],
+ "铝": [
+  "code/phonon-core.js"
+ ],
+ "银": [
+  "code/phonon-core.js"
+ ],
+ "金": [
+  "code/phonon-core.js"
+ ],
+ "镍": [
+  "code/phonon-core.js"
+ ],
+ "钯": [
+  "code/phonon-core.js"
+ ],
+ "铂": [
+  "code/phonon-core.js"
+ ],
+ "硅": [
+  "code/phonon-core.js"
+ ],
+ "金刚石": [
+  "code/phonon-core.js"
+ ],
+ "氯化钠": [
+  "code/phonon-core.js"
+ ],
+ "氧化镁": [
+  "code/phonon-core.js"
+ ],
+ "面心立方（Fm-3m）": [
+  "code/phonon-core.js"
+ ],
+ "金刚石结构（Fd-3m）": [
+  "code/phonon-core.js"
+ ],
+ "岩盐结构（Fm-3m）": [
+  "code/phonon-core.js"
+ ],
+ "EMT（ASE 自带，CPU）": [
+  "code/phonon-core.js"
+ ],
+ "EMT 是只给七种 fcc 金属（Al、Cu、Ag、Au、Ni、Pd、Pt）拟合的教学用势，几秒就算完；色散的形状对，数值和实验差 5–15 %。": [
+  "code/phonon-core.js"
+ ],
+ "UMA 的无机材料任务（omat，在 OMat24 上训练，PBE/PBE+U 精度），能算大多数元素的晶体；在站长的 GPU 上跑。": [
+  "code/phonon-core.js"
+ ],
+ "上一版 UMA 的 omat 任务，用来对照。": [
+  "code/phonon-core.js"
+ ],
+ "最早的 UMA 的 omat 任务，用来对照。": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 至少要 8 行：注释、缩放、三行晶格矢量、元素、个数、坐标类型": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 2–5 行要是缩放因子和三行晶格矢量": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 6 行要写元素符号（VASP 5 格式），例如 Na Cl": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 7 行要是每种元素的原子数，个数和第 6 行对应": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的坐标类型要写 Direct 或 Cartesian": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 写了 {0} 个原子，但坐标只有 {1} 行": [
+  "code/phonon-core.js"
+ ],
+ "晶格矢量不能共面（体积是零）": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里要有 _cell_length_a/b/c 和 _cell_angle_alpha/beta/gamma": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里没找到原子位置（loop_ 下的 _atom_site_fract_x 等）": [
+  "code/phonon-core.js"
+ ],
+ "超胞每个方向是 1 到 {0} 的整数": [
+  "code/phonon-core.js"
+ ],
+ "先选一个预设晶体": [
+  "code/phonon-core.js"
+ ],
+ "先粘贴一段 POSCAR 或 CIF，或者选一个预设": [
+  "code/phonon-core.js"
+ ],
+ "结构文字最多 {0} 个字符": [
+  "code/phonon-core.js"
+ ],
+ "结构文字只能有普通 ASCII 字符（检查有没有中文标点或全角空格）": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里有 {0} 个不等价位置；按空间群展开、标准化之后才知道晶胞里有几个原子，由站长的电脑数": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里有 {0} 个位置，没写空间群，按 P1 读": [
+  "code/phonon-core.js"
+ ],
+ "按你给的晶胞估算；站长的电脑会先用 spglib 标准化成惯用胞，原胞会变大（面心的原胞 1 个原子变成惯用胞 4 个）": [
+  "code/phonon-core.js"
+ ],
+ "晶胞里有 {0} 个原子，在线计算最多 {1} 个（标准化之后）": [
+  "code/phonon-core.js"
+ ],
+ "超胞有 {0} 个原子，在线计算最多 {1} 个；把超胞调小": [
+  "code/phonon-core.js"
+ ],
+ "没有这个引擎": [
+  "code/phonon-core.js"
+ ],
+ "EMT 只算 {0}，这个晶体里有 {1}；换成 UMA": [
+  "code/phonon-core.js"
+ ],
+ "位移在 {0} 到 {1} Å 之间": [
+  "code/phonon-core.js"
+ ],
+ "网格是 {0} 到 {1} 的整数": [
+  "code/phonon-core.js"
+ ],
+ "最高温度是 {0} 到 {1} K 的整数": [
+  "code/phonon-core.js"
+ ],
+ "有虚频：最低 {0} THz（网格上 {1} 个模式）。可能是这个结构在这个模型下动力学不稳定（会自发畸变），也可能是超胞太小、位移太大或者没有先优化；先试试打开“先优化”、加大超胞。": [
+  "code/phonon-core.js"
+ ],
+ "没有虚频（最低 {0} THz）：这个结构在这个模型下动力学稳定。": [
+  "code/phonon-core.js"
+ ],
+ "Γ 点三个声学支没有落到零（最大 {0} THz），力常数不满足平移不变性；结果要小心看。": [
+  "code/phonon-core.js"
+ ],
+ "优化没有在 {0} 步内收敛（应力 {1} GPa），声子可能出现小的虚频。": [
+  "code/phonon-core.js"
+ ],
+ "没有先优化，完美超胞里还有 {0} eV/Å 的残余受力（已经从位移的受力里减掉），频率会有偏差。": [
+  "code/phonon-core.js"
  ],
  "中文维基": [
   "websearch/web.js"

@@ -104,6 +104,20 @@ test('verdict: first-order saddle, minimum, higher-order saddle, unconverged', (
   assert.match(T.verdict({ ...FAKE, ts_converged: false, irc: null })[0][1], /没有收敛/);
 });
 
+test('the Chinese messages reach English visitors: i18n-extract reads ts-core.js and can key every literal', () => {
+  const extract = readFileSync(new URL('./i18n-extract.ts', import.meta.url), 'utf8');
+  assert.ok(extract.includes('"models/ts-core.js"'), 'tools/i18n-extract.ts lists models/ts-core.js');
+  // i18n-extract splits literals at anything that looks like an HTML tag, so a "<" or ">" in a Chinese string
+  // would cut the key short (左端（s < 0） became 左端（s ) and English pages would keep the Chinese.
+  const src = readFileSync(new URL('../public/models/ts-core.js', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  for (const m of src.matchAll(/'([^'\n]*)'|`([^`]*)`/g)) {
+    const t = m[1] ?? m[2];
+    if (/[\u3400-\u9fff]/.test(t)) assert.ok(!/[<>]/.test(t), `no < or > in a Chinese message: ${t}`);
+  }
+  const v = T.verdict(FAKE).map((x) => x[1]).join(' ');
+  assert.ok(!/[<>]/.test(v), v);
+});
+
 test('modeFrames: one period of the imaginary mode, the largest displacement amp', () => {
   const xyz = T.modeFrames(FAKE.ts_xyz, FAKE.imag_mode, 8, 0.3);
   const frames = xyz.trim().split(/\n(?=3\n)/);

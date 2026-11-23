@@ -90,6 +90,43 @@ test('the trajectory as JSON → a multi-model Cα PDB, bad frames dropped, RMSF
   assert.equal(C.framesToPdb(null), '');
 });
 
+test('B factors of 1000 Å² and more keep their leading digits (fewer decimals, never cut)', () => {
+  const residues = [{ resn: 'MET', chain: 'A', resi: 1 }, { resn: 'GLY', chain: 'A', resi: 2 }, { resn: 'LYS', chain: 'A', resi: 3 }];
+  const frames = [{ t_ps: 0, xyz: [[0, 0, 0], [3.8, 0, 0], [7.6, 0, 0]] }];
+  const rmsf = [0.5, 7, 40]; // B = 6.58, 1289.6, 42106
+  const m = C.parseModels(C.framesToPdb({ residues, frames }, rmsf));
+  const b = m[0].atoms.map((x) => x.b);
+  assert.ok(Math.abs(b[1] - C.rmsfToB(7)) < 0.06, `B for 7 Å is ${b[1]}`);
+  assert.ok(Math.abs(b[2] - C.rmsfToB(40)) < 0.6, `B for 40 Å is ${b[2]}`);
+  assert.deepEqual(m[0].atoms.map((x) => +C.bToRmsf(x.b).toFixed(2)), [0.5, 7, 40]);
+  // the RMSF domain the page shows is the one in the file
+  const r = C.withRmsf(C.framesToPdb({ residues, frames }), rmsf.map((a, i) => ({ chain: 'A', res: `${residues[i].resn}${i + 1}`, a })));
+  const back = C.parseModels(r.pdb)[0].atoms.map((x) => x.b);
+  assert.ok(Math.abs(Math.max(...back) - r.domain[1]) / r.domain[1] < 1e-4);
+  // the columns stay where PDB readers look for them, and coordinates past ±1000 Å lose decimals, not digits
+  for (const line of r.pdb.split('\n').filter((l) => l.startsWith('ATOM'))) assert.equal(line.length, 78);
+  const atom = { het: false, name: 'CA', resn: 'ALA', chain: 'A', resi: 1, x: -1234.5678, y: 12345.678, z: 1e9, occ: 1, b: 1e7, el: 'C' };
+  const back2 = C.parseAtom(C.atomLine(1, atom));
+  assert.equal(back2.x, -1234.57); assert.equal(back2.y, 12345.68); assert.equal(back2.z, 99999999); assert.equal(back2.b, 999999);
+});
+
+test('Mol* viewer: a late open() never wipes a newer viewer, and the models page disposes viewers before redrawing', () => {
+  const js = read('public/viewer/molstar.js');
+  assert.match(js, /const owns = \(\) => el\.contains\(stage\)/);
+  assert.match(js, /const fail = \(e\) => \{ if \(!owns\(\)\) return e;/);
+  assert.match(js, /if \(owns\(\)\) \{ el\.innerHTML = ''/);
+  assert.match(js, /if \(el\.ms === handle\) el\.ms = null/);
+  assert.ok((js.match(/if \(!owns\(\)\)/g) || []).length >= 4, 'checked after every await');
+  assert.match(js, /const gone = \(\) =>/);
+  const models = read('public/models/models.js');
+  assert.match(models, /function dropMolstar\(\) \{ for \(const b of \$\('m-result'\)\.querySelectorAll\('\.md-ms'\)\) b\.ms\?\.destroy\(\); \}/);
+  assert.match(models, /function paint\(\) \{\n    const box = \$\('m-result'\);\n    dropMolstar\(\);/);
+  assert.match(models, /dropMolstar\(\);\n    \$\('m-result'\)\.innerHTML = '';/);
+  // the box is translate="no": its labels come in both languages
+  assert.match(models, /en \? `Cα trajectory of \$\{id\}` : `\$\{id\} 的 Cα 轨迹`/);
+  assert.match(models, /en \? `\$\{id\} \(RCSB PDB\)`/);
+});
+
 test('frame label', () => {
   assert.equal(C.frameLabel(0, 25, 0.8), '第 1 / 25 帧 · 0.8 ps');
   assert.equal(C.frameLabel(4, 5, null), '第 5 / 5 帧');

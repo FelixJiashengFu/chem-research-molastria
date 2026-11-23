@@ -68,19 +68,76 @@
     return m ? { format: m[1], b64: m[2], bytes: b64Bytes(m[2]) } : null;
   }
 
+  // 报错带两种语言：message 是中文，en 是英文（页面整页 translate="no"，i18n.js 不会翻译它）
+  const err = (zh, en, code) => Object.assign(new Error(zh), { en, code });
+
   /** The request body for one job; throws when the images break a limit (the service would refuse them anyway). */
   function body(images) {
-    if (!Array.isArray(images) || !images.length) throw Object.assign(new Error('没有要识别的结构图'), { code: 'none' });
-    if (images.length > LIMITS.maxImages) throw Object.assign(new Error(`一次最多识别 ${LIMITS.maxImages} 个结构`), { code: 'many' });
+    if (!Array.isArray(images) || !images.length) throw err('没有要识别的结构图', 'No structure images to read', 'none');
+    if (images.length > LIMITS.maxImages) throw err(`一次最多识别 ${LIMITS.maxImages} 个结构`, `At most ${LIMITS.maxImages} structures in one job`, 'many');
     let total = 0;
     for (const b of images) {
-      if (typeof b !== 'string' || !/^(?:iVBORw0KGgo|\/9j\/)[A-Za-z0-9+/]*={0,2}$/.test(b) || b.length % 4) throw Object.assign(new Error('结构图只能是 PNG 或 JPEG'), { code: 'format' });
+      if (typeof b !== 'string' || !/^(?:iVBORw0KGgo|\/9j\/)[A-Za-z0-9+/]*={0,2}$/.test(b) || b.length % 4) throw err('结构图只能是 PNG 或 JPEG', 'Structure images must be PNG or JPEG', 'format');
       const n = b64Bytes(b);
-      if (n > LIMITS.maxBytes) throw Object.assign(new Error(`一张结构图最多 ${LIMITS.maxBytes} 字节`), { code: 'big' });
+      if (n > LIMITS.maxBytes) throw err(`一张结构图最多 ${LIMITS.maxBytes} 字节`, `A structure image may be at most ${LIMITS.maxBytes} bytes`, 'big');
       total += n;
     }
-    if (total > LIMITS.maxTotal) throw Object.assign(new Error(`一次的结构图合起来最多 ${LIMITS.maxTotal} 字节`), { code: 'total' });
+    if (total > LIMITS.maxTotal) throw err(`一次的结构图合起来最多 ${LIMITS.maxTotal} 字节`, `The structure images of one job may be at most ${LIMITS.maxTotal} bytes together`, 'total');
     return { model: MODEL, job: JOB, params: { images } };
+  }
+
+  /**
+   * The English line for an error of the account service's /uma/* on the site path, which sends only the Chinese
+   * message (only /v1 adds English). Known messages of deploy/account-worker.js are matched; anything else falls back
+   * on the HTTP status, with the Chinese text kept in brackets so nothing is lost.
+   */
+  function errorEn(status, zh) {
+    const t = String(zh || '');
+    const more = (s) => s.includes('Pro 支持者') ? '; Pro supporters get more' : s.includes('登录免费账号') ? '; sign in to a free account for more' : '';
+    let m;
+    if ((m = /^今天还剩 (\d+) 次，这项计算要用 (\d+) 次（每天 (\d+) 次([^）]*)）/.exec(t)))
+      return `${m[1]} uses left today and this calculation needs ${m[2]} (${m[3]} a day${more(m[4])}); choose a cheaper calculation or come back tomorrow`;
+    if ((m = /次数已用完（每天 (\d+) 次([^）]*)）/.exec(t))) return `Today's ${t.includes('MACE') ? 'MACE' : 'online model'} uses are used up (${m[1]} a day${more(m[2])}); come back tomorrow`;
+    if (t.includes('GPU 现在离线')) return "The site owner's GPU is offline right now, try again later";
+    if (t.includes('已经有一个任务在排队或计算')) return 'You already have a job queued or running; wait for it to finish before submitting the next one';
+    if ((m = /^计算服务：([\s\S]*)$/.exec(t))) return `Calculation service: ${m[1]}`;
+    if (t.includes('计算服务暂时不可用')) return 'The calculation service is not available right now';
+    if (t.includes('请求内容过大')) return 'Request too large';
+    if (t.includes('查询太频繁') || t.includes('请求太频繁')) return 'Too many requests, try again later';
+    if (t.includes('没有找到这个任务')) return 'No such job (finished jobs are kept for an hour)';
+    if (t.includes('账号服务出错')) return 'The account service had an error, try again later';
+    if (t && !/[\u4e00-\u9fff]/.test(t)) return t; // already English (e.g. "HTTP 502")
+    const base = status === 429 ? 'Too many requests or today\'s uses are used up'
+      : status === 503 ? "The site owner's computer is not available right now"
+      : status === 413 ? 'Request too large'
+      : status === 401 || status === 403 ? 'The account service refused the request; sign in again'
+      : `The account service refused the request (HTTP ${status || '?'})`;
+    return t ? `${base} (${t})` : base;
+  }
+
+  /**
+   * Pick the crops of one job within the size limits. crop(target, maxBytes, side) gives the bare base64 of that
+   * target's crop no larger than maxBytes with its longest side at most side, or null. A crop that does not fit what
+   * is left of maxTotal is tried again smaller (half the side) before it is dropped; every drop is counted, so the
+   * page can say how many boxed structures were not checked. Returns {sent, images, dropped}.
+   */
+  function pack(list, crop) {
+    const sent = [], images = [];
+    let total = 0, dropped = 0;
+    for (const t of list) {
+      const room = Math.min(LIMITS.maxBytes, LIMITS.maxTotal - total);
+      let b64 = null;
+      for (const side of [CROP_SIDE, CROP_SIDE / 2, CROP_SIDE / 4]) {
+        if (room < 1) break;
+        b64 = crop(t, room, side);
+        if (b64 && b64Bytes(b64) <= room) break;
+        b64 = null;
+      }
+      if (!b64) { dropped++; continue; }
+      total += b64Bytes(b64);
+      sent.push(t); images.push(b64);
+    }
+    return { sent, images, dropped };
   }
   const cost = (n) => n * COST;
 
@@ -173,6 +230,6 @@
   };
   const sourceText = (s, en) => (SOURCE[s] ? SOURCE[s][en ? 1 : 0] : '');
 
-  const API = { MODEL, JOB, LIMITS, COST, CROP_SIDE, HIGH, MID, normBox, padBox, toPixels, fitSize, b64Bytes, fromDataUrl, body, cost, targets, decide, apply, swap, tally, SOURCE, sourceText };
+  const API = { MODEL, JOB, LIMITS, COST, CROP_SIDE, HIGH, MID, normBox, padBox, toPixels, fitSize, b64Bytes, fromDataUrl, body, errorEn, pack, cost, targets, decide, apply, swap, tally, SOURCE, sourceText };
   root.MolAstriaOCSR = API;
 })(typeof window !== 'undefined' ? window : globalThis);

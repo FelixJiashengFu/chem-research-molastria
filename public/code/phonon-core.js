@@ -169,6 +169,16 @@
     return { job: 'phon', model: ENGINE[s.engine].model, params };
   }
 
+  /** 站长电脑上这个引擎的状态（/uma/health 的回答）：checking 还没问到、offline 离线、missing 没装（模型没准备好，或者
+      phonopy / spglib / seekpath 没装，这时 server.py 给的 jobs 里没有 phon）、ready 可以交 */
+  function lane(health, model) {
+    if (health == null) return 'checking';
+    if (!health.online) return 'offline';
+    const h = health.models?.[model];
+    if (h && (!h.ready || (Array.isArray(h.jobs) && !h.jobs.includes('phon')))) return 'missing';
+    return 'ready';
+  }
+
   // ── 结果 ──
   /** 色散曲线：每一段、每一支一条线（段与段之间断开），刻度是高对称点 */
   function band(r, unit = 'thz') {
@@ -201,10 +211,13 @@
     t.T.forEach((v, i) => { if (Math.abs(v - T) < Math.abs(t.T[k] - T)) k = i; });
     return { T: t.T[k], Cv: t.Cv[k], S: t.S[k], F: t.F[k] };
   }
+  /** Γ 点的三个声学支（绝对值最小的三个频率，THz）；平移不变时都约等于零 */
+  const acousticGamma = (r) => (r?.gamma_thz || []).map((x) => Math.abs(Number(x))).filter(Number.isFinite).sort((a, b) => a - b).slice(0, 3);
   /** 结论：有没有虚频、Γ 点的声学支、超胞够不够 */
   function verdict(r) {
     const out = [];
-    const g = (r.gamma_thz || []).map(Math.abs);
+    // gamma_thz 是 Γ 点全部 3N 个频率；只有最低的三个是声学支，其余是光学支（硅、NaCl 的光学支在 Γ 点有 5–40 THz）
+    const g = acousticGamma(r);
     if (r.imaginary) out.push(['warn', `有虚频：最低 ${r.min_frequency_thz.toFixed(2)} THz（网格上 ${r.n_imaginary_mesh} 个模式）。可能是这个结构在这个模型下动力学不稳定（会自发畸变），也可能是超胞太小、位移太大或者没有先优化；先试试打开“先优化”、加大超胞。`]);
     else out.push(['ok', `没有虚频（最低 ${r.min_frequency_thz.toFixed(3)} THz）：这个结构在这个模型下动力学稳定。`]);
     if (g.length && Math.max(...g) > 0.05) out.push(['warn', `Γ 点三个声学支没有落到零（最大 ${Math.max(...g).toFixed(3)} THz），力常数不满足平移不变性；结果要小心看。`]);
@@ -245,7 +258,17 @@
     if (s.source === 'preset') L.push(`atoms = bulk(${JSON.stringify(p.id)}, ${JSON.stringify(PY_KIND[p.kind])}, a=${p.a}, cubic=True)  # ${p.kind}, experimental a`);
     else L.push(`STRUCTURE = ${JSON.stringify(String(s.structure || '').replace(/\r/g, ''))}`, `atoms = read(io.StringIO(STRUCTURE), format=${JSON.stringify(s.format === 'cif' ? 'cif' : 'vasp')})`);
     L.push('');
-    if (uma) L.push('from fairchem.core import FAIRChemCalculator, pretrained_mlip', '', `calc = FAIRChemCalculator(pretrained_mlip.get_predict_unit(${JSON.stringify(e.model)}, device="cuda"), task_name="omat")  # device="cpu" without a GPU`);
+    if (uma) L.push('from fairchem.core import FAIRChemCalculator, pretrained_mlip', '', '',
+      'def uma_settings():',
+      '    """fairchem\'s default settings compile the model with torch.compile, which needs Triton. Windows has no Triton,',
+      '    so there UMA runs the full-precision path without compilation ("batch"), slower but exact."""',
+      '    try:',
+      '        import triton  # noqa: F401',
+      '        return "default"',
+      '    except ImportError:',
+      '        return "batch"',
+      '', '',
+      `calc = FAIRChemCalculator(pretrained_mlip.get_predict_unit(${JSON.stringify(e.model)}, device="cuda", inference_settings=uma_settings()), task_name="omat")  # device="cpu" without a GPU`);
     else L.push('from ase.calculators.emt import EMT', '', 'calc = EMT()');
     L.push('', '',
       'def standard_cell(a):',
@@ -293,6 +316,6 @@
   };
 
   const api = { LIMITS, COST, IMAG_THZ, EMT_METALS, PRESETS, PRESET, KIND, ENGINES, ENGINE, UNITS, SAMPLES,
-    toUnit, parsePoscar, parseCif, guessFormat, estimate, engineProblem, body, band, dos, trapz, thermal, at, verdict, csv, script };
+    toUnit, parsePoscar, parseCif, guessFormat, estimate, engineProblem, body, lane, band, dos, trapz, thermal, at, acousticGamma, verdict, csv, script };
   root.MolAstriaPhonon = api;
 })(typeof window !== 'undefined' ? window : globalThis);

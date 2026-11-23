@@ -54,7 +54,7 @@
   const massOf = (el) => MASS[el] ?? MASS_AVG[el] ?? 0;
 
   /** 点群 → 转动对称数 σ（纯转动子群的阶）。认 C2v、D3h、D∞h、Dinfh、D*H 这些写法；认不出返回 null。
-      注意：GoodVibes 的表里 S4、S6、S8、O、I 五个是错的（写成 4、6、8、12、30），这里用正确的 2、3、4、24、60。 */
+      注意：GoodVibes 的表里 S4、S6、S8、T、O、I 六个是错的（写成 4、6、8、6、12、30），这里用正确的 2、3、4、12、24、60。 */
   function symmetryNumber(pg) {
     const s = String(pg || '').trim().replace(/[∞*]|inf/gi, '∞').replace(/[₀-₉]/g, (d) => String('₀₁₂₃₄₅₆₇₈₉'.indexOf(d))).replace(/ᵥ/g, 'v').replace(/ₕ/g, 'h').replace(/ₛ/g, 's').replace(/ᵢ/g, 'i');
     const u = s.toUpperCase();
@@ -221,7 +221,7 @@
       });
       SvH = sH.reduce((a, b) => a + b, 0);
     }
-    const E = Number(mol.energy);
+    const E = mol.energy == null || mol.energy === '' ? NaN : Number(mol.energy); // Number(null) 是 0，不能当成读到了电子能
     const hasE = Number.isFinite(E);
     const corrH = (Ut + Ur + Uv + R * T) / J_TO_AU;
     const corrQH = o.qh ? (Ut + Ur + UvQ + R * T) / J_TO_AU : corrH;
@@ -311,7 +311,11 @@
     return mol;
   }
 
-  const pure = { R, J_TO_AU, KCAL, GRIMME_BAV, HC_OVER_KB, MASS, massOf, symmetryNumber, eig3, rotor, gasConc, concCorrection, compute, fromOutput, molOf, DEFAULTS,
+  /** 这份输出够不够算热化学：要有频率，还要有结构或程序印的总质量（只有频率的摘录算不了平动和转动）。 */
+  // 要么有结构，要么程序印了质量和转动常数（只有质量没有转动常数时转动熵算不出来）
+  const usable = (info) => !!(info && info.freqs && info.freqs.length && ((info.atoms || []).length || (info.mass > 0 && Array.isArray(info.rotTemps) && info.rotTemps.length > 0 && info.rotTemps.every((x) => x > 0))));
+
+  const pure = { R, J_TO_AU, KCAL, GRIMME_BAV, HC_OVER_KB, MASS, massOf, symmetryNumber, eig3, rotor, gasConc, concCorrection, compute, fromOutput, molOf, usable, DEFAULTS,
     terms: { uTrans, uRot, uVib, zpe, sTrans, sElec, sRot, sRRHO, sFreeRot, damp, uQRRHO, bavOf } };
   if (typeof module === 'object' && module.exports) module.exports = pure;
   else root.MolAstriaThermo = pure;

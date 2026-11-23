@@ -1,6 +1,6 @@
 # Starts the MolAstria online models when you sign in to Windows, and keeps them running (start.ps1 -KeepAlive).
 # It puts one shortcut in your own Startup folder: no administrator rights, no scheduled task, no Windows service.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\Scripts\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Status
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Remove
 # The models start after you sign in, not when the computer is switched on: the GPU and the tunnel's login belong

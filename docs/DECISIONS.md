@@ -32,7 +32,7 @@
 
 ## 2026-11-22 热化学：照 GoodVibes（MIT）逐式移植成 JavaScript
 
-- 没有在浏览器里跑 Python 版。数字全部对齐 GoodVibes 4.4.0（常数沿用它的旧 CODATA 值），只有两处故意不同：点群到对称数的表用正确值（GoodVibes 把 S4、S6、S8、O、I 写成 4、6、8、12、30，正确的是 2、3、4、24、60）；程序没打印对称数时用站内 gt-models.js 判点群（GoodVibes 要装 pymsym）。
+- 没有在浏览器里跑 Python 版。数字全部对齐 GoodVibes 4.4.0（常数沿用它的旧 CODATA 值），只有两处故意不同：点群到对称数的表用正确值（GoodVibes 把 S4、S6、S8、T、O、I 写成 4、6、8、6、12、30，正确的是 2、3、4、12、24、60）；程序没打印对称数时用站内 gt-models.js 判点群（GoodVibes 要装 pymsym）。
 - Truhlar 抬高低频照 GoodVibes 的做法只作用在熵上，焓和 ZPE 不动。
 - `thermo-core.js` 文件头保留 GoodVibes 的 MIT 版权声明，旁边有 THIRD-PARTY-goodvibes.md。GoodVibes 的 Python 代码只在测试机上 import，用来出参考数字（`tools/thermo-goodvibes.py`），不进 `public/`。
 

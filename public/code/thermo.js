@@ -1,5 +1,5 @@
 /* 热化学面板：代码台“输出解读”和计算工作台“光谱与输出”读到频率输出后，在下面算 ZPE、H、T·S、G。数学在 thermo-core.js（GoodVibes 的移植）。
-   用法：MolAstriaThermoUI.mount(容器, 输出全文, MolAstriaCode.parseOutput 的结果)。没有频率就什么也不画、返回 false。
+   用法：MolAstriaThermoUI.mount(容器, 输出全文, MolAstriaCode.parseOutput 的结果)。没有频率、或没有结构和质量，就什么也不画、返回 false。
    输出里没印转动对称数时，按结构判点群（按需载入 ../group-theory/gt-models.js 的 analyseXYZ）。
    文字自带中英两版，标 translate="no"。选项存 localStorage 的 molastria-thermo。 */
 (() => {
@@ -33,6 +33,8 @@
   function mount(el, text, parsed) {
     if (!parsed || !parsed.freqs || !parsed.freqs.length) { el.replaceChildren(); return false; }
     const info = TH.fromOutput(text, parsed);
+    // 只有频率、没有结构和质量（多是摘录）：平动和转动没法算，整块不画，免得只剩一排控件和一行报错
+    if (!TH.usable(info)) { el.replaceChildren(); return false; }
     const p = readPrefs();
     const id = `th${++uid}`;
     const st = {
@@ -96,9 +98,11 @@
         [`G(${st.T} K)`, r.G, r.qhG, r.corr.G, L('吉布斯自由能', 'Gibbs free energy')],
       ];
       const head = `<tr><th></th><th>RRHO / Eh</th><th>${esc(qsName)}${st.qh ? ' + qh-H' : ''} / Eh</th><th>${L('校正', 'Correction')} / kcal mol⁻¹</th></tr>`;
-      const body = rows.map(([name, a, b, c, note]) => `<tr><th scope="row">${esc(name)}<small>${esc(note || '')}</small></th><td class="th-num">${hasE || name === 'ZPE' || name === 'T·S' ? fmt(a) : '—'}</td><td class="th-num">${b === null ? '' : fmt(b)}</td><td class="th-num">${c === null ? '' : fmt(c * kc, 2)}</td></tr>`).join('');
+      const body = rows.map(([name, a, b, c, note]) => `<tr><th scope="row">${esc(name)}<small>${esc(note || '')}</small></th><td class="th-num">${hasE || name === 'ZPE' || name === 'T·S' ? fmt(a) : '—'}</td><td class="th-num">${b === null ? '' : hasE || name === 'T·S' ? fmt(b) : '—'}</td><td class="th-num">${c === null ? '' : fmt(c * kc, 2)}</td></tr>`).join('');
       const qhCorr = r.corr.qhG * kc;
-      const stdNote = st.std === '1atm' ? L(`换成 1 mol/L 标准态，G 加 ${fmt(TH.concCorrection(st.T, 1) * kc, 2)} kcal/mol`, `To 1 mol/L, add ${fmt(TH.concCorrection(st.T, 1) * kc, 2)} kcal/mol to G`) : L(`已按 ${opts.conc} mol/L 算（比 1 atm 高 ${fmt(TH.concCorrection(st.T, opts.conc) * kc, 2)} kcal/mol）`, `Computed at ${opts.conc} mol/L (${fmt(TH.concCorrection(st.T, opts.conc) * kc, 2)} kcal/mol above 1 atm)`);
+      const shift = TH.concCorrection(st.T, st.std === '1atm' ? 1 : opts.conc) * kc;
+      const up = shift >= 0, mag = fmt(Math.abs(shift), 2);
+      const stdNote = st.std === '1atm' ? L(`换成 1 mol/L 标准态，G ${up ? '加' : '减'} ${mag} kcal/mol`, `To 1 mol/L, ${up ? 'add' : 'subtract'} ${mag} kcal/mol ${up ? 'to' : 'from'} G`) : L(`已按 ${opts.conc} mol/L 算（G 比 1 atm ${up ? '高' : '低'} ${mag} kcal/mol）`, `Computed at ${opts.conc} mol/L (G is ${mag} kcal/mol ${up ? 'above' : 'below'} 1 atm)`);
       const facts = [
         r.monatomic ? L('单原子', 'single atom') : r.linear ? L('直线形分子', 'linear molecule') : L('非直线形', 'non-linear'),
         L(`质量 ${fmt(r.mass, 4)} amu`, `mass ${fmt(r.mass, 4)} amu`),
@@ -134,7 +138,10 @@
       const act = e.target.closest('button') && e.target.closest('button').dataset.act;
       if (!act || !last) return;
       const r = last, kc = TH.KCAL;
-      const lines = [['quantity', 'RRHO_Eh', 'quasi_Eh'], ['E', r.energy, r.energy], ['ZPE', r.zpe, r.zpe], ['H', r.H, r.qhH], ['T*S', r.TS, r.qhTS], ['G', r.G, r.qhG], ['G-E_kcal_mol', r.corr.G * kc, r.corr.qhG * kc]];
+      // 没读到电子能时 r.H、r.G 只是校正量：E、H、G 留空，另给 H−E、G−E（Eh），免得被当成绝对能量
+      const hasE = r.energy !== null, abs = (v) => (hasE ? v : null);
+      const lines = [['quantity', 'RRHO_Eh', 'quasi_Eh'], ['E', r.energy, r.energy], ['ZPE', r.zpe, r.zpe], ['H', abs(r.H), abs(r.qhH)], ['T*S', r.TS, r.qhTS], ['G', abs(r.G), abs(r.qhG)],
+        ['H-E', r.corr.H, r.corr.qhH], ['G-E', r.corr.G, r.corr.qhG], ['G-E_kcal_mol', r.corr.G * kc, r.corr.qhG * kc]];
       const meta = `# T=${r.T} K; ${r.standard === '1atm' ? 'standard state 1 atm' : `c=${r.conc} mol/L`}; entropy=${st.qs}${st.qs !== 'rrho' ? ` cutoff=${st.sCutoff}` : ''}; qh-H=${st.qh ? st.hCutoff : 'off'}; scale=${st.scale}; sigma=${r.sigma}; mult=${r.mult}; method after GoodVibes (MIT)`;
       const csv = [meta, ...lines.map((row) => row.map((v) => (typeof v === 'number' ? v.toFixed(8) : v ?? '')).join(','))].join('\n') + '\n';
       if (act === 'csv') download(`${info.program || 'output'}-thermo.csv`, csv, 'text/csv');

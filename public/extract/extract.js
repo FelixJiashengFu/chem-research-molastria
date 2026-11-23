@@ -176,9 +176,16 @@
     const t = token();
     const res = await fetch(api() + path, { ...init, headers: { 'Content-Type': 'application/json', ...(t ? { Authorization: `Bearer ${t}` } : {}) } });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw Object.assign(new Error(data.error?.message || data.error || `HTTP ${res.status}`), { status: res.status });
+    if (!res.ok) {
+      // the site path of the account service answers in Chinese only (data.error); the English line is made here
+      const zh = String(data.error?.message_zh || data.error?.message || data.error || `HTTP ${res.status}`);
+      const enMsg = data.error?.message_zh ? data.error.message : O ? O.errorEn(res.status, zh) : zh;
+      throw Object.assign(new Error(zh), { status: res.status, en: enMsg });
+    }
     return data;
   }
+  /** An error's text in the page language: errors from umaCall and ocsr-core carry an English line in e.en. */
+  const errText = (e) => (en && e?.en ? e.en : e?.message || String(e));
   const laneReady = () => !!(O && ocsr.health?.online && ocsr.health.models?.[O.MODEL]?.ready);
   function paintOcsr() {
     const line = $('ex-ocsr-state'), one = $('ex-ocsr-one');
@@ -200,8 +207,8 @@
   window.addEventListener('load', refreshOcsr);
 
   /** One region of the full-resolution source as bare base64 PNG (JPEG when the PNG is over the size limit). */
-  function cropB64(rect) {
-    const fit = O.fitSize(rect.sw, rect.sh);
+  function cropB64(rect, maxBytes = O.LIMITS.maxBytes, side = O.CROP_SIDE) {
+    const fit = O.fitSize(rect.sw, rect.sh, side);
     if (!fit) return null;
     const c = document.createElement('canvas');
     c.width = fit.w; c.height = fit.h;
@@ -210,7 +217,7 @@
     g.drawImage(state.src, rect.sx, rect.sy, rect.sw, rect.sh, 0, 0, c.width, c.height);
     for (const [type, q] of [['image/png'], ['image/jpeg', 0.92], ['image/jpeg', 0.8], ['image/jpeg', 0.6]]) {
       const d = O.fromDataUrl(c.toDataURL(type, q));
-      if (d && d.bytes <= O.LIMITS.maxBytes) return d.b64;
+      if (d && d.bytes <= maxBytes) return d.b64;
     }
     return null;
   }
@@ -238,15 +245,11 @@
   async function structureStep(result, signal) {
     const { targets, skipped } = O.targets(result);
     if (!targets.length) { result.notes.push({ zh: 'MolNexTR 没有用上：模型没给出结构的位置。', en: 'MolNexTR was not used: the model gave no positions for the structures.' }); return; }
-    const sent = [], images = [];
-    for (const t of targets) {
-      const b64 = cropB64(O.toPixels(O.padBox(O.normBox(t.box)), state.crop, state.src.width, state.src.height));
-      if (!b64) continue;
-      const bytes = O.b64Bytes(b64);
-      if (images.reduce((n, x) => n + O.b64Bytes(x), 0) + bytes > O.LIMITS.maxTotal) break;
-      sent.push(t); images.push(b64);
-    }
-    if (!images.length) return;
+    // crops that do not fit what is left of one job's size limit are tried again smaller; the rest are counted
+    const { sent, images, dropped } = O.pack(targets, (t, maxBytes, side) => cropB64(O.toPixels(O.padBox(O.normBox(t.box)), state.crop, state.src.width, state.src.height), maxBytes, side));
+    const leftZh = [skipped ? `另有 ${skipped} 个超出一次的上限` : '', dropped ? `${dropped} 个裁不出来或超出一次的大小上限` : ''].filter(Boolean).join('，');
+    const leftEn = [skipped ? `${skipped} more were over one job’s limit` : '', dropped ? `${dropped} could not be cropped or did not fit one job’s size limit` : ''].filter(Boolean).join('; ');
+    if (!images.length) { result.notes.push({ zh: `MolNexTR 没有用上：${leftZh}，没送。结构用的是视觉模型的答案。`, en: `MolNexTR was not used: ${leftEn}, so nothing was sent. The structures are the vision model’s.` }); return; }
     status(L(`正在把 ${images.length} 个结构交给 MolNexTR…`, `Sending ${images.length} structures to MolNexTR…`));
     await rdkit();
     const got = await recognise(images, signal, status);
@@ -255,8 +258,8 @@
     for (const rx of result.reactions) for (const m of [...rx.reactants, ...rx.products]) if (!m.source) m.source = rx.source === 'rtable' && rx.kind === 'variant' ? 'rule' : m.from ? 'pubchem' : 'vision';
     for (const m of result.molecules) if (!m.source) m.source = m.from ? 'pubchem' : 'vision';
     const n = O.tally(sent.map((t) => t.mols[0])); // per structure sent, not per copy in the table
-    result.notes.push({ zh: `MolNexTR 识别了 ${images.length} 个结构${skipped ? `（另有 ${skipped} 个超出一次的上限，没送）` : ''}：两者一致 ${n.both} 个，用 MolNexTR 的 ${n.molnextr} 个，保留视觉模型的 ${n.vision} 个${n.disagree ? `，其中 ${n.disagree} 个两边不一样，表里标出来了` : ''}。${got.fake ? '（测试用的假结果）' : ''}`,
-      en: `MolNexTR read ${images.length} structures${skipped ? ` (${skipped} more were over one job’s limit and not sent)` : ''}: ${n.both} agree, ${n.molnextr} use MolNexTR, ${n.vision} keep the vision model’s answer${n.disagree ? `; ${n.disagree} differ and are flagged in the table` : ''}.${got.fake ? ' (fake test results)' : ''}` });
+    result.notes.push({ zh: `MolNexTR 识别了 ${images.length} 个结构${leftZh ? `（${leftZh}，没送）` : ''}：两者一致 ${n.both} 个，用 MolNexTR 的 ${n.molnextr} 个，保留视觉模型的 ${n.vision} 个${n.disagree ? `，其中 ${n.disagree} 个两边不一样，表里标出来了` : ''}。${got.fake ? '（测试用的假结果）' : ''}`,
+      en: `MolNexTR read ${images.length} structures${leftEn ? ` (${leftEn}; not sent)` : ''}: ${n.both} agree, ${n.molnextr} use MolNexTR, ${n.vision} keep the vision model’s answer${n.disagree ? `; ${n.disagree} differ and are flagged in the table` : ''}.${got.fake ? ' (fake test results)' : ''}` });
   }
 
   // ── 读图 ────────────────────────────────────────────────────────────────
@@ -515,7 +518,7 @@
       if (useOcsr) {
         try { await structureStep(result, signal); } catch (e) {
           if (e.name === 'AbortError') throw e;
-          result.notes.push({ zh: `MolNexTR 这一步没成：${e.message}。结构用的是视觉模型的答案。`, en: `The MolNexTR step failed: ${e.message}. The structures are the vision model’s.` });
+          result.notes.push({ zh: `MolNexTR 这一步没成：${e.message}。结构用的是视觉模型的答案。`, en: `The MolNexTR step failed: ${e.en || e.message}. The structures are the vision model’s.` });
         }
       }
       step('merge', { status: 'done', ms: performance.now() - t0, reply: X.toJSON(result), note: [L(`${result.reactions.length} 条反应，${result.molecules.length} 个单独的分子。`, `${result.reactions.length} reactions, ${result.molecules.length} standalone molecules.`), ...result.notes.map((n) => L(n.zh, n.en))].join(' ') });
@@ -570,7 +573,7 @@
       status(L(`MolNexTR 读出 ${it.canonical || it.smiles}（${it.formula || ''}，置信度 ${it.confidence != null ? it.confidence.toFixed(2) : '—'}）。加到了“单独的分子”里。${got.fake ? '（测试用的假结果）' : ''}`,
         `MolNexTR read ${it.canonical || it.smiles} (${it.formula || ''}, confidence ${it.confidence != null ? it.confidence.toFixed(2) : '—'}); added to the standalone molecules.${got.fake ? ' (fake test result)' : ''}`));
       window.MolAstriaActivity?.('practice');
-    } catch (e) { status(e.message || String(e), true); } finally { ocsr.busy = false; paintOcsr(); refreshOcsr(); }
+    } catch (e) { status(errText(e), true); } finally { ocsr.busy = false; paintOcsr(); refreshOcsr(); }
   });
   $('ex-verify').addEventListener('change', (e) => { opts.verify = e.target.checked; saveOpts(); if (!state.running) { state.steps.verify = { status: opts.verify ? 'wait' : 'off' }; paintSteps(); } });
 

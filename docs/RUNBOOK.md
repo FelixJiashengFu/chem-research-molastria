@@ -275,7 +275,7 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 ## 化学机器学习的结构–性质图（Chemiscope）
 
-不需要站长在电脑上装东西，也不需要部署 Worker。要重算数据时（例如加母核或取代基）：在任何有 Python 的机器上 `pip install rdkit tblite ase numpy`，然后 `python3 tools/chemml-map/build.py`（4 核约 10 分钟，写 `tools/chemml-map/molecules.json`），再 `node tools/chemml-map.mjs` 生成 `public/chem-ml/cml-map-data.js`，最后 `node --test tools/chemml-map-test.mjs`（分子个数 284 写在测试里，改了枚举要一起改）。升级 Chemiscope：改 `public/chem-ml/cml-scope.js` 的 VERSION，同时 `npm install --save-dev --save-exact chemiscope@新版本 --prefix tools/e2e`（测试核对两边一致）。Mol*（`public/viewer/molstar.js`）升级同理：改 VERSION，再按同样的写法改 `tools/e2e` 的 devDependency，跑 `node --test tools/molstar-test.mjs`。
+不需要站长在电脑上装东西，也不需要部署 Worker。要重算数据时（例如加母核或取代基）：在任何有 Python 的机器上 `pip install rdkit tblite ase numpy`，然后 `python3 tools/chemml-map/build.py`（4 核约 10 分钟，写 `tools/chemml-map/molecules.json`），再 `node tools/chemml-map.mjs` 生成 `public/chem-ml/cml-map-data.js`，最后 `node --test tools/chemml-map-test.mjs`（分子个数 284 写在测试里，改了枚举要一起改）。升级 Chemiscope：改 `public/chem-ml/cml-scope.js` 的 VERSION，同时 `npm install --save-dev --save-exact chemiscope@新版本 --prefix tools/e2e`（测试核对两边一致）。Mol* 升级同理：改 `public/viewer/molstar-core.js` 的 VERSION（`molstar.js` 只读它），再按同样的写法改 `tools/e2e` 的 devDependency，跑 `node --test tools/molstar-test.mjs`。
 
 ## 开放数据接口（/api/）
 

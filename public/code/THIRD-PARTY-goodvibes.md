@@ -4,7 +4,7 @@
 `goodvibes/thermo.py` 的各项贡献（平动、转动、振动、电子，Grimme 准 RRHO 熵、Truhlar 抬高低频、Head-Gordon 准谐焓、Bav）和
 `goodvibes/io.py` 里由结构算转动惯量的做法与原子质量表。对照的是 GoodVibes 4.4.0（PyPI）。和它不同的地方：
 
-- 点群到转动对称数的表用正确的值（S4、S6、S8、O、I 分别是 2、3、4、24、60），GoodVibes 的表里这五个写的是 4、6、8、12、30；
+- 点群到转动对称数的表用正确的值（S4、S6、S8、T、O、I 分别是 2、3、4、12、24、60），GoodVibes 4.4.0 的表（`goodvibes/thermo.py` 的 `pg_sm`）里这六个写的是 4、6、8、6、12、30；
 - 读不到对称数时按结构判点群（站内群论栏目的 `group-theory/gt-models.js`），GoodVibes 要装 pymsym 才判；
 - 直线形分子按转动惯量认（最小的转动惯量接近 0）；
 - 不做 GoodVibes 的单点能校正（`--spc`）、ONIOM、溶剂自由体积（`--freespace`）、构象 Boltzmann 和势能面汇总。

@@ -104,12 +104,18 @@
       + `<button type="button" class="text-button ms-spin" aria-pressed="false">${T('自动旋转', 'Spin')}</button><button type="button" class="text-button ms-reset">${T('复位', 'Reset view')}</button><button type="button" class="text-button ms-png">${T('保存图片', 'Save image')}</button></div>`
       + '<p class="ms-legend muted small" hidden></p><p class="ms-info muted small"></p>';
     const stage = el.querySelector('.ms-canvas'), state = el.querySelector('.ms-state'), info = el.querySelector('.ms-info'), legend = el.querySelector('.ms-legend');
+    const bar = el.querySelector('.ms-bar');
+    delete el.dataset.failed;
+    // 同一个框可能先后开好几次（或者换成了 3Dmol）：这次打开只在自己的节点还在框里时才算数，晚到的那次不碰框里别人的东西
+    const owns = () => el.contains(stage);
+    const superseded = () => Object.assign(new Error('superseded'), { superseded: true });
     const say = (t) => { state.textContent = t; };
-    const fail = (e) => { state.textContent = e.message; state.dataset.bad = 'true'; el.dataset.failed = 'true'; el.querySelector('.ms-bar').hidden = true; return e; };
+    const fail = (e) => { if (!owns()) return e; state.textContent = e.message; state.dataset.bad = 'true'; el.dataset.failed = 'true'; bar.hidden = true; return e; };
 
     if (!webgl()) throw fail(new Error(T('这个浏览器没有 WebGL，Mol* 画不出来。可以下载 .pdb 用本机软件打开。', 'This browser has no WebGL, so Mol* cannot draw. You can download the .pdb and open it in a program on your computer.')));
     let src, ms;
     try { [ms, src] = await Promise.all([load(), source(opts, say)]); } catch (e) { throw fail(e); }
+    if (!owns()) throw superseded();
     say(T('正在搭建结构…', 'Building the structure…'));
 
     let viewer;
@@ -119,11 +125,12 @@
         viewportShowExpand: false, viewportShowControls: false, viewportShowSettings: false, viewportShowSelectionMode: false, viewportShowAnimation: false, viewportShowTrajectoryControls: false,
         pdbProvider: 'rcsb', emdbProvider: 'rcsb',
       });
-      await viewer.loadStructureFromData(src.data, src.format, { dataLabel: opts.name || opts.label || 'structure' });
+      if (owns()) await viewer.loadStructureFromData(src.data, src.format, { dataLabel: opts.name || opts.label || 'structure' });
     } catch (e) {
       try { viewer?.dispose(); } catch { /* 已经坏了 */ }
       throw fail(new Error(`${T('Mol* 没能显示这个结构：', 'Mol* could not show this structure: ')}${e?.message || e}`));
     }
+    if (!owns()) { try { viewer.dispose(); } catch { /* gone */ } throw superseded(); }
     state.remove();
     const plugin = viewer.plugin;
     const setBg = () => { try { plugin.canvas3d?.setProps({ renderer: { backgroundColor: BG() } }); } catch { /* 画布还没好 */ } };
@@ -166,6 +173,7 @@
       showLegend();
     }
     try { await paint(); } catch { /* 留着 Mol* 自己的默认画法 */ }
+    if (!owns()) { try { viewer.dispose(); } catch { /* gone */ } throw superseded(); }
     csel.addEventListener('change', () => { color = csel.value; paint().catch(() => {}); });
     rsel.addEventListener('change', () => { rep = rsel.value; paint().catch(() => {}); });
 
@@ -192,7 +200,7 @@
       play.addEventListener('click', () => {
         if (timer) { stop(); return; }
         play.setAttribute('aria-pressed', 'true'); play.textContent = T('暂停', 'Pause');
-        timer = setInterval(() => { busy.then(() => { if (timer) setFrame((cur + 1) % frames); }); }, reduced() ? 600 : 160);
+        timer = setInterval(() => { if (gone()) return; busy.then(() => { if (timer) setFrame((cur + 1) % frames); }); }, reduced() ? 600 : 160);
       });
       setFrame(0);
     }
@@ -224,21 +232,31 @@
       `<a href="https://molstar.org/" target="_blank" rel="noopener">Mol* ${esc(C.VERSION)} <i class="ico-ext" aria-hidden="true"></i></a>`,
     ].filter(Boolean).join(' ');
 
-    // 主题切换时换样式和背景；容器变大小时重画
-    const onTheme = () => { themeLink(); setBg(); };
+    // 主题切换时换样式和背景；容器变大小时重画。画布已经不在页面上（框被重画、换成了别的查看器）时自己收掉，
+    // 不然 <html> 上的观察者一直拉着 viewer，WebGL 上下文越积越多
+    let handle = null;
+    const gone = () => { if (stage.isConnected && owns()) return false; handle?.destroy(); return true; };
+    const onTheme = () => { if (gone()) return; themeLink(); setBg(); };
     const mo = new MutationObserver(onTheme);
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     const mq = matchMedia('(prefers-color-scheme: dark)');
     mq.addEventListener?.('change', onTheme);
-    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { try { viewer.handleResize(); } catch { /* 已经关了 */ } }) : null;
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (gone()) return; try { viewer.handleResize(); } catch { /* 已经关了 */ } }) : null;
     ro?.observe(stage);
 
     el.dataset.ready = 'true';
-    const handle = {
+    let dead = false;
+    handle = {
       viewer, plugin, frames, setFrame,
       setColor(k) { if (colors.some(([x]) => x === k)) { color = k; csel.value = k; return paint(); } return Promise.resolve(); },
       setRep(k) { if (reps.some(([x]) => x === k)) { rep = k; rsel.value = k; return paint(); } return Promise.resolve(); },
-      destroy() { stop(); mo.disconnect(); mq.removeEventListener?.('change', onTheme); ro?.disconnect(); try { viewer.dispose(); } catch { /* gone */ } el.innerHTML = ''; delete el.dataset.ready; el.ms = null; },
+      destroy() {
+        if (dead) return;
+        dead = true;
+        stop(); mo.disconnect(); mq.removeEventListener?.('change', onTheme); ro?.disconnect(); try { viewer.dispose(); } catch { /* gone */ }
+        if (owns()) { el.innerHTML = ''; delete el.dataset.ready; } // 框里已经是别人（新的一次打开、3Dmol）的内容时不去清它
+        if (el.ms === handle) el.ms = null;
+      },
     };
     el.ms = handle;
     return handle;

@@ -52,8 +52,8 @@ window.MOLASTRIA_UPDATES = {
       id: 'molstar', date: '2026-11-23', path: 'models/index.html#work', group: 'models', icon: 'atoms',
       zh: 'Mol* 大分子查看器', en: 'Mol* macromolecule viewer',
       note: ['蛋白质分子动力学的轨迹按 RMSF 着色，一帧一帧播放', 'Play a protein MD trajectory frame by frame, coloured by RMSF'],
-      more: ['模型接口“蛋白质分子动力学”的结果现在能用 Mol*（MIT，RCSB PDB 和 PDBe 用的那个查看器）打开：Cα 轨迹按每个残基的涨落着色，滑杆和播放键一帧一帧看，也能看起始的 PDB 条目和模拟结束时的全原子结构。量子生物学的结构馆可以切到 Mol*，分子动力学栏目多了一节“看一段蛋白质轨迹”：现算的螺旋正则模、任意 PDB 编号、自己电脑上的 .pdb。',
-        'Results of the model interface’s protein MD now open in Mol* (MIT, the viewer the RCSB PDB and PDBe use): the Cα trajectory is coloured by each residue’s fluctuation, with a slider and a play button, and you can also view the starting PDB entry and the final all-atom structure. The quantum biology structure hall can switch to Mol*, and the molecular dynamics section has a new part, “Watch a protein trajectory”: normal modes of a helix computed on the spot, any PDB ID, or a .pdb from your own computer.'],
+      more: ['模型接口“蛋白质分子动力学”的结果现在能用 Mol*（MIT，RCSB PDB 和 PDBe 用的那个查看器）打开：Cα 轨迹按每个残基的涨落着色，滑杆和播放键一帧一帧看，也能看起始的 PDB 条目和模拟结束时的结构（重原子）。量子生物学的结构馆可以切到 Mol*，分子动力学栏目多了一节“看一段蛋白质轨迹”：现算的螺旋正则模、任意 PDB 编号、自己电脑上的 .pdb。',
+        'Results of the model interface’s protein MD now open in Mol* (MIT, the viewer the RCSB PDB and PDBe use): the Cα trajectory is coloured by each residue’s fluctuation, with a slider and a play button, and you can also view the starting PDB entry and the final structure (heavy atoms). The quantum biology structure hall can switch to Mol*, and the molecular dynamics section has a new part, “Watch a protein trajectory”: normal modes of a helix computed on the spot, any PDB ID, or a .pdb from your own computer.'],
     },
     {
       id: 'chemml-scope', date: '2026-11-23', path: 'chem-ml/index.html#c-eval', group: 'models', icon: 'graph',
