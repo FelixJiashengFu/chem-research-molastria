@@ -46,13 +46,33 @@
     if (!s) return;
     for (const b of document.querySelectorAll('.qb-struct-btn')) b.setAttribute('aria-pressed', String(b.dataset.pdb === id));
     $('#qb-struct-text').innerHTML = `${C(esc(tx(s.title)), 'h3')}${C(rich(tx(s.text)), 'p')}<p class="fs-cite" translate="no">${esc(s.cite.authors)} (${s.cite.year}) <i>${esc(s.cite.journal)}</i> · <a href="https://doi.org/${esc(s.cite.doi)}" target="_blank" rel="noopener">doi:${esc(s.cite.doi)}</a></p><p class="fs-cite">${secLink(s.section)}</p>`;
-    if (!load || s3cur === id || !window.MolAstriaMol3D) return;
-    s3cur = id;
+    const key = `${id}:${s3eng}`;
+    if (!load || s3cur === key || !window.MolAstriaMol3D) return;
+    s3cur = key;
     s3view?.destroy();
     s3view = null;
     const box = $('#qb-struct-3d');
-    window.MolAstriaMol3D.mount(box, { pdbId: s.id, style: s.style, name: s.id, label: tx(s.title), highlight: s.hi.map((h) => ({ sel: { resn: h.resn }, color: h.color })) })
-      .then((v) => { if (s3cur === id) s3view = v; else v.destroy(); }, () => { /* 框里已写明原因 */ });
+    box.className = 'qb-struct-3d';
+    box.innerHTML = '';
+    // 两个查看器：3Dmol.js（默认，小，标出辅因子）和 Mol*（../../viewer/molstar.js，序列、表面、配体，第一次约 5 MB）
+    const run = s3eng === 'molstar' && window.MolAstriaMolstar
+      ? window.MolAstriaMolstar.open(box, { pdbId: s.id, name: s.id, label: tx(s.title), color: 'chain-id' })
+      : window.MolAstriaMol3D.mount(box, { pdbId: s.id, style: s.style, name: s.id, label: tx(s.title), highlight: s.hi.map((h) => ({ sel: { resn: h.resn }, color: h.color })) });
+    run.then((v) => { if (s3cur === key) s3view = v; else v.destroy(); }, () => { /* 框里已写明原因 */ });
+  }
+  let s3eng = 'mol3d';
+  const engBox = $('#qb-struct-engine');
+  if (engBox && window.MolAstriaMolstar) {
+    engBox.hidden = false;
+    engBox.innerHTML = `<span class="muted small">${L('查看器：', 'Viewer:')}</span><button type="button" class="fs-chip" data-eng="mol3d" aria-pressed="true">${L('3Dmol（标出辅因子）', '3Dmol (cofactors highlighted)')}</button><button type="button" class="fs-chip" data-eng="molstar" aria-pressed="false">${L('Mol*（配体、表面、更多着色）', 'Mol* (ligands, surfaces, more colourings)')}</button>`;
+    engBox.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-eng]');
+      if (!b || b.dataset.eng === s3eng) return;
+      s3eng = b.dataset.eng;
+      for (const o of engBox.querySelectorAll('[data-eng]')) o.setAttribute('aria-pressed', String(o === b));
+      s3seen = true;
+      showStructure(document.querySelector('.qb-struct-btn[aria-pressed=true]').dataset.pdb, true);
+    });
   }
   $('#qb-struct-pick').addEventListener('click', (e) => { const b = e.target.closest('.qb-struct-btn'); if (b) showStructure(b.dataset.pdb, true); });
   if (S3.length) {

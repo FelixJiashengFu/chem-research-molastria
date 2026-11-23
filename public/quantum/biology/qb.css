@@ -44,6 +44,8 @@
 .qb-struct-btn[aria-pressed=true] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .qb-struct-sec { font-size: 11.5px; color: var(--muted); }
 .qb-struct-body { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.qb-struct-3d { --m3-h: 400px; min-height: 120px; margin: 0; }
+.qb-struct-3d { --m3-h: 400px; --ms-h: 400px; min-height: 120px; margin: 0; }
+.qb-struct-engine { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: -4px 0 12px; }
+.qb-struct-engine[hidden] { display: none; }
 .qb-struct-text h3 { margin: 0 0 8px; font-size: 17px; }
-@media (max-width: 760px) { .qb-struct-body { grid-template-columns: 1fr; } .qb-struct-3d { --m3-h: 300px; } }
+@media (max-width: 760px) { .qb-struct-body { grid-template-columns: 1fr; } .qb-struct-3d { --m3-h: 300px; --ms-h: 320px; } }

@@ -36,7 +36,7 @@
 
     // 页面骨架
     const sec = (id, h, note, body) => `<section translate="no" class="fs-block" id="${id}" aria-labelledby="${id}-h" tabindex="-1"><h2 id="${id}-h">${esc(h)}</h2>${note ? `<p class="muted">${note}</p>` : ''}${body}</section>`;
-    const JUMP = [['chm-map', L(`${order.length} 章`, `${order.length} chapters`), 1], ['chm-reader', L('开始读', 'Start reading')], ['chm-labs', L('全部演示', 'All demos')], ['chm-history', L('时间线', 'Timeline')], ['chm-quiz', L('自测', 'Self-test')], ['chm-path', L('读什么', 'Reading')], ['chm-library', L('文献', 'References')]];
+    const JUMP = [['chm-map', L(`${order.length} 章`, `${order.length} chapters`), 1], ['chm-reader', L('开始读', 'Start reading')], ['chm-labs', L('全部演示', 'All demos')], ['chm-protein', L('蛋白质轨迹', 'Protein trajectory')], ['chm-history', L('时间线', 'Timeline')], ['chm-quiz', L('自测', 'Self-test')], ['chm-path', L('读什么', 'Reading')], ['chm-library', L('文献', 'References')]];
     root.innerHTML = `<section translate="no" class="fs-hero" aria-labelledby="chm-h1">
         <p class="eyebrow">${esc(D.eyebrow || '')}</p>
         <h1 id="chm-h1">${D.h1 || esc(D.title)}${D.sub ? `<span class="mdf-sub">${esc(D.sub)}</span>` : ''}</h1>
@@ -51,6 +51,7 @@
         <div class="chm-bar"><button type="button" class="button" id="chm-prev" aria-label="${L('上一章', 'Previous chapter')}"><i class="ico-ext ico-left" aria-hidden="true"></i></button><select id="chm-select" aria-label="${L('选择一章', 'Choose a chapter')}"></select><button type="button" class="button" id="chm-next" aria-label="${L('下一章', 'Next chapter')}"><i class="ico-ext ico-right" aria-hidden="true"></i></button></div>
         <div id="chm-panel"></div></section>`
       + sec('chm-labs', L('全部演示', 'All demos'), L('每个演示都在浏览器里当场计算，不是预先画好的动画。点一个就打开它所在的那一章。', 'Every demo is computed live in the browser, not a pre-drawn animation. Click one to open the chapter it belongs to.'), '<ul class="chm-demo-list" id="chm-demo-list"></ul>')
+      + sec('chm-protein', L('看一段蛋白质轨迹（Mol*）', 'Watch a protein trajectory (Mol*)'), L('分子动力学的产物是一串结构。这里用 Mol* 播放一段轨迹、按每个残基的涨落 RMSF 着色；可以先看现算的玩具模型，再打开任意一个 PDB 条目，或者在模型接口里真跑一段 OpenMM。', 'What molecular dynamics produces is a sequence of structures. Here Mol* plays a trajectory and colours each residue by its fluctuation (RMSF): start with a toy model computed on the spot, then open any PDB entry, or run a real OpenMM simulation on the model interface.'), '<div id="mdp-root"></div>')
       + sec('chm-history', L('时间线', 'Timeline'), D.notes?.history || '', '<ol class="chm-timeline" id="chm-timeline"></ol>')
       + sec('chm-quiz', L('自测', 'Self-test'), L('先自己选，再看解析。答对的题记在这台设备上。', 'Choose first, then read the explanation. Correct answers are remembered on this device.'), '<p class="chm-score" id="chm-score" aria-live="polite"></p><div class="chm-quiz" id="chm-quiz-list"></div>')
       + sec('chm-path', L('读什么、怎么读', 'What to read, and in what order'), D.notes?.path || '', `<ul class="chm-books" id="chm-books"></ul>${D.open?.length ? `<h3 class="fs-sub-h">${L('还没解决的问题', 'Open questions')}</h3><ol class="chm-open" id="chm-open-list"></ol>` : ''}`)
@@ -326,6 +327,7 @@
     }
     window.addEventListener('hashchange', route);
     if (!route()) open(order[0], { push: false, auto: true });
+    try { window.MOLASTRIA_MD_PROTEIN?.($('#mdp-root'), L); } catch (err) { console.error('[md protein]', err); }
     window.MOLASTRIA_MD_READY = true;
   }
 

@@ -7045,6 +7045,84 @@ check('thermochemistry (GoodVibes port): code desk and workbench show ZPE, H, T�
   await finish(e);
 });
 
+// ── Mol* (public/viewer/molstar.js): served here from tools/e2e/node_modules/molstar, the same pinned version as on jsDelivr ──
+const molstarLocal = (ctx) => ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/molstar@[\d.]+\/build\/viewer\/([\w/.-]+)$/, (r) => {
+  const f = /build\/viewer\/([\w/.-]+)$/.exec(r.request().url())[1];
+  return r.fulfill({ contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(new URL(`./node_modules/molstar/build/viewer/${f}`, import.meta.url)) });
+});
+check('molstar viewer: the protein MD result plays its Cα trajectory coloured by RMSF; quantum biology and the MD section open it; RCSB offline says why', async () => {
+  const p = await openModels('protein');
+  await molstarLocal(p.context());
+  await p.context().route(/^https:\/\/files\.rcsb\.org\//, (r) => r.abort());
+  await runJob(p, 'pmd');
+  assert.equal(await p.locator('#m-result [data-act=ms]').count(), 3, 'trajectory, starting PDB entry, final structure');
+  await p.click('#m-result [data-act=ms][data-src=traj]');
+  await p.waitForSelector('#m-result .md-ms[data-ready=true]', { timeout: 60000 });
+  const box = '#m-result .md-ms';
+  assert.equal(await p.getAttribute(box, 'data-frames'), '25');
+  assert.equal(await p.getAttribute(box, 'data-color'), 'rmsf', 'RMSF colouring is the default when the result has RMSF');
+  assert.match(await text(p, `${box} .ms-fnum`), /^第 1 \/ 25 帧 · 0\.8 ps$/);
+  assert.match(await text(p, `${box} .ms-legend`), /Cα RMSF 从 0\.\d\d 到 \d\.\d\d Å/);
+  assert.ok(await p.evaluate((s) => document.querySelector(`${s} canvas`)?.width > 200, box), 'Mol* drew on a canvas');
+  assert.equal(await p.evaluate(() => document.getElementById('molastria-molstar-css').getAttribute('href').endsWith('theme/light.css')), true);
+  // the slider moves the model index in Mol*'s state tree
+  await p.fill(`${box} .ms-frames input`, '10');
+  await p.waitForFunction((s) => document.querySelector(s).dataset.frame === '9', box);
+  assert.equal(await p.evaluate((s) => [...document.querySelector(s).ms.plugin.state.data.cells.values()].find((c) => /model-from-trajectory$/.test(c.transform.transformer.id)).transform.params.modelIndex, box), 9);
+  await p.selectOption(`${box} .ms-color select`, 'chain-id');
+  await p.waitForFunction((s) => document.querySelector(s).dataset.color === 'chain-id', box);
+  assert.equal(await p.isHidden(`${box} .ms-legend`), true);
+  // dark theme swaps Mol*'s stylesheet
+  await p.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  await p.waitForFunction(() => document.getElementById('molastria-molstar-css').getAttribute('href').endsWith('theme/dark.css'));
+  // the final structure, then the PDB entry with no network to RCSB: the box says why, the page has no error
+  await p.click('#m-result [data-act=ms][data-src=final]');
+  await p.waitForSelector('#m-result .md-ms[data-ready=true]', { timeout: 30000 });
+  assert.equal(await p.getAttribute(box, 'data-frames'), '1');
+  await p.click('#m-result [data-act=ms][data-src=start]');
+  await p.waitForSelector('#m-result .md-ms[data-failed=true]', { timeout: 30000 });
+  assert.match(await text(p, `${box} .ms-state`), /1L2Y 下载失败（需要联网访问 files\.rcsb\.org）/);
+  await finish(p);
+
+  // the MD section: the toy helix trajectory, 40 frames, coloured by its own RMSF
+  const m = await open();
+  await molstarLocal(m.context());
+  await go(m, '/md/index.html');
+  await m.waitForSelector('#chm-protein #mdp-rmsf path.mdp-fr');
+  await m.click('#mdp-toy');
+  await m.waitForSelector('#mdp-view[data-ready=true]', { timeout: 60000 });
+  assert.equal(await m.getAttribute('#mdp-view', 'data-frames'), '40');
+  assert.equal(await m.getAttribute('#mdp-view', 'data-color'), 'rmsf');
+  await m.fill('#mdp-id', '12');
+  await m.click('#mdp-pdb');
+  assert.match(await text(m, '#mdp-why'), /PDB 编号是四位/);
+  // in English the viewer carries its own text (the section is translate="no", so i18n.js does not reach it)
+  await go(m, '/md/index.html?lang=en');
+  await m.waitForSelector('#mdp-toy');
+  await m.click('#mdp-toy');
+  await m.waitForSelector('#mdp-view[data-ready=true]', { timeout: 60000 });
+  assert.match(await text(m, '#mdp-view .ms-fnum'), /^Frame 1 \/ 40 · 0\.0 ps$/);
+  assert.match(await text(m, '#mdp-view .ms-legend'), /Blue moves least/);
+  assert.doesNotMatch(await text(m, '#mdp-view .ms-bar'), HAN);
+  await finish(m);
+
+  // quantum biology's structure hall: the Mol* switch opens the same PDB entry in Mol* (RCSB answered with a tiny mmCIF here)
+  const q = await open();
+  await molstarLocal(q.context());
+  const CIF = 'data_TEST\nloop_\n_atom_site.group_PDB\n_atom_site.id\n_atom_site.type_symbol\n_atom_site.label_atom_id\n_atom_site.label_comp_id\n_atom_site.label_asym_id\n_atom_site.label_seq_id\n_atom_site.Cartn_x\n_atom_site.Cartn_y\n_atom_site.Cartn_z\n_atom_site.auth_seq_id\n_atom_site.auth_asym_id\n_atom_site.pdbx_PDB_model_num\n'
+    + [0, 1, 2, 3].map((i) => `ATOM ${i + 1} C CA ALA A ${i + 1} ${(3.8 * i).toFixed(3)} 0.000 0.000 ${i + 1} A 1`).join('\n') + '\n';
+  await q.context().route(/^https:\/\/files\.rcsb\.org\/download\/\w+\.cif$/, (r) => r.fulfill({ contentType: 'text/plain', headers: { 'access-control-allow-origin': '*' }, body: CIF }));
+  await go(q, '/quantum/biology/index.html');
+  await q.locator('#qb-structures').scrollIntoViewIfNeeded();
+  await q.click('#qb-struct-engine [data-eng=molstar]');
+  await q.waitForSelector('#qb-struct-3d.ms-box[data-ready=true]', { timeout: 60000 });
+  assert.equal(await q.getAttribute('#qb-struct-engine [data-eng=molstar]', 'aria-pressed'), 'true');
+  assert.match(await text(q, '#qb-struct-3d .ms-info'), /RCSB PDB/);
+  await q.click('#qb-struct-engine [data-eng=mol3d]');
+  await q.waitForSelector('#qb-struct-3d.m3-box[data-ready=true]', { timeout: 60000 });
+  await finish(q);
+});
+
 // ── run ─────────────────────────────────────────────────────────────────
 let failed = 0;
 try {
