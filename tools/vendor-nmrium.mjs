@@ -36,7 +36,8 @@ const ALLOWED = new Set(['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const out = join(repo, 'public', 'nmr', 'nmrium', 'app');
-const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'inherit'], env: { ...process.env, NODE_OPTIONS: '--max_old_space_size=4096' } }).toString();
+// npm and npx are .cmd shims on Windows, which execFileSync runs only through a shell
+const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, shell: process.platform === 'win32' && cmd !== 'git', stdio: ['ignore', 'pipe', 'inherit'], env: { ...process.env, NODE_OPTIONS: '--max_old_space_size=4096' } }).toString();
 
 let src = process.argv[2];
 if (!src) {
@@ -49,7 +50,8 @@ if (head !== COMMIT) throw new Error(`${src} is at ${head}, expected ${TAG} = ${
 /** Replace exactly one occurrence of `from` in a source file; fail when the wrapper's code moved. */
 function patch(file, from, to) {
   const p = join(src, file), text = readFileSync(p, 'utf8');
-  if (text.includes(to) && !text.includes(from)) return; // already patched (a second run on the same checkout)
+  // already patched (a second run on the same checkout): when `to` contains `from`, `from` is still there afterwards, so look for `to`
+  if (to.includes(from) ? text.includes(to) : text.includes(to) && !text.includes(from)) return;
   if (text.split(from).length !== 2) throw new Error(`${file}: the code to patch changed; update tools/vendor-nmrium.mjs`);
   writeFileSync(p, text.replace(from, () => to));
 }

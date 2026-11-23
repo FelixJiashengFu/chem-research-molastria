@@ -291,7 +291,7 @@ deno run --allow-read --allow-write --allow-net --allow-env tools/i18n-translate
 - **在线模型的 IP/EA：** 不少 OMol25 系模型（UMA-S 1.1、eSEN、MACE-OMOL-0）给的电荷态能量差不可靠，加模型前按 RUNBOOK“加一个在线模型”先测垂直 IP。
 - **WSL 里的模型权重：** Hugging Face 缓存的 `snapshots` 是 Linux 符号链接，Windows 经 `\\wsl.localhost` 读不到，要复制 `blobs` 里的文件；WSL 也写不进 Windows 的 `%USERPROFILE%\.cache`，从 Windows 这边复制。
 - **NMRium 的许可证：** NMRium 本身是 MIT，但 2025 年 2 月起 nmr-processing、jcampconverter、nmr-load-save、@zakodium/nmrium-core 是 CC BY-NC-SA 4.0（Zakodium），NMRium 0.61.0 以后都打包了它们。升级 tools/vendor-nmrium.mjs 的 TAG 之前先看 THIRD-PARTY-LICENSES.md，构建遇到不在允许清单里的许可证会直接失败，不要把清单放宽。
-- **NMRium 的 ready 会发不止一次：** 外层页面只认第一次，否则状态行会被“准备好了”盖掉。
+- **vendor-nmrium.mjs 的补丁要能重复跑：** 以前在同一个检出上第二次构建会把发 ready 的那段再插一遍（补丁的新文字里含着旧文字，判断“已经打过”失效），框里就发两次 ready；现在含旧文字的补丁按新文字判断。外层页面仍只认第一次 ready，以防万一。
 - **geomeTRIC 的代码不能进仓库：** 它的 BSD 许可证带一条“不得放进 AI 训练集”的条款，公开仓库没法遵守；过渡态用 Sella（LGPL-3.0，只在站长电脑上 import）。以后真要用 geomeTRIC，也只能在站长电脑上 pip 装、运行时 import。
 - **e2e 端口被别的会话的孤儿服务器占着：** `tools/e2e/run.mjs` 起的 serve.ts（8840）和 account-local.ts（8842）是 deno 子进程，run.mjs 被杀或超时时它们可能留下来（父进程变成 1）。下一次 e2e 起不来自己的服务器也不报错，测的却是别的工作树的 public/（2026-11-22 测出“过渡态的计算不在列表里”“模型数 20 而不是 21”，就是这个原因）。跑 e2e 前在 `flock /tmp/molastria-e2e.lock` 里先查 `pgrep -f "serve.ts 8840"`：没有 run.mjs 在跑、父进程是 1 的，就是孤儿，可以结束。
 - **aimnet_worker.py 把 stdout 换成了 stderr：** 为了让库的输出不混进 JSON 协议，import 它之后 print 都去 stderr；测试脚本要往 `sys.__stdout__` 写。

@@ -27,7 +27,7 @@
     ['pmd', '蛋白质分子动力学', 5, 'pdb_id*, chains, ps, temperature'],
     ['qflow', 'quacc 批量计算（每个分子 1 次，带频率 3 次，Psi4 2 次）', 1, 'items*, recipe, fmax, temperature, method, basis'],
     ['qslab', 'quacc 表面能（EMT，最大晶面指数 2 时 5 次）', 3, 'element*, max_index'],
-    ['phon', '晶体的声子（phonopy：色散、态密度、热容）', 5, 'preset 或 structure + format, supercell, displacement, relax, mesh, t_max'],
+    ['phon', '晶体的声子（phonopy：色散、态密度、热容）', 5, 'preset | structure + format, supercell, displacement, relax, mesh, t_max'],
     ['ocsr', '结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）', 1, 'images*']
   ];
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
