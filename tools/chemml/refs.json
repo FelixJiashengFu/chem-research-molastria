@@ -910,5 +910,47 @@
   "url": "",
   "short": "Tom et al. 2024",
   "note": null
+ },
+ {
+  "id": "fraux2020",
+  "authors": "G. Fraux, R. K. Cersonsky, M. Ceriotti",
+  "year": 2020,
+  "title": "Chemiscope: interactive structure-property explorer for materials and molecules",
+  "journal": "Journal of Open Source Software",
+  "vol": "5",
+  "pages": "2117",
+  "doi": "10.21105/joss.02117",
+  "arxiv": "",
+  "url": "",
+  "short": "Fraux et al. 2020",
+  "note": null
+ },
+ {
+  "id": "bannwarth2019",
+  "authors": "C. Bannwarth, S. Ehlert, S. Grimme",
+  "year": 2019,
+  "title": "GFN2-xTB—An Accurate and Broadly Parametrized Self-Consistent Tight-Binding Quantum Chemical Method with Multipole Electrostatics and Density-Dependent Dispersion Contributions",
+  "journal": "Journal of Chemical Theory and Computation",
+  "vol": "15",
+  "pages": "1652–1671",
+  "doi": "10.1021/acs.jctc.8b01176",
+  "arxiv": "",
+  "url": "",
+  "short": "Bannwarth et al. 2019",
+  "note": null
+ },
+ {
+  "id": "riniker2015",
+  "authors": "S. Riniker, G. A. Landrum",
+  "year": 2015,
+  "title": "Better Informed Distance Geometry: Using What We Know To Improve Conformation Generation",
+  "journal": "Journal of Chemical Information and Modeling",
+  "vol": "55",
+  "pages": "2562–2574",
+  "doi": "10.1021/acs.jcim.5b00654",
+  "arxiv": "",
+  "url": "",
+  "short": "Riniker & Landrum 2015",
+  "note": null
  }
 ]

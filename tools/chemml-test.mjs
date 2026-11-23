@@ -3,7 +3,7 @@
 // 十氢萘和联环戊烷 1-WL 分不开、消息传递和 Coulomb 矩阵本征值对编号和转动不变、高斯过程的对数边际似然对照多元正态密度、
 // 后验方差与 y 无关、小网络的解析梯度对照有限差分、EI 的闭式和极限、贝叶斯优化在中位数上胜过随机、主动学习、学习曲线的排序、
 // n-gram 生成的有效率和新颖度此消彼长、骨架划分的误差大于随机划分、先选特征再验证的泄漏、校准、Pareto 前沿和超体积，
-// 生成的内容是最新的、十章中英齐全、十七个演示都登记了、64 篇文献都被引用，顶栏和 SEO 接上了。
+// 生成的内容是最新的、十章中英齐全、十八个演示都登记了、67 篇文献都被引用，顶栏和 SEO 接上了。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -118,13 +118,13 @@ test('生成的内容是最新的、十章中英齐全、演示都登记了、�
   assert.deepEqual(zh.index.chapters.map((c) => c.id), ids); assert.deepEqual(en.index.chapters.map((c) => c.id), ids);
   const s = { window: {} }; vm.runInNewContext(read(DIR + 'cml-models.js') + '\n' + read(DIR + 'cml-demos.js'), s);
   const DEMOS = {}; s.window.MOLASTRIA_CHEMML_DEMOS(new Proxy({}, { get: (_, k) => (k === 'L' ? (a) => a : () => '') }), DEMOS);
-  const names = ['active', 'batch', 'bo', 'calib', 'coulomb', 'fp', 'goodhart', 'gp', 'lc', 'leak', 'mlp', 'mpnn', 'ngram', 'pareto', 'prior', 'regret', 'split'];
+  const names = ['active', 'batch', 'bo', 'calib', 'coulomb', 'fp', 'goodhart', 'gp', 'lc', 'leak', 'mlp', 'mpnn', 'ngram', 'pareto', 'prior', 'regret', 'scope', 'split'];
   assert.deepEqual([...Object.keys(DEMOS)].sort(), names);
   for (const C of [zh, en]) {
     for (const id of ids) { const ch = C.chapters[id]; assert.ok(ch.body.length >= 5, id); assert.ok(ch.points.length >= 4 && ch.math.length >= 3 && ch.example, id); for (const b of ch.body) if (b.demo) assert.ok(DEMOS[b.demo], b.demo); }
     const shown = new Set(); for (const c of C.index.chapters) for (const d of c.demos) { assert.ok(DEMOS[d], d); shown.add(d); }
     assert.equal(shown.size, names.length, '每个演示都放进了某一章');
-    assert.equal(C.refs.length, 64); for (const r of C.refs) assert.ok(r.used.length, r.id);
+    assert.equal(C.refs.length, 67); for (const r of C.refs) assert.ok(r.used.length, r.id);
     assert.equal(C.index.quiz.length, 12); for (const q of C.index.quiz) assert.ok(q.a < q.opts.length);
     const t = JSON.stringify(C), m = /\[@|\{\{ch:|\[\[[^"[]|\$[^$"]{1,40}\$|\\`|undefined|NaN|&amp;amp;/.exec(t);
     assert.ok(!m, m && `没转换的标记：…${t.slice(Math.max(0, m.index - 50), m.index + 30)}…`);

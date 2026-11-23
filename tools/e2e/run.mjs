@@ -4027,7 +4027,7 @@ check('Photochemistry: nav entry, eleven chapters, fifteen live demos, excited-s
 });
 
 
-check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints, WL limit, BO, leakage), quiz, references, English', async () => {
+check('Chemistry ML: nav entry, ten chapters, eighteen live demos (fingerprints, WL limit, BO, leakage), quiz, references, English', async () => {
   const p = await open();
   await go(p, '/chem-ml/index.html');
   await p.waitForFunction(() => window.MOLASTRIA_CHEMML_READY);
@@ -4035,7 +4035,7 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   const read = (id) => text(p, `#chm-panel [data-demo=${id}] .fs-readout`);
   assert.equal(await p.getAttribute('.cr-header a[data-id=chemml]', 'aria-current'), 'page', 'the nav entry is current');
   assert.equal(await p.locator('.chm-ch').count(), 10);
-  assert.equal(await p.locator('#chm-demo-list li').count(), 17);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 18);
   // Chapter 2: phenol vs aniline share six of eleven ECFP bits; the same molecule written two ways gives 1.
   await p.selectOption('#chm-select', 'repr'); await settle();
   assert.equal(await p.evaluate(() => location.hash), '#c-repr');
@@ -4060,7 +4060,7 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-chemml')).seen)).includes('eval'));
   await p.check('#chm-quiz-list .chm-q[data-q="2"] input[value="1"]');
   assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="2"] .chm-why'), /答对了/);
-  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 64);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 67);
   assert.deepEqual(p.errors, []);
   await finish(p);
   const e = await open();
@@ -4071,6 +4071,63 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   assert.match(await text(e, '#chm-panel'), /scaffold[\s\S]*leakage/i);
   const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
   assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
+/** Serves Chemiscope (the structure–property explorer the chem-ml chapter 9 demo loads from jsDelivr) from tools/e2e/node_modules. */
+check('Chemistry ML: Chemiscope structure–property map (real data, splits, click a point, linked 3D viewer), English, dark, phone', async () => {
+  const CMS = join(ROOT, 'tools/e2e/node_modules/chemiscope/dist/chemiscope.min.js');
+  const shot = (name) => (process.env.E2E_SHOTS ? join(process.env.E2E_SHOTS, name) : undefined); // 想看截图时设 E2E_SHOTS=目录
+  const p = await open();
+  let served = 0;
+  await p.context().route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/chemiscope@[\d.]+\/dist\/chemiscope\.min\.js$/, (r) => { served++; return r.fulfill({ status: 200, contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(CMS) }); });
+  await go(p, '/chem-ml/index.html#c-eval');
+  await p.waitForFunction(() => window.MOLASTRIA_CHEMML_READY);
+  const demo = p.locator('#chm-panel [data-demo=scope]');
+  await demo.scrollIntoViewIfNeeded();
+  const read = () => demo.locator('.fs-readout').innerText();
+  await p.waitForFunction(() => window.MOLASTRIA_CHEMML_MAP_DATA && document.querySelector('#chm-panel [data-demo=scope] canvas').cmlHit);
+  assert.equal(served, 0, 'Chemiscope is not loaded until asked');
+  assert.match(await read(), /c1ccccc1/, 'benzene is selected first');
+  const nn = async () => (await read()).match(/中位数：[^\n]*\n([\d.]+) \/ ([\d.]+)/).slice(1).map(Number);
+  const [scafNN, randNN] = await nn();
+  assert.ok(scafNN < randNN, `scaffold split lowers the test similarity (${scafNN} < ${randNN})`);
+  await demo.locator('select[data-k=how]').selectOption('random'); await p.waitForTimeout(300);
+  assert.match(await read(), /57 \/ 227/);
+  // Click a point on our own map: the readout follows.
+  const pickOnCanvas = async (i) => { const cv = demo.locator('figure.fs-figure canvas'); const [x, y] = await cv.evaluate((c, k) => c.cmlHit[k], i); await cv.evaluate((c, yy) => window.scrollBy(0, c.getBoundingClientRect().top + yy - innerHeight / 2), y); const b = await cv.boundingBox(); const w = await cv.evaluate((c) => c.clientWidth); await p.mouse.click(b.x + (x * b.width) / w, b.y + (y * b.width) / w); await p.waitForTimeout(300); };
+  const smiles = (i) => p.evaluate((k) => window.MOLASTRIA_CHEMML_MAP_DATA.mols[k].s, i);
+  // two dots that have no neighbour within the click radius
+  const [i1, i2] = await demo.locator('figure.fs-figure canvas').evaluate((c) => c.cmlHit.map((h, i) => [h, i]).filter(([h], _, all) => all.every(([g], j) => g === h || (g[0] - h[0]) ** 2 + (g[1] - h[1]) ** 2 > 30 * 30)).map(([, i]) => i).filter((i) => i > 0).slice(0, 2));
+  await pickOnCanvas(i1);
+  assert.ok((await read()).includes(await smiles(i1)), 'clicking a dot selects that molecule');
+  // Open Chemiscope: the map and the 3D viewer appear, and the two maps stay in step both ways.
+  await demo.locator('[data-act="0"]').click();
+  await p.waitForSelector('#chm-panel [data-demo=scope] .cms-str canvas', { timeout: 30000 });
+  await p.waitForSelector('#chm-panel [data-demo=scope] .cms-map .js-plotly-plot', { timeout: 30000 });
+  assert.equal(served, 1);
+  const csIndex = () => demo.locator('.cms-info input[type=number], .cms-info input[type=text]').first().inputValue();
+  await p.waitForTimeout(800);
+  assert.equal(await csIndex(), String(i1), 'Chemiscope shows the molecule picked on our map');
+  await pickOnCanvas(i2); await p.waitForTimeout(500);
+  assert.equal(await csIndex(), String(i2));
+  const box = demo.locator('.cms-info input').first();
+  await box.fill('7'); await box.press('Enter'); await p.waitForTimeout(800);
+  assert.ok((await read()).includes(await smiles(7)), 'picking in Chemiscope updates our readout');
+  await p.screenshot({ path: shot('chemml-scope-light.png'), fullPage: false });
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  // English and dark, phone width: no Chinese in the demo, nothing wider than the screen.
+  const e = await open({ colorScheme: 'dark', viewport: { width: 390, height: 860 } });
+  await go(e, '/chem-ml/index.html?lang=en#c-eval');
+  await e.waitForFunction(() => window.MOLASTRIA_CHEMML_READY && window.MOLASTRIA_CHEMML_MAP_DATA && !document.documentElement.dataset.i18n);
+  const ed = e.locator('#chm-panel [data-demo=scope]');
+  await ed.scrollIntoViewIfNeeded(); await e.waitForTimeout(500);
+  assert.match(await ed.innerText(), /structure–property map[\s\S]*Nearest-neighbour/i);
+  assert.doesNotMatch(await ed.innerText(), /[㐀-鿿]/, 'the demo is English');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no sideways scroll on a phone');
+  await e.screenshot({ path: shot('chemml-scope-dark-en-phone.png'), fullPage: false });
+  assert.deepEqual(e.errors, []);
   await finish(e);
 });
 
