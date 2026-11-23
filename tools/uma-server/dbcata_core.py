@@ -392,9 +392,11 @@ def sites(slab):
     return out
 
 
-def _hexagonal(c2):
+def _hexagonal(c2, tol=0.1):
+    """(111)-like surface cell: two nearly equal vectors at 60 or 120 degrees. A relative tolerance, because an
+    L1_0 cell relaxed with c != a is slightly off; the rectangular (110) cell (cos gamma = 0) is still rejected."""
     a, b = np.linalg.norm(c2[0]), np.linalg.norm(c2[1])
-    return abs(a - b) < 1e-6 and abs(abs(c2[0] @ c2[1]) / (a * b) - 0.5) < 1e-6
+    return abs(a - b) / max(a, b) < tol and abs(abs(c2[0] @ c2[1]) / (a * b) - 0.5) < tol
 
 
 def _pbc2(d, c2):
@@ -504,7 +506,12 @@ def flags(initial, positions, reference_slab=None):
     d = distances(pos, cell)
     close = d < COLLISION * (r[:, None] + r[None, :])
     np.fill_diagonal(close, False)
-    if close.any():
+    # adsorbate-adsorbate and adsorbate-slab pairs against covalent radii; slab-slab pairs against their own starting
+    # distances, because some in-domain alloys (e.g. NiTa) already sit below 0.8 x the radii sum in the ideal lattice
+    d0 = distances(np.asarray(initial["positions"], float), cell)
+    ssx = np.ix_(slab, slab)
+    squeezed = (d[ssx] < COLLISION * d0[ssx]) & ~np.eye(len(slab), dtype=bool)
+    if close[ads].any() or squeezed.any():
         out.append("collision")
     sa = [symbols[i] for i in ads]
     if len(ads) > 1:
@@ -516,8 +523,16 @@ def flags(initial, positions, reference_slab=None):
         out.append("desorbed")
     ss = [symbols[i] for i in slab]
     ref = initial["positions"][slab] if reference_slab is None else np.asarray(reference_slab, float)
-    now, now_c = bonded(ss, pos[slab], cell, 1.0), bonded(ss, pos[slab], cell, SURFACE_CUSHION)
-    was, was_c = bonded(ss, ref, cell, 1.0), bonded(ss, ref, cell, SURFACE_CUSHION)
+    # a bond is a pair within the covalent sum, but never less than the reference slab's own first shell (on about a
+    # fifth of the alloys no metal-metal pair is within 1.0 x the covalent sum, which would make the test blind);
+    # the 1.5 x cushion stays on the plain covalent sum so a lifted surface atom is still caught
+    rs = _radii(ss)
+    cov = rs[:, None] + rs[None, :]
+    dr = distances(ref, cell); np.fill_diagonal(dr, np.inf)
+    dn = distances(pos[slab], cell); np.fill_diagonal(dn, np.inf)
+    base = np.maximum(cov, 1.1 * dr.min())
+    now, now_c = dn < base, dn < SURFACE_CUSHION * cov
+    was, was_c = dr < base, dr < SURFACE_CUSHION * cov
     if (now & ~was_c).any() or (was & ~now_c).any():
         out.append("reconstructed")
     return out

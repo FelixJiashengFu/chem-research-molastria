@@ -122,7 +122,7 @@ class Engine:
             named = [f for f in found if "epoch=999" in os.path.basename(f[0])]
             if len(named) != 1:
                 raise RuntimeError("several generator checkpoints: " + ", ".join(os.path.basename(f[0]) for f in found)
-                                   + "; choose one with MOLASTRIA_DBCATA_CKPT (--dbcata-ckpt)")
+                                   + "; choose one by setting the environment variable MOLASTRIA_DBCATA_CKPT to its path")
             found = named
         return found[0][1], found[0][0]
 

@@ -422,7 +422,11 @@ class DbcataBackend:
     def __init__(self, python, directory="", toy=False):
         self.python, self.directory, self.toy = python, directory, toy
         self.proc, self.lines, self.lock = None, None, threading.Lock()
-        self.info = self.call({"op": "ping"}, timeout=DBCATA_LOAD)["engine"]
+        try:
+            self.info = self.call({"op": "ping"}, timeout=DBCATA_LOAD)["engine"]
+        except BaseException:
+            self.kill()  # a half-loaded worker must not keep holding GPU memory
+            raise
 
     def start(self):
         env = dict(os.environ, PYTHONUTF8="1")
@@ -454,41 +458,53 @@ class DbcataBackend:
                 pass
 
     def call(self, req, timeout, progress=None):
-        """One request; progress lines go to progress(p) (which may raise JobTimeout), the last line is the reply."""
+        """One request; progress lines go to progress(p) (which may raise JobTimeout), the last line is the reply.
+        After a restart the worker first loads its models with a ping bounded by DBCATA_LOAD, so the load is not
+        charged to the job's own time limit (req may be a function of nothing that builds the request afterwards)."""
         with self.lock:
             if self.proc is None or self.proc.poll() is not None:
                 self.start()
-            self.proc.stdin.write(json.dumps(req) + "\n")
-            self.proc.stdin.flush()
-            end = time.time() + timeout
-            while True:
-                try:
-                    line = self.lines.get(timeout=max(1.0, end - time.time()))
-                except queue_mod.Empty:
-                    self.kill()
-                    raise cj.JobTimeout(f"DBCata took longer than {timeout:g} s; its process was restarted") from None
-                if line is None:
-                    self.proc = None
-                    raise RuntimeError("the DBCata process stopped; it starts again with the next job")
-                try:
-                    reply = json.loads(line)
-                except ValueError:
-                    continue  # not a protocol line
-                if "progress" in reply:
-                    if progress:
-                        try:
-                            progress(reply["progress"])
-                        except Exception:
-                            self.kill()  # out of time: stop the GPU work now, not after the worker's next step
-                            raise
-                    continue
-                if not reply.get("ok"):
-                    raise RuntimeError(reply.get("error") or "DBCata failed")
-                return reply
+                if not (isinstance(req, dict) and req.get("op") == "ping"):
+                    self._exchange({"op": "ping"}, DBCATA_LOAD, None)
+            if callable(req):
+                req, timeout = req()
+            return self._exchange(req, timeout, progress)
+
+    def _exchange(self, req, timeout, progress):
+        self.proc.stdin.write(json.dumps(req) + "\n")
+        self.proc.stdin.flush()
+        end = time.time() + timeout
+        while True:
+            try:
+                line = self.lines.get(timeout=max(1.0, end - time.time()))
+            except queue_mod.Empty:
+                self.kill()
+                raise cj.JobTimeout(f"DBCata took longer than {timeout:g} s; its process was restarted") from None
+            if line is None:
+                self.proc = None
+                raise RuntimeError("the DBCata process stopped; it starts again with the next job")
+            try:
+                reply = json.loads(line)
+            except ValueError:
+                continue  # not a protocol line
+            if "progress" in reply:
+                if progress:
+                    try:
+                        progress(reply["progress"])
+                    except Exception:
+                        self.kill()  # out of time: stop the GPU work now, not after the worker's next step
+                        raise
+                continue
+            if not reply.get("ok"):
+                raise RuntimeError(reply.get("error") or "DBCata failed")
+            return reply
 
     def run(self, params, budget):
-        left = (budget.limit - (time.time() - budget.start)) if budget.limit else DEFAULT_LIMIT
-        reply = self.call({"op": "run", "params": params, "limit": max(1.0, left - 5)}, timeout=left + 30,
+        def build():  # the time left is measured after a possible restart and model load
+            left = (budget.limit - (time.time() - budget.start)) if budget.limit else DEFAULT_LIMIT
+            return {"op": "run", "params": params, "limit": max(1.0, left - 5)}, left + 30
+
+        reply = self.call(build, timeout=None,
                           progress=lambda p: budget.progress(p.get("done", 0), p.get("total", 0), p.get("note", "")))
         return reply["result"]
 
@@ -519,6 +535,7 @@ class Service:
 
     # ---- loading --------------------------------------------------------------------------------------------
     def load(self):
+        dbcata_later = False
         if self.fake:  # for tests: no models; a toy calculator, numbers marked as made up
             self.device = "fake"
             self.backends = {lane: None for lane in self.queues if lane not in ("quacc", "dbcata")}
@@ -573,19 +590,30 @@ class Service:
             if not (self.dbcata_python and self.dbcata_dir):
                 self.errors["dbcata"] = "DBCata is not set up (start with --dbcata-python and --dbcata-dir)"
             else:
-                print("Loading DBCata and UMA-S 1.1 (oc20) in DBCata's environment", flush=True)
-                try:
-                    self.backends["dbcata"] = DbcataBackend(self.dbcata_python, self.dbcata_dir)
-                    info = self.backends["dbcata"].info
-                    print(f"DBCata {info.get('dbcata')}: {info.get('checkpoint')}, classifier {info.get('classifier') or 'none'}, "
-                          f"{info.get('uma')} on {info.get('device')}", flush=True)
-                except Exception as e:  # noqa: BLE001 - DBCata missing or broken: only that model is off
-                    self.errors["dbcata"] = f"{type(e).__name__}: {e}"[:400]
-                    print(f"  not available: {self.errors['dbcata']}", flush=True)
+                self.errors["dbcata"] = "DBCata is still loading"
+                dbcata_later = True
         self.loading = False
-        for lane in self.backends:
+        for lane in list(self.backends):
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
+        if not self.fake and dbcata_later:
+            # DBCata, its classifier and a second UMA take a while (up to DBCATA_LOAD): load them in the background so
+            # the other lanes are served meanwhile; "dbcata" is not ready until it is in self.backends
+            threading.Thread(target=self.load_dbcata, daemon=True).start()
         print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
+
+    def load_dbcata(self):
+        print("Loading DBCata and UMA-S 1.1 (oc20) in DBCata's environment", flush=True)
+        try:
+            b = DbcataBackend(self.dbcata_python, self.dbcata_dir)
+            info = b.info
+            print(f"DBCata {info.get('dbcata')}: {info.get('checkpoint')}, classifier {info.get('classifier') or 'none'}, "
+                  f"{info.get('uma')} on {info.get('device')}", flush=True)
+            self.errors.pop("dbcata", None)
+            self.backends["dbcata"] = b
+            threading.Thread(target=self.work, args=("dbcata",), daemon=True).start()
+        except Exception as e:  # noqa: BLE001 - DBCata missing or broken: only that model is off
+            self.errors["dbcata"] = f"{type(e).__name__}: {e}"[:400]
+            print(f"  DBCata not available: {self.errors['dbcata']}", flush=True)
 
     def ready(self, model):
         lane = MODELS[model]["lane"]

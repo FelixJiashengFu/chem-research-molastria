@@ -122,7 +122,7 @@
   function render() {
     const raw = choice(), c = C.check(raw);
     $('db-system').textContent = c.params
-      ? `${C.formula(raw.metal_a, raw.metal_b, raw.ratio, true)}(${raw.facet}) · ${C.structure(raw.ratio)} · ${L('12 个原子的三层板', 'three-layer slab of 12 atoms')} · ${C.sub(raw.adsorbate)}`
+      ? `${C.formula(esc(raw.metal_a), esc(raw.metal_b), raw.ratio, true)}(${esc(raw.facet)}) · ${C.structure(raw.ratio)} · ${L('12 个原子的三层板', 'three-layer slab of 12 atoms')} · ${C.sub(raw.adsorbate)}`
       : LT(c.error);
     $('db-system').dataset.bad = String(!c.params);
     $('db-ref').textContent = C.refsAvailable(raw.adsorbate)
@@ -176,7 +176,7 @@
       last = r.result;
       show(last, r.cached);
     } catch (e) {
-      $('db-result').innerHTML = `<div class="md-err">${esc(e.message)}</div>`;
+      $('db-result').innerHTML = `<div class="md-err">${esc(window.ChemI18n?.t ? window.ChemI18n.t(e.message) : e.message)}</div>`; // #db-result is translate="no"
     } finally {
       busy = false; say(''); render();
     }
@@ -198,13 +198,13 @@
     if (ref.available === false) warn.push(L('OC20 没有 S 的气相参考：这里的能量是 E(吸附结构) − E(表面)，只用来比较位点，不是吸附能。', 'OC20 has no gas reference for S: the energies here are E(adslab) − E(slab), for ranking the sites only, not adsorption energies.'));
     if (r.truncated) warn.push(L('位点太多，只算了前 32 个。', 'Too many sites: only the first 32 were computed.'));
     $('db-result').innerHTML = `<div class="md-res md-db-res">
-      <h3>${C.formula(sys.metal_a, sys.metal_b, sys.ratio, true)}(${esc(sys.facet)}) + ${C.sub(esc(sys.adsorbate))}${cached ? ` <span class="chip">${esc(L('缓存的结果', 'cached result'))}</span>` : ''}</h3>
+      <h3>${C.formula(esc(sys.metal_a), esc(sys.metal_b), sys.ratio, true)}(${esc(sys.facet)}) + ${C.sub(esc(sys.adsorbate))}${cached ? ` <span class="chip">${esc(L('缓存的结果', 'cached result'))}</span>` : ''}</h3>
       ${warn.map((w) => `<p class="md-warn">${esc(w)}</p>`).join('')}
       ${best ? `<p class="md-db-best"><b>${esc(L('能量最低的位点', 'Lowest-energy site'))}</b> ${site(best)} · ${esc(L('表面', 'top layer'))} ${C.sub(esc(best.top))} · ${eName} = <b>${f(best.energy, 3)} eV</b> · DMAE ${f(best.dmae, 3)} Å</p>` : ''}
       <p class="muted small">${esc(C.structure(sys.ratio))} · a = ${f(lat.a, 3)} Å${lat.c ? ` · c = ${f(lat.c, 3)} Å` : ''} (${esc(lat.method === 'uma-omat' ? L('UMA omat 弛豫', 'UMA omat relaxation') : L('Vegard 定律', 'Vegard’s law'))}, Vegard ${f(lat.a_vegard, 3)} Å) · ${esc(L(`${(r.slabs || []).length} 种表面终止 · ${rows.length} 个位点`, `${(r.slabs || []).length} termination(s) · ${rows.length} sites`))} · ${esc([eng.checkpoint, eng.uma && `UMA ${eng.uma} (${eng.task})`, eng.gpu || (eng.device !== 'none' && eng.device)].filter(Boolean).join(' · '))}</p>
       <div class="md-table"><table class="md-db-table">
         <thead><tr><th>#</th><th>${esc(L('位点', 'Site'))}</th><th>${esc(L('表面', 'Top layer'))}</th><th>${esc(L('等价数', 'Mult.'))}</th><th>${esc(eName)} (eV)</th><th>ΔE (eV)</th><th>DMAE (Å)</th>${r.sites?.some((s) => s.dmae_gen_final != null) ? `<th>${esc(L('优化位移', 'Relax DMAE'))} (Å)</th>` : ''}<th>${esc(L('信心', 'Conf.'))}</th><th>${esc(L('异常', 'Flags'))}</th><th></th></tr></thead>
-        <tbody>${rows.map((x) => `<tr data-site="${x.id}"${x.best ? ' class="md-db-top"' : ''}${x.ok ? '' : ' data-bad="true"'}><td class="n">${x.id}</td><td>${site(x)}</td><td>${C.sub(esc(x.top))}</td><td class="n">${x.multiplicity}</td><td class="n">${f(x.energy, 3)}</td><td class="n">${f(x.rel, 3)}</td><td class="n">${f(x.dmae, 3)}</td>${r.sites?.some((s) => s.dmae_gen_final != null) ? `<td class="n">${f(x.dmaeFinal, 3)}</td>` : ''}<td class="n">${x.confidence == null ? '—' : f(x.confidence, 2)}</td><td>${flagChips(x.flags)}</td><td><button type="button" class="text-button" data-view="${x.id}">3D</button></td></tr>`).join('')}</tbody>
+        <tbody>${rows.map((x) => `<tr data-site="${esc(x.id)}"${x.best ? ' class="md-db-top"' : ''}${x.ok ? '' : ' data-bad="true"'}><td class="n">${esc(x.id)}</td><td>${site(x)}</td><td>${C.sub(esc(x.top))}</td><td class="n">${esc(x.multiplicity)}</td><td class="n">${f(x.energy, 3)}</td><td class="n">${f(x.rel, 3)}</td><td class="n">${f(x.dmae, 3)}</td>${r.sites?.some((s) => s.dmae_gen_final != null) ? `<td class="n">${f(x.dmaeFinal, 3)}</td>` : ''}<td class="n">${x.confidence == null ? '—' : f(x.confidence, 2)}</td><td>${flagChips(x.flags)}</td><td><button type="button" class="text-button" data-view="${esc(x.id)}">3D</button></td></tr>`).join('')}</tbody>
       </table></div>
       <p class="muted small">${esc(L('ΔE 相对能量最低的可靠位点；DMAE 是 DBCata 结构和初始结构的差别，优化位移是 UMA 短程优化又挪了多少（大说明 DBCata 的结构离 UMA 的极小点远）。信心来自 DBCata 的异常分类器（站长电脑上没有它的权重时为 —）。', 'ΔE is relative to the lowest reliable site; DMAE is how far DBCata moved the start, relax DMAE how much the short UMA relaxation moved it again (large: DBCata’s structure is far from UMA’s minimum). Confidence comes from DBCata’s anomaly classifier (— when its weights are not on the computer).'))}</p>
     </div>`;

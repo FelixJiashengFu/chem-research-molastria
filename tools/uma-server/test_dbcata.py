@@ -135,6 +135,32 @@ class Structures(unittest.TestCase):
         self.assertEqual(sorted(s["top"] for s in b["slabs"]), ["Au4", "Cu4"])
         self.assertFalse(b["truncated"])
 
+    def test_ideal_lattice_has_no_slab_flags(self):
+        """NiTa sits below 0.8 x the covalent sum in the ideal lattice; AuPt has no pair within 1.0 x. Neither may make
+        the clean, unmoved slab look collided, and a lifted top atom must still count as reconstructed."""
+        for a, b, x in (("Ni", "Ta", 0.5), ("Au", "Pt", 0.5), ("Au", "Ag", 0.5), ("Pt", "Ni", 0.75), ("Y", "Al", 0.25)):
+            for facet in ("111", "110"):
+                built = self.build(a, b, x, facet)
+                it = next(i for i in built["items"] if i["site"]["kind"] != "top")
+                at = it["atoms"]
+                self.assertNotIn("collision", core.flags(at, at["positions"]), (a, b, facet))
+                self.assertNotIn("reconstructed", core.flags(at, at["positions"]), (a, b, facet))
+                tags = np.array(at["tags"])
+                pos = at["positions"].copy()
+                pos[tags == 1] += (0, 0, 2.0)
+                pos[tags == 2] += (0, 0, 2.0)
+                self.assertIn("reconstructed", core.flags(at, pos), (a, b, facet))
+
+    def test_hollows_kept_when_c_differs_from_a(self):
+        """An L1_0 cell relaxed with c != a still has fcc and hcp hollows on (111)."""
+        p = params(metal_a="Au", metal_b="Cu", ratio=0.5, facet="111", adsorbate="O")
+        a = core.vegard(p["metal_a"], p["metal_b"], p["ratio"])
+        kinds = {it["site"]["kind"] for it in core.build(p, a, 1.03 * a)["items"]}
+        self.assertTrue({"hollow-fcc", "hollow-hcp"} <= kinds, kinds)
+        p = params(metal_a="Au", metal_b="Cu", ratio=0.5, facet="110", adsorbate="O")
+        kinds = {it["site"]["kind"] for it in core.build(p, a, 1.03 * a)["items"]}
+        self.assertFalse({"hollow-fcc", "hollow-hcp"} & kinds, kinds)
+
     def test_site_height(self):
         b = self.build("Au", "Cu", 0.5, "111", "CH3")
         for it in b["items"]:
