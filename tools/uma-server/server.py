@@ -6,7 +6,7 @@ use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, 
 shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
     python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
-        [--aimnet-python PATH] [--xtb PATH]
+        [--aimnet-python PATH] [--molnextr-python PATH] [--xtb PATH]
 
 Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and AllScAIP trained on OMol25) and
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
@@ -19,13 +19,15 @@ PATH / in this Python environment). Protein MD runs OpenMM (Amber ff14SB + GBSA-
 entry downloaded from RCSB by its ID (openmm_backend.py; needs openmm and pdbfixer in this environment, uses CUDA,
 then OpenCL, then the CPU). quacc (Quantum-Accelerators/quacc, BSD 3-Clause, pip install quacc) runs small batches
 through its recipes (quacc_backend.py): GFN2-xTB with tblite or the xtb program, Psi4 single points, and EMT bulk-to-
-slab surface energies. A model whose package or environment is missing is simply
+slab surface energies. MolNexTR (CYF2000127/MolNexTR, Apache-2.0) reads drawn structures from images (job ocsr,
+model molnextr) in molnextr_worker.py under its own environment's Python (--molnextr-python); ocsr_backend.py holds its
+limits and checks. A model whose package or environment is missing is simply
 reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Seven lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), xTB (the CPU), OpenMM (protein MD) and quacc
+Eight lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), MolNexTR (its own GPU process), xTB (the CPU), OpenMM (protein MD) and quacc
 (its recipes, on the CPU). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
@@ -44,7 +46,9 @@ API v3 (JSON; every request carries the header X-MolAstria-Key):
                       {fmax?, irc?, irc_steps?}; neb takes the reactant as xyz and params {product_xyz, images?, fmax?,
                       irc?, irc_steps?}. phon (phonopy-emt, and the UMA checkpoints with the inorganic-materials task
                       omat; phonon_backend.py) takes a crystal in params {preset | structure + format (poscar | cif),
-                      supercell?, displacement?, relax?, mesh?, t_max?}, not smiles or xyz. The old form {smiles, model?, job:
+                      supercell?, displacement?, relax?, mesh?, t_max?}, not smiles or xyz. ocsr (molnextr) takes
+                      params {images: [base64 PNG or JPEG, 1 to 8]} and returns one SMILES + molfile + confidence
+                      per image; the result's params say only how many images there were. The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -71,6 +75,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import numpy as np
 
 import chemjobs as cj
+import ocsr_backend as ocb
 import openmm_backend as ob
 import phonon_backend as pb
 import quacc_backend as qb
@@ -96,11 +101,12 @@ X_JOBS = tuple(j for j in A_JOBS if j != "ipea")
 P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
 Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
 PH_JOBS = ("phon",)  # phonons of a crystal (phonopy + spglib + seekpath; phonon_backend.py): UMA's omat task, or EMT
-JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS
+O_JOBS = ("ocsr",)  # structure images -> SMILES (MolNexTR; ocsr_backend.py, molnextr_worker.py)
+JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS + O_JOBS
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
 TS_JOBS = ("ts", "neb")  # transition states with Sella (tsjobs.py); XYZ input only, at most tj.MAX_ATOMS atoms
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900, "ocsr": 120}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -166,11 +172,15 @@ MODELS = {
     # phonons of crystals on the CPU with ASE's EMT (its seven fcc metals): the fully local path, no model weights
     "phonopy-emt": {"name": "phonopy · EMT", "lane": "phonon", "jobs": PH_JOBS, "charged": False,
                     "elements": pb.EMT_METALS, "direct": False},
+    # structure images -> SMILES + molfile (MolNexTR, Apache-2.0; molnextr_worker.py in molnextr-env): no molecule in
+    # the request, the pictures come in params.images
+    "molnextr": {"name": "MolNexTR", "lane": "molnextr", "jobs": O_JOBS, "charged": False, "elements": (), "direct": False},
 }
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
 MAX_HEAVY, MAX_ATOMS, MAX_QUEUE = 30, 120, 25
 MAX_BODY = 32768  # bytes; an XYZ of 120 atoms fits easily
+OCSR_BODY = (ocb.MAX_TOTAL + 2) // 3 * 4 + 8192  # an ocsr job's images in base64, and room for the rest; no other job
 MACE_TIMEOUT = 900  # seconds one MACE call may take before its process is restarted
 
 
@@ -309,6 +319,11 @@ def job_params(job, raw):
                 raise BadRequest("params.product_xyz must be the product's XYZ (the same atoms in the same order)")
             out.update(product_xyz=product, images=_number(raw, "images", tj.NEB_IMAGES_MIN, tj.NEB_IMAGES_MAX, tj.NEB_IMAGES, True))
         return out
+    if job == "ocsr":
+        images = raw.get("images")
+        if not (isinstance(images, list) and 1 <= len(images) <= ocb.MAX_IMAGES and all(isinstance(x, str) for x in images)):
+            raise BadRequest(f"params.images must be a list of 1 to {ocb.MAX_IMAGES} base64 PNG or JPEG images")
+        return {"images": list(images)}
     if job == "phon":
         preset, structure = raw.get("preset"), raw.get("structure")
         if (preset in (None, "")) == (structure in (None, "")):
@@ -469,11 +484,26 @@ class AimnetBackend(MaceBackend):
         raise RuntimeError("AIMNet2 does not predict polarizabilities")
 
 
+class MolnextrBackend(MaceBackend):
+    """molnextr_worker.py in molnextr-env: the same JSON lines as the MACE worker; images in, one item per image out."""
+
+    SCRIPT, NAME = "molnextr_worker.py", "MolNexTR"
+
+    def recognise(self, images, timeout=ocb.MAX_IMAGES * 30):
+        return self.call({"op": "ocsr", "images": images}, timeout=timeout)["items"]
+
+    def ef(self, model):
+        raise RuntimeError("MolNexTR reads images; it has no energies")
+
+    def dp(self, symbols, positions):
+        raise RuntimeError("MolNexTR reads images; it has no polarizabilities")
+
+
 class Service:
     def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python="",
-                 aimnet_python=""):
+                 aimnet_python="", molnextr_python=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
-        self.aimnet_python = aimnet_python
+        self.aimnet_python, self.molnextr_python = aimnet_python, molnextr_python
         self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
@@ -481,7 +511,8 @@ class Service:
         self.phonopy = {}
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "xtb", "openmm", "quacc", "phonon")}
+        self.save_lock = threading.Lock()
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "molnextr", "xtb", "openmm", "quacc", "phonon")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -513,12 +544,16 @@ class Service:
                 self.device = "cpu"
             for lane, make in (("fair", lambda: FairchemBackend(self.device)), ("ani", lambda: AniBackend(self.device)),
                                ("mace", lambda: MaceBackend(self.mace_python)),
-                               ("aimnet", lambda: AimnetBackend(self.aimnet_python))):
+                               ("aimnet", lambda: AimnetBackend(self.aimnet_python)),
+                               ("molnextr", lambda: MolnextrBackend(self.molnextr_python))):
                 if lane == "mace" and not self.mace_python:
                     self.errors[lane] = "no MACE environment (start with --mace-python)"
                     continue
                 if lane == "aimnet" and not self.aimnet_python:
                     self.errors[lane] = "no AIMNet2 environment (start with --aimnet-python)"
+                    continue
+                if lane == "molnextr" and not self.molnextr_python:
+                    self.errors[lane] = "no MolNexTR environment (start with --molnextr-python)"
                     continue
                 print(f"Loading the {lane} models on {self.device} {self.gpu}".rstrip(), flush=True)
                 try:
@@ -660,6 +695,14 @@ class Service:
             r = self.backends["quacc"].flow(model, items, prm["recipe"], prm, budget)
         elif job == "qslab":
             r = self.backends["quacc"].slabs(prm["element"], prm["max_index"], budget)
+        elif job == "ocsr":
+            decoded = ocb.check_images(spec["images"])
+            if self.fake:
+                items, info = ocb.toy_predict(decoded, Chem), {"version": "fake", "weights": "", "device": "fake"}
+            else:
+                backend = self.backends["molnextr"]
+                items, info = backend.recognise(spec["images"]), backend.info
+            r = ocb.result([ocb.finish(it, Chem) for it in items], decoded, info)
         elif job == "phon":
             r = pb.run_phonon(prm, self.periodic_calculator(model), budget, MODELS[model]["name"], MODELS[model]["elements"])
         elif job in D_JOBS:
@@ -719,12 +762,14 @@ class Service:
         return out
 
     def save_cache(self):
-        with self.lock:
-            data = json.dumps(self.cache)
-        tmp = self.cache_path + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            f.write(data)
-        os.replace(tmp, self.cache_path)
+        # every lane finishes on its own thread: one writer at a time, or two saves race on the same .tmp file
+        with self.save_lock:
+            with self.lock:
+                data = json.dumps(self.cache)
+            tmp = self.cache_path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write(data)
+            os.replace(tmp, self.cache_path)
 
     def prune(self):
         cutoff = time.time() - 3600
@@ -743,9 +788,10 @@ class Service:
         smiles, xyz = body.get("smiles"), body.get("xyz")
         has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
-        if job in ("rxn", "pmd", "qflow", "qslab", "phon"):
+        if job in ("rxn", "pmd", "qflow", "qslab", "phon", "ocsr"):
             if has_smiles or has_xyz:
-                raise BadRequest({"phon": "phon takes the crystal in params.preset or params.structure, not smiles or xyz",
+                raise BadRequest({"ocsr": "ocsr takes its images in params.images, not smiles or xyz",
+                                  "phon": "phon takes the crystal in params.preset or params.structure, not smiles or xyz",
                                   "rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
                                   "pmd": "pmd takes the PDB ID in params, not smiles or xyz",
                                   "qflow": "qflow takes its molecules in params.items, not smiles or xyz",
@@ -776,6 +822,16 @@ class Service:
         mol_h, symbols = None, None
         if job == "pmd":
             spec.update(charge=0, spin=None, input="pdb:" + params["pdb_id"])
+        elif job == "ocsr":
+            if body.get("charge") not in (None, "", 0) or body.get("spin") not in (None, "", 1):
+                raise BadRequest("ocsr reads pictures: no charge or spin")
+            images = params.pop("images")
+            try:
+                decoded = ocb.check_images(images)
+            except ocb.OcsrError as e:
+                raise BadRequest(str(e)) from None
+            params["n_images"] = len(images)  # the result says how many; the pictures themselves stay out of it
+            spec.update(charge=0, spin=None, images=images, input="img:" + ocb.digest(decoded))
         elif job == "qslab":
             spec.update(charge=0, spin=None, input="slab:" + params["element"])
         elif job == "phon":
@@ -1032,12 +1088,14 @@ def make_handler(service, secret):
             if self.path != "/jobs":
                 return self.reply(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
-            if n > MAX_BODY:
+            if n > OCSR_BODY:
                 return self.reply(413, {"error": "request too large"})
             try:
                 body = json.loads(self.rfile.read(n) or b"{}")
             except ValueError:
                 return self.reply(400, {"error": "not JSON"})
+            if n > MAX_BODY and not (isinstance(body, dict) and body.get("job") == "ocsr"):
+                return self.reply(413, {"error": "request too large"})  # only image jobs may be this large
             status, data = service.submit(body if isinstance(body, dict) else {})
             self.reply(status, data)
 
@@ -1052,6 +1110,8 @@ def main():
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
     ap.add_argument("--aimnet-python", default=os.environ.get("MOLASTRIA_AIMNET_PYTHON", ""),
                     help="python.exe of the environment with aimnet (AIMNet2 is off without it)")
+    ap.add_argument("--molnextr-python", default=os.environ.get("MOLASTRIA_MOLNEXTR_PYTHON", ""),
+                    help="python.exe of the environment with MolNexTR (structure images -> SMILES are off without it)")
     ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
     ap.add_argument("--psi4-python", default=os.environ.get("MOLASTRIA_PSI4_PYTHON", ""),
                     help="python.exe of a conda environment with psi4 and quacc (quacc-psi4 is off without it, unless this environment imports psi4)")
@@ -1068,7 +1128,7 @@ def main():
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
     service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
                       openmm_platform=args.openmm_platform, psi4_python=args.psi4_python,
-                      aimnet_python=args.aimnet_python)
+                      aimnet_python=args.aimnet_python, molnextr_python=args.molnextr_python)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)
     try:

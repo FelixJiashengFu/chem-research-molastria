@@ -80,9 +80,13 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
     if (id === 'conditions' && ctx.template?.arrow_text?.length) user += `\n\nThe arrow text was read as:\n${ctx.template.arrow_text.join('\n')}`;
     if (id === 'text') user += `\n\nTEXT:\n${clip(ctx.text || '', 12000)}`;
     if (id === 'verify') user += `\n\nEXTRACTION:\n${JSON.stringify(compactForReview(ctx.reactions || [])).slice(0, 9000)}`;
+    if (ctx.boxes && BOXED.has(id)) user += `\n${ctx.boxRule || BOX_RULE}`;
     if (ctx.caption && id !== 'text' && id !== 'planner') user += `\n\nCaption / nearby text from the paper (context only):\n${clip(ctx.caption, 1500)}`;
     return { system: TASK[id], user };
   }
+  // the agents whose molecules are drawn structures: with the structure lane on they also give each one a box
+  const BOXED = new Set(['template', 'molecules', 'scope']);
+  const BOX_RULE = `- Also give every drawn molecule a "box": [x0, y0, x1, y1], the bounding box of its drawing in the image in thousandths of the image width and height (integers 0–1000, origin top left), around the bonds and atom letters only, not its label or yield. Use [] when you cannot tell.`;
   const clip = (s, n) => (String(s).length > n ? String(s).slice(0, n) + ' …' : String(s));
   function compactForReview(rxns) {
     return rxns.map((r) => ({ id: r.id, reactants: r.reactants.map((m) => [m.label, m.smiles].filter(Boolean).join(' ')), products: r.products.map((m) => [m.label, m.smiles].filter(Boolean).join(' ')), conditions: r.conditions.filter((c) => c.role !== 'yield').map((c) => c.text), yield: r.yield?.text || '' }));
@@ -444,7 +448,9 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
   }
 
   // ── 汇总 ────────────────────────────────────────────────────────────────
-  const mol = (m = {}) => ({ label: String(m.label ?? '').trim(), smiles: normalizeR(m.smiles ?? ''), name: String(m.name ?? '').trim() });
+  /** A drawn molecule's box as the model gave it: four finite numbers (ocsr-core.js normBox reads them); else none. */
+  const boxOf = (b) => (Array.isArray(b) && b.length === 4 && b.every((t) => typeof t === 'number' && Number.isFinite(t)) ? b.slice() : null);
+  const mol = (m = {}) => { const b = boxOf(m.box); return { label: String(m.label ?? '').trim(), smiles: normalizeR(m.smiles ?? ''), name: String(m.name ?? '').trim(), ...(b ? { box: b } : {}) }; };
   /** Conditions from the conditions agent (preferred) or from the arrow text, each normalised; molecules referenced by label get their SMILES. */
   function conditionsOf(out, molecules) {
     let list = Array.isArray(out.conditions?.conditions) ? out.conditions.conditions : null;
@@ -512,7 +518,7 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
       if (!reactants.length) reactants = tRe.filter((m) => !hasDummy(m.smiles)).map((m) => ({ ...m }));
       // fixed reactants of the template (no R) are added when the cell gave only the variable ones
       for (const f of tRe.filter((m) => !hasDummy(m.smiles))) if (!reactants.some((r) => r.smiles === f.smiles || (r.label && r.label === f.label))) reactants.push({ ...f });
-      reactions.push({ id: `${i + 1}_1`, kind: 'variant', reactants, products: [mol({ label, smiles: e.product_smiles })], conditions: conds.map((c) => ({ ...c })), yield: y, note: String(e.note || ''), source: 'scope' });
+      reactions.push({ id: `${i + 1}_1`, kind: 'variant', reactants, products: [mol({ label, smiles: e.product_smiles, box: e.box })], conditions: conds.map((c) => ({ ...c })), yield: y, note: String(e.note || ''), source: 'scope' });
     });
     // a text-based R-group table: products enumerated by substitution
     const rows = out.rtable?.rows || [];
@@ -556,7 +562,7 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
 
   // ── 核对和打分 ───────────────────────────────────────────────────────────
   /** Penalties of the rule-based score; each flag multiplies the score. Levels use ChemEAGLE's thresholds (0.85 / 0.5). */
-  const PENALTY = { invalid: 0.3, unfilled: 0.4, unresolved: 0.4, noProduct: 0.2, noReactant: 0.5, element: 0.6, elementSoft: 0.85, yieldOdd: 0.7, noSmiles: 0.95, dupLabel: 0.8, review_no: 0.5, review_unsure: 0.85, emptySmiles: 0.6 };
+  const PENALTY = { invalid: 0.3, unfilled: 0.4, unresolved: 0.4, noProduct: 0.2, noReactant: 0.5, element: 0.6, elementSoft: 0.85, yieldOdd: 0.7, noSmiles: 0.95, dupLabel: 0.8, review_no: 0.5, review_unsure: 0.85, emptySmiles: 0.6, ocsrDisagree: 0.85 };
   const FLAG_TEXT = {
     invalid: ['SMILES 解析不了：{x}', 'SMILES does not parse: {x}'],
     emptySmiles: ['有分子没有 SMILES：{x}', 'A molecule has no SMILES: {x}'],
@@ -570,7 +576,8 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
     noSmiles: ['试剂没有 SMILES：{x}', 'Reagent without SMILES: {x}'],
     dupLabel: ['产物编号重复：{x}', 'Product label used twice: {x}'],
     review_no: ['模型复核说不对：{x}', 'Model review says no: {x}'],
-    review_unsure: ['模型复核拿不准：{x}', 'Model review unsure: {x}']
+    review_unsure: ['模型复核拿不准：{x}', 'Model review unsure: {x}'],
+    ocsrDisagree: ['MolNexTR 和视觉模型读出的结构不一样：{x}', 'MolNexTR and the vision model read different structures: {x}']
   };
   const flagText = (f, en) => (FLAG_TEXT[f.code] ? FLAG_TEXT[f.code][en ? 1 : 0].replace('{x}', f.detail || '') : f.code);
   const level = (score) => (score >= 0.85 ? 'high' : score >= 0.5 ? 'medium' : 'low');
@@ -595,6 +602,8 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
         if (!ok(dum ? m.smiles.replace(/\[(\d*)\*(?::\d+)?\]/g, '*') : m.smiles)) add('invalid', `${who} ${m.smiles}`);
       }
       for (const u of rx.unresolved || []) add('unresolved', u);
+      const differ = all.filter((m) => m.ocsr?.disagree && m.source !== 'both' && m.source !== 'manual').map((m) => m.label || m.name || '?');
+      if (differ.length) add('ocsrDisagree', differ.join(', '));
       if (!rx.products.some((m) => m.smiles || m.label)) add('noProduct');
       if (!rx.reactants.length && rx.kind !== 'text') add('noReactant');
       if (rx.kind !== 'template') {
@@ -628,6 +637,9 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
     const s = (ms) => ms.map((m) => m.smiles).filter(Boolean).join('.');
     return `${s(rx.reactants)}>${rx.conditions.map((c) => c.smiles).filter(Boolean).join('.')}>${s(rx.products)}`;
   }
+  /** One molecule in the export: where its SMILES came from, and what MolNexTR read when the structure lane ran. */
+  const molJSON = (m) => ({ label: m.label, smiles: m.smiles, ...(m.name ? { name: m.name } : {}), ...(m.source ? { source: m.source } : {}),
+    ...(m.ocsr ? { molnextr: { smiles: m.ocsr.smiles, confidence: m.ocsr.confidence, ...(m.ocsr.alt ? { other: m.ocsr.alt } : {}), agrees: m.source === 'both' } } : {}) });
   /** The JSON people download: the reactions in ChemEAGLE's shape, plus molecules, entities and where the ideas came from. */
   function toJSON(result, meta = {}) {
     return {
@@ -637,16 +649,16 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
       method: 'Multi-agent extraction after ChemEAGLE (Chen et al., arXiv:2507.20230); reimplemented by MolAstria, rule-based checks and score.',
       reactions: result.reactions.map((r) => ({
         reaction_id: r.id, kind: r.kind,
-        reactants: r.reactants.map((m) => ({ label: m.label, smiles: m.smiles, ...(m.name ? { name: m.name } : {}) })),
+        reactants: r.reactants.map(molJSON),
         conditions: [...r.conditions.map((c) => ({ role: c.role, text: c.text, ...(c.name && c.name !== c.text ? { name: c.name } : {}), ...(c.amount ? { amount: c.amount } : {}), ...(c.smiles ? { smiles: c.smiles } : {}), ...(c.label ? { label: c.label } : {}) })),
           ...(r.yield?.text ? [{ role: 'yield', text: r.yield.text }] : [])],
-        products: r.products.map((m) => ({ label: m.label, smiles: m.smiles, ...(m.name ? { name: m.name } : {}) })),
+        products: r.products.map(molJSON),
         reaction_smiles: rxnSmiles(r),
         ...(r.yield?.value != null ? { yield_percent: r.yield.value } : {}), ...(r.yield?.ee ? { ee: r.yield.ee } : {}), ...(r.yield?.dr ? { dr: r.yield.dr } : {}),
         ...(r.rvalues ? { r_groups: r.rvalues } : {}), ...(r.sentence ? { sentence: r.sentence } : {}), ...(r.note ? { note: r.note } : {}),
         ...(r.confidence ? { confidence: { score: r.confidence.score, level: r.confidence.level, flags: r.confidence.flags.map((f) => f.code + (f.detail ? `: ${f.detail}` : '')) } } : {})
       })),
-      molecules: result.molecules.map((m) => ({ label: m.label, smiles: m.smiles, ...(m.name ? { name: m.name } : {}), role: m.role })),
+      molecules: result.molecules.map((m) => ({ ...molJSON(m), role: m.role })),
       text_entities: result.entities || []
     };
   }
@@ -683,6 +695,6 @@ The deciding question between scope_panel and rgroup_table is what a cell holds:
     return smiles ? { cid: p.CID, smiles, formula: String(p.MolecularFormula || '') } : null;
   }
 
-  const API = { AGENTS, EXTRACTORS, ROLES, prompt, plan, tokens, elements, syntaxOk, normalizeR, hasDummy, substitute, fragment, aryl, SUBSTITUENTS, ALIASES, REAGENTS, reagent, splitConditions, classify, splitMixture, parseYield, relabel, assemble, check, level, PENALTY, flagText, rxnSmiles, toJSON, toCSV, CSV_COLS, parseReply, pubchemNameUrl, pubchemName };
+  const API = { AGENTS, EXTRACTORS, ROLES, prompt, plan, tokens, elements, syntaxOk, normalizeR, hasDummy, substitute, fragment, aryl, SUBSTITUENTS, ALIASES, REAGENTS, reagent, splitConditions, classify, splitMixture, parseYield, relabel, assemble, check, level, PENALTY, flagText, BOX_RULE, rxnSmiles, toJSON, toCSV, CSV_COLS, parseReply, pubchemNameUrl, pubchemName };
   root.MolAstriaExtract = API;
 })(typeof window !== 'undefined' ? window : globalThis);

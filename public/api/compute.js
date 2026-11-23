@@ -27,7 +27,8 @@
     ['pmd', '蛋白质分子动力学', 5, 'pdb_id*, chains, ps, temperature'],
     ['qflow', 'quacc 批量计算（每个分子 1 次，带频率 3 次，Psi4 2 次）', 1, 'items*, recipe, fmax, temperature, method, basis'],
     ['qslab', 'quacc 表面能（EMT，最大晶面指数 2 时 5 次）', 3, 'element*, max_index'],
-    ['phon', '晶体的声子（phonopy：色散、态密度、热容）', 5, 'preset 或 structure + format, supercell, displacement, relax, mesh, t_max']
+    ['phon', '晶体的声子（phonopy：色散、态密度、热容）', 5, 'preset 或 structure + format, supercell, displacement, relax, mesh, t_max'],
+    ['ocsr', '结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）', 1, 'images*']
   ];
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
@@ -37,6 +38,7 @@
   const IONS = [...GEOM, 'pa']; // AIMNet2: closed-shell ions, no radicals, so of the charge jobs only the proton affinity
   const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   const QFLOW = ['qflow'], QSLAB = ['qslab']; // quacc recipes: a batch of SMILES in params.items; EMT slabs by element
+  const OCSR = ['ocsr']; // MolNexTR: base64 PNG / JPEG crops of drawn structures in params.images -> SMILES + molfile
   const PHON = ['phon']; // phonopy with EMT: phonons of an fcc metal; the UMA checkpoints with the omat task do phon too
   const CHARGED_PH = [...CHARGED, 'phon'], GEOM_PH = [...GEOM, 'phon'];
   let models = [
@@ -44,7 +46,7 @@
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
     ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
     ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM], ['openmm-amber14', PROTEIN],
-    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['aimnet2', IONS], ['phonopy-emt', PHON]
+    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['aimnet2', IONS], ['phonopy-emt', PHON], ['molnextr', OCSR]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {

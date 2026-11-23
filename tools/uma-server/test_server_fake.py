@@ -41,6 +41,7 @@ QS = ["quacc-emt"] if QUACC else []
 # phonons (phonon_backend.py): phonopy, spglib and seekpath (pip install phonopy spglib seekpath); EMT is part of ASE
 PHONOPY = bool(server.pb.versions())
 PH = ["phonopy-emt"]
+OC = ["molnextr"]  # MolNexTR: structure images -> SMILES; the fake server reads every image as TOY_SMILES
 A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa"]
 BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"]
 D_JOBS = ["polar", "ir"]
@@ -48,7 +49,8 @@ P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
 I_JOBS = BC_JOBS + ["pa"]
 GROUPS = ((AM, A_JOBS + ["phon"]), (A, A_JOBS), (BM, BC_JOBS + ["phon"]), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS),
-          (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS), (QF, ["qflow"]), (QS, ["qslab"]), (PH, ["phon"]))
+          (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS), (QF, ["qflow"]), (QS, ["qslab"]), (PH, ["phon"]),
+          (OC, ["ocsr"]))
 
 
 def live(jobs):
@@ -80,6 +82,7 @@ FIELDS = {
            "path_xyz", "n_path_frames", "reaction_energy_kcal"},
     "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
               "slabs", "lowest"},
+    "ocsr": {"engine", "version", "weights", "device", "items", "n_ok"},
     "phon": {"method", "versions", "source", "formula", "symmetry", "supercell", "n_supercell", "n_displacements",
              "displacement_a", "lattice_input", "relax", "lattice", "poscar", "max_residual_force_ev_a", "band", "dos",
              "thermal", "gamma_thz", "min_frequency_thz", "max_frequency_thz", "imaginary", "imag_threshold_thz",
@@ -104,6 +107,8 @@ ITEMS = {
     ("ts", "profile"): {"s", "energy_ev", "rel_kcal"},
     ("neb", "profile"): {"s", "energy_ev", "rel_kcal"},
     ("ts", "irc"): {"forward", "reverse"},
+    ("ocsr", "items"): {"index", "format", "width", "height", "ok", "smiles", "molfile", "confidence", "min_confidence",
+                        "n_atoms", "n_bonds", "atoms", "valid", "canonical", "formula", "r_groups"},
     ("qslab", "slabs"): {"miller", "family", "atoms", "energy_ev", "area_a2", "gamma_j_m2", "gamma_ev_a2", "converged", "steps"},
 }
 DEFAULTS = {
@@ -137,14 +142,29 @@ REQUESTS = {
     "qslab": {"params": {"element": "Cu"}},
     "phon": {"params": {"preset": "Cu", "mesh": 8, "t_max": 300}},
     "ts": {"xyz": TS_GUESS, "params": {"irc_steps": 15}},
+    "ocsr": {"params": {"images": []}},  # filled below with two drawn-size PNGs
     "neb": {"xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 3, "irc_steps": 15}},
 }
 FIELDS["neb"] = FIELDS["ts"] | {"neb"}
 
 
+def png_b64(w, h):
+    """A white w x h PNG in base64, written by hand."""
+    import base64
+    import struct
+    import zlib
+    raw = b"".join(b"\x00" + b"\xff" * (3 * w) for _ in range(h))
+    chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)  # noqa: E731
+    return base64.b64encode(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                            + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b"")).decode()
+
+
+REQUESTS["ocsr"]["params"]["images"] = [png_b64(120, 80), png_b64(64, 64)]
+
+
 def expected_keys(model, job, params):
     # a protein comes back as PDB text; a quacc batch has one XYZ per molecule, a slab job none
-    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "phon") else COMMON) | FIELDS[job]
+    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "phon", "ocsr") else COMMON) | FIELDS[job]
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -285,7 +305,7 @@ class FakeServer(unittest.TestCase):
                 self.assertEqual(h["models"][model]["jobs"], live(jobs), model)
                 self.assertEqual(h["models"][model]["ready"], model not in PH or PHONOPY, model)
         self.assertEqual(set(h["models"]) - ({"quacc-gfn2", "quacc-psi4", "quacc-emt"} - set(QF + QS)),
-                         set(AM + A + BM + B + C + D + X + XN + P + I + QF + QS + PH))
+                         set(AM + A + BM + B + C + D + X + XN + P + I + QF + QS + PH + OC))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -302,7 +322,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0) + (4 if PHONOPY else 0))
+        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0) + (4 if PHONOPY else 0) + 1)
 
     @staticmethod
     def full_params(job, given):
@@ -321,6 +341,8 @@ class FakeServer(unittest.TestCase):
             out = {"fmax": 0.01, "irc": True, "irc_steps": 60, **given}
         if job == "phon":
             out = {**PHON, **given}
+        if job == "ocsr":  # the images are not echoed back, only how many there were
+            out = {"n_images": len(given["images"])}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -527,6 +549,38 @@ class FakeServer(unittest.TestCase):
         self.assertIn("imag_cm1", r)
 
     @unittest.skipUnless(PHONOPY, "phonopy / spglib / seekpath are not installed")
+    def test_ocsr(self):
+        """Structure images: the toy reading, the cache, the larger body only this job may send, the refusals."""
+        images = [png_b64(200, 120)]
+        r = self.run_job({"model": "molnextr", "job": "ocsr", "params": {"images": images}})
+        it = r["items"][0]
+        self.assertEqual((it["canonical"], it["formula"], it["valid"], it["format"], it["width"], it["height"]),
+                         ("CC(=O)c1ccc(Br)cc1", "C8H7BrO", True, "png", 200, 120))
+        self.assertTrue(0 < it["min_confidence"] <= it["confidence"] <= 1)
+        self.assertEqual((r["engine"], r["n_ok"], r["params"]), ("MolNexTR", 1, {"n_images": 1}))
+        status, again = self.call("POST", "/jobs", {"model": "molnextr", "job": "ocsr", "params": {"images": images}})
+        self.assertEqual((status, again.get("cached")), (200, True))
+        # a photo-sized crop: more than MAX_BODY, accepted for ocsr only
+        import base64
+        import random
+        rnd = random.Random(7)
+        noisy = base64.b64decode(png_b64(32, 32))
+        big = base64.b64encode(noisy[:33] + bytes(rnd.randrange(256) for _ in range(100000)) + noisy[-12:]).decode()
+        self.assertGreater(len(big), server.MAX_BODY)
+        status, data = self.call("POST", "/jobs", {"model": "molnextr", "job": "ocsr", "params": {"images": [big]}})
+        self.assertIn(status, (200, 202), data)  # the header is a PNG's; the toy reader does not decode the pixels
+        status, data = self.call("POST", "/jobs", {"model": UMA, "job": "sp", "smiles": "C", "params": {"note": big}})
+        self.assertEqual(status, 413)
+        gif = base64.b64encode(b"GIF89a" + b"\x00" * 30).decode()
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": [gif]}}, text="only PNG and JPEG")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": []}}, text="params.images")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": images * 9}}, text="params.images")
+        self.refused({"model": "molnextr", "job": "ocsr", "smiles": "CCO", "params": {"images": images}}, text="not smiles or xyz")
+        self.refused({"model": "molnextr", "job": "ocsr", "charge": 1, "params": {"images": images}}, text="no charge or spin")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": ["data:image/png;base64," + images[0]]}}, text="base64")
+        self.refused({"model": "molnextr", "job": "sp", "smiles": "CCO"})
+        self.refused({"model": UMA, "job": "ocsr", "params": {"images": images}})
+
     def test_phonons(self):
         """A crystal as POSCAR text and as CIF, the same answer either way, and the refusals before anything is queued."""
         poscar = "Cu fcc\n1.0\n0 1.8 1.8\n1.8 0 1.8\n1.8 1.8 0\nCu\n1\nDirect\n0 0 0\n"
@@ -623,9 +677,9 @@ class Contract(unittest.TestCase):
                 self.assertEqual(server.MODELS[model]["charged"], group in (A, AM) or group is X or group is QF or group is I, model)
                 self.assertEqual(bool(server.MODELS[model].get("closed")), group is I, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 25)
+        self.assertEqual(len(server.MODELS), 26)
         self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200,
-                                              "phon": 900})
+                                              "phon": 900, "ocsr": 120})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
 
     def test_aimnet_proxy(self):

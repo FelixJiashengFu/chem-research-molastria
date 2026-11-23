@@ -679,6 +679,9 @@ const POSCAR_SI = "Si\n1.0\n0 2.7155 2.7155\n2.7155 0 2.7155\n2.7155 2.7155 0\nS
 const HCN = "3\nHCN\nH -1.07 0 0\nC 0 0 0\nN 1.16 0 0\n", HNC = "3\nHNC\nH 2.15 0 0\nC 0 0 0\nN 1.17 0 0\n", TS_GUESS = "3\nguess\nH 0.6 1.0 0\nC 0 0 0\nN 1.17 0 0\n";
 const sentBody = () => { const b = { ...(umaCalls.at(-1)?.body as any) }; delete b.who; return b; };
 
+// Structure images for ocsr (MolNexTR): the start of a real PNG and JPEG in base64; the computer reads the headers.
+const PNG_B64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+const JPG_B64 = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP" + "A".repeat(42);
 await test("API v3: every job passes with valid params and only the checked fields reach the computer", async () => {
   resetUses();
   Object.assign(env, { UMA_DAILY: "1000", ASL_DAILY: "1000" });
@@ -714,6 +717,8 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800, bogus: 1 } }, { job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800 } }],
     [{ job: "phon", model: "uma-s-1p2p1", charge: 0, params: { structure: POSCAR_SI.replace(/\n/g, "\r\n"), format: "poscar" } }, { job: "phon", model: "uma-s-1p2p1", charge: 0, params: { format: "poscar", structure: POSCAR_SI } }],
     [{ xyz: HCN, job: "neb", model: "mace-off23-small", academic: true, params: { product_xyz: "\r\n" + HNC.replace(/\n/g, "\r\n"), images: 5, irc: false } }, { xyz: HCN, job: "neb", model: "mace-off23-small", params: { irc: false, images: 5, product_xyz: HNC } }],
+    // structure images: bare base64 PNG / JPEG, forwarded as sent; no molecule, no charge
+    [{ job: "ocsr", model: "molnextr", params: { images: [PNG_B64, JPG_B64], bogus: 1 } }, { job: "ocsr", model: "molnextr", params: { images: [PNG_B64, JPG_B64] } }],
   ];
   for (const [body, want] of cases) {
     const r = await call("POST", "/uma/jobs", body);
@@ -829,6 +834,18 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ job: "phon", model: "uma-s-1p2p1-ft-d4rev", params: { preset: "Si" } }, "the D4rev fine-tune has no omat task"],
     [{ job: "phon", model: "gfn2-xtb", params: { preset: "Si" } }, "xTB does no crystals here"],
     [{ xyz: TS_GUESS, job: "ts", model: "openmm-amber14" }, "protein MD has no TS"],
+    [{ job: "ocsr", model: "molnextr" }, "structure recognition needs images"],
+    [{ job: "ocsr", model: "molnextr", params: { images: [] } }, "at least one image"],
+    [{ job: "ocsr", model: "molnextr", params: { images: Array(9).fill(PNG_B64) } }, "at most 8 images"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["data:image/png;base64," + PNG_B64] } }, "bare base64, no data: prefix"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["R0lGODlhAQABAAAAACw="] } }, "a GIF is not read"],
+    [{ job: "ocsr", model: "molnextr", params: { images: [PNG_B64 + "!"] } }, "not base64"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["iVBORw0KGgo" + "A".repeat(200001)] } }, "one image over 150000 bytes"],
+    [{ job: "ocsr", model: "molnextr", params: { images: PNG_B64 } }, "images must be a list"],
+    [{ smiles: "CCO", job: "ocsr", model: "molnextr", params: { images: [PNG_B64] } }, "ocsr takes no SMILES"],
+    [{ job: "ocsr", model: "molnextr", charge: 1, params: { images: [PNG_B64] } }, "ocsr takes no charge"],
+    [{ smiles: "CCO", job: "opt", model: "molnextr" }, "MolNexTR reads images only"],
+    [{ job: "ocsr", model: "uma-s-1p2p1", params: { images: [PNG_B64] } }, "only MolNexTR reads images"],
   ];
   for (const [body, why] of refused) {
     const r = await call("POST", "/uma/jobs", body);
@@ -838,6 +855,19 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
   eq([used("uma:local"), used("asl:local")], [0, 0], "refused jobs cost nothing");
   const huge = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ xyz: "x".repeat(16001), job: "sp" }) }), env);
   eq(huge.status, 413);
+  // only ocsr may send a body over 16000 characters: four images of 100000 bytes each fit, together over 400000 do not
+  const img = "iVBORw0KGgo" + "A".repeat(133332 - 11); // 99999 bytes once decoded
+  const img2 = "iVBORw0KGgo" + "A".repeat(133468 - 11); // 100101 bytes: four of them are over 400000
+  const bigOther = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ job: "phon", model: "phonopy-emt", params: { preset: "Cu", note: img } }) }), env);
+  eq(bigOther.status, 413, "a large body for any other job");
+  const overTotal = await call("POST", "/uma/jobs", { job: "ocsr", model: "molnextr", params: { images: Array(4).fill(img2) } });
+  eq(overTotal.status, 400, `400000 bytes in all at most: ${JSON.stringify(overTotal.data)}`);
+  const tooBig = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ job: "ocsr", model: "molnextr", params: { images: Array(5).fill(img) } }) }), env);
+  eq(tooBig.status, 413, "more than an ocsr job can need");
+  eq(umaCalls.length, before, "none of these reached the computer");
+  resetUses();
+  const three = await call("POST", "/uma/jobs", { job: "ocsr", model: "molnextr", params: { images: [img, img, img] } });
+  eq([three.status, used("uma:local")], [202, 3], "three images of 100000 bytes go through and cost one use each");
 });
 
 await test("API v3: uses are counted by cost, a job that does not fit is refused, refusals give the whole cost back", async () => {
@@ -998,7 +1028,9 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt")], [20, 0, true, true, true, true, true, true], "the twenty models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt"), ids.includes("molnextr")], [21, 0, true, true, true, true, true, true, true], "the twenty-one models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "molnextr"), { id: "molnextr", ready: false, queue: 0, charged: false, jobs: ["ocsr"] }, "MolNexTR (Apache-2.0): structure images only, in the API too");
+  eq(models.data.costs.ocsr, 1, "one use per image");
   eq(models.data.models.find((m: any) => m.id === "phonopy-emt"), { id: "phonopy-emt", ready: false, queue: 0, charged: false, jobs: ["phon"] }, "phonopy with EMT: phonons only");
   eq(models.data.models.find((m: any) => m.id === "uma-s-1p1")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "phon"], "UMA's omat task does crystals");
   eq(models.data.costs.phon, 5, "a phonon job costs 5");
@@ -1014,7 +1046,7 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON|OCSR)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
   for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)(?:_PH)?\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
@@ -1077,7 +1109,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 20, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 21, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

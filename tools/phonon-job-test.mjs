@@ -46,14 +46,14 @@ test('the same limits, presets and cost as the model server and the account serv
   assert.equal(W.maxText, L.maxText);
   assert.equal(W.supercellMax, L.supercellMax);
   assert.ok(worker.includes(`displacement: pnum(${L.disp[0]}, ${L.disp[1]}), relax: pbool, mesh: pnum(${L.mesh[0]}, ${L.mesh[1]}, true), t_max: pnum(${L.tmax[0]}, ${L.tmax[1]}, true)`), 'the worker ranges');
-  assert.equal(Number(worker.match(/qslab: 3, phon: (\d+) \}/)[1]), P.COST);
+  assert.equal(Number(worker.match(/qslab: 3, phon: (\d+)[,\s}]/)[1]), P.COST);
   assert.ok(worker.includes(`'phonopy-emt': 'open'`));
   const omat = [...worker.match(/const UMA_OMAT = new Set\(\[([^\]]+)\]\)/)[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
   assert.deepEqual(omat, plain(P.ENGINES.filter((e) => !e.emtOnly).map((e) => e.model)));
   // the model server: the same models carry phon, and the time limit
   for (const m of omat) assert.match(server, new RegExp(`"?${m === 'uma-s-1p2p1' ? 'UMA' : `"${m}"`}"?: _fair\\("[^"]+", (True|False), omat=True\\)`), m);
   assert.match(server, /"phonopy-emt": \{"name": "phonopy · EMT", "lane": "phonon", "jobs": PH_JOBS/);
-  assert.match(server, /"phon": 900\}/);
+  assert.match(server, /"phon": 900[,}]/);
 });
 
 test('parsePoscar and parseCif: what the estimate needs, and readable errors', () => {

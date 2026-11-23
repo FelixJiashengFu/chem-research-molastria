@@ -99,6 +99,19 @@ function fakeTs(b: any) {
 /** phon as tools/uma-server/phonon_backend.py returns it: a real EMT copper run saved in fixtures/, whatever crystal was asked. */
 const PHONON_CU = JSON.parse(Deno.readTextFileSync(new URL("./uma-server/fixtures/phonon-cu-emt.json", import.meta.url)));
 
+/** Structure recognition (ocsr, MolNexTR) as server.py --fake answers it: every image reads as 4-bromoacetophenone
+ * (ocsr_backend.TOY_SMILES), with confidence 0.98; an image under 200 base64 characters comes back with 0.42, so the
+ * page's "keep the vision answer" branch can be tested too. */
+function fakeOcsr(images: string[]) {
+  const smiles = "CC(=O)c1ccc(Br)cc1";
+  const items = images.map((b64, i) => {
+    const low = b64.length < 200;
+    const conf = low ? 0.42 : 0.9799;
+    return { index: i, format: b64.startsWith("/9j/") ? "jpeg" : "png", width: 320, height: 200, ok: true, smiles, molfile: "\n  fake\n\n  0  0  0  0  0  0  0  0  0  0999 V2000\nM  END\n", confidence: conf, min_confidence: low ? 0.2 : 0.97, n_atoms: 10, n_bonds: 10, atoms: [], valid: true, canonical: smiles, formula: "C8H7BrO", r_groups: 0 };
+  });
+  return { engine: "MolNexTR", version: "fake", weights: "", device: "cpu", items, n_ok: items.length };
+}
+
 /** A result with the fields of API v3 for each job; the numbers are made up (fake: true). */
 function fakeResult(b: any) {
   const p = b.params || {}, job = b.job || "ipea", model = b.model || "uma-s-1p2p1";
@@ -106,6 +119,7 @@ function fakeResult(b: any) {
   const E = -2079.62, T = p.temperature ?? 298.15, kcal = 23.0605;
   if (job === "pmd") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 4.2, fake: true, ...fakeProtein(p) };
   if (job === "phon") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 1.4, fake: true, ...PHONON_CU, note: undefined };
+  if (job === "ocsr") return { model, job, smiles: null, charge: 0, spin: null, params: { n_images: (p.images || []).length }, seconds: 0.8, fake: true, ...fakeOcsr(p.images || []) };
   if (job === "qflow" || job === "qslab") return { model, job, smiles: null, charge: 0, spin: null, params: p, seconds: 2.1, fake: true, ...fakeQuacc(b) };
   const base: any = { model, job, smiles: b.smiles ?? null, charge: b.charge ?? 0, spin: b.spin ?? 1, params: p, seconds: 1, fake: true, xyz };
   if (/direct/.test(model)) base.direct_forces = true;
@@ -170,7 +184,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
   if (url.hostname === "uma.test") { // e2e: a pretend owner computer speaking API v3 (tools/uma-server --fake behaves the same)
     const geom = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"], charged = [...geom, "ipea", "spin", "bde", "pa"], xtb = charged.filter((j) => j !== "ipea");
     const ids = { charged: ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"], neutral: ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0", "mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x", "gfn-ff"] };
-    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb, "openmm-amber14": ["pmd"], "quacc-gfn2": ["qflow"], "quacc-psi4": ["qflow"], "quacc-emt": ["qslab"], "aimnet2": [...geom, "pa"], "phonopy-emt": ["phon"] };
+    const jobs: Record<string, string[]> = { ...Object.fromEntries(ids.charged.map((m) => [m, charged])), ...Object.fromEntries(ids.neutral.map((m) => [m, geom])), "mace-mdp": ["polar", "ir"], "gfn2-xtb": xtb, "gfn2-xtb-alpb-water": xtb, "gfn1-xtb": xtb, "openmm-amber14": ["pmd"], "quacc-gfn2": ["qflow"], "quacc-psi4": ["qflow"], "quacc-emt": ["qslab"], "aimnet2": [...geom, "pa"], "phonopy-emt": ["phon"], "molnextr": ["ocsr"] };
     for (const m of ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p1"]) jobs[m] = [...jobs[m], "phon"]; // UMA's omat task: crystals
     if (url.pathname === "/health") return reply({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "Test GPU", queue: 0, running: false, done: 0, cached: 0, models: Object.fromEntries(Object.entries(jobs).map(([id, j]) => [id, { ready: true, jobs: j, queue: 0, running: false }])) });
     if (url.pathname === "/jobs") {

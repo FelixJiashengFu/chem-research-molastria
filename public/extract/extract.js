@@ -4,7 +4,7 @@
    思路来自 ChemEAGLE（arXiv:2507.20230，github.com/CYF2000127/ChemEagle，MIT），代码是自己写的。 */
 (function () {
   'use strict';
-  const X = window.MolAstriaExtract, DEMO = window.MOLASTRIA_EXTRACT_DEMO;
+  const X = window.MolAstriaExtract, DEMO = window.MOLASTRIA_EXTRACT_DEMO, O = window.MolAstriaOCSR;
   const app = document.getElementById('ex');
   if (!X || !app) return;
   const en = document.documentElement.lang === 'en';
@@ -27,8 +27,8 @@
     return el;
   }
   const ico = (dir = '') => h('i', { class: `ico-ext${dir ? ' ico-' + dir : ''}`, 'aria-hidden': 'true' });
-  const opts = (() => { try { return { net: true, verify: false, ...JSON.parse(localStorage.getItem(STORE) || '{}') }; } catch { return { net: true, verify: false }; } })();
-  const saveOpts = () => { try { localStorage.setItem(STORE, JSON.stringify({ net: opts.net, verify: opts.verify })); } catch { /* private mode */ } };
+  const opts = (() => { try { return { net: true, verify: false, ocsr: true, ...JSON.parse(localStorage.getItem(STORE) || '{}') }; } catch { return { net: true, verify: false, ocsr: true }; } })();
+  const saveOpts = () => { try { localStorage.setItem(STORE, JSON.stringify({ net: opts.net, verify: opts.verify, ocsr: opts.ocsr })); } catch { /* private mode */ } };
 
   const state = { src: null, name: '', crop: null, pdf: null, page: 1, pages: 0, running: false, ctl: null, steps: {}, result: null, demo: false, model: '', calls: 0, started: 0 };
 
@@ -73,7 +73,11 @@
           h('textarea', { id: 'ex-text', rows: '7', placeholder: L('例如 “Scheme 2. Substrate scope. Conditions: 1 (0.2 mmol), …”。“文字”智能体会从这里读反应和化合物。', 'e.g. “Scheme 2. Substrate scope. Conditions: 1 (0.2 mmol), …”. The text agent reads reactions and compounds from here.') }),
           h('div', { class: 'ex-checks' },
             h('label', {}, h('input', { type: 'checkbox', id: 'ex-net', checked: opts.net }), L('联网查化学名（只把名字发给 PubChem）', 'Look up chemical names (only the names go to PubChem)')),
-            h('label', {}, h('input', { type: 'checkbox', id: 'ex-verify', checked: opts.verify }), L('最后让模型对着原图复核一遍（多一次调用）', 'Have the model review the result against the figure (one more call)'))),
+            h('label', {}, h('input', { type: 'checkbox', id: 'ex-verify', checked: opts.verify }), L('最后让模型对着原图复核一遍（多一次调用）', 'Have the model review the result against the figure (one more call)')),
+            O ? h('label', {}, h('input', { type: 'checkbox', id: 'ex-ocsr', checked: opts.ocsr }), L('结构先交给 MolNexTR 识别，视觉模型的答案作对照（站长的电脑，每个结构用掉 1 次在线计算）', 'Read structures with MolNexTR first, the vision model’s answer as the cross-check (the site owner’s computer; one online run per structure)')) : null),
+          O ? h('div', { class: 'ex-ocsr', id: 'ex-ocsr-box' },
+            h('p', { class: 'ex-small', id: 'ex-ocsr-state' }, L('正在看站长的电脑在不在线…', 'Checking whether the site owner’s computer is online…')),
+            h('button', { type: 'button', class: 'ex-btn', id: 'ex-ocsr-one', disabled: true, text: L('识别框里的结构（MolNexTR）', 'Read the boxed structure (MolNexTR)') })) : null,
           h('p', { class: 'ex-model', id: 'ex-model' }),
           h('div', { class: 'ex-go' },
             h('button', { type: 'button', class: 'ex-btn primary', id: 'ex-run', text: L('开始抽取', 'Extract') }),
@@ -164,6 +168,97 @@
   window.addEventListener('focus', paintModel);
   window.addEventListener('storage', paintModel);
 
+  // ── MolNexTR（站长电脑上的结构识别，账号服务 /uma/jobs）──────────────────────
+  const ocsr = { health: null, busy: false };
+  const token = () => { try { return localStorage.getItem('molastria-session') || ''; } catch { return ''; } };
+  const api = () => String(window.MOLASTRIA_PAY?.accountApi || '').replace(/\/+$/, '');
+  async function umaCall(path, init = {}) {
+    const t = token();
+    const res = await fetch(api() + path, { ...init, headers: { 'Content-Type': 'application/json', ...(t ? { Authorization: `Bearer ${t}` } : {}) } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error?.message || data.error || `HTTP ${res.status}`), { status: res.status });
+    return data;
+  }
+  const laneReady = () => !!(O && ocsr.health?.online && ocsr.health.models?.[O.MODEL]?.ready);
+  function paintOcsr() {
+    const line = $('ex-ocsr-state'), one = $('ex-ocsr-one');
+    if (!line) return;
+    const hl = ocsr.health;
+    line.dataset.ready = laneReady() ? 'true' : 'false';
+    line.textContent = hl === null ? L('正在看站长的电脑在不在线…', 'Checking whether the site owner’s computer is online…')
+      : !hl.online ? L('MolNexTR：站长的电脑现在离线，结构只由视觉模型读。', 'MolNexTR: the site owner’s computer is offline; structures are read by the vision model only.')
+      : !laneReady() ? L('MolNexTR：站长的电脑在线，但还没装 MolNexTR，结构只由视觉模型读。', 'MolNexTR: the computer is online but MolNexTR is not set up there; structures are read by the vision model only.')
+      : L(`MolNexTR 在线${hl.models[O.MODEL].queue ? `，前面排着 ${hl.models[O.MODEL].queue} 个任务` : ''}。在预览上框住一个结构，可以不经过 AI 直接识别。`, `MolNexTR is online${hl.models[O.MODEL].queue ? `, ${hl.models[O.MODEL].queue} jobs ahead` : ''}. Box one structure on the preview to read it without the AI.`);
+    one.disabled = !laneReady() || ocsr.busy || state.running || !state.src || !state.crop;
+  }
+  async function refreshOcsr() {
+    if (!O) return;
+    if (!api()) ocsr.health = { online: false };
+    else { try { ocsr.health = await umaCall('/uma/health'); } catch { ocsr.health = { online: false }; } }
+    paintOcsr();
+  }
+  window.addEventListener('load', refreshOcsr);
+
+  /** One region of the full-resolution source as bare base64 PNG (JPEG when the PNG is over the size limit). */
+  function cropB64(rect) {
+    const fit = O.fitSize(rect.sw, rect.sh);
+    if (!fit) return null;
+    const c = document.createElement('canvas');
+    c.width = fit.w; c.height = fit.h;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.drawImage(state.src, rect.sx, rect.sy, rect.sw, rect.sh, 0, 0, c.width, c.height);
+    for (const [type, q] of [['image/png'], ['image/jpeg', 0.92], ['image/jpeg', 0.8], ['image/jpeg', 0.6]]) {
+      const d = O.fromDataUrl(c.toDataURL(type, q));
+      if (d && d.bytes <= O.LIMITS.maxBytes) return d.b64;
+    }
+    return null;
+  }
+  /** Send crops, wait for the computer, return MolNexTR's items in the same order. */
+  async function recognise(images, signal, say) {
+    let r = await umaCall('/uma/jobs', { method: 'POST', body: JSON.stringify(O.body(images)), signal });
+    const until = Date.now() + 5 * 60 * 1000;
+    while (r.status !== 'done' && r.status !== 'error') {
+      say?.(r.status === 'running' ? L('MolNexTR 正在识别结构…', 'MolNexTR is reading the structures…') : L(`MolNexTR 排队中，前面还有 ${Math.max(0, (r.position || 1) - 1)} 个任务…`, `MolNexTR: queued, ${Math.max(0, (r.position || 1) - 1)} jobs ahead…`));
+      if (Date.now() > until) throw new Error(L('MolNexTR 等了 5 分钟还没结果。', 'No answer from MolNexTR after 5 minutes.'));
+      await sleep(1200, signal);
+      r = await umaCall(`/uma/jobs/${r.id}`, { signal });
+    }
+    if (r.status === 'error') throw new Error(r.error || L('MolNexTR 识别失败。', 'MolNexTR failed.'));
+    return { items: r.result?.items || [], fake: !!r.result?.fake, cached: !!r.cached };
+  }
+  /** RDKit's canonical SMILES (null without RDKit or for what it cannot read): two answers agree when these match. */
+  function canon(smiles) {
+    if (!R || !smiles) return null;
+    let m = null;
+    try { m = R.get_mol(String(smiles)); return m && (!m.is_valid || m.is_valid()) ? m.get_smiles() : null; } catch { return null; } finally { m?.delete?.(); }
+  }
+  const sameMol = (a, b) => { const x = canon(a), y = canon(b); return x != null && x === y; };
+  /** The structure step of a run: crop every boxed molecule, one MolNexTR job, then decide molecule by molecule. */
+  async function structureStep(result, signal) {
+    const { targets, skipped } = O.targets(result);
+    if (!targets.length) { result.notes.push({ zh: 'MolNexTR 没有用上：模型没给出结构的位置。', en: 'MolNexTR was not used: the model gave no positions for the structures.' }); return; }
+    const sent = [], images = [];
+    for (const t of targets) {
+      const b64 = cropB64(O.toPixels(O.padBox(O.normBox(t.box)), state.crop, state.src.width, state.src.height));
+      if (!b64) continue;
+      const bytes = O.b64Bytes(b64);
+      if (images.reduce((n, x) => n + O.b64Bytes(x), 0) + bytes > O.LIMITS.maxTotal) break;
+      sent.push(t); images.push(b64);
+    }
+    if (!images.length) return;
+    status(L(`正在把 ${images.length} 个结构交给 MolNexTR…`, `Sending ${images.length} structures to MolNexTR…`));
+    await rdkit();
+    const got = await recognise(images, signal, status);
+    sent.forEach((t, i) => { for (const m of t.mols) O.apply(m, O.decide(m.smiles, got.items[i], sameMol), got.items[i]); });
+    // every other molecule says where its SMILES came from too
+    for (const rx of result.reactions) for (const m of [...rx.reactants, ...rx.products]) if (!m.source) m.source = rx.source === 'rtable' && rx.kind === 'variant' ? 'rule' : m.from ? 'pubchem' : 'vision';
+    for (const m of result.molecules) if (!m.source) m.source = m.from ? 'pubchem' : 'vision';
+    const n = O.tally(sent.map((t) => t.mols[0])); // per structure sent, not per copy in the table
+    result.notes.push({ zh: `MolNexTR 识别了 ${images.length} 个结构${skipped ? `（另有 ${skipped} 个超出一次的上限，没送）` : ''}：两者一致 ${n.both} 个，用 MolNexTR 的 ${n.molnextr} 个，保留视觉模型的 ${n.vision} 个${n.disagree ? `，其中 ${n.disagree} 个两边不一样，表里标出来了` : ''}。${got.fake ? '（测试用的假结果）' : ''}`,
+      en: `MolNexTR read ${images.length} structures${skipped ? ` (${skipped} more were over one job’s limit and not sent)` : ''}: ${n.both} agree, ${n.molnextr} use MolNexTR, ${n.vision} keep the vision model’s answer${n.disagree ? `; ${n.disagree} differ and are flagged in the table` : ''}.${got.fake ? ' (fake test results)' : ''}` });
+  }
+
   // ── 读图 ────────────────────────────────────────────────────────────────
   function showCanvas(src, name) {
     state.src = src; state.name = name; state.crop = null;
@@ -175,6 +270,7 @@
     canvas.hidden = false; $('ex-drop-hint').hidden = true; sel.hidden = true;
     $('ex-clear').hidden = false; $('ex-clearsel').hidden = true;
     drop.dataset.has = 'true';
+    paintOcsr();
   }
   function toCanvas(img, w, h0) {
     const k = Math.min(1, MAX_SIDE / Math.max(w, h0));
@@ -200,6 +296,7 @@
     page.cleanup();
     state.page = n;
     showCanvas(c, `${state.name.replace(/ · p\.\d+$/, '')} · p.${n}`);
+    paintOcsr();
     $('ex-pageno').textContent = `${n} / ${state.pages}`;
     $('ex-prev').disabled = n <= 1; $('ex-next').disabled = n >= state.pages;
   }
@@ -250,6 +347,7 @@
   $('ex-clear').addEventListener('click', () => {
     state.src = null; state.crop = null; state.pdf?.destroy?.(); state.pdf = null;
     canvas.hidden = true; sel.hidden = true; $('ex-drop-hint').hidden = false; $('ex-clear').hidden = true; $('ex-clearsel').hidden = true; $('ex-pdfnav').hidden = true; delete drop.dataset.has;
+    paintOcsr();
   });
   $('ex-prev').addEventListener('click', () => state.page > 1 && renderPage(state.page - 1));
   $('ex-next').addEventListener('click', () => state.page < state.pages && renderPage(state.page + 1));
@@ -260,10 +358,11 @@
   let dragFrom = null;
   const rel = (e) => { const r = canvas.getBoundingClientRect(); return { x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) }; };
   function paintSel() {
-    if (!state.crop) { sel.hidden = true; $('ex-clearsel').hidden = true; return; }
+    if (!state.crop) { sel.hidden = true; $('ex-clearsel').hidden = true; paintOcsr(); return; }
     const { x, y, w, h: hh } = state.crop;
     Object.assign(sel.style, { left: `${canvas.offsetLeft + x * canvas.offsetWidth}px`, top: `${canvas.offsetTop + y * canvas.offsetHeight}px`, width: `${w * canvas.offsetWidth}px`, height: `${hh * canvas.offsetHeight}px` });
     sel.hidden = false; $('ex-clearsel').hidden = false;
+    paintOcsr();
   }
   canvas.addEventListener('pointerdown', (e) => { if (state.running) return; e.preventDefault(); dragFrom = rel(e); canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', (e) => {
@@ -363,7 +462,8 @@
     paintSteps();
     $('ex-out').replaceChildren(h('p', { class: 'ex-empty', text: L('正在抽取…', 'Extracting…') })); $('ex-exports').hidden = true;
     let image = '';
-    const ctx = { text, caption: text };
+    const useOcsr = !demo && !!state.src && !!opts.ocsr && laneReady();
+    const ctx = { text, caption: text, boxes: useOcsr };
     const call = async (id, extra = {}) => {
       const t0 = performance.now();
       step(id, { status: 'run' });
@@ -412,6 +512,12 @@
         const got = await lookupNames(result, signal).catch((e) => { if (e.name === 'AbortError') throw e; return null; });
         if (got?.asked) result.notes.push({ zh: `PubChem 查了 ${got.asked} 个名字，找到 ${got.found} 个。`, en: `Looked up ${got.asked} names in PubChem; ${got.found} found.` });
       }
+      if (useOcsr) {
+        try { await structureStep(result, signal); } catch (e) {
+          if (e.name === 'AbortError') throw e;
+          result.notes.push({ zh: `MolNexTR 这一步没成：${e.message}。结构用的是视觉模型的答案。`, en: `The MolNexTR step failed: ${e.message}. The structures are the vision model’s.` });
+        }
+      }
       step('merge', { status: 'done', ms: performance.now() - t0, reply: X.toJSON(result), note: [L(`${result.reactions.length} 条反应，${result.molecules.length} 个单独的分子。`, `${result.reactions.length} reactions, ${result.molecules.length} standalone molecules.`), ...result.notes.map((n) => L(n.zh, n.en))].join(' ') });
       let review = null;
       if (opts.verify && !demo && state.src && result.reactions.length) { status(L('模型在复核…', 'The model is reviewing…')); review = await call('verify', { reactions: result.reactions }); }
@@ -435,12 +541,37 @@
     } finally {
       state.running = false; state.ctl = null;
       $('ex-run').disabled = false; $('ex-demo').disabled = false; $('ex-stop').hidden = true;
+      paintOcsr();
     }
   }
   $('ex-run').addEventListener('click', () => run(false));
   $('ex-demo').addEventListener('click', () => run(true));
   $('ex-stop').addEventListener('click', () => state.ctl?.abort());
   $('ex-net').addEventListener('change', (e) => { opts.net = e.target.checked; saveOpts(); });
+  $('ex-ocsr')?.addEventListener('change', (e) => { opts.ocsr = e.target.checked; saveOpts(); });
+  // one boxed structure straight to MolNexTR: no AI key needed; the answer joins the standalone molecules
+  $('ex-ocsr-one')?.addEventListener('click', async () => {
+    if (!laneReady() || !state.src || !state.crop || ocsr.busy) return;
+    ocsr.busy = true; paintOcsr();
+    try {
+      const b64 = cropB64(O.toPixels({ x: 0, y: 0, w: 1, h: 1 }, state.crop, state.src.width, state.src.height));
+      if (!b64) throw new Error(L('框太小了，或者图太大，换一个框试试。', 'The box is too small or the image too large; try another box.'));
+      status(L('正在交给 MolNexTR…', 'Sending to MolNexTR…'));
+      await rdkit();
+      const got = await recognise([b64], null, status);
+      const it = got.items[0];
+      if (!it?.ok || it.valid === false) throw new Error(L(`MolNexTR 没读出这个结构${it?.error ? `：${it.error}` : ''}。`, `MolNexTR could not read this structure${it?.error ? `: ${it.error}` : ''}.`));
+      if (!state.result) state.result = { reactions: [], molecules: [], entities: [], notes: [] };
+      // asked for by hand: MolNexTR's answer is used whatever its score (the score is shown next to it)
+      const m = O.apply({ label: '', smiles: '', name: '', role: 'other' }, { source: 'molnextr', smiles: it.canonical || it.smiles, alt: '', disagree: false, confidence: Number.isFinite(it.confidence) ? it.confidence : null, reason: 'boxed' }, it);
+      state.result.molecules.push(m);
+      X.check(state.result, { validate });
+      paintResult();
+      status(L(`MolNexTR 读出 ${it.canonical || it.smiles}（${it.formula || ''}，置信度 ${it.confidence != null ? it.confidence.toFixed(2) : '—'}）。加到了“单独的分子”里。${got.fake ? '（测试用的假结果）' : ''}`,
+        `MolNexTR read ${it.canonical || it.smiles} (${it.formula || ''}, confidence ${it.confidence != null ? it.confidence.toFixed(2) : '—'}); added to the standalone molecules.${got.fake ? ' (fake test result)' : ''}`));
+      window.MolAstriaActivity?.('practice');
+    } catch (e) { status(e.message || String(e), true); } finally { ocsr.busy = false; paintOcsr(); refreshOcsr(); }
+  });
   $('ex-verify').addEventListener('change', (e) => { opts.verify = e.target.checked; saveOpts(); if (!state.running) { state.steps.verify = { status: opts.verify ? 'wait' : 'off' }; paintSteps(); } });
 
   // ── 结果表 ──────────────────────────────────────────────────────────────
@@ -458,9 +589,14 @@
     const lab = h('input', { type: 'text', class: 'ex-lab', value: m.label, 'aria-label': L('编号', 'Label'), placeholder: L('编号', 'label') });
     const smi = h('input', { type: 'text', class: 'ex-smi', value: m.smiles, 'aria-label': 'SMILES', placeholder: 'SMILES', spellcheck: 'false' });
     lab.addEventListener('change', () => { m.label = lab.value.trim(); after(); });
-    smi.addEventListener('change', () => { m.smiles = X.normalizeR(smi.value); after(); });
+    smi.addEventListener('change', () => { m.smiles = X.normalizeR(smi.value); if (m.source) m.source = 'manual'; after(); });
     const del = h('button', { type: 'button', class: 'ex-x', 'aria-label': L('删掉这个分子', 'Remove this molecule'), title: L('删掉', 'Remove'), text: '×', onclick: () => { list.splice(i, 1); after(); } });
-    return h('div', { class: 'ex-mol' }, thumb, h('div', { class: 'ex-mol-f' }, h('div', { class: 'ex-mol-top' }, lab, del), smi, m.name ? h('small', { text: m.name }) : null, m.from ? h('small', { class: 'ex-from', text: m.from }) : null));
+    const o = m.ocsr;
+    const src = m.source && O ? h('div', { class: 'ex-src', 'data-src': m.source, 'data-disagree': o?.disagree && m.source !== 'both' && m.source !== 'manual' ? 'true' : 'false' },
+      h('span', { class: 'ex-srctag', title: L('这个 SMILES 是谁给的', 'Where this SMILES came from'), text: O.sourceText(m.source, en) + (o?.confidence != null && m.source !== 'vision' && m.source !== 'manual' ? ` · ${o.confidence.toFixed(2)}` : '') }),
+      o?.alt ? h('button', { type: 'button', class: 'ex-swap', title: o.alt, text: m.source === 'molnextr' ? L('换回视觉模型的', 'Use the vision model’s') : L('换成 MolNexTR 的', 'Use MolNexTR’s'), onclick: () => { O.swap(m); after(); } }) : null,
+      o?.reason === 'failed' ? h('small', { text: L('MolNexTR 没读出来', 'MolNexTR could not read it') }) : null) : null;
+    return h('div', { class: 'ex-mol' }, thumb, h('div', { class: 'ex-mol-f' }, h('div', { class: 'ex-mol-top' }, lab, del), smi, src, m.name ? h('small', { text: m.name }) : null, m.from ? h('small', { class: 'ex-from', text: m.from }) : null));
   }
   function condEditor(rx, i, ri) {
     const c = rx.conditions[i];

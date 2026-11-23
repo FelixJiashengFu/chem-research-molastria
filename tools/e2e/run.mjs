@@ -4945,7 +4945,7 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 16); // with ts and neb
+  assert.equal(await p.locator('#run-jobs tr').count(), 18); // with ts, neb, phon and ocsr
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
   assert.equal(models.length, 15); // ten machine-learning potentials, the four xTB models (#123) and AIMNet2
@@ -6719,6 +6719,110 @@ check('literature extractor: demo without AI, a real run through a fake model (p
   assert.match(await text(e, 'h1'), /Literature Extractor/);
   assert.doesNotMatch(await e.innerText('#ex'), /[一-鿿]/, 'no Chinese left on the English page');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  await finish(e);
+});
+
+check('literature extractor: MolNexTR on the fake computer reads the boxed structures first, the vision answer cross-checks, source tags and swap, a boxed structure without AI, English phone', async () => {
+  const p = await open({ init: studyKey, reducedMotion: 'reduce', acceptDownloads: true });
+  const posts = [], prompts = {};
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) posts.push(JSON.parse(r.postData() || '{}')); });
+  await go(p, '/extract/index.html');
+  await p.waitForFunction(() => document.getElementById('ex-ocsr-state')?.dataset.ready === 'true', null, { timeout: 30000 });
+  assert.match(await text(p, '#ex-ocsr-state'), /MolNexTR 在线/);
+  assert.equal(await p.isChecked('#ex-ocsr'), true, 'on by default');
+  // the fake model gives each drawn molecule a box (thousandths of the figure) and one standalone molecule it misreads
+  const D = await p.evaluate(() => window.MOLASTRIA_EXTRACT_DEMO.replies);
+  D.planner.components.standalone = true;
+  const B = { r1: [40, 120, 250, 420], r2: [300, 120, 470, 420], p3: [640, 120, 900, 420], L1: [60, 760, 260, 960] };
+  D.template.reactants[0].box = B.r1; D.template.reactants[1].box = B.r2; D.template.products[0].box = B.p3;
+  D.molecules = { molecules: [{ label: 'L1', smiles: 'CC(=O)c1ccc(Cl)cc1', name: '', role: 'other', box: B.L1 }], note: '' };
+  await p.route('https://api.deepseek.com/**', async (r) => {
+    const body = JSON.parse(r.request().postData());
+    const sys = body.messages[0].content;
+    const id = /^You plan/.test(sys) ? 'planner' : /OUTSIDE the main reaction scheme/.test(sys) ? 'molecules' : /main reaction scheme/.test(sys) ? 'template' : /R-group table/.test(sys) ? 'rtable' : /reaction conditions/.test(sys) ? 'conditions' : /text below/.test(sys) ? 'text' : 'other';
+    const user = body.messages[1].content;
+    prompts[id] = Array.isArray(user) ? user.map((x) => x.text || '').join('') : user;
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: JSON.stringify(D[id] || {}) } }], usage: { prompt_tokens: 900, completion_tokens: 200 } }) });
+  });
+  await p.click('#ex-sample');
+  await p.click('#ex-run');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done' && !document.querySelector('#ex-stop:not([hidden])'), null, { timeout: 60000 });
+  assert.match(prompts.template, /"box": \[x0, y0, x1, y1\]/, 'the scheme agent is asked for boxes');
+  assert.match(prompts.molecules, /"box"/);
+  assert.doesNotMatch(prompts.rtable, /Also give every drawn molecule a "box"/, 'the R table has no drawn structures');
+  // one job, one crop per distinct box (reactant 1 of the scheme and of every row share one), PNG base64
+  const jobs = posts.filter((b) => b.job === 'ocsr');
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].model, 'molnextr');
+  assert.equal(jobs[0].params.images.length, 4);
+  assert.ok(jobs[0].params.images.every((b) => /^iVBORw0KGgo/.test(b) && b.length > 200), 'bare PNG base64, no data: prefix');
+  // the fake computer reads every crop as 4-bromoacetophenone with confidence 0.98
+  const row0 = '#ex-table tr[data-row="0"]';
+  const tags = await p.locator(`${row0} .ex-srctag`).allTextContents();
+  assert.deepEqual(tags, ['两者一致 · 0.98', '视觉模型', '视觉模型'], 'reactant 1 agrees; the R-group structures keep the vision answer');
+  assert.equal(await p.getAttribute(`${row0} td:nth-child(2) .ex-mol >> nth=1 >> .ex-src`, 'data-disagree'), 'true');
+  assert.match(await text(p, `${row0} .ex-c-conf`), /MolNexTR 和视觉模型读出的结构不一样：2, 3/);
+  assert.equal(await p.locator('#ex-table tr[data-row="2"] td:nth-child(4) .ex-srctag').textContent(), '规则代入', 'enumerated products say they came from the rule');
+  // the misread standalone molecule: MolNexTR is confident, so it wins; the vision answer is one click away
+  const L1 = p.locator('.ex-mols .ex-mol').first();
+  assert.equal(await L1.locator('.ex-smi').inputValue(), 'CC(=O)c1ccc(Br)cc1');
+  assert.equal(await L1.locator('.ex-srctag').textContent(), 'MolNexTR · 0.98');
+  await L1.locator('.ex-swap').click();
+  assert.equal(await p.locator('.ex-mols .ex-mol').first().locator('.ex-smi').inputValue(), 'CC(=O)c1ccc(Cl)cc1');
+  assert.equal(await p.locator('.ex-mols .ex-mol').first().locator('.ex-srctag').textContent(), '视觉模型');
+  assert.match(await text(p, '[data-step=merge] .ex-step-note'), /MolNexTR 识别了 4 个结构：两者一致 1 个，用 MolNexTR 的 1 个，保留视觉模型的 2 个，其中 3 个两边不一样[\s\S]*测试用的假结果/);
+  // the export says where each SMILES came from
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#ex-json')]);
+  const json = JSON.parse(readFileSync(await dl.path(), 'utf8'));
+  assert.deepEqual(json.reactions[0].reactants[0].molnextr, { smiles: 'CC(=O)c1ccc(Br)cc1', confidence: 0.9799, agrees: true });
+  assert.equal(json.molecules[0].source, 'vision');
+  assert.equal(json.molecules[0].molnextr.other, 'CC(=O)c1ccc(Br)cc1');
+  if (process.env.MOLASTRIA_SHOTS) await p.locator('#ex-out-card').screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr-tags.png` });
+  // one boxed structure straight to MolNexTR, no AI call
+  const before = posts.length, models = Object.keys(prompts).length;
+  await p.locator('#ex-canvas').scrollIntoViewIfNeeded();
+  const c = await p.locator('#ex-canvas').boundingBox();
+  await p.mouse.move(c.x + c.width * 0.05, c.y + c.height * 0.1);
+  await p.mouse.down();
+  await p.mouse.move(c.x + c.width * 0.3, c.y + c.height * 0.4, { steps: 4 });
+  await p.mouse.up();
+  await p.waitForFunction(() => !document.getElementById('ex-ocsr-one').disabled);
+  await p.click('#ex-ocsr-one');
+  await p.waitForFunction(() => /MolNexTR 读出 CC\(=O\)c1ccc\(Br\)cc1（C8H7BrO，置信度 0\.98）/.test(document.getElementById('ex-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.length, before + 1);
+  assert.equal(posts.at(-1).params.images.length, 1);
+  assert.equal(Object.keys(prompts).length, models, 'no model call');
+  assert.equal(await p.locator('.ex-mols .ex-mol').count(), 2);
+  assert.equal(await p.locator('.ex-mols .ex-mol').last().locator('.ex-srctag').textContent(), 'MolNexTR · 0.98');
+  // the switch is remembered, and with it off no job is sent
+  await p.uncheck('#ex-ocsr');
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-extract'))).ocsr, false);
+  await p.click('#ex-clearsel');
+  await p.click('#ex-run');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done' && !document.querySelector('#ex-stop:not([hidden])'), null, { timeout: 60000 });
+  assert.equal(posts.filter((b) => b.job === 'ocsr').length, 2, 'no MolNexTR job with the switch off');
+  assert.doesNotMatch(prompts.template, /Also give every drawn molecule a "box"/);
+  // MOLASTRIA_SHOTS=<folder> keeps a screenshot of each view for a look by eye
+  if (process.env.MOLASTRIA_SHOTS) await p.screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr.png`, fullPage: true });
+  await finish(p);
+  // English, phone width, dark: the lane line and a boxed structure
+  const e = await open({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce', colorScheme: 'dark' });
+  await go(e, '/extract/index.html?lang=en');
+  await e.waitForFunction(() => document.getElementById('ex-ocsr-state')?.dataset.ready === 'true', null, { timeout: 30000 });
+  assert.match(await text(e, '#ex-ocsr-state'), /^MolNexTR is online/);
+  await e.click('#ex-sample');
+  await e.locator('#ex-canvas').scrollIntoViewIfNeeded();
+  const ce = await e.locator('#ex-canvas').boundingBox();
+  await e.mouse.move(ce.x + ce.width * 0.05, ce.y + ce.height * 0.1);
+  await e.mouse.down();
+  await e.mouse.move(ce.x + ce.width * 0.35, ce.y + ce.height * 0.45, { steps: 4 });
+  await e.mouse.up();
+  await e.click('#ex-ocsr-one');
+  await e.waitForFunction(() => /^MolNexTR read CC\(=O\)c1ccc\(Br\)cc1/.test(document.getElementById('ex-status').textContent), null, { timeout: 30000 });
+  assert.equal(await e.locator('.ex-mols .ex-srctag').textContent(), 'MolNexTR · 0.98');
+  assert.doesNotMatch(await e.innerText('#ex'), /[一-鿿]/, 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  if (process.env.MOLASTRIA_SHOTS) await e.screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr-en-phone-dark.png`, fullPage: true });
   await finish(e);
 });
 
