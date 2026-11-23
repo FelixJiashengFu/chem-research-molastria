@@ -980,11 +980,11 @@ check('AI Lab demo data: the long note can be closed, the status row still says 
 
 // ── models page (public/models/): the online model API v3 through the account service and the fake computer ──
 const MODEL_WINDOWS = {
-  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
-  neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
-  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'] },
+  charged: { models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol', 'aimnet2'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'ipea', 'spin', 'bde', 'pa', 'flow'] },
+  neutral: { models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
+  organic: { models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'] },
   props: { models: ['mace-mdp'], jobs: ['polar', 'ir'] },
-  xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'spin', 'bde', 'pa'] },
+  xtb: { models: ['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb'], jobs: ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb', 'spin', 'bde', 'pa'] },
   protein: { models: ['openmm-amber14'], jobs: ['pmd'] },
 };
 /** Opens the models page once the fake computer is online and RDKit has checked the sample SMILES; records each job sent. */
@@ -1028,7 +1028,7 @@ check('models page: each window lists only its own models and jobs, and the butt
     assert.equal(await p.locator('#m-cards .md-model').count(), want.models.length, `${win} model cards`);
   }
   await p.click('#m-tabs [data-win=charged]');
-  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ipea: 1, spin: 2, bde: 2, pa: 2, flow: 4 };
+  const costs = { sp: 1, opt: 1, freq: 3, conf: 5, scan: 5, md: 5, rxn: 3, ts: 5, neb: 8, ipea: 1, spin: 2, bde: 2, pa: 2, flow: 4 };
   for (const [job, n] of Object.entries(costs)) {
     await p.selectOption('#m-job', job);
     assert.equal(await text(p, '#m-run'), `运行 · 消耗 ${n} 次`, job);
@@ -1096,6 +1096,48 @@ check('models page: every job runs once and its result is shown', async () => {
   await finish(p);
 });
 
+check('models page: transition state search and IRC, and NEB from the HCN example; ?job=ts opens it', async () => {
+  const p = await openModels('xtb');
+  const last = () => p.posts.at(-1);
+  await p.selectOption('#m-job', 'ts');
+  assert.ok(await runOff(p), 'a SMILES is not a transition state');
+  assert.match(await text(p, '#m-why'), /要用 XYZ 坐标/);
+  await p.click('#m-params [data-act=ts-sample]');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 5 次');
+  let r = await runJob(p, 'ts');
+  assert.deepEqual([last().job, last().smiles, last().params], ['ts', undefined, { fmax: 0.01, irc: true, irc_steps: 60 }]);
+  assert.match(last().xyz, /^3\n/);
+  assert.match(r, V(/一个虚频 -1426 cm⁻¹：是一阶鞍点/, /是一阶鞍点|虚频/));
+  if (V(true, false)) { assert.match(r, /73\.20/); assert.match(r, /53\.20/); }
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), 1, 'the IRC profile');
+  assert.equal(await p.locator('#m-result .md-freqs span.neg').count(), V(1, 1));
+  await p.click('#m-result [data-act=ts-anim][data-what=mode]');
+  await p.waitForSelector('#m-result .md-3d[data-ready]', { timeout: 30000 });
+  assert.equal(await p.getAttribute('#m-result [data-act=ts-anim][data-what=mode]', 'aria-pressed'), 'true');
+  assert.match(await text(p, '#m-result .m3-fnum'), /\/ 16 帧/);
+  await p.click('#m-result [data-act=ts-anim][data-what=mode]');
+  assert.equal(await p.getAttribute('#m-result [data-act=ts-anim][data-what=mode]', 'aria-pressed'), 'false', 'a second click stops it');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#m-result [data-act=ts-xyz]')]);
+  assert.match(dl.suggestedFilename(), /_ts\.xyz$/);
+  // NEB: reactant and product must have the same atoms in the same order.
+  await p.selectOption('#m-job', 'neb');
+  assert.equal(await text(p, '#m-run'), '运行 · 消耗 8 次');
+  await p.click('#m-params [data-act=ts-sample]');
+  await p.fill('#m-params textarea[data-k=product_xyz]', '3\nbad\nH 2.1 0.3 0\nN 1.17 0 0\nC 0 0 0\n');
+  assert.ok(await runOff(p)); assert.match(await text(p, '#m-why'), /同样的顺序排/);
+  await p.click('#m-params [data-act=ts-sample]');
+  r = await runJob(p, 'neb', () => p.fill('#m-params input[data-k=images]', '5'));
+  assert.equal(last().job, 'neb'); assert.equal(last().params.images, 5); assert.match(last().params.product_xyz, /^3\nHNC\n/);
+  assert.match(r, /交给 Sella 精修/);
+  assert.equal(await p.locator('#m-result svg.md-plot').count(), V(2, 2), 'the IRC profile and the NEB band');
+  await finish(p);
+  // The reaction-dynamics zone links here: ?job=ts fills the example.
+  const q = await open();
+  await go(q, '/models/index.html?job=ts#xtb');
+  await q.waitForFunction(() => document.getElementById('m-job').value === 'ts' && /HCN/.test(document.getElementById('m-xyz').value), null, { timeout: 15000 });
+  await finish(q);
+});
+
 check('models page: the one-click pipeline runs frequencies, then IP / EA on the optimised structure, and stops at an imaginary frequency', async () => {
   const p = await openModels();
   const jobs = () => p.posts.map((b) => b.job);
@@ -1137,6 +1179,27 @@ check('models page: window 5 runs xTB on an ion and shows the gap, dipole and ch
   assert.deepEqual([p.posts.at(-1).model, p.posts.at(-1).charge], ['gfn2-xtb', 1]);
   await p.selectOption('#m-model', 'gfn2-xtb-alpb-water');
   assert.match(await text(p, '#m-about'), /ALPB/);
+  await finish(p);
+});
+
+check('models page: AIMNet2 in window 1 takes a closed-shell ion, refuses a radical and offers no IP / EA', async () => {
+  const p = await openModels('charged');
+  await p.selectOption('#m-model', 'aimnet2');
+  assert.match(await text(p, '#m-about'), /只读总电荷、不读自旋多重度/);
+  assert.match(await text(p, '#m-fine'), /Chem\. Sci\. 2025, 16, 10228/);
+  const off = await p.$$eval('#m-job option', (os) => os.filter((o) => o.disabled).map((o) => o.value));
+  assert.deepEqual(off.sort(), ['bde', 'flow', 'ipea', 'spin'], 'only the jobs that need a radical are off');
+  await p.fill('#m-smiles', 'CC(=O)[O-]');
+  await p.waitForFunction(() => /C2H3O2/.test(document.getElementById('m-check').textContent));
+  await p.fill('#m-charge', '-1');
+  await p.fill('#m-spin', '3');
+  await p.selectOption('#m-job', 'opt');
+  assert.ok(await runOff(p));
+  assert.match(await text(p, '#m-why'), /AIMNet2 只算闭壳层分子/);
+  await p.fill('#m-spin', '1');
+  const r = await runJob(p, 'opt');
+  assert.match(r, /能量/);
+  assert.deepEqual([p.posts.at(-1).model, p.posts.at(-1).charge, p.posts.at(-1).spin], ['aimnet2', -1, 1]);
   await finish(p);
 });
 
@@ -1391,7 +1454,7 @@ check('English and phone width: the DBCata window has no Chinese left and no sid
 check('English: the models page has no Chinese left in its windows and a result', async () => {
   const p = await openModels('', {});
   await go(p, '/models/index.html?lang=en#charged');
-  await p.waitForFunction(() => /20/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => /21/.test(document.getElementById('m-status').textContent) && /C3H3FO3/.test(document.getElementById('m-check').textContent), null, { timeout: 30000 });
   await runJob(p, 'freq');
   const left = new Set();
   for (const win of ['charged', 'neutral', 'organic', 'props', 'xtb', 'protein']) {
@@ -4138,7 +4201,7 @@ check('Photochemistry: nav entry, eleven chapters, fifteen live demos, excited-s
 });
 
 
-check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints, WL limit, BO, leakage), quiz, references, English', async () => {
+check('Chemistry ML: nav entry, ten chapters, eighteen live demos (fingerprints, WL limit, BO, leakage), quiz, references, English', async () => {
   const p = await open();
   await go(p, '/chem-ml/index.html');
   await p.waitForFunction(() => window.MOLASTRIA_CHEMML_READY);
@@ -4146,7 +4209,7 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   const read = (id) => text(p, `#chm-panel [data-demo=${id}] .fs-readout`);
   assert.equal(await p.getAttribute('.cr-header a[data-id=chemml]', 'aria-current'), 'page', 'the nav entry is current');
   assert.equal(await p.locator('.chm-ch').count(), 10);
-  assert.equal(await p.locator('#chm-demo-list li').count(), 17);
+  assert.equal(await p.locator('#chm-demo-list li').count(), 18);
   // Chapter 2: phenol vs aniline share six of eleven ECFP bits; the same molecule written two ways gives 1.
   await p.selectOption('#chm-select', 'repr'); await settle();
   assert.equal(await p.evaluate(() => location.hash), '#c-repr');
@@ -4171,7 +4234,7 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   assert.ok((await p.evaluate(() => JSON.parse(localStorage.getItem('molastria-chemml')).seen)).includes('eval'));
   await p.check('#chm-quiz-list .chm-q[data-q="2"] input[value="1"]');
   assert.match(await text(p, '#chm-quiz-list .chm-q[data-q="2"] .chm-why'), /答对了/);
-  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 64);
+  assert.equal(await p.locator('#chm-refs .fs-ref').count(), 67);
   assert.deepEqual(p.errors, []);
   await finish(p);
   const e = await open();
@@ -4182,6 +4245,63 @@ check('Chemistry ML: nav entry, ten chapters, seventeen live demos (fingerprints
   assert.match(await text(e, '#chm-panel'), /scaffold[\s\S]*leakage/i);
   const han = await e.evaluate(() => { const out = [], w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,math,noscript')) out.push(n.nodeValue.trim().slice(0, 40)); return out; });
   assert.deepEqual(han, [], 'no Chinese left on the English page');
+  await finish(e);
+});
+
+/** Serves Chemiscope (the structure–property explorer the chem-ml chapter 9 demo loads from jsDelivr) from tools/e2e/node_modules. */
+check('Chemistry ML: Chemiscope structure–property map (real data, splits, click a point, linked 3D viewer), English, dark, phone', async () => {
+  const CMS = join(ROOT, 'tools/e2e/node_modules/chemiscope/dist/chemiscope.min.js');
+  const shot = (name) => (process.env.E2E_SHOTS ? join(process.env.E2E_SHOTS, name) : undefined); // 想看截图时设 E2E_SHOTS=目录
+  const p = await open();
+  let served = 0;
+  await p.context().route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/chemiscope@[\d.]+\/dist\/chemiscope\.min\.js$/, (r) => { served++; return r.fulfill({ status: 200, contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(CMS) }); });
+  await go(p, '/chem-ml/index.html#c-eval');
+  await p.waitForFunction(() => window.MOLASTRIA_CHEMML_READY);
+  const demo = p.locator('#chm-panel [data-demo=scope]');
+  await demo.scrollIntoViewIfNeeded();
+  const read = () => demo.locator('.fs-readout').innerText();
+  await p.waitForFunction(() => window.MOLASTRIA_CHEMML_MAP_DATA && document.querySelector('#chm-panel [data-demo=scope] canvas').cmlHit);
+  assert.equal(served, 0, 'Chemiscope is not loaded until asked');
+  assert.match(await read(), /c1ccccc1/, 'benzene is selected first');
+  const nn = async () => (await read()).match(/中位数：[^\n]*\n([\d.]+) \/ ([\d.]+)/).slice(1).map(Number);
+  const [scafNN, randNN] = await nn();
+  assert.ok(scafNN < randNN, `scaffold split lowers the test similarity (${scafNN} < ${randNN})`);
+  await demo.locator('select[data-k=how]').selectOption('random'); await p.waitForTimeout(300);
+  assert.match(await read(), /57 \/ 227/);
+  // Click a point on our own map: the readout follows.
+  const pickOnCanvas = async (i) => { const cv = demo.locator('figure.fs-figure canvas'); const [x, y] = await cv.evaluate((c, k) => c.cmlHit[k], i); await cv.evaluate((c, yy) => window.scrollBy(0, c.getBoundingClientRect().top + yy - innerHeight / 2), y); const b = await cv.boundingBox(); const w = await cv.evaluate((c) => c.clientWidth); await p.mouse.click(b.x + (x * b.width) / w, b.y + (y * b.width) / w); await p.waitForTimeout(300); };
+  const smiles = (i) => p.evaluate((k) => window.MOLASTRIA_CHEMML_MAP_DATA.mols[k].s, i);
+  // two dots that have no neighbour within the click radius
+  const [i1, i2] = await demo.locator('figure.fs-figure canvas').evaluate((c) => c.cmlHit.map((h, i) => [h, i]).filter(([h], _, all) => all.every(([g], j) => g === h || (g[0] - h[0]) ** 2 + (g[1] - h[1]) ** 2 > 30 * 30)).map(([, i]) => i).filter((i) => i > 0).slice(0, 2));
+  await pickOnCanvas(i1);
+  assert.ok((await read()).includes(await smiles(i1)), 'clicking a dot selects that molecule');
+  // Open Chemiscope: the map and the 3D viewer appear, and the two maps stay in step both ways.
+  await demo.locator('[data-act="0"]').click();
+  await p.waitForSelector('#chm-panel [data-demo=scope] .cms-str canvas', { timeout: 30000 });
+  await p.waitForSelector('#chm-panel [data-demo=scope] .cms-map .js-plotly-plot', { timeout: 30000 });
+  assert.equal(served, 1);
+  const csIndex = () => demo.locator('.cms-info input[type=number], .cms-info input[type=text]').first().inputValue();
+  await p.waitForTimeout(800);
+  assert.equal(await csIndex(), String(i1), 'Chemiscope shows the molecule picked on our map');
+  await pickOnCanvas(i2); await p.waitForTimeout(500);
+  assert.equal(await csIndex(), String(i2));
+  const box = demo.locator('.cms-info input').first();
+  await box.fill('7'); await box.press('Enter'); await p.waitForTimeout(800);
+  assert.ok((await read()).includes(await smiles(7)), 'picking in Chemiscope updates our readout');
+  await p.screenshot({ path: shot('chemml-scope-light.png'), fullPage: false });
+  assert.deepEqual(p.errors, []);
+  await finish(p);
+  // English and dark, phone width: no Chinese in the demo, nothing wider than the screen.
+  const e = await open({ colorScheme: 'dark', viewport: { width: 390, height: 860 } });
+  await go(e, '/chem-ml/index.html?lang=en#c-eval');
+  await e.waitForFunction(() => window.MOLASTRIA_CHEMML_READY && window.MOLASTRIA_CHEMML_MAP_DATA && !document.documentElement.dataset.i18n);
+  const ed = e.locator('#chm-panel [data-demo=scope]');
+  await ed.scrollIntoViewIfNeeded(); await e.waitForTimeout(500);
+  assert.match(await ed.innerText(), /structure–property map[\s\S]*Nearest-neighbour/i);
+  assert.doesNotMatch(await ed.innerText(), /[㐀-鿿]/, 'the demo is English');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no sideways scroll on a phone');
+  await e.screenshot({ path: shot('chemml-scope-dark-en-phone.png'), fullPage: false });
+  assert.deepEqual(e.errors, []);
   await finish(e);
 });
 
@@ -5008,11 +5128,11 @@ check('compute API on the docs page: is the computer on and how often it was, a 
   assert.match(await p.getAttribute('#gpu-days .api-upday:first-child', 'title'), /：没有记录$/);
   const status = await (await p.request.get(`${API}/v1/status`, { headers: { Origin: 'https://elsewhere.example' } })).json();
   assert.deepEqual([status.online, status.uptime.samples, status.uptime.days.length], [true, 1, 7], 'the same record is public, without a key');
-  assert.equal(await p.locator('#run-jobs tr').count(), 15);
+  assert.equal(await p.locator('#run-jobs tr').count(), 19); // with ts, neb, phon, ocsr and adsgen
   assert.match(await text(p, '#run-jobs tr:nth-child(5)'), /^scan二面角扫描5atoms 必填 start end points$/);
   assert.match(await text(p, '#run-jobs tr:last-child'), /^adsgenDBCata 合金表面吸附结构/, 'the DBCata lane, open since 2026-11-22');
   const models = await p.locator('#run-model option').evaluateAll((os) => os.map((o) => o.value));
-  assert.equal(models.length, 14); // ten machine-learning potentials and the four xTB models (#123)
+  assert.equal(models.length, 15); // ten machine-learning potentials, the four xTB models (#123) and AIMNet2
   assert.ok(!models.some((m) => m.startsWith('mace')), 'no MACE model is offered');
   // The code follows the form and never holds the key.
   await p.fill('#run-key', key);
@@ -5475,6 +5595,74 @@ check('code desk: quacc pipelines (recipe cards, batch sent to the fake computer
   await e.waitForFunction(() => /online runs/.test(document.getElementById('qc-cost').textContent), null, { timeout: 30000 });
   assert.doesNotMatch(await e.evaluate(() => document.getElementById('p-quacc').innerText), /[㐀-鿿]/, 'no Chinese left on the quacc tab');
   await finish(e);
+});
+
+check('code desk: crystal phonons (presets, EMT job sent to the fake computer, space group, dispersion, DOS, thermal table, CSV, limits, own POSCAR)', async () => {
+  const p = await open({ acceptDownloads: true });
+  const posts = [];
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) posts.push(JSON.parse(r.postData() || '{}')); });
+  await go(p, '/code/index.html#phonon');
+  assert.equal(await p.getAttribute('#t-phonon', 'aria-selected'), 'true');
+  assert.equal(await p.locator('#ph-presets [data-preset]').count(), 12);
+  await p.click('[data-preset="Cu"]');
+  await p.selectOption('#ph-engine', 'emt');
+  assert.match(await text(p, '#ph-estimate'), /晶胞 4 个原子，超胞 32 个原子/);
+  await p.waitForFunction(() => /用掉今天在线计算次数 5 次/.test(document.getElementById('ph-cost').textContent), null, { timeout: 30000 });
+  assert.match(await text(p, '#ph-script'), /bulk\("Cu", "fcc", a=3\.615, cubic=True\)[\s\S]*calc = EMT\(\)[\s\S]*auto_band_structure/);
+  await p.click('#ph-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('ph-status').textContent), null, { timeout: 30000 });
+  const b = posts.at(-1);
+  assert.equal(b.job, 'phon');
+  assert.equal(b.model, 'phonopy-emt');
+  assert.deepEqual(b.params, { preset: 'Cu', supercell: [2, 2, 2], displacement: 0.01, relax: true, mesh: 16, t_max: 1000 });
+  assert.match(await text(p, '#ph-meta'), /空间群 Fm-3m[\s\S]*No\. 225[\s\S]*a = 3\.5898 Å[\s\S]*32 个原子/);
+  assert.match(await text(p, '#ph-verdict'), /没有虚频/);
+  // the dispersion: 6 segments (Γ-X, X-U, K-Γ, Γ-L, L-W, W-X) x 3 branches, Γ X U|K Γ L W X along the bottom
+  assert.equal(await p.locator('#ph-band path.sp-line').count(), 18);
+  const ticks = await p.locator('#ph-band text.sp-tick').allTextContents();
+  for (const l of ['Γ', 'X', 'U|K', 'L', 'W']) assert.ok(ticks.includes(l), `band tick ${l}`);
+  assert.equal(await p.locator('#ph-dos path.sp-fill').count(), 1);
+  assert.equal(await p.locator('#ph-thermal path.sp-line').count(), 2);
+  assert.deepEqual(await p.locator('#ph-table tbody tr:last-child td').allTextContents().then((c) => c.slice(0, 3)), ['1000', '24.791', '0.994']);
+  // units: cm-1 relabels the axis
+  await p.selectOption('#ph-unit', 'cm1');
+  assert.match(await text(p, '#ph-band'), /cm⁻¹/);
+  const dl = p.waitForEvent('download');
+  await p.click('#ph-csv');
+  const csv = readFileSync(await (await dl).path(), 'utf8');
+  assert.match(csv, /^distance,segment,band1_thz,band2_thz,band3_thz\n0\.00000,Γ-X,/);
+  assert.match(csv, /\ntemperature_k,free_energy_kj_mol,entropy_j_k_mol,heat_capacity_j_k_mol\n/);
+  // limits: Si with a 3x3x4 supercell is 288 atoms; EMT does not take Si
+  await p.click('[data-preset="Si"]');
+  assert.equal(await p.inputValue('#ph-engine'), 'uma');
+  await p.fill('#ph-sc', '4'); await p.fill('#ph-sa', '3'); await p.fill('#ph-sb', '3');
+  assert.match(await text(p, '#ph-estimate'), /超胞有 288 个原子，在线计算最多 216 个/);
+  assert.equal(await p.isDisabled('#ph-run'), true);
+  await p.fill('#ph-sc', '2'); await p.fill('#ph-sa', '2'); await p.fill('#ph-sb', '2');
+  await p.selectOption('#ph-engine', 'emt');
+  assert.match(await text(p, '#ph-estimate'), /EMT 只算/);
+  assert.equal(await p.isDisabled('#ph-run'), true);
+  // own structure: the sample POSCAR goes out as text with its format
+  await p.click('[data-preset="__own"]');
+  assert.equal(await p.isVisible('#ph-text'), true);
+  await p.click('#ph-sample-poscar');
+  await p.selectOption('#ph-engine', 'uma');
+  assert.match(await text(p, '#ph-estimate'), /晶胞 2 个原子，超胞 16 个原子（估算）/);
+  assert.match(await text(p, '#ph-script'), /STRUCTURE = "Si primitive cell[\s\S]*format="vasp"[\s\S]*task_name="omat"/);
+  await p.waitForFunction(() => !document.getElementById('ph-run').disabled, null, { timeout: 10000 });
+  await p.click('#ph-run');
+  await p.waitForFunction(() => /^完成/.test(document.getElementById('ph-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.at(-1).model, 'uma-s-1p2p1');
+  assert.equal(posts.at(-1).params.format, 'poscar');
+  assert.match(posts.at(-1).params.structure, /^Si primitive cell/);
+  await finish(p);
+  // the tab is linked from the phonon hall and from group theory
+  const g = await open();
+  await go(g, '/quasiparticles/phonons/index.html#c-compute');
+  await g.waitForSelector('a[href$="code/#phonon"]', { state: 'attached', timeout: 15000 });
+  await go(g, '/group-theory/index.html#c-crystals');
+  await g.waitForSelector('a[href$="code/#phonon"]', { state: 'attached', timeout: 15000 });
+  await finish(g);
 });
 
 check('code desk: structure search asks PubChem (mocked) by drawing or SMILES, ranks by Morgan similarity, adds a hit to the list', async () => {
@@ -6718,6 +6906,110 @@ check('literature extractor: demo without AI, a real run through a fake model (p
   await finish(e);
 });
 
+check('literature extractor: MolNexTR on the fake computer reads the boxed structures first, the vision answer cross-checks, source tags and swap, a boxed structure without AI, English phone', async () => {
+  const p = await open({ init: studyKey, reducedMotion: 'reduce', acceptDownloads: true });
+  const posts = [], prompts = {};
+  p.on('request', (r) => { if (r.method() === 'POST' && r.url().endsWith('/uma/jobs')) posts.push(JSON.parse(r.postData() || '{}')); });
+  await go(p, '/extract/index.html');
+  await p.waitForFunction(() => document.getElementById('ex-ocsr-state')?.dataset.ready === 'true', null, { timeout: 30000 });
+  assert.match(await text(p, '#ex-ocsr-state'), /MolNexTR 在线/);
+  assert.equal(await p.isChecked('#ex-ocsr'), true, 'on by default');
+  // the fake model gives each drawn molecule a box (thousandths of the figure) and one standalone molecule it misreads
+  const D = await p.evaluate(() => window.MOLASTRIA_EXTRACT_DEMO.replies);
+  D.planner.components.standalone = true;
+  const B = { r1: [40, 120, 250, 420], r2: [300, 120, 470, 420], p3: [640, 120, 900, 420], L1: [60, 760, 260, 960] };
+  D.template.reactants[0].box = B.r1; D.template.reactants[1].box = B.r2; D.template.products[0].box = B.p3;
+  D.molecules = { molecules: [{ label: 'L1', smiles: 'CC(=O)c1ccc(Cl)cc1', name: '', role: 'other', box: B.L1 }], note: '' };
+  await p.route('https://api.deepseek.com/**', async (r) => {
+    const body = JSON.parse(r.request().postData());
+    const sys = body.messages[0].content;
+    const id = /^You plan/.test(sys) ? 'planner' : /OUTSIDE the main reaction scheme/.test(sys) ? 'molecules' : /main reaction scheme/.test(sys) ? 'template' : /R-group table/.test(sys) ? 'rtable' : /reaction conditions/.test(sys) ? 'conditions' : /text below/.test(sys) ? 'text' : 'other';
+    const user = body.messages[1].content;
+    prompts[id] = Array.isArray(user) ? user.map((x) => x.text || '').join('') : user;
+    await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ model: body.model, choices: [{ message: { content: JSON.stringify(D[id] || {}) } }], usage: { prompt_tokens: 900, completion_tokens: 200 } }) });
+  });
+  await p.click('#ex-sample');
+  await p.click('#ex-run');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done' && !document.querySelector('#ex-stop:not([hidden])'), null, { timeout: 60000 });
+  assert.match(prompts.template, /"box": \[x0, y0, x1, y1\]/, 'the scheme agent is asked for boxes');
+  assert.match(prompts.molecules, /"box"/);
+  assert.doesNotMatch(prompts.rtable, /Also give every drawn molecule a "box"/, 'the R table has no drawn structures');
+  // one job, one crop per distinct box (reactant 1 of the scheme and of every row share one), PNG base64
+  const jobs = posts.filter((b) => b.job === 'ocsr');
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0].model, 'molnextr');
+  assert.equal(jobs[0].params.images.length, 4);
+  assert.ok(jobs[0].params.images.every((b) => /^iVBORw0KGgo/.test(b) && b.length > 200), 'bare PNG base64, no data: prefix');
+  // the fake computer reads every crop as 4-bromoacetophenone with confidence 0.98
+  const row0 = '#ex-table tr[data-row="0"]';
+  const tags = await p.locator(`${row0} .ex-srctag`).allTextContents();
+  assert.deepEqual(tags, ['两者一致 · 0.98', '视觉模型', '视觉模型'], 'reactant 1 agrees; the R-group structures keep the vision answer');
+  assert.equal(await p.getAttribute(`${row0} td:nth-child(2) .ex-mol >> nth=1 >> .ex-src`, 'data-disagree'), 'true');
+  assert.match(await text(p, `${row0} .ex-c-conf`), /MolNexTR 和视觉模型读出的结构不一样：2, 3/);
+  assert.equal(await p.locator('#ex-table tr[data-row="2"] td:nth-child(4) .ex-srctag').textContent(), '规则代入', 'enumerated products say they came from the rule');
+  // the misread standalone molecule: MolNexTR is confident, so it wins; the vision answer is one click away
+  const L1 = p.locator('.ex-mols .ex-mol').first();
+  assert.equal(await L1.locator('.ex-smi').inputValue(), 'CC(=O)c1ccc(Br)cc1');
+  assert.equal(await L1.locator('.ex-srctag').textContent(), 'MolNexTR · 0.98');
+  await L1.locator('.ex-swap').click();
+  assert.equal(await p.locator('.ex-mols .ex-mol').first().locator('.ex-smi').inputValue(), 'CC(=O)c1ccc(Cl)cc1');
+  assert.equal(await p.locator('.ex-mols .ex-mol').first().locator('.ex-srctag').textContent(), '视觉模型');
+  assert.match(await text(p, '[data-step=merge] .ex-step-note'), /MolNexTR 识别了 4 个结构：两者一致 1 个，用 MolNexTR 的 1 个，保留视觉模型的 2 个，其中 3 个两边不一样[\s\S]*测试用的假结果/);
+  // the export says where each SMILES came from
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#ex-json')]);
+  const json = JSON.parse(readFileSync(await dl.path(), 'utf8'));
+  assert.deepEqual(json.reactions[0].reactants[0].molnextr, { smiles: 'CC(=O)c1ccc(Br)cc1', confidence: 0.9799, agrees: true });
+  assert.equal(json.molecules[0].source, 'vision');
+  assert.equal(json.molecules[0].molnextr.other, 'CC(=O)c1ccc(Br)cc1');
+  if (process.env.MOLASTRIA_SHOTS) await p.locator('#ex-out-card').screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr-tags.png` });
+  // one boxed structure straight to MolNexTR, no AI call
+  const before = posts.length, models = Object.keys(prompts).length;
+  await p.locator('#ex-canvas').scrollIntoViewIfNeeded();
+  const c = await p.locator('#ex-canvas').boundingBox();
+  await p.mouse.move(c.x + c.width * 0.05, c.y + c.height * 0.1);
+  await p.mouse.down();
+  await p.mouse.move(c.x + c.width * 0.3, c.y + c.height * 0.4, { steps: 4 });
+  await p.mouse.up();
+  await p.waitForFunction(() => !document.getElementById('ex-ocsr-one').disabled);
+  await p.click('#ex-ocsr-one');
+  await p.waitForFunction(() => /MolNexTR 读出 CC\(=O\)c1ccc\(Br\)cc1（C8H7BrO，置信度 0\.98）/.test(document.getElementById('ex-status').textContent), null, { timeout: 30000 });
+  assert.equal(posts.length, before + 1);
+  assert.equal(posts.at(-1).params.images.length, 1);
+  assert.equal(Object.keys(prompts).length, models, 'no model call');
+  assert.equal(await p.locator('.ex-mols .ex-mol').count(), 2);
+  assert.equal(await p.locator('.ex-mols .ex-mol').last().locator('.ex-srctag').textContent(), 'MolNexTR · 0.98');
+  // the switch is remembered, and with it off no job is sent
+  await p.uncheck('#ex-ocsr');
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-extract'))).ocsr, false);
+  await p.click('#ex-clearsel');
+  await p.click('#ex-run');
+  await p.waitForFunction(() => document.querySelector('[data-step=check]')?.dataset.status === 'done' && !document.querySelector('#ex-stop:not([hidden])'), null, { timeout: 60000 });
+  assert.equal(posts.filter((b) => b.job === 'ocsr').length, 2, 'no MolNexTR job with the switch off');
+  assert.doesNotMatch(prompts.template, /Also give every drawn molecule a "box"/);
+  // MOLASTRIA_SHOTS=<folder> keeps a screenshot of each view for a look by eye
+  if (process.env.MOLASTRIA_SHOTS) await p.screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr.png`, fullPage: true });
+  await finish(p);
+  // English, phone width, dark: the lane line and a boxed structure
+  const e = await open({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce', colorScheme: 'dark' });
+  await go(e, '/extract/index.html?lang=en');
+  await e.waitForFunction(() => document.getElementById('ex-ocsr-state')?.dataset.ready === 'true', null, { timeout: 30000 });
+  assert.match(await text(e, '#ex-ocsr-state'), /^MolNexTR is online/);
+  await e.click('#ex-sample');
+  await e.locator('#ex-canvas').scrollIntoViewIfNeeded();
+  const ce = await e.locator('#ex-canvas').boundingBox();
+  await e.mouse.move(ce.x + ce.width * 0.05, ce.y + ce.height * 0.1);
+  await e.mouse.down();
+  await e.mouse.move(ce.x + ce.width * 0.35, ce.y + ce.height * 0.45, { steps: 4 });
+  await e.mouse.up();
+  await e.click('#ex-ocsr-one');
+  await e.waitForFunction(() => /^MolNexTR read CC\(=O\)c1ccc\(Br\)cc1/.test(document.getElementById('ex-status').textContent), null, { timeout: 30000 });
+  assert.equal(await e.locator('.ex-mols .ex-srctag').textContent(), 'MolNexTR · 0.98');
+  assert.doesNotMatch(await e.innerText('#ex'), /[一-鿿]/, 'no Chinese left on the English page');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  if (process.env.MOLASTRIA_SHOTS) await e.screenshot({ path: `${process.env.MOLASTRIA_SHOTS}/extract-molnextr-en-phone-dark.png`, fullPage: true });
+  await finish(e);
+});
+
 check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from real outputs, a Slurm batch zip, hand-off to the code desk, English phone', async () => {
   const p = await open({ reducedMotion: 'reduce' });
   await localOCL(p.context());
@@ -6797,6 +7089,223 @@ check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from 
     assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no sideways scroll on a phone (${id})`);
   }
   await finish(e);
+});
+
+check('nmrium: samples, a practice spectrum, your own files and a Bruker folder go into the embedded NMRium; links from the NMR and Spectra pages; English phone', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const p = await open({ reducedMotion: 'reduce' });
+  await go(p, '/nmr/nmrium/index.html#sample=aspirin');
+  const loaded = async (label) => {
+    await p.waitForFunction(() => /^已载入：/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 60000 });
+    await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+    assert.doesNotMatch(await text(p, '#nmrium-status'), /报错/, label);
+  };
+  await loaded('aspirin FID');
+  assert.match(await text(p, '#nmrium-status'), /阿司匹林/);
+  const frame = p.frameLocator('#nmrium-frame');
+  await frame.locator('text=1H').first().waitFor({ timeout: 30000 });
+  assert.equal(await p.getAttribute('[data-sample=aspirin]', 'aria-pressed'), 'true');
+  // the 2D sample: two spectra (1H and the COSY)
+  await p.evaluate(() => { delete document.body.dataset.spectra; });
+  await p.click('[data-sample=cyclosporin]');
+  await loaded('cyclosporin');
+  await p.waitForFunction(() => +document.body.dataset.spectra === 2, null, { timeout: 60000 });
+  await frame.locator('text=1H,1H').first().waitFor({ timeout: 30000 });
+  // a practice spectrum from the Spectra Hall, written as JCAMP-DX on the page
+  await p.evaluate(() => { delete document.body.dataset.spectra; location.hash = '#practice=etoac-0'; });
+  await p.waitForFunction(() => /练习题的谱/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  await frame.locator('text=/molastria-etoac/').first().waitFor({ timeout: 30000 });
+  // your own files: a JCAMP-DX goes, a picture is named as skipped
+  await p.evaluate(() => { delete document.body.dataset.spectra; });
+  await p.setInputFiles('#nmrium-files', [join(ROOT, 'public/nmr/nmrium/samples/indometacin-1h.dx'), join(ROOT, 'public/favicon.svg')]);
+  await p.waitForFunction(() => /indometacin-1h\.dx/.test(document.getElementById('nmrium-status').textContent));
+  assert.match(await text(p, '#nmrium-status'), /认不出.*favicon\.svg/);
+  await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  // a Bruker experiment folder (the aspirin zip unpacked): packed into one zip on the page
+  const dir = mkdtempSync(join(tmpdir(), 'molastria-bruker-'));
+  const unzip = spawnSync('python3', ['-I', '-m', 'zipfile', '-e', join(ROOT, 'public/nmr/nmrium/samples/aspirin-1h.zip'), join(dir, 'aspirin')]);
+  if (unzip.status === 0) {
+    await p.evaluate(() => { delete document.body.dataset.spectra; });
+    await p.setInputFiles('#nmrium-folder', join(dir, 'aspirin'));
+    await p.waitForFunction(() => /已载入：aspirin\.zip/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 30000 });
+    await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  }
+  rmSync(dir, { recursive: true, force: true });
+  assert.equal((await p.request.get(`${SITE}/nmr/nmrium/app/THIRD-PARTY-LICENSES.md`)).status(), 200);
+  await finish(p);
+  // the NMR page and the Spectra Hall's practice problems link here
+  const q = await open({ reducedMotion: 'reduce' });
+  await go(q, '/nmr/index.html');
+  assert.ok(await q.locator('a[href="nmrium/index.html#sample=aspirin"]').count(), 'NMR page: open the aspirin sample');
+  await go(q, '/spectra/index.html#pr-etoac');
+  await q.waitForSelector('[data-nmrium="etoac-0"]');
+  assert.equal(await q.getAttribute('[data-nmrium="etoac-0"]', 'href'), '../nmr/nmrium/index.html#practice=etoac-0');
+  await q.click('#pr-sbu');
+  assert.equal(await q.locator('#sp-pr-panel [data-nmrium]').count(), 2, 'problem 3: the 1H and 13C sketches, not the 2D one');
+  await finish(q);
+  // English, dark, phone width: the bar is in English and nothing scrolls sideways
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await go(e, '/nmr/nmrium/index.html?lang=en');
+  await e.waitForFunction(() => /NMRium is ready/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 60000 });
+  assert.doesNotMatch(await e.innerText('#nmrium-bar'), /[一-鿿]/, 'no Chinese in the English bar');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  assert.ok(await e.evaluate(() => document.getElementById('nmrium-frame').getBoundingClientRect().height > 300), 'NMRium keeps most of the screen');
+  await finish(e);
+});
+
+check('thermochemistry (GoodVibes port): code desk and workbench show ZPE, H, T·S, G for a frequency output; options move the numbers; σ from the point group; English phone', async () => {
+  const fix = (f) => readFileSync(join(ROOT, 'tools/thermo-fixtures', f), 'utf8');
+  const ref = JSON.parse(fix('goodvibes-ref.json')).files['gaussian-h2o.out'];
+  const shots = process.env.THERMO_SHOTS; // a folder: also save screenshots there (light, dark, English phone)
+  const p = await open();
+  await go(p, '/code/index.html#output');
+  await p.fill('#out-text', fix('gaussian-h2o.out'));
+  await p.waitForSelector('#out-thermo .th-table');
+  const cell = (row, col) => p.locator(`#out-thermo .th-result tbody tr:nth-child(${row}) td:nth-of-type(${col})`).textContent();
+  assert.equal(await cell(5, 1), ref['rrho-grimme'].gibbs_free_energy.toFixed(6), 'G (RRHO) as GoodVibes gives it');
+  assert.equal(await cell(5, 2), ref['rrho-grimme'].qh_gibbs_free_energy.toFixed(6), 'quasi-RRHO G');
+  assert.equal(await cell(2, 1), ref['rrho-grimme'].zpe.toFixed(6), 'ZPE');
+  assert.match(await text(p, '#out-thermo .th-sig'), /程序印的/);
+  const corr = async () => Number(await text(p, '#out-thermo [data-th=qhcorr]'));
+  const gas = await corr();
+  await p.selectOption('#out-thermo [data-k=std]', '1M');
+  const sol = await corr();
+  assert.ok(Math.abs(sol - gas - 1.89) < 0.011, `1 atm → 1 M adds about 1.89 kcal/mol (${gas} → ${sol})`);
+  await p.fill('#out-thermo [data-k=T]', '350');
+  assert.equal(await cell(5, 2), ref['T350-1M'].qh_gibbs_free_energy.toFixed(6), '350 K and 1 M');
+  await p.selectOption('#out-thermo [data-k=std]', '1atm');
+  await p.fill('#out-thermo [data-k=T]', '298.15');
+  await p.check('#out-thermo [data-k=qh]');
+  await p.fill('#out-thermo [data-k=hCutoff]', '150');
+  await p.fill('#out-thermo [data-k=sCutoff]', '50');
+  assert.equal(await cell(3, 2), ref['qh-150-s50'].qh_enthalpy.toFixed(6), 'Head-Gordon quasi-harmonic H');
+  assert.equal(await cell(5, 2), ref['qh-150-s50'].qh_gibbs_free_energy.toFixed(6));
+  // the options are remembered
+  assert.equal(JSON.parse(await p.evaluate(() => localStorage.getItem('molastria-thermo'))).qh, true);
+  if (shots) await p.locator('#out-thermo').screenshot({ path: join(shots, 'code-light.png') });
+  // a TS-like output: the imaginary mode is left out and said so; it can be counted as real
+  await p.fill('#out-text', fix('gaussian-hcn-triplet.out'));
+  await p.waitForSelector('#out-thermo .th-warn');
+  assert.match(await text(p, '#out-thermo .th-warn'), /1 个虚频（1327\.0i）/);
+  assert.match(await text(p, '#out-thermo .th-facts'), /直线形分子[\s\S]*多重度 3/);
+  await p.uncheck('#out-thermo [data-k=qh]');
+  await p.fill('#out-thermo [data-k=sCutoff]', '100');
+  await p.check('#out-thermo [data-k=invert]');
+  await p.fill('#out-thermo [data-k=invertAt]', '-1500');
+  assert.equal(await cell(5, 1), JSON.parse(fix('goodvibes-ref.json')).files['gaussian-hcn-triplet.out']['invert-1500'].gibbs_free_energy.toFixed(6));
+  // no symmetry number printed: it comes from the point group of the geometry (group-theory/gt-models.js, loaded on demand)
+  await p.fill('#out-text', fix('gaussian-h2o.out').replace(/^ Rotational symmetry number.*\n/m, ''));
+  await p.waitForFunction(() => /按结构判为 C2v/.test(document.querySelector('#out-thermo .th-sig')?.textContent || ''), null, { timeout: 15000 });
+  assert.equal(await p.inputValue('#out-thermo [data-k=sigma]'), '2');
+  assert.equal(await cell(5, 2), ref['rrho-grimme'].qh_gibbs_free_energy.toFixed(6), 'same G as with the printed σ');
+  // frequencies but no geometry and no rotational constants (the NWChem demo is an excerpt): the panel is not drawn at all
+  await p.fill('#out-text', '');
+  await p.selectOption('#out-demo-prog', 'nwchem');
+  await p.waitForFunction(() => !document.querySelector('#out-thermo .th-table'), null, { timeout: 10000 });
+  assert.equal(await p.locator('#out-thermo .th-result').count(), 0, 'no half-drawn thermochemistry panel for an excerpt');
+  await finish(p);
+
+  // dark theme, then the workbench's outputs tab with its Gaussian 16 sample
+  const d = await open({ colorScheme: 'dark' });
+  await go(d, '/workbench/index.html#spec');
+  await d.click('#wb-t-spec');
+  await d.click('#wb-p-spec button:has-text("二乙烯基苯：Gaussian 16 频率和拉曼")');
+  await d.waitForSelector('#wb-p-spec .th-table');
+  assert.match(await d.innerText('#wb-p-spec .th-box'), /热化学[\s\S]*G\(298\.15 K\)/);
+  if (shots) await d.locator('#wb-p-spec .th-box').screenshot({ path: join(shots, 'workbench-dark.png') });
+  await finish(d);
+
+  // English on a phone: no Chinese, nothing wider than the screen
+  const e = await open({ viewport: { width: 390, height: 844 } });
+  await go(e, '/code/index.html?lang=en#output');
+  await e.waitForFunction(() => !document.documentElement.dataset.i18n);
+  await e.click('#t-output');
+  await e.fill('#out-text', fix('orca5-dvb-freq.out'));
+  await e.waitForSelector('#out-thermo .th-table');
+  assert.doesNotMatch(await e.innerText('#out-thermo'), HAN, 'no Chinese in the English thermochemistry panel');
+  assert.match(await e.innerText('#out-thermo'), /as printed by the program \(C2h\)/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  if (shots) await e.locator('#out-thermo').screenshot({ path: join(shots, 'code-en-phone.png') });
+  await finish(e);
+});
+
+// ── Mol* (public/viewer/molstar.js): served here from tools/e2e/node_modules/molstar, the same pinned version as on jsDelivr ──
+const molstarLocal = (ctx) => ctx.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\/molstar@[\d.]+\/build\/viewer\/([\w/.-]+)$/, (r) => {
+  const f = /build\/viewer\/([\w/.-]+)$/.exec(r.request().url())[1];
+  return r.fulfill({ contentType: f.endsWith('.css') ? 'text/css' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: readFileSync(new URL(`./node_modules/molstar/build/viewer/${f}`, import.meta.url)) });
+});
+check('molstar viewer: the protein MD result plays its Cα trajectory coloured by RMSF; quantum biology and the MD section open it; RCSB offline says why', async () => {
+  const p = await openModels('protein');
+  await molstarLocal(p.context());
+  await p.context().route(/^https:\/\/files\.rcsb\.org\//, (r) => r.abort());
+  await runJob(p, 'pmd');
+  assert.equal(await p.locator('#m-result [data-act=ms]').count(), 3, 'trajectory, starting PDB entry, final structure');
+  await p.click('#m-result [data-act=ms][data-src=traj]');
+  await p.waitForSelector('#m-result .md-ms[data-ready=true]', { timeout: 60000 });
+  const box = '#m-result .md-ms';
+  assert.equal(await p.getAttribute(box, 'data-frames'), '25');
+  assert.equal(await p.getAttribute(box, 'data-color'), 'rmsf', 'RMSF colouring is the default when the result has RMSF');
+  assert.match(await text(p, `${box} .ms-fnum`), /^第 1 \/ 25 帧 · 0\.8 ps$/);
+  assert.match(await text(p, `${box} .ms-legend`), /Cα RMSF 从 0\.\d\d 到 \d\.\d\d Å/);
+  assert.ok(await p.evaluate((s) => document.querySelector(`${s} canvas`)?.width > 200, box), 'Mol* drew on a canvas');
+  assert.equal(await p.evaluate(() => document.getElementById('molastria-molstar-css').getAttribute('href').endsWith('theme/light.css')), true);
+  // the slider moves the model index in Mol*'s state tree
+  await p.fill(`${box} .ms-frames input`, '10');
+  await p.waitForFunction((s) => document.querySelector(s).dataset.frame === '9', box);
+  assert.equal(await p.evaluate((s) => [...document.querySelector(s).ms.plugin.state.data.cells.values()].find((c) => /model-from-trajectory$/.test(c.transform.transformer.id)).transform.params.modelIndex, box), 9);
+  await p.selectOption(`${box} .ms-color select`, 'chain-id');
+  await p.waitForFunction((s) => document.querySelector(s).dataset.color === 'chain-id', box);
+  assert.equal(await p.isHidden(`${box} .ms-legend`), true);
+  // dark theme swaps Mol*'s stylesheet
+  await p.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  await p.waitForFunction(() => document.getElementById('molastria-molstar-css').getAttribute('href').endsWith('theme/dark.css'));
+  // the final structure, then the PDB entry with no network to RCSB: the box says why, the page has no error
+  await p.click('#m-result [data-act=ms][data-src=final]');
+  await p.waitForSelector('#m-result .md-ms[data-ready=true]', { timeout: 30000 });
+  assert.equal(await p.getAttribute(box, 'data-frames'), '1');
+  await p.click('#m-result [data-act=ms][data-src=start]');
+  await p.waitForSelector('#m-result .md-ms[data-failed=true]', { timeout: 30000 });
+  assert.match(await text(p, `${box} .ms-state`), /1L2Y 下载失败（需要联网访问 files\.rcsb\.org）/);
+  await finish(p);
+
+  // the MD section: the toy helix trajectory, 40 frames, coloured by its own RMSF
+  const m = await open();
+  await molstarLocal(m.context());
+  await go(m, '/md/index.html');
+  await m.waitForSelector('#chm-protein #mdp-rmsf path.mdp-fr');
+  await m.click('#mdp-toy');
+  await m.waitForSelector('#mdp-view[data-ready=true]', { timeout: 60000 });
+  assert.equal(await m.getAttribute('#mdp-view', 'data-frames'), '40');
+  assert.equal(await m.getAttribute('#mdp-view', 'data-color'), 'rmsf');
+  await m.fill('#mdp-id', '12');
+  await m.click('#mdp-pdb');
+  assert.match(await text(m, '#mdp-why'), /PDB 编号是四位/);
+  // in English the viewer carries its own text (the section is translate="no", so i18n.js does not reach it)
+  await go(m, '/md/index.html?lang=en');
+  await m.waitForSelector('#mdp-toy');
+  await m.click('#mdp-toy');
+  await m.waitForSelector('#mdp-view[data-ready=true]', { timeout: 60000 });
+  assert.match(await text(m, '#mdp-view .ms-fnum'), /^Frame 1 \/ 40 · 0\.0 ps$/);
+  assert.match(await text(m, '#mdp-view .ms-legend'), /Blue moves least/);
+  assert.doesNotMatch(await text(m, '#mdp-view .ms-bar'), HAN);
+  await finish(m);
+
+  // quantum biology's structure hall: the Mol* switch opens the same PDB entry in Mol* (RCSB answered with a tiny mmCIF here)
+  const q = await open();
+  await molstarLocal(q.context());
+  const CIF = 'data_TEST\nloop_\n_atom_site.group_PDB\n_atom_site.id\n_atom_site.type_symbol\n_atom_site.label_atom_id\n_atom_site.label_comp_id\n_atom_site.label_asym_id\n_atom_site.label_seq_id\n_atom_site.Cartn_x\n_atom_site.Cartn_y\n_atom_site.Cartn_z\n_atom_site.auth_seq_id\n_atom_site.auth_asym_id\n_atom_site.pdbx_PDB_model_num\n'
+    + [0, 1, 2, 3].map((i) => `ATOM ${i + 1} C CA ALA A ${i + 1} ${(3.8 * i).toFixed(3)} 0.000 0.000 ${i + 1} A 1`).join('\n') + '\n';
+  await q.context().route(/^https:\/\/files\.rcsb\.org\/download\/\w+\.cif$/, (r) => r.fulfill({ contentType: 'text/plain', headers: { 'access-control-allow-origin': '*' }, body: CIF }));
+  await go(q, '/quantum/biology/index.html');
+  await q.locator('#qb-structures').scrollIntoViewIfNeeded();
+  await q.click('#qb-struct-engine [data-eng=molstar]');
+  await q.waitForSelector('#qb-struct-3d.ms-box[data-ready=true]', { timeout: 60000 });
+  assert.equal(await q.getAttribute('#qb-struct-engine [data-eng=molstar]', 'aria-pressed'), 'true');
+  assert.match(await text(q, '#qb-struct-3d .ms-info'), /RCSB PDB/);
+  await q.click('#qb-struct-engine [data-eng=mol3d]');
+  await q.waitForSelector('#qb-struct-3d.m3-box[data-ready=true]', { timeout: 60000 });
+  await finish(q);
 });
 
 check('GPU Particle HIVE (/particles/): presets, storage, guide drawer, English mobile', async () => {

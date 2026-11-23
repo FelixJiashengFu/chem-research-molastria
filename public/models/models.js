@@ -52,7 +52,13 @@
   const xtb = (name, about, cite, more = {}) => ({ name, tier: 'open', elements: null, dft: '半经验紧束缚，参数拟合到 DFT 和实验数据', license: 'LGPL-3.0（xtb 程序）', about, ...more,
     fine: `${name} 由开源程序 xtb（grimme-lab/xtb，LGPL-3.0）计算；论文里请引用 ${cite}。` });
   const UMA_CITE = 'UMA（Meta FAIR Chemistry）', ALLSCAIP = 'AllScAIP 和 OMol25 数据集（Levine et al., 2025）', ESEN = 'eSEN 和 OMol25 数据集（Levine et al., 2025）';
+  const AIMNET = ['H', 'B', 'C', 'N', 'O', 'F', 'Si', 'P', 'S', 'Cl', 'As', 'Se', 'Br', 'I'];
   const MODELS = {
+    // AIMNet2 (isayevlab/aimnetcentral, MIT) in its own environment on the owner's computer. It reads the charge but
+    // not the multiplicity, so it takes closed-shell molecules only (closed): ions yes, radicals no.
+    aimnet2: { name: 'AIMNet2', tier: 'open', closed: true, elements: AIMNET, dft: 'ωB97M-D3(BJ)/def2-TZVPP', license: 'MIT',
+      about: 'Isayev 组的 AIMNet2 神经网络势（ωB97M-D3 精度），覆盖 H B C N O F Si P S Cl As Se Br I 十四种元素，能算中性和带电荷的闭壳层分子（铵离子、羧酸根、两性离子都可以），速度很快。它只读总电荷、不读自旋多重度，所以不算自由基和开壳层分子，也就没有电离能、电子亲和能、自旋态能隙和键解离能；质子亲和能两边都是闭壳层，可以算。',
+      fine: 'AIMNet2 采用 MIT 许可；论文里请引用 Anstine, Zubatyuk, Isayev, Chem. Sci. 2025, 16, 10228（AIMNet2）。' },
     'openmm-amber14': { name: 'OpenMM · Amber ff14SB + 隐式水', tier: 'open', elements: null, kind: 'ff', dft: 'Amber ff14SB 蛋白质力场 + GBSA-OBC2 隐式溶剂（经典力场，不是量子化学）', license: 'MIT（OpenMM、PDBFixer）',
       about: '开源分子模拟引擎 OpenMM 在站长电脑的显卡上跑蛋白质分子动力学：按 PDB 编号从 RCSB 取结构，PDBFixer 补齐缺失的原子和链内短缺口、加氢（pH 7），去掉配体和水，用 Amber ff14SB 力场和隐式水先能量最小化，再跑一段 Langevin 动力学。',
       fine: '论文里请引用 OpenMM 8（Eastman et al., J. Phys. Chem. B 2024）、Amber ff14SB（Maier et al., J. Chem. Theory Comput. 2015）和所用的 PDB 条目。' },
@@ -83,10 +89,11 @@
       about: '预测分子的偶极矩和完整的极化率张量（在 SPICE-α 上训练，ωB97M-D3BJ/def2-TZVPP）。它本身不算能量和力，所以先用 MACE-OFF23 medium 优化结构，再在这个结构上预测；红外与拉曼光谱用 MACE-OFF23 medium 的振动模式加上 MACE-MDP 的偶极矩和极化率导数。只算由 H C N O F P S Cl Br I 组成的中性闭壳层分子。',
       fine: 'MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。' }
   };
-  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'];
+  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'];
+  const TS = window.MolAstriaTS; // ts-core.js: limits, checks and the profile of the two transition-state jobs
   const GROUPS = {
-    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa', 'flow'],
-      intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。' },
+    charged: { name: '带电荷与自旋的分子模型', charged: true, models: ['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p2p1-ft-d4rev', 'allscaip-md-conserving-all-omol', 'allscaip-md-direct-all-omol', 'aimnet2'], jobs: [...GEOM, 'ipea', 'spin', 'bde', 'pa', 'flow'],
+      intro: '① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。AIMNet2 也算离子，但只算闭壳层分子（不算自由基）。' },
     neutral: { name: '中性分子通用模型', charged: false, models: ['uma-s-1p1', 'esen-sm-conserving-all-omol', 'esen-sm-direct-all-omol', 'esen-md-direct-all-omol', 'mace-omol-0'], jobs: GEOM,
       intro: '② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。' },
     organic: { name: '有机分子力场', charged: false, models: ['mace-off23-small', 'mace-off23-medium', 'mace-off23-large', 'ani-2x', 'gfn-ff'], jobs: GEOM,
@@ -134,6 +141,13 @@
     pmd: { name: '蛋白质分子动力学', cost: (p) => (p.ps > 20 ? 10 : 5), about: '从 RCSB 下载这个 PDB 条目的第一个模型，修补、加氢后能量最小化，再在 Langevin 恒温器下以 2 fs 步长跑动力学（与氢相连的键长固定）。超过 20 ps 消耗 10 次。',
       fields: [{ k: 'pdb_id', label: 'PDB 编号（四位，如 1L2Y、1VII、1UBQ）', type: 'pdb', def: '1L2Y' }, { k: 'chains', label: '链（如 A 或 AB；空着就是全部蛋白链）', type: 'chains', def: '' },
         { k: 'ps', label: '模拟时长（ps）', type: 'int', lo: 1, hi: 100, def: 20 }, { k: 'temperature', label: '温度（K）', type: 'num', lo: 250, hi: 400, def: 300, step: 1 }] },
+    // Transition states (tools/uma-server/tsjobs.py): Sella saddle point, Hessian from the same model, IRC both ways.
+    ts: { name: '过渡态搜索与 IRC', cost: () => TS.COST.ts, xyz: true,
+      about: '从一个过渡态的猜测结构出发，用 Sella 找一阶鞍点（内坐标），再用同一个模型的受力差分算振动频率（过渡态应该恰好有一个虚频），最后沿两个方向做内禀反应坐标（IRC），两端各自优化到极小点，给出能量曲线、两个方向的能垒和整条路径的动画。只收 XYZ 坐标，最多 50 个原子。',
+      fields: [{ k: 'fmax', label: '鞍点收敛判据 fmax（eV/Å）', type: 'num', lo: TS.FMAX.lo, hi: TS.FMAX.hi, def: TS.FMAX.def, step: 0.001 }, { k: 'irc', label: '找到过渡态后做 IRC（两个方向）', type: 'bool', def: true }, { k: 'irc_steps', label: 'IRC 每个方向最多几步', type: 'int', lo: TS.IRC_STEPS.lo, hi: TS.IRC_STEPS.hi, def: TS.IRC_STEPS.def }] },
+    neb: { name: 'NEB 找过渡态与 IRC', cost: () => TS.COST.neb, xyz: true,
+      about: '左边的 XYZ 是反应物，下面再贴产物（同样的原子、同样的顺序）。两端先各自优化，再用 IDPP 插值出一串图像，跑 NEB 和爬坡图像 NEB（CI-NEB），把最高的图像交给 Sella 精修成过渡态，然后算频率、做 IRC。最多 50 个原子。',
+      fields: [{ k: 'product_xyz', label: '产物的 XYZ（和反应物同样的原子、同样的顺序）', type: 'product', def: '' }, { k: 'images', label: 'NEB 的中间图像数', type: 'int', lo: TS.IMAGES.lo, hi: TS.IMAGES.hi, def: TS.IMAGES.def }, { k: 'fmax', label: '鞍点收敛判据 fmax（eV/Å）', type: 'num', lo: TS.FMAX.lo, hi: TS.FMAX.hi, def: TS.FMAX.def, step: 0.001 }, { k: 'irc', label: '找到过渡态后做 IRC（两个方向）', type: 'bool', def: true }, { k: 'irc_steps', label: 'IRC 每个方向最多几步', type: 'int', lo: TS.IRC_STEPS.lo, hi: TS.IRC_STEPS.hi, def: TS.IRC_STEPS.def }] },
     ir: { name: '红外与拉曼光谱', cost: () => 3, about: 'MACE-OFF23 medium 优化并求振动模式，MACE-MDP 给出偶极矩和极化率对振动的导数，得到红外强度和拉曼活性。', fields: [] }
   };
 
@@ -271,7 +285,7 @@
     const out = {};
     for (const f of JOBS[j].fields) {
       const v = param(f);
-      out[f.k] = f.type === 'bond' ? String(v).split('-').map(Number) : f.type === 'reaction' || f.type === 'chains' ? String(v).trim() : f.type === 'pdb' ? String(v).trim().toUpperCase() : v;
+      out[f.k] = f.type === 'bond' ? String(v).split('-').map(Number) : f.type === 'reaction' || f.type === 'chains' ? String(v).trim() : f.type === 'pdb' ? String(v).trim().toUpperCase() : f.type === 'product' ? String(v).replace(/\r/g, '') : v;
     }
     return out;
   }
@@ -284,14 +298,27 @@
       if (f.type === 'select') return `<label>${esc(f.label)}<select data-k="${f.k}">${opts(f.options, v)}</select></label>`;
       if (f.type === 'pdb') return `<label>${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="4" spellcheck="false" autocomplete="off" translate="no"></label>`;
       if (f.type === 'chains') return `<label>${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="8" spellcheck="false" autocomplete="off" translate="no"></label>`;
+      if (f.type === 'product') return `<label class="md-full">${esc(f.label)}<textarea data-k="${f.k}" rows="6" spellcheck="false" translate="no">${esc(v)}</textarea></label>`;
       if (f.type === 'reaction') return `<label class="md-full">${esc(f.label)}<input type="text" data-k="${f.k}" value="${esc(v)}" maxlength="400" spellcheck="false" autocomplete="off"></label>`;
       if (f.type === 'atoms') return `<div class="md-full"><span class="small muted">${esc(f.label)}</span><div class="md-atoms">${[0, 1, 2, 3].map((n) => `<select data-k="atoms" data-n="${n}" aria-label="第 ${n + 1} 个原子">${opts(atomOpts(), v[n])}</select>`).join('')}</div></div>`;
       if (f.type === 'spins') return `<div class="md-full"><span class="small muted">${esc(f.label)}</span><div class="md-pair">${[0, 1].map((n) => `<select data-k="spins" data-n="${n}" aria-label="第 ${n + 1} 个自旋多重度">${opts([1, 2, 3, 4].map((m) => [m, `${m}（${['单重态', '二重态', '三重态', '四重态'][m - 1]}）`]), v[n])}</select>`).join('')}</div></div>`;
       if (f.type === 'bond') { const list = breakable(); return `<label class="md-full">${esc(f.label)}<select data-k="bond">${list.length ? opts(list.map((b) => [b.v, b.label]), v) : '<option value="">这个分子没有可以断开的非环单键</option>'}</select></label>`; }
       if (f.type === 'site') return `<label>${esc(f.label)}<select data-k="site">${opts(heavy().map((a) => [a.i, a.h ? `${atomName(a)}（${a.h} 个氢）` : atomName(a)]), v)}</select></label>`;
       return `<label>${esc(f.label)}<input type="number" data-k="${f.k}" value="${esc(v)}" min="${f.lo}" max="${f.hi}" step="${f.type === 'int' ? 1 : f.step}"><small>${f.lo} – ${f.hi}，默认 ${f.def}</small></label>`;
-    }).join('');
+    }).join('') + (JOBS[j].xyz ? '<div class="md-full"><button type="button" class="text-button" data-act="ts-sample">填入示例：HCN ⇌ HNC 异构化</button></div>' : '');
   }
+  /** The worked example of the two transition-state jobs: a guess of the TS, or the two isomers. */
+  function tsSample() {
+    const j = job();
+    $('m-xyz').value = j === 'neb' ? TS.SAMPLES.reactant : TS.SAMPLES.ts;
+    if (j === 'neb') vals().product_xyz = TS.SAMPLES.product;
+    const r = document.querySelector('input[name=m-mode][value=xyz]');
+    if (r) r.checked = true;
+    S.mode = 'xyz'; xyz = parseXyz($('m-xyz').value);
+    if (G().charged) { $('m-charge').value = 0; $('m-spin').value = 1; }
+    formKey = ''; sync(); xyz3d();
+  }
+  $('m-params').addEventListener('click', (e) => { if (e.target.closest('[data-act=ts-sample]')) tsSample(); });
   $('m-params').addEventListener('input', (e) => {
     const el = e.target.closest('[data-k]');
     if (!el) return;
@@ -331,9 +358,13 @@
           if (!d) return `RDKit 无法解析反应里的物种 ${s}。`;
           d.elements.forEach((e) => symbols.add(e));
           if (!G().charged && (d.charge !== 0 || electrons(d.counts, d.charge) % 2)) return `${G().name}只算中性闭壳层分子：${s} 带电荷或有未成对电子，请换到窗口 ① 计算。`;
+          const shut = models.find((id) => MODELS[id].closed);
+          if (shut && electrons(d.counts, d.charge) % 2) return `${MODELS[shut].name} 只算闭壳层分子：${s} 有未成对电子。`;
         }
         symbols = [...symbols];
       }
+    } else if (JOBS[j].xyz && S.mode === 'smiles') {
+      return `“${JOBS[j].name}”要用 XYZ 坐标：从 SMILES 生成的是能量极小点，不是过渡态。请换成 XYZ 输入（可以先点“填入示例”）。`;
     } else if (S.mode === 'smiles') {
       if (!$('m-smiles').value.trim()) return '先输入一个 SMILES。';
       if (!R) return '正在载入 RDKit…';
@@ -344,6 +375,7 @@
       if (!xyz || xyz.error) return xyz?.error || '先粘贴或上传一个 XYZ 结构。';
       if (JOBS[j].smiles?.(p)) return `“${JOBS[j].name}”要从 SMILES 生成结构，请换成 SMILES 输入。`;
       symbols = Object.keys(xyz.counts); electronCount = electrons(xyz.counts, charge());
+      if (JOBS[j].xyz) { const why = j === 'neb' ? TS.checkPair(xyz.text, p.product_xyz) : TS.checkAtoms(xyz.n); if (why) return why; }
     }
     for (const id of models) {
       const out = MODELS[id].elements && symbols ? symbols.filter((x) => !MODELS[id].elements.includes(x)) : [];
@@ -352,6 +384,8 @@
     if (j !== 'rxn' && j !== 'pmd') {
       if (!G().charged && (ionCharge !== 0 || electronCount % 2)) return `${G().name}只算中性闭壳层分子：这个结构带电荷或有未成对电子，请换到窗口 ① 计算。`;
       if (G().charged && electronCount !== null && (electronCount % 2 === 1) !== (spin() % 2 === 0)) return `电荷 ${charge()} 时有 ${electronCount} 个电子，和自旋多重度 ${spin()} 不相容。`;
+      const shut = models.find((id) => MODELS[id].closed);
+      if (shut && G().charged && spin() !== 1) return `${MODELS[shut].name} 只算闭壳层分子：离子可以，自由基和开壳层分子不行，自旋多重度要为 1。`;
     }
     for (const f of JOBS[j].fields) {
       if ((f.type === 'num' || f.type === 'int') && !(p[f.k] >= f.lo && p[f.k] <= f.hi && (f.type !== 'int' || Number.isInteger(p[f.k])))) return `${f.label}要在 ${f.lo} 到 ${f.hi} 之间${f.type === 'int' ? '，取整数' : ''}。`;
@@ -514,6 +548,7 @@
     const models = runModels(), j = job();
     busy = true; sync();
     shown = [];
+    dropMolstar();
     $('m-result').innerHTML = '';
     try {
       for (const [i, model] of models.entries()) {
@@ -614,6 +649,23 @@
     const csv = [csvOf(['t_ps', 'epot_kj', 'temperature_k', 'rmsd_a', 'rg_a'], s.map((p) => [p.t_ps, p.epot_kj, p.temperature_k, p.rmsd_a, p.rg_a])),
       csvOf(['chain', 'residue', 'rmsf_a'], fl.map((x) => [x.chain, x.res, x.a]))].join('\n');
     return { html, csv, xyz: '', pdb: r.trajectory_pdb || '', finalPdb: r.final_pdb || '' };
+  }
+  /** ts / neb: verdict, energy profile along the IRC, the NEB band, barriers, and two animations (path, imaginary mode). */
+  function tsView(r) {
+    const pr = TS.profile(r), b = TS.barriers(r), bd = TS.band(r), fr = r.frequencies_cm1 || [];
+    const notes = TS.verdict(r).map(([k, t]) => `<p class="${k === 'ok' ? 'md-note' : 'md-warn'}">${esc(t)}</p>`).join('');
+    let html = `<p>过渡态能量 <b>${f(r.ts_energy_ev, 4)} eV</b>（Sella ${r.ts_steps ?? '?'} 步，最大受力 ${f(r.ts_fmax_ev_a, 4)} eV/Å）。</p>${notes}`;
+    if (pr.pts.length) {
+      html += table(['', 'kcal/mol', 'eV'], [['左端 → 过渡态的能垒', b.left], ['右端 → 过渡态的能垒', b.right], ['反应能（右端 − 左端）', b.reaction]].map(([n, v]) => `<tr><td>${n}</td>${td(v, 2)}${td(v / KCAL, 3)}</tr>`))
+        + plot({ series: [{ pts: pr.pts, dots: true }], xlabel: '反应坐标 s（√amu·Å，过渡态在 0）', ylabel: '相对过渡态的能量（kcal/mol）' })
+        + `<p class="muted small">IRC：左端 ${r.irc?.reverse?.irc_steps ?? '?'} 步、右端 ${r.irc?.forward?.irc_steps ?? '?'} 步（每步 0.1 √amu·Å），之后两端各自优化到极小点（曲线最外面的点）。“左”“右”只是 IRC 的两个方向，哪边是反应物要看结构。</p>`;
+    } else html += '<p class="muted small">没有做 IRC，只给出过渡态和频率。</p>';
+    if (bd.length) html += plot({ series: [{ pts: bd, dots: true }], xlabel: 'NEB 图像（0 是反应物）', ylabel: '相对反应物的能量（kcal/mol）', h: 200 })
+      + `<p class="muted small">NEB ${r.neb.neb_steps} 步${r.neb.neb_converged ? '' : '（没收敛）'}，爬坡图像 NEB ${r.neb.ci_steps} 步${r.neb.ci_converged ? '' : '（没收敛）'}；第 ${r.neb.highest_image} 个图像最高，交给 Sella 精修。</p>`;
+    html += `<p class="small muted">振动频率（cm⁻¹，共 ${fr.length} 个）：</p><div class="md-freqs">${fr.map((v) => `<span class="${v < 0 ? 'neg' : ''}">${f(v, 1)}</span>`).join('')}</div>`
+      + `<div class="btns md-ts-anim">${r.path_xyz ? '<button type="button" class="button small" data-act="ts-anim" data-what="path" aria-pressed="false">播放反应路径</button>' : ''}${r.imag_mode && r.imag_cm1 < 0 ? '<button type="button" class="button small" data-act="ts-anim" data-what="mode" aria-pressed="false">播放虚频振动</button>' : ''}<button type="button" class="button small" data-act="ts-xyz">下载过渡态（.xyz）</button>${r.irc ? '<button type="button" class="button small" data-act="ts-ends">下载两端的极小点（.xyz）</button>' : ''}</div>`
+      + `<p class="muted small">${esc(r.method || '')}。Sella（LGPL-3.0）作为库调用；论文里请引用 Hermes et al., J. Chem. Theory Comput. 2022（Sella）和所用的模型。</p>`;
+    return { html, csv: TS.csv(r), xyz: r.path_xyz || r.ts_xyz || '', modeXyz: TS.modeFrames(r.ts_xyz, r.imag_mode) };
   }
   /** One result: what it shows, plus the CSV and XYZ its buttons hand out. */
   function view(r) {
@@ -718,6 +770,7 @@
         c(['frequency_cm1', 'ir_intensity_km_mol', 'raman_activity_a4_amu'], fr.map((x, i) => [x, r.ir_intensity_km_mol?.[i], r.raman_activity_a4_amu?.[i]]));
         break;
       }
+      case 'ts': case 'neb': return tsView(r);
       case 'pmd': return proteinView(r);
       default: html = `<p>能量 <b>${e4} eV</b></p>`;
     }
@@ -764,6 +817,7 @@
       case 'pa': return [[r.mode === 'deprotonate' ? '去质子化能（kcal/mol）' : '质子亲和能（kcal/mol）', f(r.value_kcal, 1)]];
       case 'polar': return [['偶极矩（D）', f(r.dipole_debye, 2)], ['极化率（Å³）', f(r.polarizability_a3, 2)]];
       case 'ir': return [['振动模式', (r.frequencies_cm1 || []).length]];
+      case 'ts': case 'neb': { const b = TS.barriers(r); return [['过渡态能量（eV）', f(r.ts_energy_ev, 4)], ['虚频（cm⁻¹）', f(r.imag_cm1, 0)], ['明显的虚频数', r.n_imag_significant ?? '—'], ['左端能垒（kcal/mol）', f(b.left, 2)], ['右端能垒（kcal/mol）', f(b.right, 2)]]; }
       case 'pmd': return [['最终 Cα RMSD（Å）', f(r.final_rmsd_a, 2)], ['平均温度（K）', f(r.mean_temperature_k, 1)]];
       default: return [['能量（eV）', f(r.energy_ev, 4)]];
     }
@@ -789,8 +843,11 @@
       + `<p class="muted small">同一个结构走完两步：第 1 步优化并算频率${T ? `（热化学按 ${f(T, 2)} K）` : ''}，第 2 步在第 1 步优化好的结构上算电离能和电子亲和能。IP = E(+1) − E(0)，EA = E(0) − E(−1)；绝热值每个电荷态各自再优化，垂直值都用中性分子的结构。已完成 ${n} 步。</p>`
       + `<div class="btns"><button type="button" class="button small" data-act="flow-csv">复制汇总 CSV</button></div></div>`;
   }
+  /** Mol* viewers in the results hold a WebGL context and observers on <html>: dispose them before the results are redrawn. */
+  function dropMolstar() { for (const b of $('m-result').querySelectorAll('.md-ms')) b.ms?.destroy(); }
   function paint() {
     const box = $('m-result');
+    dropMolstar();
     if (!shown.length) { box.innerHTML = ''; return; }
     let html = '';
     if (shown.some((x) => x.flow)) html += flowTable();
@@ -807,11 +864,12 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>${x.flow ? `<span class="md-flow-n">第 ${x.flow} 步</span>` : ''}<span>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</span></h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`
+        + (v.pdb && window.MolAstriaMolstar ? `<div class="btns md-ms-btns"><span class="muted small">用 Mol* 看：</span><button type="button" class="button small" data-act="ms" data-src="traj" data-i="${i}" aria-expanded="false">轨迹（按 RMSF 着色）</button>${x.r.pdb_id ? `<button type="button" class="button small" data-act="ms" data-src="start" data-i="${i}" aria-expanded="false">起始结构（RCSB ${esc(x.r.pdb_id)}）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="ms" data-src="final" data-i="${i}" aria-expanded="false">最终结构（全部重原子）</button>` : ''}</div>` : '');
       const what = M.kind === 'ff' ? '经典力场的模拟，不是量子化学计算' : M.tier === 'open' ? '半经验量子化学（xTB）的结果，不是 DFT 计算' : '机器学习势的预测，不是 DFT 计算';
       const foot = `<p class="muted small">用时 ${x.r.seconds ?? '?'} 秒 · <span>${what}</span>${x.r.direct_forces ? '<span> · 直接受力型模型：力不是能量的导数，频率由受力差分得到</span>' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 || (x.flow && new Set(shown.map((y) => y.model)).size === 1) ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
-      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
+      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${v.pdb ? '<div class="md-ms" hidden></div>' : ''}${foot}</div>`;
     });
     box.innerHTML = html;
   }
@@ -833,6 +891,25 @@
       const src = x.view.pdb ? { pdb: x.view.pdb, label: `${x.r.pdb_id} 的 Cα 轨迹` } : { xyz: x.view.xyz, label: `${MODELS[x.model]?.name || ''} 算出的结构` };
       if (open && !box.dataset.ready && window.MolAstriaMol3D) window.MolAstriaMol3D.mount(box, { ...src, name: stem }).catch(() => { /* the box says why */ });
     }
+    if (b.dataset.act === 'ts-anim') { tsAnimate(b, x, stem); return; }
+    if (b.dataset.act === 'ts-xyz') save(`${stem}_ts.xyz`, x.r.ts_xyz || '', 'chemical/x-xyz');
+    if (b.dataset.act === 'ts-ends') save(`${stem}_irc_ends.xyz`, (x.r.irc?.reverse?.xyz || '') + (x.r.irc?.forward?.xyz || ''), 'chemical/x-xyz');
+    if (b.dataset.act === 'ms') { // Mol* (viewer/molstar.js): the Cα trajectory coloured by RMSF, the PDB entry it started from, or the final heavy-atom structure
+      const res = b.closest('.md-res'), box = res.querySelector('.md-ms'), want = b.dataset.src;
+      const again = !box.hidden && box.dataset.src === want;
+      for (const o of res.querySelectorAll('[data-act=ms]')) o.setAttribute('aria-expanded', String(!again && o === b));
+      box.ms?.destroy();
+      box.hidden = again;
+      if (again) { delete box.dataset.src; return; }
+      box.dataset.src = want;
+      const r = x.r, rmsf = r.rmsf || [];
+      // the Mol* box is translate="no", so its aria-label has to be in the page language already
+      const en = document.documentElement.lang === 'en', id = r.pdb_id || '';
+      const opts = want === 'traj' ? { pdbText: x.view.pdb, rmsf, label: en ? `Cα trajectory of ${id}` : `${id} 的 Cα 轨迹`, name: `${stem}_trajectory` }
+        : want === 'final' ? { pdbText: x.view.finalPdb, rmsf, color: 'chain-id', label: en ? `${id} at the end of the simulation` : `${id} 模拟结束时的结构`, name: `${stem}_final` }
+          : { pdbId: r.pdb_id, label: en ? `${id} (RCSB PDB)` : `${id}（RCSB PDB）`, name: r.pdb_id };
+      window.MolAstriaMolstar?.open(box, opts).catch(() => { /* the box says why */ });
+    }
     if (b.dataset.act === 'pdb-traj') save(`${stem}_trajectory_ca.pdb`, x.view.pdb, 'chemical/x-pdb');
     if (b.dataset.act === 'pdb-final') save(`${stem}_final.pdb`, x.view.finalPdb, 'chemical/x-pdb');
     if (b.dataset.act === 'xyz') save(`${stem}.xyz`, x.view.xyz, 'chemical/x-xyz');
@@ -849,6 +926,33 @@
       location.href = '../lab/index.html#workbench';
     }
   });
+  /** Plays the IRC path or the imaginary mode in the result's 3D box, frame by frame; a second click stops it. */
+  const anims = new WeakMap(), mounts = new WeakMap();
+  async function tsAnimate(b, x, stem) {
+    const res = b.closest('.md-res'), box = res.querySelector('.md-3d'), what = b.dataset.what;
+    const cur = anims.get(box);
+    if (cur) { clearInterval(cur.timer); anims.delete(box); }
+    res.querySelectorAll('[data-act=ts-anim]').forEach((o) => o.setAttribute('aria-pressed', 'false'));
+    if (cur?.what === what) return; // the same button again: stop
+    const src = what === 'mode' ? x.view.modeXyz : x.view.xyz;
+    if (!src || !window.MolAstriaMol3D) return;
+    box.hidden = false;
+    res.querySelector('[data-act="3d"]')?.setAttribute('aria-expanded', 'true');
+    mounts.get(box)?.destroy();
+    delete box.dataset.ready;
+    let m;
+    try { m = await window.MolAstriaMol3D.mount(box, { xyz: src, name: `${stem}_${what}`, label: what === 'mode' ? '沿虚频方向的振动' : 'IRC 反应路径' }); } catch { return; }
+    mounts.set(box, m);
+    if (!m?.frames || m.frames < 2) return;
+    b.setAttribute('aria-pressed', 'true');
+    let k = 0, dir = 1;
+    const timer = setInterval(() => { // the path goes back and forth; the mode is already one period
+      if (!box.isConnected) { clearInterval(timer); return; }
+      if (what === 'mode') k = (k + 1) % m.frames; else { k += dir; if (k <= 0 || k >= m.frames - 1) dir = -dir; }
+      m.setFrame(k);
+    }, what === 'mode' ? 70 : 120);
+    anims.set(box, { timer, what });
+  }
   $('m-result').addEventListener('input', (e) => { // IR / Raman switch and line width
     const el = e.target.closest('[data-act=spec]');
     if (!el) return;
@@ -925,7 +1029,10 @@
 
   const start = location.hash.slice(1);
   S.win = isWin(start) ? start : GROUPS[store.get('molastria-models-win')] ? store.get('molastria-models-win') : 'charged';
+  const askJob = new URLSearchParams(location.search).get('job'); // ?job=ts#xtb from the reaction-dynamics pages
+  if (askJob && G()?.jobs.includes(askJob)) S.job[S.win] = askJob;
   sync();
+  if (askJob && JOBS[askJob]?.xyz && G()?.jobs.includes(askJob)) tsSample();
   refresh();
   window.MolAstriaSketch?.attach($('m-smiles')); // “画结构”按钮：画完填回 SMILES（viewer/sketch.js）
   rdkit.then(onSmiles, () => { $('m-check').textContent = 'RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。'; $('m-check').dataset.bad = 'true'; });

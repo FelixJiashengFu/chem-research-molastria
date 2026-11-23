@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="../shared-nav.css">
   <link rel="stylesheet" href="../viewer/mol3d.css">
   <link rel="stylesheet" href="code.css">
+  <link rel="stylesheet" href="thermo.css">
   <script src="../shared-nav.js" defer></script>
   <script src="../viewer/mol3d.js" defer></script>
   <script src="../lab/chem.js" defer></script>
@@ -23,11 +24,16 @@
   <script src="cheminf-core.js" defer></script>
   <script src="ir-core.js" defer></script>
   <script src="ir.js" defer></script>
+  <script src="thermo-core.js" defer></script>
+  <script src="thermo.js" defer></script>
   <script src="code.js" defer></script>
   <script src="cheminf.js" defer></script>
   <script src="../pay/config.js" defer></script>
   <script src="quacc-core.js" defer></script>
   <script src="quacc.js" defer></script>
+  <script src="../spectra/sp-plot.js" defer></script>
+  <script src="phonon-core.js" defer></script>
+  <script src="phonon.js" defer></script>
 </head>
 <body data-section="code">
 <main class="cd">
@@ -37,11 +43,12 @@
     <p class="cd-lead">计算化学的开源代码，从“找到”到“跑起来”：给一个分子写好各个程序的输入，读懂算完的输出，查清一个软件能不能放心用，再到全世界的公开代码里找实现。全部在你的浏览器里完成，输入的分子和输出不会上传。</p>
   </header>
 
-  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的六个工具">
+  <nav class="cd-tabs" role="tablist" aria-label="开源代码台的七个工具">
     <button type="button" role="tab" id="t-input" aria-controls="p-input" aria-selected="true" data-tab="input"><b>写输入</b><small>九个程序 + QCSchema</small></button>
     <button type="button" role="tab" id="t-output" aria-controls="p-output" aria-selected="false" data-tab="output"><b>读输出</b><small>能量、收敛、虚频、结构</small></button>
     <button type="button" role="tab" id="t-chem" aria-controls="p-chem" aria-selected="false" data-tab="chem"><b>化学信息学</b><small>RDKit 描述符、子结构、相似度</small></button>
     <button type="button" role="tab" id="t-quacc" aria-controls="p-quacc" aria-selected="false" data-tab="quacc"><b>quacc 流水线</b><small>批量优化、频率、表面能</small></button>
+    <button type="button" role="tab" id="t-phonon" aria-controls="p-phonon" aria-selected="false" data-tab="phonon" translate="no"><b data-en="Crystal phonons">晶体声子</b><small data-en="phonopy: dispersion, DOS, heat capacity">phonopy：色散、态密度、热容</small></button>
     <button type="button" role="tab" id="t-check" aria-controls="p-check" aria-selected="false" data-tab="check"><b>软件体检</b><small>版本、许可证、漏洞</small></button>
     <button type="button" role="tab" id="t-search" aria-controls="p-search" aria-selected="false" data-tab="search"><b>搜代码</b><small>五个代码搜索引擎</small></button>
   </nav>
@@ -268,6 +275,84 @@
       <p class="cd-small" id="qc-caveat"></p>
     </div>
     <p class="cd-small qc-credit">在线计算在站长电脑的 CPU 上排队进行，尽力而为，可能离线；一批最多 8 个分子，花的是在线模型每天的次数。quacc 由 Andrew S. Rosen 和贡献者开发，按 BSD 3-Clause 许可发布，本页和站长电脑上的服务只是调用它，没有拷贝它的代码，也不代表 quacc 的作者认可本站（许可证全文见 <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/tools/uma-server/THIRD-PARTY-quacc.md" target="_blank" rel="noopener noreferrer">THIRD-PARTY-quacc.md <i class="ico-ext" aria-hidden="true"></i></a>）。GFN2-xTB 来自 tblite 或 xtb 程序（LGPL-3.0），Psi4 是 LGPL-3.0，EMT 是 ASE 自带的（LGPL-2.1）；ORCA 只对学术用户免费，所以只给本机脚本。</p>
+  </section>
+
+  <!-- 晶体声子（phonopy） -->
+  <section class="cd-panel" id="p-phonon" role="tabpanel" aria-labelledby="t-phonon" hidden>
+    <div class="cd-box qc-intro">
+      <h2 class="cd-h2">用 phonopy 算晶体的声子</h2>
+      <p class="cd-p">给一个晶体，先用 <a href="https://github.com/spglib/spglib" target="_blank" rel="noopener noreferrer">spglib <i class="ico-ext" aria-hidden="true"></i></a> 判断空间群、标准化成惯用胞，再用 <a href="https://github.com/phonopy/phonopy" target="_blank" rel="noopener noreferrer">phonopy <i class="ico-ext" aria-hidden="true"></i></a> 的有限位移法：在超胞里把原子挪一点点，算每个原子受的力，拼出力常数，然后得到沿高对称路径（<a href="https://github.com/giovannipizzi/seekpath" target="_blank" rel="noopener noreferrer">seekpath <i class="ico-ext" aria-hidden="true"></i></a>）的色散曲线、声子态密度，以及热容、熵和自由能随温度的变化。出现虚频说明结构在这个模型下不稳定，或者超胞不够大。原理在 <a href="../quasiparticles/phonons/">声子馆</a>和群论的 <a href="../group-theory/#c-crystals">晶体和空间群</a>一章。</p>
+    </div>
+    <div class="cd-grid">
+      <div class="cd-box">
+        <h2 class="cd-h2">晶体和计算</h2>
+        <div class="ph-presets" id="ph-presets" role="radiogroup" aria-label="晶体"></div>
+        <div id="ph-own" hidden>
+          <div class="cd-row qc-opts">
+            <label>格式<select id="ph-format"><option value="poscar">POSCAR（VASP 5）</option><option value="cif">CIF</option></select></label>
+            <label class="cd-grow">读一个文件<input type="file" id="ph-file" accept=".cif,.vasp,.poscar,.txt,text/plain"></label>
+          </div>
+          <label class="cd-field" for="ph-text">结构（POSCAR 或 CIF 的全文）</label>
+          <textarea id="ph-text" rows="9" spellcheck="false" autocomplete="off" autocapitalize="off" translate="no"></textarea>
+          <div class="cd-row">
+            <button type="button" class="cd-btn" id="ph-sample-poscar">填入示例 POSCAR（硅）</button>
+            <button type="button" class="cd-btn" id="ph-sample-cif">填入示例 CIF（氯化钠）</button>
+          </div>
+        </div>
+        <div class="cd-row qc-opts">
+          <label class="cd-grow">算力的模型<select id="ph-engine"></select></label>
+        </div>
+        <p class="cd-small qc-note" id="ph-engine-note"></p>
+        <div class="cd-row qc-opts ph-sc">
+          <span class="ph-sc-l">超胞（乘在惯用胞上）</span>
+          <label>a<input id="ph-sa" type="number" min="1" max="4" step="1" value="2"></label>
+          <label>b<input id="ph-sb" type="number" min="1" max="4" step="1" value="2"></label>
+          <label>c<input id="ph-sc" type="number" min="1" max="4" step="1" value="2"></label>
+        </div>
+        <div class="cd-row qc-opts">
+          <label>位移（Å）<input id="ph-disp" type="number" min="0.005" max="0.05" step="0.005" value="0.01"></label>
+          <label>网格<input id="ph-mesh" type="number" min="4" max="32" step="1" value="16"></label>
+          <label>最高温度（K）<input id="ph-tmax" type="number" min="100" max="2000" step="100" value="1000"></label>
+        </div>
+        <label class="ph-check"><input type="checkbox" id="ph-relax" checked> 先优化晶胞和原子位置（保持对称性），再算声子</label>
+        <p class="cd-small" id="ph-estimate"></p>
+        <div class="cd-row qc-runrow">
+          <button type="button" class="cd-btn primary" id="ph-run">在站长的电脑上算</button>
+          <span class="cd-small qc-cost" id="ph-cost"></span>
+        </div>
+        <p class="cd-status" id="ph-status" role="status"></p>
+      </div>
+      <div class="cd-box">
+        <h2 class="cd-h2">在自己的电脑上跑</h2>
+        <p class="cd-p" id="ph-install"></p>
+        <pre class="cd-code" id="ph-script" tabindex="0" translate="no" aria-label="phonopy 脚本"></pre>
+        <div class="cd-row">
+          <button type="button" class="cd-btn" id="ph-copy">复制</button>
+          <button type="button" class="cd-btn" id="ph-save">下载 .py</button>
+        </div>
+      </div>
+    </div>
+    <div class="cd-box" id="ph-result" hidden>
+      <h2 class="cd-h2">结果</h2>
+      <p class="cd-p" id="ph-meta"></p>
+      <div id="ph-verdict"></div>
+      <div class="cd-row qc-opts ph-unit-row">
+        <label>频率单位<select id="ph-unit"><option value="thz">THz</option><option value="cm1">cm⁻¹</option><option value="mev">meV</option></select></label>
+      </div>
+      <div class="ph-plots">
+        <div class="ph-plot-host"><p class="ph-plot-t">色散曲线（声子谱）</p><div id="ph-band"></div></div>
+        <div class="ph-plot-host"><p class="ph-plot-t">声子态密度</p><div id="ph-dos"></div></div>
+        <div class="ph-plot-host"><p class="ph-plot-t">热容和熵</p><div id="ph-thermal"></div></div>
+      </div>
+      <div class="cd-tablewrap"><table class="ci-table qc-table" id="ph-table"></table></div>
+      <div class="cd-row">
+        <button type="button" class="cd-btn" id="ph-csv">下载 CSV（色散、态密度、热学量）</button>
+        <button type="button" class="cd-btn" id="ph-json">下载 JSON</button>
+        <button type="button" class="cd-btn" id="ph-poscar">下载算声子用的结构（POSCAR）</button>
+      </div>
+      <p class="cd-small" id="ph-caveat"></p>
+    </div>
+    <p class="cd-small qc-credit">在线计算在站长的电脑上排队进行，尽力而为，可能离线；EMT 跑在 CPU 上，UMA 跑在 GPU 上，每次用掉在线模型每天的次数 5 次。晶胞（标准化之后）最多 32 个原子，超胞最多 216 个原子，按对称性约化后最多 48 个位移超胞。phonopy（Atsushi Togo 和贡献者）和 spglib 按 BSD 3-Clause 许可发布，seekpath（Giovanni Pizzi 和贡献者）按 MIT 许可发布；站长电脑上的服务只是调用它们，没有拷贝它们的代码，也不代表它们的作者认可本站（见 <a href="https://github.com/FelixJiashengFu/chem-research-molastria/blob/main/tools/uma-server/THIRD-PARTY-phonopy.md" target="_blank" rel="noopener noreferrer">THIRD-PARTY-phonopy.md <i class="ico-ext" aria-hidden="true"></i></a>）。论文里请引用 phonopy（Togo, J. Phys. Soc. Jpn. 92, 012001, 2023）、spglib 和 seekpath（Hinuma et al., Comput. Mater. Sci. 128, 140, 2017），以及所用的模型。</p>
   </section>
 
   <!-- 软件体检 -->

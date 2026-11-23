@@ -18,6 +18,8 @@
     ['scan', '二面角扫描', 5, 'atoms*, start, end, points'],
     ['md', '分子动力学', 5, 'temperature, timestep_fs, steps, friction'],
     ['rxn', '反应能', 3, 'reaction*, thermo, temperature'],
+    ['ts', '过渡态搜索与 IRC（只收 XYZ）', 5, 'fmax, irc, irc_steps'],
+    ['neb', 'NEB 找过渡态与 IRC（反应物 XYZ + 产物 XYZ）', 8, 'product_xyz*, images, fmax, irc, irc_steps'],
     ['ipea', '电离能与电子亲和能', 1, 'mode'],
     ['spin', '自旋态能隙', 2, 'spins'],
     ['bde', '键解离能', 2, 'bond*, thermo, temperature'],
@@ -25,22 +27,28 @@
     ['pmd', '蛋白质分子动力学', 5, 'pdb_id*, chains, ps, temperature'],
     ['qflow', 'quacc 批量计算（每个分子 1 次，带频率 3 次，Psi4 2 次）', 1, 'items*, recipe, fmax, temperature, method, basis'],
     ['qslab', 'quacc 表面能（EMT，最大晶面指数 2 时 5 次）', 3, 'element*, max_index'],
+    ['phon', '晶体的声子（phonopy：色散、态密度、热容）', 5, 'preset | structure + format, supercell, displacement, relax, mesh, t_max'],
+    ['ocsr', '结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）', 1, 'images*'],
     ['adsgen', 'DBCata 合金表面吸附结构（默认带 UMA 短程优化 5 次，不优化 3 次）', 3, 'metal_a*, metal_b*, ratio*, facet*, adsorbate*, polish, steps, lattice']
   ];
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
   // Until the service answers: the models the API offers and whether each handles charge and spin (GET /v1/models says the same).
-  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
+  const GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'], CHARGED = [...GEOM, 'ipea', 'spin', 'bde', 'pa'];
   const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
+  const IONS = [...GEOM, 'pa']; // AIMNet2: closed-shell ions, no radicals, so of the charge jobs only the proton affinity
   const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   const QFLOW = ['qflow'], QSLAB = ['qslab']; // quacc recipes: a batch of SMILES in params.items; EMT slabs by element
+  const OCSR = ['ocsr']; // MolNexTR: base64 PNG / JPEG crops of drawn structures in params.images -> SMILES + molfile
+  const PHON = ['phon']; // phonopy with EMT: phonons of an fcc metal; the UMA checkpoints with the omat task do phon too
+  const CHARGED_PH = [...CHARGED, 'phon'], GEOM_PH = [...GEOM, 'phon'];
   const ADSGEN = ['adsgen']; // DBCata: every site of one adsorbate on one bimetallic slab, chosen in params; no SMILES
   let models = [
-    ['uma-s-1p2p1', CHARGED], ['uma-s-1p2', CHARGED], ['uma-s-1p2p1-ft-d4rev', CHARGED], ['uma-s-1p1', GEOM],
+    ['uma-s-1p2p1', CHARGED_PH], ['uma-s-1p2', CHARGED_PH], ['uma-s-1p2p1-ft-d4rev', CHARGED], ['uma-s-1p1', GEOM_PH],
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
     ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
     ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM], ['openmm-amber14', PROTEIN],
-    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['dbcata', ADSGEN]
+    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['aimnet2', IONS], ['phonopy-emt', PHON], ['molnextr', OCSR], ['dbcata', ADSGEN]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {

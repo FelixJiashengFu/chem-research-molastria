@@ -1,0 +1,17 @@
+ Symbolic Z-matrix:
+ Charge =  0 Multiplicity = 2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1         13           0        0.000000    0.000000    0.000000
+ ---------------------------------------------------------------------
+ Leave Link  202 at Fri Mar 18 11:04:05 2016, MaxMem=   524288000 cpu:         0.0
+ SCF Done:  E(UB97D) =  -242.328707909     A.U. after    1 cycles
+            NFock=  1  Conv=0.00D+00     -V/T= 2.0031
+ Atom     1 has atomic number 13 and mass  26.98154
+ Molecular mass:    26.98154 amu.
+ 
+ Zero-point correction=                           0.000000 (Hartree/Particle)
+ Normal termination of Gaussian 09 at Fri Mar 18 11:04:13 2016.

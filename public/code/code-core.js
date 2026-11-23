@@ -381,6 +381,19 @@
 
   /** 从 Gaussian 一行特征值里取数：它的定宽格式会把负数连在一起（-10.12345-10.23456）。 */
   const floats = (s) => (String(s).match(/-?\d+\.\d+/g) || []).map(Number);
+  /** 一份输出里可能有不止一次频率计算（Gaussian 的 Link1 换温度再算、opt freq 之后又一个 freq；Psi4 的两次 frequency()）。
+      全部读进来，热化学就把振动项算了两遍。只留最后一次：按频率段的标题和作业步切开，取最后一段有频率的；切不开（摘录）就是全文。 */
+  const FREQ_SPLIT = {
+    gaussian: [/^[ \t]*(?:Harmonic frequencies \(cm\*\*-1\)|Link1:\s+Proceeding to internal job step|Initial command:)/gm, /Frequencies --\s/],
+    psi4: [/==> Harmonic Vibrational Analysis <==/g, /Freq \[cm\^-1\]/],
+  };
+  const lastFreqJob = (t, p) => {
+    if (!FREQ_SPLIT[p]) return t;
+    const [cut, has] = FREQ_SPLIT[p];
+    const at = [0, ...all(cut, t).map((m) => m.index), t.length];
+    for (let i = at.length - 2; i >= 0; i--) { const seg = t.slice(at[i], at[i + 1]); if (has.test(seg)) return seg; }
+    return t;
+  };
   /** 带指数的数（CP2K 的 1.5771062461E+03、NWChem 的 -4.989594D-01）。 */
   const sci = (s) => (String(s).match(/-?\d+\.\d+(?:[ED][+-]?\d+)?/gi) || []).map(num);
   /** 由各自旋的占据和空轨道能量（hartree）算能隙（eV）：HOMO 取最高的占据轨道，LUMO 取最低的空轨道。 */
@@ -440,7 +453,7 @@
     else if (scf) r.scfConverged = true;
     if (/Optimization is complete!/.test(t)) r.optConverged = true;
     else if (/Could not converge geometry optimization/i.test(t)) r.optConverged = false;
-    const fr = all(/Freq \[cm\^-1\]\s+([^\n]+)/g, t).flatMap((m) => (m[1].match(/-?\d+\.\d+i?/g) || []).map((s) => (s.endsWith('i') ? -num(s.slice(0, -1)) : num(s))));
+    const fr = all(/Freq \[cm\^-1\]\s+([^\n]+)/g, lastFreqJob(t, 'psi4')).flatMap((m) => (m[1].match(/-?\d+\.\d+i?/g) || []).map((s) => (s.endsWith('i') ? -num(s.slice(0, -1)) : num(s))));
     if (fr.length) r.freqs = fr;
     const occB = last(all(/Doubly Occupied:\s*\n([\s\S]*?)(?:Singly Occupied:|Virtual:)/g, t));
     const virB = last(all(/Virtual:\s*\n([\s\S]*?)\n\s*\n\s*(?:Final Occupation|\S)/g, t));
@@ -461,7 +474,7 @@
     else if (e) r.scfConverged = true;
     if (/Optimization completed\.|-- Stationary point found\./.test(t)) r.optConverged = true;
     else if (/Optimization stopped\.|Number of steps exceeded/.test(t)) r.optConverged = false;
-    const fr = all(/Frequencies --\s+([^\n]+)/g, t).flatMap((m) => floats(m[1]));
+    const fr = all(/Frequencies --\s+([^\n]+)/g, lastFreqJob(t, 'gaussian')).flatMap((m) => floats(m[1]));
     if (fr.length) r.freqs = fr;
     // 取最后一组 Alpha 特征值（hartree）；开壳层只看 alpha 会偏，标出来
     const blocks = t.split(/The electronic state is|Population analysis using the SCF/).slice(-1)[0];
@@ -666,6 +679,7 @@
    * 没有强度的输出（xTB、CP2K、PySCF 默认）返回空数组。读法对照 cclib 的 vibfreqs / vibirs（tools/code-fixtures/cclib-ir.json）。
    */
   function irOf(t, p) {
+    if (p === 'gaussian' || p === 'psi4') t = lastFreqJob(t, p); // 和 parseOutput 的 freqs 一样只看最后一次频率计算
     const pairs = (fs, is) => (fs.length && fs.length === is.length ? fs.map((f, i) => ({ freq: f, int: is[i] })) : []);
     const rowNums = (re) => all(re, t).flatMap((m) => (m[1].match(/-?\d+\.\d+i?/g) || []).map((x) => (x.endsWith('i') ? -num(x.slice(0, -1)) : num(x))));
     if (p === 'gaussian') {

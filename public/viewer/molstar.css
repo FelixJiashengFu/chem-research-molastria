@@ -1,0 +1,21 @@
+/* Mol* 查看器（viewer/molstar.js）外面的框和工具条。颜色都用 shared-nav.css 的变量；画布里面是 Mol* 自己的主题样式。 */
+.ms-box { display: grid; gap: 8px; margin: 10px 0; min-width: 0; }
+.ms-stage { position: relative; height: var(--ms-h, 420px); border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--surface) 88%, transparent); overflow: hidden; touch-action: none; }
+.ms-canvas { position: absolute; inset: 0; }
+.ms-canvas .msp-plugin { border-radius: 12px; }
+.ms-state { margin: 0; position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; color: var(--muted); font-size: 0.92rem; z-index: 1; }
+.ms-state[data-bad=true] { color: var(--danger); }
+.ms-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 0.88rem; }
+.ms-bar select { font: inherit; padding: 3px 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); max-width: 100%; }
+.ms-frames { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ms-frames input { width: 160px; accent-color: var(--accent); }
+.ms-fnum { font-variant-numeric: tabular-nums; }
+.ms-box .text-button { border: 0; background: none; color: var(--accent-text); cursor: pointer; font-size: 12.5px; padding: 6px 4px; font-weight: 600; }
+.ms-box .text-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ms-box .text-button[aria-pressed=true] { color: var(--ink); }
+.ms-legend, .ms-info { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.ms-info a { color: var(--accent-text); }
+.ms-ramp { display: inline-block; width: 72px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, rgb(49, 54, 149), rgb(240, 240, 240), rgb(165, 0, 38)); border: 1px solid var(--line); }
+.ms-box .ms-open { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface); color: var(--ink); cursor: pointer; font-size: 12.5px; }
+.ms-box .ms-open:hover { border-color: var(--accent); }
+@media (max-width: 560px) { .ms-stage { height: var(--ms-h-phone, 320px); } .ms-frames input { width: 120px; } }

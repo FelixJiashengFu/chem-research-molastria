@@ -543,7 +543,8 @@
  ],
  "个": [
   "atlas/index.html",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "已有数据源接入模块": [
   "atlas/index.html"
@@ -955,7 +956,8 @@
  ],
  "一章。": [
   "journals/index.html",
-  "qchem/index.html"
+  "qchem/index.html",
+  "code/index.html"
  ],
  "从研究到发表": [
   "journals/index.html"
@@ -1671,6 +1673,9 @@
  "选择结构": [
   "quantum/biology/index.html"
  ],
+ "选择查看器": [
+  "quantum/biology/index.html"
+ ],
  "传递效率随退相干率变化": [
   "quantum/biology/index.html"
  ],
@@ -1905,6 +1910,9 @@
  "动手实验室": [
   "nmr/index.html"
  ],
+ "在 NMRium 里处理谱图": [
+  "nmr/index.html"
+ ],
  "说法核对": [
   "nmr/index.html"
  ],
@@ -1927,6 +1935,33 @@
   "nmr/index.html"
  ],
  "五个演示都在浏览器里直接计算对应的模型：曲线和数值随参数实时重新计算，不是预先画好的动画，也不是实测的谱。每个演示下方写明模型的假设和适用范围。": [
+  "nmr/index.html"
+ ],
+ "真实数据": [
+  "nmr/index.html"
+ ],
+ "用 NMRium 处理一张真实的谱": [
+  "nmr/index.html"
+ ],
+ "下面五个演示是模型；这里是实测数据。开源的 NMRium 在你的浏览器里读 JCAMP-DX、Bruker 的原始 FID 和二维数据，做傅里叶变换、调相位、校基线、积分、找峰。文件不上传。NMRium 的界面是英文的，适合在电脑上用。": [
+  "nmr/index.html"
+ ],
+ "打开示例：阿司匹林 ¹H 原始 FID": [
+  "nmr/index.html"
+ ],
+ "吲哚美辛 ¹H 和结构": [
+  "nmr/index.html"
+ ],
+ "环孢素 ¹H 和 COSY": [
+  "nmr/index.html"
+ ],
+ "处理自己的数据": [
+  "nmr/index.html"
+ ],
+ "示例是 cheminfo 的开放测试数据（MIT 许可）。谱图馆的练习题也能一键送进 NMRium：": [
+  "nmr/index.html"
+ ],
+ "谱图馆 · 练习题": [
   "nmr/index.html"
  ],
  "从自由感应衰减到谱：傅里叶变换": [
@@ -1981,7 +2016,8 @@
   "nmr/index.html"
  ],
  "估算": [
-  "nmr/index.html"
+  "nmr/index.html",
+  "code/phonon.js"
  ],
  "小分子": [
   "nmr/index.html"
@@ -2118,6 +2154,20 @@
  ],
  "核磁共振（NMR）：从 1938 年的分子束实验到 1.2 GHz 磁体、超快魔角旋转、超极化、零场 NMR 和机器学习解谱。十一个部分讲清方法的来龙去脉，八类方法对比，五个可以动手调的演示，203 篇按 DOI 核对过的文献。": [
   "nmr/index.html"
+ ],
+ "NMRium 谱图处理 · 在浏览器里处理核磁数据 · MolAstria": [
+  "nmr/nmrium/index.html"
+ ],
+ "NMRium 谱图处理": [
+  "nmr/nmrium/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "NMRium 需要启用 JavaScript。": [
+  "nmr/nmrium/index.html"
+ ],
+ "在浏览器里处理真实的核磁数据：用开源的 NMRium 打开 JCAMP-DX、Bruker 的 zip 或实验文件夹、原始 FID，做傅里叶变换、调相位、校基线、积分、找峰，看二维谱。数据只在你的浏览器里处理，不上传。附三组开放许可的实测示例。": [
+  "nmr/nmrium/index.html"
  ],
  "谱图馆 · Spectra Hall · MolAstria": [
   "spectra/index.html"
@@ -3543,7 +3593,8 @@
   "meta/meta.js",
   "train/train.js",
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "下载": [
   "meta/index.html",
@@ -4015,6 +4066,17 @@
  "5 次": [
   "models/index.html"
  ],
+ "过渡态搜索与 IRC": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "NEB 找过渡态与 IRC": [
+  "models/index.html",
+  "models/models.js"
+ ],
+ "8 次": [
+  "models/index.html"
+ ],
  "5 次（超过 20 ps 10 次）": [
   "models/index.html"
  ],
@@ -4285,7 +4347,8 @@
   "train/index.html",
   "scimodels/scimodels.js",
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "发布": [
   "train/index.html"
@@ -6268,7 +6331,8 @@
  ],
  "安装": [
   "download/index.html",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "安装 MolAstria": [
   "download/index.html"
@@ -8152,6 +8216,12 @@
  "批量优化、频率、表面能": [
   "code/index.html"
  ],
+ "晶体声子": [
+  "code/index.html"
+ ],
+ "phonopy：色散、态密度、热容": [
+  "code/index.html"
+ ],
  "软件体检": [
   "code/index.html"
  ],
@@ -8209,7 +8279,8 @@
  "频率": [
   "code/index.html",
   "radar/app/app.js",
-  "code/code-core.js"
+  "code/code-core.js",
+  "code/phonon.js"
  ],
  "优化 + 频率": [
   "code/index.html",
@@ -8402,6 +8473,96 @@
  "）。GFN2-xTB 来自 tblite 或 xtb 程序（LGPL-3.0），Psi4 是 LGPL-3.0，EMT 是 ASE 自带的（LGPL-2.1）；ORCA 只对学术用户免费，所以只给本机脚本。": [
   "code/index.html"
  ],
+ "用 phonopy 算晶体的声子": [
+  "code/index.html"
+ ],
+ "给一个晶体，先用": [
+  "code/index.html"
+ ],
+ "判断空间群、标准化成惯用胞，再用": [
+  "code/index.html"
+ ],
+ "的有限位移法：在超胞里把原子挪一点点，算每个原子受的力，拼出力常数，然后得到沿高对称路径（": [
+  "code/index.html"
+ ],
+ "）的色散曲线、声子态密度，以及热容、熵和自由能随温度的变化。出现虚频说明结构在这个模型下不稳定，或者超胞不够大。原理在": [
+  "code/index.html"
+ ],
+ "声子馆": [
+  "code/index.html",
+  "shared-nav.js"
+ ],
+ "和群论的": [
+  "code/index.html"
+ ],
+ "晶体和空间群": [
+  "code/index.html"
+ ],
+ "晶体和计算": [
+  "code/index.html"
+ ],
+ "格式": [
+  "code/index.html"
+ ],
+ "读一个文件": [
+  "code/index.html"
+ ],
+ "结构（POSCAR 或 CIF 的全文）": [
+  "code/index.html"
+ ],
+ "填入示例 POSCAR（硅）": [
+  "code/index.html"
+ ],
+ "填入示例 CIF（氯化钠）": [
+  "code/index.html"
+ ],
+ "算力的模型": [
+  "code/index.html"
+ ],
+ "超胞（乘在惯用胞上）": [
+  "code/index.html"
+ ],
+ "位移（Å）": [
+  "code/index.html"
+ ],
+ "网格": [
+  "code/index.html"
+ ],
+ "最高温度（K）": [
+  "code/index.html"
+ ],
+ "先优化晶胞和原子位置（保持对称性），再算声子": [
+  "code/index.html"
+ ],
+ "频率单位": [
+  "code/index.html"
+ ],
+ "色散曲线（声子谱）": [
+  "code/index.html"
+ ],
+ "声子态密度": [
+  "code/index.html",
+  "code/phonon.js"
+ ],
+ "热容和熵": [
+  "code/index.html",
+  "code/phonon.js"
+ ],
+ "下载 CSV（色散、态密度、热学量）": [
+  "code/index.html"
+ ],
+ "下载 JSON": [
+  "code/index.html"
+ ],
+ "下载算声子用的结构（POSCAR）": [
+  "code/index.html"
+ ],
+ "在线计算在站长的电脑上排队进行，尽力而为，可能离线；EMT 跑在 CPU 上，UMA 跑在 GPU 上，每次用掉在线模型每天的次数 5 次。晶胞（标准化之后）最多 32 个原子，超胞最多 216 个原子，按对称性约化后最多 48 个位移超胞。phonopy（Atsushi Togo 和贡献者）和 spglib 按 BSD 3-Clause 许可发布，seekpath（Giovanni Pizzi 和贡献者）按 MIT 许可发布；站长电脑上的服务只是调用它们，没有拷贝它们的代码，也不代表它们的作者认可本站（见": [
+  "code/index.html"
+ ],
+ "）。论文里请引用 phonopy（Togo, J. Phys. Soc. Jpn. 92, 012001, 2023）、spglib 和 seekpath（Hinuma et al., Comput. Mater. Sci. 128, 140, 2017），以及所用的模型。": [
+  "code/index.html"
+ ],
  "查一个软件": [
   "code/index.html"
  ],
@@ -8470,7 +8631,7 @@
  "（BSD-3），化学信息学用 RDKit.js（BSD-3），3D 显示用 3Dmol.js（BSD-3，py3Dmol 背后就是它）。本页代码按 MIT 许可开源，没有拷贝 GPL 或 AGPL 的代码。相关的程序和数据都已收进": [
   "code/index.html"
  ],
- "开源代码台的六个工具": [
+ "开源代码台的七个工具": [
   "code/index.html"
  ],
  "示例分子": [
@@ -8492,6 +8653,12 @@
   "code/index.html"
  ],
  "quacc 脚本": [
+  "code/index.html"
+ ],
+ "晶体": [
+  "code/index.html"
+ ],
+ "phonopy 脚本": [
   "code/index.html"
  ],
  "MolAstria 开源代码台：从 SMILES 直接生成三维坐标，一个分子一键写出 PySCF、Psi4、xTB、CREST、ORCA、Gaussian、NWChem、CP2K、ASE 的输入和 QCSchema；读懂 xTB、ORCA、Psi4、Gaussian、PySCF、NWChem、CP2K、Q-Chem 的输出；查一个软件包的版本、许可证、已知漏洞和存档；跨 GitHub、Sourcegraph、grep.app、Software Heritage 搜代码。全部在浏览器里完成。": [
@@ -8679,7 +8846,7 @@
  "从 1938 年的分子束到 1.2 GHz、超极化和 AI 解谱，附五个动手演示": [
   "shared-nav.js"
  ],
- "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫": [
+ "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫 nmrium 处理谱图 jcamp bruker fid 相位 积分 峰": [
   "shared-nav.js"
  ],
  "91 种分析方法的谱图怎么来、怎么读：红外、质谱、GC-MS、LC-MS、色谱、衍射、热分析、冷冻电镜和高分子表征，附实测谱和 78 个演示": [
@@ -8714,9 +8881,6 @@
   "tools/build-seo.ts"
  ],
  "声子、空穴、费米液体、磁振子、激子、极化子、等离激元、极化激元、库珀对和任意子十二章，附十三个演示；另有九章的声子馆": [
-  "shared-nav.js"
- ],
- "声子馆": [
   "shared-nav.js"
  ],
  "群论": [
@@ -8769,6 +8933,15 @@
   "shared-nav.js"
  ],
  "42 个物理理论和它们之间的关系图": [
+  "shared-nav.js"
+ ],
+ "GPU 粒子力场": [
+  "shared-nav.js"
+ ],
+ "WebGPU 实时万级粒子与多体势模拟：Lennard-Jones、Morse 自组装、Tersoff 共价网络与重力凝聚": [
+  "shared-nav.js"
+ ],
+ "particle hive webgpu gpu simulation 粒子 模拟 力场 lennard jones morse tersoff verlet dbscan": [
   "shared-nav.js"
  ],
  "愿景：工业革命2.5": [
@@ -8845,10 +9018,10 @@
   "shared-nav.js",
   "tools/build-seo.ts"
  ],
- "分子怎样变成数字、高斯过程、贝叶斯优化、主动学习、生成模型、自驱实验室和评估的陷阱，十章十七个演示": [
+ "分子怎样变成数字、高斯过程、贝叶斯优化、主动学习、生成模型、自驱实验室和评估的陷阱，十章十八个演示": [
   "shared-nav.js"
  ],
- "chemistry machine learning 化学机器学习 ml 指纹 fingerprint ecfp tanimoto smiles 高斯过程 gaussian process 贝叶斯优化 bayesian optimization 主动学习 active learning 生成模型 generative 自驱实验室 self-driving lab qsar 骨架划分 scaffold split 数据泄漏 leakage 校准 calibration": [
+ "chemistry machine learning 化学机器学习 ml 指纹 fingerprint ecfp tanimoto chemiscope 结构性质图 structure-property map smiles 高斯过程 gaussian process 贝叶斯优化 bayesian optimization 主动学习 active learning 生成模型 generative 自驱实验室 self-driving lab qsar 骨架划分 scaffold split 数据泄漏 leakage 校准 calibration": [
   "shared-nav.js"
  ],
  "世界模型": [
@@ -9039,7 +9212,8 @@
  ],
  "完成": [
   "shared-nav.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "分组和按钮已恢复默认顺序": [
   "shared-nav.js"
@@ -9345,7 +9519,8 @@
   "train/train.js",
   "code/code.js",
   "code/cheminf.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "单点能与受力": [
   "api/compute.js",
@@ -9372,6 +9547,12 @@
   "models/models.js",
   "pro/account-page.js"
  ],
+ "过渡态搜索与 IRC（只收 XYZ）": [
+  "api/compute.js"
+ ],
+ "NEB 找过渡态与 IRC（反应物 XYZ + 产物 XYZ）": [
+  "api/compute.js"
+ ],
  "电离能与电子亲和能": [
   "api/compute.js",
   "models/models.js",
@@ -9396,6 +9577,12 @@
   "api/compute.js"
  ],
  "quacc 表面能（EMT，最大晶面指数 2 时 5 次）": [
+  "api/compute.js"
+ ],
+ "晶体的声子（phonopy：色散、态密度、热容）": [
+  "api/compute.js"
+ ],
+ "结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）": [
   "api/compute.js"
  ],
  "DBCata 合金表面吸附结构（默认带 UMA 短程优化 5 次，不优化 3 次）": [
@@ -10463,6 +10650,15 @@
  ],
  "分量": [
   "fundamental-science/fundamental.js"
+ ],
+ "查看器：": [
+  "quantum/biology/qb.js"
+ ],
+ "3Dmol（标出辅因子）": [
+  "quantum/biology/qb.js"
+ ],
+ "Mol*（配体、表面、更多着色）": [
+  "quantum/biology/qb.js"
  ],
  "关键结论": [
   "quantum/biology/qb.js",
@@ -13186,6 +13382,12 @@
  "eSEN 和 OMol25 数据集（Levine et al., 2025）": [
   "models/models.js"
  ],
+ "Isayev 组的 AIMNet2 神经网络势（ωB97M-D3 精度），覆盖 H B C N O F Si P S Cl As Se Br I 十四种元素，能算中性和带电荷的闭壳层分子（铵离子、羧酸根、两性离子都可以），速度很快。它只读总电荷、不读自旋多重度，所以不算自由基和开壳层分子，也就没有电离能、电子亲和能、自旋态能隙和键解离能；质子亲和能两边都是闭壳层，可以算。": [
+  "models/models.js"
+ ],
+ "AIMNet2 采用 MIT 许可；论文里请引用 Anstine, Zubatyuk, Isayev, Chem. Sci. 2025, 16, 10228（AIMNet2）。": [
+  "models/models.js"
+ ],
  "OpenMM · Amber ff14SB + 隐式水": [
   "models/models.js"
  ],
@@ -13285,7 +13487,7 @@
  "MACE-MDP 采用学术软件许可（ASL），只限学术、非商业研究；论文里请引用 MACE-MDP（ChemRxiv，doi:10.26434/chemrxiv.15000716）；结构来自 MACE-OFF23 medium，同样适用 ASL。": [
   "models/models.js"
  ],
- "① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。": [
+ "① 这些模型在 OMol25 的不同电荷态和自旋态上训练，实测电荷态之间的能量差可靠：可以算离子、自由基和开壳层分子，以及电离能、电子亲和能、自旋态能隙、键解离能和质子亲和能。AIMNet2 也算离子，但只算闭壳层分子（不算自由基）。": [
   "models/models.js"
  ],
  "② 同样在 OMol25 上训练、覆盖 83 种元素，但实测它们给不同电荷态的能量差不可靠，所以只算中性闭壳层分子：结构、频率、构象、扫描、动力学和反应能。带电荷或有未成对电子的分子请用窗口 ①。": [
@@ -13435,6 +13637,27 @@
  "模拟时长（ps）": [
   "models/models.js"
  ],
+ "从一个过渡态的猜测结构出发，用 Sella 找一阶鞍点（内坐标），再用同一个模型的受力差分算振动频率（过渡态应该恰好有一个虚频），最后沿两个方向做内禀反应坐标（IRC），两端各自优化到极小点，给出能量曲线、两个方向的能垒和整条路径的动画。只收 XYZ 坐标，最多 50 个原子。": [
+  "models/models.js"
+ ],
+ "鞍点收敛判据 fmax（eV/Å）": [
+  "models/models.js"
+ ],
+ "找到过渡态后做 IRC（两个方向）": [
+  "models/models.js"
+ ],
+ "IRC 每个方向最多几步": [
+  "models/models.js"
+ ],
+ "左边的 XYZ 是反应物，下面再贴产物（同样的原子、同样的顺序）。两端先各自优化，再用 IDPP 插值出一串图像，跑 NEB 和爬坡图像 NEB（CI-NEB），把最高的图像交给 Sella 精修成过渡态，然后算频率、做 IRC。最多 50 个原子。": [
+  "models/models.js"
+ ],
+ "产物的 XYZ（和反应物同样的原子、同样的顺序）": [
+  "models/models.js"
+ ],
+ "NEB 的中间图像数": [
+  "models/models.js"
+ ],
  "红外与拉曼光谱": [
   "models/models.js"
  ],
@@ -13442,7 +13665,8 @@
   "models/models.js"
  ],
  "先粘贴或上传一个 XYZ 结构。": [
-  "models/models.js"
+  "models/models.js",
+  "models/ts-core.js"
  ],
  "XYZ 结构最多 12000 个字符。": [
   "models/models.js"
@@ -13454,7 +13678,8 @@
   "models/models.js"
  ],
  "XYZ 的原子行要写成“元素符号 x y z”，行数要和第一行的原子数一致。": [
-  "models/models.js"
+  "models/models.js",
+  "models/ts-core.js"
  ],
  "不认识的元素符号：{0}": [
   "models/models.js"
@@ -13484,6 +13709,9 @@
   "models/models.js"
  ],
  "{0} – {1}，默认 {2}": [
+  "models/models.js"
+ ],
+ "填入示例：HCN ⇌ HNC 异构化": [
   "models/models.js"
  ],
  "站长的 GPU 现在离线，请稍后再试。": [
@@ -13519,6 +13747,12 @@
  "{0}只算中性闭壳层分子：{1} 带电荷或有未成对电子，请换到窗口 ① 计算。": [
   "models/models.js"
  ],
+ "{0} 只算闭壳层分子：{1} 有未成对电子。": [
+  "models/models.js"
+ ],
+ "“{0}”要用 XYZ 坐标：从 SMILES 生成的是能量极小点，不是过渡态。请换成 XYZ 输入（可以先点“填入示例”）。": [
+  "models/models.js"
+ ],
  "正在载入 RDKit…": [
   "models/models.js"
  ],
@@ -13535,6 +13769,9 @@
   "models/models.js"
  ],
  "电荷 {0} 时有 {1} 个电子，和自旋多重度 {2} 不相容。": [
+  "models/models.js"
+ ],
+ "{0} 只算闭壳层分子：离子可以，自由基和开壳层分子不行，自旋多重度要为 1。": [
   "models/models.js"
  ],
  "，取整数": [
@@ -13647,11 +13884,13 @@
  ],
  "等了 20 分钟还没算完，请稍后再试": [
   "models/models.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "计算失败": [
   "models/models.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "第 1 步 · 优化与频率": [
   "models/models.js"
@@ -13749,6 +13988,63 @@
  "{0} · OpenMM {1} · 步长 {2} fs。隐式水、几十皮秒的模拟只能粗看折叠稳不稳和哪些片段柔软，开始时 RMSD 的上升有一部分来自加热和换成溶剂模型；要定量的结论请用显式水、充分平衡、更长时间的模拟（比如在自己的电脑上用 OpenMM 跑）。": [
   "models/models.js"
  ],
+ "过渡态能量": [
+  "models/models.js"
+ ],
+ "（Sella {0} 步，最大受力 {1} eV/Å）。": [
+  "models/models.js"
+ ],
+ "左端 → 过渡态的能垒": [
+  "models/models.js"
+ ],
+ "右端 → 过渡态的能垒": [
+  "models/models.js"
+ ],
+ "反应能（右端 − 左端）": [
+  "models/models.js"
+ ],
+ "反应坐标 s（√amu·Å，过渡态在 0）": [
+  "models/models.js"
+ ],
+ "相对过渡态的能量（kcal/mol）": [
+  "models/models.js"
+ ],
+ "IRC：左端 {0} 步、右端 {1} 步（每步 0.1 √amu·Å），之后两端各自优化到极小点（曲线最外面的点）。“左”“右”只是 IRC 的两个方向，哪边是反应物要看结构。": [
+  "models/models.js"
+ ],
+ "没有做 IRC，只给出过渡态和频率。": [
+  "models/models.js"
+ ],
+ "NEB 图像（0 是反应物）": [
+  "models/models.js"
+ ],
+ "相对反应物的能量（kcal/mol）": [
+  "models/models.js"
+ ],
+ "（没收敛）": [
+  "models/models.js"
+ ],
+ "NEB {0} 步{1}，爬坡图像 NEB {2} 步{3}；第 {4} 个图像最高，交给 Sella 精修。": [
+  "models/models.js"
+ ],
+ "振动频率（cm⁻¹，共 {0} 个）：": [
+  "models/models.js"
+ ],
+ "播放反应路径": [
+  "models/models.js"
+ ],
+ "播放虚频振动": [
+  "models/models.js"
+ ],
+ "下载两端的极小点（.xyz）": [
+  "models/models.js"
+ ],
+ "下载过渡态（.xyz）": [
+  "models/models.js"
+ ],
+ "{0}。Sella（LGPL-3.0）作为库调用；论文里请引用 Hermes et al., J. Chem. Theory Comput. 2022（Sella）和所用的模型。": [
+  "models/models.js"
+ ],
  "，最大受力 {0} eV/Å。": [
   "models/models.js"
  ],
@@ -13770,9 +14066,6 @@
  "（优化 {0} 步）{1}。": [
   "models/models.js"
  ],
- "振动频率（cm⁻¹，共 {0} 个）：": [
-  "models/models.js"
- ],
  "热化学（{0} K）": [
   "models/models.js"
  ],
@@ -13792,7 +14085,8 @@
   "models/models.js"
  ],
  "熵 S": [
-  "models/models.js"
+  "models/models.js",
+  "code/phonon.js"
  ],
  "生成 {0} 个构象，去重后 {1} 个；Boltzmann 权重按 {2} K 计算。": [
   "models/models.js"
@@ -14016,6 +14310,21 @@
  "振动模式": [
   "models/models.js"
  ],
+ "过渡态能量（eV）": [
+  "models/models.js"
+ ],
+ "虚频（cm⁻¹）": [
+  "models/models.js"
+ ],
+ "明显的虚频数": [
+  "models/models.js"
+ ],
+ "左端能垒（kcal/mol）": [
+  "models/models.js"
+ ],
+ "右端能垒（kcal/mol）": [
+  "models/models.js"
+ ],
  "最终 Cα RMSD（Å）": [
   "models/models.js"
  ],
@@ -14073,6 +14382,18 @@
  "下载最终结构（.pdb）": [
   "models/models.js"
  ],
+ "起始结构（RCSB {0}）": [
+  "models/models.js"
+ ],
+ "最终结构（全部重原子）": [
+  "models/models.js"
+ ],
+ "用 Mol* 看：": [
+  "models/models.js"
+ ],
+ "轨迹（按 RMSF 着色）": [
+  "models/models.js"
+ ],
  "经典力场的模拟，不是量子化学计算": [
   "models/models.js"
  ],
@@ -14097,10 +14418,19 @@
  "{0} 算出的结构": [
   "models/models.js"
  ],
+ "{0} 模拟结束时的结构": [
+  "models/models.js"
+ ],
  "还在算，这一轮算完再送过去": [
   "models/models.js"
  ],
  "浏览器存储不可用，请下载结构后在代码台粘贴": [
+  "models/models.js"
+ ],
+ "沿虚频方向的振动": [
+  "models/models.js"
+ ],
+ "IRC 反应路径": [
   "models/models.js"
  ],
  "输入的结构": [
@@ -14116,6 +14446,57 @@
  ],
  "RDKit.js 载入失败（需要联网访问 cdn.jsdelivr.net），SMILES 无法校验；可以改用 XYZ 输入。": [
   "models/models.js"
+ ],
+ "XYZ 的第一行要是原子数。": [
+  "models/ts-core.js"
+ ],
+ "过渡态计算至少要 2 个原子。": [
+  "models/ts-core.js"
+ ],
+ "过渡态计算最多 {0} 个原子（要算 Hessian 和两个方向的 IRC），这个结构有 {1} 个。": [
+  "models/ts-core.js"
+ ],
+ "反应物：{0}": [
+  "models/ts-core.js"
+ ],
+ "再给出产物的 XYZ（和反应物同样的原子、同样的顺序）。": [
+  "models/ts-core.js"
+ ],
+ "产物：{0}": [
+  "models/ts-core.js"
+ ],
+ "产物有 {0} 个原子，反应物有 {1} 个；两边要一样多。": [
+  "models/ts-core.js"
+ ],
+ "第 {0} 个原子在反应物里是 {1}，在产物里是 {2}：两边的原子要按同样的顺序排。": [
+  "models/ts-core.js"
+ ],
+ "产物和反应物几乎一样，没有可以连起来的反应路径。": [
+  "models/ts-core.js"
+ ],
+ "鞍点搜索没有收敛（{0} 步后最大受力 {1} eV/Å），下面的结构只是最后一步。": [
+  "models/ts-core.js"
+ ],
+ "一个虚频 {0} cm⁻¹：是一阶鞍点（过渡态）。": [
+  "models/ts-core.js"
+ ],
+ "没有明显的虚频：这个结构更像能量极小点，不是过渡态。换一个更靠近过渡态的猜测结构再试。": [
+  "models/ts-core.js"
+ ],
+ "有 {0} 个明显的虚频：这是高阶鞍点，不是过渡态。沿多出来的虚频方向扰动结构后再算一次。": [
+  "models/ts-core.js"
+ ],
+ "左端（s 为负）": [
+  "models/ts-core.js"
+ ],
+ "右端（s 为正）": [
+  "models/ts-core.js"
+ ],
+ "{0}的 IRC 在第 {1} 步停下（{2}），之后直接优化到极小点。": [
+  "models/ts-core.js"
+ ],
+ "{0}的终点没有优化到收敛。": [
+  "models/ts-core.js"
  ],
  "DeepSeek V4.1 Flash-1017 · 快速": [
   "ai/ai.js"
@@ -16705,7 +17086,8 @@
  ],
  "复制失败": [
   "code/code.js",
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "没载入 OpenChemLib（要联网访问 cdn.jsdelivr.net），过一会儿再试。": [
   "code/code.js"
@@ -17453,40 +17835,50 @@
   "code/quacc.js"
  ],
  "正在看站长的电脑在不在线…": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "站长的电脑现在离线，可以先用右边的脚本": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "站长的电脑上还没有装这个引擎": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "用掉今天在线计算次数": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "次": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "前面排队": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "已提交，正在排队…": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "quacc 正在计算": [
   "code/quacc.js"
  ],
  "排队中，前面还有": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "个任务": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "完成（这批以前算过，直接给了存下的结果，没有再算）": [
   "code/quacc.js"
  ],
  "测试用的假数据": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "晶面": [
   "code/quacc.js"
@@ -17519,7 +17911,8 @@
   "code/quacc.js"
  ],
  "点群": [
-  "code/quacc.js"
+  "code/quacc.js",
+  "code/phonon.js"
  ],
  "热化学按理想气体、1 bar 算，对称数和点群由 quacc 从结构判断；自由基的电子熵按 SMILES 的自旋多重度补上。分子不同，G 不能直接相减成反应能，除非原子守恒。GFN2-xTB 是半经验方法，频率和能量适合筛选，不能代替 DFT。": [
   "code/quacc.js"
@@ -17583,6 +17976,225 @@
  ],
  "在线一批最多 {0} 个分子（现在 {1} 个）；多的请用下面的脚本在自己的电脑上跑": [
   "code/quacc-core.js"
+ ],
+ "自己的结构": [
+  "code/phonon.js"
+ ],
+ "POSCAR 或 CIF": [
+  "code/phonon.js"
+ ],
+ "晶胞": [
+  "code/phonon.js"
+ ],
+ "个原子": [
+  "code/phonon.js"
+ ],
+ "超胞": [
+  "code/phonon.js"
+ ],
+ "UMA 要先在 Hugging Face 上同意许可证并登录": [
+  "code/phonon.js"
+ ],
+ "文件太大：结构文字最多": [
+  "code/phonon.js"
+ ],
+ "个字符": [
+  "code/phonon.js"
+ ],
+ "读不了这个文件": [
+  "code/phonon.js"
+ ],
+ "phonopy 正在计算": [
+  "code/phonon.js"
+ ],
+ "完成（这个晶体以前算过，直接给了存下的结果，没有再算）": [
+  "code/phonon.js"
+ ],
+ "画图工具没有载入": [
+  "code/phonon.js"
+ ],
+ "声子色散曲线": [
+  "code/phonon.js"
+ ],
+ "态密度": [
+  "code/phonon.js"
+ ],
+ "定容热容 C_V": [
+  "code/phonon.js"
+ ],
+ "空间群": [
+  "code/phonon.js"
+ ],
+ "优化前": [
+  "code/phonon.js"
+ ],
+ "原胞": [
+  "code/phonon.js"
+ ],
+ "惯用胞": [
+  "code/phonon.js"
+ ],
+ "个位移超胞": [
+  "code/phonon.js"
+ ],
+ "位移": [
+  "code/phonon.js"
+ ],
+ "每摩尔原胞": [
+  "code/phonon.js"
+ ],
+ "零点能": [
+  "code/phonon.js"
+ ],
+ "最高频率": [
+  "code/phonon.js"
+ ],
+ "谐振近似：频率不随温度变，没有热膨胀（要的话用准谐近似，在几个体积上各算一次）。热学量对每摩尔原胞，F 含零点能。力来自所选的模型，不是 DFT；EMT 只适合教学和检查流程。超胞太小时，远处的力常数被截掉，布里渊区边上的频率会偏；加大超胞看看收不收敛。": [
+  "code/phonon.js"
+ ],
+ "铜": [
+  "code/phonon-core.js"
+ ],
+ "铝": [
+  "code/phonon-core.js"
+ ],
+ "银": [
+  "code/phonon-core.js"
+ ],
+ "金": [
+  "code/phonon-core.js"
+ ],
+ "镍": [
+  "code/phonon-core.js"
+ ],
+ "钯": [
+  "code/phonon-core.js"
+ ],
+ "铂": [
+  "code/phonon-core.js"
+ ],
+ "硅": [
+  "code/phonon-core.js"
+ ],
+ "金刚石": [
+  "code/phonon-core.js"
+ ],
+ "氯化钠": [
+  "code/phonon-core.js"
+ ],
+ "氧化镁": [
+  "code/phonon-core.js"
+ ],
+ "面心立方（Fm-3m）": [
+  "code/phonon-core.js"
+ ],
+ "金刚石结构（Fd-3m）": [
+  "code/phonon-core.js"
+ ],
+ "岩盐结构（Fm-3m）": [
+  "code/phonon-core.js"
+ ],
+ "EMT（ASE 自带，CPU）": [
+  "code/phonon-core.js"
+ ],
+ "EMT 是只给七种 fcc 金属（Al、Cu、Ag、Au、Ni、Pd、Pt）拟合的教学用势，几秒就算完；色散的形状对，数值和实验差 5–15 %。": [
+  "code/phonon-core.js"
+ ],
+ "UMA 的无机材料任务（omat，在 OMat24 上训练，PBE/PBE+U 精度），能算大多数元素的晶体；在站长的 GPU 上跑。": [
+  "code/phonon-core.js"
+ ],
+ "上一版 UMA 的 omat 任务，用来对照。": [
+  "code/phonon-core.js"
+ ],
+ "最早的 UMA 的 omat 任务，用来对照。": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 至少要 8 行：注释、缩放、三行晶格矢量、元素、个数、坐标类型": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 2–5 行要是缩放因子和三行晶格矢量": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 6 行要写元素符号（VASP 5 格式），例如 Na Cl": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的第 7 行要是每种元素的原子数，个数和第 6 行对应": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 的坐标类型要写 Direct 或 Cartesian": [
+  "code/phonon-core.js"
+ ],
+ "POSCAR 写了 {0} 个原子，但坐标只有 {1} 行": [
+  "code/phonon-core.js"
+ ],
+ "晶格矢量不能共面（体积是零）": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里要有 _cell_length_a/b/c 和 _cell_angle_alpha/beta/gamma": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里没找到原子位置（loop_ 下的 _atom_site_fract_x 等）": [
+  "code/phonon-core.js"
+ ],
+ "超胞每个方向是 1 到 {0} 的整数": [
+  "code/phonon-core.js"
+ ],
+ "先选一个预设晶体": [
+  "code/phonon-core.js"
+ ],
+ "先粘贴一段 POSCAR 或 CIF，或者选一个预设": [
+  "code/phonon-core.js"
+ ],
+ "结构文字最多 {0} 个字符": [
+  "code/phonon-core.js"
+ ],
+ "结构文字只能有普通 ASCII 字符（检查有没有中文标点或全角空格）": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里有 {0} 个不等价位置；按空间群展开、标准化之后才知道晶胞里有几个原子，由站长的电脑数": [
+  "code/phonon-core.js"
+ ],
+ "CIF 里有 {0} 个位置，没写空间群，按 P1 读": [
+  "code/phonon-core.js"
+ ],
+ "按你给的晶胞估算；站长的电脑会先用 spglib 标准化成惯用胞，原胞会变大（面心的原胞 1 个原子变成惯用胞 4 个）": [
+  "code/phonon-core.js"
+ ],
+ "晶胞里有 {0} 个原子，在线计算最多 {1} 个（标准化之后）": [
+  "code/phonon-core.js"
+ ],
+ "超胞有 {0} 个原子，在线计算最多 {1} 个；把超胞调小": [
+  "code/phonon-core.js"
+ ],
+ "没有这个引擎": [
+  "code/phonon-core.js"
+ ],
+ "EMT 只算 {0}，这个晶体里有 {1}；换成 UMA": [
+  "code/phonon-core.js"
+ ],
+ "位移在 {0} 到 {1} Å 之间": [
+  "code/phonon-core.js"
+ ],
+ "网格是 {0} 到 {1} 的整数": [
+  "code/phonon-core.js"
+ ],
+ "最高温度是 {0} 到 {1} K 的整数": [
+  "code/phonon-core.js"
+ ],
+ "有虚频：最低 {0} THz（网格上 {1} 个模式）。可能是这个结构在这个模型下动力学不稳定（会自发畸变），也可能是超胞太小、位移太大或者没有先优化；先试试打开“先优化”、加大超胞。": [
+  "code/phonon-core.js"
+ ],
+ "没有虚频（最低 {0} THz）：这个结构在这个模型下动力学稳定。": [
+  "code/phonon-core.js"
+ ],
+ "Γ 点三个声学支没有落到零（最大 {0} THz），力常数不满足平移不变性；结果要小心看。": [
+  "code/phonon-core.js"
+ ],
+ "优化没有在 {0} 步内收敛（应力 {1} GPa），声子可能出现小的虚频。": [
+  "code/phonon-core.js"
+ ],
+ "没有先优化，完美超胞里还有 {0} eV/Å 的残余受力（已经从位移的受力里减掉），频率会有偏差。": [
+  "code/phonon-core.js"
  ],
  "中文维基": [
   "websearch/web.js"
@@ -17815,6 +18427,18 @@
  "表面能计算按金属元素建结构，不要另给 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
+ "结构识别读的是图片（参数 images），不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "结构识别读的是图片，不要给电荷和自旋多重度": [
+  "deploy/account-worker.js"
+ ],
+ "声子计算的晶体写在参数里（preset，或 structure 的 POSCAR / CIF），不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "声子计算的晶体是中性的，不要给电荷和自旋多重度": [
+  "deploy/account-worker.js"
+ ],
  "DBCata 按两种金属、比例、晶面和吸附物自己搭结构，不接受上传的 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
@@ -17830,10 +18454,28 @@
  "这项计算要从 SMILES 生成结构，不接受 XYZ": [
   "deploy/account-worker.js"
  ],
+ "过渡态计算要给 XYZ 坐标（过渡态的猜测结构，或反应物）：从 SMILES 生成的是能量极小点，不是过渡态": [
+  "deploy/account-worker.js"
+ ],
+ "过渡态计算要 2 到 {0} 个原子": [
+  "deploy/account-worker.js"
+ ],
  "电荷要在 -2 到 2 之间，自旋多重度在 1 到 4 之间": [
   "deploy/account-worker.js"
  ],
  "这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1": [
+  "deploy/account-worker.js"
+ ],
+ "这个模型只算闭壳层分子（离子可以，自由基不行）：自旋多重度要为 1": [
+  "deploy/account-worker.js"
+ ],
+ "产物要和反应物是同样的原子、同样的顺序": [
+  "deploy/account-worker.js"
+ ],
+ "声子计算要给一个预设晶体（preset）或者一段 POSCAR / CIF（structure），二者选一": [
+  "deploy/account-worker.js"
+ ],
+ "EMT 只算 {0} 七种 fcc 金属": [
   "deploy/account-worker.js"
  ],
  "今天的 MACE 计算次数已用完": [
@@ -18283,6 +18925,12 @@
  "AI 化学与材料企业图谱": [
   "tools/build-seo.ts"
  ],
+ "NMRium 谱图处理 · MolAstria": [
+  "tools/build-seo.ts"
+ ],
+ "在浏览器里用开源的 NMRium 处理核磁数据：JCAMP-DX、Bruker、原始 FID，傅里叶变换、相位、基线、积分、找峰和二维谱；数据不上传。": [
+  "tools/build-seo.ts"
+ ],
  "谱图馆 · Spectra Hall": [
   "tools/build-seo.ts"
  ],
@@ -18352,7 +19000,7 @@
  "NequIP 八章：为什么需要机器学习势、不变与等变、球谐函数和不可约表示、张量积与 Clebsch–Gordan 系数、NequIP 的结构、力和能量守恒、论文的实验与数据效率、训练部署与 Allegro、MACE、基础模型；十个在浏览器里当场计算的演示和 36 篇核对过的文献。": [
   "tools/build-seo.ts"
  ],
- "化学机器学习十章：为什么用机器学习、分子表示（SMILES、指纹、Coulomb 矩阵）、高斯过程、神经网络和消息传递、贝叶斯优化、主动学习、生成模型、自驱实验室、评估的陷阱（骨架划分、数据泄漏、校准）、前沿；十七个在浏览器里当场计算的演示和 64 篇核对过的文献。": [
+ "化学机器学习十章：为什么用机器学习、分子表示（SMILES、指纹、Coulomb 矩阵）、高斯过程、神经网络和消息传递、贝叶斯优化、主动学习、生成模型、自驱实验室、评估的陷阱（骨架划分、数据泄漏、校准）、前沿；十八个在浏览器里当场计算的演示（含一张 Chemiscope 结构–性质图）和 67 篇核对过的文献。": [
   "tools/build-seo.ts"
  ],
  "世界模型 · World Models": [
@@ -18413,6 +19061,12 @@
   "tools/build-seo.ts"
  ],
  "用真实的物理公式玩量子世界的二十个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），3D 立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球导航、量子世界），以及在浏览器里运行的量子化学计算器 QChem Web。": [
+  "tools/build-seo.ts"
+ ],
+ "GPU 粒子力场 · Particle HIVE": [
+  "tools/build-seo.ts"
+ ],
+ "浏览器内置 WebGPU 粒子计算着色器模拟器，支持 Lennard-Jones、Morse 自组装、Tersoff 多体键序势与恒定重力外场，提供三维视角、DBSCAN 实时聚类、均方速率统计与预设 YAML 配置。": [
   "tools/build-seo.ts"
  ],
  "开放模型馆 · Open Model Hall": [

@@ -15,7 +15,7 @@
     const PROG = { gaussian: 'Gaussian', orca: 'ORCA', xtb: 'xTB', psi4: 'Psi4', pyscf: 'PySCF', nwchem: 'NWChem', cp2k: 'CP2K', qchem: 'Q-Chem' };
     let out = null; // { text, name, program, r, uv, raman, orbs, conv, charges }
     const st = h('p', { class: 'wb-status' }), sum = h('div', {});
-    const secIr = h('div', { class: 'wb-sec' }), secRa = h('div', { class: 'wb-sec' }), secUv = h('div', { class: 'wb-sec' }), secOrb = h('div', { class: 'wb-sec' }), secConv = h('div', { class: 'wb-sec' }), secQ = h('div', { class: 'wb-sec' });
+    const secIr = h('div', { class: 'wb-sec' }), secRa = h('div', { class: 'wb-sec' }), secUv = h('div', { class: 'wb-sec' }), secOrb = h('div', { class: 'wb-sec' }), secConv = h('div', { class: 'wb-sec' }), secQ = h('div', { class: 'wb-sec' }), secTh = h('div', {});
 
     function take(text, name, program, fromBuild) {
       if (out && out.text === text) return;
@@ -38,7 +38,7 @@
 
     function kv(rows) { return h('div', { class: 'wb-kv' }, rows.filter(Boolean).map(([k, v]) => h('div', {}, h('small', { text: k }), h('b', { text: String(v) })))); }
     function draw() {
-      for (const s of [sum, secIr, secRa, secUv, secOrb, secConv, secQ]) s.replaceChildren();
+      for (const s of [sum, secTh, secIr, secRa, secUv, secOrb, secConv, secQ]) s.replaceChildren();
       if (!out) return;
       const r = out.r;
       sum.append(kv([
@@ -56,6 +56,7 @@
         const E = r.steps.length === r.geoms.length ? r.steps : [];
         setFrames(r.geoms.map((g, k) => ({ atoms: g, cell: null, energy: Number.isFinite(E[k]) ? E[k] : null, comment: `${out.program} step ${k + 1}` })), { name: out.name, charge: S.charge, mult: S.mult, frame: r.geoms.length - 1, source: 'output' });
       }, 'small')));
+      if (r.freqs.length && window.MolAstriaThermoUI) window.MolAstriaThermoUI.mount(secTh, out.text, r); // 热化学（代码台的 thermo.js，GoodVibes 的移植）
       drawIr(); drawRaman(); drawUv(); drawOrbs(); drawConv(); drawCharges();
     }
 
@@ -191,7 +192,7 @@
         ...SAMPLES.map(([f, label]) => btn(label, async () => {
           try { const t = await (await fetch(`samples/${f}`)).text(); out = null; take(t, f); } catch { status(st, L('示例载入失败。', 'The sample failed to load.'), 'bad'); }
         }, 'small'))),
-      st, sum, secIr, secRa, secUv, secOrb, secConv, secQ));
+      st, sum, secTh, secIr, secRa, secUv, secOrb, secConv, secQ));
   } });
 
   // ── 批量作业 ─────────────────────────────────────────────────────────

@@ -4,6 +4,7 @@
 
 ## 现在
 
+- 开源八项（2026-11-22—23，分支 `claude/project-thread-g7bqf6`，**还没推送、没部署**）：NMRium 谱图处理 `/nmr/nmrium/`（停在 NMRium 0.56.0，见 DECISIONS）；代码台和计算工作台的热化学（GoodVibes 4.4.0 的 JS 移植，七份真实输出、八组选项对照，最大差 3e-8 Eh）；模型接口的过渡态 ts / neb（Sella 找鞍点、两个方向的 IRC，最多 50 个原子）；在线模型 AIMNet2（只收闭壳层）；代码台“晶体声子”标签 `#phonon`（phonopy + spglib + seekpath，phonopy-emt 和 UMA 的 omat）；文献抽取接上 MolNexTR（job ocsr，视觉模型作对照）；Mol* 大分子查看器（蛋白质分子动力学的轨迹、量子生物学结构馆、分子动力学“看一段蛋白质轨迹”）；化学机器学习第九章的 Chemiscope 结构–性质图（284 个自己用 GFN2-xTB 算的分子）。**上线要站长做：** 在站长电脑上装 sella、phonopy / spglib / seekpath，建 aimnet-env 和 molnextr-env 并跑自查（RUNBOOK“开源八项：站长电脑上的安装”），然后部署 Worker（ts、neb、aimnet2、phon、phonopy-emt、ocsr 都要新 Worker），再推网站。后续待办见“接下来”的“开源八项的后续”。
 - ~~DBCata 在线通道（模型接口“⑦ 合金表面吸附结构”）~~：2026-11-22 开放（`DBCATA_ENABLED = "1"`），只开放 (111)（训练集里没有 fcc(110)），落到同一处的位点合并显示。还可以做：找到或训练 DBCata 的异常分类器权重（现在只有四条规则）；Ni、Fe、Co、Mn 在训练集里很少，可以在页面上提示；用户自己的结构（要一个转换脚本，而且超出训练范围）不做。
 - 计算工作台（`/workbench/`，2026-11-22，站长发来 Ester Studio 的截图：“把这个里面全部功能也都加入到我的这个项目中来”）：顶栏“工具”组，文献信息抽取之后。八个标签（结构、晶体与表面、反应路径、构象、波函数与表面、光谱与输出、批量作业、项目与引用），照 Ester Studio 的功能清单独立重写（许可证见 `docs/DECISIONS.md`）；R/S 对照 RDKit，Molden 的密度、梯度、Hessian 对照 PySCF，光谱读法对照 cclib。草稿 PR，等站长说上线。没测：真实的大体系（IGM 限 400 个原子）、Safari 和 iPad 的 WebGL 表现。
 - 世界模型（`/world-models/`，2026-11-22，站长：“把世界模型的模组也加进去 并且说明和化学研究的联系”，又补了一句“记得所有世界物理模型哦”；**草稿 PR，等站长说上线再合并**）：顶栏“模型与 AI”组，化学机器学习之后。十一章（什么是世界模型、潜空间、在想象里学、用模型规划、JEPA、视频和交互式世界、学出来的物理模拟器、天气和气候、分子和材料、实验室和反应、什么时候该相信），十三个演示，首页一张“和化学研究的联系”表，“世界物理模型总览”71 个（七类，Sora、Genie 2、Genie 3 只有官方博客），80 篇文献按 DOI / arXiv 核对。没测：Safari、真机触屏；桌面版等下一个标签。后续可以加：总览随新模型更新（每条带核对日期）、一个用 NequIP 式势当世界模型跑分子动力学的演示。
@@ -108,6 +109,20 @@
 
 ## 接下来
 
+开源八项的后续：
+- 站长电脑：uma-env 装 `sella==2.6.0` 和 `phonopy==4.11.0 spglib==2.8.0 seekpath==2.2.2`；建 aimnet-env 跑 `aimnet_selftest.py`、建 molnextr-env 跑 `molnextr_selftest.py --download`，通过后用 `start.ps1 -AimnetPython … -MolnextrPython …` 重启；用 UMA 的 omat 真跑一次 Cu 和 Si 的声子（Windows 上还没跑过）；然后部署 Worker。
+- chemdb-agent：adapter 加了 ts、neb、aimnet2、phon、phonopy-emt、ocsr（`public/atlas/downloads/chemdb-agent.zip` 已重新打包），chemdb-agent 自己的测试还没跑。
+- 桌面版：NMRium 页（约多 13 MB，离线、module 脚本、文件选择）和 Mol* 的断网提示都没在桌面版里试过，下一个桌面版本发出前在 Win / Mac 上各开一次。
+- NMRium：想用 0.61+ 要先定许可（读写和处理数据的库是 CC BY-NC-SA 4.0，需要 Zakodium 的商用许可，或者站长确认本站这样用不算商用），在那之前停在 0.56.0。可选：把谱图馆练习题的二维谱（pr2d 的交叉峰）写成 JCAMP-DX 的 NTUPLES 送进去。
+- 热化学：找一份真实的 xTB --hess 输出加进 `tools/thermo-fixtures/` 对照 GoodVibes（云端没能跑 xtb 二进制）；一份输出里有多个频率任务时 code-core 会把所有频率都读进来，应该只取最后一组；可以考虑加 GoodVibes 的单点能校正（--spc）和多个构象的 Boltzmann 汇总。
+- 过渡态：可以把结果“送进代码台写输入”，用 ORCA / Gaussian 在 DFT 上重新优化过渡态（OptTS + IRC）。AIMNet2：可以考虑再加开壳层的 aimnet2-nse（云端实测苯 / 乙醇 / 水的垂直电离能 9.36 / 10.66 / 12.65 eV），在 CPU 上跑过以后给它 ipea、spin、bde。
+- 晶体声子：以后可以考虑准谐近似（几个体积各算一次，得热膨胀）、3D 振动模式、Born 有效电荷的 LO–TO 劈裂（NaCl、MgO 现在没有）。
+- MolNexTR：准备一批真实论文的反应图，核对置信度和对错的关系，再调 0.85 / 0.5 这两个阈值；看视觉模型给的框准不准，框不准时考虑加一步结构检测。
+- Mol*：在站长电脑上用 OpenMM 真跑一段（比如 1L2Y，20 ps），在 Mol* 里看轨迹和最终结构，调 putty 的粗细系数（现在 bfactorFactor 0.04）；联网环境里试 RCSB 的多模型 NMR 条目（1L2Y 有 38 个模型）和 Safari / iPad；可以考虑让 pmd 多返回一份全原子的多帧轨迹（要改 openmm_backend.py 和账号服务的返回大小上限）。
+- Chemiscope：上线后在线上点一次“打开 Chemiscope”，确认真实的 jsDelivr 能载入（e2e 只测了本地供给）；iPad Safari 上看一眼 WebGL；跑一次 `NODE_USE_SYSTEM_CA=1 node tools/chemml-refs.mjs` 核对新加的三篇文献；可以考虑 NequIP 栏目也接一张图。
+- e2e：run.mjs 在启动时检查 8840 / 8842 端口是不是自己的服务器（比如让 serve.ts 回一个随机令牌），免得孤儿进程让测试测错工作树。
+- 上线后：新页面的 SEO 头和 sitemap 条目（NMRium 页）等 CI 生成后看一眼。
+
 - 桌面版在本机一键运行（接计算工作台）：站长问过 Ester Studio 有哪些我们真没有的，答案里第一条就是“一键在本机跑 Gaussian / ORCA / xTB / CREST / Multiwfn”。做法：Tauri 那边加一个命令，在用户选的目录里写输入、调用户自己装的程序（路径在设置里填）、读回输出交给工作台的“光谱与输出”；只调用户自己的程序，不打包任何商业程序。工作台上线后再做。
 GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 - Stripe 的 25 美元手续费额度（直接抵 MolAstria 的收款手续费）。
@@ -142,6 +157,8 @@ GitHub 学生包里需要用户自己领取、领取后可以接进来的：
 - Resend 每天超过 100 封时升级 Pro；Workers 每天超过 10 万次请求时升级 Workers Paid。
 
 ## 已完成
+
+- 2026-11-23 开源八项（代码已合进分支，等部署和站长电脑安装，见“现在”）：NMRium 谱图处理、GoodVibes 热化学移植、过渡态 ts / neb（Sella）、在线模型 AIMNet2、晶体声子（phonopy + spglib）、文献抽取的 MolNexTR 通道、Mol* 大分子查看器、Chemiscope 结构–性质图。
 
 - 2026-11-19 文献信息抽取 `/extract/`（工具组）：照 ChemEAGLE（arXiv:2507.20230，MIT）的多智能体分工重写的浏览器版。读图片或 PDF 的一页（可框选），规划 → 计划核对 → 反应式 / 分子 / 底物表 / R 基团表 / 条件 / 文字 → 汇总（R 基团规则代入、PubChem 查名）→ 可选的模型复核 → RDKit 核对和规则打分；可编辑的反应表，导出 JSON / CSV / 反应 SMILES；“看示范”不用 AI。真实模型对真实论文图的准确率还没有系统测过，可以拿原文的基准图测一轮。
 

@@ -2,6 +2,58 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-23 文献抽取的结构识别：MolNexTR 先读，视觉模型作对照
+
+- 结构交给站长电脑上的 MolNexTR（Apache-2.0，固定 commit 6f6502b，单独的 molnextr-env，当库调用，不复制代码和权重）。视觉模型的答案保留下来作对照。
+- 每个分子用谁的答案按固定规则定：两边一致就标“两者一致”；MolNexTR 置信度不低于 0.85 才替换视觉模型的答案；带 R 基团的结构保留视觉模型的答案（R 的名字要和表对上），MolNexTR 只作核对；其余情况保留视觉模型的答案，MolNexTR 的留作对照。
+- 0.85 / 0.5 是经验值，没有校准：MolNexTR 的置信度是各原子、各键分数的几何平均，不是“对的概率”。
+- 结构的位置让视觉模型顺手给框，不另装结构检测模型。这样省一个模型，代价是框可能不准。
+- 每张图算 1 次在线计算。图片请求体比别的任务大得多，所以只有 ocsr 这一项能超过 16000 字符，上限按 8 张合计 400000 字节来定。
+
+## 2026-11-23 大分子用 Mol*，小分子仍用 3Dmol.js
+
+- Mol* 的 viewer 构建约 5 MB，3Dmol.js 小得多，所以 Mol* 只在用户点开时才载入，没有替换 mol3d.js：量子生物学结构馆默认仍是 3Dmol（会标出辅因子），Mol* 是切换项；模型接口窗口 6 两个都给。
+- Mol*（MIT）直接从 jsDelivr 载入写死的 5.13.1，仓库里不复制它的代码。e2e 把 molstar 加成 tools/e2e 的 devDependency 来供给同版本文件，代价是 npm ci 多装约 100 MB（molstar 包本身，加上它带的 express、react-markdown 等依赖）。
+- 查看器外面的工具条自带中英两版、标 translate="no"，没有走 i18n.js：分子动力学和量子生物学这两栏本身是 translate="no"，i18n.js 翻译不到里面。
+
+## 2026-11-23 化学机器学习的结构–性质图：自己算数据，Chemiscope 按需载入
+
+- 数据不用 QM9（云端连不上 figshare），改为自己枚举 284 个小分子并用 GFN2-xTB 算结构和性质，这样来源和许可证只有一个（MolAstria 自己算的，CC BY 4.0），骨架分组由构造就知道。tblite（LGPL）和 ASE（LGPL）只在生成数据时当库调用，不进仓库。
+- Chemiscope（BSD-3-Clause）用 1.1.1 的完整 DefaultVisualizer（1.x 已经自带 3Dmol.js，不需要 JSmol 或别的主机），不用“只要图 + 自己的 3Dmol 查看器”的拼法；但它约 1 MB（压缩后），所以只在用户按按钮时才载入，平时由我们自己画的 canvas 图完成划分和泄漏的讲解。
+- Chemiscope 的界面是英文、浅色，放在固定白底面板里，不去改它的样式。
+- 正文如实写了这份数据的结论：骨架划分降低相似度，但只有 logP 变难，能隙和偶极矩由取代基决定、不变难。
+
+## 2026-11-22 NMRium：复制构建结果进仓库，停在包装 v0.8.0 / NMRium 0.56.0
+
+- **接法：** 三种方案里选了 (a)，用 `tools/vendor-nmrium.mjs` 从源码构建 NFDI4Chem 的 nmrium-react-wrapper，复制到 `public/nmr/nmrium/app/`，iframe 加 postMessage。(b) 从 jsDelivr 载入 npm 的 nmrium：它是 React 组件，依赖六十多个包（React、Blueprint 的 CSS），浏览器里拼不起来，而且桌面版离线用不了。(c) 链到 nmrium.nmrxiv.org：桌面版离线用不了；它的 postMessage 只接受白名单里的站点，molastria.com 要发邮件去申请；云端会话也连不上它，没法测。(a) 的代价是仓库多大约 13 MB，桌面安装包也多 13 MB；但只有打开这一页才会下载，其他页面的大小不变。
+- **版本钉在 0.56.0：** NMRium 本身是 MIT，但 2025-02-14 起 nmr-processing（16+）、jcampconverter（11+）、nmr-load-save（3+）和后来的 @zakodium/nmrium-core 改成了 CC BY-NC-SA 4.0（© Zakodium Sàrl），NMRium 0.61.0（2025-03）以后的版本都打包了它们。本站有 Pro 订阅，又按规则只用宽松许可的代码，所以停在全部 MIT / BSD / Apache 的最后一个包装版本 v0.8.0（NMRium 0.56.0，2024-06）。构建时核对打包进去的 252 个软件包的许可证，不在允许清单里就失败。要用新版，需要 Zakodium 的商用许可，或者站长另做决定。
+- **补丁：** 只接受同源父页面发来的消息，启动时不去 GitHub 下载白名单（桌面版离线也能用），加 ready 事件，去掉自带的 service worker 和 source map。
+- **示例数据：** 用 npm 上 cheminfo 的 bruker-data-test 和 jcamp-data-test（MIT）。没用 nmr-dataset-demo，因为那个仓库没有写许可证。
+
+## 2026-11-22 热化学：照 GoodVibes（MIT）逐式移植成 JavaScript
+
+- 没有在浏览器里跑 Python 版。数字全部对齐 GoodVibes 4.4.0（常数沿用它的旧 CODATA 值），只有两处故意不同：点群到对称数的表用正确值（GoodVibes 把 S4、S6、S8、T、O、I 写成 4、6、8、6、12、30，正确的是 2、3、4、12、24、60）；程序没打印对称数时用站内 gt-models.js 判点群（GoodVibes 要装 pymsym）。
+- Truhlar 抬高低频照 GoodVibes 的做法只作用在熵上，焓和 ZPE 不动。
+- `thermo-core.js` 文件头保留 GoodVibes 的 MIT 版权声明，旁边有 THIRD-PARTY-goodvibes.md。GoodVibes 的 Python 代码只在测试机上 import，用来出参考数字（`tools/thermo-goodvibes.py`），不进 `public/`。
+
+## 2026-11-22 过渡态用 Sella，不用 geomeTRIC；AIMNet2 只上闭壳层版本
+
+- **Sella 只当运行时的库：** 过渡态搜索和 IRC 用 Sella（LGPL-3.0），只在站长电脑上 `pip install` 后 import，不复制、不随网站和桌面版分发，所以 LGPL 没有额外义务。
+- **不用 geomeTRIC：** 它的 BSD 许可证带一条“Non-AI”条款（不得放进 AI 训练集），公开仓库一旦复制它的代码就没法遵守，所以它的源码永远不进仓库。以后真要用，也只能在站长电脑上 pip 装、运行时 import。
+- 能量曲线里的“左”“右”就是 IRC 的两个方向，不去猜哪边是反应物（猜错比不猜更误导人），页面上写明了这一点。
+- ts / neb 只收 XYZ：从 SMILES 生成的是极小点，拿它当过渡态的猜测只会白白花次数。最多 50 个原子，因为每次都要算有限差分 Hessian 和两个方向的 IRC。
+- AIMNet2（`aimnet`，MIT）上线的是 aimnet2（ωB97M-D3，闭壳层），放在窗口 ①。它读总电荷、不读多重度，送进去的双重态会被当成闭壳层悄悄算掉，所以页面、账号服务、server.py、worker 四处都拒绝开壳层，计算只给几何类九项和质子亲和能（两边都是闭壳层）。RUNBOOK 要求的电荷态检查对闭壳层模型改成两项：确认它拒绝自由基，再拿质子亲和能和酸度对照实验。云端 CPU 实测五项都在 2 kcal/mol 以内。开壳层的 aimnet2-nse 只在自查脚本里算垂直电离能作参考（苯 / 乙醇 / 水 9.36 / 10.66 / 12.65 eV），要不要另外上线以后再定。
+- AIMNet2 单独放在 aimnet-env：它要 torch 2.10 以上，uma-env 里的 fairchem 用旧版本。和 MACE 一样经标准输入输出的 JSON 调用（AimnetBackend 继承 MaceBackend）。
+
+## 2026-11-22 晶体声子用 phonopy + spglib + seekpath，只调用不拷贝
+
+- 力的来源：EMT（新模型 phonopy-emt，CPU 的 phonon 通道，几秒算完，给没有 GPU 时用和教学）和 UMA 的 omat 任务（挂在三个 UMA 模型上，GPU）。不用 OMol 任务：它是分子数据，不适合晶体。
+- 结构：先用 spglib 标准化成惯用胞，超胞乘在惯用胞上。这样同一个晶体不论输入的是原胞还是惯用胞，都得到同一个结果和缓存键（crystal:预设名或 sha256:超胞原子数:位移数）。
+- 计算：扣掉完美超胞的残余受力，没先优化的结构也能得到干净的力常数。
+- 上限：惯用胞 32、超胞 216、位移超胞 48 个原子，在提交时用 prepare() 核对，不进队列。
+- 计费：每次 5 次，不按位移数算，这样前端能先告诉用户花多少。
+- 英文：标签按钮自带中英两版（translate="no"），这样别的标签的英文页面不用等这一页补译文。面板正文仍走 i18n。
+
 ## 2026-11-22 DBCata 通道开放：只开放 (111)，落到同一处的位点合并
 
 站长在决定卡片上选了“都上，并打开在线窗口”。`DBCATA_ENABLED` 改成 "1"，计算接口的文档（compute.js、openapi、chemdb-agent）加上 `dbcata` / `adsgen`。

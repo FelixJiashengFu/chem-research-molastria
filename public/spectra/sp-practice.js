@@ -74,7 +74,7 @@
     figs: [
       { gen: 'prLines', kind: 'constants', title: T(`¹³C{¹H} 核磁，62.9 MHz，CDCl₃`, `¹³C{¹H} NMR, 62.9 MHz, CDCl₃`),
         cap: T(`峰位取自题目标出的读数；高度大致照题图（季碳很弱、三个等价甲基很强），77.16 ppm 的溶剂三重峰是本页补画的。`, `Positions are the readings on the slide; heights roughly follow the slide (the quaternary carbon weak, the three equivalent methyls strong); the solvent triplet at 77.16 ppm is drawn in here.`),
-        args: { c13: true, x: [20, 160], sticks: [[149.82, 0.32], [108.85, 0.45], [33.63, 0.06], [29.14, 1]], solvent: 77.16 } },
+        args: { c13: true, mhz: 62.9, x: [20, 160], sticks: [[149.82, 0.32], [108.85, 0.45], [33.63, 0.06], [29.14, 1]], solvent: 77.16 } },
       { gen: 'prLines', kind: 'constants', title: T(`¹H 核磁，250.13 MHz，CDCl₃`, `¹H NMR, 250.13 MHz, CDCl₃`),
         cap: T(`峰位取自题目标出的读数（Hz）；1.01 ppm 的单峰从题图读出。线形和强度是本页加的（双二重峰画成等高的四条线，没有画二级效应造成的微小“屋顶”）。`, `Positions are the slide's readings (Hz); the singlet at 1.01 ppm is read from the slide. Line shape and intensities are added here (each doublet of doublets as four equal lines, without the slight second-order roofing).`),
         args: { mhz: 250.13, x: [0.5, 6.4], groups: [

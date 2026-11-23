@@ -7,6 +7,62 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'nmrium', date: '2026-11-23', path: 'nmr/nmrium/index.html', group: 'explore', icon: 'nmr',
+      zh: 'NMRium 谱图处理', en: 'NMRium processing',
+      note: ['在浏览器里处理真实的核磁数据：FID、相位、积分、找峰、二维谱', 'Process real NMR data in your browser: FIDs, phasing, integrals, peak picking, 2D'],
+      more: ['开源的 NMRium（MIT）嵌在核磁共振栏目里：打开 JCAMP-DX、Bruker 的 zip 或实验文件夹、原始 FID，做傅里叶变换、调相位、校基线、积分、找峰，看 COSY 等二维谱。文件只在浏览器里处理，不上传。附三组开放许可的实测示例；谱图馆练习题的一维谱也能一键送进去，自己积分核对答案。',
+        'The open-source NMRium (MIT) now sits in the NMR section: open JCAMP-DX, a Bruker zip or experiment folder or a raw FID, then Fourier-transform, phase, correct the baseline, integrate, pick peaks and view 2D spectra such as COSY. Files stay in your browser. Three openly licensed measured samples are included, and the Spectra Hall practice spectra open there in one click so you can integrate them yourself.'],
+    },
+    {
+      id: 'thermo-goodvibes', date: '2026-11-23', path: 'code/index.html#p-output', group: 'make', icon: 'graph',
+      zh: '频率输出直接算自由能', en: 'Free energies from frequency outputs',
+      note: ['代码台和计算工作台读到频率计算，就给出 ZPE、H、T·S 和 G', 'The Code Desk and the Workbench turn a frequency job into ZPE, H, T·S and G'],
+      more: ['可以用 Grimme 准 RRHO、Truhlar 抬高低频或 Head-Gordon 准谐焓，换 1 mol/L 标准态，改温度和校正因子，对称数按点群自动判断。公式照 GoodVibes（MIT）逐式移植，七份真实输出对照 GoodVibes 4.4.0，差不到 10⁻⁵ Eh。',
+        'Choose Grimme quasi-RRHO, Truhlar low-mode raising or Head-Gordon quasi-harmonic enthalpy, switch to a 1 mol/L standard state, set the temperature and scale factors; the symmetry number comes from the point group. The formulas are ported one by one from GoodVibes (MIT) and agree with GoodVibes 4.4.0 on seven real outputs to within 10⁻⁵ Eh.'],
+    },
+    {
+      id: 'ts-irc', date: '2026-11-23', path: 'models/index.html#work', group: 'models', icon: 'barrier',
+      zh: '模型接口 · 过渡态与 IRC', en: 'Model interface · Transition states and IRC',
+      note: ['在线找过渡态：一个猜测结构，或者反应物和产物', 'Find transition states online: from a guess, or from a reactant and a product'],
+      more: ['模型接口多了两项计算：从过渡态的猜测结构出发，用 Sella 找一阶鞍点、算虚频，再沿两个方向做 IRC；或者从反应物和产物出发，先走 NEB 和爬坡像，再交给 Sella。结果有能垒表、能量曲线，还能在 3D 里播放反应路径和虚频振动。可以用 xTB、MACE、UMA 等模型，最多 50 个原子，打开时已经填好 HCN ⇌ HNC 的例子。Sella 采用 LGPL-3.0，只作为库调用。',
+        'Two new jobs on the model interface: start from a guess of the transition state and Sella finds the first-order saddle, computes the imaginary frequency and runs the IRC both ways; or start from a reactant and a product, which go through NEB and a climbing image before Sella. Results include the barriers and the energy profile, and you can play the reaction path and the imaginary mode in 3D. Works with xTB, MACE, UMA and more, up to 50 atoms, with the HCN ⇌ HNC example filled in. Sella (LGPL-3.0) is used as a library.'],
+    },
+    {
+      id: 'aimnet2', date: '2026-11-23', path: 'models/index.html#work', group: 'models', icon: 'atoms',
+      zh: '在线模型 · AIMNet2', en: 'Online model · AIMNet2',
+      note: ['ωB97M-D3 精度的神经网络势，能算离子', 'A neural network potential at ωB97M-D3 quality that handles ions'],
+      more: ['窗口 ① 加了 Isayev 组的 AIMNet2（MIT 许可，对所有人免费）：14 种元素，中性和带电荷的闭壳层分子都能算，比如铵离子、羧酸根、两性离子。它不读自旋多重度，所以不算自由基，也就没有电离能和键解离能，但能算质子亲和能。上线前对照了实验的质子亲和能，误差都在 2 kcal/mol 以内。',
+        'Window ① now has AIMNet2 from the Isayev group (MIT, free for everyone): 14 elements, neutral and charged closed-shell molecules such as ammonium, carboxylates and zwitterions. It does not read the spin multiplicity, so no radicals and hence no ionisation energies or bond dissociation, but proton affinities work. Before launch its proton affinities were checked against experiment, all within 2 kcal/mol.'],
+    },
+    {
+      id: 'phonons', date: '2026-11-23', path: 'code/index.html#p-phonon', group: 'make', icon: 'crystal',
+      zh: '开源代码台 · 晶体声子', en: 'Code Desk · crystal phonons',
+      note: ['给一个晶体，算出声子色散、态密度、热容和有没有虚频', 'Give a crystal, get its phonon dispersion, density of states, heat capacity and any imaginary modes'],
+      more: ['代码台的新标签把晶体（11 个预设，或者你的 POSCAR / CIF）交给站长电脑上的 phonopy：spglib 先认出空间群，可选保持对称性地优化，再做有限位移，沿高对称路径画色散，在网格上算态密度、热容、熵和自由能。力来自 EMT（七种 fcc 金属，几秒）或者 UMA 的无机材料任务。每次用掉 5 次在线计算，也能拿走一段在自己电脑上跑的脚本。phonopy、spglib（BSD-3）和 seekpath（MIT）只是调用。',
+        'A new Code Desk tab hands a crystal (11 presets, or your POSCAR / CIF) to phonopy on the site owner’s computer: spglib finds the space group, an optional symmetry-preserving relaxation follows, then finite displacements, the dispersion along the high-symmetry path, and the density of states, heat capacity, entropy and free energy on a mesh. Forces come from EMT (seven fcc metals, seconds) or UMA’s inorganic-materials task. Each run uses 5 online runs; you can also take a script to run on your own computer. phonopy, spglib (BSD-3) and seekpath (MIT) are called, not copied.'],
+    },
+    {
+      id: 'molnextr', date: '2026-11-23', path: 'extract/index.html', group: 'make', icon: 'extract',
+      zh: '文献抽取接上 MolNexTR', en: 'MolNexTR in the Literature Extractor',
+      note: ['结构图先交给 MolNexTR 识别，视觉模型的答案作对照', 'Drawn structures are read by MolNexTR first, with the vision model as the cross-check'],
+      more: ['结构图先交给站长电脑上的 MolNexTR（Apache-2.0）识别，视觉模型的答案作对照：表里标出每个结构是谁读的，两边不一样时提醒，可以一键换成另一个答案；在图上框住一个结构，不用 AI 也能直接识别。',
+        'Drawn structures are read first by MolNexTR (Apache-2.0) on the site owner’s computer, with the vision model’s answer as the cross-check: the table shows who read each structure, flags disagreements and swaps answers in one click; box a single structure on the figure to read it without the AI.'],
+    },
+    {
+      id: 'molstar', date: '2026-11-23', path: 'models/index.html#work', group: 'models', icon: 'atoms',
+      zh: 'Mol* 大分子查看器', en: 'Mol* macromolecule viewer',
+      note: ['蛋白质分子动力学的轨迹按 RMSF 着色，一帧一帧播放', 'Play a protein MD trajectory frame by frame, coloured by RMSF'],
+      more: ['模型接口“蛋白质分子动力学”的结果现在能用 Mol*（MIT，RCSB PDB 和 PDBe 用的那个查看器）打开：Cα 轨迹按每个残基的涨落着色，滑杆和播放键一帧一帧看，也能看起始的 PDB 条目和模拟结束时的结构（重原子）。量子生物学的结构馆可以切到 Mol*，分子动力学栏目多了一节“看一段蛋白质轨迹”：现算的螺旋正则模、任意 PDB 编号、自己电脑上的 .pdb。',
+        'Results of the model interface’s protein MD now open in Mol* (MIT, the viewer the RCSB PDB and PDBe use): the Cα trajectory is coloured by each residue’s fluctuation, with a slider and a play button, and you can also view the starting PDB entry and the final structure (heavy atoms). The quantum biology structure hall can switch to Mol*, and the molecular dynamics section has a new part, “Watch a protein trajectory”: normal modes of a helix computed on the spot, any PDB ID, or a .pdb from your own computer.'],
+    },
+    {
+      id: 'chemml-scope', date: '2026-11-23', path: 'chem-ml/index.html#c-eval', group: 'models', icon: 'graph',
+      zh: '结构–性质图（Chemiscope）', en: 'Structure–property map (Chemiscope)',
+      note: ['化学机器学习第九章：284 个分子的图，点一个点看它的三维结构', 'Chemistry ML chapter 9: a map of 284 molecules; click a point to see its 3D structure'],
+      more: ['284 个小分子由我们自己枚举，三维结构和能隙、偶极矩用 GFN2-xTB 算出；按指纹或描述符的主成分摆在平面上，切换随机和骨架划分，看测试分子离训练集有多远、k 近邻的误差怎样变。按“打开 Chemiscope”载入 EPFL 的开源浏览器 Chemiscope，图和三维结构联动。',
+        '284 small molecules we enumerated ourselves, with 3D structures, gaps and dipoles from GFN2-xTB, laid out by the principal components of their fingerprints or descriptors. Switch between random and scaffold splits to see how far test molecules sit from the training set and how the k-NN error changes. “Open Chemiscope” loads EPFL’s open-source Chemiscope explorer with the map and 3D structures linked.'],
+    },
+    {
       id: 'particles', date: '2026-11-22', path: 'particles/index.html', group: 'explore', icon: 'md',
       zh: 'GPU 粒子力场模拟器', en: 'GPU Particle HIVE Simulator',
       note: ['浏览器 WebGPU 实时模拟万级粒子与多体势，附五组化学物理预设', 'Real-time WebGPU particle compute simulator with five physics & chemistry presets'],

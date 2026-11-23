@@ -639,6 +639,8 @@ await test("online models: ANI-2x free like UMA, MACE free and the same for ever
   eq((umaCalls.at(-1)?.body as any).model, "ani-2x");
   eq((await call("POST", "/uma/jobs", { smiles: "[NH4+]", job: "opt", model: "gfn2-xtb", charge: 1 }, pro)).status, 202, "xTB takes ions, on the same allowance");
   eq((umaCalls.at(-1)?.body as any).model, "gfn2-xtb");
+  eq((await call("POST", "/uma/jobs", { smiles: "CC(=O)[O-]", job: "opt", model: "aimnet2", charge: -1 })).status, 202, "AIMNet2 (MIT) takes closed-shell ions, free for everyone");
+  eq((umaCalls.at(-1)?.body as any).charge, -1);
   eq((await call("POST", "/uma/jobs", { job: "pmd", model: "openmm-amber14", params: { pdb_id: "1l2y", chains: "A", ps: 10 } }, pro)).status, 202, "protein MD by PDB ID");
   eq((umaCalls.at(-1)?.body as any).params, { pdb_id: "1L2Y", chains: "A", ps: 10 }, "the ID is upper-cased, nothing else added");
   eq([(umaCalls.at(-1)?.body as any).smiles, (umaCalls.at(-1)?.body as any).xyz], [undefined, undefined]);
@@ -671,8 +673,15 @@ await test("UMA: embargoed regions are refused, an optional Access token is sent
 const used = (key: string) => (sqlite.prepare("SELECT n FROM throttle WHERE key = ?").get(key) as any)?.n ?? 0;
 const resetUses = () => sqlite.prepare("DELETE FROM throttle WHERE key LIKE 'uma:%' OR key LIKE 'asl:%'").run();
 const WATER = "3\nwater\nO 0.000 0.000 0.000\nH 0.000 0.000 0.960\nH 0.930 0.000 -0.240\n";
+// transition states: a guess for HCN <-> HNC, and the two isomers for neb (same atoms, same order)
+// phonons: a primitive silicon cell as POSCAR text
+const POSCAR_SI = "Si\n1.0\n0 2.7155 2.7155\n2.7155 0 2.7155\n2.7155 2.7155 0\nSi\n2\nDirect\n0 0 0\n0.25 0.25 0.25\n";
+const HCN = "3\nHCN\nH -1.07 0 0\nC 0 0 0\nN 1.16 0 0\n", HNC = "3\nHNC\nH 2.15 0 0\nC 0 0 0\nN 1.17 0 0\n", TS_GUESS = "3\nguess\nH 0.6 1.0 0\nC 0 0 0\nN 1.17 0 0\n";
 const sentBody = () => { const b = { ...(umaCalls.at(-1)?.body as any) }; delete b.who; return b; };
 
+// Structure images for ocsr (MolNexTR): the start of a real PNG and JPEG in base64; the computer reads the headers.
+const PNG_B64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+const JPG_B64 = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP" + "A".repeat(42);
 await test("API v3: every job passes with valid params and only the checked fields reach the computer", async () => {
   resetUses();
   Object.assign(env, { UMA_DAILY: "1000", ASL_DAILY: "1000" });
@@ -700,6 +709,16 @@ await test("API v3: every job passes with valid params and only the checked fiel
     [{ job: "qflow", model: "quacc-gfn2", params: { items: [" CCO ", "[CH3]"], recipe: "relax_freq", temperature: 350, bogus: 1 } }, { job: "qflow", model: "quacc-gfn2", params: { items: ["CCO", "[CH3]"], recipe: "relax_freq", temperature: 350 } }],
     [{ job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }, { job: "qflow", model: "quacc-psi4", params: { items: ["O"], method: "hf", basis: "sto-3g" } }],
     [{ job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }, { job: "qslab", model: "quacc-emt", params: { element: "Pt", max_index: 2 } }],
+    // transition states: coordinates only; the product's XYZ in params is tidied the same way as the main one
+    [{ xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80, bogus: 1 } }, { xyz: TS_GUESS, job: "ts", model: "gfn2-xtb", charge: 0, spin: 1, params: { fmax: 0.005, irc: true, irc_steps: 80 } }],
+    [{ smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }, { smiles: "CCN", job: "pa", model: "aimnet2", params: { site: 2, thermo: true } }], // AIMNet2: protons move, no radicals
+    [{ xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }, { xyz: TS_GUESS, job: "ts", model: "aimnet2", charge: 0, spin: 1 }],
+    // phonons: a preset or POSCAR / CIF text, never smiles or xyz; the computer reads and standardises the crystal
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800, bogus: 1 } }, { job: "phon", model: "phonopy-emt", params: { preset: "Cu", supercell: [3, 3, 3], displacement: 0.02, relax: false, mesh: 12, t_max: 800 } }],
+    [{ job: "phon", model: "uma-s-1p2p1", charge: 0, params: { structure: POSCAR_SI.replace(/\n/g, "\r\n"), format: "poscar" } }, { job: "phon", model: "uma-s-1p2p1", charge: 0, params: { format: "poscar", structure: POSCAR_SI } }],
+    [{ xyz: HCN, job: "neb", model: "mace-off23-small", academic: true, params: { product_xyz: "\r\n" + HNC.replace(/\n/g, "\r\n"), images: 5, irc: false } }, { xyz: HCN, job: "neb", model: "mace-off23-small", params: { irc: false, images: 5, product_xyz: HNC } }],
+    // structure images: bare base64 PNG / JPEG, forwarded as sent; no molecule, no charge
+    [{ job: "ocsr", model: "molnextr", params: { images: [PNG_B64, JPG_B64], bogus: 1 } }, { job: "ocsr", model: "molnextr", params: { images: [PNG_B64, JPG_B64] } }],
   ];
   for (const [body, want] of cases) {
     const r = await call("POST", "/uma/jobs", body);
@@ -720,6 +739,11 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ smiles: "CCO", job: "ir", model: "uma-s-1p2p1" }, "IR is MACE-MDP's"],
     [{ smiles: "CCO", job: "ipea", model: "uma-s-1p1" }, "neutral model has no IP / EA"],
     [{ smiles: "CCO", job: "ipea", model: "gfn2-xtb" }, "xTB has no IP / EA"],
+    [{ smiles: "CCO", job: "ipea", model: "aimnet2" }, "AIMNet2 is closed-shell: no IP / EA"],
+    [{ smiles: "O=O", job: "spin", model: "aimnet2" }, "AIMNet2 has no spin gaps"],
+    [{ smiles: "CCO", job: "bde", model: "aimnet2", params: { bond: [1, 2] } }, "AIMNet2 has no BDE (radicals)"],
+    [{ smiles: "CCO", job: "opt", model: "aimnet2", charge: 1, spin: 2 }, "AIMNet2 refuses a doublet cation"],
+    [{ smiles: "O=O", job: "opt", model: "aimnet2", spin: 3 }, "AIMNet2 refuses a triplet"],
     [{ job: "pmd", model: "openmm-amber14" }, "protein MD needs a PDB ID"],
     [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "1L2Y; rm -rf" } }, "a PDB ID is four characters"],
     [{ job: "pmd", model: "openmm-amber14", params: { pdb_id: "0ABC" } }, "a PDB ID starts with 1-9"],
@@ -779,6 +803,49 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
     [{ job: "qslab", model: "quacc-gfn2", params: { element: "Cu" } }, "the GFN2 batch has no slabs"],
     [{ job: "qflow", model: "quacc-emt", params: { items: ["C"] } }, "EMT does slabs only"],
     [{ smiles: "CCO", job: "opt", model: "quacc-gfn2" }, "quacc models take batches only"],
+    [{ smiles: "C#N", job: "ts" }, "a TS needs coordinates, not SMILES"],
+    [{ job: "ts" }, "a TS needs a structure"],
+    [{ xyz: `51\nbig\n${"H 0 0 0\n".repeat(51)}`, job: "ts" }, "at most 50 atoms for a TS"],
+    [{ xyz: "1\nH\nH 0 0 0\n", job: "ts", spin: 2 }, "a TS needs two atoms"],
+    [{ xyz: TS_GUESS, job: "ts", params: { fmax: 0.1 } }, "the TS fmax tops out at 0.05"],
+    [{ xyz: TS_GUESS, job: "ts", params: { irc_steps: 201 } }, "at most 200 IRC steps"],
+    [{ xyz: TS_GUESS, job: "ts", params: { irc: "yes" } }, "irc is true or false"],
+    [{ xyz: HCN, job: "neb" }, "neb needs the product"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: WATER } }, "the product has other atoms"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: "3\nHNC\nC 0 0 0\nH 2.15 0 0\nN 1.17 0 0\n" } }, "the product's atoms in another order"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: "3\nbad\nH 0 0 x\nC 0 0 0\nN 1 0 0\n" } }, "a broken product XYZ"],
+    [{ xyz: HCN, job: "neb", params: { product_xyz: HNC, images: 12 } }, "at most 11 images"],
+    [{ xyz: TS_GUESS, job: "ts", model: "mace-mdp", academic: true }, "MACE-MDP has no forces for a TS"],
+    [{ job: "phon", model: "phonopy-emt" }, "phon needs a crystal"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu", structure: POSCAR_SI } }, "a preset or a structure, not both"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Si" } }, "EMT does fcc metals only"],
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Fe" } }, "no such preset"],
+    [{ job: "phon", model: "phonopy-emt", smiles: "[Cu]", params: { preset: "Cu" } }, "no SMILES for a crystal"],
+    [{ job: "phon", model: "uma-s-1p2p1", xyz: WATER, params: { preset: "Si" } }, "no XYZ for a crystal"],
+    [{ job: "phon", model: "uma-s-1p2p1", charge: 1, params: { preset: "Si" } }, "a crystal has no charge"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", supercell: [5, 1, 1] } }, "at most 4 per axis"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", supercell: [2, 2] } }, "three multipliers"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", displacement: 0.1 } }, "displacement up to 0.05"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", mesh: 40 } }, "mesh up to 32"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { preset: "Si", t_max: 3000 } }, "t_max up to 2000"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: "x".repeat(8001) } }, "at most 8000 characters"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: POSCAR_SI.replace("Si\n2", "Сі\n2") } }, "ASCII only"],
+    [{ job: "phon", model: "uma-s-1p2p1", params: { structure: POSCAR_SI, format: "xyz" } }, "POSCAR or CIF"],
+    [{ job: "phon", model: "uma-s-1p2p1-ft-d4rev", params: { preset: "Si" } }, "the D4rev fine-tune has no omat task"],
+    [{ job: "phon", model: "gfn2-xtb", params: { preset: "Si" } }, "xTB does no crystals here"],
+    [{ xyz: TS_GUESS, job: "ts", model: "openmm-amber14" }, "protein MD has no TS"],
+    [{ job: "ocsr", model: "molnextr" }, "structure recognition needs images"],
+    [{ job: "ocsr", model: "molnextr", params: { images: [] } }, "at least one image"],
+    [{ job: "ocsr", model: "molnextr", params: { images: Array(9).fill(PNG_B64) } }, "at most 8 images"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["data:image/png;base64," + PNG_B64] } }, "bare base64, no data: prefix"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["R0lGODlhAQABAAAAACw="] } }, "a GIF is not read"],
+    [{ job: "ocsr", model: "molnextr", params: { images: [PNG_B64 + "!"] } }, "not base64"],
+    [{ job: "ocsr", model: "molnextr", params: { images: ["iVBORw0KGgo" + "A".repeat(200001)] } }, "one image over 150000 bytes"],
+    [{ job: "ocsr", model: "molnextr", params: { images: PNG_B64 } }, "images must be a list"],
+    [{ smiles: "CCO", job: "ocsr", model: "molnextr", params: { images: [PNG_B64] } }, "ocsr takes no SMILES"],
+    [{ job: "ocsr", model: "molnextr", charge: 1, params: { images: [PNG_B64] } }, "ocsr takes no charge"],
+    [{ smiles: "CCO", job: "opt", model: "molnextr" }, "MolNexTR reads images only"],
+    [{ job: "ocsr", model: "uma-s-1p2p1", params: { images: [PNG_B64] } }, "only MolNexTR reads images"],
   ];
   for (const [body, why] of refused) {
     const r = await call("POST", "/uma/jobs", body);
@@ -788,6 +855,19 @@ await test("API v3: unknown jobs, wrong models, bad params and oversized XYZ are
   eq([used("uma:local"), used("asl:local")], [0, 0], "refused jobs cost nothing");
   const huge = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ xyz: "x".repeat(16001), job: "sp" }) }), env);
   eq(huge.status, 413);
+  // only ocsr may send a body over 16000 characters: four images of 100000 bytes each fit, together over 400000 do not
+  const img = "iVBORw0KGgo" + "A".repeat(133332 - 11); // 99999 bytes once decoded
+  const img2 = "iVBORw0KGgo" + "A".repeat(133468 - 11); // 100101 bytes: four of them are over 400000
+  const bigOther = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ job: "phon", model: "phonopy-emt", params: { preset: "Cu", note: img } }) }), env);
+  eq(bigOther.status, 413, "a large body for any other job");
+  const overTotal = await call("POST", "/uma/jobs", { job: "ocsr", model: "molnextr", params: { images: Array(4).fill(img2) } });
+  eq(overTotal.status, 400, `400000 bytes in all at most: ${JSON.stringify(overTotal.data)}`);
+  const tooBig = await worker.fetch(new Request("https://api.test/uma/jobs", { method: "POST", headers: { Origin: "https://molastria.com" }, body: JSON.stringify({ job: "ocsr", model: "molnextr", params: { images: Array(5).fill(img) } }) }), env);
+  eq(tooBig.status, 413, "more than an ocsr job can need");
+  eq(umaCalls.length, before, "none of these reached the computer");
+  resetUses();
+  const three = await call("POST", "/uma/jobs", { job: "ocsr", model: "molnextr", params: { images: [img, img, img] } });
+  eq([three.status, used("uma:local")], [202, 3], "three images of 100000 bytes go through and cost one use each");
 });
 
 await test("API v3: uses are counted by cost, a job that does not fit is refused, refusals give the whole cost back", async () => {
@@ -822,6 +902,10 @@ await test("API v3: uses are counted by cost, a job that does not fit is refused
     [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O"] } }, 3], [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C", "N", "O", "F"], recipe: "relax_freq" } }, 12],
     [{ job: "qflow", model: "quacc-gfn2", params: { items: ["C"], recipe: "static" } }, 1], [{ job: "qflow", model: "quacc-psi4", params: { items: ["C", "O"], recipe: "relax_freq" } }, 4],
     [{ job: "qslab", model: "quacc-emt", params: { element: "Au" } }, 3], [{ job: "qslab", model: "quacc-emt", params: { element: "Au", max_index: 2 } }, 5],
+    // transition states: a search, a Hessian and two IRCs 5; the band from reactant and product 8
+    [{ xyz: TS_GUESS, job: "ts" }, 5], [{ xyz: TS_GUESS, job: "ts", params: { irc: false } }, 5], [{ xyz: HCN, job: "neb", params: { product_xyz: HNC } }, 8],
+    // phonons: 5 whatever the crystal (the computer bounds atoms and displacements)
+    [{ job: "phon", model: "phonopy-emt", params: { preset: "Cu" } }, 5], [{ job: "phon", params: { preset: "NaCl", supercell: [3, 3, 3] } }, 5],
   ];
   for (const [body, cost] of costs) {
     const n0 = used("uma:local");
@@ -1004,20 +1088,26 @@ await test("compute API: models without MACE, jobs on the account's own allowanc
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
   eq([models.status, models.data.online, models.data.gpu], [200, true, "NVIDIA GeForce RTX 2080"]);
   const ids: string[] = models.data.models.map((m: any) => m.id);
-  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("dbcata")], [19, 0, true, true, true, true, true], "the nineteen models whose licence allows it");
+  eq([ids.length, ids.filter((id) => id.startsWith("mace")).length, ids.includes("ani-2x"), ids.includes("gfn2-xtb"), ids.includes("openmm-amber14"), ids.includes("quacc-emt"), ids.includes("aimnet2"), ids.includes("phonopy-emt"), ids.includes("molnextr"), ids.includes("dbcata")], [22, 0, true, true, true, true, true, true, true, true], "the twenty-two models whose licence allows it");
+  eq(models.data.models.find((m: any) => m.id === "molnextr"), { id: "molnextr", ready: false, queue: 0, charged: false, jobs: ["ocsr"] }, "MolNexTR (Apache-2.0): structure images only, in the API too");
+  eq(models.data.costs.ocsr, 1, "one use per image");
+  eq(models.data.models.find((m: any) => m.id === "phonopy-emt"), { id: "phonopy-emt", ready: false, queue: 0, charged: false, jobs: ["phon"] }, "phonopy with EMT: phonons only");
+  eq(models.data.models.find((m: any) => m.id === "uma-s-1p1")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "phon"], "UMA's omat task does crystals");
+  eq(models.data.costs.phon, 5, "a phonon job costs 5");
+  eq(models.data.models.find((m: any) => m.id === "aimnet2"), { id: "aimnet2", ready: false, queue: 0, charged: true, closed_shell: true, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "pa"] }, "AIMNet2: ions, closed-shell only");
   eq(models.data.models.find((m: any) => m.id === "quacc-psi4")?.jobs, ["qflow"], "quacc: batches through one recipe");
   eq(models.data.quacc_costs, { per_molecule: { static: 1, relax: 1, relax_freq: 3 }, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, "what a batch costs");
-  eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
+  eq(models.data.models.find((m: any) => m.id === "gfn2-xtb")?.jobs, ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "spin", "bde", "pa"], "xTB: charges and spins, no IP / EA");
   eq(models.data.models[0], { id: "uma-s-1p2p1", ready: true, queue: 1, charged: true, jobs: ["opt", "md", "ipea", "bde"] }, "a model's jobs as the computer reports them");
-  eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn"] }, "not loaded right now");
+  eq(models.data.models.find((m: any) => m.id === "ani-2x"), { id: "ani-2x", ready: false, queue: 0, charged: false, jobs: ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"] }, "not loaded right now");
   eq([models.data.costs.md, models.data.costs.polar, models.data.costs.ir, models.data.cost_with_thermo], [5, undefined, undefined, 5], "only the jobs these models do");
   if (JSON.stringify(models.data).includes("secret")) throw new Error("the model list leaked the secret");
   // The documentation page (public/api/compute.js) lists the same jobs, costs and models as the service.
   const page = await Deno.readTextFile(new URL("../public/api/compute.js", import.meta.url));
   const listed = Object.fromEntries([...page.matchAll(/^    \['([a-z]+)', '[^']+', (\d), '/gm)].map((m) => [m[1], Number(m[2])]));
   eq(Object.entries(listed).sort(), Object.entries(models.data.costs).sort(), "the costs on the documentation page");
-  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|PROTEIN|QFLOW|QSLAB|ADSGEN)\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
-  for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
+  eq([...page.matchAll(/\['([a-z0-9-]+)', (?:CHARGED|GEOM|XTB|IONS|PROTEIN|QFLOW|QSLAB|PHON|OCSR|ADSGEN)(?:_PH)?\]/g)].map((m) => m[1]).sort(), [...ids].sort(), "the models on the documentation page");
+  for (const m of [...page.matchAll(/\['([a-z0-9-]+)', (CHARGED|GEOM)(?:_PH)?\]/g)]) eq(m[2] === "CHARGED", models.data.models.find((x: any) => x.id === m[1]).charged, m[1]);
   // So does the OpenAPI description (generated by tools/build-api.mjs).
   const spec = JSON.parse(await Deno.readTextFile(new URL("../public/api/v1/openapi.json", import.meta.url)));
   const wanted = spec.components.schemas.ComputeJobRequest.properties;
@@ -1080,7 +1170,7 @@ await test("compute API: offline, switched off, blocked regions", async () => {
   const off = await call("POST", "/v1/jobs", { smiles: "CCO", job: "opt" }, freeKey, elsewhere);
   eq([off.status, off.data.error.code, used("uma:a@lab.edu")], [503, "offline", 0], "an offline GPU costs nothing");
   const models = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
-  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 18, false], "the list still says what exists");
+  eq([models.status, models.data.online, models.data.models.length, models.data.models[0].ready], [200, false, 21, false], "the list still says what exists");
   umaOffline = false;
   const req = new Request("https://api.test/v1/jobs", { method: "POST", headers: { Authorization: `Bearer ${freeKey}`, "Content-Type": "application/json" }, body: "{\"smiles\":\"CCO\",\"job\":\"opt\"}" });
   Object.defineProperty(req, "cf", { value: { country: "KP" } });

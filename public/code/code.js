@@ -1,4 +1,4 @@
-/* 开源代码台的界面：六个标签（写输入、读输出、化学信息学、quacc 流水线、软件体检、搜代码）；化学信息学和 quacc 各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
+/* 开源代码台的界面：七个标签（写输入、读输出、化学信息学、quacc 流水线、晶体声子、软件体检、搜代码）；化学信息学、quacc 和声子各有自己的脚本。逻辑都在 code-core.js（MolAstriaCode）。
    从 SMILES 生成坐标用 viewer/smiles3d.js（MolAstriaSmiles3D），“读输出”的示例在 code-demos.js。
    上次的分子、设置和标签存在 localStorage 的 molastria-code；模型接口页和计算工作台把结构放在 molastria-code-import，这里读一次就删掉。 */
 (function () {
@@ -16,7 +16,7 @@
   const link = (href, text) => { const u = safeUrl(href); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)} ${ext}</a>` : esc(text); };
 
   // ── 标签 ──
-  const TABS = ['input', 'output', 'chem', 'quacc', 'check', 'search'];
+  const TABS = ['input', 'output', 'chem', 'quacc', 'phonon', 'check', 'search'];
   function show(tab, push) {
     if (!TABS.includes(tab)) tab = 'input';
     for (const t of TABS) {
@@ -303,6 +303,7 @@
     box.innerHTML = `<dl class="cd-dl">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`
       + (r.warnings.length ? `<ul class="cd-warn">${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : `<p class="cd-ok">${esc(tr('没有发现问题。'))}</p>`)
       + stepsPlot(r.steps)
+      + (r.freqs.length ? '<div id="out-thermo"></div>' : '')
       + (r.ir.length ? '<div id="out-ir"></div>' : r.freqs.length ? `<p class="cd-dim cd-irnote">${esc(tr('这份输出只有频率、没有红外强度，所以画不出红外谱。Gaussian、ORCA、Psi4、Q-Chem、NWChem 的频率输出都带强度。'))}</p>` : '')
       + (r.geoms.length ? '<div class="cd-row"><button type="button" class="cd-btn" id="out-xyz">下载结构（XYZ）</button><button type="button" class="cd-btn" id="out-to-input">用最后的结构写输入</button></div><div class="cd-out3d" id="out-3d"></div>' : '');
     if (r.geoms.length) {
@@ -324,6 +325,7 @@
       if (window.MolAstriaMol3D) window.MolAstriaMol3D.button($('out-3d'), { xyz, name: `${r.program}-structure`, label: tr('输出里的结构') }, r.geoms.length > 1 ? tr('查看 3D 结构和优化轨迹') : tr('查看 3D 结构'));
     }
     if (r.ir.length && window.MolAstriaIR) window.MolAstriaIR.mount($('out-ir'), r.ir, NAMES[r.program] || 'output');
+    if (r.freqs.length && window.MolAstriaThermoUI) window.MolAstriaThermoUI.mount($('out-thermo'), text, r);
     diff();
   }
   /** 每一步的能量画成一条线：相对最后一步，kcal/mol（几何优化的收敛曲线）。少于 3 步不画。 */

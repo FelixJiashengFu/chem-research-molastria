@@ -119,6 +119,12 @@
   const prTable = (t) => `<div class="sp-scroll"><table class="sp-table" translate="no" lang="${lang}"><thead><tr>${t.cols.map((c) => `<th>${T(c)}</th>`).join('')}</tr></thead><tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => (i ? `<td>${T(c)}</td>` : `<th>${T(c)}</th>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
   const prStruct = (k, cap) => (PR.svg[k] ? `<figure class="sp-struct">${PR.svg[k]}<figcaption translate="no" lang="${lang}">${T(cap)}</figcaption></figure>` : '');
   const bold = (s) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // 一维谱（prLines）可以交给 NMRium 自己积分、找峰：那一页按同样的峰位写成 JCAMP-DX（../nmr/nmrium/nmrium-core.js）
+  const prNmrium = (p) => {
+    const figs = p.figs.map((f, i) => [f, i]).filter(([f]) => f.gen === 'prLines');
+    if (!figs.length) return '';
+    return `<p class="sp-chips sp-pr-nmrium" translate="no" lang="${lang}"><span class="muted">${L('在 NMRium 里处理（按峰位重画的谱，不是实测）：', 'Process in NMRium (redrawn from the peak positions, not measured):')}</span>${figs.map(([f, i]) => `<a class="sp-chip" data-nmrium="${esc(p.id)}-${i}" href="../nmr/nmrium/index.html#practice=${esc(p.id)}-${i}">${C(T(f.title))} ${ext}</a>`).join('')}<a class="sp-chip" href="../nmr/nmrium/index.html">${L('处理自己的数据', 'Process your own data')} ${ext}</a></p>`;
+  };
   function renderPractice() {
     const p = PR.problems.find((x) => x.id === prId) || PR.problems[0];
     $('#sp-pr-tabs').innerHTML = PR.problems.map((x) => `<button type="button" class="fs-tab" role="tab" id="pr-${x.id}" data-pr="${x.id}" aria-selected="${x.id === p.id}" aria-controls="sp-pr-panel"><b translate="no">${L(`第 ${x.no} 题`, `Problem ${x.no}`)}</b>${C(esc(x.formula === '?' ? tx(x.name) : `${x.formula} · ${tx(x.name)}`))}</button>`).join('');
@@ -126,6 +132,7 @@
       <section class="sp-pr-ask"><h3>${L('题目', 'Problem')}</h3><ul translate="no" lang="${lang}">${p.ask.map((a) => `<li>${T(a)}${en ? '' : `<span class="sp-pr-orig" lang="en">${rich(a.en)}</span>`}</li>`).join('')}</ul>
         <dl class="sp-nums sp-pr-data" translate="no" lang="${lang}">${p.data.map(([a, b]) => `<div><dt>${T(a)}</dt><dd>${T(b)}</dd></div>`).join('')}</dl></section>
       ${p.figs.map((f) => figHtml(f)).join('')}
+      ${prNmrium(p)}
       <details class="fs-notes sp-pr-more"><summary>${L(`提示（${p.hints.length} 条）`, `Hints (${p.hints.length})`)}</summary><ol translate="no" lang="${lang}">${p.hints.map((h) => `<li>${T(h)}</li>`).join('')}</ol></details>
       <details class="fs-notes sp-pr-more sp-pr-sol"><summary>${L('解析', 'Solution')}</summary>
         <ol class="sp-steps">${p.steps.map((s, i) => `<li><div class="sp-step-t"><span class="sp-step-n">${i + 1}</span><p translate="no" lang="${lang}">${bold(T(s))}</p></div></li>`).join('')}</ol>

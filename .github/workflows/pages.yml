@@ -80,6 +80,8 @@ jobs:
         run: node --test tools/reaction-test.mjs
       - name: Chemistry machine learning models and content
         run: node --test tools/chemml-test.mjs
+      - name: Chemistry ML structure–property map (Chemiscope data and glue)
+        run: node --test tools/chemml-map-test.mjs
       - name: World models demos and content
         run: node --test tools/wm-test.mjs
       - name: Electromagnetism models and content
@@ -123,6 +125,13 @@ jobs:
         run: node --test tools/extract-test.mjs
       - name: Workbench (formats, crystals, paths, conformers, R/S vs RDKit, Molden vs PySCF, cube, Hirshfeld, IGM/IGMH, spectra vs cclib, job scripts)
         run: node --test tools/workbench-test.mjs
+      - name: Thermochemistry (GoodVibes port, compared with the real GoodVibes 4.4.0 on real outputs)
+        run: |
+          python -m pip install goodvibes==4.4.0
+          node --test tools/thermo-test.mjs
+      - name: Open-source integrations (TS/NEB, AIMNet2, crystal phonons, MolNexTR, NMRium, Mol*) and the DBCata / quacc lanes; limits agree across page, worker and PC server
+        run: |
+          TS_SKIP_PYTHON=1 DBCATA_SKIP_PYTHON=1 node --test tools/ts-test.mjs tools/aimnet-test.mjs tools/phonon-job-test.mjs tools/ocsr-test.mjs tools/nmrium-test.mjs tools/molstar-test.mjs tools/dbcata-test.mjs tools/quacc-test.mjs
       - name: GPU Particle HIVE (presets, storage encoding, HTML/CSS conventions, vendored WebGPU bundle)
         run: node --test tools/particles-test.mjs
       - name: Code desk cheminformatics (the generated RDKit script runs for real)

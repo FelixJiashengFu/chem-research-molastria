@@ -165,3 +165,16 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   .ex-table td:not(:first-child)::before{content:attr(data-h);display:block;margin-bottom:6px;font-size:11.5px;letter-spacing:1px;color:var(--muted)}
   .ex-cond{grid-template-columns:90px minmax(0,1fr) 26px}
 }
+
+/* MolNexTR：结构识别那一行、每个分子的来源标签和“换一个答案” */
+.ex-ocsr{margin-top:12px;padding:10px 12px;border:1px dashed var(--line-strong);border-radius:12px;display:grid;gap:8px;justify-items:start}
+.ex-ocsr .ex-small{margin:0}
+.ex-ocsr .ex-small[data-ready=true]{color:var(--ink-2)}
+.ex-src{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+.ex-srctag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;line-height:1.6;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.ex-src[data-src=molnextr] .ex-srctag{border-color:var(--info);color:var(--info)}
+.ex-src[data-src=both] .ex-srctag{border-color:var(--ok);color:var(--ok)}
+.ex-src[data-src=manual] .ex-srctag{border-style:dashed}
+.ex-src[data-disagree=true] .ex-srctag{border-color:var(--gold);color:var(--gold-ink);background:var(--gold-soft)}
+.ex-swap{font:inherit;font-size:11.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--accent-text);cursor:pointer}
+.ex-swap:hover{background:var(--accent-soft)}

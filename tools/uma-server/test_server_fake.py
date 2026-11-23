@@ -23,26 +23,41 @@ import server  # noqa: E402
 
 UMA = "uma-s-1p2p1"
 DIRECT = {"allscaip-md-direct-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol"}
-A = ["uma-s-1p2p1", "uma-s-1p2", "uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"]
-B = ["uma-s-1p1", "esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0"]
+# The UMA checkpoints with the inorganic-materials task (omat) also do phonons of crystals (phon)
+AM = ["uma-s-1p2p1", "uma-s-1p2"]
+A = ["uma-s-1p2p1-ft-d4rev", "allscaip-md-conserving-all-omol", "allscaip-md-direct-all-omol"]
+BM = ["uma-s-1p1"]
+B = ["esen-sm-conserving-all-omol", "esen-sm-direct-all-omol", "esen-md-direct-all-omol", "mace-omol-0"]
 C = ["mace-off23-small", "mace-off23-medium", "mace-off23-large", "ani-2x"]
 D = ["mace-mdp"]
 X = ["gfn2-xtb", "gfn2-xtb-alpb-water", "gfn1-xtb"]  # xTB with charges and spins, no ipea
 XN = ["gfn-ff"]
 P = ["openmm-amber14"]  # protein MD from a PDB ID
+I = ["aimnet2"]  # AIMNet2: ions, but closed-shell only, so of the charge jobs only pa
 # quacc recipes: a batch of molecules, or EMT bulk -> slabs. Only where quacc is installed (pip install quacc).
 QUACC = bool(server.qb.quacc_version())
 QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
 QS = ["quacc-emt"] if QUACC else []
+# phonons (phonon_backend.py): phonopy, spglib and seekpath (pip install phonopy spglib seekpath); EMT is part of ASE
+PHONOPY = bool(server.pb.versions())
+PH = ["phonopy-emt"]
 QUACC_ALL = {"quacc-gfn2", "quacc-psi4", "quacc-emt"}
 G = ["dbcata"]  # DBCata: the fake server runs dbcata_worker.py in toy mode (dbcata_core.ToyEngine)
-A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"]
-BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"]
+OC = ["molnextr"]  # MolNexTR: structure images -> SMILES; the fake server reads every image as TOY_SMILES
+A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa"]
+BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
-GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS),
-          (QF, ["qflow"]), (QS, ["qslab"]), (G, ["adsgen"]))
+I_JOBS = BC_JOBS + ["pa"]
+GROUPS = ((AM, A_JOBS + ["phon"]), (A, A_JOBS), (BM, BC_JOBS + ["phon"]), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS),
+          (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS), (I, I_JOBS), (QF, ["qflow"]), (QS, ["qslab"]), (PH, ["phon"]),
+          (OC, ["ocsr"]), (G, ["adsgen"]))
+
+
+def live(jobs):
+    """The jobs the fake server offers here: phon only where phonopy is installed."""
+    return [j for j in jobs if j != "phon" or PHONOPY]
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
 FIELDS = {
@@ -64,8 +79,16 @@ FIELDS = {
             "ps", "temperature_k", "timestep_fs", "energy_start_kj", "energy_minimised_kj", "ns_per_day", "series",
             "mean_temperature_k", "final_rmsd_a", "rmsf", "trajectory_pdb", "final_pdb", "seconds_total"},
     "qflow": {"recipe", "engine", "quacc_version", "items", "n_ok"},
+    "ts": {"ts_steps", "ts_converged", "ts_fmax_ev_a", "method", "ts_energy_ev", "frequencies_cm1", "n_imag",
+           "n_imag_significant", "imag_cm1", "is_first_order_saddle", "ts_xyz", "imag_mode", "irc", "profile",
+           "path_xyz", "n_path_frames", "reaction_energy_kcal"},
     "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
               "slabs", "lowest"},
+    "ocsr": {"engine", "version", "weights", "device", "items", "n_ok"},
+    "phon": {"method", "versions", "source", "formula", "symmetry", "supercell", "n_supercell", "n_displacements",
+             "displacement_a", "lattice_input", "relax", "lattice", "poscar", "max_residual_force_ev_a", "band", "dos",
+             "thermal", "gamma_thz", "min_frequency_thz", "max_frequency_thz", "imaginary", "imag_threshold_thz",
+             "n_imaginary_mesh"},
     "adsgen": {"system", "lattice", "slabs", "sites", "truncated", "distinct", "best", "best_ok", "reference", "engine",
                "seconds_worker"},
 }
@@ -88,6 +111,11 @@ ITEMS = {
     ("spin", "states"): {"spin", "energy_ev", "xyz"},
     ("bde", "fragments"): {"smiles", "spin", "energy_ev"},
     ("pa", "energies"): {"base_ev", "acid_ev"},
+    ("ts", "profile"): {"s", "energy_ev", "rel_kcal"},
+    ("neb", "profile"): {"s", "energy_ev", "rel_kcal"},
+    ("ts", "irc"): {"forward", "reverse"},
+    ("ocsr", "items"): {"index", "format", "width", "height", "ok", "smiles", "molfile", "confidence", "min_confidence",
+                        "n_atoms", "n_bonds", "atoms", "valid", "canonical", "formula", "r_groups"},
     ("qslab", "slabs"): {"miller", "family", "atoms", "energy_ev", "area_a2", "gamma_j_m2", "gamma_ev_a2", "converged", "steps"},
     ("adsgen", "sites"): ADS_SITE | ADS_POLISH,
     ("adsgen", "slabs"): {"termination", "top", "composition", "energy_ev", "steps", "converged", "xyz"},
@@ -100,8 +128,17 @@ DEFAULTS = {
     "md": {"temperature": 300.0, "timestep_fs": 0.5, "steps": 1000, "friction": 0.01},
     "ipea": {"mode": "adiabatic"}, "polar": {"average": False, "n": 8},
     "qslab": {"element": "Cu", "max_index": 1},
+    "ts": {"fmax": 0.01, "irc": True, "irc_steps": 60},
     "adsgen": {"polish": True, "steps": 20, "lattice": "uma"},
 }
+PHON = {"supercell": [2, 2, 2], "displacement": 0.01, "relax": True, "mesh": 16, "t_max": 1000}
+TS_GUESS = "3\nguess\nO 0 0 0\nH 0.1 0 0.95\nH 0 0 -0.95\n"  # the toy calculator: a bent triangle -> the linear saddle
+NEB_R = "3\nreactant\nO 0 0 0\nH 0.9 0 0.3\nH -0.2 0 0.95\n"
+NEB_P = "3\n\nO 0.00000000 0.00000000 0.00000000\nH -0.90000000 0.00000000 0.30000000\nH 0.20000000 0.00000000 0.95000000\n"
+IRC_END = {"irc_steps", "irc_converged", "irc_note", "energy_ev", "relax_steps", "relax_converged", "fmax_ev_a",
+           "barrier_kcal", "xyz"}
+NEB_KEYS = {"images", "neb_steps", "neb_converged", "ci_steps", "ci_converged", "highest_image", "energies_rel_kcal",
+            "reactant_energy_ev", "product_energy_ev", "reactant_relaxed", "product_relaxed", "band_xyz"}
 # One request per job (small parameters where they cost time). Ethanol, CCO: heavy atoms C0 C1 O2, then H3-H5 on C0,
 # H6 H7 on C1, H8 on O2.
 REQUESTS = {
@@ -115,14 +152,33 @@ REQUESTS = {
     "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
     "qflow": {"params": {"items": ["CCO", "O"]}},
     "qslab": {"params": {"element": "Cu"}},
+    "phon": {"params": {"preset": "Cu", "mesh": 8, "t_max": 300}},
+    "ts": {"xyz": TS_GUESS, "params": {"irc_steps": 15}},
+    "ocsr": {"params": {"images": []}},  # filled below with two drawn-size PNGs
+    "neb": {"xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 3, "irc_steps": 15}},
     # canonical already (metals in alphabetical order), so the params come back as sent
     "adsgen": {"params": {"metal_a": "Ni", "metal_b": "Pt", "ratio": 0.25, "facet": "111", "adsorbate": "OH"}},
 }
+FIELDS["neb"] = FIELDS["ts"] | {"neb"}
+
+
+def png_b64(w, h):
+    """A white w x h PNG in base64, written by hand."""
+    import base64
+    import struct
+    import zlib
+    raw = b"".join(b"\x00" + b"\xff" * (3 * w) for _ in range(h))
+    chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)  # noqa: E731
+    return base64.b64encode(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                            + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b"")).decode()
+
+
+REQUESTS["ocsr"]["params"]["images"] = [png_b64(120, 80), png_b64(64, 64)]
 
 
 def expected_keys(model, job, params):
     # a protein comes back as PDB text; a quacc batch has one XYZ per molecule, a slab job none
-    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "adsgen") else COMMON) | FIELDS[job]
+    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "phon", "ocsr", "adsgen") else COMMON) | FIELDS[job]
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -230,6 +286,25 @@ class FakeServer(unittest.TestCase):
         if job == "pmd":
             self.assertEqual(r["trajectory_pdb"].count("MODEL "), len(r["series"]))
             self.assertEqual(len(r["rmsf"]), r["residues"])
+        if job in ("ts", "neb"):
+            for side in r["irc"].values():
+                self.assertEqual(set(side), IRC_END)
+            self.assertEqual(r["path_xyz"].count(" s = "), r["n_path_frames"])
+            self.assertEqual(len(r["imag_mode"]), 3)
+            s = [p["s"] for p in r["profile"]]
+            self.assertEqual(s, sorted(s))  # reverse end -> TS (s = 0) -> forward end
+            self.assertIn(0.0, s)
+            if job == "neb":
+                self.assertEqual(set(r["neb"]), NEB_KEYS)
+                self.assertEqual(len(r["neb"]["energies_rel_kcal"]), params["images"] + 2)
+                self.assertEqual(r["neb"]["band_xyz"].count("NEB image"), params["images"] + 2)
+        if job == "phon":  # the fake server's calculator is EMT for copper: real numbers
+            self.assertEqual((r["symmetry"]["international"], r["symmetry"]["number"]), ("Fm-3m", 225))
+            self.assertEqual((r["n_supercell"], r["n_displacements"], r["thermal"]["atoms_per_cell"]), (32, 1, 1))
+            self.assertFalse(r["imaginary"])
+            self.assertTrue(all(abs(f) < 0.01 for f in r["gamma_thz"]))
+            self.assertEqual(r["band"]["ticks"][0]["label"], "Γ")
+            self.assertEqual(len(r["thermal"]["temperature_k"]), len(r["thermal"]["heat_capacity_j_k_mol"]))
         if job in ("ir",):
             self.assertEqual(len(r["frequencies_cm1"]), len(r["ir_intensity_km_mol"]))
             self.assertEqual(len(r["frequencies_cm1"]), len(r["raman_activity_a4_amu"]))
@@ -241,10 +316,10 @@ class FakeServer(unittest.TestCase):
         self.assertEqual(h["api"], 3)
         for group, jobs in GROUPS:
             for model in group:
-                self.assertEqual(h["models"][model]["jobs"], jobs, model)
-                self.assertTrue(h["models"][model]["ready"])
-        self.assertEqual(set(h["models"]) - QUACC_ALL if not QUACC else set(h["models"]),
-                         set(A + B + C + D + X + XN + P + QF + QS + G))
+                self.assertEqual(h["models"][model]["jobs"], live(jobs), model)
+                self.assertEqual(h["models"][model]["ready"], model not in PH or PHONOPY, model)
+        self.assertEqual(set(h["models"]) - (QUACC_ALL - set(QF + QS)),
+                         set(AM + A + BM + B + C + D + X + XN + P + I + QF + QS + PH + OC + G))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -252,7 +327,7 @@ class FakeServer(unittest.TestCase):
         count = 0
         for group, jobs in GROUPS:
             for model in group:
-                for job in jobs:
+                for job in live(jobs):
                     body = dict(REQUESTS[job], model=model, job=job)
                     r = self.run_job(body)
                     params = dict(DEFAULTS.get(job, {}))
@@ -261,7 +336,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1 + (3 if QUACC else 0) + 1)
+        self.assertEqual(count, 5 * 13 + 9 * 9 + 2 + 3 * 12 + 9 + 1 + 10 + (3 if QUACC else 0) + (4 if PHONOPY else 0) + 1 + 1)
 
     @staticmethod
     def full_params(job, given):
@@ -276,6 +351,12 @@ class FakeServer(unittest.TestCase):
             out = {"chains": "", "temperature": 300.0, **given}
         if job == "qflow":
             out = {"recipe": "relax", "fmax": 0.01, "temperature": 298.15, **given}
+        if job in ("ts", "neb"):
+            out = {"fmax": 0.01, "irc": True, "irc_steps": 60, **given}
+        if job == "phon":
+            out = {**PHON, **given}
+        if job == "ocsr":  # the images are not echoed back, only how many there were
+            out = {"n_images": len(given["images"])}
         if job in ("bde", "pa"):
             out = {"thermo": False, "temperature": 298.15, **given}
             if job == "pa":
@@ -489,6 +570,110 @@ class FakeServer(unittest.TestCase):
         self.refused({"model": UMA, "job": "sp", "smiles": "C(", "who": "0123456789abcdef"}, text="cannot parse")
         self.refused({"model": UMA, "job": "sp", "smiles": "C", "who": "bad"}, text="bad visitor id")
 
+    def test_closed_shell_refusals(self):
+        """AIMNet2 takes ions but no radicals: SMILES, XYZ and reaction species."""
+        self.refused({"model": "aimnet2", "job": "opt", "smiles": "[CH3]"}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "opt", "smiles": "C", "charge": 1, "spin": 2}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "sp", "xyz": "3\n\nO 0 0 0\nH 0 0 0.96\nH 0.93 0 -0.24", "charge": 1, "spin": 2}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "rxn", "params": {"reaction": "[CH3].[CH3]>>CC"}}, text="closed-shell")
+        self.refused({"model": "aimnet2", "job": "ipea", "smiles": "CCO"}, text="supports only")
+        self.refused({"model": "aimnet2", "job": "sp", "smiles": "[Na+]"}, text="does not know Na")
+        r = self.run_job({"model": "aimnet2", "job": "opt", "smiles": "CC(=O)[O-]"})
+        self.assertEqual((r["charge"], r["spin"]), (-1, 1))  # an anion, closed-shell: fine
+
+    def test_ts_refusals(self):
+        self.refused({"model": UMA, "job": "ts", "smiles": "CCO"}, text="needs coordinates")
+        self.refused({"model": UMA, "job": "neb", "smiles": "CCO", "params": {"product_xyz": NEB_P}}, text="needs coordinates")
+        self.refused({"model": UMA, "job": "ts", "xyz": "1\n\nH 0 0 0"}, text="at least 2 atoms")
+        big = "51\n\n" + "".join(f"H {i % 10 * 1.0} {i // 10 * 1.0} 0\n" for i in range(51))
+        self.refused({"model": UMA, "job": "ts", "xyz": big}, text="at most 50 atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R}, text="params.product_xyz")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": "2\n\nO 0 0 0\nH 0 0 1"}},
+                     text="same atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": NEB_P.replace("\nO ", "\nS ")}},
+                     text="same atoms")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": "3\n\nO 0 0 0\nH 0 0 x\nH 1 0 0"}},
+                     text="product_xyz:")
+        self.refused({"model": UMA, "job": "neb", "xyz": NEB_R, "params": {"product_xyz": NEB_P, "images": 12}}, text="params.images")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"irc_steps": 500}}, text="params.irc_steps")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"fmax": 0.08}}, text="params.fmax")
+        self.refused({"model": UMA, "job": "ts", "xyz": TS_GUESS, "params": {"irc": "yes"}}, text="params.irc")
+        self.refused({"model": "mace-mdp", "job": "ts", "xyz": TS_GUESS}, text="supports only")
+        self.refused({"model": "ani-2x", "job": "ts", "xyz": TS_GUESS, "charge": 1}, text="neutral closed-shell")
+        r = self.run_job({"model": "gfn2-xtb", "job": "ts", "xyz": TS_GUESS, "params": {"irc": False}})
+        self.assertNotIn("irc", r)
+        self.assertIn("imag_cm1", r)
+
+    @unittest.skipUnless(PHONOPY, "phonopy / spglib / seekpath are not installed")
+    def test_ocsr(self):
+        """Structure images: the toy reading, the cache, the larger body only this job may send, the refusals."""
+        images = [png_b64(200, 120)]
+        r = self.run_job({"model": "molnextr", "job": "ocsr", "params": {"images": images}})
+        it = r["items"][0]
+        self.assertEqual((it["canonical"], it["formula"], it["valid"], it["format"], it["width"], it["height"]),
+                         ("CC(=O)c1ccc(Br)cc1", "C8H7BrO", True, "png", 200, 120))
+        self.assertTrue(0 < it["min_confidence"] <= it["confidence"] <= 1)
+        self.assertEqual((r["engine"], r["n_ok"], r["params"]), ("MolNexTR", 1, {"n_images": 1}))
+        status, again = self.call("POST", "/jobs", {"model": "molnextr", "job": "ocsr", "params": {"images": images}})
+        self.assertEqual((status, again.get("cached")), (200, True))
+        # a photo-sized crop: more than MAX_BODY, accepted for ocsr only
+        import base64
+        import random
+        rnd = random.Random(7)
+        noisy = base64.b64decode(png_b64(32, 32))
+        big = base64.b64encode(noisy[:33] + bytes(rnd.randrange(256) for _ in range(100000)) + noisy[-12:]).decode()
+        self.assertGreater(len(big), server.MAX_BODY)
+        status, data = self.call("POST", "/jobs", {"model": "molnextr", "job": "ocsr", "params": {"images": [big]}})
+        self.assertIn(status, (200, 202), data)  # the header is a PNG's; the toy reader does not decode the pixels
+        status, data = self.call("POST", "/jobs", {"model": UMA, "job": "sp", "smiles": "C", "params": {"note": big}})
+        self.assertEqual(status, 413)
+        gif = base64.b64encode(b"GIF89a" + b"\x00" * 30).decode()
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": [gif]}}, text="only PNG and JPEG")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": []}}, text="params.images")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": images * 9}}, text="params.images")
+        self.refused({"model": "molnextr", "job": "ocsr", "smiles": "CCO", "params": {"images": images}}, text="not smiles or xyz")
+        self.refused({"model": "molnextr", "job": "ocsr", "charge": 1, "params": {"images": images}}, text="no charge or spin")
+        self.refused({"model": "molnextr", "job": "ocsr", "params": {"images": ["data:image/png;base64," + images[0]]}}, text="base64")
+        self.refused({"model": "molnextr", "job": "sp", "smiles": "CCO"})
+        self.refused({"model": UMA, "job": "ocsr", "params": {"images": images}})
+
+    def test_phonons(self):
+        """A crystal as POSCAR text and as CIF, the same answer either way, and the refusals before anything is queued."""
+        poscar = "Cu fcc\n1.0\n0 1.8 1.8\n1.8 0 1.8\n1.8 1.8 0\nCu\n1\nDirect\n0 0 0\n"
+        r = self.run_job({"model": "phonopy-emt", "job": "phon", "params": {"structure": poscar, "format": "poscar",
+                                                                             "supercell": [2, 2, 2], "relax": False, "mesh": 8}})
+        # the primitive cell is standardised to the conventional one first: 4 atoms, 2 x 2 x 2 -> 32
+        self.assertEqual((r["symmetry"]["n_input"], r["symmetry"]["n_conventional"], r["n_supercell"]), (1, 4, 32))
+        self.assertNotIn("relax", r)
+        cif = ("data_Cu\n_cell_length_a 3.6\n_cell_length_b 3.6\n_cell_length_c 3.6\n_cell_angle_alpha 90\n"
+               "_cell_angle_beta 90\n_cell_angle_gamma 90\n_symmetry_space_group_name_H-M 'F m -3 m'\n"
+               "loop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n"
+               "_atom_site_fract_z\nCu1 Cu 0 0 0\n")
+        r2 = self.run_job({"model": "phonopy-emt", "job": "phon", "params": {"structure": cif, "format": "cif",
+                                                                              "relax": False, "mesh": 8}})
+        self.assertEqual(r2["n_supercell"], 32)
+        self.assertAlmostEqual(r2["max_frequency_thz"], r["max_frequency_thz"], places=3)  # a = 3.6 both times
+        pm = "phonopy-emt"
+        self.refused({"model": pm, "job": "phon"}, text="exactly one of params.preset")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "structure": poscar}}, text="exactly one")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Fe"}}, text="params.preset")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "NaCl"}}, text="does not take Cl, Na")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "supercell": [5, 1, 1]}}, text="params.supercell")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "supercell": [4, 4, 4]}}, text="at most 216")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "displacement": 0.2}}, text="params.displacement")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "mesh": 64}}, text="params.mesh")
+        self.refused({"model": pm, "job": "phon", "params": {"preset": "Cu", "t_max": 5000}}, text="params.t_max")
+        self.refused({"model": pm, "job": "phon", "params": {"structure": "not a poscar"}}, text="could not read")
+        self.refused({"model": pm, "job": "phon", "params": {"structure": poscar, "format": "xyz"}}, text="params.format")
+        self.refused({"model": pm, "job": "phon", "smiles": "C", "params": {"preset": "Cu"}}, text="not smiles or xyz")
+        self.refused({"model": UMA, "job": "phon", "charge": 1, "params": {"preset": "Si"}}, text="no charge or spin")
+        self.refused({"model": "esen-sm-conserving-all-omol", "job": "phon", "params": {"preset": "Si"}}, text="supports only")
+        # a cell without symmetry: 16 atoms in P1 need 3 x 16 x 2 = 96 displaced supercells
+        rng = __import__("random").Random(7)
+        p1 = "P1\n1.0\n5.1 0 0\n0.3 5.3 0\n0.2 0.4 5.6\nCu\n16\nDirect\n" + "".join(
+            f"{rng.random():.4f} {rng.random():.4f} {rng.random():.4f}\n" for _ in range(16))
+        self.refused({"model": pm, "job": "phon", "params": {"structure": p1, "supercell": [1, 1, 1]}}, text="at most 48")
+
     def test_key(self):
         status, data = self.call("GET", "/health", key="")
         self.assertEqual((status, data), (401, {"error": "unauthorized"}))
@@ -545,13 +730,37 @@ class Contract(unittest.TestCase):
         for group, jobs in GROUPS:
             for model in group:
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
-                self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF, model)
+                self.assertEqual(server.MODELS[model]["charged"], group in (A, AM) or group is X or group is QF or group is I, model)
+                self.assertEqual(bool(server.MODELS[model].get("closed")), group is I, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
         # quacc's models are in the table even where quacc is not installed (they are then not ready)
-        self.assertEqual(set(server.MODELS), set(A + B + C + D + X + XN + P + G) | QUACC_ALL)
-        self.assertEqual(len(server.MODELS), 24)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "adsgen": 900})
+        self.assertEqual(set(server.MODELS), set(AM + A + BM + B + C + D + X + XN + P + I + PH + OC + G) | QUACC_ALL)
+        self.assertEqual(len(server.MODELS), 27)
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200,
+                                              "phon": 900, "ocsr": 120, "adsgen": 900})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
+    def test_aimnet_proxy(self):
+        """AIMNet2 reaches chemjobs through aimnet_worker.py with the same JSON lines as MACE (stubbed here)."""
+        sent = []
+
+        def call(req, timeout=None):
+            sent.append(req)
+            return {"ok": True, "energy_ev": -10.0 + req["charge"], "forces": [[0.0, 0.1, 0.0]] * len(req["symbols"]), "charges": []}
+
+        backend = server.AimnetBackend.__new__(server.AimnetBackend)
+        backend.call = call
+        self.assertEqual((backend.SCRIPT, backend.NAME), ("aimnet_worker.py", "AIMNet2"))
+        calc = server.cj.EFCalculator(backend.ef("aimnet2"))
+        atoms = server.cj.new_atoms(["N", "H", "H", "H", "H"], server.np.zeros((5, 3)) + server.np.arange(5)[:, None], 1, 1, calc)
+        self.assertEqual(atoms.get_potential_energy(), -9.0)
+        self.assertEqual(sent[-1]["model"], "aimnet2")
+        self.assertEqual((sent[-1]["charge"], sent[-1]["spin"]), (1, 1))
+        with self.assertRaises(RuntimeError):
+            backend.dp(["H"], server.np.zeros((1, 3)))
+        # the elements the server checks are the worker's own list
+        import aimnet_worker
+        self.assertEqual(server.AIMNET_ELEMENTS, aimnet_worker.ELEMENTS)
+        self.assertEqual(tuple(server.MODELS["aimnet2"]["elements"]), aimnet_worker.ELEMENTS)
 
     def test_dbcata_backend(self):
         """The worker process: progress reaches the job's budget, running out of time kills the process (the GPU stops
@@ -605,6 +814,7 @@ class Contract(unittest.TestCase):
         for job, want in DEFAULTS.items():
             given = REQUESTS[job].get("params", {}) if job == "adsgen" else {}  # adsgen has required params
             self.assertEqual(server.job_params(job, given), {**given, **want}, job)
+        self.assertEqual(server.job_params("phon", {"preset": "Cu"}), {**PHON, "preset": "Cu"})
 
 
 if __name__ == "__main__":

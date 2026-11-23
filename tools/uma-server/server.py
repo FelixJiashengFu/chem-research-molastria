@@ -5,19 +5,23 @@ Runs on the owner's computer in the UMA environment. Cloudflare Tunnel connects 
 use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, blocks embargoed regions and adds the
 shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
-    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH] [--xtb PATH]
-                                              [--dbcata-python PATH --dbcata-dir PATH]
+    python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
+        [--aimnet-python PATH] [--molnextr-python PATH] [--xtb PATH] [--dbcata-python PATH --dbcata-dir PATH]
 
 Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and AllScAIP trained on OMol25) and
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
 MACE-OMOL-0 and MACE-MDP run in mace_worker.py under the MACE environment's Python (--mace-python), because
-mace-torch and fairchem need different e3nn versions. GFN2-xTB (also with ALPB water), GFN1-xTB and GFN-FF run the
+mace-torch and fairchem need different e3nn versions. AIMNet2 (isayevlab/aimnetcentral, MIT) runs in aimnet_worker.py
+under its own environment's Python (--aimnet-python), because it needs a newer torch than fairchem; it takes neutral
+and charged closed-shell molecules. GFN2-xTB (also with ALPB water), GFN1-xTB and GFN-FF run the
 xtb program (grimme-lab/xtb, LGPL-3.0) once per energy and gradient on the CPU (xtb_backend.py; --xtb or found on
 PATH / in this Python environment). Protein MD runs OpenMM (Amber ff14SB + GBSA-OBC2 implicit water) on a PDB
 entry downloaded from RCSB by its ID (openmm_backend.py; needs openmm and pdbfixer in this environment, uses CUDA,
 then OpenCL, then the CPU). quacc (Quantum-Accelerators/quacc, BSD 3-Clause, pip install quacc) runs small batches
 through its recipes (quacc_backend.py): GFN2-xTB with tblite or the xtb program, Psi4 single points, and EMT bulk-to-
-slab surface energies. DBCata (Huo & Cao, Nat Commun 2026, GPL-3.0) generates adsorbate-on-alloy-surface structures
+slab surface energies. MolNexTR (CYF2000127/MolNexTR, Apache-2.0) reads drawn structures from images (job ocsr,
+model molnextr) in molnextr_worker.py under its own environment's Python (--molnextr-python); ocsr_backend.py holds its
+limits and checks. DBCata (Huo & Cao, Nat Commun 2026, GPL-3.0) generates adsorbate-on-alloy-surface structures
 in its own environment (--dbcata-python, --dbcata-dir): dbcata_worker.py, the only GPL-3.0 file here, runs as a
 separate process and talks JSON lines with this MIT service, which never imports DBCata (THIRD-PARTY-DBCata.md);
 the structures, sites, heuristics and energies are dbcata_core.py. A model whose package or environment is missing is
@@ -25,9 +29,10 @@ simply reported as not ready. Every model is one ASE calculator (charge and spin
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Seven lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, the MACE models (one GPU process, taking turns), xTB (the CPU), OpenMM (protein MD), quacc
-(its recipes, on the CPU) and DBCata (one GPU process with DBCata and UMA-S 1.1). A visitor has at
+Ten lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), MolNexTR
+(its own GPU process), xTB (the CPU), OpenMM (protein MD), quacc (its recipes, on the CPU), phonopy-EMT phonons (the
+CPU) and DBCata (one GPU process with DBCata and UMA-S 1.1). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
 
@@ -37,12 +42,19 @@ environment variable MOLASTRIA_UMA_SECRET (with --fake the environment variable 
 API v3 (JSON; every request carries the header X-MolAstria-Key):
     GET  /health      {ok, api: 3, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
     POST /jobs        {model, job, smiles? | xyz?, charge?, spin?, params?, who?}  ->  {id, status, position} or a cached result
-                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd qflow qslab adsgen. pmd (model
+                      job: sp opt freq conf scan md rxn ts neb ipea spin bde pa polar ir pmd qflow qslab phon ocsr adsgen. pmd (model
                       openmm-amber14) takes no structure: params {pdb_id, chains?, ps?, temperature?}. qflow (quacc-gfn2,
                       quacc-psi4) takes a batch in params {items: [SMILES, up to 8], recipe: static | relax | relax_freq,
-                      fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. adsgen
-                      (dbcata) takes no structure either: params {metal_a, metal_b, ratio, facet, adsorbate, polish?,
-                      steps?, lattice?}, only inside DBCata's training domain (dbcata_core.check). The old form {smiles, model?, job:
+                      fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. ts and neb
+                      (every model with forces; XYZ only, at most 50 atoms; Sella): ts takes the TS guess as xyz, params
+                      {fmax?, irc?, irc_steps?}; neb takes the reactant as xyz and params {product_xyz, images?, fmax?,
+                      irc?, irc_steps?}. phon (phonopy-emt, and the UMA checkpoints with the inorganic-materials task
+                      omat; phonon_backend.py) takes a crystal in params {preset | structure + format (poscar | cif),
+                      supercell?, displacement?, relax?, mesh?, t_max?}, not smiles or xyz. ocsr (molnextr) takes
+                      params {images: [base64 PNG or JPEG, 1 to 8]} and returns one SMILES + molfile + confidence
+                      per image; the result's params say only how many images there were. adsgen (dbcata) takes no structure either:
+                      params {metal_a, metal_b, ratio, facet, adsorbate, polish?, steps?, lattice?}, only inside
+                      DBCata's training domain (dbcata_core.check). The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -69,31 +81,42 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import numpy as np
 
 import chemjobs as cj
+import ocsr_backend as ocb
 import dbcata_core as dc
 import openmm_backend as ob
+import phonon_backend as pb
 import quacc_backend as qb
+import tsjobs as tj
 import xtb_backend as xb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UMA = "uma-s-1p2p1"
 OFF_ELEMENTS = ("H", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I")
 OMOL_ELEMENTS = tuple(cj.chemical_symbols[1:84])  # H to Bi, the elements of OMol25
+AIMNET_ELEMENTS = ("H", "B", "C", "N", "O", "F", "Si", "P", "S", "Cl", "As", "Se", "Br", "I")  # aimnet_worker.ELEMENTS
 # Jobs by kind of model: A takes charges and spin states, B and C neutral closed-shell molecules only, D is MACE-MDP.
-A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa")
-B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn")
+A_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb", "ipea", "spin", "bde", "pa")
+B_JOBS = ("sp", "opt", "freq", "conf", "scan", "md", "rxn", "ts", "neb")
 D_JOBS = ("polar", "ir")
+# Closed-shell models that take ions (AIMNet2): moving a proton keeps every species closed-shell, so pa works; IP / EA,
+# spin gaps and bond dissociation need radicals and are left out.
+I_JOBS = B_JOBS + ("pa",)
 # xTB takes charges and spin states, but its IP / EA are far off (measured 2026-11-11 with xtb 6.7.1, adiabatic, at
 # the ETKDG start: GFN2 benzene / ethanol / water 14.2 / 14.4 / 18.1 eV, GFN1 15.0 / 15.9 / 20.5 eV; experiment about
 # 9.2 / 10.5 / 12.6 eV; the methods were never fitted to vertical charge changes), so no ipea. GFN-FF has no spin.
 X_JOBS = tuple(j for j in A_JOBS if j != "ipea")
 P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
 Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
+PH_JOBS = ("phon",)  # phonons of a crystal (phonopy + spglib + seekpath; phonon_backend.py): UMA's omat task, or EMT
+O_JOBS = ("ocsr",)  # structure images -> SMILES (MolNexTR; ocsr_backend.py, molnextr_worker.py)
 G_JOBS = ("adsgen",)  # DBCata: an adsorbate on a binary-alloy surface, every site, then UMA-OC20 energies
-JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + G_JOBS
-NO_STRUCTURE_JOBS = ("rxn", "pmd", "qflow", "qslab", "adsgen")  # the input is in params, not smiles or xyz
+JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS + O_JOBS + G_JOBS
+NO_STRUCTURE_JOBS = ("rxn", "pmd", "qflow", "qslab", "phon", "ocsr", "adsgen")  # the input is in params, not smiles or xyz
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
+TS_JOBS = ("ts", "neb")  # transition states with Sella (tsjobs.py); XYZ input only, at most tj.MAX_ATOMS atoms
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "adsgen": 900}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900, "ocsr": 120,
+               "adsgen": 900}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -106,8 +129,11 @@ DEFAULT_LIMIT = 600
 #   UMA-S 1.1 9.26 / 5.11 / 5.89, eSEN-sm conserving 9.21 / 4.84 / 0.03, eSEN direct models about 0, MACE-OMOL-0
 #   9.11 / 5.02 / 0.04: neutral only. UMA-M 1.1 (an 11 GB checkpoint) does not fit this computer (15 GB RAM, 8 GB GPU).
 # "direct" models predict forces directly instead of as the energy gradient; their results say so.
-def _fair(name, charged, direct=False):
-    return {"name": name, "lane": "fair", "jobs": A_JOBS if charged else B_JOBS, "charged": charged,
+# omat: the UMA checkpoints that also carry the inorganic-materials task (OMat24; fairchem's pretrained_models.json lists
+# form_elem_refs for them), so they compute periodic crystals: phonons. The D4rev fine-tune and the OMol25-only
+# eSEN / AllScAIP models do not.
+def _fair(name, charged, direct=False, omat=False):
+    return {"name": name, "lane": "fair", "jobs": (A_JOBS if charged else B_JOBS) + (PH_JOBS if omat else ()), "charged": charged,
             "elements": OMOL_ELEMENTS, "direct": direct}
 
 
@@ -116,10 +142,10 @@ def _mace(name, jobs, elements):
 
 
 MODELS = {
-    UMA: _fair("UMA-S 1.2.1", True),
-    "uma-s-1p2": _fair("UMA-S 1.2", True),
+    UMA: _fair("UMA-S 1.2.1", True, omat=True),
+    "uma-s-1p2": _fair("UMA-S 1.2", True, omat=True),
     "uma-s-1p2p1-ft-d4rev": _fair("UMA-S 1.2.1 D4rev", True),
-    "uma-s-1p1": _fair("UMA-S 1.1", False),
+    "uma-s-1p1": _fair("UMA-S 1.1", False, omat=True),
     "allscaip-md-conserving-all-omol": _fair("AllScAIP-md conserving (OMol25)", True),
     "allscaip-md-direct-all-omol": _fair("AllScAIP-md direct (OMol25)", True, direct=True),
     "esen-sm-conserving-all-omol": _fair("eSEN-sm conserving (OMol25)", False),
@@ -132,6 +158,11 @@ MODELS = {
     "mace-off23-large": _mace("MACE-OFF23 large", B_JOBS, OFF_ELEMENTS),
     "mace-omol-0": _mace("MACE-OMOL-0", B_JOBS, OMOL_ELEMENTS),  # 83 elements, H to Bi
     "mace-mdp": _mace("MACE-MDP", D_JOBS, OFF_ELEMENTS),
+    # AIMNet2 (isayevlab, MIT; aimnet_worker.py in aimnet-env): wB97M-D3 quality for neutral and charged closed-shell
+    # molecules of 14 elements. It reads the charge but not the multiplicity, so radicals are refused ("closed").
+    # Its charge-state energies were checked with aimnet_selftest.py before it was offered (docs/RUNBOOK.md).
+    "aimnet2": {"name": "AIMNet2 (wB97M-D3)", "lane": "aimnet", "jobs": I_JOBS, "charged": True, "closed": True,
+                "elements": AIMNET_ELEMENTS, "direct": False},
     # GFN2 / GFN1 parametrise H to Rn (Z 1-86); GFN-FF too. Elements past Bi rarely matter and keep the list as OMol25.
     "gfn2-xtb": {"name": "GFN2-xTB", "lane": "xtb", "jobs": X_JOBS, "charged": True, "elements": OMOL_ELEMENTS, "direct": False},
     "gfn2-xtb-alpb-water": {"name": "GFN2-xTB (ALPB water)", "lane": "xtb", "jobs": X_JOBS, "charged": True,
@@ -148,6 +179,12 @@ MODELS = {
                    "elements": tuple(cj.chemical_symbols[1:37]), "direct": False},  # H to Kr: the small bases stop there
     "quacc-emt": {"name": "quacc · EMT", "lane": "quacc", "jobs": ("qslab",), "charged": False,
                   "elements": qb.EMT_METALS, "direct": False},
+    # phonons of crystals on the CPU with ASE's EMT (its seven fcc metals): the fully local path, no model weights
+    "phonopy-emt": {"name": "phonopy · EMT", "lane": "phonon", "jobs": PH_JOBS, "charged": False,
+                    "elements": pb.EMT_METALS, "direct": False},
+    # structure images -> SMILES + molfile (MolNexTR, Apache-2.0; molnextr_worker.py in molnextr-env): no molecule in
+    # the request, the pictures come in params.images
+    "molnextr": {"name": "MolNexTR", "lane": "molnextr", "jobs": O_JOBS, "charged": False, "elements": (), "direct": False},
     # DBCata (dbcata_worker.py, its own environment); the alloy and the adsorbate come in params, from fixed lists
     "dbcata": {"name": "DBCata + UMA-OC20", "lane": "dbcata", "jobs": G_JOBS, "charged": False,
                "elements": dc.METALS, "direct": False},
@@ -156,6 +193,7 @@ SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
 MAX_HEAVY, MAX_ATOMS, MAX_QUEUE = 30, 120, 25
 MAX_BODY = 32768  # bytes; an XYZ of 120 atoms fits easily
+OCSR_BODY = (ocb.MAX_TOTAL + 2) // 3 * 4 + 8192  # an ocsr job's images in base64, and room for the rest; no other job
 MACE_TIMEOUT = 900  # seconds one MACE call may take before its process is restarted
 DBCATA_LOAD = 600  # seconds DBCata, its classifier and UMA may take to load
 
@@ -286,6 +324,39 @@ def job_params(job, raw):
         return out
     if job == "qslab":
         return {"element": _choice(raw, "element", qb.EMT_METALS, "Cu"), "max_index": _number(raw, "max_index", 1, 2, 1, True)}
+    if job in TS_JOBS:
+        out = {"fmax": _number(raw, "fmax", 0.001, 0.05, tj.TS_FMAX), "irc": _flag(raw, "irc", True),
+               "irc_steps": _number(raw, "irc_steps", 10, tj.IRC_STEPS_MAX, tj.IRC_STEPS, True)}
+        if job == "neb":
+            product = raw.get("product_xyz")
+            if not isinstance(product, str) or not product.strip():
+                raise BadRequest("params.product_xyz must be the product's XYZ (the same atoms in the same order)")
+            out.update(product_xyz=product, images=_number(raw, "images", tj.NEB_IMAGES_MIN, tj.NEB_IMAGES_MAX, tj.NEB_IMAGES, True))
+        return out
+    if job == "ocsr":
+        images = raw.get("images")
+        if not (isinstance(images, list) and 1 <= len(images) <= ocb.MAX_IMAGES and all(isinstance(x, str) for x in images)):
+            raise BadRequest(f"params.images must be a list of 1 to {ocb.MAX_IMAGES} base64 PNG or JPEG images")
+        return {"images": list(images)}
+    if job == "phon":
+        preset, structure = raw.get("preset"), raw.get("structure")
+        if (preset in (None, "")) == (structure in (None, "")):
+            raise BadRequest("give exactly one of params.preset and params.structure")
+        sc = raw.get("supercell", [2, 2, 2])
+        if not (isinstance(sc, list) and len(sc) == 3 and all(isinstance(x, int) and not isinstance(x, bool)
+                                                              and 1 <= x <= pb.SUPERCELL_MAX for x in sc)):
+            raise BadRequest(f"params.supercell must be three integers from 1 to {pb.SUPERCELL_MAX}")
+        out = {"supercell": [int(x) for x in sc],
+               "displacement": _number(raw, "displacement", pb.DISP[0], pb.DISP[1], pb.DISP[2]),
+               "relax": _flag(raw, "relax", True), "mesh": _number(raw, "mesh", pb.MESH[0], pb.MESH[1], pb.MESH[2], True),
+               "t_max": _number(raw, "t_max", pb.TMAX[0], pb.TMAX[1], pb.TMAX[2], True)}
+        if preset not in (None, ""):
+            out["preset"] = _choice(raw, "preset", tuple(pb.PRESETS), "Cu")
+        else:
+            if not isinstance(structure, str) or len(structure) > pb.MAX_TEXT:
+                raise BadRequest(f"params.structure must be POSCAR or CIF text of at most {pb.MAX_TEXT} characters")
+            out.update(structure=structure.replace("\r", ""), format=_choice(raw, "format", pb.FORMATS, "poscar"))
+        return out
     if job == "adsgen":
         try:  # the whole domain check is in dbcata_core, shared with the worker and its tests
             return dc.check(raw)
@@ -321,6 +392,12 @@ class FairchemBackend:
         self.units[model] = pretrained_mlip.get_predict_unit(model, device=self.device, inference_settings=uma_settings())
         print(f"  loaded {model} in {time.time() - t:.1f} s", flush=True)
         return self.units[model]
+
+    def periodic(self, model):
+        """The checkpoint's inorganic-materials task as an ASE calculator, for crystals (cell and pbc set)."""
+        from fairchem.core import FAIRChemCalculator
+
+        return FAIRChemCalculator(self.unit(model), task_name="omat")
 
     def ef(self, model):
         from ase import Atoms
@@ -361,13 +438,15 @@ class AniBackend:
 class MaceBackend:
     """mace_worker.py in the MACE environment, one JSON line per request; restarted if it dies or hangs."""
 
+    SCRIPT, NAME = "mace_worker.py", "MACE"
+
     def __init__(self, python):
         self.python, self.proc, self.lines = python, None, None
         self.info = self.call({"op": "ping"}, timeout=180)
 
     def start(self):
         env = dict(os.environ, PYTHONUTF8="1")
-        self.proc = subprocess.Popen([self.python, "-X", "utf8", "-u", os.path.join(HERE, "mace_worker.py")],
+        self.proc = subprocess.Popen([self.python, "-X", "utf8", "-u", os.path.join(HERE, self.SCRIPT)],
                                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None, env=env,
                                      text=True, encoding="utf-8", bufsize=1)
         self.lines = queue_mod.Queue()
@@ -390,13 +469,13 @@ class MaceBackend:
         except queue_mod.Empty:
             self.proc.kill()
             self.proc = None
-            raise RuntimeError(f"the MACE process took longer than {timeout} s and was restarted")
+            raise RuntimeError(f"the {self.NAME} process took longer than {timeout} s and was restarted")
         if line is None:
             self.proc = None
-            raise RuntimeError("the MACE process stopped; it starts again with the next job")
+            raise RuntimeError(f"the {self.NAME} process stopped; it starts again with the next job")
         reply = json.loads(line)
         if not reply.get("ok"):
-            raise RuntimeError(reply.get("error") or "MACE failed")
+            raise RuntimeError(reply.get("error") or f"{self.NAME} failed")
         return reply
 
     def ef(self, model):
@@ -412,6 +491,31 @@ class MaceBackend:
         r = self.call({"op": "polar", "model": "mace-mdp", "symbols": list(symbols),
                        "positions": [[float(x) for x in row] for row in positions]})
         return np.array(r["dipole"], float), np.array(r["polarizability"], float) * cj.POL_TO_A3
+
+
+class AimnetBackend(MaceBackend):
+    """aimnet_worker.py in aimnet-env (AIMNet2 needs torch 2.10 or later, fairchem an older one): the same JSON
+    lines as the MACE worker, energies and forces only."""
+
+    SCRIPT, NAME = "aimnet_worker.py", "AIMNet2"
+
+    def dp(self, symbols, positions):
+        raise RuntimeError("AIMNet2 does not predict polarizabilities")
+
+
+class MolnextrBackend(MaceBackend):
+    """molnextr_worker.py in molnextr-env: the same JSON lines as the MACE worker; images in, one item per image out."""
+
+    SCRIPT, NAME = "molnextr_worker.py", "MolNexTR"
+
+    def recognise(self, images, timeout=ocb.MAX_IMAGES * 30):
+        return self.call({"op": "ocsr", "images": images}, timeout=timeout)["items"]
+
+    def ef(self, model):
+        raise RuntimeError("MolNexTR reads images; it has no energies")
+
+    def dp(self, symbols, positions):
+        raise RuntimeError("MolNexTR reads images; it has no polarizabilities")
 
 
 class DbcataBackend:
@@ -511,15 +615,19 @@ class DbcataBackend:
 
 class Service:
     def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python="",
-                 dbcata_python="", dbcata_dir=""):
+                 aimnet_python="", molnextr_python="", dbcata_python="", dbcata_dir=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
+        self.aimnet_python, self.molnextr_python = aimnet_python, molnextr_python
         self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
         self.dbcata_python, self.dbcata_dir = dbcata_python, dbcata_dir
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
+        self.sella = ""
+        self.phonopy = {}
         self.loading = True
         self.lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "xtb", "openmm", "quacc", "dbcata")}
+        self.save_lock = threading.Lock()
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "molnextr", "xtb", "openmm", "quacc", "phonon", "dbcata")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -555,9 +663,17 @@ class Service:
             else:
                 self.device = "cpu"
             for lane, make in (("fair", lambda: FairchemBackend(self.device)), ("ani", lambda: AniBackend(self.device)),
-                               ("mace", lambda: MaceBackend(self.mace_python) if self.mace_python else None)):
+                               ("mace", lambda: MaceBackend(self.mace_python)),
+                               ("aimnet", lambda: AimnetBackend(self.aimnet_python)),
+                               ("molnextr", lambda: MolnextrBackend(self.molnextr_python))):
                 if lane == "mace" and not self.mace_python:
                     self.errors[lane] = "no MACE environment (start with --mace-python)"
+                    continue
+                if lane == "aimnet" and not self.aimnet_python:
+                    self.errors[lane] = "no AIMNet2 environment (start with --aimnet-python)"
+                    continue
+                if lane == "molnextr" and not self.molnextr_python:
+                    self.errors[lane] = "no MolNexTR environment (start with --molnextr-python)"
                     continue
                 print(f"Loading the {lane} models on {self.device} {self.gpu}".rstrip(), flush=True)
                 try:
@@ -592,6 +708,16 @@ class Service:
             else:
                 self.errors["dbcata"] = "DBCata is still loading"
                 dbcata_later = True
+        self.sella = tj.sella_version()  # transition states (ts, neb) need Sella; without it those two jobs are off
+        if not self.sella:
+            self.errors["sella"] = "no sella package (pip install sella): no transition-state jobs"
+        self.phonopy = pb.versions()  # phonons need phonopy, spglib and seekpath; EMT itself is part of ASE
+        if self.phonopy:
+            self.backends["phonon"] = None
+            print("phonopy " + ", ".join(f"{k} {v}" for k, v in self.phonopy.items()), flush=True)
+        else:
+            self.backends.pop("phonon", None)
+            self.errors["phonopy"] = "no phonopy / spglib / seekpath (pip install phonopy spglib seekpath): no phonon jobs"
         self.loading = False
         for lane in list(self.backends):
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
@@ -600,6 +726,10 @@ class Service:
             # the other lanes are served meanwhile; "dbcata" is not ready until it is in self.backends
             threading.Thread(target=self.load_dbcata, daemon=True).start()
         print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
+
+    def jobs_of(self, model):
+        """The model's jobs this computer can run now: without Sella, no ts and neb; without phonopy, no phon."""
+        return [j for j in MODELS[model]["jobs"] if (j not in TS_JOBS or self.sella) and (j not in PH_JOBS or self.phonopy)]
 
     def load_dbcata(self):
         print("Loading DBCata and UMA-S 1.1 (oc20) in DBCata's environment", flush=True)
@@ -626,6 +756,16 @@ class Service:
         if self.fake:
             return cj.EFCalculator(cj.toy_ef)
         return cj.EFCalculator(self.backends[MODELS[model]["lane"]].ef(model))
+
+    def periodic_calculator(self, model):
+        """For phon: symbols -> an ASE calculator for a periodic cell."""
+        if self.fake:
+            return pb.toy_calculator
+        if model == "phonopy-emt":
+            from ase.calculators.emt import EMT
+
+            return lambda symbols: EMT()
+        return lambda symbols: self.backends["fair"].periodic(model)
 
     def dp(self):
         return cj.toy_dp if self.fake else self.backends["mace"].dp
@@ -698,6 +838,16 @@ class Service:
             r = self.backends["quacc"].flow(model, items, prm["recipe"], prm, budget)
         elif job == "qslab":
             r = self.backends["quacc"].slabs(prm["element"], prm["max_index"], budget)
+        elif job == "ocsr":
+            decoded = ocb.check_images(spec["images"])
+            if self.fake:
+                items, info = ocb.toy_predict(decoded, Chem), {"version": "fake", "weights": "", "device": "fake"}
+            else:
+                backend = self.backends["molnextr"]
+                items, info = backend.recognise(spec["images"]), backend.info
+            r = ocb.result([ocb.finish(it, Chem) for it in items], decoded, info)
+        elif job == "phon":
+            r = pb.run_phonon(prm, self.periodic_calculator(model), budget, MODELS[model]["name"], MODELS[model]["elements"])
         elif job == "adsgen":
             r = self.backends["dbcata"].run(prm, budget)
         elif job in D_JOBS:
@@ -720,6 +870,12 @@ class Service:
                 r = cj.run_scan(st, calc, budget, label, prm["atoms"], prm["start"], prm["end"], prm["points"])
             elif job == "md":
                 r = cj.run_md(st, calc, budget, label, prm["temperature"], prm["timestep_fs"], prm["steps"], prm["friction"])
+            elif job == "ts":
+                r = tj.run_ts(st, calc, budget, label, prm["fmax"], prm["irc"], prm["irc_steps"])
+            elif job == "neb":
+                _, product = cj.parse_xyz(prm["product_xyz"])
+                r = tj.run_neb(st, product, lambda: self.calculator(model), budget, label, prm["images"], prm["fmax"],
+                               prm["irc"], prm["irc_steps"])
             elif job == "rxn":
                 species, _ = cj.parse_reaction(prm["reaction"])
                 r = cj.run_rxn(species, calc, budget, prm["thermo"], prm["temperature"])
@@ -751,12 +907,14 @@ class Service:
         return out
 
     def save_cache(self):
-        with self.lock:
-            data = json.dumps(self.cache)
-        tmp = self.cache_path + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            f.write(data)
-        os.replace(tmp, self.cache_path)
+        # every lane finishes on its own thread: one writer at a time, or two saves race on the same .tmp file
+        with self.save_lock:
+            with self.lock:
+                data = json.dumps(self.cache)
+            tmp = self.cache_path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write(data)
+            os.replace(tmp, self.cache_path)
 
     def prune(self):
         cutoff = time.time() - 3600
@@ -777,7 +935,9 @@ class Service:
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
         if job in NO_STRUCTURE_JOBS:
             if has_smiles or has_xyz:
-                raise BadRequest({"rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
+                raise BadRequest({"ocsr": "ocsr takes its images in params.images, not smiles or xyz",
+                                  "phon": "phon takes the crystal in params.preset or params.structure, not smiles or xyz",
+                                  "rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
                                   "pmd": "pmd takes the PDB ID in params, not smiles or xyz",
                                   "qflow": "qflow takes its molecules in params.items, not smiles or xyz",
                                   "qslab": "qslab takes the metal in params.element, not smiles or xyz",
@@ -785,6 +945,8 @@ class Service:
                                             "facet, adsorbate); it takes no smiles or xyz"}[job])
         elif has_smiles == has_xyz:
             raise BadRequest("give exactly one of smiles and xyz")
+        if has_smiles and job in TS_JOBS:
+            raise BadRequest(f"{job} needs coordinates (xyz): a structure built from SMILES is a minimum, not a transition state")
         if has_xyz and (job in SMILES_JOBS or (job == "polar" and params["average"])):
             raise BadRequest(f"{job}{' with average' if job == 'polar' else ''} needs a SMILES, not xyz")
 
@@ -807,8 +969,27 @@ class Service:
         mol_h, symbols = None, None
         if job == "pmd":
             spec.update(charge=0, spin=None, input="pdb:" + params["pdb_id"])
+        elif job == "ocsr":
+            if body.get("charge") not in (None, "", 0) or body.get("spin") not in (None, "", 1):
+                raise BadRequest("ocsr reads pictures: no charge or spin")
+            images = params.pop("images")
+            try:
+                decoded = ocb.check_images(images)
+            except ocb.OcsrError as e:
+                raise BadRequest(str(e)) from None
+            params["n_images"] = len(images)  # the result says how many; the pictures themselves stay out of it
+            spec.update(charge=0, spin=None, images=images, input="img:" + ocb.digest(decoded))
         elif job == "qslab":
             spec.update(charge=0, spin=None, input="slab:" + params["element"])
+        elif job == "phon":
+            if body.get("charge") not in (None, "", 0) or body.get("spin") not in (None, "", 1):
+                raise BadRequest("phon takes a neutral crystal: no charge or spin")
+            try:
+                prep = pb.prepare(params, m["elements"])
+            except pb.PhononError as e:
+                raise BadRequest(str(e)) from None
+            crystal = params.get("preset") or hashlib.sha256((params["format"] + "\n" + params["structure"]).encode()).hexdigest()
+            spec.update(charge=0, spin=None, input=f"crystal:{crystal}:{prep['n_supercell']}:{prep['n_displacements']}")
         elif job == "adsgen":
             spec.update(charge=0, spin=None, input=dc.key(params))
         elif job == "qflow":
@@ -857,6 +1038,8 @@ class Service:
             charge, spin = charge_spin(Chem.GetFormalCharge(mol), lambda _: radicals + 1)
             if not m["charged"] and (charge != 0 or spin != 1 or radicals):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            if m.get("closed") and (spin != 1 or radicals):
+                raise BadRequest(f"{m['name']} handles closed-shell molecules only (ions are fine, radicals are not)")
             canonical = Chem.MolToSmiles(mol)
             symbols = [a.GetSymbol() for a in mol_h.GetAtoms()]
             # Atom indices in params follow the SMILES as sent, so those jobs build the molecule from it (and cache
@@ -875,10 +1058,26 @@ class Service:
                 raise BadRequest("this charge and spin multiplicity do not fit the number of electrons")
             if not m["charged"] and (charge != 0 or spin != 1):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell molecules only")
+            if m.get("closed") and spin != 1:
+                raise BadRequest(f"{m['name']} handles closed-shell molecules only (ions are fine, radicals are not)")
             text = "".join(f"{s} {x:.8f} {y:.8f} {z:.8f}\n" for s, (x, y, z) in zip(symbols, positions))
             spec.update(xyz=f"{len(symbols)}\n\n{text}", charge=charge, spin=spin,
                         input="xyz:" + hashlib.sha256(text.encode()).hexdigest())
         n_atoms = len(symbols) if symbols else 0
+        if job in TS_JOBS:
+            if n_atoms > tj.MAX_ATOMS:
+                raise BadRequest(f"{job} takes at most {tj.MAX_ATOMS} atoms")
+            if n_atoms < 2:
+                raise BadRequest(f"{job} needs at least 2 atoms")
+        if job == "neb":
+            try:
+                p_symbols, p_positions = cj.parse_xyz(params["product_xyz"])
+            except ValueError as e:
+                raise BadRequest(f"product_xyz: {e}") from None
+            if not tj.same_atoms(symbols, p_symbols):
+                raise BadRequest("the product must have the same atoms as the reactant, in the same order")
+            params["product_xyz"] = f"{len(p_symbols)}\n\n" + "".join(
+                f"{s} {x:.8f} {y:.8f} {z:.8f}\n" for s, (x, y, z) in zip(p_symbols, p_positions))
         if job == "scan" and max(params["atoms"]) >= n_atoms:
             raise BadRequest(f"params.atoms must be atom indices below {n_atoms}")
         if job == "spin":
@@ -918,6 +1117,8 @@ class Service:
                 raise BadRequest(f"{m['name']} does not know {', '.join(outside)}")
             if not m["charged"] and (sp["charge"] != 0 or sp["spin"] != 1):
                 raise BadRequest(f"{m['name']} handles neutral closed-shell species only ({sp['smiles']})")
+            if m.get("closed") and sp["spin"] != 1:
+                raise BadRequest(f"{m['name']} handles closed-shell species only ({sp['smiles']})")
             if not (-2 <= sp["charge"] <= 2 and 1 <= sp["spin"] <= 4):
                 raise BadRequest(f"each species needs charge -2..2 and spin multiplicity 1..4 ({sp['smiles']})")
         return species, canonical
@@ -930,6 +1131,10 @@ class Service:
         m = MODELS[model]
         if job not in m["jobs"]:
             return 400, {"error": f"{m['name']} supports only: {', '.join(m['jobs'])}"}
+        if job in TS_JOBS and not self.loading and not self.sella:
+            return 503, {"error": "transition-state jobs need the sella package, which is not installed on this computer"}
+        if job in PH_JOBS and not self.loading and not self.phonopy:
+            return 503, {"error": "phonon jobs need phonopy, spglib and seekpath, which are not installed on this computer"}
         if not self.ready(model):
             return 503, {"error": "the model is still loading" if self.loading else f"{m['name']} is not available on this computer"}
         if who and not WHO_OK.match(who):
@@ -984,7 +1189,7 @@ class Service:
                 lane = m["lane"]
                 waiting = sum(1 for j in self.queues[lane] if self.jobs.get(j, {}).get("spec", {}).get("model") == mid)
                 run = self.running[lane]
-                models[mid] = {"ready": self.ready(mid), "jobs": list(m["jobs"]), "queue": waiting,
+                models[mid] = {"ready": self.ready(mid), "jobs": self.jobs_of(mid), "queue": waiting,
                                "running": bool(run and self.jobs.get(run, {}).get("spec", {}).get("model") == mid)}
             return {"ok": not self.loading and bool(self.backends), "api": 3, "ready": bool(self.backends),
                     "loading": self.loading, "errors": self.errors, "model": UMA, "device": self.device, "gpu": self.gpu,
@@ -1033,12 +1238,14 @@ def make_handler(service, secret):
             if self.path != "/jobs":
                 return self.reply(404, {"error": "not found"})
             n = int(self.headers.get("Content-Length") or 0)
-            if n > MAX_BODY:
+            if n > OCSR_BODY:
                 return self.reply(413, {"error": "request too large"})
             try:
                 body = json.loads(self.rfile.read(n) or b"{}")
             except ValueError:
                 return self.reply(400, {"error": "not JSON"})
+            if n > MAX_BODY and not (isinstance(body, dict) and body.get("job") == "ocsr"):
+                return self.reply(413, {"error": "request too large"})  # only image jobs may be this large
             status, data = service.submit(body if isinstance(body, dict) else {})
             self.reply(status, data)
 
@@ -1051,6 +1258,10 @@ def main():
     ap.add_argument("--device", default="auto", choices=["auto", "cuda", "cpu"])
     ap.add_argument("--mace-python", default=os.environ.get("MOLASTRIA_MACE_PYTHON", ""),
                     help="python.exe of the environment with mace-torch (the MACE models are off without it)")
+    ap.add_argument("--aimnet-python", default=os.environ.get("MOLASTRIA_AIMNET_PYTHON", ""),
+                    help="python.exe of the environment with aimnet (AIMNet2 is off without it)")
+    ap.add_argument("--molnextr-python", default=os.environ.get("MOLASTRIA_MOLNEXTR_PYTHON", ""),
+                    help="python.exe of the environment with MolNexTR (structure images -> SMILES are off without it)")
     ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
     ap.add_argument("--psi4-python", default=os.environ.get("MOLASTRIA_PSI4_PYTHON", ""),
                     help="python.exe of a conda environment with psi4 and quacc (quacc-psi4 is off without it, unless this environment imports psi4)")
@@ -1071,6 +1282,7 @@ def main():
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
     service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
                       openmm_platform=args.openmm_platform, psi4_python=args.psi4_python,
+                      aimnet_python=args.aimnet_python, molnextr_python=args.molnextr_python,
                       dbcata_python=args.dbcata_python, dbcata_dir=args.dbcata_dir)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)

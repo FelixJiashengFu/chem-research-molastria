@@ -56,3 +56,7 @@
 .nmr-tools-note{margin:10px 0 0;font-size:12.5px}
 
 @media (max-width:720px){.nmr-fam dl>div{grid-template-columns:1fr;gap:0}}
+
+/* 真实数据：用 NMRium 处理（nmrium/） */
+.nmr-real .nmr-real-btns { margin: 10px 0 6px; }
+.nmr-real-note { margin: 6px 0 0; font-size: 13px; }

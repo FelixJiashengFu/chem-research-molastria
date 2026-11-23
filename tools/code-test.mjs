@@ -747,3 +747,23 @@ test('生成的 CP2K 输入能跑：水 GFN1-xTB 单点', { skip: !CP2K && '本�
     near(r.energy, -5.768733676277428, 1e-6, 'E'); // CP2K 2026.2 跑同一个输入的结果（code-fixtures/cp2k-water-gfn1.out）
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('一份输出里有两次频率计算（Gaussian 的 Link1、Psi4 的两次 frequency()）：频率和红外只留最后一次，不叠在一起', () => {
+  const g = (nu, inten) => ` Harmonic frequencies (cm**-1), IR intensities (KM/Mole), Raman scattering\n                      1                      2                      3\n Frequencies --   ${nu.map((v) => v.toFixed(4)).join('              ')}\n Red. masses --      1.0824                 1.0455                 1.0805\n IR Inten    --     ${inten.map((v) => v.toFixed(4)).join('                ')}\n`;
+  const gauss = ` Entering Gaussian System, Link 0=g16\n SCF Done:  E(RB3LYP) =  -76.4089     A.U. after    1 cycles\n${g([1600, 3700, 3800], [70, 2, 50])}\n Normal termination of Gaussian 16\n Link1:  Proceeding to internal job step number  2.\n${g([1650, 3750, 3850], [71, 3, 51])}\n Normal termination of Gaussian 16\n`;
+  const r = C.parseOutput(gauss);
+  assert.equal(r.program, 'gaussian');
+  assert.deepEqual(r.freqs, [1650, 3750, 3850]);
+  assert.deepEqual(r.ir.map((x) => x.freq), [1650, 3750, 3850]);
+  assert.deepEqual(r.ir.map((x) => x.int), [71, 3, 51]);
+  // 一次频率计算时不受影响（没有标题的摘录也是）
+  assert.deepEqual(C.parseOutput(gauss.split(' Link1:')[0]).freqs, [1600, 3700, 3800]);
+  assert.equal(C.parseOutput(fixture('ir-gaussian16-dvb.out')).ir.length, 54);
+  const p = (nu) => `  ==> Harmonic Vibrational Analysis <==\n\n  Freq [cm^-1]                ${nu.map((v) => v.toFixed(4)).join('           ')}\n  IR activ [km/mol]             0.0544              0.0000              0.0655\n`;
+  const psi = `          Psi4: An Open-Source Ab Initio Electronic Structure Package\n${p([1600, 3700, 3800])}\n${p([1610, 3710, 3810])}\n    Psi4 exiting successfully. Buy a developer a beer!\n`;
+  const q = C.parseOutput(psi);
+  assert.equal(q.program, 'psi4');
+  assert.deepEqual(q.freqs, [1610, 3710, 3810]);
+  assert.deepEqual(q.ir.map((x) => x.freq), [1610, 3710, 3810]);
+  assert.equal(C.parseOutput(fixture('ir-psi4-dvb.out')).freqs.length, 54);
+});

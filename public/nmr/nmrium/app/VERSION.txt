@@ -1,0 +1,3 @@
+nmrium-react-wrapper v0.8.0 a469b7d4329e2a0f8ed54656d1ffae3214a13603
+nmrium 0.56.0
+built by tools/vendor-nmrium.mjs
