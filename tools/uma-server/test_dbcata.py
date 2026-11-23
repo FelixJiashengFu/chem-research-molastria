@@ -30,6 +30,8 @@ except ImportError:
 def params(**kw):
     raw = dict(metal_a="Pt", metal_b="Ni", ratio=0.75, facet="111", adsorbate="OH")
     raw.update(kw)
+    if raw["facet"] == "110":  # the builder still knows fcc(110), for these tests; the lane refuses it
+        return dict(core.check(dict(raw, facet="111")), facet="110")
     return core.check(raw)
 
 
@@ -57,7 +59,7 @@ class Domain(unittest.TestCase):
             (dict(ratio=0.3), "0.25, 0.5 or 0.75"),
             (dict(ratio=True), "0.25, 0.5 or 0.75"),
             (dict(ratio="0.5"), "0.25, 0.5 or 0.75"),
-            (dict(facet="100"), "111 or 110"),
+            (dict(facet="100"), "must be 111"),
             (dict(adsorbate="CO"), "12 adsorbates"),
             (dict(adsorbate="OOH"), "12 adsorbates"),
             (dict(steps=30), "20, 50 or 100"),
@@ -71,6 +73,18 @@ class Domain(unittest.TestCase):
             self.assertIn(why, str(cm.exception), kw)
         with self.assertRaises(core.DomainError):
             core.check(["Pt"])
+        with self.assertRaises(core.DomainError) as cm:  # the training set has no fcc(110) (dbcata_domain_check.py)
+            core.check(dict(metal_a="Pt", metal_b="Ni", ratio=0.75, facet="110", adsorbate="O"))
+        self.assertIn("no fcc(110)", str(cm.exception))
+        self.assertEqual(core.FACETS, ("111",))
+
+    def test_uma_preset(self):
+        """fairchem 2.25 (uma-env) has "batch"; 2.13 (DBCata's venv) only default and turbo, whose default does not
+        compile; with Triton the default everywhere."""
+        self.assertEqual(core.uma_setting({"default", "turbo", "batch"}, False), "batch")
+        self.assertEqual(core.uma_setting({"default", "turbo"}, False), "default")
+        self.assertEqual(core.uma_setting(None, False), "batch")
+        self.assertEqual(core.uma_setting({"default", "turbo"}, True), "default")
 
     def test_lists(self):
         self.assertEqual(len(core.METALS), 31)
@@ -157,7 +171,7 @@ class Structures(unittest.TestCase):
         a = core.vegard(p["metal_a"], p["metal_b"], p["ratio"])
         kinds = {it["site"]["kind"] for it in core.build(p, a, 1.03 * a)["items"]}
         self.assertTrue({"hollow-fcc", "hollow-hcp"} <= kinds, kinds)
-        p = params(metal_a="Au", metal_b="Cu", ratio=0.5, facet="110", adsorbate="O")
+        p = params(metal_a="Au", metal_b="Cu", ratio=0.5, facet="110", adsorbate="O")  # not offered, still built
         kinds = {it["site"]["kind"] for it in core.build(p, a, 1.03 * a)["items"]}
         self.assertFalse({"hollow-fcc", "hollow-hcp"} & kinds, kinds)
 
@@ -268,6 +282,33 @@ class Run(unittest.TestCase):
             self.assertAlmostEqual(s["e_ads_ev"], s["e_bind_raw_ev"] + 7.204 + 3.477, 3)
         self.assertEqual(notes[-1]["note"], "done")
         self.assertLess(len(json.dumps(r)), 60000)
+        # the toy lifts every adsorbate straight up: each one lands where it started, and no two sites coincide
+        for s in r["sites"]:
+            self.assertEqual((s["landing"]["kind"], s["landing"]["atoms"]), (s["kind"], s["atoms"]), s["id"])
+            self.assertIsNone(s["same_as"])
+        self.assertEqual(r["distinct"], 9)
+
+    def test_sites_that_end_at_one_place(self):
+        """DBCata moved O from several starting sites to one hollow on the site owner's Pt3Ni(111) trial; the result
+        must say which sites coincide and where each one ended, not only where it started."""
+        class Funnel(core.ToyEngine):
+            def generate(self, structures, steps):
+                out = super().generate(structures, steps)
+                for i in (1, 2, 3):  # sites 1-3 (bridges) all end where site 4 (a hollow) ends
+                    out[i] = out[4].copy()
+                return out
+
+        r = core.run(params(adsorbate="O", polish=False), Funnel())
+        sites = r["sites"]
+        for i in (1, 2, 3):
+            self.assertEqual(sites[i]["same_as"], 1 if i > 1 else None, i)
+            self.assertEqual(sites[i]["landing"], sites[4]["landing"])
+        self.assertEqual(sites[4]["same_as"], 1)
+        self.assertEqual(r["distinct"], 9 - 3)
+        self.assertNotEqual(sites[1]["landing"]["kind"], sites[1]["kind"])
+        self.assertEqual(core.same_place([(0, np.zeros(3), 0.0, np.eye(3) * 10), (0, np.array([9.95, 0, 0]), 0.005, np.eye(3) * 10),
+                                          (1, np.zeros(3), 0.0, np.eye(3) * 10), (0, np.zeros(3), 0.5, np.eye(3) * 10)]),
+                         [None, 0, None, None], "minimum image, same termination, same energy")
 
     def test_without_polish_and_with_sulfur(self):
         r = core.run(params(adsorbate="SH", polish=False, lattice="vegard"), core.ToyEngine())
@@ -325,7 +366,7 @@ class Worker(unittest.TestCase):
 
     def test_protocol(self):
         replies = self.talk([{"op": "ping"},
-                             {"op": "run", "params": {"metal_a": "Cu", "metal_b": "Au", "ratio": 0.5, "facet": "110",
+                             {"op": "run", "params": {"metal_a": "Cu", "metal_b": "Au", "ratio": 0.5, "facet": "111",
                                                       "adsorbate": "CH3", "polish": False}},
                              {"op": "run", "params": {"metal_a": "Cu", "metal_b": "Cu"}},
                              {"op": "nope"}])
@@ -336,7 +377,7 @@ class Worker(unittest.TestCase):
         self.assertEqual(len(final), 4)
         result = final[1]["result"]
         self.assertEqual(result["system"]["formula"], "AuCu")
-        self.assertEqual(sorted(s["top"] for s in result["slabs"]), ["Au4", "Cu4"])
+        self.assertEqual(sorted(s["top"] for s in result["slabs"]), ["Au2Cu2"])
         self.assertIn("seconds_worker", result)
         self.assertFalse(final[2]["ok"])
         self.assertIn("two different metals", final[2]["error"])

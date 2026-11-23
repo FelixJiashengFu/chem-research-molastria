@@ -925,9 +925,9 @@ await test("DBCata: closed until DBCATA_ENABLED is 1, then only its training dom
   eq(ok.status, 202);
   eq(sentBody(), { job: "adsgen", model: "dbcata", charge: 0, params: { metal_a: "Ni", metal_b: "Pt", ratio: 0.25, facet: "111", adsorbate: "OH" } }, "metals in alphabetical order, the ratio with them");
   eq(used("uma:local"), 5, "with the UMA polish (the default): 5 uses");
-  const lean = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { metal_a: "cu", metal_b: "AU", ratio: 0.5, facet: "(110)", adsorbate: "h2o", polish: false, steps: 50, lattice: "vegard" } });
+  const lean = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { metal_a: "cu", metal_b: "AU", ratio: 0.5, facet: "(111)", adsorbate: "h2o", polish: false, steps: 50, lattice: "vegard" } });
   eq(lean.status, 202);
-  eq(sentBody().params, { metal_a: "Au", metal_b: "Cu", ratio: 0.5, facet: "110", adsorbate: "H2O", polish: false, steps: 50, lattice: "vegard" }, "case and brackets normalised");
+  eq(sentBody().params, { metal_a: "Au", metal_b: "Cu", ratio: 0.5, facet: "111", adsorbate: "H2O", polish: false, steps: 50, lattice: "vegard" }, "case and brackets normalised");
   eq(used("uma:local"), 8, "without the polish: 3 uses");
   const sent = umaCalls.filter((c) => c.path === "/jobs").length;
   const refused: [any, string, string][] = [
@@ -937,7 +937,8 @@ await test("DBCata: closed until DBCATA_ENABLED is 1, then only its training dom
     [{ ...P, metal_a: "" }, "invalid_request", "metal symbol"],
     [{ ...P, ratio: 0.3 }, "out_of_domain", "0.25, 0.5 or 0.75"],
     [{ ...P, ratio: "0.75" }, "out_of_domain", "0.25, 0.5 or 0.75"],
-    [{ ...P, facet: "100" }, "out_of_domain", "111 or 110"],
+    [{ ...P, facet: "100" }, "out_of_domain", "must be 111"],
+    [{ ...P, facet: "110" }, "out_of_domain", "no fcc(110)"],
     [{ ...P, adsorbate: "CO" }, "out_of_domain", "12 adsorbates"],
     [{ ...P, adsorbate: "OOH" }, "out_of_domain", "12 adsorbates"],
     [{ ...P, steps: 10 }, "invalid_request", "20, 50 or 100"],

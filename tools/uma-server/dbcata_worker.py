@@ -51,12 +51,33 @@ def send(obj):
 
 
 def uma_settings():
-    """As server.py: fairchem compiles with torch.compile by default, which needs Triton (none on Windows)."""
+    """As server.py: fairchem compiles with torch.compile by default, which needs Triton (none on Windows); which
+    preset to use instead depends on the fairchem version (dbcata_core.uma_setting)."""
     try:
         import triton  # noqa: F401
-        return "default"
+        return core.uma_setting(None, True)
     except ImportError:
-        return "batch"
+        pass
+    names = None
+    for mod in ("fairchem.core.units.mlip_unit.api.inference", "fairchem.core.units.mlip_unit.inference"):
+        try:
+            names = set(__import__(mod, fromlist=["NAME_TO_INFERENCE_SETTING"]).NAME_TO_INFERENCE_SETTING)
+            break
+        except Exception:  # noqa: BLE001 - another fairchem layout: keep server.py's choice
+            continue
+    return core.uma_setting(names, False)
+
+
+def _with_preset(load):
+    """load(preset) with uma_settings(); if this fairchem does not know that preset (2.13 names only default and
+    turbo, "inference setting name must be one of ..."), once more with "default"."""
+    first = uma_settings()
+    try:
+        return load(first)
+    except Exception as e:  # noqa: BLE001
+        if first == "default" or "inference setting" not in str(e):
+            raise
+        return load("default")
 
 
 class Engine:
@@ -157,11 +178,11 @@ class Engine:
                 from omegaconf import OmegaConf
 
                 kw["atom_refs"] = OmegaConf.load(refs)
-            unit = load_predict_unit(name, device=dev, inference_settings=uma_settings(), **kw)
+            unit = _with_preset(lambda preset: load_predict_unit(name, device=dev, inference_settings=preset, **kw))
         else:
             from fairchem.core import pretrained_mlip
 
-            unit = pretrained_mlip.get_predict_unit(name, device=dev, inference_settings=uma_settings())
+            unit = _with_preset(lambda preset: pretrained_mlip.get_predict_unit(name, device=dev, inference_settings=preset))
         return FAIRChemCalculator(unit, task_name="oc20"), FAIRChemCalculator(unit, task_name="omat")
 
     def _versions(self):

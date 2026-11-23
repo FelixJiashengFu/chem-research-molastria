@@ -17740,7 +17740,7 @@
  "参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75": [
   "deploy/account-worker.js"
  ],
- "参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面": [
+ "参数 facet 只能是 111：DBCata 的训练集里只有 (111) 面（A3B、AB、AB3 和纯金属），没有 fcc(110)": [
   "deploy/account-worker.js"
  ],
  "参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：{0}": [
