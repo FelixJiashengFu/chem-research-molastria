@@ -306,9 +306,56 @@ class Run(unittest.TestCase):
         self.assertEqual(sites[4]["same_as"], 1)
         self.assertEqual(r["distinct"], 9 - 3)
         self.assertNotEqual(sites[1]["landing"]["kind"], sites[1]["kind"])
-        self.assertEqual(core.same_place([(0, np.zeros(3), 0.0, np.eye(3) * 10), (0, np.array([9.95, 0, 0]), 0.005, np.eye(3) * 10),
-                                          (1, np.zeros(3), 0.0, np.eye(3) * 10), (0, np.zeros(3), 0.5, np.eye(3) * 10)]),
+        box = np.eye(3) * 10
+
+        def it(t, xyz, e, kind="hollow-fcc", atoms="Pt-Pt-Pt", ok=True):
+            return {"termination": t, "position": np.array(xyz, float), "energy": e, "cell": box,
+                    "landing": {"kind": kind, "atoms": atoms}, "ok": ok}
+        self.assertEqual(core.same_place([it(0, (0, 0, 0), 0.0, "top"), it(0, (9.95, 0, 0), 0.005, "bridge"),
+                                          it(1, (0, 0, 0), 0.0), it(0, (0, 0, 0), 0.5)]),
                          [None, 0, None, None], "minimum image, same termination, same energy")
+        self.assertEqual(core.same_place([it(0, (1, 1, 0), 0.0), it(0, (6, 3, 0), 0.004), it(0, (6, 3, 0), 0.004, "hollow-hcp")]),
+                         [None, 0, None], "equivalent copies of one hollow, several A apart, are one place")
+        self.assertEqual(core.same_place([it(0, (1, 1, 0), 0.0, "none", ""), it(0, (6, 3, 0), 0.0, "none", "")]),
+                         [None, None], "two desorbed molecules far apart are not one place")
+        self.assertEqual(core.same_place([it(0, (0, 0, 0), 0.0, ok=False), it(0, (0, 0, 0), 0.0), it(0, (0, 0, 0), 0.0)]),
+                         [1, None, 1], "the first reliable site leads, not a flagged one")
+        self.assertEqual(core.same_place([it(0, (0, 0, 0), 0.0, ok=False), it(0, (0, 0, 0), 0.0, ok=False)]), [None, 0])
+
+    def test_landing_is_by_position_in_the_plane(self):
+        """Low adsorbates, off-centre ones and unequal bonds (short M-O to an early metal, long Pt-O) stay in their
+        hollow; an equivalent copy of a site lands as that site; a molecule far above the surface touches nothing."""
+        for a, b, x in (("Pt", "Ni", 0.75), ("Pt", "Y", 0.75), ("Pt", "Sc", 0.75), ("Pt", "Zr", 0.75), ("Au", "Ti", 0.75)):
+            built = Structures.build(self, a, b, x, "111")
+            for item in built["items"]:
+                at, site = item["atoms"], item["site"]
+                pos = np.array(at["positions"], float)
+                k = next(i for i, t in enumerate(at["tags"]) if t == 2)
+                z_top = float(np.mean([pos[i, 2] for i, t in enumerate(at["tags"]) if t == 1]))
+                shift = pos[k].copy()
+                for h, off in ((0.9, (0.2, 0.0)), (1.2, (0.0, -0.25)), (2.0, (0.15, 0.15))):
+                    moved = pos.copy()
+                    moved[at["tags"].index(2):] += np.array([site["xy"][0] + off[0], site["xy"][1] + off[1], z_top + h]) - shift
+                    got = core.landing(at, moved)
+                    if site["kind"].startswith("hollow"):
+                        self.assertEqual((got["kind"], got["atoms"]), (site["kind"], site["atoms"]), (a, b, site, h, off))
+                    elif off == (0.15, 0.15) or site["kind"] == "top":
+                        self.assertEqual(got["kind"], site["kind"], (a, b, site, h, off))
+                far = pos.copy()
+                far[at["tags"].index(2):] += np.array([0, 0, 6.0])
+                self.assertEqual(core.landing(at, far), {"kind": "none", "atoms": ""})
+        # every copy of a site with multiplicity > 1 lands as that site
+        at0 = Structures.build(self, "Pt", "Ni", 0.75, "111")["items"][0]["atoms"]
+        n = at0["tags"].index(2)
+        slab = {"positions": np.array(at0["positions"], float)[:n], "symbols": at0["symbols"][:n], "tags": at0["tags"][:n], "cell": np.asarray(at0["cell"], float)}
+        z_top = float(np.mean([slab["positions"][i, 2] for i, t in enumerate(slab["tags"]) if t == 1]))
+        copies = 0
+        for kind, xy, els in core._candidates(slab["positions"], slab["symbols"], slab["tags"], slab["cell"]):
+            pos = np.vstack([slab["positions"], [xy[0], xy[1], z_top + 1.1]])
+            got = core.landing(dict(at0, symbols=slab["symbols"] + ["O"], tags=slab["tags"] + [2]), pos)
+            self.assertEqual((got["kind"], got["atoms"]), (kind, "-".join(els)))
+            copies += 1
+        self.assertEqual(copies, sum(s["multiplicity"] for s in core.sites(slab)))
 
     def test_without_polish_and_with_sulfur(self):
         r = core.run(params(adsorbate="SH", polish=False, lattice="vegard"), core.ToyEngine())

@@ -337,16 +337,15 @@ def _home(xy, inv2):
     return bool(np.all(fr > -1e-6) and np.all(fr < 1 - 1e-6))
 
 
-def sites(slab):
-    """Symmetry-distinct adsorption sites on the top layer: {kind, xy, atoms (elements around it), multiplicity}."""
-    cell = slab["cell"]
+def _candidates(pos, symbols, tags, cell):
+    """Every top, bridge and hollow point of the top layer (tag 1) in the home cell: [(kind, xy, elements)]. Works
+    on a relaxed slab too: the second layer is the slab atoms (tag 0) within 0.6 A of the highest of them."""
     c2 = cell[:2, :2]
     inv2 = np.linalg.inv(c2)
-    pos, symbols, tags = slab["positions"], slab["symbols"], slab["tags"]
     top = [i for i, t in enumerate(tags) if t == 1]
-    z_top = float(np.mean(pos[top, 2]))
-    zs = sorted({round(float(z), 3) for z in pos[:, 2]})
-    second = [i for i in range(len(symbols)) if abs(pos[i, 2] - zs[-2]) < 1e-2]
+    under = [i for i, t in enumerate(tags) if t == 0]
+    z2 = max(pos[i, 2] for i in under)
+    second = [i for i in under if abs(pos[i, 2] - z2) < 0.6]
     pts = pos[top, :2]
     q, tris = delaunay_periodic(pts, c2)
     qsym = [symbols[top[m % len(top)]] for m in range(len(q))]
@@ -380,6 +379,16 @@ def sites(slab):
         if hexagonal:  # (111): a second-layer atom right below makes it an hcp hollow
             kind = "hollow-hcp" if any(_pbc2(pos[i, :2] - cen, c2) < 0.5 for i in second) else "hollow-fcc"
         cand.append((kind, cen, sorted(qsym[m] for m in t)))
+    return cand
+
+
+def sites(slab):
+    """Symmetry-distinct adsorption sites on the top layer: {kind, xy, atoms (elements around it), multiplicity}."""
+    cell = slab["cell"]
+    c2 = cell[:2, :2]
+    pos, symbols, tags = slab["positions"], slab["symbols"], slab["tags"]
+    z_top = float(np.mean(pos[[i for i, t in enumerate(tags) if t == 1], 2]))
+    cand = _candidates(pos, symbols, tags, cell)
     # one site per equivalence class: the same distances to the same elements of the slab
     out, envs = [], []
     for kind, xy, els in cand:
@@ -542,46 +551,54 @@ def flags(initial, positions, reference_slab=None):
     return out
 
 
-LANDING_RATIO = 1.15  # top-layer atoms within 1.15 x the nearest one's distance count as touched
-LANDING_BOND = 1.3  # ... and closer than 1.3 x the sum of covalent radii
-SAME_XYZ, SAME_EV = 0.2, 0.01  # two sites ended at one place: binding atoms within 0.2 A and energies within 0.01 eV
+LANDING_BOND = 1.3  # the binding atom touches the surface: some top-layer atom within 1.3 x the sum of covalent radii
+SAME_XYZ, SAME_EV = 0.2, 0.01  # two sites ended at one place: binding atoms within 0.2 A, or the same kind of site, and energies within 0.01 eV
 
 
 def landing(atoms, positions):
-    """Where the adsorbate's binding atom ended up: {kind, atoms} from the top-layer atoms it touches (1 top,
-    2 bridge, 3 hollow (fcc / hcp on a hexagonal cell, by a second-layer atom right below), 4 hollow-4), or kind
-    "none" when it touches none. DBCata and the polish can move an adsorbate away from the site it started on (the
-    site names of the table are the starting sites), so the result says both."""
+    """Where the adsorbate's binding atom ended up: {kind, atoms}, named like the starting sites (top, bridge,
+    hollow-fcc, ...), or kind "none" when no top-layer atom is within LANDING_BOND x the covalent sum. The kind is
+    that of the top, bridge or hollow point of the final top layer nearest to the binding atom in the surface plane,
+    so neither the height nor unequal bond lengths (a short Ni-O and a long Pt-O) change it. DBCata and the polish
+    can move an adsorbate away from the site it started on, so the result says both."""
     symbols, tags, cell = atoms["symbols"], atoms["tags"], np.asarray(atoms["cell"], float)
     pos = np.asarray(positions, float)
     b = next(i for i, t in enumerate(tags) if t == 2)
     top = [i for i, t in enumerate(tags) if t == 1]
     d = distances(pos, cell)[b]
-    d1 = min(d[i] for i in top)
-    near = [i for i in top if d[i] <= LANDING_RATIO * d1 and d[i] < LANDING_BOND * (COVALENT[symbols[b]] + COVALENT[symbols[i]])]
-    kind = {0: "none", 1: "top", 2: "bridge", 3: "hollow"}.get(len(near), "hollow-4")
-    if kind == "hollow" and _hexagonal(cell[:2, :2]):
-        slab = [i for i, t in enumerate(tags) if t != 2 and t != 1]
-        z2 = max(pos[i, 2] for i in slab)
-        second = [i for i in slab if abs(pos[i, 2] - z2) < 0.6]
-        kind = "hollow-hcp" if any(_pbc2(pos[i, :2] - pos[b, :2], cell[:2, :2]) < 0.6 for i in second) else "hollow-fcc"
-    return {"kind": kind, "atoms": "-".join(sorted(symbols[i] for i in near))}
+    if all(d[i] >= LANDING_BOND * (COVALENT[symbols[b]] + COVALENT[symbols[i]]) for i in top):
+        return {"kind": "none", "atoms": ""}
+    c2 = cell[:2, :2]
+    kind, _, els = min(_candidates(pos, symbols, tags, cell), key=lambda c: _pbc2(c[1] - pos[b, :2], c2))
+    return {"kind": kind, "atoms": "-".join(els)}
 
 
 def same_place(items):
-    """items: [(termination, binding-atom position, energy, cell)] -> for each, the index of the first earlier item
-    that ended at the same place (same termination, binding atoms within SAME_XYZ by the minimum image, energies
-    within SAME_EV), or None."""
-    out = []
-    for j, (tj, pj, ej, cell) in enumerate(items):
-        hit = None
-        for i in range(j):
-            ti, pi, ei, _ = items[i]
-            if out[i] is None and ti == tj and abs(ei - ej) < SAME_EV:
-                if distances(np.array([pi, pj]), cell)[0, 1] < SAME_XYZ:
-                    hit = i
-                    break
-        out.append(hit)
+    """items: [{termination, position (of the binding atom), energy, cell, landing, ok}] -> for each, the index of
+    the item that leads the group of items that ended at the same place, or None for a leader. Same place: same
+    termination, energies within SAME_EV, and either binding atoms within SAME_XYZ by the minimum image or the same
+    landing (kind and atoms; an equivalent copy of one hollow sits several A from the copy another site went to).
+    The leader is the group's first ok item (its first item when none is ok), so a reliable row is never shown as
+    a copy of a flagged one."""
+    def same(x, y):
+        if x["termination"] != y["termination"] or abs(x["energy"] - y["energy"]) >= SAME_EV:
+            return False
+        if distances(np.array([x["position"], y["position"]]), x["cell"])[0, 1] < SAME_XYZ:
+            return True
+        return x["landing"]["kind"] != "none" and x["landing"] == y["landing"]
+
+    groups = []
+    for j, it in enumerate(items):
+        g = next((g for g in groups if same(items[g[0]], it)), None)
+        if g is None:
+            groups.append([j])
+        else:
+            g.append(j)
+    out = [None] * len(items)
+    for g in groups:
+        lead = next((k for k in g if items[k].get("ok", True)), g[0])
+        for k in g:
+            out[k] = None if k == lead else lead
     return out
 
 
@@ -678,11 +695,13 @@ def run(params, engine, progress=None, limit=0.0):
             frames.append(extxyz(at["symbols"], fin, at["cell"], frame="DBCata+UMA", energy=_r(e_final, 5)))
         e_slab = slab_out[it["termination"]]["energy_ev"]
         b = next(k for k, t in enumerate(at["tags"]) if t == 2)
-        ends.append((it["termination"], np.asarray(fin, float)[b], float(e_final), at["cell"]))
         site["landing"] = landing(at, fin)
+        ends.append({"termination": it["termination"], "position": np.asarray(fin, float)[b], "energy": float(e_final),
+                     "cell": at["cell"], "landing": site["landing"]})
         site.update(energy_ev=_r(e_final, 5), e_bind_raw_ev=_r(e_final - e_slab),
                     e_ads_ev=_r(adsorption_energy(e_final, e_slab, p["adsorbate"])), xyz="".join(frames))
         site["ok"] = not site["flags"] and not site.get("flags_polished") and (site["confidence"] is None or site["confidence"] >= 0.5)
+        ends[-1]["ok"] = site["ok"]
         sites_out.append(site)
     step(n, n, "done")
     for s, k in zip(sites_out, same_place(ends)):
