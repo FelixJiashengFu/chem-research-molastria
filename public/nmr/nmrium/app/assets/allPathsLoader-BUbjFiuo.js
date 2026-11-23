@@ -1,0 +1,1 @@
+import{_ as n,m as i,n as s}from"./vendor-FGeJMPBd.js";var u=function(e,a){return n(void 0,void 0,void 0,function(){var t;return i(this,function(r){switch(r.label){case 0:return[4,s(()=>import("./vendor-FGeJMPBd.js").then(o=>o.s),[],import.meta.url)];case 1:return t=r.sent().getIconPaths,[2,t(e,a)]}})})};export{u as allPathsLoader};

@@ -6907,6 +6907,69 @@ check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from 
   await finish(e);
 });
 
+check('nmrium: samples, a practice spectrum, your own files and a Bruker folder go into the embedded NMRium; links from the NMR and Spectra pages; English phone', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const p = await open({ reducedMotion: 'reduce' });
+  await go(p, '/nmr/nmrium/index.html#sample=aspirin');
+  const loaded = async (label) => {
+    await p.waitForFunction(() => /^已载入：/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 60000 });
+    await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+    assert.doesNotMatch(await text(p, '#nmrium-status'), /报错/, label);
+  };
+  await loaded('aspirin FID');
+  assert.match(await text(p, '#nmrium-status'), /阿司匹林/);
+  const frame = p.frameLocator('#nmrium-frame');
+  await frame.locator('text=1H').first().waitFor({ timeout: 30000 });
+  assert.equal(await p.getAttribute('[data-sample=aspirin]', 'aria-pressed'), 'true');
+  // the 2D sample: two spectra (1H and the COSY)
+  await p.evaluate(() => { delete document.body.dataset.spectra; });
+  await p.click('[data-sample=cyclosporin]');
+  await loaded('cyclosporin');
+  await p.waitForFunction(() => +document.body.dataset.spectra === 2, null, { timeout: 60000 });
+  await frame.locator('text=1H,1H').first().waitFor({ timeout: 30000 });
+  // a practice spectrum from the Spectra Hall, written as JCAMP-DX on the page
+  await p.evaluate(() => { delete document.body.dataset.spectra; location.hash = '#practice=etoac-0'; });
+  await p.waitForFunction(() => /练习题的谱/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 30000 });
+  await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  await frame.locator('text=/molastria-etoac/').first().waitFor({ timeout: 30000 });
+  // your own files: a JCAMP-DX goes, a picture is named as skipped
+  await p.evaluate(() => { delete document.body.dataset.spectra; });
+  await p.setInputFiles('#nmrium-files', [join(ROOT, 'public/nmr/nmrium/samples/indometacin-1h.dx'), join(ROOT, 'public/favicon.svg')]);
+  await p.waitForFunction(() => /indometacin-1h\.dx/.test(document.getElementById('nmrium-status').textContent));
+  assert.match(await text(p, '#nmrium-status'), /认不出.*favicon\.svg/);
+  await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  // a Bruker experiment folder (the aspirin zip unpacked): packed into one zip on the page
+  const dir = mkdtempSync(join(tmpdir(), 'molastria-bruker-'));
+  const unzip = spawnSync('python3', ['-I', '-m', 'zipfile', '-e', join(ROOT, 'public/nmr/nmrium/samples/aspirin-1h.zip'), join(dir, 'aspirin')]);
+  if (unzip.status === 0) {
+    await p.evaluate(() => { delete document.body.dataset.spectra; });
+    await p.setInputFiles('#nmrium-folder', join(dir, 'aspirin'));
+    await p.waitForFunction(() => /已载入：aspirin\.zip/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 30000 });
+    await p.waitForFunction(() => +document.body.dataset.spectra >= 1, null, { timeout: 60000 });
+  }
+  rmSync(dir, { recursive: true, force: true });
+  assert.equal((await p.request.get(`${SITE}/nmr/nmrium/app/THIRD-PARTY-LICENSES.md`)).status(), 200);
+  await finish(p);
+  // the NMR page and the Spectra Hall's practice problems link here
+  const q = await open({ reducedMotion: 'reduce' });
+  await go(q, '/nmr/index.html');
+  assert.ok(await q.locator('a[href="nmrium/index.html#sample=aspirin"]').count(), 'NMR page: open the aspirin sample');
+  await go(q, '/spectra/index.html#pr-etoac');
+  await q.waitForSelector('[data-nmrium="etoac-0"]');
+  assert.equal(await q.getAttribute('[data-nmrium="etoac-0"]', 'href'), '../nmr/nmrium/index.html#practice=etoac-0');
+  await q.click('#pr-sbu');
+  assert.equal(await q.locator('#sp-pr-panel [data-nmrium]').count(), 2, 'problem 3: the 1H and 13C sketches, not the 2D one');
+  await finish(q);
+  // English, dark, phone width: the bar is in English and nothing scrolls sideways
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await go(e, '/nmr/nmrium/index.html?lang=en');
+  await e.waitForFunction(() => /NMRium is ready/.test(document.getElementById('nmrium-status').textContent), null, { timeout: 60000 });
+  assert.doesNotMatch(await e.innerText('#nmrium-bar'), /[一-鿿]/, 'no Chinese in the English bar');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  assert.ok(await e.evaluate(() => document.getElementById('nmrium-frame').getBoundingClientRect().height > 300), 'NMRium keeps most of the screen');
+  await finish(e);
+});
+
 // ── run ─────────────────────────────────────────────────────────────────
 let failed = 0;
 try {

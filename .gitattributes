@@ -1,3 +1,6 @@
 *.sh text eol=lf
 # 代码台输出解读的真实样本：示例要逐行对照，换行不能被改成 CRLF
 tools/code-fixtures/** text eol=lf
+# NMRium：app/ 是 tools/vendor-nmrium.mjs 生成的构建结果，不看 diff；示例数据原样保存，换行不能改
+public/nmr/nmrium/app/** -diff linguist-generated
+public/nmr/nmrium/samples/** -text
