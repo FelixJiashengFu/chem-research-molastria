@@ -1277,6 +1277,111 @@ check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and p
   await finish(p);
 });
 
+// The DBCata window (public/models/dbcata.js): hidden until the account service lists the model, then its own form; the
+// computer is faked here (tools/e2e/dbcata-result.json, dbcata_core.ToyEngine's numbers), since the local account
+// service keeps the lane closed (DBCATA_ENABLED is not set).
+const DBCATA_RESULT = JSON.parse(readFileSync(join(ROOT, 'tools/e2e/dbcata-result.json'), 'utf8'));
+const withDbcata = (h) => ({ ...h, models: { ...h.models, dbcata: { ready: true, jobs: ['adsgen'], queue: 0, running: false, tier: 'open' } } });
+async function fakeDbcataJobs(p) {
+  let polls = 0;
+  await p.route(`${API}/uma/jobs`, (route) => route.fulfill({ status: 202, json: { id: 'dbca0123456789ab', status: 'queued', position: 0, model: 'dbcata', job: 'adsgen', smiles: null } }));
+  await p.route(`${API}/uma/jobs/dbca0123456789ab`, (route) => route.fulfill({ json: ++polls < 2
+    ? { id: 'dbca0123456789ab', status: 'running', model: 'dbcata', job: 'adsgen', progress: { done: 1, total: 4, note: 'UMA 2/4' } }
+    : { id: 'dbca0123456789ab', status: 'done', model: 'dbcata', job: 'adsgen', result: DBCATA_RESULT } }));
+}
+check('models page: the DBCata window (hidden while closed, the domain only, a result with its table and 3D frames)', async () => {
+  // closed: no tab, and a direct link says it is not open yet
+  let p = await openModels();
+  assert.equal(await p.isHidden('#m-tabs [data-win=dbcata]'), true, 'no tab while the account service does not list it');
+  await finish(p);
+  p = await open();
+  await go(p, '/models/index.html#dbcata');
+  await p.waitForFunction(() => /还没有开放/.test(document.getElementById('db-why')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await p.isVisible('#m-dbcata'), true);
+  assert.equal(await p.isHidden('#m-panel'), true);
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await finish(p);
+  // open
+  p = await openModels('', { health: withDbcata });
+  await fakeDbcataJobs(p);
+  await p.click('#m-tabs [data-win=dbcata]');
+  assert.equal(await p.getAttribute('#m-tabs [data-win=dbcata]', 'aria-selected'), 'true');
+  assert.equal(await p.isHidden('#m-panel'), true);
+  assert.match(await text(p, '#m-status'), /DBCata：空闲，排队 0 个/);
+  assert.equal(await p.locator('#m-cards .md-model').count(), 1);
+  assert.match(await text(p, '#m-dbcata .md-db-domain'), /12 种吸附物/);
+  assert.match(await text(p, '#m-dbcata .md-db-cite'), /10\.1038\/s41467-026-79243-9/);
+  assert.match(await text(p, '#m-dbcata .md-fine'), /GPL-3\.0 许可，不是本站的一部分/);
+  assert.equal(await p.locator('#db-a option').count(), 31);
+  assert.equal(await p.locator('input[name=db-ads]').count(), 12);
+  // the domain: two different metals
+  await p.selectOption('#db-a', 'Ni');
+  await p.selectOption('#db-b', 'Ni');
+  assert.match(await text(p, '#db-why'), /两种金属要不同/);
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await p.selectOption('#db-a', 'Pt');
+  await p.selectOption('#db-x', '0.75');
+  await p.check('input[name=db-facet][value="111"]');
+  await p.check('input[name=db-ads][value=OH]', { force: true });
+  assert.match(await text(p, '#db-system'), /Pt₃Ni\(111\) · L1₂/);
+  assert.equal(await text(p, '#db-run'), '运行 · 消耗 5 次');
+  await p.uncheck('#db-polish');
+  assert.equal(await text(p, '#db-run'), '运行 · 消耗 3 次', 'without the UMA polish');
+  await p.check('#db-polish');
+  await p.click('#db-run');
+  await p.waitForSelector('#db-result .md-db-table tbody tr', { timeout: 20000 });
+  assert.deepEqual(p.posts.at(-1), { model: 'dbcata', job: 'adsgen', params: { metal_a: 'Ni', metal_b: 'Pt', ratio: 0.25, facet: '111', adsorbate: 'OH' } }, 'the canonical form, defaults left out');
+  assert.equal(await p.locator('#db-result tbody tr').count(), 4);
+  assert.equal(await p.getAttribute('#db-result tbody tr:first-child', 'data-site'), String(DBCATA_RESULT.best), 'the best site first');
+  assert.equal(await p.getAttribute('#db-result tbody tr:last-child', 'data-bad'), 'true', 'the flagged site last');
+  assert.match(await text(p, '#db-result tbody tr:last-child'), /脱附/);
+  assert.match(await text(p, '#db-result'), /测试用的假数字/);
+  assert.match(await text(p, '#db-result .md-db-best'), /fcc 空位 · Pt-Pt-Pt/);
+  assert.equal(await p.isVisible('#db-view'), true);
+  assert.match(await text(p, '#db-view-frames'), /帧 3: DBCata \+ UMA 短程优化/);
+  await p.waitForSelector('#db-3d .m3-stage');
+  await p.click('#db-result [data-view="0"]');
+  assert.match(await text(p, '#db-view-title'), /#0 顶位 · Ni/);
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#db-view [data-save=csv]')]);
+  assert.equal(dl.suggestedFilename(), 'NiPt3-111-OH.csv');
+  await finish(p);
+  // the computer offline
+  p = await open();
+  await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: { ...withDbcata(await res.json()), online: false } }); });
+  await go(p, '/models/index.html#dbcata');
+  await p.waitForFunction(() => /离线/.test(document.getElementById('db-why')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await finish(p);
+});
+
+check('English and phone width: the DBCata window has no Chinese left and no sideways scroll', async () => {
+  for (const options of [{}, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]) {
+    const p = await open(options);
+    await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: withDbcata(await res.json()) }); });
+    await fakeDbcataJobs(p);
+    p.posts = [];
+    await go(p, `/models/index.html${options.viewport ? '' : '?lang=en'}#dbcata`);
+    await p.waitForFunction(() => !document.getElementById('db-run').disabled, null, { timeout: 30000 });
+    await p.click('#db-run');
+    await p.waitForSelector('#db-result .md-db-table tbody tr', { timeout: 20000 });
+    await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await p.waitForTimeout(400);
+    if (!options.viewport) {
+      const left = await p.evaluate(() => {
+        const out = [], w = document.createTreeWalker(document.getElementById('m-dbcata'), NodeFilter.SHOW_TEXT);
+        for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,code,textarea')) out.push(n.nodeValue.trim());
+        return out;
+      });
+      assert.deepEqual(left, [], 'no Chinese in the English DBCata window');
+      assert.match(await text(p, '#db-run'), /^Run · 5 uses$/);
+    } else {
+      const wide = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      assert.ok(wide <= 0, `the page scrolls sideways by ${wide} px at phone width`);
+    }
+    await finish(p);
+  }
+});
+
 check('English: the models page has no Chinese left in its windows and a result', async () => {
   const p = await openModels('', {});
   await go(p, '/models/index.html?lang=en#charged');

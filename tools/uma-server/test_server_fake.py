@@ -34,13 +34,15 @@ P = ["openmm-amber14"]  # protein MD from a PDB ID
 QUACC = bool(server.qb.quacc_version())
 QF = ["quacc-gfn2", "quacc-psi4"] if QUACC else []
 QS = ["quacc-emt"] if QUACC else []
+QUACC_ALL = {"quacc-gfn2", "quacc-psi4", "quacc-emt"}
+G = ["dbcata"]  # DBCata: the fake server runs dbcata_worker.py in toy mode (dbcata_core.ToyEngine)
 A_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn", "ipea", "spin", "bde", "pa"]
 BC_JOBS = ["sp", "opt", "freq", "conf", "scan", "md", "rxn"]
 D_JOBS = ["polar", "ir"]
 P_JOBS = ["pmd"]
 X_JOBS = [j for j in A_JOBS if j != "ipea"]
 GROUPS = ((A, A_JOBS), (B, BC_JOBS), (C, BC_JOBS), (D, D_JOBS), (X, X_JOBS), (XN, BC_JOBS), (P, P_JOBS),
-          (QF, ["qflow"]), (QS, ["qslab"]))
+          (QF, ["qflow"]), (QS, ["qslab"]), (G, ["adsgen"]))
 
 COMMON = {"model", "job", "smiles", "charge", "spin", "params", "seconds", "xyz", "fake"}
 FIELDS = {
@@ -64,7 +66,12 @@ FIELDS = {
     "qflow": {"recipe", "engine", "quacc_version", "items", "n_ok"},
     "qslab": {"element", "engine", "quacc_version", "max_index", "a_angstrom", "e_bulk_ev_atom", "bulk_converged",
               "slabs", "lowest"},
+    "adsgen": {"system", "lattice", "slabs", "sites", "truncated", "best", "best_ok", "reference", "engine",
+               "seconds_worker"},
 }
+ADS_SITE = {"id", "termination", "kind", "atoms", "multiplicity", "xy", "dmae_init_gen", "flags", "confidence",
+            "energy_sp_ev", "energy_ev", "e_bind_raw_ev", "e_ads_ev", "xyz", "ok", "rel_ev"}
+ADS_POLISH = {"dmae_gen_final", "flags_polished", "steps", "converged"}
 # what each molecule of a batch carries, by recipe
 QITEM = {"smiles", "charge", "spin", "formula", "ok", "energy_ev", "xyz"}
 QOPT = {"converged", "steps", "fmax_ev_a"}
@@ -82,6 +89,10 @@ ITEMS = {
     ("bde", "fragments"): {"smiles", "spin", "energy_ev"},
     ("pa", "energies"): {"base_ev", "acid_ev"},
     ("qslab", "slabs"): {"miller", "family", "atoms", "energy_ev", "area_a2", "gamma_j_m2", "gamma_ev_a2", "converged", "steps"},
+    ("adsgen", "sites"): ADS_SITE | ADS_POLISH,
+    ("adsgen", "slabs"): {"termination", "top", "composition", "energy_ev", "steps", "converged", "xyz"},
+    ("adsgen", "lattice"): {"a_vegard", "a", "c", "method", "note"},
+    ("adsgen", "reference"): {"scheme", "available", "refs_ev", "note"},
 }
 DEFAULTS = {
     "sp": {}, "ir": {}, "opt": {"fmax": 0.02}, "freq": {"temperature": 298.15, "symmetry": 1},
@@ -89,6 +100,7 @@ DEFAULTS = {
     "md": {"temperature": 300.0, "timestep_fs": 0.5, "steps": 1000, "friction": 0.01},
     "ipea": {"mode": "adiabatic"}, "polar": {"average": False, "n": 8},
     "qslab": {"element": "Cu", "max_index": 1},
+    "adsgen": {"polish": True, "steps": 20, "lattice": "uma"},
 }
 # One request per job (small parameters where they cost time). Ethanol, CCO: heavy atoms C0 C1 O2, then H3-H5 on C0,
 # H6 H7 on C1, H8 on O2.
@@ -103,12 +115,14 @@ REQUESTS = {
     "pmd": {"params": {"pdb_id": "1VII", "ps": 5}},
     "qflow": {"params": {"items": ["CCO", "O"]}},
     "qslab": {"params": {"element": "Cu"}},
+    # canonical already (metals in alphabetical order), so the params come back as sent
+    "adsgen": {"params": {"metal_a": "Ni", "metal_b": "Pt", "ratio": 0.25, "facet": "111", "adsorbate": "OH"}},
 }
 
 
 def expected_keys(model, job, params):
     # a protein comes back as PDB text; a quacc batch has one XYZ per molecule, a slab job none
-    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab") else COMMON) | FIELDS[job]
+    keys = (COMMON - {"xyz"} if job in ("pmd", "qflow", "qslab", "adsgen") else COMMON) | FIELDS[job]
     if job == "rxn" and params.get("thermo"):
         keys |= {"delta_g_ev", "delta_g_kcal", "temperature_k"}
     if job == "ipea":
@@ -229,8 +243,8 @@ class FakeServer(unittest.TestCase):
             for model in group:
                 self.assertEqual(h["models"][model]["jobs"], jobs, model)
                 self.assertTrue(h["models"][model]["ready"])
-        self.assertEqual(set(h["models"]) - set(QF + QS) if not QUACC else set(h["models"]),
-                         set(A + B + C + D + X + XN + P + QF + QS))
+        self.assertEqual(set(h["models"]) - QUACC_ALL if not QUACC else set(h["models"]),
+                         set(A + B + C + D + X + XN + P + QF + QS + G))
         for key in ("ok", "ready", "model", "device", "gpu", "queue", "running", "done", "cached", "models"):
             self.assertIn(key, h)
 
@@ -247,7 +261,7 @@ class FakeServer(unittest.TestCase):
                         params.update(recipe="static", method="b3lyp-d3bj", basis="def2-svp")
                     self.check_result(model, job, r, params)
                     count += 1
-        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1 + (3 if QUACC else 0))
+        self.assertEqual(count, 5 * 11 + 9 * 7 + 2 + 3 * 10 + 7 + 1 + (3 if QUACC else 0) + 1)
 
     @staticmethod
     def full_params(job, given):
@@ -362,6 +376,47 @@ class FakeServer(unittest.TestCase):
         self.refused({"model": "quacc-emt", "job": "qslab", "params": {"element": "Fe"}}, text="params.element")
         self.refused({"model": "quacc-emt", "job": "qslab", "params": {"element": "Cu", "max_index": 3}}, text="params.max_index")
         self.refused({"model": "quacc-emt", "job": "qslab", "xyz": "1\n\nCu 0 0 0", "params": {"element": "Cu"}}, text="params.element")
+
+    def test_dbcata(self):
+        """The whole lane in toy mode: the worker process, the protocol, the structures and the result."""
+        body = {"model": "dbcata", "job": "adsgen",
+                "params": {"metal_a": "Au", "metal_b": "Cu", "ratio": 0.5, "facet": "110", "adsorbate": "H2O"}}
+        r = self.run_job(body)
+        self.assertEqual(r["engine"]["dbcata"], "toy")
+        self.assertEqual(r["system"]["formula"], "AuCu")
+        self.assertEqual(sorted(s["top"] for s in r["slabs"]), ["Au4", "Cu4"])
+        self.assertTrue(r["reference"]["available"])
+        self.assertIn(r["best"], [s["id"] for s in r["sites"]])
+        for s in r["sites"]:
+            self.assertEqual(s["xyz"].count("Lattice="), 3)
+        # the same system in the other order is the same job: cached
+        status, again = self.call("POST", "/jobs", dict(body, params={"metal_a": "cu", "metal_b": "AU", "ratio": 0.5,
+                                                                        "facet": "(110)", "adsorbate": "h2o"}))
+        self.assertEqual((status, again.get("cached")), (200, True))
+        r = self.run_job({"model": "dbcata", "job": "adsgen",
+                          "params": {"metal_a": "Pd", "metal_b": "Ga", "ratio": 0.75, "facet": "111", "adsorbate": "S",
+                                     "polish": False, "steps": 50, "lattice": "vegard"}})
+        self.assertEqual(r["params"], {"metal_a": "Ga", "metal_b": "Pd", "ratio": 0.25, "facet": "111", "adsorbate": "S",
+                                       "polish": False, "steps": 50, "lattice": "vegard"})
+        self.assertFalse(r["reference"]["available"])
+        for s in r["sites"]:
+            self.assertEqual(set(s), ADS_SITE)
+            self.assertIsNone(s["e_ads_ev"])
+
+    def test_dbcata_refusals(self):
+        ok = {"metal_a": "Ni", "metal_b": "Pt", "ratio": 0.25, "facet": "111", "adsorbate": "OH"}
+        for change, text in (({"metal_a": "Tc"}, "radioactive"), ({"metal_b": "Ni"}, "two different metals"),
+                             ({"metal_a": "Na"}, "training domain"), ({"ratio": 0.4}, "0.25, 0.5 or 0.75"),
+                             ({"facet": "100"}, "111 or 110"), ({"adsorbate": "CO"}, "12 adsorbates"),
+                             ({"steps": 10}, "params.steps"), ({"polish": 1}, "params.polish"),
+                             ({"lattice": "pbe"}, "params.lattice")):
+            self.refused({"model": "dbcata", "job": "adsgen", "params": dict(ok, **change)}, text=text)
+        self.refused({"model": "dbcata", "job": "adsgen"}, text="params.metal_a")
+        self.refused({"model": "dbcata", "job": "adsgen", "params": [1]}, text="params must be an object")
+        self.refused({"model": "dbcata", "job": "adsgen", "smiles": "O", "params": ok}, text="takes no smiles or xyz")
+        self.refused({"model": "dbcata", "job": "adsgen", "xyz": "1\n\nO 0 0 0", "params": ok}, text="takes no smiles or xyz")
+        self.refused({"model": "dbcata", "job": "sp", "smiles": "O"}, text="supports only: adsgen")
+        self.refused({"model": UMA, "job": "adsgen", "params": ok}, text="supports only")
 
     def test_refusals(self):
         self.refused({"model": "nope", "job": "sp", "smiles": "C"}, text="unknown model")
@@ -491,9 +546,35 @@ class Contract(unittest.TestCase):
                 self.assertEqual(list(server.MODELS[model]["jobs"]), jobs, model)
                 self.assertEqual(server.MODELS[model]["charged"], group is A or group is X or group is QF, model)
                 self.assertEqual(server.MODELS[model]["direct"], model in DIRECT, model)
-        self.assertEqual(len(server.MODELS), 23)
-        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300})
+        # quacc's models are in the table even where quacc is not installed (they are then not ready)
+        self.assertEqual(set(server.MODELS), set(A + B + C + D + X + XN + P + G) | QUACC_ALL)
+        self.assertEqual(len(server.MODELS), 24)
+        self.assertEqual(server.TIME_LIMITS, {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "adsgen": 900})
         self.assertEqual(server.DEFAULT_LIMIT, 600)
+
+    def test_dbcata_backend(self):
+        """The worker process: progress reaches the job's budget, running out of time kills the process (the GPU stops
+        at once), and the next job starts a new one."""
+        backend = server.DbcataBackend(sys.executable, toy=True)
+        self.assertEqual(backend.info["dbcata"], "toy")
+        seen = []
+        p = server.dc.check({"metal_a": "Cu", "metal_b": "Au", "ratio": 0.5, "facet": "111", "adsorbate": "O"})
+        r = backend.run(p, server.cj.Budget(300, seen.append))
+        self.assertEqual(r["system"]["formula"], "AuCu")
+        self.assertEqual(seen[-1]["note"], "done")
+        self.assertEqual(seen[-1]["done"], seen[-1]["total"])
+        first = backend.proc
+        with self.assertRaises(server.cj.JobTimeout):
+            budget = server.cj.Budget(300, None)
+            budget.start -= 299.99  # the limit passes at the first progress line
+            backend.run(p, budget)
+        self.assertIsNone(backend.proc)
+        self.assertIsNotNone(first.wait(10))
+        self.assertEqual(backend.run(p, server.cj.Budget(300, None))["system"]["formula"], "AuCu")
+        with self.assertRaises(RuntimeError) as cm:
+            backend.call({"op": "run", "params": {"metal_a": "Au"}}, timeout=60)
+        self.assertIn("params.metal_b", str(cm.exception))
+        backend.kill()
 
     def test_mace_proxy(self):
         """The MACE models reach chemjobs as an ASE calculator through mace_worker.py's 'calc' op (stubbed here)."""
@@ -521,7 +602,8 @@ class Contract(unittest.TestCase):
 
     def test_param_defaults(self):
         for job, want in DEFAULTS.items():
-            self.assertEqual(server.job_params(job, {}), want, job)
+            given = REQUESTS[job].get("params", {}) if job == "adsgen" else {}  # adsgen has required params
+            self.assertEqual(server.job_params(job, given), {**given, **want}, job)
 
 
 if __name__ == "__main__":
