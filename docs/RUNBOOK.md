@@ -262,7 +262,20 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 - **加一个输出读法：** 在 `code-core.js` 的 `detect()` 加识别、`PARSE` 加同名函数（只填 `energy`、`energyLabel`、收敛、`gap` / `gapNote`、`freqs`、`normal`、`errorText`，别的不要），`PROGRAMS`、`index.html` 的 `#out-prog` 和 `code.js` 的 `NAMES` 各加一项；拿真实输出摘一段放进 `tools/code-fixtures/`（只留要读的行和前后几行，数字不改），在 `tools/code-test.mjs` 的 `OUTS` 表里加一行，并在那里的 README 写清来源。除了普通的单点和优化，还要拿**数值差分**（有限差分频率、数值梯度优化）和**一个文件里好几个任务**的输出试一次：这两种文件里最后印出的能量常常不是这个结构的（2026-11-10 审查出的错，见 DECISIONS）。
 - **代码台：重做输出样本（NWChem、CP2K）：** 云端会话里 `apt-get install -y nwchem`（Ubuntu 的包是 7.2.2）；CP2K 不在 apt 里，用 micromamba（2026-11-10 这样装成的）：`curl -L -o mm.tar.bz2 https://conda.anaconda.org/conda-forge/linux-64/micromamba-2.0.5-0.tar.bz2 && tar -xjf mm.tar.bz2 bin/micromamba`，再 `MAMBA_ROOT_PREFIX=$PWD/root ./bin/micromamba create -y -n cp2k -c conda-forge cp2k`，可执行文件在 `root/envs/cp2k/bin/cp2k.psmp`，基组和赝势是编译进去的路径，不用设 `CP2K_DATA_DIR`（注意这个环境自带的 python3 没有 PySCF，跑 `code-test.mjs` 时不要把它放在 PATH 前面，用 `CP2K_EXE`）。输入用代码台生成，`nwchem x.nw > x.out`、`cp2k.psmp -i x.inp -o x.out`；要失败的样本就把迭代或步数上限改小。conda-forge 的 CP2K 没有 tblite，GFN2-xTB 跑不了，会报 “Built without TBLITE”。
 - **模型接口送结构：** `public/models/models.js` 的 `codeImport()` 把 `{xyz, frame, meta:[{charge, mult}], charge, mult, name, model, job}` 写进 localStorage 的 `molastria-code-import`，代码台读一次就删。服务器（`tools/uma-server/chemjobs.py`）改了某个任务的多帧顺序（尤其 `run_rxn` 的“每种分子一帧、按出现顺序去重”），这里要跟着改。
+- **热化学（GoodVibes 移植）：** `thermo-core.js` 的数字对照 `tools/thermo-fixtures/goodvibes-ref.json`；参考值要重出时 `pip install goodvibes==4.4.0`，再 `python3 tools/thermo-goodvibes.py`，然后 `node --test tools/thermo-test.mjs`。GoodVibes 只在测试机上 import，不进 `public/`。
 - **OpenChemLib 升级：** 改 `smiles3d.js` 的 `VERSION` 和 `tools/e2e/package.json` 里的版本（两处要一样），`npm install --prefix tools/e2e`，再跑上面两组测试；新版本至少要两周前发布的。
+
+## NMRium 谱图处理（/nmr/nmrium/）
+
+不用安装，也不用部署 Worker，推到 main 就上线。`public/nmr/nmrium/app/` 是生成的（`node tools/vendor-nmrium.mjs`），停在包装 v0.8.0 / NMRium 0.56.0（许可证原因，见 `docs/DECISIONS.md` 2026-11-22）。以后升级：
+1. 改 `tools/vendor-nmrium.mjs` 里的 TAG 和 COMMIT，把 `nmrium-core.js` 的 BUILD 一起改掉；
+2. 运行 `node tools/vendor-nmrium.mjs`。它会克隆、打补丁、构建，许可证不合规时直接停下；
+3. 运行 `node --test tools/nmrium-test.mjs`，再跑 `node tools/e2e/run.mjs nmrium`；
+4. 看一眼 `app/THIRD-PARTY-LICENSES.md` 有没有新的许可证类型。不要为了升级把 ALLOWED 清单放宽，NC 类许可（0.61.0 以后打包的 nmr-processing、jcampconverter、nmr-load-save、@zakodium/nmrium-core 是 CC BY-NC-SA 4.0）要站长先决定。
+
+## 化学机器学习的结构–性质图（Chemiscope）
+
+不需要站长在电脑上装东西，也不需要部署 Worker。要重算数据时（例如加母核或取代基）：在任何有 Python 的机器上 `pip install rdkit tblite ase numpy`，然后 `python3 tools/chemml-map/build.py`（4 核约 10 分钟，写 `tools/chemml-map/molecules.json`），再 `node tools/chemml-map.mjs` 生成 `public/chem-ml/cml-map-data.js`，最后 `node --test tools/chemml-map-test.mjs`（分子个数 284 写在测试里，改了枚举要一起改）。升级 Chemiscope：改 `public/chem-ml/cml-scope.js` 的 VERSION，同时 `npm install --save-dev --save-exact chemiscope@新版本 --prefix tools/e2e`（测试核对两边一致）。Mol*（`public/viewer/molstar.js`）升级同理：改 VERSION，再按同样的写法改 `tools/e2e` 的 devDependency，跑 `node --test tools/molstar-test.mjs`。
 
 ## 开放数据接口（/api/）
 
@@ -329,6 +342,8 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 - **站内数字：** 数据量大变时，检查写死的“1,600 多条”（`public/ai/ai.js`、`public/pro/index.html`）和 atlas 页的条数、类别数。
 
 ## 在线模型：站长电脑的 GPU，对所有访客开放（UMA、OMol25、MACE、ANI-2x）
+
+**开源八项（2026-11-23）：** 新加的 aimnet2、phonopy-emt（phonon 通道）、molnextr（ocsr）三个模型和 ts、neb、phon 三项计算，装法见下面“开源八项：站长电脑上的安装”。
 
 **quacc 通道（2026-11-19）：** 三个模型 `quacc-gfn2`（批量优化 / 频率 / 单点）、`quacc-psi4`（单点）、`quacc-emt`（金属表面能），代码台 `#quacc` 用。装法：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install quacc`（不装时这三个模型在健康检查里是“未就绪”，别的不受影响）。GFN2 在 Windows 上用已有的 xtb 程序（tblite 没有 Windows 的 pip 包）；Psi4 只有 conda 版，所以单独装一个 conda 环境 `D:\ChemDraw\psi4-env`（Miniforge：`conda create -p D:\ChemDraw\psi4-env -c conda-forge python=3.12 psi4`，再在里面 `pip install quacc==1.10.0`），启动时加 `-Psi4Python D:\ChemDraw\psi4-env\python.exe`（`start.ps1` 和 `autostart.ps1 -Install` 都认，也可以设环境变量 `MOLASTRIA_PSI4_PYTHON`）；服务每算一个分子就用那个 Python 起一次 `psi4_worker.py`（标准输入输出各一行 JSON），和 torch 不在一个进程里。没给这个参数、Psi4 也不在 uma-env 里时 `quacc-psi4` 一直未就绪，启动日志的 errors.psi4 写着原因。测：`python tools/uma-server/test_quacc_backend.py`、`python tools/uma-server/test_server_fake.py`，网页端 `node --test tools/quacc-test.mjs`（`QUACC_PYTHON` 指向装了 quacc 的 Python 时真跑生成的脚本）。
 
@@ -400,6 +415,60 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 **测试（不用 GPU）：** `server.py --fake` 返回标明 fake 的假数据（缓存单独放在 `cache.fake.local.json`），所有模型都算“已加载”；`tools/account-test.ts` 和 `tools/e2e/run.mjs` 里各有在线模型的检查。
 
 **加一个在线模型：** 先在 GPU 上测：能加载、FEC 优化收敛，再在 ETKDG 结构上算苯、乙醇、水的垂直 IP（实验约 9.2 / 10.5 / 12.6 eV）。接近的才开放 IP/EA；偏差大（OMol-0 时期的模型常见）就只开放中性分子的几何优化（`charged: False`）。然后改 `server.py` 的 `MODELS`、`deploy/account-worker.js` 的 `UMA_MODELS`（新许可要想清楚放哪一档）、`public/meta/meta.js` 的 `ONLINE` 和 `index.html` 的选项、`tools/account-local.ts` 的假电脑；跑测试，部署账号服务，重启 `start.ps1`。
+
+## 开源八项：站长电脑上的安装（2026-11-23）
+
+过渡态 ts / neb、AIMNet2、晶体声子 phon、MolNexTR 结构识别 ocsr 四项要在站长的 Windows GPU 电脑上装东西；NMRium、GoodVibes 热化学、Mol*、Chemiscope 四项全在浏览器里，不用装、不用部署 Worker，推到 main 就上线。
+
+**许可证（不要改成复制代码）：** Sella（LGPL-3.0）、phonopy / spglib（BSD-3）、seekpath（MIT）、AIMNet2（`aimnet`，MIT）、MolNexTR（Apache-2.0）都只在站长电脑上 `pip install` 后当库调用，代码和权重不进仓库、不随网站和桌面版分发（说明在 `tools/uma-server/THIRD-PARTY-*.md`）。**geomeTRIC 不用**：它的 BSD 许可证带一条“不得放进 AI 训练集”（Non-AI）的条款，公开仓库复制它的源码就没法遵守；以后真要用，也只能在站长电脑上 `pip install geometric`、运行时 import，源码永远不要复制进仓库。
+
+**一览（都装好后再部署 Worker）：**
+
+| 装到哪里 | 装什么 | 给哪一项 |
+| --- | --- | --- |
+| `D:\ChemDraw\uma-env` | `sella==2.6.0`（带上 jax + jaxlib 的 CPU 轮子）；可选 `tblite` 做自测 | 过渡态 ts / neb |
+| `D:\ChemDraw\uma-env` | `phonopy==4.11.0 spglib==2.8.0 seekpath==2.2.2`（顺带 symfc、phonors，BSD-3） | 晶体声子 phon |
+| 新建 `D:\ChemDraw\aimnet-env`（Python 3.11–3.13） | CUDA 版 `torch>=2.10`，`aimnet[ase]==0.2.6`；权重 `aimnet2_wb97m_d3_0.pt`（自查时自动下载到用户目录的 `.cache\aimnet`） | AIMNet2 |
+| 新建 `D:\ChemDraw\molnextr-env`（Python 3.10） | `torch==2.4.1 torchvision==0.19.1`（cu121），MolNexTR 固定 commit `6f6502b`；权重 `molnextr_best.pth`（约 0.3 GB，`--download` 放到 `%USERPROFILE%\.data\molnextr\`） | 结构识别 ocsr |
+
+装完一起重启：`powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe -MacePython D:\ChemDraw\mace-env\Scripts\python.exe -AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe -MolnextrPython D:\ChemDraw\molnextr-env\Scripts\python.exe`（自动启动的话，用 `autostart.ps1 -Install` 带同样的参数重新装一次快捷方式）。`/uma/health` 里应该有：ts、neb 出现在能算力的模型的 jobs 里；aimnet2、phonopy-emt、molnextr 都是 ready；uma-s-1p2p1、uma-s-1p2、uma-s-1p1 的 jobs 里有 phon。缺哪个包，那一项就自动不出现（或返回 503），其他计算照常。
+
+**部署 Worker：** 四项都要新的账号服务（ts、neb、aimnet2、phon、phonopy-emt、ocsr 和 /v1 的新字段 closed_shell）。`cd deploy`，`npm ci`，`npx.cmd wrangler deploy`（或 `/ship-worker`）；这次没有改表结构，不用迁移数据库。先部署 Worker 再推网站：旧网页不受影响；新网页遇到旧 Worker 时，提交 ts / neb / phon 会被拒绝，health 里没有 molnextr 时文献抽取页只是不显示这个通道。推网站前先跑 `i18n-extract` 和 `i18n-translate`，上线后 `node tools/e2e/live.mjs`。之后重新打包 `python tools/pack-chemdb-agent.py`（adapter 加了这几项）。
+
+### 过渡态搜索与 IRC（ts、neb）
+1. 在 uma-env 装 Sella（LGPL-3.0，只调用不复制）：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install sella==2.6.0`。它会一起装上 JAX（jax + jaxlib，Windows 有 CPU 轮子，不需要 GPU 版）。装完检查：`D:\ChemDraw\uma-env\Scripts\python.exe -c "import sella, jax; print(sella.__file__, jax.__version__)"`
+2. 可选的自测（要 tblite）：`D:\ChemDraw\uma-env\Scripts\python.exe -m pip install tblite`，然后 `D:\ChemDraw\uma-env\Scripts\python.exe -X utf8 -m unittest tools/uma-server/test_tsjobs.py -v`。应该看到 HCN 的虚频约 −1426 cm⁻¹、IRC 两端是 HCN 和 HNC、NEB 找到同一个过渡态。
+3. 重启服务（start.ps1，或者等 -KeepAlive 自己重启）。启动日志里没有 “no sella package” 就说明好了；没装 Sella 时 ts、neb 两项自动不出现在 /health 里。
+- 坑：Sella 第一次跑时 JAX 编译要几秒；ts 限时 900 秒、neb 限时 1200 秒，原子多的分子在 MACE 上（float64）可能接近上限。
+
+### 在线模型 AIMNet2（aimnet2）
+AIMNet2 要 torch 2.10 以上，uma-env 里的 fairchem 用的是旧版本，所以和 MACE 一样单独建一个环境：
+1. 建环境（Python 3.11–3.13）：`py -3.12 -m venv D:\ChemDraw\aimnet-env`，`D:\ChemDraw\aimnet-env\Scripts\python.exe -m pip install --upgrade pip`
+2. 先装 CUDA 版 torch（RTX 2080 是 sm_75），再装 aimnet：`D:\ChemDraw\aimnet-env\Scripts\python.exe -m pip install "torch>=2.10" --index-url https://download.pytorch.org/whl/cu126`（cu126 没有这一版的话换 cu128；不要用 CPU 版的 PyPI 默认轮子），然后 `D:\ChemDraw\aimnet-env\Scripts\python.exe -m pip install "aimnet[ase]==0.2.6"`。一起装上的 warp-lang（约 135 MB）和 nvalchemi-toolkit-ops 都有 Windows 轮子（2026-11-22 查过 win_amd64 / py3.12）。检查：`D:\ChemDraw\aimnet-env\Scripts\python.exe -c "import torch, aimnet; print(torch.__version__, torch.cuda.is_available())"`
+3. 上线前的自查（“加一个在线模型”要先测电荷态）。用 uma-env 的 Python 跑，它经 aimnet_worker.py 去调 aimnet-env，和服务里的路径一模一样：`D:\ChemDraw\uma-env\Scripts\python.exe -X utf8 tools\uma-server\aimnet_selftest.py --aimnet-python D:\ChemDraw\aimnet-env\Scripts\python.exe`。第一次会下载权重（`aimnet2_wb97m_d3_0.pt`，和自测用的 `aimnet2nse_wb97m_0.pt`，放在用户目录的 `.cache\aimnet` 里；start.ps1 设的 HF_HUB_OFFLINE 管不到它，但服务启动前先跑一次自测，权重就已经在本机了）。要看到：1. ok（双重态被拒绝）；2. 五行都是 ok（云端 CPU 实测 NH3 203.6 / H2O 165.8 / CH3OH 182.3 / 吡啶 222.5 / 乙酸酸度 349.9，实验 204.0 / 165.2 / 180.3 / 222.3 / 348.1 kcal/mol）；最后一行是 “AIMNet2 may be offered”。第 3 项的垂直电离能只作参考。没通过就先不要加 -AimnetPython。
+4. 可选：`set MOLASTRIA_AIMNET_PYTHON=D:\ChemDraw\aimnet-env\Scripts\python.exe`，然后 `D:\ChemDraw\uma-env\Scripts\python.exe -X utf8 -m unittest tools/uma-server/test_aimnet_worker.py -v`
+5. 启动时加上 `-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe`（也可以设环境变量 MOLASTRIA_AIMNET_PYTHON）。日志里会有 “AIMNet2 worker: loaded aimnet2 on cuda”，/health 里 aimnet2 是 ready。
+6. aimnet2 是 open 一档（MIT），对所有人免费，计算接口 /v1 里也有。
+- 坑：AIMNet2 只读电荷、不读自旋多重度；服务已经在四处拒绝自由基，不要为了“多给几种计算”把 ipea / spin / bde 打开。中文 Windows 上 worker 已经用 -X utf8 启动。
+
+### 晶体声子（phon）
+1. 在 uma-env 里运行 `D:\ChemDraw\uma-env\Scripts\python.exe -m pip install phonopy==4.11.0 spglib==2.8.0 seekpath==2.2.2`。phonopy 会顺带装上 symfc 和 phonors，都是 BSD-3。
+2. 重启在线服务（start.ps1 带 -X utf8，已经写在脚本里）。
+3. 看 /uma/health：models 里要有 phonopy-emt，且 ready 为真；uma-s-1p2p1、uma-s-1p2、uma-s-1p1 的 jobs 里要有 phon。没装 phonopy 时，health 的 errors 里会写 phonopy，phon 交上去返回 503。
+4. 本机测一遍：`D:\ChemDraw\uma-env\Scripts\python.exe -X utf8 -m unittest tools/uma-server/test_phonon_backend.py`
+5. 用 UMA 的 omat 任务试一次，比如在代码台“晶体声子”选 Cu、引擎选 UMA-S 1.2.1，确认 Windows 上能出色散，且没有虚频（Windows 上还没真跑过）。
+- 排障：超胞太大，提交时就会被拒，报错写着上限（216 个原子 / 48 个位移超胞）；EMT 只收七种 fcc 金属；出现虚频时，先打开“先优化”、加大超胞再试。
+
+### MolNexTR 结构识别（molnextr / ocsr）
+1. 新建环境（Python 3.10）：`py -3.10 -m venv D:\ChemDraw\molnextr-env`
+2. 装带 CUDA 的 torch（按显卡选，例如 cu121）：`D:\ChemDraw\molnextr-env\Scripts\python.exe -m pip install torch==2.4.1 torchvision==0.19.1 --index-url https://download.pytorch.org/whl/cu121`
+3. 按固定 commit 装 MolNexTR：`D:\ChemDraw\molnextr-env\Scripts\python.exe -m pip install "git+https://github.com/CYF2000127/MolNexTR@6f6502b4ed9733dba8b1ee45d2da474576683194"`。它会带上 timm 0.4.12、OpenNMT-py 2.2.0、RDKit、OpenCV 等，不要和 uma-env、mace-env 混在一起。
+4. 下载权重并自测：`D:\ChemDraw\molnextr-env\Scripts\python.exe -X utf8 tools\uma-server\molnextr_selftest.py --download`
+   - 权重放在 `%USERPROFILE%\.data\molnextr\molnextr_best.pth`，约 0.3 GB，来自作者的 Hugging Face 数据集 CYF200127/MolNexTR；脚本会打印 SHA-256，可以和作者发布的文件对一下。
+   - 权重放在别处时，设环境变量 `MOLASTRIA_MOLNEXTR_WEIGHTS=<路径>`；想强制用 CPU 时，设 `MOLASTRIA_MOLNEXTR_DEVICE=cpu`。
+   - 显示 PASS（8 个里至少 7 个完全对）才继续。
+5. 启动服务时加 `-MolnextrPython D:\ChemDraw\molnextr-env\Scripts\python.exe`（start.ps1 和 autostart.ps1 都支持，也可以设 MOLASTRIA_MOLNEXTR_PYTHON）。/health 里 molnextr 显示 ready: true 就是好了；不加这个参数时 molnextr 显示没准备好，文献抽取页会自动只用视觉模型。
+6. 上线后在文献抽取页框住一个结构，点“识别框里的结构（MolNexTR）”试一次。
 
 ## 云端 GPU 批量计算（UMA + MACE-OFF23）
 
