@@ -4,6 +4,7 @@
 
 ## 现在
 
+- DBCata 在线通道（模型接口“⑦ 合金表面吸附结构”，2026-11-22，和新闻栏目的 DBCata 一条一起做）：站长电脑第七条通道 `dbcata`（计算 `adsgen`），GPL 的 `dbcata_worker.py` 在 DBCata 自己的 venv 里单独一个进程跑，只接受训练范围内的体系（31 种金属、三种比例、两个晶面、12 种吸附物），UMA oc20 算能量。**账号服务里关着**（`DBCATA_ENABLED = "0"`）。开放前：确认 Figshare 上权重的 GPL 版本、站长同意；在站长电脑上装好、跑 `dbcata_domain_check.py` 核对 val.pkl（真空、初始高度、吸附物名单）、试几个体系看时间（32 个位点 × 约 7 秒要在 900 秒内）；再改成 "1" 部署，补计算接口文档（`docs/RUNBOOK.md`“DBCata 通道”）。
 - 计算工作台（`/workbench/`，2026-11-22，站长发来 Ester Studio 的截图：“把这个里面全部功能也都加入到我的这个项目中来”）：顶栏“工具”组，文献信息抽取之后。八个标签（结构、晶体与表面、反应路径、构象、波函数与表面、光谱与输出、批量作业、项目与引用），照 Ester Studio 的功能清单独立重写（许可证见 `docs/DECISIONS.md`）；R/S 对照 RDKit，Molden 的密度、梯度、Hessian 对照 PySCF，光谱读法对照 cclib。草稿 PR，等站长说上线。没测：真实的大体系（IGM 限 400 个原子）、Safari 和 iPad 的 WebGL 表现。
 - 世界模型（`/world-models/`，2026-11-22，站长：“把世界模型的模组也加进去 并且说明和化学研究的联系”，又补了一句“记得所有世界物理模型哦”；**草稿 PR，等站长说上线再合并**）：顶栏“模型与 AI”组，化学机器学习之后。十一章（什么是世界模型、潜空间、在想象里学、用模型规划、JEPA、视频和交互式世界、学出来的物理模拟器、天气和气候、分子和材料、实验室和反应、什么时候该相信），十三个演示，首页一张“和化学研究的联系”表，“世界物理模型总览”71 个（七类，Sora、Genie 2、Genie 3 只有官方博客），80 篇文献按 DOI / arXiv 核对。没测：Safari、真机触屏；桌面版等下一个标签。后续可以加：总览随新模型更新（每条带核对日期）、一个用 NequIP 式势当世界模型跑分子动力学的演示。
 - 用 Google 登录（账号页，2026-11-22，站长：“可以给我加上谷歌登录吗”）：账号服务走 OpenID Connect 授权码 + PKCE，按 Google 确认过的邮箱登录，和验证码登录是同一个账号。**上线要站长做：** 在 Google Cloud 建 OAuth 客户端（重定向 URI `https://api.molastria.com/auth/google/callback`），合并后在 main 上跑 D1 迁移（`handoffs` 表）、放两个 secret、部署 Worker（RUNBOOK“用 Google 登录”）。没测：真 Google（只对着假的测过）、Safari / iPhone。桌面版暂不显示按钮，以后可以用深链接接上。

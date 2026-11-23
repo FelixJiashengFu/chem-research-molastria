@@ -2,6 +2,17 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-22 DBCata：GPL 的代码放在单独的进程里，只接受训练范围内的体系，等权重许可和站长点头才开放
+
+站长要把 DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9；github.com/Songze1019/DBCata，GPL-3.0）接进在线模型。做法：站长电脑的 `server.py` 加第七条通道 `dbcata`（计算 `adsgen`），由 `dbcata_worker.py` 在 DBCata 自己的环境里生成结构，UMA 的 oc20 任务算能量；模型接口页加“⑦ 合金表面吸附结构”。
+**原因：**
+- **GPL 隔离：** MolAstria 是 MIT，桌面版要打包网页。DBCata 的代码不复制进仓库，权重和数据也不放；唯一 import DBCata 的 `dbcata_worker.py` 自己标 GPL-3.0-or-later，在单独的进程里运行，和 MIT 的 `server.py` 只经标准输入输出交换 JSON 行。结构、规则、能量这些自己写的部分在 `dbcata_core.py`（MIT，只用 numpy），不 import DBCata，测试会查这一点。网页和账号服务不碰 DBCata。
+- **只在训练范围内：** DBCata 只学过 Catalysis-Hub 上 Mamun 等的数据：fcc 二元合金 A₃B / AB / AB₃（L1₂、L1₀）的 (111) 和 (110)，12 原子的三层板（下面 8 个固定），12 种吸附物。所以不接受上传的结构，只能从列表里选；名单在网页、账号服务、电脑三处各有一份，`tools/dbcata-test.mjs` 核对它们一致。金属取 3d、4d（不含 Tc）、5d 的 Hf–Au 和 Al、Ga、In、Tl；Tc（放射性）、Hg（室温是液体，有序的 fcc 合金表面意义不大）、La（不算论文筛选里的 3d / 4d / 5d 过渡金属）不放。
+- **能量的参考：** E_ads = E(吸附结构) − E(同一个模型弛豫的干净表面) − Σ OC20 的气相参考（H −3.477、C −7.282、N −8.083、O −7.204 eV），和 UMA 的 oc20 任务训练时一致。OC20 没有 S 的参考（它也没有含 S 的吸附物），所以 S、SH 只给 E(吸附结构) − E(表面)，只用来比较位点，页面写明。
+- **晶格常数：** 论文用 Catalysis-Hub 里 BEEF-vdW 的晶格常数，站长电脑上离线拿不到。先按 Vegard 定律（fcc 等效的实验晶格常数）估计，再用 UMA 的 omat 任务弛豫体相（L1₂ 只改体积）；离 Vegard 超过 8 % 或弛豫失败时退回 Vegard，结果里写明用的是哪个。
+- **异常标记：** 四条规则照论文第 4.2.2 节和 AdsorbML / fairchem 的定义（相撞 0.8 倍共价半径之和、吸附物分成几块、离表面太远、表面重构）；带标记的位点不算“能量最低”。初始结构在顶位上本来就会触发“相撞”（结合原子放在位点上方 1.5 Å），只检查 DBCata 生成和优化之后的结构。
+- **先关着：** 账号服务的 `DBCATA_ENABLED` 默认 "0"，关着时 `/uma` 和 `/v1` 都回 503、健康检查和模型清单里不列它。Figshare 上的权重只标了“GPL”没有版本，要确认之后、站长在自己电脑上试过并同意才改成 "1"；计算接口的文档（compute.js、openapi、chemdb-agent）也等那时再加。
+
 ## 2026-11-22 计算工作台：照 Ester Studio 的功能清单独立重写，不用它的代码
 
 站长要把 Ester Studio（github.com/Ahey1/Ester-Studio，Windows 上的计算化学工作台）的全部功能加进来。做法：新页面 `/workbench/`，在浏览器里按公开的文件格式和方法原文重写，不复制它的代码、界面文字和图片，页面上写明功能清单参照 Ester Studio、请怎样引用它。
