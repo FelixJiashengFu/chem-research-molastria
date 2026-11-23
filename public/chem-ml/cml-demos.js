@@ -1,5 +1,5 @@
 'use strict';
-// 化学机器学习（/chem-ml/）的十七个演示。数学都在 cml-models.js（纯函数，tools/chemml-test.mjs 测）。cml.js 用 window.MOLASTRIA_CHEMML_DEMOS(K, DEMOS) 把它们登记进去。
+// 化学机器学习（/chem-ml/）的十八个演示（第九章的结构–性质图另外用 cml-map-core.js、cml-scope.js 和生成的 cml-map-data.js）。数学都在 cml-models.js（纯函数，tools/chemml-test.mjs 测）。cml.js 用 window.MOLASTRIA_CHEMML_DEMOS(K, DEMOS) 把它们登记进去。
 // 写法同群论的 gt-demos.js：title，kind，intro，sel，ctl，chk，btn，act，state，autoplay，fps + tick(s)，changed，figs，note，draw(s, 图, 颜色) 返回读数。
 // 读数的值按 HTML 放进页面，只放这里自己算出来的数字和固定的文字。'html' 图里的内容也只用这里的固定文字、算出来的数字和 esc() 过的用户输入拼。
 // 耗时的数值实验（学习曲线、贝叶斯优化的多次重复、批量实验）按参数缓存，同样的参数只算一次。
@@ -433,6 +433,111 @@ window.MOLASTRIA_CHEMML_DEMOS = (K, DEMOS) => {
       plot(cv2, { x: [-0.6, 2.6], y: [0, ymax], xt: [0, 1, 2], xf: (i) => SPL[i]?.[1] || '', yl: 'MAE', series: [{ xs: [0, 1, 2], ys: stats.map((x) => x[0]), bars: 0.55, color: c.accent }],
         after: ({ ctx, X, Y }) => { ctx.strokeStyle = c.ink2; ctx.lineWidth = 1.5; stats.forEach(([, lo, hi], i) => { ctx.beginPath(); ctx.moveTo(X(i), Y(lo)); ctx.lineTo(X(i), Y(hi)); ctx.stroke(); }); } });
       return [[L('这一次的测试 MAE', 'Test MAE of this split'), fix(R.mae, 3), true], [L('测试分子到最近训练分子的平均距离', 'Mean distance from test to nearest training molecule'), fix(R.near, 3)], [L('5 次平均 MAE：随机 / 骨架 / 时间', 'Mean MAE of 5: random / scaffold / time'), stats.map((x) => fix(x[0], 3)).join(' / ')], [L('骨架划分比随机划分差几倍', 'Scaffold MAE ÷ random MAE'), fix(stats[1][0] / stats[0][0], 2)]];
+    },
+  };
+
+  // ── 15b. 结构–性质图（Chemiscope）─────────────────────────────────
+  // 数据：cml-map-data.js（284 个自己枚举的小分子，GFN2-xTB 优化的三维结构和性质，tools/chemml-map/build.py），第一次画的时候才载入。
+  // 纯逻辑在 cml-map-core.js；Chemiscope 的载入和接线在 cml-scope.js（按“打开 Chemiscope”才从 jsDelivr 载入）。
+  // viridis 色带；最暗的一端在深色主题的背景上看不清，所以从 12 % 处开始用
+  const VIRIDIS = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+  const ramp = (t) => { const u = (0.12 + 0.88 * Math.min(1, Math.max(0, t))) * 4, i = Math.min(3, Math.floor(u)), f = u - i, a = VIRIDIS[i], b = VIRIDIS[i + 1]; return `rgb(${a.map((v, k) => Math.round(v + f * (b[k] - v))).join(',')})`; };
+  const MAPS = [['ecfp', L('ECFP 指纹的主成分', 'PCA of ECFP fingerprints')], ['desc', L('九个描述符的主成分', 'PCA of nine descriptors')]];
+  const TARGETS = [['gap', L('GFN2-xTB 能隙（eV）', 'GFN2-xTB gap (eV)'), 'gap'], ['dip', L('偶极矩（D）', 'Dipole moment (D)'), 'dipole'], ['logp', L('Crippen logP', 'Crippen logP'), 'logP']];
+  const COLOURS = [['family', L('母核', 'Parent scaffold')], ['split', L('训练 / 测试', 'Train / test')], ['target', L('要预测的性质', 'The target property')], ['nn', L('到训练集的最近邻相似度', 'Nearest-neighbour similarity to training')], ['err', L('k 近邻预测的误差', 'k-NN prediction error')]];
+  DEMOS.scope = {
+    title: L('一张真实数据的结构–性质图：点一个点，看它是哪个分子', 'A structure–property map of real data: click a point to see the molecule'), kind: 'sim',
+    intro: L('284 个小分子：14 个母核（苯、吡啶、噻吩、萘、吲哚、环己烷、哌啶……还有两种无环的）各接 17 种取代基，再加 55 个对位二取代苯。每个分子都有一个三维结构（GFN2-xTB 优化）和几个算出来的性质。图上每个点是一个分子，位置是它的指纹（或描述符）做主成分分析后的前两维，相似的分子挨在一起。在“随机”和“骨架”两种划分之间切换：骨架划分的测试集（空心圈）整块整块地落在训练集没覆盖的地方，最近邻相似度掉下来；预测 logP 时 k 近邻的误差跟着涨，预测能隙和偶极矩时却几乎不涨，想一想为什么（正文接着讲）。按“打开 Chemiscope”会载入 EPFL 开发的开源浏览器 Chemiscope：左边的图和右边的三维结构联动，可以旋转、缩放、换坐标轴。', '284 small molecules: 14 parent scaffolds (benzene, pyridine, thiophene, naphthalene, indole, cyclohexane, piperidine… and two acyclic ones) each carrying 17 substituents, plus 55 para-disubstituted benzenes. Every molecule has a 3D structure (GFN2-xTB optimised) and a few computed properties. Each dot is a molecule placed by the first two principal components of its fingerprint (or descriptors), so similar molecules sit together. Switch between the random and scaffold splits: the scaffold test set (open rings) lands in whole blocks the training set does not reach and the nearest-neighbour similarity drops; for logP the k-NN error grows with it, but for the gap and dipole it barely moves. Think about why (the text goes on to explain). “Open Chemiscope” loads Chemiscope, the open-source explorer from EPFL: the map on the left and the 3D structure on the right are linked, and you can rotate, zoom and change axes.'),
+    sel: [['map', L('坐标', 'Coordinates'), MAPS, 'ecfp'], ['how', L('划分', 'Split'), [['random', L('随机', 'Random')], ['scaffold', L('骨架（Bemis–Murcko）', 'Scaffold (Bemis–Murcko)')]], 'scaffold'], ['target', L('要预测的性质', 'Property to predict'), TARGETS.map(([k, n]) => [k, n]), 'logp'], ['colour', L('颜色', 'Colour by'), COLOURS, 'nn']],
+    ctl: [['seed', L('随机种子', 'Random seed'), 1, 12, 1, 1, (v) => String(v)]],
+    act: [[L('打开 Chemiscope（约 1 MB）', 'Open Chemiscope (about 1 MB)'), (s) => { if (!s.cs || s.cs === 'error') s.cs = 'want'; }]],
+    state: () => ({ pick: 0, cs: null, scope: null, csKey: '' }),
+    stack: true,
+    figs: [[0.52, L('每个点是一个分子；实心是训练集，空心圈是测试集，金色大圈是选中的分子。点一下图上的点就选中它。', 'Each dot is a molecule; filled dots are the training set, open rings the test set, and the large gold ring the selected molecule. Click a dot to select it.')], ['html', L('Chemiscope（点“打开 Chemiscope”后出现）。', 'Chemiscope (appears after “Open Chemiscope”).')]],
+    note: L('分子由 tools/chemml-map/build.py 自己枚举，不取外部数据集（CC BY 4.0）。三维结构：RDKit ETKDGv3（固定种子）→ MMFF94 → GFN2-xTB 优化（tblite + ASE 的 BFGS，最大力 0.03 eV/Å），284 个全部收敛；能隙和偶极矩是 GFN2-xTB 在优化结构上的单点，logP 是 Crippen 的原子贡献法。注意：xTB 的 HOMO–LUMO 能隙不是光学能隙（烷烃给到 13–15 eV，硝基化合物只有 1.6–2 eV），这里只拿它当一个“算出来的性质”。指纹是本栏目自己写的 ECFP（半径 2、1024 位），主成分用幂迭代算，和 numpy 的 SVD 一致。骨架划分按 RDKit 的 Murcko 骨架整组分配，测试集约 20 %；k 近邻取 5 个最像的训练分子，按 Tanimoto 加权；训练分子自己的误差用留一法算。Chemiscope 是 BSD-3-Clause 许可的开源软件（Fraux、Cersonsky、Ceriotti，JOSS 2020），版本 1.1.1，从 jsDelivr 载入，界面是英文的。', 'The molecules are enumerated by tools/chemml-map/build.py, not taken from any external dataset (CC BY 4.0). 3D structures: RDKit ETKDGv3 (fixed seed) → MMFF94 → GFN2-xTB optimisation (tblite + ASE BFGS, max force 0.03 eV/Å), all 284 converged; the gap and dipole are GFN2-xTB single points at the optimised geometry, and logP is Crippen’s atom-contribution method. Note that the xTB HOMO–LUMO gap is not an optical gap (alkanes get 13–15 eV, nitro compounds only 1.6–2 eV); here it is just “a computed property”. The fingerprint is this zone’s own ECFP (radius 2, 1024 bits); principal components come from power iteration and agree with numpy’s SVD. The scaffold split assigns whole RDKit Murcko-scaffold groups, about 20 % to test; k-NN uses the 5 most similar training molecules weighted by Tanimoto, and training molecules’ own errors are leave-one-out. Chemiscope is BSD-3-Clause open-source software (Fraux, Cersonsky, Ceriotti, JOSS 2020), version 1.1.1, loaded from jsDelivr; its interface is in English.'),
+    draw(s, [cv, box], c) {
+      const SC = window.MOLASTRIA_CHEMML_SCOPE, MC = window.MOLASTRIA_CHEMML_MAP_CORE, D = window.MOLASTRIA_CHEMML_MAP_DATA;
+      if (!D || !MC) {
+        const { ctx, w, h } = fit(cv); ctx.fillStyle = c.muted; ctx.font = font(13); ctx.textAlign = 'center';
+        ctx.fillText(s.dataErr ? L('数据没载入（需要联网）', 'The data did not load (network needed)') : L('正在载入 284 个分子……', 'Loading 284 molecules…'), w / 2, h / 2);
+        if (SC && !s.dataWait) { s.dataWait = true; SC.loadData().then(() => s.redraw(), () => { s.dataErr = true; s.redraw(); }); }
+        return [];
+      }
+      const fps = cache('mapfps', () => MC.fingerprints(D.mols.map((m) => m.s), M, 2, 1024));
+      const T = TARGETS.find((t) => t[0] === s.target) || TARGETS[0], y = D.mols.map((m) => m[T[0]]);
+      const key = `${s.how}|${s.seed}|${T[0]}`;
+      if (s.cs === 'loading') s.loadingKey = key;
+      const run = (how) => cache(`map${how}|${s.seed}|${T[0]}`, () => { const S = MC.split(D.mols, how, s.seed); return { S, P: MC.perMolecule(fps, y, S, M, 5), K: MC.knn(fps, y, S.train, S.test, M, 5), nn: MC.median(MC.nnSim(fps, S.train, S.test, M)) }; });
+      const R = run(s.how), other = run(s.how === 'random' ? 'scaffold' : 'random');
+      const avg12 = cache(`map12|${T[0]}`, () => ['random', 'scaffold'].map((how) => M.mean(range(12).map((k) => { const S = MC.split(D.mols, how, k + 1); return MC.knn(fps, y, S.train, S.test, M, 5).mae; }))));
+      const xy = D.pca[s.map].xy, fams = Object.keys(D.fam);
+      const lo = (k) => Math.min(...xy.map((p) => p[k])), hi = (k) => Math.max(...xy.map((p) => p[k]));
+      const padd = (a, b) => [a - 0.06 * (b - a), b + 0.06 * (b - a)];
+      const ymin = Math.min(...y), ymax = Math.max(...y), emax = Math.max(...R.P.err.map(Math.abs));
+      const colourOf = (i) => s.colour === 'family' ? `hsl(${Math.round((fams.indexOf(D.mols[i].f) * 360) / fams.length)},62%,48%)`
+        : s.colour === 'split' ? (R.P.test.has(i) ? c.danger : c.info)
+        : s.colour === 'target' ? ramp((y[i] - ymin) / (ymax - ymin || 1))
+        : s.colour === 'nn' ? ramp(R.P.nn[i]) : ramp(Math.abs(R.P.err[i]) / (emax || 1));
+      const ev = D.pca[s.map].ev;
+      plot(cv, { x: padd(lo(0), hi(0)), y: padd(lo(1), hi(1)), xl: L(`PC1（${pct(ev[0])}）`, `PC1 (${pct(ev[0])})`), yl: L(`PC2（${pct(ev[1])}）`, `PC2 (${pct(ev[1])})`), series: [],
+        after: ({ ctx, X, Y }) => {
+          s.hit = xy.map((p) => [X(p[0]), Y(p[1])]); cv.cmlHit = s.hit; // 浏览器测试按这个找点的位置
+          const order = D.mols.map((_, i) => i).sort((a, b) => R.P.test.has(a) - R.P.test.has(b));
+          for (const i of order) { const [px, py] = s.hit[i], col = colourOf(i); ctx.beginPath(); if (R.P.test.has(i)) { ctx.strokeStyle = col; ctx.lineWidth = 1.8; ctx.arc(px, py, 4.6, 0, 2 * Math.PI); ctx.stroke(); } else { ctx.fillStyle = col; ctx.globalAlpha = 0.85; ctx.arc(px, py, 3.4, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1; } }
+          const [sx, sy] = s.hit[s.pick] || [0, 0]; ctx.strokeStyle = c.gold; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(sx, sy, 9, 0, 2 * Math.PI); ctx.stroke();
+        } });
+      if (!cv.dataset.bound) {
+        cv.dataset.bound = '1'; cv.style.cursor = 'pointer';
+        cv.addEventListener('click', (e) => {
+          if (!s.hit) return;
+          const r = cv.getBoundingClientRect(), k = cv.clientWidth / r.width, px = (e.clientX - r.left) * k, py = (e.clientY - r.top) * k;
+          let best = -1, bd = 14 * 14; s.hit.forEach(([hx, hy], i) => { const d = (hx - px) ** 2 + (hy - py) ** 2; if (d < bd) { bd = d; best = i; } });
+          if (best < 0) return;
+          s.pick = best; s.scope?.select(best); s.redraw();
+        });
+      }
+      // Chemiscope：按了按钮才载入；划分、种子或目标变了就按新的性质重建一次，坐标轴和颜色只改设置
+      const csProp = { family: 'family', split: 'test set', target: T[2], nn: 'nn Tanimoto', err: '|k-NN error|' }[s.colour];
+      const csXY = s.map === 'ecfp' ? ['ECFP PC1', 'ECFP PC2'] : ['descriptor PC1', 'descriptor PC2'];
+      if (s.cs === 'want' || (s.cs === 'ready' && s.csKey !== key)) {
+        s.cs = 'loading'; s.loadingKey = key; s.scope?.remove(); s.scope = null;
+        box.innerHTML = `<p class="muted cms-wait">${L('正在载入 Chemiscope……', 'Loading Chemiscope…')}</p>`;
+        const pe = D.pca.ecfp.xy, pd = D.pca.desc.xy;
+        const props = {
+          'ECFP PC1': { values: pe.map((p) => p[0]) }, 'ECFP PC2': { values: pe.map((p) => p[1]) },
+          'descriptor PC1': { values: pd.map((p) => p[0]) }, 'descriptor PC2': { values: pd.map((p) => p[1]) },
+          gap: { values: D.mols.map((m) => m.gap), units: 'eV', description: 'GFN2-xTB HOMO–LUMO gap' },
+          dipole: { values: D.mols.map((m) => m.dip), units: 'D', description: 'GFN2-xTB dipole moment' },
+          logP: { values: D.mols.map((m) => m.logp), description: 'Crippen logP (RDKit)' },
+          MW: { values: D.mols.map((m) => m.mw), units: 'g/mol' }, TPSA: { values: D.mols.map((m) => m.tpsa), units: 'Å²' },
+          family: { values: D.mols.map((m) => m.f), description: 'parent scaffold of the enumeration' },
+          SMILES: { values: D.mols.map((m) => m.s) },
+          'test set': { values: D.mols.map((_, i) => (R.P.test.has(i) ? 1 : 0)), description: `${s.how} split, seed ${s.seed}: 1 = test, 0 = train` },
+          'nn Tanimoto': { values: R.P.nn, description: 'nearest-neighbour Tanimoto similarity to the training set' },
+          '|k-NN error|': { values: R.P.err.map(Math.abs), units: T[0] === 'gap' ? 'eV' : T[0] === 'dip' ? 'D' : '', description: `5-NN error for ${T[2]}` },
+        };
+        const ds = MC.chemiscopeDataset(D, { props, x: csXY[0], y: csXY[1], color: csProp, description: 'MolAstria chem-ml chapter 9 demo' });
+        SC.mount(box, ds, (i) => { s.pick = i; s.redraw(); }).then((h) => {
+          s.scope = h; s.cs = 'ready'; s.csKey = key; s.csView = '';
+          if (s.loadingKey !== key) { s.redraw(); return; } // 载入期间换了划分：下一次画的时候按新的重建
+          h.select(s.pick); s.redraw();
+        }, (err) => { console.warn('[chemml] chemiscope', err); s.cs = 'error'; box.innerHTML = `<p class="muted cms-wait">${L('Chemiscope 没有载入（需要联网访问 cdn.jsdelivr.net）。上面的图照常可用。', 'Chemiscope did not load (it needs cdn.jsdelivr.net). The plot above still works.')}</p>`; });
+      }
+      if (s.cs === 'ready' && s.scope) { const view = `${csXY}|${csProp}`; if (s.csView !== view) { s.csView = view; s.scope.apply({ map: { x: { property: csXY[0] }, y: { property: csXY[1] }, color: { property: csProp } } }); } }
+      if (!s.cs) box.innerHTML = '';
+      const m = D.mols[s.pick], fam = D.fam[m.f] || ['', ''], unit = T[0] === 'gap' ? ' eV' : T[0] === 'dip' ? ' D' : '';
+      const names = { random: L('随机', 'random'), scaffold: L('骨架', 'scaffold') };
+      return [
+        [L('选中的分子', 'Selected molecule'), `<code>${esc(m.s)}</code> · ${esc(L(fam[0], fam[1]))} · ${R.P.test.has(s.pick) ? L('测试集', 'test set') : L('训练集', 'training set')}`, true],
+        [L('能隙 / 偶极矩 / logP', 'Gap / dipole / logP'), `${fix(m.gap, 2)} eV / ${fix(m.dip, 2)} D / ${fix(m.logp, 2)}`],
+        [L('它到训练集的最近邻相似度', 'Its nearest-neighbour similarity to training'), fix(R.P.nn[s.pick], 2)],
+        [L('k 近邻预测 / 真值', 'k-NN prediction / truth'), `${fix(R.P.pred[s.pick], 2)} / ${fix(y[s.pick], 2)}${unit}`],
+        [`${L('测试 MAE：', 'Test MAE: ')}${names[s.how]} / ${names[s.how === 'random' ? 'scaffold' : 'random']}`, `${fix(R.K.mae, 3)} / ${fix(other.K.mae, 3)}${unit}`, true],
+        [L('12 个种子的平均测试 MAE：随机 / 骨架', 'Mean test MAE over 12 seeds: random / scaffold'), `${fix(avg12[0], 3)} / ${fix(avg12[1], 3)}${unit}`],
+        [L('只猜训练集平均值的 MAE', 'MAE of guessing the training mean'), `${fix(R.K.baseline, 3)}${unit}`],
+        [`${L('测试分子最近邻相似度的中位数：', 'Median test nearest-neighbour similarity: ')}${names[s.how]} / ${names[s.how === 'random' ? 'scaffold' : 'random']}`, `${fix(R.nn, 2)} / ${fix(other.nn, 2)}`],
+        [L('测试集 / 训练集', 'Test / training'), `${R.S.test.length} / ${R.S.train.length}`],
+      ];
     },
   };
 

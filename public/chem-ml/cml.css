@@ -38,3 +38,11 @@
 .cml-gen li.is-new{border-color:color-mix(in srgb,var(--ok) 55%,transparent);background:color-mix(in srgb,var(--ok) 8%,transparent)}
 .cml-gen li.is-old{border-color:color-mix(in srgb,var(--gold) 55%,transparent);background:var(--gold-soft)}
 .cml-gen li.is-bad code{color:var(--muted);text-decoration:line-through}
+/* 第九章的结构–性质图：Chemiscope 自己的界面（plotly 图和 3Dmol 查看器）是浅色的，所以放在一块固定的白底面板上，深色主题里也一样；
+   宽的时候图和结构左右并排，窄（约 520 px 的排版宽度、手机）时上下叠起来 */
+.chm-html .cms-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgb(255,255,255);color:rgb(33,37,41);color-scheme:light;container-type:inline-size}
+.chm-html .cms-map,.chm-html .cms-str{position:relative;height:360px;min-width:0}
+.chm-html .cms-info{grid-column:1/-1;min-width:0}
+.chm-html .cms-meta{display:none}
+.chm-html .cms-wait{margin:6px 0;font-size:13.5px}
+@media(max-width:760px){.chm-html .cms-grid{grid-template-columns:minmax(0,1fr)}.chm-html .cms-map{height:320px}.chm-html .cms-str{height:280px}}
