@@ -450,6 +450,8 @@ const inviteMail = (owner) => [
 //         AIMNet2 (MIT, isayevlab/aimnetcentral; wB97M-D3 quality for neutral and charged closed-shell molecules) too,
 //         and phonopy with ASE's EMT (phonons of fcc metals on the CPU; phonopy and spglib BSD-3-Clause, seekpath MIT).
 //         MolNexTR (Apache-2.0, CYF2000127/MolNexTR) reads drawn structures from images: SMILES + molfile + confidence.
+//         DBCata (GPL-3.0, run as a separate process on the owner's computer; an adsorbate on a binary-alloy surface,
+//         from fixed lists only) is open too, but stays switched off until DBCATA_ENABLED is "1" (docs/DECISIONS.md).
 //   asl: the MACE models are licensed for academic non-commercial use only, so they stay outside Pro: the same
 //        free allowance for everyone, and the visitor confirms academic use with each job.
 const UMA_BLOCKED = new Set(['CU', 'IR', 'KP', 'SY']);
@@ -464,10 +466,11 @@ const UMA_MODELS = {
   'quacc-gfn2': 'open', 'quacc-psi4': 'open', 'quacc-emt': 'open',
   'aimnet2': 'open',
   'phonopy-emt': 'open',
-  'molnextr': 'open'
+  'molnextr': 'open',
+  'dbcata': 'open'
 };
 // Online model API v3 (the same contract as tools/uma-server/server.py): each job costs this many of the day's uses.
-const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, ts: 5, neb: 8, pmd: 5, qflow: 1, qslab: 3, phon: 5, ocsr: 1 };
+const UMA_COST = { sp: 1, opt: 1, ipea: 1, polar: 1, spin: 2, bde: 2, pa: 2, freq: 3, ir: 3, rxn: 3, conf: 5, scan: 5, md: 5, ts: 5, neb: 8, pmd: 5, qflow: 1, qslab: 3, phon: 5, ocsr: 1, adsgen: 3 };
 // A quacc batch costs per molecule (tools/uma-server/quacc_backend.py ITEM_COST): a single point or a relaxation 1, a
 // relaxation and frequencies 3; Psi4 2 per molecule (single points only). Slabs up to (2,1,1) cost 5 instead of 3.
 const QUACC_ITEM_COST = { static: 1, relax: 1, relax_freq: 3 };
@@ -493,6 +496,50 @@ const ocsrImages = (v) => {
   }
   return total <= OCSR.maxTotal ? v : undefined;
 };
+// DBCata (tools/uma-server/dbcata_core.py, the same lists and the same canonical form): every site of one adsorbate on one
+// alloy surface; 3 uses, 5 with the UMA polish (on by default). Only the systems it was trained on.
+const DBCATA_METALS = ['Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Y', 'Zr', 'Nb', 'Mo', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd',
+  'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Al', 'Ga', 'In', 'Tl'];
+const DBCATA_ADSORBATES = ['H', 'C', 'CH', 'CH2', 'CH3', 'N', 'NH', 'O', 'OH', 'H2O', 'S', 'SH'];
+const DBCATA_RATIOS = [0.25, 0.5, 0.75], DBCATA_STEPS = [20, 50, 100];
+const dbcataOn = (env) => env.DBCATA_ENABLED === '1';
+const dbcataCost = (params) => (params.polish === false ? 3 : 5);
+const DBCATA_DOMAIN = 'DBCata 只学过 3d、4d、5d 过渡金属和 Al、Ga、In、Tl 组成的 fcc 二元合金';
+const DBCATA_DOMAIN_EN = 'DBCata was trained only on fcc binary alloys of the 3d, 4d and 5d transition metals and Al, Ga, In, Tl';
+/** DBCata's params, checked and in the computer's canonical form (metals in alphabetical order, ratio the fraction of metal_a). */
+function dbcataParams(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw fail(400, '参数（params）必须是一个对象', 'params must be an object');
+  const metal = (k) => {
+    const v = typeof raw[k] === 'string' ? raw[k].trim() : '';
+    const s = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
+    if (!v) throw fail(400, `参数 ${k} 要写一种金属的元素符号，如 Pt`, `Parameter ${k} must be a metal symbol such as Pt`);
+    if (!DBCATA_METALS.includes(s)) throw fail(400, `参数 ${k}：${s.slice(0, 3)} 不在训练范围内。${DBCATA_DOMAIN}`, `Parameter ${k}: ${s.slice(0, 3)} is outside the training domain. ${DBCATA_DOMAIN_EN}`, 'out_of_domain');
+    return s;
+  };
+  let a = metal('metal_a'), b = metal('metal_b');
+  if (a === b) throw fail(400, '两种金属要不同：DBCata 学的是二元合金（A3B、AB、AB3），不是纯金属', 'The two metals must differ: DBCata was trained on binary alloys (A3B, AB, AB3), not on pure metals', 'out_of_domain');
+  let x = raw.ratio;
+  if (typeof x !== 'number' || !DBCATA_RATIOS.includes(x)) throw fail(400, '参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75', 'Parameter ratio (the atomic fraction of metal_a) must be 0.25, 0.5 or 0.75', 'out_of_domain');
+  const facet = String(raw.facet ?? '').trim().replace(/^\((.*)\)$/, '$1');
+  if (facet !== '111' && facet !== '110') throw fail(400, '参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面', 'Parameter facet must be 111 or 110: DBCata was trained on those two fcc facets only', 'out_of_domain');
+  const adsorbate = DBCATA_ADSORBATES.find((n) => typeof raw.adsorbate === 'string' && n.toLowerCase() === raw.adsorbate.trim().toLowerCase());
+  if (!adsorbate) throw fail(400, `参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：${DBCATA_ADSORBATES.join('、')}`, `Parameter adsorbate must be one of the 12 adsorbates DBCata was trained on: ${DBCATA_ADSORBATES.join(', ')}`, 'out_of_domain');
+  const out = { metal_a: a, metal_b: b, ratio: x, facet, adsorbate };
+  if (raw.polish !== undefined) {
+    if (typeof raw.polish !== 'boolean') throw fail(400, '参数 polish 只能是 true 或 false', 'Parameter polish must be true or false');
+    out.polish = raw.polish;
+  }
+  if (raw.steps !== undefined) {
+    if (!DBCATA_STEPS.includes(raw.steps)) throw fail(400, '参数 steps（DBCata 的采样步数）只能是 20、50 或 100', "Parameter steps (DBCata's sampling steps) must be 20, 50 or 100");
+    out.steps = raw.steps;
+  }
+  if (raw.lattice !== undefined) {
+    if (raw.lattice !== 'uma' && raw.lattice !== 'vegard') throw fail(400, '参数 lattice 只能是 uma 或 vegard', 'Parameter lattice must be uma or vegard');
+    out.lattice = raw.lattice;
+  }
+  if (a > b) [out.metal_a, out.metal_b, out.ratio] = [b, a, 1 - x]; // one canonical form, so the computer's cache finds it
+  return out;
+}
 const UMA_GEOM = ['sp', 'opt', 'freq', 'conf', 'scan', 'md', 'rxn', 'ts', 'neb'];
 // Transition states (tools/uma-server/tsjobs.py, Sella): XYZ input only, at most this many atoms; neb also takes the
 // product's XYZ in params, the same atoms in the same order.
@@ -512,7 +559,7 @@ const UMA_NO_IPEA = new Set(['gfn2-xtb', 'gfn2-xtb-alpb-water', 'gfn1-xtb']);
 const UMA_OMAT = new Set(['uma-s-1p2p1', 'uma-s-1p2', 'uma-s-1p1']);
 const PHONON = { maxText: 8000, supercellMax: 4, presets: ['Cu', 'Al', 'Ag', 'Au', 'Ni', 'Pd', 'Pt', 'Si', 'C', 'NaCl', 'MgO'], emt: ['Al', 'Cu', 'Ag', 'Au', 'Ni', 'Pd', 'Pt'] };
 // Which jobs each kind of model does: charge-and-spin molecular models, neutral models, and MACE-MDP's properties.
-const umaJobsOf = (model) => (QUACC_JOBS[model] || (model === 'mace-mdp' ? ['polar', 'ir'] : model === 'openmm-amber14' ? ['pmd'] : model === 'phonopy-emt' ? ['phon'] : model === 'molnextr' ? ['ocsr']
+const umaJobsOf = (model) => (QUACC_JOBS[model] || (model === 'dbcata' ? ['adsgen'] : model === 'mace-mdp' ? ['polar', 'ir'] : model === 'openmm-amber14' ? ['pmd'] : model === 'phonopy-emt' ? ['phon'] : model === 'molnextr' ? ['ocsr']
   : [...(UMA_CLOSED.has(model) ? [...UMA_GEOM, 'pa'] : UMA_CHARGED.has(model) ? [...UMA_GEOM, ...(UMA_NO_IPEA.has(model) ? [] : ['ipea']), 'spin', 'bde', 'pa'] : UMA_GEOM), ...(UMA_OMAT.has(model) ? ['phon'] : [])]));
 const SMILES_RE = /^[A-Za-z0-9@+\-[\]()=#$%/\\.:~*]{1,200}$/;
 const UMA_SMILES_ONLY = new Set(['conf', 'rxn', 'bde', 'pa']);
@@ -619,7 +666,7 @@ async function uma(request, env, cors, path, ip, api = null) {
       // Per model: whether it is loaded, what it can do and how many visitors wait for it; only the known models.
       const models = {};
       for (const [id, v] of Object.entries(data.models && typeof data.models === 'object' ? data.models : {})) {
-        if (!UMA_MODELS[id] || !v || typeof v !== 'object') continue;
+        if (!UMA_MODELS[id] || !v || typeof v !== 'object' || (id === 'dbcata' && !dbcataOn(env))) continue;
         models[id] = { ready: !!v.ready, jobs: (Array.isArray(v.jobs) ? v.jobs : []).filter((j) => umaJobsOf(id).includes(j)), queue: Number(v.queue) || 0, running: !!v.running, tier: UMA_MODELS[id] };
       }
       const api = ['number', 'string'].includes(typeof data.api) ? { api: data.api } : {}; // the computer's API version
@@ -644,6 +691,7 @@ async function uma(request, env, cors, path, ip, api = null) {
     if (!Object.hasOwn(UMA_COST, job)) throw fail(400, '没有这种计算', 'No such calculation');
     if (!umaJobsOf(model).includes(job)) throw fail(400, '这个模型不做这种计算', 'This model does not do that calculation');
     const tier = UMA_MODELS[model];
+    if (model === 'dbcata' && !dbcataOn(env)) throw fail(503, 'DBCata 通道还没有开放', 'The DBCata lane is not open yet', 'not_open');
     // A tick in a browser is how a visitor confirms academic use; a program cannot give that, so the API leaves these models out.
     if (tier === 'asl' && api) throw fail(403, 'MACE 模型采用学术软件许可（ASL），不通过 API 提供；可以在网站的在线模型页上使用', V1_ASL, 'licence');
     if (tier === 'asl' && body.academic !== true) throw fail(400, 'MACE 模型采用学术软件许可（ASL），请先勾选“只用于学术、非商业研究”');
@@ -664,6 +712,8 @@ async function uma(request, env, cors, path, ip, api = null) {
     } else if (job === 'phon') {
       if (given(body.smiles) || given(body.xyz)) throw fail(400, '声子计算的晶体写在参数里（preset，或 structure 的 POSCAR / CIF），不要另给 SMILES 或 XYZ', 'A phonon job takes its crystal in params (preset, or POSCAR / CIF text in structure); do not also give SMILES or XYZ');
       if (given(body.charge) && Number(body.charge) !== 0 || given(body.spin) && Number(body.spin) !== 1) throw fail(400, '声子计算的晶体是中性的，不要给电荷和自旋多重度', 'A phonon job takes a neutral crystal; do not give a charge or spin multiplicity');
+    } else if (job === 'adsgen') {
+      if (given(body.smiles) || given(body.xyz)) throw fail(400, 'DBCata 按两种金属、比例、晶面和吸附物自己搭结构，不接受上传的 SMILES 或 XYZ', 'DBCata builds the structure itself from the two metals, the ratio, the facet and the adsorbate; it takes no SMILES or XYZ', 'out_of_domain');
     } else if (given(body.smiles) === given(body.xyz)) {
       throw fail(400, given(body.smiles) ? 'SMILES 和 XYZ 只能给一个' : '请给出分子的 SMILES 或 XYZ 结构', given(body.smiles) ? 'Give either SMILES or XYZ, not both' : "Give the molecule's SMILES or XYZ structure");
     } else if (given(body.smiles)) {
@@ -689,7 +739,7 @@ async function uma(request, env, cors, path, ip, api = null) {
     }
     if (!UMA_CHARGED.has(model) && ((out.charge ?? 0) !== 0 || (out.spin ?? 1) !== 1)) throw fail(400, '这个模型只算中性闭壳层分子：电荷要为 0，自旋多重度为 1', 'This model takes neutral closed-shell molecules only: charge 0 and multiplicity 1');
     if (UMA_CLOSED.has(model) && (out.spin ?? 1) !== 1) throw fail(400, '这个模型只算闭壳层分子（离子可以，自由基不行）：自旋多重度要为 1', 'This model takes closed-shell molecules only (ions are fine, radicals are not): multiplicity 1');
-    const params = umaParams(job, body.params);
+    const params = job === 'adsgen' ? dbcataParams(body.params) : umaParams(job, body.params);
     if (job === 'neb' && xyzAtoms(params.product_xyz).join(' ') !== xyzAtoms(out.xyz).join(' ')) throw fail(400, '产物要和反应物是同样的原子、同样的顺序', 'The product must have the same atoms as the reactant, in the same order');
     if (job === 'phon') {
       if (('preset' in params) === ('structure' in params)) throw fail(400, '声子计算要给一个预设晶体（preset）或者一段 POSCAR / CIF（structure），二者选一', 'A phonon job takes either a preset crystal (preset) or POSCAR / CIF text (structure), not both and not neither');
@@ -698,7 +748,7 @@ async function uma(request, env, cors, path, ip, api = null) {
     if (Object.keys(params).length) out.params = params;
     // Conformer-averaged polarisability and the thermochemistry options need frequency runs: 5 uses each.
     // Protein MD longer than the default 20 ps holds the GPU longer: 10 uses.
-    const cost = QUACC_JOBS[model] ? quaccCost(model, job, params) : job === 'ocsr' ? params.images.length * UMA_COST.ocsr
+    const cost = QUACC_JOBS[model] ? quaccCost(model, job, params) : job === 'ocsr' ? params.images.length * UMA_COST.ocsr : job === 'adsgen' ? dbcataCost(params)
       : job === 'pmd' && (params.ps ?? 20) > 20 ? 10 : (job === 'polar' && params.average) || (['rxn', 'bde', 'pa'].includes(job) && params.thermo) ? 5 : UMA_COST[job];
     const email = api ? api.email : await signedIn(env, request).catch(() => null);
     const pro = api ? api.pro : email ? (await access(env, email)).pro : false;
@@ -898,11 +948,13 @@ async function v1(request, env, path, ip) {
       if (status === 200 && data && typeof data === 'object') health = data;
     } catch { /* offline, or not set up: the list below still says what exists */ }
     const live = health?.models && typeof health.models === 'object' ? health.models : {};
-    const models = v1Models.map((id) => {
+    const models = v1Models.filter((id) => id !== 'dbcata' || dbcataOn(env)).map((id) => {
       const v = live[id] && typeof live[id] === 'object' ? live[id] : {};
       return { id, ready: !!v.ready, queue: Number(v.queue) || 0, charged: UMA_CHARGED.has(id), ...(UMA_CLOSED.has(id) ? { closed_shell: true } : {}), jobs: umaJobsOf(id).filter((j) => !Array.isArray(v.jobs) || v.jobs.includes(j)) };
     });
-    return json({ online: !!health?.ready, gpu: String(health?.gpu || ''), models, costs: v1Costs, cost_with_thermo: 5, quacc_costs: { per_molecule: QUACC_ITEM_COST, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, note: V1_NOTE }, cors);
+    const costs = dbcataOn(env) ? v1Costs : Object.fromEntries(Object.entries(v1Costs).filter(([job]) => job !== 'adsgen'));
+    const more = dbcataOn(env) ? { dbcata_costs: { adsgen: 3, adsgen_polish: 5 } } : {};
+    return json({ online: !!health?.ready, gpu: String(health?.gpu || ''), models, costs, cost_with_thermo: 5, quacc_costs: { per_molecule: QUACC_ITEM_COST, psi4_per_molecule: 2, qslab: 3, qslab_max_index_2: 5 }, ...more, note: V1_NOTE }, cors);
   }
   if (key === 'POST /v1/jobs' || (request.method === 'GET' && /^\/v1\/jobs\/[0-9a-f]{16}$/.test(path))) {
     return uma(request, env, cors, path.replace('/v1/', '/uma/'), ip, { email: owner.email, pro, key: owner.id });

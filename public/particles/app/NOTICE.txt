@@ -1,0 +1,7 @@
+Particle HIVE (WebGPU particle simulation)
+Upstream: https://github.com/0ffz/particle-hive
+License: MIT License (see LICENSE in this directory)
+Copyright (c) 2025 Danielle Voznyy
+
+Vendored build commit: 4fd2f08 (includes upstream PR #11 fixes & WebGPU pre-check UI)
+Excluded build artifact: particles-demo.js.map

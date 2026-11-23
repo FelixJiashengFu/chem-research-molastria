@@ -6,7 +6,7 @@ use which model (ANI-2x is for Pro members, the rest is free), counts the jobs, 
 shared secret; this service accepts nothing without that secret and listens on 127.0.0.1 only.
 
     python -X utf8 tools/uma-server/server.py [--port 8765] [--device auto|cuda|cpu] [--mace-python PATH]
-        [--aimnet-python PATH] [--molnextr-python PATH] [--xtb PATH]
+        [--aimnet-python PATH] [--molnextr-python PATH] [--xtb PATH] [--dbcata-python PATH --dbcata-dir PATH]
 
 Models: the fairchem checkpoints (UMA-S 1.2.1, 1.2, 1.2.1 D4rev, 1.1; eSEN and AllScAIP trained on OMol25) and
 ANI-2x (TorchANI) run in this process; MACE-OFF23 small / medium / large,
@@ -21,14 +21,18 @@ then OpenCL, then the CPU). quacc (Quantum-Accelerators/quacc, BSD 3-Clause, pip
 through its recipes (quacc_backend.py): GFN2-xTB with tblite or the xtb program, Psi4 single points, and EMT bulk-to-
 slab surface energies. MolNexTR (CYF2000127/MolNexTR, Apache-2.0) reads drawn structures from images (job ocsr,
 model molnextr) in molnextr_worker.py under its own environment's Python (--molnextr-python); ocsr_backend.py holds its
-limits and checks. A model whose package or environment is missing is simply
-reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
+limits and checks. DBCata (Huo & Cao, Nat Commun 2026, GPL-3.0) generates adsorbate-on-alloy-surface structures
+in its own environment (--dbcata-python, --dbcata-dir): dbcata_worker.py, the only GPL-3.0 file here, runs as a
+separate process and talks JSON lines with this MIT service, which never imports DBCata (THIRD-PARTY-DBCata.md);
+the structures, sites, heuristics and energies are dbcata_core.py. A model whose package or environment is missing is
+simply reported as not ready. Every model is one ASE calculator (charge and spin multiplicity in atoms.info), and every
 calculation is written once against that calculator in chemjobs.py.
 
 Queues: every model has its own queue and computes one job at a time, so a model serves one visitor at a time.
-Eight lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
-others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), MolNexTR (its own GPU process), xTB (the CPU), OpenMM (protein MD) and quacc
-(its recipes, on the CPU). A visitor has at
+Ten lanes run side by side: the fairchem models (they take turns on one GPU worker; UMA-S 1.2.1 stays loaded, two
+others are kept), ANI-2x, the MACE models (one GPU process, taking turns), AIMNet2 (its own GPU process), MolNexTR
+(its own GPU process), xTB (the CPU), OpenMM (protein MD), quacc (its recipes, on the CPU), phonopy-EMT phonons (the
+CPU) and DBCata (one GPU process with DBCata and UMA-S 1.1). A visitor has at
 most one job waiting or running at a time (the account service passes a hashed visitor id, never the IP).
 Finished jobs are cached by model, job, input (canonical SMILES or a hash of the XYZ), charge, spin and params.
 
@@ -38,7 +42,7 @@ environment variable MOLASTRIA_UMA_SECRET (with --fake the environment variable 
 API v3 (JSON; every request carries the header X-MolAstria-Key):
     GET  /health      {ok, api: 3, ready, model, device, gpu, queue, running, done, cached, models: {id: {ready, jobs, queue, running}}}
     POST /jobs        {model, job, smiles? | xyz?, charge?, spin?, params?, who?}  ->  {id, status, position} or a cached result
-                      job: sp opt freq conf scan md rxn ipea spin bde pa polar ir pmd qflow qslab. pmd (model
+                      job: sp opt freq conf scan md rxn ts neb ipea spin bde pa polar ir pmd qflow qslab phon ocsr adsgen. pmd (model
                       openmm-amber14) takes no structure: params {pdb_id, chains?, ps?, temperature?}. qflow (quacc-gfn2,
                       quacc-psi4) takes a batch in params {items: [SMILES, up to 8], recipe: static | relax | relax_freq,
                       fmax?, temperature?, method?, basis?}; qslab (quacc-emt) params {element, max_index?}. ts and neb
@@ -48,7 +52,9 @@ API v3 (JSON; every request carries the header X-MolAstria-Key):
                       omat; phonon_backend.py) takes a crystal in params {preset | structure + format (poscar | cif),
                       supercell?, displacement?, relax?, mesh?, t_max?}, not smiles or xyz. ocsr (molnextr) takes
                       params {images: [base64 PNG or JPEG, 1 to 8]} and returns one SMILES + molfile + confidence
-                      per image; the result's params say only how many images there were. The old form {smiles, model?, job:
+                      per image; the result's params say only how many images there were. adsgen (dbcata) takes no structure either:
+                      params {metal_a, metal_b, ratio, facet, adsorbate, polish?, steps?, lattice?}, only inside
+                      DBCata's training domain (dbcata_core.check). The old form {smiles, model?, job:
                       ipea | opt | polar, charge?, spin?} (the desktop app's Meta page) works as before.
     GET  /jobs/<id>   {id, status: queued | running | done | error, position, progress?: {done, total, note}, result?, error?}
 
@@ -76,6 +82,7 @@ import numpy as np
 
 import chemjobs as cj
 import ocsr_backend as ocb
+import dbcata_core as dc
 import openmm_backend as ob
 import phonon_backend as pb
 import quacc_backend as qb
@@ -102,11 +109,14 @@ P_JOBS = ("pmd",)  # protein MD from a PDB ID (OpenMM)
 Q_JOBS = ("qflow", "qslab")  # quacc: a batch of molecules through one recipe; EMT bulk -> slabs
 PH_JOBS = ("phon",)  # phonons of a crystal (phonopy + spglib + seekpath; phonon_backend.py): UMA's omat task, or EMT
 O_JOBS = ("ocsr",)  # structure images -> SMILES (MolNexTR; ocsr_backend.py, molnextr_worker.py)
-JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS + O_JOBS
+G_JOBS = ("adsgen",)  # DBCata: an adsorbate on a binary-alloy surface, every site, then UMA-OC20 energies
+JOBS = A_JOBS + D_JOBS + P_JOBS + Q_JOBS + PH_JOBS + O_JOBS + G_JOBS
+NO_STRUCTURE_JOBS = ("rxn", "pmd", "qflow", "qslab", "phon", "ocsr", "adsgen")  # the input is in params, not smiles or xyz
 SMILES_JOBS = ("conf", "rxn", "bde", "pa")  # and polar with params.average
 TS_JOBS = ("ts", "neb")  # transition states with Sella (tsjobs.py); XYZ input only, at most tj.MAX_ATOMS atoms
 INDEX_JOBS = ("scan", "bde", "pa")  # params name atoms by index
-TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900, "ocsr": 120}  # seconds; every other job 600
+TIME_LIMITS = {"sp": 120, "opt": 120, "pmd": 900, "qflow": 900, "qslab": 300, "ts": 900, "neb": 1200, "phon": 900, "ocsr": 120,
+               "adsgen": 900}  # seconds; every other job 600
 DEFAULT_LIMIT = 600
 
 
@@ -175,6 +185,9 @@ MODELS = {
     # structure images -> SMILES + molfile (MolNexTR, Apache-2.0; molnextr_worker.py in molnextr-env): no molecule in
     # the request, the pictures come in params.images
     "molnextr": {"name": "MolNexTR", "lane": "molnextr", "jobs": O_JOBS, "charged": False, "elements": (), "direct": False},
+    # DBCata (dbcata_worker.py, its own environment); the alloy and the adsorbate come in params, from fixed lists
+    "dbcata": {"name": "DBCata + UMA-OC20", "lane": "dbcata", "jobs": G_JOBS, "charged": False,
+               "elements": dc.METALS, "direct": False},
 }
 SMILES_OK = re.compile(r"^[A-Za-z0-9@+\-\[\]()=#$%/\\.:~*]{1,200}$")
 WHO_OK = re.compile(r"^[0-9a-f]{16}$")
@@ -182,6 +195,7 @@ MAX_HEAVY, MAX_ATOMS, MAX_QUEUE = 30, 120, 25
 MAX_BODY = 32768  # bytes; an XYZ of 120 atoms fits easily
 OCSR_BODY = (ocb.MAX_TOTAL + 2) // 3 * 4 + 8192  # an ocsr job's images in base64, and room for the rest; no other job
 MACE_TIMEOUT = 900  # seconds one MACE call may take before its process is restarted
+DBCATA_LOAD = 600  # seconds DBCata, its classifier and UMA may take to load
 
 
 class BadRequest(ValueError):
@@ -343,6 +357,11 @@ def job_params(job, raw):
                 raise BadRequest(f"params.structure must be POSCAR or CIF text of at most {pb.MAX_TEXT} characters")
             out.update(structure=structure.replace("\r", ""), format=_choice(raw, "format", pb.FORMATS, "poscar"))
         return out
+    if job == "adsgen":
+        try:  # the whole domain check is in dbcata_core, shared with the worker and its tests
+            return dc.check(raw)
+        except dc.DomainError as e:
+            raise BadRequest(str(e)) from None
     return {}  # sp, ir
 
 
@@ -499,12 +518,108 @@ class MolnextrBackend(MaceBackend):
         raise RuntimeError("MolNexTR reads images; it has no polarizabilities")
 
 
+class DbcataBackend:
+    """dbcata_worker.py in DBCata's own environment (GPL-3.0, a separate process; this file only exchanges JSON lines
+    with it). The worker loads DBCata, its classifier and UMA once; a job streams progress lines and then its result.
+    A job that fails to answer, hangs or runs out of time kills the process; the next job starts it again."""
+
+    def __init__(self, python, directory="", toy=False):
+        self.python, self.directory, self.toy = python, directory, toy
+        self.proc, self.lines, self.lock = None, None, threading.Lock()
+        try:
+            self.info = self.call({"op": "ping"}, timeout=DBCATA_LOAD)["engine"]
+        except BaseException:
+            self.kill()  # a half-loaded worker must not keep holding GPU memory
+            raise
+
+    def start(self):
+        env = dict(os.environ, PYTHONUTF8="1")
+        if self.directory:
+            env["MOLASTRIA_DBCATA_DIR"] = self.directory
+        if self.toy:
+            env["MOLASTRIA_DBCATA_TOY"] = "1"
+        self.proc = subprocess.Popen([self.python, "-X", "utf8", "-u", os.path.join(HERE, "dbcata_worker.py")],
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None, env=env,
+                                     text=True, encoding="utf-8", bufsize=1, cwd=self.directory or HERE)
+        self.lines = queue_mod.Queue()
+        proc, lines = self.proc, self.lines
+
+        def read():
+            for line in proc.stdout:
+                lines.put(line)
+            lines.put(None)  # the process ended
+
+        threading.Thread(target=read, daemon=True).start()
+
+    def kill(self):
+        proc, self.proc = self.proc, None
+        if proc is not None:
+            proc.kill()
+            try:
+                proc.wait(10)
+                proc.stdin.close()
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+
+    def call(self, req, timeout, progress=None):
+        """One request; progress lines go to progress(p) (which may raise JobTimeout), the last line is the reply.
+        After a restart the worker first loads its models with a ping bounded by DBCATA_LOAD, so the load is not
+        charged to the job's own time limit (req may be a function of nothing that builds the request afterwards)."""
+        with self.lock:
+            if self.proc is None or self.proc.poll() is not None:
+                self.start()
+                if not (isinstance(req, dict) and req.get("op") == "ping"):
+                    self._exchange({"op": "ping"}, DBCATA_LOAD, None)
+            if callable(req):
+                req, timeout = req()
+            return self._exchange(req, timeout, progress)
+
+    def _exchange(self, req, timeout, progress):
+        self.proc.stdin.write(json.dumps(req) + "\n")
+        self.proc.stdin.flush()
+        end = time.time() + timeout
+        while True:
+            try:
+                line = self.lines.get(timeout=max(1.0, end - time.time()))
+            except queue_mod.Empty:
+                self.kill()
+                raise cj.JobTimeout(f"DBCata took longer than {timeout:g} s; its process was restarted") from None
+            if line is None:
+                self.proc = None
+                raise RuntimeError("the DBCata process stopped; it starts again with the next job")
+            try:
+                reply = json.loads(line)
+            except ValueError:
+                continue  # not a protocol line
+            if "progress" in reply:
+                if progress:
+                    try:
+                        progress(reply["progress"])
+                    except Exception:
+                        self.kill()  # out of time: stop the GPU work now, not after the worker's next step
+                        raise
+                continue
+            if not reply.get("ok"):
+                raise RuntimeError(reply.get("error") or "DBCata failed")
+            return reply
+
+    def run(self, params, budget):
+        def build():  # the time left is measured after a possible restart and model load
+            left = (budget.limit - (time.time() - budget.start)) if budget.limit else DEFAULT_LIMIT
+            return {"op": "run", "params": params, "limit": max(1.0, left - 5)}, left + 30
+
+        reply = self.call(build, timeout=None,
+                          progress=lambda p: budget.progress(p.get("done", 0), p.get("total", 0), p.get("note", "")))
+        return reply["result"]
+
+
 class Service:
     def __init__(self, device, cache_path, fake=False, mace_python="", xtb="", openmm_platform="", psi4_python="",
-                 aimnet_python="", molnextr_python=""):
+                 aimnet_python="", molnextr_python="", dbcata_python="", dbcata_dir=""):
         self.device_wanted, self.cache_path, self.fake, self.mace_python = device, cache_path, fake, mace_python
         self.aimnet_python, self.molnextr_python = aimnet_python, molnextr_python
         self.xtb, self.openmm_platform, self.psi4_python = xtb, openmm_platform, psi4_python
+        self.dbcata_python, self.dbcata_dir = dbcata_python, dbcata_dir
         self.device, self.gpu = "", ""
         self.backends, self.errors = {}, {}
         self.sella = ""
@@ -512,7 +627,7 @@ class Service:
         self.loading = True
         self.lock = threading.Lock()
         self.save_lock = threading.Lock()
-        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "molnextr", "xtb", "openmm", "quacc", "phonon")}
+        self.queues = {lane: collections.deque() for lane in ("fair", "ani", "mace", "aimnet", "molnextr", "xtb", "openmm", "quacc", "phonon", "dbcata")}
         self.wakes = {lane: threading.Event() for lane in self.queues}
         self.running = {lane: None for lane in self.queues}
         self.jobs = {}
@@ -528,13 +643,18 @@ class Service:
 
     # ---- loading --------------------------------------------------------------------------------------------
     def load(self):
+        dbcata_later = False
         if self.fake:  # for tests: no models; a toy calculator, numbers marked as made up
             self.device = "fake"
-            self.backends = {lane: None for lane in self.queues if lane != "quacc"}
+            self.backends = {lane: None for lane in self.queues if lane not in ("quacc", "dbcata")}
             try:  # quacc's own Runner and schemas around the toy calculator; EMT is real (it is part of ASE)
                 self.backends["quacc"] = qb.QuaccBackend(toy_ef=cj.toy_ef)
             except Exception as e:  # noqa: BLE001 - quacc not installed here: that lane is not ready
                 self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
+            try:  # the real worker process and protocol, with dbcata_core's toy engine instead of DBCata and UMA
+                self.backends["dbcata"] = DbcataBackend(sys.executable, toy=True)
+            except Exception as e:  # noqa: BLE001
+                self.errors["dbcata"] = f"{type(e).__name__}: {e}"[:400]
         else:
             import torch
 
@@ -583,6 +703,11 @@ class Service:
                     self.errors["psi4"] = q.psi4_error
             except Exception as e:  # noqa: BLE001 - no quacc in this environment: its recipes are off
                 self.errors["quacc"] = f"{type(e).__name__}: {e}"[:400]
+            if not (self.dbcata_python and self.dbcata_dir):
+                self.errors["dbcata"] = "DBCata is not set up (start with --dbcata-python and --dbcata-dir)"
+            else:
+                self.errors["dbcata"] = "DBCata is still loading"
+                dbcata_later = True
         self.sella = tj.sella_version()  # transition states (ts, neb) need Sella; without it those two jobs are off
         if not self.sella:
             self.errors["sella"] = "no sella package (pip install sella): no transition-state jobs"
@@ -594,13 +719,31 @@ class Service:
             self.backends.pop("phonon", None)
             self.errors["phonopy"] = "no phonopy / spglib / seekpath (pip install phonopy spglib seekpath): no phonon jobs"
         self.loading = False
-        for lane in self.backends:
+        for lane in list(self.backends):
             threading.Thread(target=self.work, args=(lane,), daemon=True).start()
+        if not self.fake and dbcata_later:
+            # DBCata, its classifier and a second UMA take a while (up to DBCATA_LOAD): load them in the background so
+            # the other lanes are served meanwhile; "dbcata" is not ready until it is in self.backends
+            threading.Thread(target=self.load_dbcata, daemon=True).start()
         print("Ready: " + ", ".join(m for m in MODELS if self.ready(m)), flush=True)
 
     def jobs_of(self, model):
         """The model's jobs this computer can run now: without Sella, no ts and neb; without phonopy, no phon."""
         return [j for j in MODELS[model]["jobs"] if (j not in TS_JOBS or self.sella) and (j not in PH_JOBS or self.phonopy)]
+
+    def load_dbcata(self):
+        print("Loading DBCata and UMA-S 1.1 (oc20) in DBCata's environment", flush=True)
+        try:
+            b = DbcataBackend(self.dbcata_python, self.dbcata_dir)
+            info = b.info
+            print(f"DBCata {info.get('dbcata')}: {info.get('checkpoint')}, classifier {info.get('classifier') or 'none'}, "
+                  f"{info.get('uma')} on {info.get('device')}", flush=True)
+            self.errors.pop("dbcata", None)
+            self.backends["dbcata"] = b
+            threading.Thread(target=self.work, args=("dbcata",), daemon=True).start()
+        except Exception as e:  # noqa: BLE001 - DBCata missing or broken: only that model is off
+            self.errors["dbcata"] = f"{type(e).__name__}: {e}"[:400]
+            print(f"  DBCata not available: {self.errors['dbcata']}", flush=True)
 
     def ready(self, model):
         lane = MODELS[model]["lane"]
@@ -705,6 +848,8 @@ class Service:
             r = ocb.result([ocb.finish(it, Chem) for it in items], decoded, info)
         elif job == "phon":
             r = pb.run_phonon(prm, self.periodic_calculator(model), budget, MODELS[model]["name"], MODELS[model]["elements"])
+        elif job == "adsgen":
+            r = self.backends["dbcata"].run(prm, budget)
         elif job in D_JOBS:
             geo = self.calculator("mace-off23-medium")
             if job == "polar":
@@ -788,14 +933,16 @@ class Service:
         smiles, xyz = body.get("smiles"), body.get("xyz")
         has_smiles, has_xyz = smiles not in (None, ""), xyz not in (None, "")
         params = job_params(job, body.get("params") if body.get("params") is not None else {})
-        if job in ("rxn", "pmd", "qflow", "qslab", "phon", "ocsr"):
+        if job in NO_STRUCTURE_JOBS:
             if has_smiles or has_xyz:
                 raise BadRequest({"ocsr": "ocsr takes its images in params.images, not smiles or xyz",
                                   "phon": "phon takes the crystal in params.preset or params.structure, not smiles or xyz",
                                   "rxn": "rxn takes the reaction in params.reaction, not smiles or xyz",
                                   "pmd": "pmd takes the PDB ID in params, not smiles or xyz",
                                   "qflow": "qflow takes its molecules in params.items, not smiles or xyz",
-                                  "qslab": "qslab takes the metal in params.element, not smiles or xyz"}[job])
+                                  "qslab": "qslab takes the metal in params.element, not smiles or xyz",
+                                  "adsgen": "adsgen builds the surface itself from params (metal_a, metal_b, ratio, "
+                                            "facet, adsorbate); it takes no smiles or xyz"}[job])
         elif has_smiles == has_xyz:
             raise BadRequest("give exactly one of smiles and xyz")
         if has_smiles and job in TS_JOBS:
@@ -843,6 +990,8 @@ class Service:
                 raise BadRequest(str(e)) from None
             crystal = params.get("preset") or hashlib.sha256((params["format"] + "\n" + params["structure"]).encode()).hexdigest()
             spec.update(charge=0, spin=None, input=f"crystal:{crystal}:{prep['n_supercell']}:{prep['n_displacements']}")
+        elif job == "adsgen":
+            spec.update(charge=0, spin=None, input=dc.key(params))
         elif job == "qflow":
             psi4 = model == "quacc-psi4"
             if psi4:
@@ -1115,6 +1264,10 @@ def main():
     ap.add_argument("--xtb", default="", help="the xtb executable (default: MOLASTRIA_XTB, this Python environment, PATH)")
     ap.add_argument("--psi4-python", default=os.environ.get("MOLASTRIA_PSI4_PYTHON", ""),
                     help="python.exe of a conda environment with psi4 and quacc (quacc-psi4 is off without it, unless this environment imports psi4)")
+    ap.add_argument("--dbcata-python", default=os.environ.get("MOLASTRIA_DBCATA_PYTHON", ""),
+                    help="python.exe of DBCata's own environment (torch, torch_geometric, lightning, fairchem); DBCata is off without it")
+    ap.add_argument("--dbcata-dir", default=os.environ.get("MOLASTRIA_DBCATA_DIR", ""),
+                    help="the DBCata checkout (github.com/Songze1019/DBCata) with its checkpoints/ folder")
     ap.add_argument("--openmm-platform", default="", choices=["", "CUDA", "OpenCL", "CPU"],
                     help="OpenMM platform for protein MD (default: the fastest there is)")
     ap.add_argument("--cache", default="", help="result cache (default cache.local.json; cache.fake.local.json with --fake)")
@@ -1128,7 +1281,8 @@ def main():
     cache = args.cache or os.path.join(HERE, "cache.fake.local.json" if args.fake else "cache.local.json")
     service = Service(args.device, cache, fake=args.fake, mace_python=args.mace_python, xtb=args.xtb,
                       openmm_platform=args.openmm_platform, psi4_python=args.psi4_python,
-                      aimnet_python=args.aimnet_python, molnextr_python=args.molnextr_python)
+                      aimnet_python=args.aimnet_python, molnextr_python=args.molnextr_python,
+                      dbcata_python=args.dbcata_python, dbcata_dir=args.dbcata_dir)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service, secret))
     print(f"MolAstria online models on http://127.0.0.1:{args.port} (only reachable through the tunnel and the account service)", flush=True)
     try:

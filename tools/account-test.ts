@@ -34,7 +34,7 @@ globalThis.fetch = (async (input: Request | URL | string, init?: RequestInit) =>
     if (umaOffline) throw new TypeError("connection refused");
     umaCalls.push({ path: url.pathname, key: req.headers.get("X-MolAstria-Key"), access: req.headers.get("CF-Access-Client-Id"), body: req.method === "POST" ? await req.json() : null });
     if (req.headers.get("X-MolAstria-Key") !== "uma-secret-for-tests-0123456789abcdef") return ok({ error: "unauthorized" }, 401);
-    if (url.pathname === "/health") return ok({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt", "md", "bde", "rm -rf"], queue: 1, running: true }, "mace-mdp": { ready: false, jobs: ["polar", "ir", "md", "rm -rf"], queue: 0, running: false }, "evil-model": { ready: true, jobs: ["opt"] } } });
+    if (url.pathname === "/health") return ok({ ok: true, ready: true, api: 3, model: "uma-s-1p2p1", gpu: "NVIDIA GeForce RTX 2080", queue: 1, running: true, done: 3, cached: 7, models: { "uma-s-1p2p1": { ready: true, jobs: ["ipea", "opt", "md", "bde", "rm -rf"], queue: 1, running: true }, "mace-mdp": { ready: false, jobs: ["polar", "ir", "md", "rm -rf"], queue: 0, running: false }, "dbcata": { ready: true, jobs: ["adsgen", "sp"], queue: 0, running: false }, "evil-model": { ready: true, jobs: ["opt"] } } });
     if (url.pathname === "/jobs" && (umaCalls.at(-1)?.body as any)?.smiles === "CCCC") return ok({ error: "one job at a time" }, 429);
     if (url.pathname === "/jobs") return ok({ id: "0123456789abcdef", status: "queued", position: 2 }, 202);
     if (url.pathname === "/jobs/0123456789abcdef") return ok({ id: "0123456789abcdef", status: "done", result: { ip_uma_s: 10.9, ea_uma_s: -0.4 } });
@@ -985,6 +985,64 @@ await test("API keys: an account makes, lists and revokes its own; only the hash
   // A key is for /v1 only: it does not sign in to the account.
   eq((await call("GET", "/me", undefined, freeKey)).status, 401);
   eq((await call("GET", "/keys", undefined, freeKey)).status, 401);
+});
+
+await test("DBCata: closed until DBCATA_ENABLED is 1, then only its training domain, in the canonical form, for 3 or 5 uses", async () => {
+  resetUses();
+  Object.assign(env, { UMA_ORIGIN: "https://uma.test/", UMA_SERVER_SECRET: "uma-secret-for-tests-0123456789abcdef", UMA_DAILY: "1000" });
+  delete (env as any).DBCATA_ENABLED;
+  const elsewhere = "https://someone-elses-lab.example";
+  const P = { metal_a: "Pt", metal_b: "Ni", ratio: 0.75, facet: "111", adsorbate: "OH" };
+  const before = umaCalls.filter((c) => c.path === "/jobs").length;
+  const closed = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: P });
+  eq([closed.status, closed.data.error?.message], [503, "DBCata 通道还没有开放"], "closed by default");
+  const closedApi = await call("POST", "/v1/jobs", { job: "adsgen", model: "dbcata", params: P }, freeKey, elsewhere);
+  eq([closedApi.status, closedApi.data.error?.code, closedApi.data.error?.message], [503, "not_open", "The DBCata lane is not open yet"]);
+  eq((await call("GET", "/uma/health")).data.models.dbcata, undefined, "not shown on the site while closed");
+  const listClosed = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
+  eq([listClosed.data.models.some((m: any) => m.id === "dbcata"), listClosed.data.costs.adsgen, listClosed.data.dbcata_costs], [false, undefined, undefined], "nor in the API");
+  eq([umaCalls.filter((c) => c.path === "/jobs").length - before, used("uma:local"), used("uma:a@lab.edu")], [0, 0, 0], "nothing sent, nothing counted");
+
+  env.DBCATA_ENABLED = "1";
+  eq((await call("GET", "/uma/health")).data.models.dbcata, { ready: true, jobs: ["adsgen"], queue: 0, running: false, tier: "open" }, "open: shown with its one job");
+  const ok = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { ...P, extra: "dropped" }, charge: 0 });
+  eq(ok.status, 202);
+  eq(sentBody(), { job: "adsgen", model: "dbcata", charge: 0, params: { metal_a: "Ni", metal_b: "Pt", ratio: 0.25, facet: "111", adsorbate: "OH" } }, "metals in alphabetical order, the ratio with them");
+  eq(used("uma:local"), 5, "with the UMA polish (the default): 5 uses");
+  const lean = await call("POST", "/uma/jobs", { job: "adsgen", model: "dbcata", params: { metal_a: "cu", metal_b: "AU", ratio: 0.5, facet: "(110)", adsorbate: "h2o", polish: false, steps: 50, lattice: "vegard" } });
+  eq(lean.status, 202);
+  eq(sentBody().params, { metal_a: "Au", metal_b: "Cu", ratio: 0.5, facet: "110", adsorbate: "H2O", polish: false, steps: 50, lattice: "vegard" }, "case and brackets normalised");
+  eq(used("uma:local"), 8, "without the polish: 3 uses");
+  const sent = umaCalls.filter((c) => c.path === "/jobs").length;
+  const refused: [any, string, string][] = [
+    [{ ...P, metal_a: "Tc" }, "out_of_domain", "outside the training domain"],
+    [{ ...P, metal_a: "Na" }, "out_of_domain", "fcc binary alloys"],
+    [{ ...P, metal_b: "Pt" }, "out_of_domain", "binary alloys"],
+    [{ ...P, metal_a: "" }, "invalid_request", "metal symbol"],
+    [{ ...P, ratio: 0.3 }, "out_of_domain", "0.25, 0.5 or 0.75"],
+    [{ ...P, ratio: "0.75" }, "out_of_domain", "0.25, 0.5 or 0.75"],
+    [{ ...P, facet: "100" }, "out_of_domain", "111 or 110"],
+    [{ ...P, adsorbate: "CO" }, "out_of_domain", "12 adsorbates"],
+    [{ ...P, adsorbate: "OOH" }, "out_of_domain", "12 adsorbates"],
+    [{ ...P, steps: 10 }, "invalid_request", "20, 50 or 100"],
+    [{ ...P, polish: "yes" }, "invalid_request", "true or false"],
+    [{ ...P, lattice: "dft" }, "invalid_request", "uma or vegard"],
+    [{ metal_a: "Pt" }, "invalid_request", "metal_b"],
+  ];
+  for (const [params, code, text] of refused) {
+    const r = await call("POST", "/v1/jobs", { job: "adsgen", model: "dbcata", params }, freeKey, elsewhere);
+    eq([r.status, r.data.error?.code], [400, code], JSON.stringify(params));
+    if (!r.data.error.message.includes(text) || !/[一-鿿]/.test(r.data.error.message_zh)) throw new Error(`${JSON.stringify(params)}: ${JSON.stringify(r.data.error)}`);
+  }
+  for (const body of [{ job: "adsgen", model: "dbcata" }, { job: "adsgen", model: "dbcata", params: [P] }, { job: "adsgen", model: "dbcata", params: P, smiles: "O" },
+    { job: "adsgen", model: "dbcata", params: P, xyz: WATER }, { job: "sp", model: "dbcata", smiles: "O" }, { job: "adsgen", model: "uma-s-1p2p1", params: P }]) {
+    eq((await call("POST", "/uma/jobs", body)).status, 400, JSON.stringify(body).slice(0, 80));
+  }
+  eq([umaCalls.filter((c) => c.path === "/jobs").length - sent, used("uma:local"), used("uma:a@lab.edu")], [0, 8, 0], "refusals reach nothing and cost nothing");
+  const list = await call("GET", "/v1/models", undefined, freeKey, elsewhere);
+  eq([list.data.models.find((m: any) => m.id === "dbcata"), list.data.costs.adsgen, list.data.dbcata_costs],
+    [{ id: "dbcata", ready: true, queue: 0, charged: false, jobs: ["adsgen"] }, 3, { adsgen: 3, adsgen_polish: 5 }], "open: in the API with its costs");
+  delete (env as any).DBCATA_ENABLED;
 });
 
 await test("compute API: any origin with a key; never a sign-in token; errors in English and Chinese", async () => {

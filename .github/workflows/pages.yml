@@ -129,6 +129,8 @@ jobs:
         run: |
           python -m pip install goodvibes==4.4.0
           node --test tools/thermo-test.mjs
+      - name: GPU Particle HIVE (presets, storage encoding, HTML/CSS conventions, vendored WebGPU bundle)
+        run: node --test tools/particles-test.mjs
       - name: Code desk cheminformatics (the generated RDKit script runs for real)
         run: |
           python -m pip install rdkit pandas

@@ -1,7 +1,7 @@
 # Starts the MolAstria online models and their Cloudflare Tunnel. Closing this window (or Ctrl+C) takes both
 # offline; the site then shows "the owner's GPU is offline". Do not run it as administrator: the service needs no
 # rights beyond reading its secret and model files and writing its result cache in this folder.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\start.ps1 -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
 # -KeepAlive starts the service again when it stops by itself (a crash, a driver reset) and the tunnel when it has
 # gone; restarts are written to keepalive.log in this folder. autostart.ps1 uses it to start the models at sign-in.
 param(
@@ -11,6 +11,8 @@ param(
   [string]$MolnextrPython = $env:MOLASTRIA_MOLNEXTR_PYTHON,  # MolNexTR (structure images -> SMILES); without it that lane stays off
   [string]$Xtb = $env:MOLASTRIA_XTB,                 # xtb.exe; without it server.py looks in the -Python environment and on PATH
   [string]$Psi4Python = $env:MOLASTRIA_PSI4_PYTHON,  # python.exe of a conda env with psi4 + quacc; without it quacc-psi4 stays off
+  [string]$DbcataPython = $env:MOLASTRIA_DBCATA_PYTHON,  # python.exe of DBCata's own venv (GPL-3.0, a separate process); without it DBCata stays off
+  [string]$DbcataDir = $env:MOLASTRIA_DBCATA_DIR,        # the DBCata checkout with checkpoints\
   [string]$Tunnel = 'molastria-uma',
   [switch]$KeepAlive
 )
@@ -36,6 +38,8 @@ if ($AimnetPython) { $extra += @('--aimnet-python', $AimnetPython) }
 if ($MolnextrPython) { $extra += @('--molnextr-python', $MolnextrPython) }
 if ($Xtb) { $extra += @('--xtb', $Xtb) }
 if ($Psi4Python) { $extra += @('--psi4-python', $Psi4Python) }
+if ($DbcataPython -and $DbcataDir) { $extra += @('--dbcata-python', $DbcataPython, '--dbcata-dir', $DbcataDir) }
+elseif ($DbcataPython -or $DbcataDir) { Write-Warning 'DBCata needs both -DbcataPython and -DbcataDir; it stays off.' }
 
 function Start-Tunnel { Start-Process $cloudflared -ArgumentList 'tunnel', 'run', $Tunnel -PassThru -WindowStyle Minimized }
 function Write-Note([string]$Text) {

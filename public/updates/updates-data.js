@@ -63,6 +63,20 @@ window.MOLASTRIA_UPDATES = {
         '284 small molecules we enumerated ourselves, with 3D structures, gaps and dipoles from GFN2-xTB, laid out by the principal components of their fingerprints or descriptors. Switch between random and scaffold splits to see how far test molecules sit from the training set and how the k-NN error changes. “Open Chemiscope” loads EPFL’s open-source Chemiscope explorer with the map and 3D structures linked.'],
     },
     {
+      id: 'particles', date: '2026-11-22', path: 'particles/index.html', group: 'explore', icon: 'md',
+      zh: 'GPU 粒子力场模拟器', en: 'GPU Particle HIVE Simulator',
+      note: ['浏览器 WebGPU 实时模拟万级粒子与多体势，附五组化学物理预设', 'Real-time WebGPU particle compute simulator with five physics & chemistry presets'],
+      more: ['基于 MIT 开源项目 Particle HIVE（并包含我们提交给上游的归约越界、簇映射与 WebGPU 自检修复 PR #11）：在浏览器 GPU 计算着色器中运行网格空间哈希、双调排序与速度 Verlet 积分，预置氩原子 LJ 流体、双组分莫尔斯自组装、Tersoff 共价网络、重力凝聚与三维混合盒，支持实时调参、YAML 编辑、DBSCAN 聚类与均方速率统计。',
+        'Integrates MIT-licensed Particle HIVE along with our upstream fixes for GPU reduction bounds, cluster index mapping, wall repulsion safety, and WebGPU pre-check UX (PR #11). Runs spatial grid hashing, bitonic sort, and Velocity Verlet in WebGPU compute shaders with five ready-to-run chemistry and physics presets, live YAML config, DBSCAN clustering, and MSQV statistics.'],
+    },
+    {
+      id: 'news-dbcata', date: '2026-11-22', path: 'news/index.html', group: 'find', icon: 'atoms',
+      zh: '新闻图解 · DBCata 生成吸附结构', en: 'News explained · DBCata generates adsorption structures',
+      note: ['扩散模型直接给出吸附物在合金表面上的落点，两个能动手调的演示', 'A diffusion model goes straight to where an adsorbate settles on an alloy surface; two hands-on demos'],
+      more: ['上海交通大学 Huo 和 Cao 的 DBCata（Nature Communications 2026）：从规则摆出的初猜出发，用周期布朗桥走 20 步得到 DFT 优化后的结构，坐标误差 0.035 Å，比 UMA 直接优化小三倍；配上离群检测，94% 的吸附能落在 0.1 eV 以内。图解讲清楚它怎么做、哪些数字是论文原文、哪些是算出来的、还差什么；演示里能看布朗桥和力算错了的优化在二维表面上谁走对，以及周期边界上为什么要按最近的像插值。9 篇文献按 DOI 在 OpenAlex 核对过。',
+        'DBCata by Huo and Cao at Shanghai Jiao Tong University (Nature Communications 2026) starts from a rule-placed guess and walks a periodic Brownian bridge for 20 steps to the DFT-relaxed structure, with a coordinate error of 0.035 Å, three times smaller than relaxing directly with UMA; with outlier detection, 94% of adsorption energies land within 0.1 eV. The explainer covers how it works, which numbers are the paper’s and which are computed, and what is still missing; the demos show a bridge and a wrong-force optimisation racing on a 2D surface, and why interpolation across a periodic boundary must follow the nearest image. 9 references checked by DOI on OpenAlex.'],
+    },
+    {
       id: 'workbench', date: '2026-11-22', path: 'workbench/index.html', group: 'make', icon: 'bench',
       zh: '计算工作台', en: 'Workbench',
       note: ['结构、晶体、反应路径、构象、轨道、弱相互作用、光谱和批量作业，一页做完', 'Structures, crystals, reaction paths, conformers, orbitals, weak interactions, spectra and batch jobs on one page'],

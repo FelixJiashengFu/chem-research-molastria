@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -1338,6 +1338,111 @@ check('models page: UMA-S 1.2.1 adiabatic IP / EA imports into the AI Lab, and p
   await p.waitForURL(/lab\/index\.html/);
   await p.waitForFunction(() => /更新 1 个分子/.test(document.getElementById('import-msg')?.textContent || ''), null, { timeout: 30000 });
   await finish(p);
+});
+
+// The DBCata window (public/models/dbcata.js): hidden until the account service lists the model, then its own form; the
+// computer is faked here (tools/e2e/dbcata-result.json, dbcata_core.ToyEngine's numbers), since the local account
+// service keeps the lane closed (DBCATA_ENABLED is not set).
+const DBCATA_RESULT = JSON.parse(readFileSync(join(ROOT, 'tools/e2e/dbcata-result.json'), 'utf8'));
+const withDbcata = (h) => ({ ...h, models: { ...h.models, dbcata: { ready: true, jobs: ['adsgen'], queue: 0, running: false, tier: 'open' } } });
+async function fakeDbcataJobs(p) {
+  let polls = 0;
+  await p.route(`${API}/uma/jobs`, (route) => route.fulfill({ status: 202, json: { id: 'dbca0123456789ab', status: 'queued', position: 0, model: 'dbcata', job: 'adsgen', smiles: null } }));
+  await p.route(`${API}/uma/jobs/dbca0123456789ab`, (route) => route.fulfill({ json: ++polls < 2
+    ? { id: 'dbca0123456789ab', status: 'running', model: 'dbcata', job: 'adsgen', progress: { done: 1, total: 4, note: 'UMA 2/4' } }
+    : { id: 'dbca0123456789ab', status: 'done', model: 'dbcata', job: 'adsgen', result: DBCATA_RESULT } }));
+}
+check('models page: the DBCata window (hidden while closed, the domain only, a result with its table and 3D frames)', async () => {
+  // closed: no tab, and a direct link says it is not open yet
+  let p = await openModels();
+  assert.equal(await p.isHidden('#m-tabs [data-win=dbcata]'), true, 'no tab while the account service does not list it');
+  await finish(p);
+  p = await open();
+  await go(p, '/models/index.html#dbcata');
+  await p.waitForFunction(() => /还没有开放/.test(document.getElementById('db-why')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await p.isVisible('#m-dbcata'), true);
+  assert.equal(await p.isHidden('#m-panel'), true);
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await finish(p);
+  // open
+  p = await openModels('', { health: withDbcata });
+  await fakeDbcataJobs(p);
+  await p.click('#m-tabs [data-win=dbcata]');
+  assert.equal(await p.getAttribute('#m-tabs [data-win=dbcata]', 'aria-selected'), 'true');
+  assert.equal(await p.isHidden('#m-panel'), true);
+  assert.match(await text(p, '#m-status'), /DBCata：空闲，排队 0 个/);
+  assert.equal(await p.locator('#m-cards .md-model').count(), 1);
+  assert.match(await text(p, '#m-dbcata .md-db-domain'), /12 种吸附物/);
+  assert.match(await text(p, '#m-dbcata .md-db-cite'), /10\.1038\/s41467-026-79243-9/);
+  assert.match(await text(p, '#m-dbcata .md-fine'), /GPL-3\.0 许可，不是本站的一部分/);
+  assert.equal(await p.locator('#db-a option').count(), 31);
+  assert.equal(await p.locator('input[name=db-ads]').count(), 12);
+  // the domain: two different metals
+  await p.selectOption('#db-a', 'Ni');
+  await p.selectOption('#db-b', 'Ni');
+  assert.match(await text(p, '#db-why'), /两种金属要不同/);
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await p.selectOption('#db-a', 'Pt');
+  await p.selectOption('#db-x', '0.75');
+  await p.check('input[name=db-facet][value="111"]');
+  await p.check('input[name=db-ads][value=OH]', { force: true });
+  assert.match(await text(p, '#db-system'), /Pt₃Ni\(111\) · L1₂/);
+  assert.equal(await text(p, '#db-run'), '运行 · 消耗 5 次');
+  await p.uncheck('#db-polish');
+  assert.equal(await text(p, '#db-run'), '运行 · 消耗 3 次', 'without the UMA polish');
+  await p.check('#db-polish');
+  await p.click('#db-run');
+  await p.waitForSelector('#db-result .md-db-table tbody tr', { timeout: 20000 });
+  assert.deepEqual(p.posts.at(-1), { model: 'dbcata', job: 'adsgen', params: { metal_a: 'Ni', metal_b: 'Pt', ratio: 0.25, facet: '111', adsorbate: 'OH' } }, 'the canonical form, defaults left out');
+  assert.equal(await p.locator('#db-result tbody tr').count(), 4);
+  assert.equal(await p.getAttribute('#db-result tbody tr:first-child', 'data-site'), String(DBCATA_RESULT.best), 'the best site first');
+  assert.equal(await p.getAttribute('#db-result tbody tr:last-child', 'data-bad'), 'true', 'the flagged site last');
+  assert.match(await text(p, '#db-result tbody tr:last-child'), /脱附/);
+  assert.match(await text(p, '#db-result'), /测试用的假数字/);
+  assert.match(await text(p, '#db-result .md-db-best'), /fcc 空位 · Pt-Pt-Pt/);
+  assert.equal(await p.isVisible('#db-view'), true);
+  assert.match(await text(p, '#db-view-frames'), /帧 3: DBCata \+ UMA 短程优化/);
+  await p.waitForSelector('#db-3d .m3-stage');
+  await p.click('#db-result [data-view="0"]');
+  assert.match(await text(p, '#db-view-title'), /#0 顶位 · Ni/);
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#db-view [data-save=csv]')]);
+  assert.equal(dl.suggestedFilename(), 'NiPt3-111-OH.csv');
+  await finish(p);
+  // the computer offline
+  p = await open();
+  await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: { ...withDbcata(await res.json()), online: false } }); });
+  await go(p, '/models/index.html#dbcata');
+  await p.waitForFunction(() => /离线/.test(document.getElementById('db-why')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await p.isDisabled('#db-run'), true);
+  await finish(p);
+});
+
+check('English and phone width: the DBCata window has no Chinese left and no sideways scroll', async () => {
+  for (const options of [{}, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]) {
+    const p = await open(options);
+    await p.route(`${API}/uma/health`, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, json: withDbcata(await res.json()) }); });
+    await fakeDbcataJobs(p);
+    p.posts = [];
+    await go(p, `/models/index.html${options.viewport ? '' : '?lang=en'}#dbcata`);
+    await p.waitForFunction(() => !document.getElementById('db-run').disabled, null, { timeout: 30000 });
+    await p.click('#db-run');
+    await p.waitForSelector('#db-result .md-db-table tbody tr', { timeout: 20000 });
+    await p.waitForFunction(() => !document.documentElement.dataset.i18n);
+    await p.waitForTimeout(400);
+    if (!options.viewport) {
+      const left = await p.evaluate(() => {
+        const out = [], w = document.createTreeWalker(document.getElementById('m-dbcata'), NodeFilter.SHOW_TEXT);
+        for (let n = w.nextNode(); n; n = w.nextNode()) if (/[㐀-鿿]/.test(n.nodeValue) && !n.parentElement.closest('script,style,code,textarea')) out.push(n.nodeValue.trim());
+        return out;
+      });
+      assert.deepEqual(left, [], 'no Chinese in the English DBCata window');
+      assert.match(await text(p, '#db-run'), /^Run · 5 uses$/);
+    } else {
+      const wide = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      assert.ok(wide <= 0, `the page scrolls sideways by ${wide} px at phone width`);
+    }
+    await finish(p);
+  }
 });
 
 check('English: the models page has no Chinese left in its windows and a result', async () => {
@@ -4476,12 +4581,15 @@ check('U of T zone and company map: nav entries, graph, filters, cross-links bot
   }
 });
 
-check('News explainers: nav entry, item list and filter, two explainers with key numbers, three working demos, English', async () => {
+check('News explainers: nav entry, item list and filter, three explainers with key numbers, five working demos, English', async () => {
   const p = await open();
   await go(p, '/news/index.html');
   assert.equal(await p.getAttribute('.cr-header a[data-id=news]', 'aria-current'), 'page', 'the news nav entry is current');
-  assert.equal(await p.locator('.nw-card').count(), 2);
-  assert.equal(await p.locator('.nw-item').count(), 2);
+  assert.equal(await p.locator('.nw-card').count(), 3);
+  assert.equal(await p.locator('.nw-item').count(), 3);
+  assert.match(await text(p, '#n-dbcata-adsorption .nw-paper'), /10\.1038\/s41467-026-79243-9[\s\S]*GPL-3\.0/);
+  assert.equal(await p.locator('#n-dbcata-adsorption .nw-paper-l', { hasText: '新闻报道' }).count(), 0, 'no empty coverage row');
+  assert.match(await text(p, '#n-dbcata-adsorption .nw-nums'), /68\.9%/);
   assert.match(await text(p, '#n-mof-radical-pairs .nw-paper'), /10\.1038\/s41467-026-79262-6/);
   assert.match(await text(p, '#n-mof-odmr .nw-nums'), /920 MHz, 150 MHz/);
   await p.click('#nw-filter button[data-f=spectroscopy]');
@@ -4489,7 +4597,19 @@ check('News explainers: nav entry, item list and filter, two explainers with key
   assert.equal(await p.isVisible('#n-mof-odmr'), true);
   await p.click('#nw-filter button[data-f=""]');
   await p.evaluate(() => window.MOLASTRIA_NEWS_START());
-  assert.equal(await p.locator('.nw-demo .sp-plot').count(), 6, 'every demo draws');
+  assert.equal(await p.locator('.nw-demo .sp-plot').count(), 8, 'every demo draws');
+  // Demo: DBCata bridge. Near a rule site with wrong forces the bridge is right and the ML potential wrong; off the rule the bridge fails too.
+  const br = p.locator('#demo-dbcata-adsorption-bridge');
+  const rows = async () => (await br.locator('.sp-out').innerText()).split('\n');
+  let out = (await rows()).join(' ');
+  assert.match(out, /机器学习势的终点离答案\s*0\.\d+（错/);
+  assert.match(out, /布朗桥的终点离答案\s*0\.000（对/);
+  assert.match(out, /桥 \/ 机器学习势答对\s*90% \/ 67%/);
+  await br.locator('button[data-k=pre][data-v=ood]').click();
+  assert.match((await rows()).join(' '), /布朗桥的终点离答案\s*0\.\d+（错/);
+  assert.match(await br.locator('image.nw-heat').getAttribute('href'), /^data:image\/png;base64,/, 'the surface is shaded');
+  // Demo: periodic interpolation. 0.95 → 0.05 is 0.90 cells straight, 0.10 by the nearest image.
+  assert.match(await p.locator('#demo-dbcata-adsorption-pbc .sp-out').innerText(), /0\.90 个晶胞 = 2\.49 Å[\s\S]*0\.10 个晶胞 = 0\.28 Å/);
   // Demo: radical pair. A large J suppresses the T₀ yield.
   const rp = p.locator('#demo-mof-radical-pairs-rp');
   const yieldOf = async () => +(await rp.locator('.sp-out').innerText()).match(/([\d.]+)%/)[1];
@@ -6338,7 +6458,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
@@ -7178,6 +7298,32 @@ check('molstar viewer: the protein MD result plays its Cα trajectory coloured b
   await q.click('#qb-struct-engine [data-eng=mol3d]');
   await q.waitForSelector('#qb-struct-3d.m3-box[data-ready=true]', { timeout: 60000 });
   await finish(q);
+});
+
+check('GPU Particle HIVE (/particles/): presets, storage, guide drawer, English mobile', async () => {
+  const p = await open({ reducedMotion: 'reduce' });
+  await go(p, '/particles/index.html');
+  assert.match(await text(p, 'h1'), /GPU 粒子力场/);
+  assert.equal(await p.locator('.pt-preset').count(), 5);
+  assert.match(await p.evaluate(() => localStorage.getItem('recentProjectPaths') || ''), /argon-lj\.yml/);
+  await p.click('[data-preset="tersoff-covalent"]');
+  assert.match(await p.evaluate(() => localStorage.getItem('recentProjectPaths') || ''), /tersoff-covalent\.yml/);
+  assert.match(await p.evaluate(() => localStorage.getItem('paths/tersoff-covalent.yml') || ''), /tersoff_simple:/);
+  await p.click('#pt-guide');
+  assert.equal(await p.locator('#pt-drawer').isVisible(), true);
+  assert.match(await p.locator('#pt-drawer').innerText(), /tersoff-covalent\.yml/);
+  await finish(p);
+
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await go(e, '/particles/index.html?lang=en');
+  assert.match(await text(e, 'h1'), /GPU Particle HIVE/);
+  assert.doesNotMatch(await e.locator('#pt-bar').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-bar');
+  assert.doesNotMatch(await e.locator('#pt-summary').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-summary');
+  await e.click('#pt-guide');
+  assert.doesNotMatch(await e.locator('#pt-drawer').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-drawer');
+  await e.click('#pt-close');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on phone');
+  await finish(e);
 });
 
 // ── run ─────────────────────────────────────────────────────────────────

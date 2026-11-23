@@ -2153,6 +2153,20 @@
  "核磁共振（NMR）：从 1938 年的分子束实验到 1.2 GHz 磁体、超快魔角旋转、超极化、零场 NMR 和机器学习解谱。十一个部分讲清方法的来龙去脉，八类方法对比，五个可以动手调的演示，203 篇按 DOI 核对过的文献。": [
   "nmr/index.html"
  ],
+ "NMRium 谱图处理 · 在浏览器里处理核磁数据 · MolAstria": [
+  "nmr/nmrium/index.html"
+ ],
+ "NMRium 谱图处理": [
+  "nmr/nmrium/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "NMRium 需要启用 JavaScript。": [
+  "nmr/nmrium/index.html"
+ ],
+ "在浏览器里处理真实的核磁数据：用开源的 NMRium 打开 JCAMP-DX、Bruker 的 zip 或实验文件夹、原始 FID，做傅里叶变换、调相位、校基线、积分、找峰，看二维谱。数据只在你的浏览器里处理，不上传。附三组开放许可的实测示例。": [
+  "nmr/nmrium/index.html"
+ ],
  "谱图馆 · Spectra Hall · MolAstria": [
   "spectra/index.html"
  ],
@@ -8827,10 +8841,6 @@
  "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫 nmrium 处理谱图 jcamp bruker fid 相位 积分 峰": [
   "shared-nav.js"
  ],
- "NMRium 谱图处理": [
-  "shared-nav.js",
-  "tools/build-seo.ts"
- ],
  "91 种分析方法的谱图怎么来、怎么读：红外、质谱、GC-MS、LC-MS、色谱、衍射、热分析、冷冻电镜和高分子表征，附实测谱和 78 个演示": [
   "shared-nav.js"
  ],
@@ -8915,6 +8925,15 @@
   "shared-nav.js"
  ],
  "42 个物理理论和它们之间的关系图": [
+  "shared-nav.js"
+ ],
+ "GPU 粒子力场": [
+  "shared-nav.js"
+ ],
+ "WebGPU 实时万级粒子与多体势模拟：Lennard-Jones、Morse 自组装、Tersoff 共价网络与重力凝聚": [
+  "shared-nav.js"
+ ],
+ "particle hive webgpu gpu simulation 粒子 模拟 力场 lennard jones morse tersoff verlet dbscan": [
   "shared-nav.js"
  ],
  "愿景：工业革命2.5": [
@@ -9551,9 +9570,6 @@
   "api/compute.js"
  ],
  "晶体的声子（phonopy：色散、态密度、热容）": [
-  "api/compute.js"
- ],
- "preset 或 structure + format, supercell, displacement, relax, mesh, t_max": [
   "api/compute.js"
  ],
  "结构图片识别成 SMILES（MolNexTR，每张图 1 次，一次最多 8 张）": [
@@ -18018,7 +18034,37 @@
  "{0} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。 打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。 {1} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.": [
   "deploy/account-worker.js"
  ],
+ "DBCata 只学过 3d、4d、5d 过渡金属和 Al、Ga、In、Tl 组成的 fcc 二元合金": [
+  "deploy/account-worker.js"
+ ],
  "参数（params）必须是一个对象": [
+  "deploy/account-worker.js"
+ ],
+ "参数 {0} 要写一种金属的元素符号，如 Pt": [
+  "deploy/account-worker.js"
+ ],
+ "参数 {0}：{1} 不在训练范围内。{2}": [
+  "deploy/account-worker.js"
+ ],
+ "两种金属要不同：DBCata 学的是二元合金（A3B、AB、AB3），不是纯金属": [
+  "deploy/account-worker.js"
+ ],
+ "参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75": [
+  "deploy/account-worker.js"
+ ],
+ "参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面": [
+  "deploy/account-worker.js"
+ ],
+ "参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：{0}": [
+  "deploy/account-worker.js"
+ ],
+ "参数 polish 只能是 true 或 false": [
+  "deploy/account-worker.js"
+ ],
+ "参数 steps（DBCata 的采样步数）只能是 20、50 或 100": [
+  "deploy/account-worker.js"
+ ],
+ "参数 lattice 只能是 uma 或 vegard": [
   "deploy/account-worker.js"
  ],
  "参数 {0} 的值不在允许的范围内": [
@@ -18060,6 +18106,9 @@
  "这个模型不做这种计算": [
   "deploy/account-worker.js"
  ],
+ "DBCata 通道还没有开放": [
+  "deploy/account-worker.js"
+ ],
  "MACE 模型采用学术软件许可（ASL），不通过 API 提供；可以在网站的在线模型页上使用": [
   "deploy/account-worker.js"
  ],
@@ -18088,6 +18137,9 @@
   "deploy/account-worker.js"
  ],
  "声子计算的晶体是中性的，不要给电荷和自旋多重度": [
+  "deploy/account-worker.js"
+ ],
+ "DBCata 按两种金属、比例、晶面和吸附物自己搭结构，不接受上传的 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
  "SMILES 和 XYZ 只能给一个": [
@@ -18709,6 +18761,12 @@
   "tools/build-seo.ts"
  ],
  "用真实的物理公式玩量子世界的二十个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），3D 立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球导航、量子世界），以及在浏览器里运行的量子化学计算器 QChem Web。": [
+  "tools/build-seo.ts"
+ ],
+ "GPU 粒子力场 · Particle HIVE": [
+  "tools/build-seo.ts"
+ ],
+ "浏览器内置 WebGPU 粒子计算着色器模拟器，支持 Lennard-Jones、Morse 自组装、Tersoff 多体键序势与恒定重力外场，提供三维视角、DBSCAN 实时聚类、均方速率统计与预设 YAML 配置。": [
   "tools/build-seo.ts"
  ],
  "开放模型馆 · Open Model Hall": [

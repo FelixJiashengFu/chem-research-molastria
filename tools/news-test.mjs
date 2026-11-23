@@ -144,3 +144,50 @@ test('radical pair: the hyperfine average has no aliasing revival at long times'
     close(M.stMixAvg(0, 4.76, 5, t), exact, 1e-6, `t = ${t} μs`);
   }
 });
+
+// ── DBCata：二维玩具表面、布朗桥、周期插值 ────────────────────────────────
+test('DBCata toy surface: periodic, three minima with zero gradient, the ML potential is exact near them', () => {
+  for (const [x, y] of [[0.13, 0.71], [0.42, 0.05], [0.9, 0.33]]) {
+    close(M.surfV(x + 1, y), M.surfV(x, y), 1e-12, 'periodic in x');
+    close(M.surfV(x, y - 1), M.surfV(x, y), 1e-12, 'periodic in y');
+  }
+  for (const [x, y] of M.MINIMA) {
+    const g = M.surfGrad(x, y); close(Math.hypot(g[0], g[1]), 0, 1e-9, `zero gradient at ${x},${y}`);
+    close(M.mlipV(x + 0.03, y - 0.02, 1), M.surfV(x + 0.03, y - 0.02), 1e-12, 'ML potential equals V near a minimum');
+  }
+  assert.ok(M.surfV(0.5, 0.5) < M.surfV(0.5, 0) && M.surfV(0.5, 0) < M.surfV(0, 0), 'hollow < bridge < top');
+  assert.ok(Math.abs(M.mlipV(0.3, 0.2, 1) - M.surfV(0.3, 0.2)) > 1e-3, 'the ML potential is wrong far from the minima');
+});
+
+test('DBCata bridge: variance vanishes at both ends, peaks at s/2 halfway; nearest-image interpolation', () => {
+  close(M.bridgeVar(0, 0.02), 0, 0, 'δ at m = 0'); close(M.bridgeVar(1, 0.02), 0, 1e-18, 'δ at m = 1'); close(M.bridgeVar(0.5, 0.02), 0.01, 1e-15, 'δ_max = s/2');
+  const x0 = [0.05, 0.3], y = [0.95, 0.3];
+  close(M.periodicInterp(x0, y, 1, false)[0], 0.95, 1e-12, 'plain interpolation ends on y');
+  close(M.periodicInterp(x0, y, 1, true)[0], -0.05, 1e-12, 'nearest image ends on the image of y next to x0');
+  close(M.periodicInterp(x0, y, 0.5, true)[0], 0, 1e-12, 'halfway is on the boundary, not across the cell');
+  close(M.periodicInterp(x0, y, 0.5, false)[0], 0.5, 1e-12, 'plain interpolation crosses the cell');
+});
+
+test('DBCata bridge: a training guess goes back to its own answer; bridge beats the wrong-force ML potential', () => {
+  const data = M.adsPairs(300, 7, 0.08);
+  for (const p of data.slice(0, 12)) assert.ok(M.pdist(M.bridgeSample(data, p.y).x, p.x) < 0.03, `training guess ${p.y}`);
+  for (const p of data.slice(0, 40)) close(M.pdist(M.relaxTrue(p.y).x, p.x), 0, 1e-12, 'relaxation is deterministic');
+  const tin = M.adsPairs(100, 99, 0.08), tfar = M.adsPairs(100, 123, 0.16);
+  const a = M.adsScore(data, tin, { eps: 0.5 }), b = M.adsScore(data, tfar, { eps: 0.5 }), z = M.adsScore(data, tin, { eps: 0 });
+  assert.equal(z.mlip, 1, 'with ε = 0 the ML potential is the true one');
+  assert.ok(a.bridge >= 0.85 && a.bridge > a.mlip + 0.15, `in distribution: bridge ${a.bridge} vs ML ${a.mlip}`);
+  assert.ok(b.bridge >= 0.8 && b.bridge > b.mlip + 0.4, `far guesses: bridge ${b.bridge} vs ML ${b.mlip}`);
+  // 演示的三个预设：力算错了而桥对；不在规则里时桥也错；数据少时桥错，多了就对
+  const right = (d, y) => M.pdist(M.bridgeSample(d, y).x, M.relaxTrue(y).x) < 0.03;
+  assert.ok(right(data, [0.04, 0.08]) && M.pdist(M.relaxML([0.04, 0.08], 0.5).x, M.relaxTrue([0.04, 0.08]).x) > 0.03, 'preset seen');
+  assert.ok(!right(data, [0.15, 0.69]), 'preset ood');
+  assert.ok(!right(M.adsPairs(20, 7, 0.08), [0.06, 0.94]) && right(data, [0.06, 0.94]), 'preset few');
+});
+
+test('DBCata: the computed numbers in the table', () => {
+  const it = D.items.find((i) => i.id === 'dbcata-adsorption'), v = Object.fromEntries(it.numbers.map((n) => [n[0].en, n[1]]));
+  assert.equal(v['Error reduction'], `${(100 * (1 - 0.0352 / 0.1133)).toFixed(1)}%`);
+  assert.equal(Math.round((100 * 30108) / 1e6), 3);
+  assert.equal(Math.round((5 * 60 * 1000) / 15911), 19);
+  assert.ok(it.code && /^https:\/\/github\.com\//.test(it.code[0]) && /GPL-3\.0/.test(it.code[1] + it.code[2]), 'code link with its licence');
+});

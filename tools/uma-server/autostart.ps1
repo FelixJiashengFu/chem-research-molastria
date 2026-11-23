@@ -1,6 +1,6 @@
 # Starts the MolAstria online models when you sign in to Windows, and keeps them running (start.ps1 -KeepAlive).
 # It puts one shortcut in your own Startup folder: no administrator rights, no scheduled task, no Windows service.
-#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe]
+#   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Install -Python D:\ChemDraw\uma-env\Scripts\python.exe [-MacePython D:\ChemDraw\mace-env\Scripts\python.exe] [-AimnetPython D:\ChemDraw\aimnet-env\Scripts\python.exe] [-MolnextrPython D:\ChemDraw\molnextr-env\python.exe] [-Xtb C:\path\to\xtb.exe] [-Psi4Python D:\ChemDraw\psi4-env\python.exe] [-DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata]
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Status
 #   powershell -ExecutionPolicy Bypass -File tools\uma-server\autostart.ps1 -Remove
 # The models start after you sign in, not when the computer is switched on: the GPU and the tunnel's login belong
@@ -16,6 +16,8 @@ param(
   [string]$MolnextrPython = $env:MOLASTRIA_MOLNEXTR_PYTHON,
   [string]$Xtb = $env:MOLASTRIA_XTB,
   [string]$Psi4Python = $env:MOLASTRIA_PSI4_PYTHON,
+  [string]$DbcataPython = $env:MOLASTRIA_DBCATA_PYTHON,
+  [string]$DbcataDir = $env:MOLASTRIA_DBCATA_DIR,
   [string]$Tunnel = 'molastria-uma'
 )
 $link = Join-Path ([Environment]::GetFolderPath('Startup')) 'MolAstria online models.lnk'
@@ -24,7 +26,7 @@ $log = Join-Path $PSScriptRoot 'keepalive.log'
 
 if ($Install) {
   if (-not $Python) { Write-Error 'Pass -Python (the python.exe of the environment with fairchem-core and rdkit) or set MOLASTRIA_UMA_PYTHON.'; exit 2 }
-  foreach ($path in @($Python, $MacePython, $AimnetPython, $MolnextrPython, $Psi4Python, $start) | Where-Object { $_ }) {
+  foreach ($path in @($Python, $MacePython, $AimnetPython, $MolnextrPython, $Psi4Python, $DbcataPython, $DbcataDir, $start) | Where-Object { $_ }) {
     if (-not (Test-Path $path)) { Write-Error "Not found: $path"; exit 2 }
   }
   $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$start`" -KeepAlive -Python `"$Python`" -Tunnel `"$Tunnel`""
@@ -33,6 +35,7 @@ if ($Install) {
   if ($MolnextrPython) { $arguments += " -MolnextrPython `"$MolnextrPython`"" }
   if ($Xtb) { $arguments += " -Xtb `"$Xtb`"" }
   if ($Psi4Python) { $arguments += " -Psi4Python `"$Psi4Python`"" }
+  if ($DbcataPython -and $DbcataDir) { $arguments += " -DbcataPython `"$DbcataPython`" -DbcataDir `"$DbcataDir`"" }
   $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($link)
   $shortcut.TargetPath = (Get-Command powershell.exe).Source
   $shortcut.Arguments = $arguments
