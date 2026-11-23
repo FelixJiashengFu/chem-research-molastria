@@ -14,11 +14,14 @@
   <link rel="stylesheet" href="../../fundamental-science/fundamental.css">
   <link rel="stylesheet" href="qb.css">
   <link rel="stylesheet" href="../../viewer/mol3d.css">
+  <link rel="stylesheet" href="../../viewer/molstar.css">
   <script src="../../shared-nav.js" defer></script>
   <script src="qb-data.js" defer></script>
   <script src="qb-math.js" defer></script>
   <script src="qb-models.js" defer></script>
   <script src="../../viewer/mol3d.js" defer></script>
+  <script src="../../viewer/molstar-core.js" defer></script>
+  <script src="../../viewer/molstar.js" defer></script>
   <script src="../../cite/cite-core.js" defer></script>
   <script src="../../cite/cite.js" defer></script>
   <script src="qb.js" defer></script>
@@ -73,6 +76,7 @@
     <h2 id="qb-structures-h">结构馆：看得见的分子</h2>
     <p class="muted" id="qb-struct-note"></p>
     <div class="qb-struct-pick" role="group" aria-label="选择结构" id="qb-struct-pick"></div>
+    <div class="qb-struct-engine" role="group" aria-label="选择查看器" id="qb-struct-engine" hidden></div>
     <div class="qb-struct-body">
       <div class="qb-struct-3d" id="qb-struct-3d"></div>
       <div class="qb-struct-text" id="qb-struct-text" aria-live="polite"></div>

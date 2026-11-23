@@ -31,3 +31,22 @@
 .mdf-peaks th,.mdf-peaks td{padding:3px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:normal}
 .mdf-peaks th:first-child,.mdf-peaks td:first-child{text-align:left}
 .mdf-peaks tr.is-weak td{color:var(--muted)}
+/* 看一段蛋白质轨迹（md-protein.js + ../viewer/molstar.js） */
+.mdp{display:grid;gap:16px}
+.mdp-src{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.mdp-card{display:grid;align-content:start;gap:8px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.mdp-card h3{margin:0;font-size:15px}
+.mdp-card p{margin:0}
+.mdp-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
+.mdp-row select,.mdp-row input:not([type=file]){font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.mdp-row input#mdp-id{width:8em;font-family:var(--font-mono)}
+.mdp-row input[type=file]{max-width:100%;font-size:12.5px;color:var(--ink-2)}
+.mdp-card .button{justify-self:start}
+.mdp-rmsf{width:100%;height:auto;max-height:130px}
+.mdp-ax{stroke:var(--line-strong);stroke-width:1}
+.mdp-fr{fill:none;stroke:var(--accent-text);stroke-width:2}
+.mdp-th{fill:none;stroke:var(--gold-ink, var(--gold));stroke-width:1.5;stroke-dasharray:4 3}
+.mdp-tx{font-size:9.5px;fill:var(--muted)}
+.mdp-tx-fr{fill:var(--accent-text)}
+.mdp-why{color:var(--danger);margin:0;min-height:1em}
+.mdp-view{min-width:0}

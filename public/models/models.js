@@ -795,11 +795,12 @@
       x.view = v;
       const lab = x.r.job === 'ipea' && x.r.model === 'uma-s-1p2p1' && Number.isFinite(x.r.ip_uma_s ?? x.r.ip_ev) && x.r.ip_ev !== undefined;
       const head = `<h3>${x.flow ? `<span class="md-flow-n">第 ${x.flow} 步</span>` : ''}<span>计算完成 · ${esc(M.name)} · ${esc(JOBS[x.r.job]?.name || x.r.job)}${x.r.fake ? '（测试数据）' : ''}</span></h3>`;
-      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`;
+      const btns = `<div class="btns">${lab ? `<button type="button" class="button primary small" data-act="lab" data-i="${i}">导入 AI 实验室 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.csv ? `<button type="button" class="button small" data-act="csv" data-i="${i}">复制 CSV</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 结构</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="xyz" data-i="${i}">下载结构（.xyz${(v.xyz.match(/^\s*\d+\s*$/gm) || []).length > 1 ? '，多帧' : ''}）</button>` : ''}${v.xyz ? `<button type="button" class="button small" data-act="code" data-i="${i}">送进代码台写输入 <i class="ico-ext ico-right" aria-hidden="true"></i></button>` : ''}${v.pdb ? `<button type="button" class="button small" data-act="3d" data-i="${i}" aria-expanded="false">3D 轨迹（Cα）</button><button type="button" class="button small" data-act="pdb-traj" data-i="${i}">下载轨迹（.pdb，多帧）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="pdb-final" data-i="${i}">下载最终结构（.pdb）</button>` : ''}</div>`
+        + (v.pdb && window.MolAstriaMolstar ? `<div class="btns md-ms-btns"><span class="muted small">用 Mol* 看：</span><button type="button" class="button small" data-act="ms" data-src="traj" data-i="${i}" aria-expanded="false">轨迹（按 RMSF 着色）</button>${x.r.pdb_id ? `<button type="button" class="button small" data-act="ms" data-src="start" data-i="${i}" aria-expanded="false">起始结构（RCSB ${esc(x.r.pdb_id)}）</button>` : ''}${v.finalPdb ? `<button type="button" class="button small" data-act="ms" data-src="final" data-i="${i}" aria-expanded="false">最终结构（全部重原子）</button>` : ''}</div>` : '');
       const what = M.kind === 'ff' ? '经典力场的模拟，不是量子化学计算' : M.tier === 'open' ? '半经验量子化学（xTB）的结果，不是 DFT 计算' : '机器学习势的预测，不是 DFT 计算';
       const foot = `<p class="muted small">用时 ${x.r.seconds ?? '?'} 秒 · <span>${what}</span>${x.r.direct_forces ? '<span> · 直接受力型模型：力不是能量的导数，频率由受力差分得到</span>' : ''}。</p>`;
       const body = shown.length > 1 ? `<details${i === 0 || (x.flow && new Set(shown.map((y) => y.model)).size === 1) ? ' open' : ''}><summary>完整结果</summary>${v.html}</details>` : v.html;
-      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${foot}</div>`;
+      html += `<div class="md-res" data-i="${i}">${head}${body}${btns}<div class="md-3d" hidden></div>${v.pdb ? '<div class="md-ms" hidden></div>' : ''}${foot}</div>`;
     });
     box.innerHTML = html;
   }
@@ -820,6 +821,20 @@
       box.hidden = !open; b.setAttribute('aria-expanded', String(open));
       const src = x.view.pdb ? { pdb: x.view.pdb, label: `${x.r.pdb_id} 的 Cα 轨迹` } : { xyz: x.view.xyz, label: `${MODELS[x.model]?.name || ''} 算出的结构` };
       if (open && !box.dataset.ready && window.MolAstriaMol3D) window.MolAstriaMol3D.mount(box, { ...src, name: stem }).catch(() => { /* the box says why */ });
+    }
+    if (b.dataset.act === 'ms') { // Mol* (viewer/molstar.js): the Cα trajectory coloured by RMSF, the PDB entry it started from, or the final heavy-atom structure
+      const res = b.closest('.md-res'), box = res.querySelector('.md-ms'), want = b.dataset.src;
+      const again = !box.hidden && box.dataset.src === want;
+      for (const o of res.querySelectorAll('[data-act=ms]')) o.setAttribute('aria-expanded', String(!again && o === b));
+      box.ms?.destroy();
+      box.hidden = again;
+      if (again) { delete box.dataset.src; return; }
+      box.dataset.src = want;
+      const r = x.r, rmsf = r.rmsf || [];
+      const opts = want === 'traj' ? { pdbText: x.view.pdb, rmsf, label: `${r.pdb_id} 的 Cα 轨迹`, name: `${stem}_trajectory` }
+        : want === 'final' ? { pdbText: x.view.finalPdb, rmsf, color: 'chain-id', label: `${r.pdb_id} 模拟结束时的结构`, name: `${stem}_final` }
+          : { pdbId: r.pdb_id, label: `${r.pdb_id}（RCSB PDB）`, name: r.pdb_id };
+      window.MolAstriaMolstar?.open(box, opts).catch(() => { /* the box says why */ });
     }
     if (b.dataset.act === 'pdb-traj') save(`${stem}_trajectory_ca.pdb`, x.view.pdb, 'chemical/x-pdb');
     if (b.dataset.act === 'pdb-final') save(`${stem}_final.pdb`, x.view.finalPdb, 'chemical/x-pdb');
