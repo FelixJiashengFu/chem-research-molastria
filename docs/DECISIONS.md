@@ -2,6 +2,12 @@
 
 记录做过的取舍和原因，免得以后重新争论。新的写在最上面。要改某个决定，就新加一条说明为什么改，不要删旧的。
 
+## 2026-11-22 GPU 粒子力场（Particle HIVE）：直接收入改良后的 MIT 构建并外包双语壳
+
+结论：采用 `0ffz/particle-hive`（MIT 许可，作者 Danielle Voznyy）并合入我们提交给上游的修复（PR #11：非 2 的幂次粒数归约越界、DBSCAN 簇索引映射、空 `lennardJones` 边界墙回退、直方图分桶防越界、未命名项目编辑保存、`Mode.PRODUCTION` 包体减半、加载遮罩与 WebGPU 兼容性提示），由 `tools/vendor-particles.ts` 将精简构建（去掉 2.3 MB `.map`，保留 `LICENSE` 与 `NOTICE.txt`，共约 2.2 MB）放入 `public/particles/app/`；外层 `public/particles/`（`translate="no"`）负责中英双语顶栏、WebGPU 检测徽章、五组物理化学 YAML 预设写入 `localStorage`（`paths/<name>.yml` + `recentProjectPaths`）以及力场指南抽屉。
+
+为什么不用 JS 重写：Particle HIVE 使用 Kool WebGPU compute shaders 完成网格空间哈希、GPU 双调排序与万级粒子实时积分，直接收入 MIT 授权构建兼顾万级性能与开源署名。同时保留 `LICENSE`、`NOTICE.txt`、`VERSION.txt` 与独立归属说明，并让 `tools/build-seo.ts` 跳过 `particles/app/`。
+
 ## 2026-11-22 DBCata：GPL 的代码放在单独的进程里，只接受训练范围内的体系，等权重许可和站长点头才开放
 
 站长要把 DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9；github.com/Songze1019/DBCata，GPL-3.0）接进在线模型。做法：站长电脑的 `server.py` 加第七条通道 `dbcata`（计算 `adsgen`），由 `dbcata_worker.py` 在 DBCata 自己的环境里生成结构，UMA 的 oc20 任务算能量；模型接口页加“⑦ 合金表面吸附结构”。

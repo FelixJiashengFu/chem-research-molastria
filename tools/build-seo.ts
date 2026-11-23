@@ -333,6 +333,7 @@ const mains = [
   await injectHead("research-atlas/index.html", "research-atlas/", { jsonld: [{ "@context": "https://schema.org", "@type": "Dataset", name: "中美·研究图谱", inLanguage: "zh-CN", url: SITE + "research-atlas/", isAccessibleForFree: true, license: "https://creativecommons.org/publicdomain/zero/1.0/", creator: { "@type": "Person", name: "Jiasheng Fu" }, description: "中美二十所大学的数学、物理、化学教授合作网络，北美与中国量子化学 / 计算化学课题组地图，Top 20 学者档案，中美细分方向对比与北美计算化学产业报告。数据来自 OpenAlex。" }] }),
   await injectHead("physics-realms/index.html", "physics-realms/", { jsonld: [{ "@context": "https://schema.org", "@type": "LearningResource", name: "物理疆界图 · Realms of Physics", inLanguage: ["zh-CN", "en"], url: SITE + "physics-realms/", isAccessibleForFree: true, learningResourceType: "interactive graph", provider: { "@type": "Organization", name: "MolAstria", url: SITE }, description: "经典力学、电磁学、热力学与统计物理、相对论、量子力学、量子场论、凝聚态、宇宙学与量子引力前沿的理论，连同它们能解释和解释不了的问题，画成一张网状图；每个理论都写明适用范围和失效之处。", about: ["classical mechanics", "electromagnetism", "thermodynamics", "statistical mechanics", "special relativity", "general relativity", "quantum mechanics", "quantum field theory", "condensed matter physics", "cosmology", "quantum gravity", "domain of validity"] }, crumbs([["首页", ""], ["物理疆界图", "physics-realms/"]])] }),
   await injectHead("qchem/index.html", "qchem/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "MolAstria 游乐场", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: "zh-CN", url: SITE + "qchem/", isAccessibleForFree: true, description: "用真实的物理公式玩量子世界的二十个小游戏：量子化学（盒中粒子、氢原子轨道、电子排布、量子隧穿、Hückel 芳香性、氢原子光谱），量子嘉年华（Stern–Gerlach 自旋过滤、CHSH 贝尔游戏、量子电路拼图、三比特纠错、Grover 搜索、噪声辅助的能量传递、二维波包画墙），物理疆界（普朗克单位、ħ-c-G 立方体），3D 立体馆（价层电子对排布、手性 R/S、密勒晶面、Bloch 球导航、量子世界），以及在浏览器里运行的量子化学计算器 QChem Web。" }] }),
+  await injectHead("particles/index.html", "particles/", { jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: "GPU 粒子力场 · Particle HIVE", applicationCategory: "EducationalApplication", operatingSystem: "Web", inLanguage: ["zh-CN", "en"], url: SITE + "particles/", isAccessibleForFree: true, codeRepository: "https://github.com/0ffz/particle-hive", license: "https://opensource.org/licenses/MIT", description: "浏览器内置 WebGPU 粒子计算着色器模拟器，支持 Lennard-Jones、Morse 自组装、Tersoff 多体键序势与恒定重力外场，提供三维视角、DBSCAN 实时聚类、均方速率统计与预设 YAML 配置。" }] }),
   await injectHead("open-models/index.html", "open-models/", { jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "开放模型馆 · Open Model Hall", inLanguage: ["zh-CN", "en"], url: SITE + "open-models/", isAccessibleForFree: true, description: "Meta、Google DeepMind、微软、英伟达、深势科技、字节跳动、IBM、百度、Orbital Materials、Chai Discovery、Rowan、上海人工智能实验室、商汤科技开放给科研的化学、材料与生物分子 AI 模型、科学大模型、数据集和工具，每条写明使用条件和原始出处，并按任务比较。", about: ["machine-learning interatomic potentials", "protein structure prediction", "generative materials design", "machine-learned density functionals"] }] }),
   await injectHead("open-models/deepmind/index.html", "open-models/deepmind/"),
   await injectHead("open-models/microsoft/index.html", "open-models/microsoft/"),
@@ -412,6 +413,7 @@ const urls = [
   ["learn/", "0.8", "monthly"],
   ["extract/", "0.7", "monthly"],
   ["workbench/", "0.8", "monthly"],
+  ["particles/", "0.8", "monthly"],
   ["chat/", "0.7", "daily"],
   ["open-models/", "0.8", "monthly"],
   ["open-models/deepmind/", "0.6", "monthly"],
@@ -460,7 +462,7 @@ const htmlFiles = async (dir: string): Promise<string[]> => {
   const out: string[] = [];
   for await (const e of Deno.readDir(new URL(dir, pub))) {
     const path = dir + e.name;
-    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app" && path !== "research-atlas/app") out.push(...await htmlFiles(path + "/"));
+    if (e.isDirectory && path !== "radar/app" && path !== "qchem/app" && path !== "research-atlas/app" && path !== "particles/app") out.push(...await htmlFiles(path + "/"));
     else if (e.isFile && path.endsWith(".html") && path !== "offline.html") out.push(path);
   }
   return out;

@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -6270,7 +6270,7 @@ check('home glass switches: loaded only near view, silent until pressed, one pla
   await finish(p);
 });
 check('phone width: no sideways scrolling', async () => {
-  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
+  for (const path of ['/index.html', '/manual/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/fundamental-science/index.html', '/fundamental-science/math/index.html', '/quantum/biology/index.html', '/quantum/algorithms/index.html', '/quantum/computing/index.html', '/nmr/index.html', '/news/index.html', '/toronto/index.html', '/industry/index.html', '/spectra/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/pro/index.html', '/pro/account.html', '/hub/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/meta/index.html', '/models/index.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/chat/index.html']) {
     const p = await open({ viewport: { width: 390, height: 844 } });
     await go(p, path);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `sideways scroll on ${path}`);
@@ -6789,6 +6789,32 @@ check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from 
     assert.doesNotMatch(await e.innerText(`#wb-p-${id}`), /[一-鿿]/, `no Chinese left on the English ${id} tab`);
     assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `no sideways scroll on a phone (${id})`);
   }
+  await finish(e);
+});
+
+check('GPU Particle HIVE (/particles/): presets, storage, guide drawer, English mobile', async () => {
+  const p = await open({ reducedMotion: 'reduce' });
+  await go(p, '/particles/index.html');
+  assert.match(await text(p, 'h1'), /GPU 粒子力场/);
+  assert.equal(await p.locator('.pt-preset').count(), 5);
+  assert.match(await p.evaluate(() => localStorage.getItem('recentProjectPaths') || ''), /argon-lj\.yml/);
+  await p.click('[data-preset="tersoff-covalent"]');
+  assert.match(await p.evaluate(() => localStorage.getItem('recentProjectPaths') || ''), /tersoff-covalent\.yml/);
+  assert.match(await p.evaluate(() => localStorage.getItem('paths/tersoff-covalent.yml') || ''), /tersoff_simple:/);
+  await p.click('#pt-guide');
+  assert.equal(await p.locator('#pt-drawer').isVisible(), true);
+  assert.match(await p.locator('#pt-drawer').innerText(), /tersoff-covalent\.yml/);
+  await finish(p);
+
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await go(e, '/particles/index.html?lang=en');
+  assert.match(await text(e, 'h1'), /GPU Particle HIVE/);
+  assert.doesNotMatch(await e.locator('#pt-bar').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-bar');
+  assert.doesNotMatch(await e.locator('#pt-summary').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-summary');
+  await e.click('#pt-guide');
+  assert.doesNotMatch(await e.locator('#pt-drawer').innerText(), /[一-鿿]/, 'no Chinese left on English #pt-drawer');
+  await e.click('#pt-close');
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on phone');
   await finish(e);
 });
 
