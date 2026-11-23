@@ -401,6 +401,38 @@ AI 家教，全部在浏览器里：`learn-core.js` 是纯逻辑，`learn-source
 
 **加一个在线模型：** 先在 GPU 上测：能加载、FEC 优化收敛，再在 ETKDG 结构上算苯、乙醇、水的垂直 IP（实验约 9.2 / 10.5 / 12.6 eV）。接近的才开放 IP/EA；偏差大（OMol-0 时期的模型常见）就只开放中性分子的几何优化（`charged: False`）。然后改 `server.py` 的 `MODELS`、`deploy/account-worker.js` 的 `UMA_MODELS`（新许可要想清楚放哪一档）、`public/meta/meta.js` 的 `ONLINE` 和 `index.html` 的选项、`tools/account-local.ts` 的假电脑；跑测试，部署账号服务，重启 `start.ps1`。
 
+### DBCata 通道（合金表面吸附结构，还没开放）
+
+模型接口页的“⑦ 合金表面吸附结构”：访客选两种金属、比例（A₃B / AB / AB₃）、晶面（111 / 110）和 12 种吸附物之一，站长电脑搭出每个不等价位点的初始结构，DBCata（Huo & Cao，Nat. Commun. 2026，doi:10.1038/s41467-026-79243-9）一步生成接近 DFT 弛豫的结构，四条规则（原子相撞、吸附物解离、脱附、表面重构）和分类器（有权重时）标异常，UMA-S 1.1 的 oc20 任务算能量（默认再做一段 fmax 0.05、最多 100 步的短程优化）。模型 `dbcata`，计算 `adsgen`，次数 5（不做短程优化 3），免费账号也能用，一次最多 32 个位点、900 秒。
+
+**许可：** DBCata 的代码是 GPL-3.0，Figshare 上的权重标的是“GPL”（没写版本）。仓库里不放 DBCata 的任何代码、权重和数据，也不进桌面版；`tools/uma-server/dbcata_worker.py` 这一个文件是 GPL-3.0-or-later（文件头的 SPDX 行），在 DBCata 自己的环境里作为单独的进程运行，`server.py` 只和它交换 JSON 行。出处和许可全文的位置写在 `tools/uma-server/THIRD-PARTY-DBCata.md`。决定见 `docs/DECISIONS.md` 2026-11-22。
+
+**装（站长电脑）：** DBCata 用自己的 venv（实测 `D:\ChemDraw\DBCata\.venv`：Python 3.12、torch 2.6.0+cu124、torch_geometric 2.7.0、lightning 2.2.5、fairchem-core 2.13.0），权重放在 checkout 的 `checkpoints\`。启动时加两个参数（两个都给才启用，只给一个 `start.ps1` 会提示）：
+
+```powershell
+.\tools\uma-server\start.ps1 -DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata
+.\tools\uma-server\autostart.ps1 -Install -DbcataPython D:\ChemDraw\DBCata\.venv\Scripts\python.exe -DbcataDir D:\ChemDraw\DBCata
+```
+
+也可以设环境变量 `MOLASTRIA_DBCATA_PYTHON`、`MOLASTRIA_DBCATA_DIR`。`server.py` 用那个 Python 起一个常驻的 `dbcata_worker.py`（工作目录是 DBCata 的 checkout），超时或出错就结束它，下一个任务再起。worker 另外认：`MOLASTRIA_DBCATA_CKPT`（生成模型的权重，默认在 `checkpoints\` 里找能当 `pl_module_cart` 载入的那个，有几个时取名字里有 `epoch=999` 的）、`MOLASTRIA_DBCATA_BC_CKPT`（分类器，默认找能当 `pl_module_v` 载入的；没有就只用四条规则）、`MOLASTRIA_DBCATA_UMA`（默认 `uma-s-1p1`，也可以是 .pt 的路径）、`MOLASTRIA_DBCATA_DEVICE`（cuda / cpu）。没给参数时健康检查里 `dbcata` 是“未就绪”，errors.dbcata 写着原因，其他模型不受影响。
+
+**开放之前先核对训练范围：** 在 DBCata 的环境里对数据集跑一遍（只读，不改任何东西）：
+
+```powershell
+D:\ChemDraw\DBCata\.venv\Scripts\python.exe tools\uma-server\dbcata_domain_check.py D:\ChemDraw\DBCata\data\cathub\val.pkl
+```
+
+它报出吸附物名单、每块板的原子数和固定原子数、真空层、晶面、吸附物初始高度、晶格常数和 Vegard 估计的差别；名单或 12 原子 / 8 固定对不上时退出码是 1。要看的：吸附物是不是那 12 种、真空是每边 10 Å 还是一共 10 Å、初始结构里结合原子离位点多高（这里放在位点上方 1.5 Å）。对不上就改 `dbcata_core.py` 的常量和 `test_dbcata.py`。
+
+**开放（站长决定之后）：** 账号服务里这条通道默认关着：`deploy/wrangler.toml` 的 `DBCATA_ENABLED = "0"` 时 `/uma/jobs` 和 `/v1/jobs` 对 `dbcata` 一律回 503（`not_open`），健康检查和 `/v1/models` 里也不列它，网页上不显示这个页签。开放的步骤：
+
+1. Figshare 上权重的许可确认（GPL 哪个版本），站长同意；
+2. 站长电脑上按上面装好，跑一次 `dbcata_domain_check.py`，在网页上用站长账号试几个体系（打开 `/models/#dbcata` 能直接看到面板，只是按钮不可用）；
+3. 把 `DBCATA_ENABLED` 改成 `"1"`，用 `/ship-worker` 部署；
+4. 再补上计算接口的文档：`public/api/compute.js`、`node tools/build-api.mjs` 生成的 openapi 和 chemdb-agent 的模型清单，以及 `tools/account-test.ts`、`tools/api-test.mjs` 里 `/v1/models` 的数目。
+
+**测（不要 GPU、不要 DBCata）：** `python tools/uma-server/test_dbcata.py`（结构、位点、四条规则、DMAE、参考能量、worker 的协议，用 `MOLASTRIA_DBCATA_TOY=1` 的假引擎）、`python tools/uma-server/test_server_fake.py`、`deno run --allow-read tools/account-test.ts`（开关、规范化、所有拒绝和次数）、`node --test tools/dbcata-test.mjs`（网页、电脑、账号服务三处的名单和次数一致）、`node tools/e2e/run.mjs DBCata`（页签、表单、结果表、3D、英文、手机宽度）。
+
 ## 云端 GPU 批量计算（UMA + MACE-OFF23）
 
 站长自己的谷歌云 L4 虚拟机，只给 AI 实验室跑批量计算，不对外服务：没有公网端口，全部经 `gcloud compute ssh` / `scp`。

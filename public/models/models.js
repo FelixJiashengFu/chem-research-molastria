@@ -1,5 +1,6 @@
 /* 量子化学模型接口：站长电脑上的 15 个机器学习势和 xTB 的 4 种方法，经账号服务（/uma/*，在线模型 API v3）排队计算。
    五个窗口按模型类别分：① 带电荷与自旋的分子模型 ② 中性分子通用模型 ③ 有机分子力场 ④ 分子性质模型 ⑤ 半经验量子化学（xTB）。
+   ⑥ 蛋白质分子动力学；⑦ 合金表面吸附结构（DBCata）是自成一体的面板，在 dbcata.js（EXTRA），这里只切换和转交 health。
    RDKit 与 lab/chem.js 共用。页面只决定能不能提交；次数、许可和每人一个任务由账号服务和站长电脑检查。 */
 (() => {
   'use strict';
@@ -137,6 +138,9 @@
   };
 
   // ── 状态 ────────────────────────────────────────────────────────────────
+  // Windows with a panel of their own (dbcata.js puts its tab and panel into the page before this file runs).
+  const EXTRA = window.MolAstriaDbcata ? { dbcata: window.MolAstriaDbcata } : {};
+  const isWin = (w) => !!GROUPS[w] || !!EXTRA[w];
   const tabs = [...document.querySelectorAll('#m-tabs [data-win]')];
   const S = { win: 'charged', model: {}, job: {}, values: {}, compare: new Set(), mode: 'smiles' };
   let health = null, online = false, busy = false;
@@ -368,8 +372,16 @@
 
   // ── 同步界面 ────────────────────────────────────────────────────────────
   function sync() {
-    const grp = G();
     tabs.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.win === S.win)));
+    for (const [w, x] of Object.entries(EXTRA)) x.activate(w === S.win, health);
+    $('m-panel').hidden = !!EXTRA[S.win];
+    if (EXTRA[S.win]) { // its own form; the model cards below show its card
+      $('m-cards').innerHTML = EXTRA[S.win].card();
+      $('m-model').dataset.win = '';
+      status();
+      return;
+    }
+    const grp = G();
     $('m-win-about').textContent = grp.intro;
     const msel = $('m-model'), jsel = $('m-job');
     if (msel.dataset.win !== S.win) { // a new window: its own models and jobs
@@ -442,9 +454,9 @@
     if (!health) return;
     if (health.configured === false || !umaApi()) { box.innerHTML = '<span class="chip warn">! 在线计算服务还没有开通</span>'; return; }
     if (!online) { box.innerHTML = '<span class="chip warn">! 站长的 GPU 现在离线，请稍后再来；也可以用 <a href="../meta/index.html#uma">Meta 页的脚本</a>在自己的电脑上算</span>'; return; }
-    const ready = Object.entries(health.models || {}).filter(([id, m]) => m.ready && MODELS[id]).length;   // 只数这一页的模型（quacc 的三个在代码台）
-    const M = MODELS[$('m-model').value], s = st($('m-model').value);
-    box.innerHTML = `<span class="chip ok">✓ 在线 · ${ready} 个模型${health.gpu ? ` · ${esc(health.gpu)}` : ''}</span>${s ? `<span class="chip" id="m-queue">${esc(M.name)}：${s.running ? '正在为一位访客计算' : '空闲'}，排队 ${Number(s.queue) || 0} 个</span>` : ''}`;
+    const ready = Object.entries(health.models || {}).filter(([id, m]) => m.ready && (MODELS[id] || EXTRA[id])).length;   // 只数这一页的模型（quacc 的三个在代码台）
+    const id = EXTRA[S.win] ? S.win : $('m-model').value, s = st(id), name = EXTRA[S.win]?.name || MODELS[id].name;
+    box.innerHTML = `<span class="chip ok">✓ 在线 · ${ready} 个模型${health.gpu ? ` · ${esc(health.gpu)}` : ''}</span>${s ? `<span class="chip" id="m-queue">${esc(name)}：${s.running ? '正在为一位访客计算' : '空闲'}，排队 ${Number(s.queue) || 0} 个</span>` : ''}`;
   }
   async function refresh() {
     if (!umaApi()) { health = { configured: false }; online = false; sync(); return; }
@@ -848,18 +860,19 @@
 
   // ── 事件 ────────────────────────────────────────────────────────────────
   function setWin(win, focus = false) {
-    if (!GROUPS[win] || busy) return;
+    if (!isWin(win) || busy) return;
     S.win = win;
     store.set('molastria-models-win', win);
     if (location.hash.slice(1) !== win) history.replaceState(null, '', `#${win}`);
     sync();
     if (focus) tabs.find((b) => b.dataset.win === win)?.focus();
   }
-  tabs.forEach((b, i) => {
+  tabs.forEach((b) => {
     b.addEventListener('click', () => setWin(b.dataset.win));
     b.addEventListener('keydown', (e) => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (d) { e.preventDefault(); setWin(tabs[(i + d + tabs.length) % tabs.length].dataset.win, true); }
+      const shown = tabs.filter((t) => !t.hidden), k = shown.indexOf(b);
+      if (d && k >= 0) { e.preventDefault(); setWin(shown[(k + d + shown.length) % shown.length].dataset.win, true); }
     });
   });
   function onSmiles() {
@@ -911,7 +924,7 @@
   $('m-compare').addEventListener('change', (e) => { if (e.target.checked) S.compare.add(e.target.value); else S.compare.delete(e.target.value); sync(); });
 
   const start = location.hash.slice(1);
-  S.win = GROUPS[start] ? start : GROUPS[store.get('molastria-models-win')] ? store.get('molastria-models-win') : 'charged';
+  S.win = isWin(start) ? start : GROUPS[store.get('molastria-models-win')] ? store.get('molastria-models-win') : 'charged';
   sync();
   refresh();
   window.MolAstriaSketch?.attach($('m-smiles')); // “画结构”按钮：画完填回 SMILES（viewer/sketch.js）

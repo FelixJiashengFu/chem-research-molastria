@@ -1,0 +1,34 @@
+/* 量子化学模型接口的“⑦ 合金表面吸附结构（DBCata）”窗口（dbcata.js）。只用 shared-nav.css 的颜色变量。 */
+.md-tabs:has(>[data-win=dbcata]:not([hidden])){grid-template-columns:repeat(7,minmax(0,1fr))}
+.md-db-domain{display:grid;gap:4px;margin:0 0 14px;padding:10px 14px;border-left:3px solid var(--info);background:color-mix(in srgb,var(--info) 7%,transparent);font-size:13px;line-height:1.7}
+.md-db-domain b{font-size:13px}
+.md-db-facets{margin-top:10px}
+.md-db-ads{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.md-db-ads label{flex-direction:row!important;align-items:center;justify-content:center;gap:0!important;position:relative;min-height:36px;border:1px solid var(--line-strong);border-radius:4px;background:var(--paper);cursor:pointer;font-family:var(--font-num);font-size:14px;color:var(--ink)!important}
+.md-db-ads input{position:absolute;opacity:0;pointer-events:none}
+.md-db-ads label:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--paper));font-weight:600}
+.md-db-ads label:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.md-db-best{font-size:14px!important}
+.md-db-table td,.md-db-table th{white-space:nowrap}
+.md-db-table td:nth-child(2){white-space:normal;min-width:9em}
+.md-db-table tr.md-db-top td{background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.md-db-table tr[data-bad=true] td{color:var(--muted)}
+.md-db-table tr[data-shown] td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.md-db-flag{display:inline-block;padding:0 6px;border-radius:3px;border:1px solid color-mix(in srgb,var(--danger) 45%,transparent);color:var(--danger);font-size:12px;line-height:1.6}
+.md-db-ok{color:var(--muted);font-size:12px}
+.md-db-view{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.md-db-view-head{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font-size:13px}
+.md-db-view .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.md-db-cite{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:13px}
+.md-db-cite p{margin:4px 0}
+.md-db-cite a{white-space:nowrap}
+@media (max-width:1180px){
+  .md-tabs:has(>[data-win=dbcata]:not([hidden])){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .md-tabs [data-win=dbcata]{grid-column:1/-1}
+}
+@media (max-width:900px){
+  .md-tabs:has(>[data-win=dbcata]:not([hidden])){grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:480px){
+  .md-db-ads{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
