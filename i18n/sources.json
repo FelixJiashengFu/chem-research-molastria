@@ -9398,6 +9398,9 @@
  "quacc 表面能（EMT，最大晶面指数 2 时 5 次）": [
   "api/compute.js"
  ],
+ "DBCata 合金表面吸附结构（默认带 UMA 短程优化 5 次，不优化 3 次）": [
+  "api/compute.js"
+ ],
  "必填": [
   "api/compute.js"
  ],

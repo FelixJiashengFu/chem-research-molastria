@@ -24,7 +24,8 @@
     ['pa', '质子亲和能与去质子化能', 2, 'site*, mode, thermo, temperature'],
     ['pmd', '蛋白质分子动力学', 5, 'pdb_id*, chains, ps, temperature'],
     ['qflow', 'quacc 批量计算（每个分子 1 次，带频率 3 次，Psi4 2 次）', 1, 'items*, recipe, fmax, temperature, method, basis'],
-    ['qslab', 'quacc 表面能（EMT，最大晶面指数 2 时 5 次）', 3, 'element*, max_index']
+    ['qslab', 'quacc 表面能（EMT，最大晶面指数 2 时 5 次）', 3, 'element*, max_index'],
+    ['adsgen', 'DBCata 合金表面吸附结构（默认带 UMA 短程优化 5 次，不优化 3 次）', 3, 'metal_a*, metal_b*, ratio*, facet*, adsorbate*, polish, steps, lattice']
   ];
   const NAME = Object.fromEntries(JOBS.map(([id, name]) => [id, name]));
   const TRY = ['opt', 'sp', 'freq', 'ipea', 'conf', 'md']; // what the box above offers: the jobs that need no parameter
@@ -33,12 +34,13 @@
   const XTB = CHARGED.filter((j) => j !== 'ipea'); // xTB takes ions and radicals; its IP / EA are several eV off, so none
   const PROTEIN = ['pmd']; // OpenMM: a protein by its PDB ID, no SMILES
   const QFLOW = ['qflow'], QSLAB = ['qslab']; // quacc recipes: a batch of SMILES in params.items; EMT slabs by element
+  const ADSGEN = ['adsgen']; // DBCata: every site of one adsorbate on one bimetallic slab, chosen in params; no SMILES
   let models = [
     ['uma-s-1p2p1', CHARGED], ['uma-s-1p2', CHARGED], ['uma-s-1p2p1-ft-d4rev', CHARGED], ['uma-s-1p1', GEOM],
     ['allscaip-md-conserving-all-omol', CHARGED], ['allscaip-md-direct-all-omol', CHARGED],
     ['esen-sm-conserving-all-omol', GEOM], ['esen-sm-direct-all-omol', GEOM], ['esen-md-direct-all-omol', GEOM], ['ani-2x', GEOM],
     ['gfn2-xtb', XTB], ['gfn2-xtb-alpb-water', XTB], ['gfn1-xtb', XTB], ['gfn-ff', GEOM], ['openmm-amber14', PROTEIN],
-    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB]
+    ['quacc-gfn2', QFLOW], ['quacc-psi4', QFLOW], ['quacc-emt', QSLAB], ['dbcata', ADSGEN]
   ].map(([id, jobs]) => ({ id, jobs, ready: null }));
 
   function drawJobs() {

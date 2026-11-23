@@ -4135,7 +4135,8 @@
    "page": "https://molastria.com/atlas/#resources/252",
    "category_code": "13",
    "description": {
-    "zh": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。"
+    "zh": "Quantum ESPRESSO 的连续介质嵌入插件：隐式溶剂（自洽连续溶剂模型 SCCS）、电解质和外加电场，常用来算固液界面和电化学体系；GPL-2.0 许可。",
+    "en": "Continuum embedding plug-in for Quantum ESPRESSO: implicit solvent (the self-consistent continuum solvation model, SCCS), electrolytes and applied electric fields, often used for solid–liquid interfaces and electrochemical systems; GPL-2.0 licence."
    },
    "access": {
     "zh": "免费",
@@ -4150,7 +4151,8 @@
    "page": "https://molastria.com/atlas/#resources/253",
    "category_code": "14",
    "description": {
-    "zh": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。"
+    "zh": "多尺度模拟工具包：CSG 把全原子分子动力学粗化成珠子模型（迭代 Boltzmann 反演、力匹配），XTP 用 GW-BSE 和 QM/MM 算激发态，再用动力学蒙特卡洛模拟有机半导体里的电荷和激子输运；Apache-2.0 许可。",
+    "en": "Multiscale simulation toolkit: CSG coarse-grains all-atom molecular dynamics into bead models (iterative Boltzmann inversion, force matching), and XTP computes excited states with GW-BSE and QM/MM, then uses kinetic Monte Carlo to simulate charge and exciton transport in organic semiconductors; Apache-2.0 licence."
    },
    "access": {
     "zh": "免费",

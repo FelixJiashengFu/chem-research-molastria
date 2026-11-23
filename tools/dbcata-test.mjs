@@ -106,7 +106,7 @@ test('the page loads the window before models.js and the account service gates i
   assert.ok(order.every((i, k) => i > 0 && (k === 0 || i > order[k - 1])), 'dbcata-core.js, dbcata.js, then models.js');
   assert.match(html, /href="dbcata\.css"/);
   assert.match(worker, /const dbcataOn = \(env\) => env\.DBCATA_ENABLED === '1';/);
-  assert.match(read('../deploy/wrangler.toml'), /^DBCATA_ENABLED = "0"/m, 'closed until the site owner opens it');
+  assert.match(read('../deploy/wrangler.toml'), /^DBCATA_ENABLED = "1"/m, 'open: the site owner opened it on 2026-11-22');
   const ui = read('../public/models/dbcata.js');
   assert.match(ui, /GPL-3\.0/);
   assert.match(ui, /C\.DOI|doi\.org/);
