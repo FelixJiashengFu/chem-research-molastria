@@ -85,6 +85,9 @@ def one(d):
     return out
 
 
+FIXED_SHARE = 0.98  # at least this share of the data must fix what the lane fixes
+
+
 def summary(rows):
     def dist(key):
         v = [r[key] for r in rows if key in r]
@@ -129,8 +132,18 @@ def main():
     want_slab, want_fixed = core.LAYERS * core.PER_LAYER, core.FIXED_LAYERS * core.PER_LAYER
     if set(s["slab_atoms"]) != {want_slab}:
         problems.append(f"slab sizes {s['slab_atoms']}, the lane builds {want_slab}")
-    if set(s["fixed_atoms"]) != {want_fixed}:
+    share = s["fixed_atoms"].get(want_fixed, 0) / max(1, s["structures"])
+    if share < FIXED_SHARE:
         problems.append(f"fixed atoms {s['fixed_atoms']}, the lane fixes {want_fixed}")
+    elif set(s["fixed_atoms"]) != {want_fixed}:  # DBCata's val.pkl: 131 slabs fix none, one fixes 9 (2026-11-22)
+        print(f"note: fixed atoms {s['fixed_atoms']}: {share:.1%} fix {want_fixed}, as the lane does")
+    missing_facets = sorted(set(core.FACETS) - set(s["facets"]))
+    if missing_facets:
+        problems.append(f"facets the lane offers but the data never has: {missing_facets}")
+    other = {k: v for k, v in s["facets"].items() if k not in core.FACETS}
+    if other:  # L1_0 (111) with c/a far from 1 has an oblique cell (at c/a = 1/sqrt 2 it is bcc(110)); see dbcata_core
+        print(f"note: {sum(other.values())} slabs whose cell is not the hexagonal (111) one (AB / L1_0 with c != a, "
+              f"or another facet): {dict(list(other.items())[:6])}")
     if s["fixed_adsorbate_atoms"]:
         problems.append(f"{s['fixed_adsorbate_atoms']} structures fix adsorbate atoms")
     odd = sorted(set(s["metals"]) - set(core.METALS))

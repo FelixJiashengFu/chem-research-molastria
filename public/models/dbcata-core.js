@@ -14,7 +14,7 @@
   ];
   const METALS = METAL_GROUPS.flatMap(([, m]) => m);
   const RATIOS = [0.75, 0.5, 0.25]; // metal_a 的原子分数：A3B、AB、AB3
-  const FACETS = ['111', '110'];
+  const FACETS = ['111']; // the training set has (111) slabs only, no fcc(110) (tools/uma-server/dbcata_core.py)
   const ADSORBATES = ['H', 'C', 'CH', 'CH2', 'CH3', 'N', 'NH', 'O', 'OH', 'H2O', 'S', 'SH'];
   const STEPS = [20, 50, 100];
   const LATTICES = ['uma', 'vegard'];
@@ -28,7 +28,7 @@
   const KINDS = {
     top: T('顶位', 'top'), bridge: T('桥位', 'bridge'), 'long-bridge': T('长桥位', 'long bridge'),
     'hollow-fcc': T('fcc 空位', 'fcc hollow'), 'hollow-hcp': T('hcp 空位', 'hcp hollow'), hollow: T('三重空位', 'threefold hollow'),
-    'hollow-4': T('四重空位', 'fourfold hollow'),
+    'hollow-4': T('四重空位', 'fourfold hollow'), none: T('没有接触表面', 'off the surface'),
   };
   const FLAGS = {
     collision: T('原子相撞：两个原子比共价半径之和的 0.8 倍还近', 'collision: two atoms closer than 0.8 × the sum of their covalent radii'),
@@ -59,7 +59,7 @@
     let x = Number(r.ratio);
     if (!RATIOS.includes(x)) return { error: T('比例只能是 A₃B、AB 或 AB₃。', 'The composition must be A₃B, AB or AB₃.') };
     const facet = String(r.facet ?? '').replace(/[()]/g, '').trim();
-    if (!FACETS.includes(facet)) return { error: T('晶面只能是 (111) 或 (110)。', 'The facet must be (111) or (110).') };
+    if (!FACETS.includes(facet)) return { error: T('晶面只能是 (111)：DBCata 的训练集里没有 fcc(110)。', 'The facet must be (111): DBCata\'s training set has no fcc(110).') };
     const ads = ADSORBATES.find((n) => typeof r.adsorbate === 'string' && n.toLowerCase() === r.adsorbate.trim().toLowerCase());
     if (!ads) return { error: T('吸附物只能从 12 种里选。', 'Pick one of the 12 adsorbates.') };
     const polish = r.polish !== false;
@@ -91,6 +91,7 @@
         termination: s.termination, top: slabs[s.termination]?.top || '', energy: energyOf(s, result), rel: s.rel_ev,
         dmae: s.dmae_init_gen, dmaeFinal: s.dmae_gen_final ?? null, confidence: s.confidence ?? null, flags, ok: !!s.ok,
         steps: s.steps ?? null, converged: s.converged ?? null,
+        landing: s.landing || null, sameAs: s.same_as ?? null,
       };
     });
     const e = (r) => (Number.isFinite(r.energy) ? r.energy : Infinity);
@@ -117,11 +118,12 @@
   /** One CSV line per site, with the system in the first columns. */
   function csv(result) {
     const sys = result?.system || {};
-    const head = ['formula', 'facet', 'adsorbate', 'site_id', 'termination_top', 'kind', 'atoms', 'multiplicity', 'energy_ev', 'energy_kind', 'rel_ev', 'dmae_init_gen_a', 'dmae_gen_final_a', 'confidence', 'flags', 'ok'];
+    const head = ['formula', 'facet', 'adsorbate', 'site_id', 'termination_top', 'kind', 'atoms', 'multiplicity', 'energy_ev', 'energy_kind', 'rel_ev', 'dmae_init_gen_a', 'dmae_gen_final_a', 'confidence', 'flags', 'ok', 'landing_kind', 'landing_atoms', 'same_as'];
     const kind = result?.reference?.available ? 'E_ads (OC20 refs)' : 'E(adslab)-E(slab)';
     const q = (v) => (/[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
     const body = rows(result).map((r) => [sys.formula, sys.facet, sys.adsorbate, r.id, r.top, r.kind, r.atoms, r.multiplicity, num(r.energy, 4), kind, num(r.rel, 4),
-      num(r.dmae, 4), num(r.dmaeFinal, 4), num(r.confidence, 3), r.flags.join(' '), r.ok ? 1 : 0].map(q).join(','));
+      num(r.dmae, 4), num(r.dmaeFinal, 4), num(r.confidence, 3), r.flags.join(' '), r.ok ? 1 : 0,
+      r.landing?.kind ?? '', r.landing?.atoms ?? '', r.sameAs ?? ''].map(q).join(','));
     return [head.join(','), ...body].join('\n') + '\n';
   }
   /** The text to cite, in the page's language. */

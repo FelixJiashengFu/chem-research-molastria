@@ -13,6 +13,8 @@
 .md-db-table td:nth-child(2){white-space:normal;min-width:9em}
 .md-db-table tr.md-db-top td{background:color-mix(in srgb,var(--ok) 10%,transparent)}
 .md-db-table tr[data-bad=true] td{color:var(--muted)}
+.md-db-table tr[data-same=true] td{color:var(--muted)}
+.md-db-same{display:inline-block;padding:0 6px;border-radius:3px;border:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.6;white-space:nowrap}
 .md-db-table tr[data-shown] td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
 .md-db-flag{display:inline-block;padding:0 6px;border-radius:3px;border:1px solid color-mix(in srgb,var(--danger) 45%,transparent);color:var(--danger);font-size:12px;line-height:1.6}
 .md-db-ok{color:var(--muted);font-size:12px}

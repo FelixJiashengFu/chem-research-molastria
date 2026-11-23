@@ -497,7 +497,7 @@ function dbcataParams(raw) {
   let x = raw.ratio;
   if (typeof x !== 'number' || !DBCATA_RATIOS.includes(x)) throw fail(400, '参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75', 'Parameter ratio (the atomic fraction of metal_a) must be 0.25, 0.5 or 0.75', 'out_of_domain');
   const facet = String(raw.facet ?? '').trim().replace(/^\((.*)\)$/, '$1');
-  if (facet !== '111' && facet !== '110') throw fail(400, '参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面', 'Parameter facet must be 111 or 110: DBCata was trained on those two fcc facets only', 'out_of_domain');
+  if (facet !== '111') throw fail(400, '参数 facet 只能是 111：DBCata 的训练集里只有 (111) 面（A3B、AB、AB3 和纯金属），没有 fcc(110)', 'Parameter facet must be 111: DBCata\'s training set has (111) slabs only (A3B, AB, AB3 and pure metals), no fcc(110)', 'out_of_domain');
   const adsorbate = DBCATA_ADSORBATES.find((n) => typeof raw.adsorbate === 'string' && n.toLowerCase() === raw.adsorbate.trim().toLowerCase());
   if (!adsorbate) throw fail(400, `参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：${DBCATA_ADSORBATES.join('、')}`, `Parameter adsorbate must be one of the 12 adsorbates DBCata was trained on: ${DBCATA_ADSORBATES.join(', ')}`, 'out_of_domain');
   const out = { metal_a: a, metal_b: b, ratio: x, facet, adsorbate };
