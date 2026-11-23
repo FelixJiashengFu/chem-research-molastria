@@ -17719,7 +17719,37 @@
  "{0} 把你加入了 TA 的 MolAstria 课题组，你已获得 Pro 权益。 打开 https://molastria.com/pro/account.html ，用这个邮箱收验证码登录即可。 {1} added you to their MolAstria team plan. Sign in at https://molastria.com/pro/account.html with this email address.": [
   "deploy/account-worker.js"
  ],
+ "DBCata 只学过 3d、4d、5d 过渡金属和 Al、Ga、In、Tl 组成的 fcc 二元合金": [
+  "deploy/account-worker.js"
+ ],
  "参数（params）必须是一个对象": [
+  "deploy/account-worker.js"
+ ],
+ "参数 {0} 要写一种金属的元素符号，如 Pt": [
+  "deploy/account-worker.js"
+ ],
+ "参数 {0}：{1} 不在训练范围内。{2}": [
+  "deploy/account-worker.js"
+ ],
+ "两种金属要不同：DBCata 学的是二元合金（A3B、AB、AB3），不是纯金属": [
+  "deploy/account-worker.js"
+ ],
+ "参数 ratio（metal_a 的原子分数）只能是 0.25、0.5 或 0.75": [
+  "deploy/account-worker.js"
+ ],
+ "参数 facet 只能是 111 或 110：DBCata 只学过 fcc 的这两种晶面": [
+  "deploy/account-worker.js"
+ ],
+ "参数 adsorbate 只能是 DBCata 学过的 12 种吸附物之一：{0}": [
+  "deploy/account-worker.js"
+ ],
+ "参数 polish 只能是 true 或 false": [
+  "deploy/account-worker.js"
+ ],
+ "参数 steps（DBCata 的采样步数）只能是 20、50 或 100": [
+  "deploy/account-worker.js"
+ ],
+ "参数 lattice 只能是 uma 或 vegard": [
   "deploy/account-worker.js"
  ],
  "参数 {0} 的值不在允许的范围内": [
@@ -17761,6 +17791,9 @@
  "这个模型不做这种计算": [
   "deploy/account-worker.js"
  ],
+ "DBCata 通道还没有开放": [
+  "deploy/account-worker.js"
+ ],
  "MACE 模型采用学术软件许可（ASL），不通过 API 提供；可以在网站的在线模型页上使用": [
   "deploy/account-worker.js"
  ],
@@ -17777,6 +17810,9 @@
   "deploy/account-worker.js"
  ],
  "表面能计算按金属元素建结构，不要另给 SMILES 或 XYZ": [
+  "deploy/account-worker.js"
+ ],
+ "DBCata 按两种金属、比例、晶面和吸附物自己搭结构，不接受上传的 SMILES 或 XYZ": [
   "deploy/account-worker.js"
  ],
  "SMILES 和 XYZ 只能给一个": [
