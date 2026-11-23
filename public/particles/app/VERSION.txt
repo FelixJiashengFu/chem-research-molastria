@@ -1,0 +1,2 @@
+Particle HIVE https://github.com/0ffz/particle-hive 4fd2f08
+copied by tools/vendor-particles.ts (source map omitted)

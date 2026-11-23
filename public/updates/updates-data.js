@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'particles', date: '2026-11-22', path: 'particles/index.html', group: 'explore', icon: 'md',
+      zh: 'GPU 粒子力场模拟器', en: 'GPU Particle HIVE Simulator',
+      note: ['浏览器 WebGPU 实时模拟万级粒子与多体势，附五组化学物理预设', 'Real-time WebGPU particle compute simulator with five physics & chemistry presets'],
+      more: ['基于 MIT 开源项目 Particle HIVE（并包含我们提交给上游的归约越界、簇映射与 WebGPU 自检修复 PR #11）：在浏览器 GPU 计算着色器中运行网格空间哈希、双调排序与速度 Verlet 积分，预置氩原子 LJ 流体、双组分莫尔斯自组装、Tersoff 共价网络、重力凝聚与三维混合盒，支持实时调参、YAML 编辑、DBSCAN 聚类与均方速率统计。',
+        'Integrates MIT-licensed Particle HIVE along with our upstream fixes for GPU reduction bounds, cluster index mapping, wall repulsion safety, and WebGPU pre-check UX (PR #11). Runs spatial grid hashing, bitonic sort, and Velocity Verlet in WebGPU compute shaders with five ready-to-run chemistry and physics presets, live YAML config, DBSCAN clustering, and MSQV statistics.'],
+    },
+    {
       id: 'news-dbcata', date: '2026-11-22', path: 'news/index.html', group: 'find', icon: 'atoms',
       zh: '新闻图解 · DBCata 生成吸附结构', en: 'News explained · DBCata generates adsorption structures',
       note: ['扩散模型直接给出吸附物在合金表面上的落点，两个能动手调的演示', 'A diffusion model goes straight to where an adsorbate settles on an alloy surface; two hands-on demos'],
