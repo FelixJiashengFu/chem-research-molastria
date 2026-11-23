@@ -1,0 +1,32 @@
+ Charge =  0 Multiplicity = 3
+ Redundant internal coordinates found in file.
+ Deg. of freedom     2
+ Full point group                 C*V     NOp   4
+ Largest concise Abelian subgroup C1      NOp   1
+                         Standard orientation:                         
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.000000    0.000000   -0.587021
+      2          7           0        0.000000    0.000000    0.740828
+      3          1           0        0.000000    0.000000   -1.663671
+ ---------------------------------------------------------------------
+
+ SCF Done:  E(UB97D) =  -93.1537874991     A.U. after    1 cycles
+                     PI                     PI                     SG
+ Frequencies --  -1327.0114               658.0951              1495.8968
+ Frequencies --   3362.4566
+ Red. masses --      1.1179
+ Temperature   298.150 Kelvin.  Pressure   1.00000 Atm.
+ Atom     1 has atomic number  6 and mass  12.00000
+ Atom     2 has atomic number  7 and mass  14.00307
+ Atom     3 has atomic number  1 and mass   1.00783
+ Molecular mass:    27.01090 amu.
+           Z            1.00000   0.00000   0.00000
+ This molecule is a prolate symmetric top.
+ Rotational symmetry number  1.
+ Rotational temperature (Kelvin)      1.67171
+ Rotational constant (GHZ):          34.832857
+ 
+ Zero-point correction=                           0.012567 (Hartree/Particle)
+ File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      2 Scr=      1
+ Normal termination of Gaussian 09 at Thu Mar 17 13:22:20 2016.

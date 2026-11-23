@@ -1,0 +1,33 @@
+ Normal termination of Gaussian 09 at Thu Mar 17 13:22:29 2016.
+ (Enter /mnt/data/applications/G09/g09/l1.exe)
+ Link1:  Proceeding to internal job step number  2.
+ opt freq
+ --------
+ Charge =  0 Multiplicity = 1
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          8           0        0.000000    0.000000    0.120823
+      2          1           0        0.000000    0.761688   -0.483292
+      3          1           0        0.000000   -0.761688   -0.483292
+ ---------------------------------------------------------------------
+ RMSDP=0.00D+00 MaxDP=0.00D+00              OVMax= 0.00D+00
+
+ SCF Done:  E(RB97D) =  -76.3681281356     A.U. after    1 cycles
+ Frequencies --   1694.8284              3644.5363              3778.6962
+ Red. masses --      1.0824                 1.0455                 1.0805
+ Frc consts  --      1.8318                 8.1816                 9.0901
+ Temperature   298.150 Kelvin.  Pressure   1.00000 Atm.
+ Atom     1 has atomic number  8 and mass  15.99491
+ Atom     2 has atomic number  1 and mass   1.00783
+ Atom     3 has atomic number  1 and mass   1.00783
+ Molecular mass:    18.01056 amu.
+ Principal axes and moments of inertia in atomic units:
+ Rotational symmetry number  2.
+ Rotational temperatures (Kelvin)     37.12617    20.74054    13.30673
+ Rotational constants (GHZ):         773.58478   432.16330   277.26766
+          (Kelvin)
+ 
+ Zero-point correction=                           0.020772 (Hartree/Particle)
