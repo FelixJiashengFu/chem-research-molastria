@@ -1,0 +1,144 @@
+%%%%%%%%% PCCP (RSC) JOURNAL TEMPLATE %%%%%%%%%
+% Physical Chemistry Chemical Physics (Royal Society of Chemistry), full paper.
+% RSC's official LaTeX template is on Overleaf, not on CTAN. This template
+% approximates its two-column A4 layout on the standard article class; the
+% layout is in pccp-approx.sty (written for this template, not an RSC file).
+% RSC says template use is optional and accepts Word, PDF or LaTeX (with a
+% PDF) for submission; it retypesets accepted articles (see guidelines.md).
+\documentclass[10pt,a4paper,twoside,twocolumn]{article}
+
+%%%%%%%%% PACKAGES - KEEP UNCHANGED %%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+% Tables: booktabs (\toprule, \midrule, \cmidrule, \bottomrule).
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+% Chemistry: mhchem version 4, \ce{...} for formulas and reactions.
+\IfFileExists{mhchem.sty}{\usepackage[version=4]{mhchem}}{}
+% Quantities: siunitx, \SI/\qty{1.5}{\kilo\joule\per\mole} -> 1.5 kJ mol^-1,
+% \si/\unit{\kilo\calorie\per\mole}, \num{1.2e-3}, \SIrange{1}{3}{\angstrom}.
+\IfFileExists{siunitx.sty}{\usepackage{siunitx}}{}
+% Citations: numbered superscripts, sorted and compressed (RSC style).
+\usepackage[super,sort&compress,comma]{natbib}
+% RSC-like layout: 8.3 cm columns, framed title/abstract block, sans-serif
+% headings, "Fig." captions, page-1 footnotes, table of contents entry. It
+% also defines simple fallbacks for \ce, \SI, \si, \num, \qty, \unit and the
+% booktabs rules where those packages are missing, and loads hyperref.
+\usepackage{pccp-approx}
+% Last-resort fallbacks: no effect when mhchem/siunitx or pccp-approx have
+% already defined these commands (they normally have).
+\providecommand{\ce}[1]{\mbox{#1}}
+\providecommand{\num}[2][]{#2}
+\providecommand{\si}[2][]{#2}
+\providecommand{\SI}[3][]{#2\,#3}
+\providecommand{\qty}[3][]{#2\,#3}
+\providecommand{\unit}[2][]{#2}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+\title{My Title}
+
+%%%%%%%%% AUTHOR - KEEP THIS PLACEHOLDER EXACTLY AS IT IS
+% Printed as "A. Researcher*a" (RSC marks the corresponding author with an
+% asterisk); the affiliation and e-mail go to footnote "a" on page 1.
+\author{A. Researcher}
+\affiliation{Department of Chemistry, Example University, City, Country}
+\email{researcher@example.edu}
+
+\begin{document}
+
+%%%%%%%%% TITLE BLOCK %%%%%%%%%
+% Prints the framed title, author and abstract block across both columns
+% (once the abstract below has been read).
+\maketitle
+
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+Abstract here.
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+%%%%%%%%% ESI FOOTNOTE %%%%%%%%%
+% Printed on page 1 as the dagger footnote to the title: "Electronic
+% supplementary information (ESI) available: <this text> See DOI: ...".
+% One sentence naming what the ESI contains; cite it in the text as "ESI".
+% (RSC's current author pages and Overleaf template call it "Supplementary
+% Information (SI)"; RSC sets the final wording at typesetting.)
+\esinote{%
+%%%%%%%%% ESI %%%%%%%%%
+ESI contents here.
+%%%%%%%%% ESI %%%%%%%%%
+}
+
+%%%%%%%%% TABLE OF CONTENTS ENTRY (GRAPHICAL ABSTRACT) %%%%%%%%%
+% RSC: an image at most 8 cm wide x 4 cm high plus 1-2 sentences (at most
+% 250 characters). Printed at the end of the PDF. To fill it, replace both
+% occurrences of figures/toc_graphic.png with the most representative figure
+% in figures/ (see guidelines.md); keep the placeholder branch.
+\begin{tocentry}
+\IfFileExists{figures/toc_graphic.png}{%
+  \includegraphics[width=8cm,height=4cm,keepaspectratio]{figures/toc_graphic.png}%
+}{%
+  \fbox{\parbox[c][3.8cm][c]{7.7cm}{\centering
+    Graphical abstract placeholder\\[2pt]
+    8~cm wide $\times$ 4~cm high}}%
+}\par\medskip
+%%%%%%%%% TOC TEXT %%%%%%%%%
+Table of contents text here.
+%%%%%%%%% TOC TEXT %%%%%%%%%
+\end{tocentry}
+
+\section{Introduction}
+\label{sec:intro}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Introduction here.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+\section{Computational details}
+\label{sec:methods}
+%%%%%%%%% COMPUTATIONAL DETAILS %%%%%%%%%
+Computational details here.
+%%%%%%%%% COMPUTATIONAL DETAILS %%%%%%%%%
+
+\section{Results and discussion}
+\label{sec:results}
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+Results and discussion here.
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+
+\section{Conclusions}
+\label{sec:conclusions}
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+Conclusions here.
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+
+%%%%%%%%% BACK MATTER (unnumbered, in RSC order) %%%%%%%%%
+% State only what the provided materials say; otherwise write
+% "To be completed by the authors."
+\section*{Author contributions}
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+Author contributions here.
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+
+\section*{Conflicts of interest}
+%%%%%%%%% CONFLICTS OF INTEREST %%%%%%%%%
+% RSC wording when there are none: "There are no conflicts to declare."
+Conflicts of interest here.
+%%%%%%%%% CONFLICTS OF INTEREST %%%%%%%%%
+
+\section*{Data availability}
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+Data availability here.
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+
+\section*{Acknowledgements}
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+Acknowledgements here.
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+
+%%%%%%%%% REFERENCES %%%%%%%%%
+% Printed as "Notes and references" with rsc.bst (copied next to this file).
+\bibliographystyle{rsc}
+\bibliography{references}
+%%%%%%%%% REFERENCES %%%%%%%%%
+
+\end{document}

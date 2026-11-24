@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'paper-studio', date: '2026-11-24', path: 'paper/index.html', group: 'make', icon: 'quill',
+      zh: '论文工坊', en: 'Paper Studio',
+      note: ['用你自己的 API key 写论文、模拟审稿、投稿体检', 'Write a paper, get it reviewed and check it for submission with your own API key'],
+      more: ['照 PaperOrchestra Studio（Apache-2.0，源自 Google Research 的 PaperOrchestra）重写：从一份想法和实验记录出发，列大纲，到 OpenAlex、Semantic Scholar、Crossref 找真实文献并核对，按实验记录画图，写全文，几位“审稿人”打分后按意见修改，导出 zip 或在 Overleaf 打开。另有科研工坊（精读、综述、选题、复现、数学建模）、投稿体检和 LaTeX 助手。key 只存在你的浏览器里，由浏览器直接发给你选的服务商，不经过 MolAstria 的服务器。',
+        'Rebuilt from PaperOrchestra Studio (Apache-2.0, from Google Research’s PaperOrchestra): start from an idea and an experimental log, get an outline, real references found and checked on OpenAlex, Semantic Scholar and Crossref, figures drawn from the log, the full text, scores from a panel of reviewers and revisions, then a zip or an Overleaf project. Also a research studio (close reading, reviews, topics, reproduction, modelling), a submission check and a LaTeX copilot. Your key stays in your browser and goes straight to the provider you choose, never through MolAstria’s servers.'],
+    },
+    {
       id: 'nmrium', date: '2026-11-23', path: 'nmr/nmrium/index.html', group: 'explore', icon: 'nmr',
       zh: 'NMRium 谱图处理', en: 'NMRium processing',
       note: ['在浏览器里处理真实的核磁数据：FID、相位、积分、找峰、二维谱', 'Process real NMR data in your browser: FIDs, phasing, integrals, peak picking, 2D'],

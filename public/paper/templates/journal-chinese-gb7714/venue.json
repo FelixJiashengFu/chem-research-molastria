@@ -1,0 +1,23 @@
+{
+  "kind": "journal",
+  "venue_name": "Chinese Journal (GB/T 7714)",
+  "short_name": "Chinese-GB7714",
+  "field": "computer science, engineering and applied sciences (Chinese / bilingual)",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Methods",
+    "Results and Discussion",
+    "Conclusions"
+  ],
+  "abstract_limit": "Chinese abstract (300-400 characters) paired with a mirrored English abstract (~200-250 words), each separated cleanly",
+  "writing_style": "Formal Chinese academic journal style (e.g., Journal of Computers / 计算机学报): cohesive paragraph-based exposition rather than two-sentence chatty fragments; clear mathematical definitions, theorem/algorithm structure, and GB/T 7714-2015 numbered reference ordering [1], [2], [3]. Keep the bilingual abstract blocks separated cleanly before the main body.",
+  "reviewer_focus": "Sound problem formulation, complete literature grounding ordered sequentially, reproducible experimental protocol, quantitative ablation comparisons, and honest discussion of limitations without fabricated citations.",
+  "figure_style": "High-contrast serif/sans-serif figure typography legible at 8 cm single-column or 16 cm double-column width, >= 300 dpi, explicit physical/statistical units on axes, colorblind-safe Okabe-Ito palette.",
+  "extras": [
+    "Chinese Abstract + Keywords and mirrored English Abstract + Keywords on clean separated blocks",
+    "GB/T 7714-2015 sequential numbered bibliography (unsrt)",
+    "Data and code availability note at end of manuscript"
+  ]
+}

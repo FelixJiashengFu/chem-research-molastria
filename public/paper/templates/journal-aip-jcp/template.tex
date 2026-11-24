@@ -1,0 +1,173 @@
+% The Journal of Chemical Physics (AIP Publishing) -- REVTeX 4.2 template
+% for PaperOrchestra. Class and style files shipped in this folder are
+% verbatim copies from TeX Live 2023 (see SOURCES.md).
+%
+% Layout: `reprint' gives the two-column journal look used here.
+% AIP formats peer-review copies with the `preprint' option (single column,
+% 12pt, double spaced); to get that look, replace `reprint' by `preprint'.
+% Do not change any other class option or package below.
+%
+% Compile: pdflatex template; bibtex template; pdflatex template; pdflatex template
+% (REVTeX writes templateNotes.bib on the first run; bibtex reads it).
+\documentclass[aip,jcp,reprint,amsmath,amssymb]{revtex4-2}
+%\documentclass[aip,jcp,preprint,amsmath,amssymb]{revtex4-2}
+
+\usepackage{graphicx}% figures: always \includegraphics{figures/<file>}
+\usepackage{dcolumn}% decimal-aligned table columns (D{.}{.}{2.3})
+\usepackage{bm}% bold math symbols
+
+% Tables: booktabs (\toprule, \midrule, \bottomrule, \cmidrule).
+% Chemistry: mhchem (\ce, \pu) and siunitx (\SI, \si, \num, \qty, \unit).
+% Each package is loaded only if installed; otherwise the simple fallback
+% definitions below keep the document compilable.
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+\IfFileExists{mhchem.sty}{\usepackage[version=4]{mhchem}}{}
+\IfFileExists{siunitx.sty}{\usepackage{siunitx}}{}
+\makeatletter
+\@ifpackageloaded{siunitx}{%
+  \sisetup{per-mode=symbol}% prints 1.5 kcal/mol (not kcal mol^-1)
+  % non-SI units common in chemistry that siunitx does not predefine
+  \DeclareSIUnit\calorie{cal}%
+  \DeclareSIUnit\molar{M}%
+  \DeclareSIUnit\debye{D}%
+  \DeclareSIUnit\atm{atm}%
+  \DeclareSIUnit\wavenumber{\centi\metre\tothe{-1}}%
+  \DeclareSIUnit\angstrom{\text{\AA}}% siunitx v3 deprecates its own \angstrom
+}{}
+% --- fallbacks (used only when a package above is missing) ---
+\providecommand{\toprule}{\hline\hline}
+\providecommand{\midrule}{\hline}
+\providecommand{\bottomrule}{\hline\hline}
+\@ifundefined{cmidrule}{\def\cmidrule#1#{\cline}}{}
+\providecommand{\addlinespace}{}
+\@ifundefined{ce}{\DeclareRobustCommand{\ce}[1]{\texttt{\detokenize{#1}}}}{}
+\@ifundefined{pu}{\DeclareRobustCommand{\pu}[1]{\texttt{\detokenize{#1}}}}{}
+\def\jcp@units{%
+  \def\yocto{y}\def\zepto{z}\def\atto{a}\def\femto{f}\def\pico{p}%
+  \def\nano{n}\def\micro{\mu}\def\milli{m}\def\centi{c}\def\deci{d}%
+  \def\kilo{k}\def\mega{M}\def\giga{G}\def\tera{T}\def\peta{P}%
+  \def\metre{m}\def\meter{m}\def\gram{g}\def\second{s}\def\ampere{A}%
+  \def\kelvin{K}\def\mole{mol}\def\candela{cd}\def\joule{J}\def\watt{W}%
+  \def\newton{N}\def\pascal{Pa}\def\hertz{Hz}\def\coulomb{C}\def\volt{V}%
+  \def\ohm{\Omega}\def\tesla{T}\def\litre{L}\def\liter{L}\def\bar{bar}%
+  \def\calorie{cal}\def\electronvolt{eV}\def\angstrom{\mathring{A}}%
+  \def\hartree{E_h}\def\bohr{a_0}\def\dalton{Da}\def\atm{atm}%
+  \def\debye{D}\def\minute{min}\def\hour{h}\def\day{d}\def\molar{M}%
+  \def\degreeCelsius{{}^{\circ}C}\def\degree{{}^{\circ}}\def\percent{\%}%
+  \def\wavenumber{cm^{-1}}%
+  \def\per{/}\def\squared{^{2}}\def\cubed{^{3}}\def\square{}\def\cubic{}%
+  \def\tothe##1{^{##1}}\def\raiseto##1{}\def\of##1{_{\mathrm{##1}}}}
+\@ifundefined{si}{\DeclareRobustCommand{\si}[2][]{%
+  \ensuremath{{\jcp@units\mathrm{#2}}}}}{}
+\@ifundefined{num}{\DeclareRobustCommand{\num}[2][]{#2}}{}
+\@ifundefined{SI}{\DeclareRobustCommand{\SI}[3][]{#2\,\si{#3}}}{}
+\@ifundefined{ang}{\DeclareRobustCommand{\ang}[2][]{\ensuremath{#2^{\circ}}}}{}
+\@ifundefined{SIrange}{\DeclareRobustCommand{\SIrange}[4][]{#2--#3\,\si{#4}}}{}
+\@ifundefined{numrange}{\DeclareRobustCommand{\numrange}[3][]{#2--#3}}{}
+% siunitx v2 has no \qty/\unit/\qtyrange: map them to \SI/\si/\SIrange
+\providecommand{\qty}{\SI}
+\providecommand{\unit}{\si}
+\providecommand{\qtyrange}{\SIrange}
+\makeatother
+
+\begin{document}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+\title{My Title}
+
+% Author placeholder: keep exactly as is. \email marks the corresponding
+% author (printed as a footnote to the author name).
+\author{A. Researcher}
+\email[Author to whom correspondence should be addressed: ]{researcher@example.edu}
+\affiliation{Department of Chemistry, Example University, City, Country}
+
+% REVTeX: the abstract comes BEFORE \maketitle. JCP has no TOC graphic or
+% graphical abstract (Fig. 1 serves as the highlight image).
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+Abstract here.
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Introduction here.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+% Optional: keep only if the paper derives or extends a theory or model;
+% otherwise delete this section together with its marker lines.
+\section{Theory}
+\label{sec:theory}
+%%%%%%%%% THEORY %%%%%%%%%
+Theory here.
+%%%%%%%%% THEORY %%%%%%%%%
+
+\section{Computational Methods}
+\label{sec:methods}
+%%%%%%%%% COMPUTATIONAL METHODS %%%%%%%%%
+Computational methods here.
+%%%%%%%%% COMPUTATIONAL METHODS %%%%%%%%%
+
+\section{Results and Discussion}
+\label{sec:results}
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+Results and discussion here.
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+
+\section{Conclusions}
+\label{sec:conclusions}
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+Conclusions here.
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+
+% ---- Back matter, in the order required by AIP Publishing ----
+% Supplementary Material: describe only supplementary material that really
+% exists; if there is none, delete this section with its marker lines.
+\section*{Supplementary Material}
+%%%%%%%%% SUPPLEMENTARY MATERIAL %%%%%%%%%
+Supplementary material here.
+%%%%%%%%% SUPPLEMENTARY MATERIAL %%%%%%%%%
+
+% Acknowledgments: only people, facilities and funders named in the inputs;
+% never invent funding agencies or grant numbers.
+\begin{acknowledgments}
+%%%%%%%%% ACKNOWLEDGMENTS %%%%%%%%%
+Acknowledgments here.
+%%%%%%%%% ACKNOWLEDGMENTS %%%%%%%%%
+\end{acknowledgments}
+
+% Author Declarations are required by AIP Publishing, even with no conflicts.
+\section*{Author Declarations}
+\subsection*{Conflict of Interest}
+%%%%%%%%% CONFLICT OF INTEREST %%%%%%%%%
+Conflict of interest statement here.
+%%%%%%%%% CONFLICT OF INTEREST %%%%%%%%%
+
+% CRediT statement, e.g. \textbf{A. Researcher}: Conceptualization (lead); ...
+\subsection*{Author Contributions}
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+Author contributions here.
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+
+% Required: one of AIP's data availability template sentences (see guidelines).
+\section*{Data Availability}
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+Data availability statement here.
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+
+%%%%%%%%% Appendix %%%%%%%%%
+% AIP order: appendixes come after Data Availability and BEFORE the
+% references. To add one, uncomment the following lines:
+% \appendix
+% \section{xxx}
+%%%%%%%%% Appendix %%%%%%%%%
+
+%%%%%%%%% REFERENCES %%%%%%%%%
+% Numbered references in citation order; the class selects aipnum4-2.bst.
+\bibliography{references}
+%%%%%%%%% REFERENCES %%%%%%%%%
+
+\end{document}

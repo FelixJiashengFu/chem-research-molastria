@@ -9079,6 +9079,15 @@
  "workbench ester studio structure xyz cif poscar pdb mol sdf crystal surface slab supercell scan ts irc neb idpp conformer rmsd boltzmann molden orbital homo lumo cube esp hirshfeld fingerprint igm igmh iri nci raman uv tddft convergence slurm pbs batch job cip chirality 工作台 结构 晶体 表面 反应路径 过渡态 构象 轨道 静电势 弱相互作用 拉曼 紫外 批量 作业脚本 手性": [
   "shared-nav.js"
  ],
+ "论文工坊": [
+  "shared-nav.js"
+ ],
+ "用你自己的 API key 把想法和实验记录写成 LaTeX 论文：大纲、找真实文献并核对、画图、模拟审稿和修改；科研工坊、投稿体检、LaTeX 助手": [
+  "shared-nav.js"
+ ],
+ "paper writing latex manuscript paperorchestra paper orchestra byok api key outline literature review citation bibtex overleaf arxiv peer review referee double blind abstract copilot research studio reproduction math modeling mcm cumcm 写论文 论文写作 投稿 审稿 文献综述 引用核对 摘要 选题 复现 数学建模 美赛 国赛": [
+  "shared-nav.js"
+ ],
  "期刊选择与投稿指导": [
   "shared-nav.js"
  ],
@@ -18839,6 +18848,12 @@
   "tools/build-seo.ts"
  ],
  "在浏览器里读写九种结构格式（XYZ、PDB、MOL、CIF、POSCAR、Gaussian、ORCA、CDXML、cube），搭超胞和表面；写扫描、过渡态、IRC、NEB 的输入并画能量曲线；构象按 RMSD 归簇；标 R/S 和 E/Z；从 Molden 画分子轨道和电子密度，做 Hirshfeld 面、指纹图和 IGM / IGMH / IRI 弱相互作用图；读红外、拉曼、紫外和优化收敛；批量写输入和 Slurm / PBS 作业脚本。功能清单参照 Ester Studio，代码是独立重写的。": [
+  "tools/build-seo.ts"
+ ],
+ "MolAstria 论文工坊 · Paper Studio": [
+  "tools/build-seo.ts"
+ ],
+ "用你自己的大模型 API key，在浏览器里把想法和实验记录写成 LaTeX 论文：大纲、在 OpenAlex / Semantic Scholar / Crossref 找真实文献并核对、按实验记录画图、写全文、多位审稿人打分并按意见修改，导出 zip 或在 Overleaf 打开；另有科研工坊、投稿体检（双盲、编译日志、引用核对、arXiv 打包）和 LaTeX 助手。流程和提示词照 PaperOrchestra Studio（Apache-2.0）重写，key 只存在用户的浏览器里。": [
   "tools/build-seo.ts"
  ],
  "MolAstria 开源代码台 · Code Desk": [

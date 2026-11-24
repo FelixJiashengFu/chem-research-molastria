@@ -1,0 +1,28 @@
+{
+  "kind": "journal",
+  "venue_name": "npj Computational Materials",
+  "short_name": "npj Comput. Mater.",
+  "field": "computational materials science and computational chemistry",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Results",
+    "Discussion",
+    "Methods"
+  ],
+  "abstract_limit": "150 words, one paragraph without subheadings, no references",
+  "writing_style": "Nature-family style for a broad materials audience: a concise Introduction without subheadings that carries the literature context, Results organized under short informative subheadings that state findings, and a Discussion without subheadings that also holds limitations and outlook (no Conclusions section). All methods sit in a Methods section at the end with short bold subheadings, references are superscript numbers in order of citation, and units follow SI with a space between number and unit.",
+  "reviewer_focus": "Referees judge whether the computational work gives new insight into or design rules for real materials and is of interest beyond one subfield, not a routine calculation. They check that the methods (functional, U values, cutoffs, k-points, force fields, ML training data and splits) are adequate, converged and fully reported, that predictions are validated against experiment or higher-level references with quantified errors, and that data and code are available for reproduction.",
+  "figure_style": "Figures fit A4 page width with Arial or Helvetica lettering of about 8 pt, lines of at least 1 pt, at least 300 dpi RGB, lowercase bold panel labels (a, b, c) and color-blind-safe colors without red-green contrast or rainbow scales. Each legend starts with a bold one-sentence title covering the whole figure, followed by at most 350 words describing each panel, and stays on the same page as its figure.",
+  "extras": [
+    "Data availability statement after Methods (mandatory; no invented repositories or DOIs)",
+    "Code availability statement",
+    "Acknowledgements including funding (no separate funding statement; no invented grants)",
+    "Author contributions by initials (A.R.)",
+    "Competing interests statement (mandatory, even if none)",
+    "Additional information: one Supplementary Information sentence (single merged PDF, no Supplementary Methods) or delete it",
+    "Bold title sentence at the start of every figure and table legend",
+    "No TOC graphic or graphical abstract"
+  ]
+}

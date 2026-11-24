@@ -1,0 +1,210 @@
+%%%%%%%%% NATURE BIOTECHNOLOGY - SUBMISSION MANUSCRIPT %%%%%%%%%
+% Journal: Nature Biotechnology (Springer Nature).
+% Submission-format approximation built on the standard article class (Nature
+% Biotechnology does not require final house typesetting at initial submission;
+% a single PDF with inline figures is what editors and referees read).
+% Layout: single column, 12 pt, A4, Nature-style superscript numbered
+% references (naturemag.bst), unnumbered headings, "Fig. 1" legends opening
+% with a bold title sentence.
+\documentclass[12pt,a4paper]{article}
+
+%%%%%%%%% PACKAGES - KEEP UNCHANGED %%%%%%%%%
+% Do not load natbib, hyperref, cleveref, caption, titlesec or other font
+% packages: citations, headings and captions are set up below.
+\IfFileExists{geometry.sty}{\usepackage[a4paper,margin=2.5cm]{geometry}}{}
+\IfFileExists{mathptmx.sty}{\usepackage{mathptmx}}{}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.92]{helvet}}{}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+% Optional for a referee copy (off by default): double spacing and line numbers.
+% \linespread{1.6}
+% \IfFileExists{lineno.sty}{\usepackage{lineno}\linenumbers}{}
+
+% Tables: booktabs (\toprule, \midrule, \cmidrule, \bottomrule).
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+\makeatletter
+\providecommand*{\toprule}{\hline}
+\providecommand*{\midrule}{\hline}
+\providecommand*{\bottomrule}{\hline}
+\providecommand*{\addlinespace}[1][]{}
+\providecommand*{\cmidrule}{\@ifnextchar(\nb@cmidtrim\nb@cmid}
+\def\nb@cmidtrim(#1){\nb@cmid}
+\def\nb@cmid#1{\cline{#1}}
+\makeatother
+
+% URLs (Data availability, Code availability): \url{https://...}.
+\IfFileExists{url.sty}{\usepackage{url}}{}
+\providecommand*{\url}[1]{\texttt{#1}}
+
+% Citations: Nature style, superscript numbers in order of first citation.
+\makeatletter
+\IfFileExists{cite.sty}{\usepackage[super]{cite}}{%
+  \def\@cite##1##2{\textsuperscript{##1\if@tempswa, ##2\fi}}}
+\renewcommand\@biblabel[1]{#1.}
+\makeatother
+
+% Chemistry: mhchem (version 4) for formulas and reactions, \ce{...}.
+\IfFileExists{mhchem.sty}{\usepackage[version=4]{mhchem}}{}
+\providecommand*{\ce}[1]{\textrm{\detokenize{#1}}}
+
+% Quantities and units: siunitx with safe fallbacks.
+\IfFileExists{siunitx.sty}{\usepackage{siunitx}}{}
+\makeatletter
+\@ifpackageloaded{siunitx}{%
+  \DeclareSIUnit{\calorie}{cal}%
+  \DeclareSIUnit{\angstrom}{\text{\AA}}%
+  \DeclareSIUnit{\atom}{atom}%
+}{}
+\newcommand*{\nb@units}{%
+  \def\per{/}\def\squared{^{2}}\def\cubed{^{3}}\def\tothe##1{^{##1}}%
+  \def\square##1{##1^{2}}\def\cubic##1{##1^{3}}%
+  \def\femto{f}\def\pico{p}\def\nano{n}\def\micro{\mu}\def\milli{m}%
+  \def\centi{c}\def\deci{d}\def\kilo{k}\def\mega{M}\def\giga{G}%
+  \def\tera{T}\def\metre{m}\def\meter{m}\def\gram{g}\def\second{s}%
+  \def\mole{mol}\def\kelvin{K}\def\joule{J}\def\calorie{cal}%
+  \def\electronvolt{eV}\def\hartree{E_{\mathrm{h}}}\def\bohr{a_{0}}%
+  \def\angstrom{\mbox{\AA}}\def\atom{atom}\def\dalton{Da}%
+  \def\litre{L}\def\liter{L}\def\hour{h}\def\minute{min}%
+  \def\pascal{Pa}\def\bar{bar}\def\atmosphere{atm}\def\hertz{Hz}%
+  \def\watt{W}\def\volt{V}\def\ampere{A}\def\coulomb{C}\def\newton{N}%
+  \def\ohm{\Omega}\def\siemens{S}\def\tesla{T}\def\debye{D}%
+  \def\molar{M}\def\percent{\%}\def\degree{^{\circ}}%
+  \def\degreeCelsius{{}^{\circ}C}%
+}
+\providecommand*{\si}[2][]{{\nb@units\ensuremath{\mathrm{#2}}}}
+\makeatother
+\providecommand*{\num}[2][]{#2}
+\providecommand*{\SI}[3][]{\num{#2}\,\si{#3}}
+\providecommand*{\SIrange}[4][]{\num{#2}--\num{#3}\,\si{#4}}
+\providecommand*{\numrange}[3][]{\num{#2}--\num{#3}}
+\providecommand*{\qty}{\SI}
+\providecommand*{\unit}{\si}
+\providecommand*{\qtyrange}{\SIrange}
+
+%%%%%%%%% NATURE-STYLE LAYOUT (no extra packages) %%%%%%%%%
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-3.0ex \@plus -1ex \@minus -.2ex}{1.0ex \@plus .2ex}%
+  {\normalfont\large\sffamily\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-2.2ex \@plus -.5ex \@minus -.2ex}{0.6ex \@plus .2ex}%
+  {\normalfont\normalsize\sffamily\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {1.5ex \@plus .5ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}}
+\setcounter{secnumdepth}{0}
+\renewcommand\@maketitle{%
+  \newpage\null\vskip 1em%
+  {\raggedright\LARGE\sffamily\bfseries \@title\par}%
+  \vskip 1.2em%
+  {\raggedright\large \@author\par}%
+  \vskip 0.8em}
+\newenvironment{affiliations}{%
+  \begin{list}{\textsuperscript{\arabic{enumi}}}{%
+    \usecounter{enumi}\setlength{\leftmargin}{0pt}%
+    \setlength{\labelwidth}{0pt}\setlength{\labelsep}{0pt}%
+    \setlength{\itemindent}{0pt}\setlength{\topsep}{0pt}%
+    \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}}%
+  \small\raggedright}{\end{list}\par\vskip 0.4em}
+\renewenvironment{abstract}{%
+  \par\vskip 1.2em\noindent{\large\sffamily\bfseries Abstract}\par
+  \vskip 0.6ex\noindent\ignorespaces}{\par\vskip 0.6em}
+\renewcommand\figurename{Fig.}
+\renewcommand\fnum@figure{\textbf{\figurename~\thefigure}}
+\renewcommand\fnum@table{\textbf{\tablename~\thetable}}
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  {\small\sffamily\raggedright #1\hspace{0.6em}#2\par}%
+  \vskip\belowcaptionskip}
+\makeatother
+
+\begin{document}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+% Concise, <= 15 words (~75-90 characters); clearly state biotechnology advance without punctuation or hype.
+\title{My Title}
+
+%%%%%%%%% AUTHOR - KEEP THIS PLACEHOLDER EXACTLY AS IT IS
+\author{A. Researcher\textsuperscript{1,$\ast$}}
+\date{}
+
+\maketitle
+
+\begin{affiliations}
+\item Department of Bioengineering and Biotechnology, Example University, City, Country
+\end{affiliations}
+
+\noindent{\small\textsuperscript{$\ast$}Corresponding author. e-mail: researcher@example.edu}
+
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+% <= 150 words, one unreferenced paragraph: biotechnology/clinical bottleneck,
+% engineered platform or resource, quantitative validation and translational utility.
+Abstract here.
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+\section*{Introduction}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Introduction here.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+\section*{Results}
+%%%%%%%%% RESULTS %%%%%%%%%
+% Use short informative \subsection* headings highlighting engineering design, validation and utility.
+Results here.
+%%%%%%%%% RESULTS %%%%%%%%%
+
+\section*{Discussion}
+%%%%%%%%% DISCUSSION %%%%%%%%%
+% Concise, no subheadings, no separate Conclusions section; address scalability, limitations and translation.
+Discussion here.
+%%%%%%%%% DISCUSSION %%%%%%%%%
+
+\section*{Methods}
+%%%%%%%%% METHODS %%%%%%%%%
+% Full experimental/computational protocol, characterization, and Statistics and reproducibility.
+Methods here.
+%%%%%%%%% METHODS %%%%%%%%%
+
+%%%%%%%%% BACK MATTER (unnumbered; Nature Biotechnology order) %%%%%%%%%
+\section*{Data availability}
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+Data availability here.
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+
+\section*{Code availability}
+%%%%%%%%% CODE AVAILABILITY %%%%%%%%%
+Code availability here.
+%%%%%%%%% CODE AVAILABILITY %%%%%%%%%
+
+%%%%%%%%% REFERENCES - KEEP STYLE AND FILE NAME %%%%%%%%%
+\bibliographystyle{naturemag}
+\bibliography{references}
+
+\section*{Acknowledgements}
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+Acknowledgements here.
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+
+\section*{Author contributions}
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+Author contributions here.
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+
+\section*{Competing interests}
+%%%%%%%%% COMPETING INTERESTS %%%%%%%%%
+Competing interests here.
+%%%%%%%%% COMPETING INTERESTS %%%%%%%%%
+
+\section*{Additional information}
+%%%%%%%%% ADDITIONAL INFORMATION %%%%%%%%%
+\textbf{Supplementary information} Supplementary information here.
+
+\noindent\textbf{Correspondence} and requests for materials should be addressed to A. Researcher.
+%%%%%%%%% ADDITIONAL INFORMATION %%%%%%%%%
+
+\end{document}

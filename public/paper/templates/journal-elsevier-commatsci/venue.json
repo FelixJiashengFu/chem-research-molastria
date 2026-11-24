@@ -1,0 +1,24 @@
+{
+  "kind": "journal",
+  "venue_name": "Computational Materials Science (Elsevier; other Elsevier journals by changing \\journal{...})",
+  "short_name": "Comput. Mater. Sci.",
+  "field": "computational materials science (atomistic, electronic-structure, data-driven and multiscale materials modelling)",
+  "review_model": "single-blind (single anonymized)",
+  "separate_related_work_section": false,
+  "section_order": ["Introduction", "Computational methods", "Results and discussion", "Conclusions"],
+  "abstract_limit": "at most 250 words in one paragraph; no citations (if essential, author and year), no figure, table or equation references, no undefined non-standard abbreviations",
+  "writing_style": "Concise, quantitative prose for computational materials scientists: state the materials problem, the conceptual or computational advance and the validated evidence, with every number in consistent SI-style units (eV/atom, GPa, K) and compared with experiment or higher-level theory. Methods are reported so that referees can reproduce them (code and version, functional or interatomic potential, pseudopotentials, cutoffs, k-points, convergence criteria, system size and sampling). Elsevier conventions: numbered sections in sentence case, numbered citations in square brackets, 'Fig. 1', 'Eq. (1)', mhchem formulas; no promotional language.",
+  "reviewer_focus": "Referees judge whether the paper contains a new conceptual or computational advance rather than a routine simulation of one more material, and whether non-first-principles methods (interatomic and machine-learned potentials, phase-field, CALPHAD, continuum models) are validated and shown to be transferable. They check that the computational protocol is complete and reproducible, that convergence and uncertainties are quantified, that results are compared with experiment or higher-level theory, that the physical motivation and impact are discussed in depth, and that data and code are available (FAIR data and code are mandatory for data-driven papers).",
+  "figure_style": "Elsevier sizes: single column 90 mm, 1.5 column 140 mm, full width 190 mm; lettering about 7 pt at print size (sub/superscripts at least 6 pt), RGB, at least 300 dpi for images and 1000 dpi for bitmap line art, vector plots preferred. Label axes with quantity and unit, use color-blind-safe palettes with markers or line styles, no titles inside panels, and captions that define every symbol and level of theory.",
+  "extras": [
+    "Graphical abstract in the graphicalabstract environment (13 cm x 5 cm, at least 1328 x 531 px): reuse the most representative figure from figures/ by replacing both occurrences of figures/toc_graphic.png, or keep the placeholder",
+    "Highlights in the highlights environment: 3-5 \\item lines, each at most 85 characters including spaces",
+    "Keywords in the keyword environment: 1-7 keywords separated by \\sep",
+    "CRediT authorship contribution statement",
+    "Declaration of competing interest",
+    "Declaration of generative AI and AI-assisted technologies in the manuscript preparation process (Elsevier template sentence, bracketed fields left for the authors)",
+    "Data availability statement (repository deposit or reason data cannot be shared; FAIR data and code for data-driven work)",
+    "Supplementary material captions",
+    "Acknowledgements (including funding, only as stated in the materials)"
+  ]
+}

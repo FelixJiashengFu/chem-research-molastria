@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage[preprint]{neurips_2026}
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Jane Doe}}
+\title{Learning Reaction Barriers with Equivariant Networks}
+\author{Jane Doe\thanks{Work done at Example Lab.} \\ Example University}
+\begin{document}
+\maketitle
+\begin{abstract}
+Predicting reaction barriers is a central task in computational chemistry; however, existing machine-learned potentials fail near transition states because training sets rarely sample them --- they are biased toward minima. We propose BarrierNet, a framework that leverages equivariant message passing to delve into the intricate geometry of saddle points. Our method reduces the mean absolute error by 37\% on 12 benchmark reactions, 4 solvents, 3 temperatures and 2 basis sets, outperforming the strongest baseline. This does not establish transferability to enzymes.
+\end{abstract}
+
+\section{Introduction}
+Transition states shed light on reactivity. Our previous work showed that sampling matters~\cite{doe2024sampling}. In this paper, we harness a seamless pipeline, making it easy to train, enabling fast inference, and allowing broad use. It is worth noting that barriers are hard. This is not trivial. They are rare. Data is scarce. Labels are costly. Models drift.
+Code is at https://github.com/janedoe/barriernet and \url{https://example.org/~jdoe/data%20set}.
+% TODO: add the enzyme results before submission
+We compare with prior models~\citep{smith2023, lee2022}; see Fig.~\ref{fig:parity} and Figure 3.
+
+\section{Method}
+\begin{verbatim}
+x = 5 % this is not a comment
+\end{verbatim}
+\begin{comment}
+An old paragraph we cut. FIXME later.
+\end{comment}
+Results here.
+We trained five seeds; the improvement is statistically significant (p < 0.05). \textbf{This bold sentence is far too long for body text here.}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=8cm]{figures/loss_curve.png}
+\caption{Training loss of BarrierNet over 200 epochs on the full reaction set with all solvents included and every temperature considered at once.}
+\label{fig:loss}
+\end{figure}
+
+\begin{figure}[t]
+\includegraphics[width=\linewidth]{figures/parity}
+\caption{\textbf{Parity plot.} Predicted against reference barriers.}
+\label{fig:parity}
+\end{figure}
+
+\section*{Acknowledgments}
+We thank the Example Foundation for grant 1234.
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
