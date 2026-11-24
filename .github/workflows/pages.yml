@@ -123,7 +123,7 @@ jobs:
           node --test tools/code-test.mjs
       - name: Literature extractor (R-group substitution, reagent table formulas, conditions, scoring, exports, sample figure)
         run: node --test tools/extract-test.mjs
-      - name: Paper Studio (PaperOrchestra port: prompts, templates, audits, pipeline and key handling, checked against the Python original)
+      - name: Paper Studio (PaperOrchestra port — prompts, templates, audits, pipeline and key handling, checked against the Python original)
         run: node --test tools/paper-test.mjs
       - name: Workbench (formats, crystals, paths, conformers, R/S vs RDKit, Molden vs PySCF, cube, Hirshfeld, IGM/IGMH, spectra vs cclib, job scripts)
         run: node --test tools/workbench-test.mjs
