@@ -1,0 +1,29 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
+(./main.tex
+LaTeX2e <2023-11-01>
+./main.tex:42: Undefined control sequence.
+l.42 \barrierheight
+                   {12}
+./main.tex:42: Undefined control sequence.
+! Missing $ inserted.
+<inserted text>
+                $
+l.57 The energy is E_
+                     a
+! LaTeX Error: File `chemfig.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+LaTeX Warning: Citation `smith2023' on page 2 undefined on input line 30.
+LaTeX Warning: Citation `lee2022' on page 2 undefined on input line 30.
+LaTeX Warning: Reference `fig:missing' on page 3 undefined on input line 61.
+Overfull \hbox (3.2pt too wide) in paragraph at lines 10--12
+Overfull \hbox (25.7pt too wide) in paragraph at lines 80--82
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+LaTeX Font Warning: Font shape `OT1/cmr/bx/sc' undefined
+LaTeX Warning: There were undefined references.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+Package natbib Warning: There were undefined citations.
+! Unicode character 你 (U+4F60)
+l.88 你
+./main.tex:99: Package pgfkeys Error: I do not know the key '/tikz/barrierwidth
+' and I am going to ignore it.

@@ -1,0 +1,19 @@
+{
+  "kind": "journal",
+  "venue_name": "Journal of Chemical Theory and Computation (default); The Journal of Physical Chemistry A/B/C; Journal of Chemical Information and Modeling",
+  "short_name": "ACS JCTC / JPC A/B/C / JCIM",
+  "field": "computational and theoretical chemistry",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": ["Introduction", "Computational Methods", "Results and Discussion", "Conclusions"],
+  "abstract_limit": "one paragraph of 3-4 sentences (JCTC, JCIM) or 100-200 words (JPC A/B/C); at most 200 words, no citations, no figure or table references, no equations",
+  "writing_style": "Concise, quantitative physical-chemistry prose for computational chemists: state the chemical problem, the methodological advance and the evidence, with every number given in consistent units and compared with reference data. Methods are reported so that the calculations can be reproduced (software and version, level of theory or force field, basis set, dispersion and solvation treatment, convergence criteria, sampling). Numbered superscript ACS citations, mhchem formulas and SI-style units; no promotional language.",
+  "reviewer_focus": "Referees judge whether the work is a genuine advance in theory, method or physical insight rather than a routine application of standard DFT or MD to one system, and whether new methods are benchmarked against high-level or experimental reference data on several systems or tasks. They check that the computational protocol is complete and reproducible, that errors and statistical uncertainty are quantified, that conclusions do not overreach the model chemistry, and that data and software availability is stated (mandatory at JCIM).",
+  "figure_style": "ACS sizes at final print size: single column up to 3.33 in (240 pt), double column 4.167-7 in, lettering at least 4.5 pt, lines at least 0.5 pt, 300 dpi color. Use sans-serif labels with axis quantities and units consistent with the text (e.g. kcal/mol), color-blind-safe palettes with markers or line styles, and no titles inside panels.",
+  "extras": [
+    "TOC graphic in the tocentry environment (3.25 in x 1.75 in): reuse the most representative figure from figures/, or keep the placeholder",
+    "Data and Software Availability section",
+    "Supporting Information file descriptions in the suppinfo environment",
+    "Acknowledgement environment (funding and AI-tool disclosure, only as stated in the materials)"
+  ]
+}

@@ -1,0 +1,62 @@
+%%%%%%%%% CHINESE JOURNAL TEMPLATE (GB/T 7714 STYLE) %%%%%%%%%
+% Supports XeLaTeX (with ctex for full Chinese typography) AND pdfLaTeX
+% (standard article fallback for compatibility checks).
+\documentclass[11pt,a4paper]{article}
+
+\IfFileExists{iftex.sty}{\usepackage{iftex}}{}
+\makeatletter
+\@ifundefined{ifXeTeX}{\newif\ifXeTeX\XeTeXfalse}{}
+\makeatother
+\ifXeTeX
+  \IfFileExists{ctex.sty}{\usepackage{ctex}}{}
+\else
+  \usepackage[T1]{fontenc}
+\fi
+
+\IfFileExists{geometry.sty}{\usepackage[a4paper,margin=2.5cm]{geometry}}{}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+\IfFileExists{url.sty}{\usepackage{url}}{}
+\IfFileExists{cite.sty}{\usepackage{cite}}{}
+
+\title{My Title}
+\author{A. Researcher\textsuperscript{1}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+Chinese and English abstracts here (keep Chinese abstract and English abstract cleanly separated, followed by keywords).
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Introduction and sequentially numbered literature review context here.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+\section{Methods}
+%%%%%%%%% METHODS %%%%%%%%%
+Methodology and system formulation here.
+%%%%%%%%% METHODS %%%%%%%%%
+
+\section{Results and Discussion}
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+Quantitative experiments, comparative analysis, and discussion here.
+%%%%%%%%% RESULTS AND DISCUSSION %%%%%%%%%
+
+\section{Conclusions}
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+Conclusions and future work here.
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}

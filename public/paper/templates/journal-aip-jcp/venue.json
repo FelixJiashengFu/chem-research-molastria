@@ -1,0 +1,28 @@
+{
+  "kind": "journal",
+  "venue_name": "The Journal of Chemical Physics",
+  "short_name": "JCP",
+  "field": "computational chemistry and chemical physics",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Theory",
+    "Computational Methods",
+    "Results and Discussion",
+    "Conclusions"
+  ],
+  "abstract_limit": "one paragraph, at most 250 words; no references, displayed equations, footnotes, graphics or tables",
+  "writing_style": "Precise, quantitative physical-chemistry prose for readers across the subfields of chemical physics: every claim is backed by numbers with units and uncertainties, and trends are explained by the underlying physics. Literature context belongs in the Introduction, and the methods are reported in enough detail to reproduce every calculation. AIP conventions apply: superscript numbered citations (written out as Ref N when used as a noun), figures numbered 1, 2, 3 and tables I, II, III, and no footnotes.",
+  "reviewer_focus": "Referees judge whether the work is significant new chemical physics of interest beyond one subfield, not a routine application. They check that the level of theory, basis sets, dispersion and solvation treatment, sampling and convergence are adequate and fully specified, that results are validated against high-level references or experiment with error statistics, and that conclusions follow from the data.",
+  "figure_style": "Single-column figures at most 3.37 in (8.5 cm) wide and two-column figures at most 6.69 in (17 cm), with lettering of at least 8 pt, lines of at least 0.5 pt and panels labeled (a), (b). Color is free online but print is grayscale, so use color-blind-safe palettes together with distinct line styles or markers.",
+  "extras": [
+    "Supplementary Material section after Conclusions (only if supplementary material exists; refer to it as 'supplementary material')",
+    "Acknowledgments in the acknowledgments environment (no invented funding)",
+    "Author Declarations: Conflict of Interest statement (required even if none)",
+    "Author Declarations: Author Contributions as a CRediT statement",
+    "Data Availability statement using an AIP template sentence",
+    "Corresponding-author footnote via \\email on the fixed author placeholder",
+    "No TOC graphic or graphical abstract: Fig. 1 is used as the highlight image, so cite the most representative figure first"
+  ]
+}

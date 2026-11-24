@@ -1,0 +1,61 @@
+%%%%%%%%% MCM / ICM MATHEMATICAL MODELING CONTEST TEMPLATE %%%%%%%%%
+\documentclass[12pt,letterpaper]{article}
+
+\IfFileExists{geometry.sty}{\usepackage[letterpaper,margin=1in]{geometry}}{}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+\IfFileExists{url.sty}{\usepackage{url}}{}
+\IfFileExists{cite.sty}{\usepackage{cite}}{}
+
+\title{MCM/ICM Mathematical Modeling Report}
+\author{Team Control Number \#0000000}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+Summary sheet paragraph summarizing the problem, modeling framework, quantitative results, sensitivity checks, and key recommendations.
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Problem background, restatement of the objectives, and overview of our modeling workflow.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+\section{Assumptions and Notation}
+%%%%%%%%% ASSUMPTIONS AND NOTATION %%%%%%%%%
+Key simplifying assumptions with physical or statistical justifications, plus a centered symbol/notation table.
+%%%%%%%%% ASSUMPTIONS AND NOTATION %%%%%%%%%
+
+\section{Data Preprocessing and Exploratory Analysis}
+%%%%%%%%% EXPLORATORY ANALYSIS %%%%%%%%%
+Missing-value imputation, outlier detection, feature engineering, and periodicity or correlation diagnostics.
+%%%%%%%%% EXPLORATORY ANALYSIS %%%%%%%%%
+
+\section{Model Formulation and Comparative Results}
+%%%%%%%%% MODEL FORMULATION %%%%%%%%%
+Mathematical formulation, multi-model benchmark comparison (MAE, RMSE, MAPE, R\textsuperscript{2}), and feature importance analysis.
+%%%%%%%%% MODEL FORMULATION %%%%%%%%%
+
+\section{Sensitivity and Robustness Analysis}
+%%%%%%%%% SENSITIVITY ANALYSIS %%%%%%%%%
+Parameter perturbation tests, error propagation, strengths, and honest limitations.
+%%%%%%%%% SENSITIVITY ANALYSIS %%%%%%%%%
+
+\section{Conclusions and Policy Recommendations}
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+Summary of quantitative findings and actionable recommendations.
+%%%%%%%%% CONCLUSIONS %%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

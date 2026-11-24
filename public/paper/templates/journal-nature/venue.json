@@ -1,0 +1,29 @@
+{
+  "kind": "journal",
+  "venue_name": "Nature",
+  "short_name": "Nature",
+  "field": "multidisciplinary natural and computational sciences",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Results",
+    "Discussion",
+    "Methods"
+  ],
+  "abstract_limit": "200 words, single unreferenced summary paragraph written for non-specialists (broad context, specific problem, key advance, quantitative findings, broader implication)",
+  "writing_style": "Flagship Nature style for a broad multidisciplinary readership: low-jargon title (at most 75 characters / ~15 words) and summary paragraph accessible outside the immediate subfield; concise unheaded Introduction carrying literature context; Results organized under short informative subheadings that state findings rather than experiments; concise Discussion without subheadings covering significance, honest limitations and outlook (no separate Conclusions section); full reproducible Methods at the end; superscript numbered references.",
+  "reviewer_focus": "Referees judge whether the work delivers a conceptual advance of broad scientific significance outside one narrow specialty, backed by rigorous controls, independent validation, complete statistical reporting (n, exact test, effect size/CI) and transparent limitations without overclaiming.",
+  "figure_style": "Nature Portfolio figure standards: single column 89 mm (3.5 in) or double column 183 mm (7.2 in) width, Arial or Helvetica sans-serif lettering at 5-7 pt at final size, lines >= 0.5-1 pt, at least 300 dpi RGB, lowercase bold panel labels (a, b, c) and colorblind-safe Okabe-Ito or viridis palettes without red-green contrast or rainbow scales. Each legend opens with a bold one-sentence title covering the whole figure followed by <= 350 words describing every panel and defining error bars/n. No AI-generated artwork in final figures.",
+  "extras": [
+    "Data availability statement after Methods (mandatory; no invented repositories or DOIs)",
+    "Code availability statement",
+    "Acknowledgements including funding (no invented grants)",
+    "Author contributions by initials (A.R.)",
+    "Competing interests statement (mandatory, even if none)",
+    "Reporting summary / statistics & reproducibility subsection in Methods",
+    "Nature AI-use disclosure in Methods only if generative AI assisted manuscript drafting (do not invent)",
+    "Bold title sentence at the start of every figure and table legend",
+    "No TOC graphic or graphical abstract"
+  ]
+}

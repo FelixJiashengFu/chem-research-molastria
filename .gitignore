@@ -9,6 +9,7 @@ maintenance/_probe/
 *.log
 # 计算工作台的示例和测试数据是程序输出，要进仓库
 !public/workbench/samples/*.log
+!tools/paper/samples/*.log
 !tools/workbench/fixtures/**/*.log
 dist/
 desktop/node_modules/

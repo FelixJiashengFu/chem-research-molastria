@@ -1,0 +1,21 @@
+{
+  "kind": "journal",
+  "venue_name": "Physical Chemistry Chemical Physics (Royal Society of Chemistry)",
+  "short_name": "RSC PCCP",
+  "field": "computational and theoretical physical chemistry",
+  "review_model": "single-blind (single-anonymised; optional transparent peer review)",
+  "separate_related_work_section": false,
+  "section_order": ["Introduction", "Computational details", "Results and discussion", "Conclusions"],
+  "abstract_limit": "single paragraph of about 50-250 words (aim for 150-200), no citations",
+  "writing_style": "Concise, quantitative physical-chemistry prose for a readership that spans experiment and theory: state the physical question and the new insight, then the evidence, with every number in consistent SI-style units (one of kJ mol-1 or kcal mol-1 throughout) and a sensible number of significant figures. Sentence-case headings, RSC numbered superscript citations, \\ce formulas, 'Fig. 1' and 'eqn (1)' cross-references, and no promotional language. Computational details are reported so that every result can be reproduced.",
+  "reviewer_focus": "Referees judge whether the work gives significant new insight into physical chemistry rather than a routine application of standard DFT or MD to one more system. They check that the level of theory, basis set, dispersion and solvation treatment, sampling and convergence are complete and justified, that results are benchmarked against experiment or high-level reference data with quantified errors, and that conclusions do not overreach the model. Coordinates, energies and a data availability statement pointing to the ESI or a repository are expected.",
+  "figure_style": "Figures fit one column (8.3 cm) or two columns (17.1 cm) at final size, with legible 6-8 pt sans-serif labels (Arial/Helvetica 7 pt for structures), axis quantities with units matching the text, and colour-blind-safe palettes with markers or line styles. Captions read 'Fig. 1 ...' below figures, and table captions go above booktabs tables.",
+  "extras": [
+    "Table of contents entry (graphical abstract) in tocentry: 8 cm x 4 cm image reusing the most representative figure from figures/, or keep the placeholder, plus 1-2 sentences of at most 250 characters",
+    "ESI footnote text in \\esinote{...} listing the supplementary contents",
+    "Author contributions section (CRediT roles, only as stated in the materials)",
+    "Conflicts of interest section ('There are no conflicts to declare.' if none)",
+    "Data availability section (repository or ESI, full URLs, no 'available on request')",
+    "Acknowledgements section (funding, computing resources, AI-tool use, only as stated)"
+  ]
+}

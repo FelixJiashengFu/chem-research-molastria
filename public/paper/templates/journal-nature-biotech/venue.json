@@ -1,0 +1,29 @@
+{
+  "kind": "journal",
+  "venue_name": "Nature Biotechnology",
+  "short_name": "Nat. Biotechnol.",
+  "field": "biotechnology, bioengineering, translational biology and computational platforms",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Results",
+    "Discussion",
+    "Methods"
+  ],
+  "abstract_limit": "150 words, one unreferenced paragraph without subheadings (biotechnological bottleneck, engineered platform/resource, quantitative validation, translational or community impact)",
+  "writing_style": "Nature Biotechnology style emphasizing enabling biotechnology significance, engineering depth, platform utility and translational relevance: concise unheaded Introduction framing the biological/engineering challenge and state of the art; Results organized under short finding-driven subheadings moving from platform design and mechanistic characterization to quantitative validation and translational/community utility; concise unheaded Discussion covering scalability, limitations, safety/regulatory considerations and outlook (no separate Conclusions); full Methods; superscript numbered references.",
+  "reviewer_focus": "Referees weigh whether the advance has genuine biotechnology, medical or bioengineering significance beyond a single narrow benchmark, whether platform/resource claims are substantiated across realistic biological complexity and orthogonal assays, full reproducibility and data/code accessibility, and complete statistical reporting (n, exact test, effect size/CI) without overclaiming.",
+  "figure_style": "Nature Portfolio figure standards: single column 89 mm (3.5 in) or double column 183 mm (7.2 in) width, Arial or Helvetica sans-serif lettering at 5-7 pt at final size, lines >= 0.5-1 pt, at least 300 dpi RGB, lowercase bold panel labels (a, b, c) and colorblind-safe Okabe-Ito or viridis palettes without red-green contrast or rainbow scales. Each legend opens with a bold one-sentence title followed by <= 350 words explaining every panel and defining error bars/n. No AI-generated artwork in final figures.",
+  "extras": [
+    "Data availability statement after Methods (mandatory; no invented repositories or DOIs)",
+    "Code availability statement (mandatory for computational/software platforms; state only provided repos)",
+    "Acknowledgements including funding (no invented grants)",
+    "Author contributions by initials (A.R.)",
+    "Competing interests statement (mandatory, even if none)",
+    "Reporting summary / statistics & reproducibility subsection in Methods",
+    "Nature AI-use disclosure in Methods only if generative AI assisted manuscript drafting (do not invent)",
+    "Bold title sentence at the start of every figure and table legend",
+    "No TOC graphic or graphical abstract"
+  ]
+}

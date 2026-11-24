@@ -1,0 +1,8 @@
+\documentclass{article}
+\usepackage{biblatex}
+\begin{document}
+See \cite{smith2023}, \citep[p.~3]{lee2022,doe2024}, \textcite{child2019} and \parencites[see][]{smith2023}{Unused2020}.
+% \cite{commented2021}
+\url{https://example.org/\cite{notreal}} and \nocite{#1}.
+\bibliography{refs}
+\end{document}

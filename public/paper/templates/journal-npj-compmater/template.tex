@@ -1,0 +1,234 @@
+%%%%%%%%% npj COMPUTATIONAL MATERIALS - SUBMISSION MANUSCRIPT %%%%%%%%%
+% Journal: npj Computational Materials (Springer Nature, npj Series).
+% This is a submission-format approximation built on the standard article
+% class (Springer Nature's own sn-jnl template is not used here, see
+% SOURCES.md). npj journals do not require their formatting at first
+% submission; a single compiled PDF with figures in the text is what the
+% editors and referees read.
+% Layout: single column, 12 pt, A4, Nature-style superscript numbered
+% references (naturemag.bst, copied next to this file), unnumbered
+% headings, "Fig. 1" legends that start with a bold title sentence.
+\documentclass[12pt,a4paper]{article}
+
+%%%%%%%%% PACKAGES - KEEP UNCHANGED %%%%%%%%%
+% Do not load natbib, hyperref, cleveref, caption, titlesec or other font
+% packages: citations, headings and captions are set up below.
+\IfFileExists{geometry.sty}{\usepackage[a4paper,margin=2.5cm]{geometry}}{}
+% Times-like text and math, Helvetica for headings and legends.
+\IfFileExists{mathptmx.sty}{\usepackage{mathptmx}}{}
+\IfFileExists{helvet.sty}{\usepackage[scaled=0.92]{helvet}}{}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+% Optional for a referee copy (off by default): double spacing and line
+% numbers. Uncomment both lines to switch them on.
+% \linespread{1.6}
+% \IfFileExists{lineno.sty}{\usepackage{lineno}\linenumbers}{}
+
+% Tables: booktabs (\toprule, \midrule, \cmidrule, \bottomrule).
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{}
+\makeatletter
+\providecommand*{\toprule}{\hline}
+\providecommand*{\midrule}{\hline}
+\providecommand*{\bottomrule}{\hline}
+\providecommand*{\addlinespace}[1][]{}
+\providecommand*{\cmidrule}{\@ifnextchar(\npj@cmidtrim\npj@cmid}
+\def\npj@cmidtrim(#1){\npj@cmid}
+\def\npj@cmid#1{\cline{#1}}
+\makeatother
+
+% URLs (Data availability, Code availability): \url{https://...}.
+\IfFileExists{url.sty}{\usepackage{url}}{}
+\providecommand*{\url}[1]{\texttt{#1}}
+
+% Citations: Nature style, superscript numbers in order of first citation,
+% placed after punctuation ("as reported previously.\cite{key}" is fine;
+% cite.sty moves a following full stop or comma before the number) and
+% compressed (1-3). Fallback without cite.sty: plain superscripts.
+\makeatletter
+\IfFileExists{cite.sty}{\usepackage[super]{cite}}{%
+  \def\@cite##1##2{\textsuperscript{##1\if@tempswa, ##2\fi}}}
+\renewcommand\@biblabel[1]{#1.}
+\makeatother
+
+% Chemistry: mhchem (version 4) for formulas and reactions, \ce{...}.
+\IfFileExists{mhchem.sty}{\usepackage[version=4]{mhchem}}{}
+% Fallback when mhchem is missing: print the formula as typed.
+\providecommand*{\ce}[1]{\textrm{\detokenize{#1}}}
+
+% Quantities and units: siunitx. \qty{1.5}{\kilo\calorie\per\mole} (or \SI),
+% \unit{\electronvolt\per\atom} (or \si), \num{1.2e-3}.
+\IfFileExists{siunitx.sty}{\usepackage{siunitx}}{}
+\makeatletter
+% siunitx has no \calorie and no \atom, and v3 deprecates \angstrom;
+% declare them here.
+\@ifpackageloaded{siunitx}{%
+  \DeclareSIUnit{\calorie}{cal}%
+  \DeclareSIUnit{\angstrom}{\text{\AA}}%
+  \DeclareSIUnit{\atom}{atom}%
+}{}
+% Fallbacks when siunitx is missing (or is version 2, without \qty/\unit):
+% common prefixes and units are printed upright.
+\newcommand*{\npj@units}{%
+  \def\per{/}\def\squared{^{2}}\def\cubed{^{3}}\def\tothe##1{^{##1}}%
+  \def\square##1{##1^{2}}\def\cubic##1{##1^{3}}%
+  \def\femto{f}\def\pico{p}\def\nano{n}\def\micro{\mu}\def\milli{m}%
+  \def\centi{c}\def\deci{d}\def\kilo{k}\def\mega{M}\def\giga{G}%
+  \def\tera{T}\def\metre{m}\def\meter{m}\def\gram{g}\def\second{s}%
+  \def\mole{mol}\def\kelvin{K}\def\joule{J}\def\calorie{cal}%
+  \def\electronvolt{eV}\def\hartree{E_{\mathrm{h}}}\def\bohr{a_{0}}%
+  \def\angstrom{\mbox{\AA}}\def\atom{atom}\def\dalton{Da}%
+  \def\litre{L}\def\liter{L}\def\hour{h}\def\minute{min}%
+  \def\pascal{Pa}\def\bar{bar}\def\atmosphere{atm}\def\hertz{Hz}%
+  \def\watt{W}\def\volt{V}\def\ampere{A}\def\coulomb{C}\def\newton{N}%
+  \def\ohm{\Omega}\def\siemens{S}\def\tesla{T}\def\debye{D}%
+  \def\molar{M}\def\percent{\%}\def\degree{^{\circ}}%
+  \def\degreeCelsius{{}^{\circ}C}%
+}
+\providecommand*{\si}[2][]{{\npj@units\ensuremath{\mathrm{#2}}}}
+\makeatother
+\providecommand*{\num}[2][]{#2}
+\providecommand*{\SI}[3][]{\num{#2}\,\si{#3}}
+\providecommand*{\SIrange}[4][]{\num{#2}--\num{#3}\,\si{#4}}
+\providecommand*{\numrange}[3][]{\num{#2}--\num{#3}}
+\providecommand*{\qty}{\SI}
+\providecommand*{\unit}{\si}
+\providecommand*{\qtyrange}{\SIrange}
+
+%%%%%%%%% NATURE-STYLE LAYOUT (no extra packages) %%%%%%%%%
+\makeatletter
+% Unnumbered bold sans-serif headings; refer to sections by name
+% ("see Methods"), not with \ref.
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-3.0ex \@plus -1ex \@minus -.2ex}{1.0ex \@plus .2ex}%
+  {\normalfont\large\sffamily\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-2.2ex \@plus -.5ex \@minus -.2ex}{0.6ex \@plus .2ex}%
+  {\normalfont\normalsize\sffamily\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {1.5ex \@plus .5ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}}
+\setcounter{secnumdepth}{0}
+% Title block: left-aligned, sans-serif bold title, then authors.
+\renewcommand\@maketitle{%
+  \newpage\null\vskip 1em%
+  {\raggedright\LARGE\sffamily\bfseries \@title\par}%
+  \vskip 1.2em%
+  {\raggedright\large \@author\par}%
+  \vskip 0.8em}
+% Affiliations: one \item per institution, numbered by superscripts.
+\newenvironment{affiliations}{%
+  \begin{list}{\textsuperscript{\arabic{enumi}}}{%
+    \usecounter{enumi}\setlength{\leftmargin}{0pt}%
+    \setlength{\labelwidth}{0pt}\setlength{\labelsep}{0pt}%
+    \setlength{\itemindent}{0pt}\setlength{\topsep}{0pt}%
+    \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}}%
+  \small\raggedright}{\end{list}\par\vskip 0.4em}
+% Abstract: a heading and one unreferenced paragraph.
+\renewenvironment{abstract}{%
+  \par\vskip 1.2em\noindent{\large\sffamily\bfseries Abstract}\par
+  \vskip 0.6ex\noindent\ignorespaces}{\par\vskip 0.6em}
+% Legends: "Fig. 1" / "Table 1" in bold, then the caption, which starts
+% with a bold title sentence: \caption{\textbf{Title.} Description...}.
+\renewcommand\figurename{Fig.}
+\renewcommand\fnum@figure{\textbf{\figurename~\thefigure}}
+\renewcommand\fnum@table{\textbf{\tablename~\thetable}}
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  {\small\sffamily\raggedright #1\hspace{0.6em}#2\par}%
+  \vskip\belowcaptionskip}
+\makeatother
+
+\begin{document}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+% At most 15 words, no punctuation, idioms or puns (npj content types).
+\title{My Title}
+
+%%%%%%%%% AUTHOR - KEEP THIS PLACEHOLDER EXACTLY AS IT IS
+% npj review is single-anonymized: authors are shown. Superscript 1 links
+% the author to the affiliation; the asterisk marks the corresponding author.
+\author{A. Researcher\textsuperscript{1,$\ast$}}
+\date{}
+
+\maketitle
+
+\begin{affiliations}
+\item Department of Chemistry, Example University, City, Country
+\end{affiliations}
+\noindent{\small\textsuperscript{$\ast$}Corresponding author. e-mail: researcher@example.edu}
+
+\begin{abstract}
+%%%%%%%%% ABSTRACT %%%%%%%%%
+Abstract here.
+%%%%%%%%% ABSTRACT %%%%%%%%%
+\end{abstract}
+
+\section*{Introduction}
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+Introduction here.
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+
+\section*{Results}
+%%%%%%%%% RESULTS %%%%%%%%%
+% Use short \subsection* headings (npj: Results should have subheadings).
+Results here.
+%%%%%%%%% RESULTS %%%%%%%%%
+
+\section*{Discussion}
+%%%%%%%%% DISCUSSION %%%%%%%%%
+% No subheadings and no separate Conclusions or Limitations section.
+Discussion here.
+%%%%%%%%% DISCUSSION %%%%%%%%%
+
+\section*{Methods}
+%%%%%%%%% METHODS %%%%%%%%%
+% All methods go here (npj does not permit Supplementary Methods). Use
+% short \subsection* headings, e.g. Electronic-structure calculations,
+% Molecular dynamics, Machine-learning model, Statistics and reproducibility.
+Methods here.
+%%%%%%%%% METHODS %%%%%%%%%
+
+%%%%%%%%% BACK MATTER (unnumbered; npj order) %%%%%%%%%
+\section*{Data availability}
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+Data availability here.
+%%%%%%%%% DATA AVAILABILITY %%%%%%%%%
+
+\section*{Code availability}
+%%%%%%%%% CODE AVAILABILITY %%%%%%%%%
+Code availability here.
+%%%%%%%%% CODE AVAILABILITY %%%%%%%%%
+
+%%%%%%%%% REFERENCES - KEEP STYLE AND FILE NAME %%%%%%%%%
+\bibliographystyle{naturemag}
+\bibliography{references}
+
+\section*{Acknowledgements}
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+Acknowledgements here.
+%%%%%%%%% ACKNOWLEDGEMENTS %%%%%%%%%
+
+\section*{Author contributions}
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+Author contributions here.
+%%%%%%%%% AUTHOR CONTRIBUTIONS %%%%%%%%%
+
+\section*{Competing interests}
+%%%%%%%%% COMPETING INTERESTS %%%%%%%%%
+Competing interests here.
+%%%%%%%%% COMPETING INTERESTS %%%%%%%%%
+
+\section*{Additional information}
+%%%%%%%%% ADDITIONAL INFORMATION %%%%%%%%%
+% Supplementary information: one sentence naming the single merged
+% Supplementary Information PDF and what it contains (no Supplementary
+% Methods). Keep the correspondence sentence.
+\textbf{Supplementary information} Supplementary information here.
+
+\noindent\textbf{Correspondence} and requests for materials should be addressed to A. Researcher.
+%%%%%%%%% ADDITIONAL INFORMATION %%%%%%%%%
+
+\end{document}

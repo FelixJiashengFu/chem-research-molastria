@@ -100,6 +100,7 @@
       ['code', 'code/index.html', '开源代码台', 'Code Desk', '计算化学程序的输入生成、输出解读与软件体检', 'Input generation, output reading and health checks for chemistry codes', 1, 'pyscf orca gaussian xtb nwchem cp2k qchem smiles 3d input 输入 坐标'],
       ['extract', 'extract/index.html', '文献信息抽取', 'Literature Extractor', '一组分工的 AI 智能体从反应图和 PDF 读出反应、条件、产率和底物表，规则代入 R 基团、核对打分，导出 JSON / CSV', 'A team of AI agents reads reactions, conditions, yields and scope tables from figures and PDFs; rules fill R groups, check and score; export JSON / CSV', 1, 'extract extraction literature paper pdf figure scheme reaction scope table ocr chemeagle agent multi-agent smiles yield 抽取 提取 文献 论文 反应图 底物表 智能体 识别'],
       ['workbench', 'workbench/index.html', '计算工作台', 'Workbench', '读写九种结构格式、搭晶体和表面、写反应路径和批量作业的输入、构象归簇、R/S 标记，画分子轨道、Hirshfeld 面和 IGM / IGMH 弱相互作用，读红外拉曼紫外和优化收敛', 'Nine structure formats, crystals and surfaces, reaction-path and batch inputs, conformer clustering, R/S labels; orbitals, Hirshfeld surfaces and IGM / IGMH weak interactions; IR, Raman, UV–vis and convergence from outputs', 1, 'workbench ester studio structure xyz cif poscar pdb mol sdf crystal surface slab supercell scan ts irc neb idpp conformer rmsd boltzmann molden orbital homo lumo cube esp hirshfeld fingerprint igm igmh iri nci raman uv tddft convergence slurm pbs batch job cip chirality 工作台 结构 晶体 表面 反应路径 过渡态 构象 轨道 静电势 弱相互作用 拉曼 紫外 批量 作业脚本 手性'],
+      ['paper', 'paper/index.html', '论文工坊', 'Paper Studio', '用你自己的 API key 把想法和实验记录写成 LaTeX 论文：大纲、找真实文献并核对、画图、模拟审稿和修改；科研工坊、投稿体检、LaTeX 助手', 'Bring your own API key to turn an idea and an experimental log into a LaTeX paper: outline, real checked references, figures, simulated review and revision; research studio, submission check, LaTeX copilot', 1, 'paper writing latex manuscript paperorchestra paper orchestra byok api key outline literature review citation bibtex overleaf arxiv peer review referee double blind abstract copilot research studio reproduction math modeling mcm cumcm 写论文 论文写作 投稿 审稿 文献综述 引用核对 摘要 选题 复现 数学建模 美赛 国赛'],
       ['journals', 'journals/index.html', '期刊发表', 'Journals', '期刊选择与投稿指导', 'Choosing a journal and submitting', 0, 'journal submit 投稿'],
       ['api', 'api/index.html', '开放数据接口', 'Open Data API', '程序可读的数据集、JS / Python 库与计算接口', 'Machine-readable datasets, JS / Python clients and the compute API', 1, 'api json openapi python'],
       ['download', 'download/index.html', '桌面版', 'Desktop App', 'Windows 和 macOS 应用，可在本机跑 UMA', 'Windows and macOS app that can run UMA locally', 0, 'desktop download windows mac app 下载'],
@@ -151,7 +152,7 @@
   // ── 最近更新（updates/）：UPDATES_LATEST 是 updates/updates-data.js 里最新一条的日期（tools/updates-test.mjs 核对两边一致）。
   //    每页载入时把这一页记进 molastria-updates.p（进度圈用：打开过就算看过；同一套写法在 updates-core.js 的 normPath / visit）；
   //    第一次来的人（首页进场动画是 full，或者本机没有任何 MolAstria 存档）直接记成看过最新一版，不弹也不亮小点。
-  const UPDATES_LATEST = '2026-11-23', UKEY = 'molastria-updates';
+  const UPDATES_LATEST = '2026-11-24', UKEY = 'molastria-updates';
   const readUp = () => { try { const v = JSON.parse(localStorage.getItem(UKEY) || 'null'); return v && typeof v === 'object' && !Array.isArray(v) ? v : null; } catch { return null; } };
   const firstVisit = (() => {
     if (document.documentElement.dataset.entrance === 'full') return true;

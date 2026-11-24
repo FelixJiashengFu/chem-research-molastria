@@ -4,7 +4,7 @@
 //   node tools/e2e/run.mjs          all checks
 //   node tools/e2e/run.mjs vip      only checks whose name contains "vip"
 //   node tools/e2e/run.mjs --net    also run a real PreprintRadar search (calls Crossref and DataCite)
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/paper/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -7010,6 +7010,79 @@ check('literature extractor: MolNexTR on the fake computer reads the boxed struc
   await finish(e);
 });
 
+check('paper studio: key only in this tab and only sent to the chosen provider, the five steps with a fake model, a zip with the template files, hand-off to the submission check, English phone', async () => {
+  const KEY = 'sk-e2e-SECRET-0123456789abcdef';
+  const p = await open({ reducedMotion: 'reduce' });
+  const ctx = p.context();
+  const leaks = [];
+  ctx.on('request', (r) => { const all = r.url() + JSON.stringify(r.headers()) + (r.postData() || ''); if (all.includes(KEY) && !r.url().startsWith('https://api.deepseek.com/')) leaks.push(r.url()); });
+  const plan = { plotting_plan: [{ figure_id: 'fig_curve', plot_type: 'plot', title: 'Learning curve' }, { figure_id: 'fig_scheme', plot_type: 'diagram', title: 'Scheme' }],
+    intro_related_work_plan: { introduction_strategy: { problem_gap_hypothesis: 'xTB barriers are inaccurate', search_directions: ['delta learning barriers'] }, related_work_strategy: { subsections: [] } },
+    section_plan: [{ section_title: 'Methods', subsections: [] }] };
+  const tex = (body) => '```latex\n\\documentclass{achemso}\n\\begin{document}\n\\begin{abstract}We correct barriers. MAE 6.8 to 1.4 kcal/mol.\\end{abstract}\n' + body + '\n\\bibliography{references}\n\\end{document}\n```';
+  const answer = (prompt) => {
+    if (/Here are the input materials for the paper/.test(prompt) && !/REFLECTION/.test(prompt)) return tex('\\section{Methods}Model \\cite{Lee2023DeltaLearning}.');
+    if (prompt.includes("'idea.md':")) return '```json\n' + JSON.stringify(plan) + '\n```';
+    if (/likely_titles/.test(prompt)) return '{"queries": ["delta learning barriers"], "likely_titles": []}';
+    if (/"irrelevant"/.test(prompt)) return '{"irrelevant": []}';
+    if (/Generate the LaTeX for/.test(prompt)) return tex('\\section{Introduction}Prior \\cite{Lee2023DeltaLearning}.');
+    if (/chart specification/.test(prompt)) return '{"type":"line","xLabel":"Training reactions","yLabel":"MAE (kcal/mol)","series":[{"name":"net","x":[100,200,400],"y":[3.9,2.9,2.2]}],"caption":"Error falls."}';
+    if (/Review \d+\/\d+:/.test(prompt) || /Here is the paper you are asked to review/.test(prompt)) return '{"Summary":"S","Strengths":["clear"],"Weaknesses":["small"],"Overall":5,"Originality":3,"Quality":2,"Clarity":3,"Significance":3,"Soundness":2,"Presentation":3,"Contribution":3,"Confidence":4}';
+    if (/REFLECTION ITERATION/.test(prompt)) return '{"plan":"x"}\n' + tex('\\section{Methods}Better \\cite{Lee2023DeltaLearning}.');
+    return '## Report\n\n- ok';
+  };
+  await ctx.route(/^https:\/\/api\.deepseek\.com\//, (r) => {
+    if (r.request().headers().authorization !== `Bearer ${KEY}`) return r.fulfill({ status: 401, body: '{"error":{"message":"bad key"}}' });
+    if (/\/models$/.test(r.request().url())) return r.fulfill({ status: 200, contentType: 'application/json', body: '{"data":[{"id":"deepseek-v4-pro"}]}' });
+    const body = JSON.parse(r.request().postData());
+    const text = answer(body.messages.map((m) => (typeof m.content === 'string' ? m.content : m.content.map((c) => c.text || '').join(''))).join('\n'));
+    const chunks = (text.match(/[\s\S]{1,50}/g) || []).map((t) => `data: ${JSON.stringify({ choices: [{ delta: { content: t } }] })}\n\n`).join('');
+    return r.fulfill({ status: 200, contentType: 'text/event-stream', body: chunks + `data: ${JSON.stringify({ choices: [{ delta: {}, finish_reason: 'stop' }], usage: { prompt_tokens: 1000, completion_tokens: 200 } })}\n\ndata: [DONE]\n\n` });
+  });
+  const inv = (s) => Object.fromEntries(s.split(' ').map((w, i) => [w, [i]]));
+  const work = (t, y) => ({ id: 'https://openalex.org/W' + y, doi: `https://doi.org/10.9999/${y}`, display_name: t, publication_year: y, publication_date: `${y}-02-01`, authorships: [{ author: { display_name: 'Ann Lee' } }], primary_location: { source: { display_name: 'JCTC', type: 'journal' } }, abstract_inverted_index: inv('An abstract about barriers'), cited_by_count: 3, biblio: {} });
+  await ctx.route(/^https:\/\/api\.openalex\.org\//, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ results: [work('Delta learning of barrier heights', 2023), work('A paper from the future', 2099)] }) }));
+  await ctx.route(/^https:\/\/api\.(semanticscholar\.org|crossref\.org)\//, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"data":[],"message":{"items":[]}}' }));
+  await go(p, '/paper/index.html#settings');
+  const keyIn = p.locator('#po-p-settings input[data-provider=deepseek]');
+  await keyIn.fill(KEY);
+  await keyIn.press('Tab');
+  await p.locator('#po-p-settings .po-pv').filter({ hasText: 'DeepSeek' }).getByRole('button', { name: '测试连接' }).click();
+  await p.waitForFunction(() => /连上了/.test(document.querySelector('#po-p-settings').textContent));
+  const stores = await p.evaluate(() => [JSON.stringify(localStorage), JSON.stringify(sessionStorage)]);
+  assert.ok(!stores[0].includes('SECRET') && stores[1].includes('SECRET'), 'without “remember” the key lives only in sessionStorage');
+  await p.click('#po-t-write');
+  await p.getByRole('button', { name: '填入示例' }).click();
+  await p.selectOption('#po-p-write select[aria-label=修改轮数]', '1');
+  await p.selectOption('#po-p-write select[aria-label=审稿人数]', '2');
+  await p.getByRole('button', { name: '开始写' }).click();
+  await p.waitForFunction(() => /写完了/.test(document.querySelector('#po-p-write').textContent), null, { timeout: 60000 });
+  const states = await p.evaluate(() => [...document.querySelectorAll('.po-step')].map((s) => s.dataset.state));
+  assert.deepEqual(states, ['done', 'done', 'done', 'done', 'done']);
+  assert.match(await p.locator('#po-step-literature').innerText(), /找到并核对了 1 篇/, 'the paper after the cutoff is left out');
+  assert.equal(await p.locator('#po-step-plots img').count(), 1, 'the planned plot is drawn, the diagram is left to the author');
+  assert.match(await p.locator('.po-meter').innerText(), /次调用/);
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: /下载 zip/ }).click()]);
+  const dir = mkdtempSync(join(tmpdir(), 'paper-'));
+  await dl.saveAs(join(dir, 'paper.zip'));
+  const names = spawnSync('python3', ['-I', '-c', 'import sys, zipfile; print("\\n".join(zipfile.ZipFile(sys.argv[1]).namelist()))', join(dir, 'paper.zip')]).stdout.toString().split('\n');
+  for (const f of ['main.tex', 'references.bib', 'achemso.cls', 'fig_curve.png', 'paperorchestra/run.json']) assert.ok(names.includes(f), `zip has ${f}`);
+  assert.ok(!readFileSync(join(dir, 'paper.zip')).includes('SECRET'), 'the export has no key');
+  rmSync(dir, { recursive: true, force: true });
+  await p.getByRole('button', { name: '送去投稿体检' }).click();
+  await p.waitForSelector('#po-p-audit .po-ck');
+  assert.match(await p.locator('#po-p-audit').innerText(), /稿件体检[\s\S]*引用核对/);
+  assert.deepEqual(leaks, [], 'the key went nowhere but the provider');
+  assert.deepEqual(p.errors, []);
+  await ctx.close();
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  await go(e, '/paper/index.html?lang=en#settings');
+  await e.waitForSelector('#po-p-settings input[data-provider=openai]');
+  assert.match(await e.locator('#po-p-settings').innerText(), /Where your key goes/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
+  assert.deepEqual(e.errors, []);
+  await e.context().close();
+});
 check('workbench: R/S labels, Hirshfeld + IGMH on the water dimer, spectra from real outputs, a Slurm batch zip, hand-off to the code desk, English phone', async () => {
   const p = await open({ reducedMotion: 'reduce' });
   await localOCL(p.context());

@@ -1,0 +1,440 @@
+%% pccp-approx.sty -- page layout for PaperOrchestra's PCCP template
+%% (templates/journal-rsc-pccp).
+%%
+%% This is NOT a Royal Society of Chemistry file and contains no RSC code.
+%% RSC's official LaTeX template is hosted on Overleaf, not on CTAN. This
+%% package approximates its two-column article layout on the standard
+%% article class: A4 paper, 17.1 cm text width with 8.3 cm columns (the RSC
+%% single- and double-column figure widths), 9 pt body text, a framed title,
+%% author and abstract block across both columns, sans-serif headings,
+%% "Fig. 1" captions, the affiliation and the ESI note as page-1 footnotes,
+%% numbered superscript citations (natbib + rsc.bst) under "Notes and
+%% references", and a table of contents entry (graphical abstract) printed
+%% at the end. RSC retypesets every accepted article in its house style.
+%%
+%% It also supplies plain fallbacks for \ce (mhchem), \SI, \si, \num, \qty,
+%% \unit (siunitx) and the booktabs rules when those packages are missing,
+%% so template.tex compiles with a basic LaTeX installation.
+%%
+%% Load it after amsmath, graphicx, booktabs, mhchem, siunitx and natbib:
+%% it loads hyperref.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pccp-approx}
+  [2026/11/18 v1.0 PCCP-like two-column layout (approximation, not an RSC file)]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Page geometry: A4, 17.1 cm x 25 cm text, 0.5 cm gutter -> 8.3 cm columns
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[a4paper,textwidth=17.1cm,textheight=25cm,hcentering,
+  top=2.3cm,headheight=20pt,headsep=0.35cm,footskip=0.9cm,
+  columnsep=0.5cm]{geometry}
+\RequirePackage{graphicx}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fonts: Charter text, Times math and Helvetica headings as in the RSC
+%% template, where the standard Type 1 fonts are installed (their font
+%% definition files ship with the fonts); Computer Modern otherwise.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\IfFileExists{t1utm.fd}{%
+  \RequirePackage[T1]{fontenc}%
+  \RequirePackage{mathptmx}%
+  \RequirePackage[scaled=0.92]{helvet}%
+  \IfFileExists{t1bch.fd}{\renewcommand*{\rmdefault}{bch}}{}%
+  \IfFileExists{t1pcr.fd}{\renewcommand*{\ttdefault}{pcr}}{}%
+}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Type sizes: 9 pt on 11 pt body text (RSC articles are set at about 9 pt)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand\normalsize{%
+  \@setfontsize\normalsize\@ixpt{11}%
+  \abovedisplayskip 6\p@ \@plus2\p@ \@minus4\p@
+  \abovedisplayshortskip \z@ \@plus2\p@
+  \belowdisplayshortskip 3\p@ \@plus2\p@ \@minus2\p@
+  \belowdisplayskip \abovedisplayskip
+  \let\@listi\@listI}
+\renewcommand\small{%
+  \@setfontsize\small\@viiipt{9.5}%
+  \abovedisplayskip 5\p@ \@plus2\p@ \@minus3\p@
+  \abovedisplayshortskip \z@ \@plus1\p@
+  \belowdisplayshortskip 3\p@ \@plus1\p@ \@minus2\p@
+  \def\@listi{\leftmargin\leftmargini
+              \topsep 3\p@ \@plus1\p@ \@minus1\p@
+              \parsep 1.5\p@ \@plus1\p@ \@minus\p@
+              \itemsep \parsep}%
+  \belowdisplayskip \abovedisplayskip}
+\renewcommand\footnotesize{%
+  \@setfontsize\footnotesize\@viipt{8.5}%
+  \abovedisplayskip 4\p@ \@plus2\p@ \@minus2\p@
+  \abovedisplayshortskip \z@ \@plus1\p@
+  \belowdisplayshortskip 2\p@ \@plus1\p@ \@minus1\p@
+  \def\@listi{\leftmargin\leftmargini
+              \topsep 2\p@ \@plus1\p@ \@minus1\p@
+              \parsep 1\p@ \@plus\p@ \@minus\p@
+              \itemsep \parsep}%
+  \belowdisplayskip \abovedisplayskip}
+\renewcommand\scriptsize{\@setfontsize\scriptsize\@vipt{7}}
+\renewcommand\tiny{\@setfontsize\tiny\@vpt{6}}
+\renewcommand\large{\@setfontsize\large{10.5}{12.5}}
+\renewcommand\Large{\@setfontsize\Large{12}{14}}
+\renewcommand\LARGE{\@setfontsize\LARGE{16}{19}}
+\renewcommand\huge{\@setfontsize\huge{20}{24}}
+\renewcommand\Huge{\@setfontsize\Huge{24}{28}}
+\setlength\parindent{1em}
+\setlength\footnotesep{6.5\p@}
+\skip\footins=12\p@ \@plus 4\p@ \@minus 2\p@\relax
+\setlength\emergencystretch{1.5em}
+\normalsize
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Colours (xcolor where installed, otherwise the basic color package)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\IfFileExists{xcolor.sty}{\RequirePackage{xcolor}}{\RequirePackage{color}}
+\definecolor{pccpframe}{rgb}{0.42,0.42,0.42}
+\definecolor{pccpshade}{rgb}{0.965,0.955,0.935}
+\definecolor{pccpgrey}{rgb}{0.33,0.33,0.33}
+\definecolor{pccplink}{rgb}{0.0,0.25,0.52}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Running heads and feet
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*\pccp@journal{Physical Chemistry Chemical Physics}
+\newcommand*\pccp@footlabel{Phys.\ Chem.\ Chem.\ Phys.\ manuscript}
+\def\pccp@headbar{%
+  \vbox{\hsize\textwidth
+    \hbox to\textwidth{\normalfont\sffamily\Large\bfseries\pccp@journal
+      \hfil\normalfont\sffamily\small\MakeUppercase{Paper}}%
+    \vskip3\p@{\color{pccpframe}\hrule\@height1.2\p@}}}
+\def\ps@pccpfirst{%
+  \def\@oddhead{\pccp@headbar}\let\@evenhead\@oddhead
+  \def\@oddfoot{\normalfont\sffamily\footnotesize\hfil
+    \pccp@footlabel\enspace|\enspace\thepage}%
+  \let\@evenfoot\@oddfoot
+  \let\@mkboth\@gobbletwo}
+\def\ps@pccp{%
+  \def\@evenhead{\normalfont\sffamily\footnotesize\pccp@journal\hfil}%
+  \def\@oddhead{\normalfont\sffamily\footnotesize\hfil\pccp@journal}%
+  \def\@evenfoot{\normalfont\sffamily\footnotesize\thepage\enspace|\enspace
+    \pccp@footlabel\hfil}%
+  \def\@oddfoot{\normalfont\sffamily\footnotesize\hfil
+    \pccp@footlabel\enspace|\enspace\thepage}%
+  \let\@mkboth\@gobbletwo}
+\pagestyle{pccp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Headings: "1 Introduction", sans-serif, sentence case typed by the author
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand\section{\pccp@flushtitle
+  \@startsection{section}{1}{\z@}%
+  {-12\p@ \@plus -3\p@ \@minus -2\p@}{5\p@ \@plus 1\p@}%
+  {\normalfont\sffamily\bfseries\large\raggedright}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-9\p@ \@plus -2\p@ \@minus -1\p@}{3\p@ \@plus 1\p@}%
+  {\normalfont\sffamily\bfseries\normalsize\raggedright}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {-7\p@ \@plus -2\p@ \@minus -1\p@}{2\p@ \@plus 1\p@}%
+  {\normalfont\sffamily\itshape\normalsize\raggedright}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {5\p@ \@plus 2\p@ \@minus 1\p@}{-0.5em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname\enspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Captions: "Fig. 1 Text" / "Table 1 Text", small sans-serif, label bold;
+%% table captions go above the table.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand\figurename{Fig.}
+\renewcommand\tablename{Table}
+\setlength\abovecaptionskip{5\p@}
+\setlength\belowcaptionskip{\z@}
+\def\pccp@tabletype{table}
+\long\def\@makecaption#1#2{%
+  \ifx\@captype\pccp@tabletype\else\vskip\abovecaptionskip\fi
+  {\small\sffamily\noindent{\bfseries #1}\enspace\ignorespaces #2\par}%
+  \ifx\@captype\pccp@tabletype\vskip 4\p@\fi}
+
+%% Float placement suited to narrow columns
+\renewcommand\topfraction{0.9}
+\renewcommand\bottomfraction{0.6}
+\renewcommand\textfraction{0.1}
+\renewcommand\floatpagefraction{0.8}
+\renewcommand\dbltopfraction{0.9}
+\renewcommand\dblfloatpagefraction{0.8}
+\setcounter{topnumber}{3}
+\setcounter{dbltopnumber}{2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Front matter: \title, \author, \affiliation, \email, abstract, \esinote,
+%% \maketitle. The framed block is printed by \maketitle once the abstract
+%% has been read (either order works).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\pccp@affil{}
+\def\pccp@email{}
+\def\pccp@esi{}
+\def\affiliation#1{\gdef\pccp@affil{#1}}
+\def\email#1{\gdef\pccp@email{#1}}
+\newif\ifpccp@abstract
+\newif\ifpccp@titlepending
+\newif\ifpccp@titledone
+\newif\ifpccp@esi
+\newif\ifpccp@esidone
+
+\newlength\pccp@boxsep  \setlength\pccp@boxsep{8\p@}
+\newlength\pccp@boxrule \setlength\pccp@boxrule{0.6\p@}
+\newlength\pccp@leftw   \setlength\pccp@leftw{3.7cm}
+\newlength\pccp@gapw    \setlength\pccp@gapw{0.5cm}
+\newlength\pccp@innerw
+\newlength\pccp@rightw
+\def\pccp@setwidths{%
+  \setlength\pccp@innerw{\dimexpr\textwidth-2\pccp@boxsep-2\pccp@boxrule\relax}%
+  \setlength\pccp@rightw{\dimexpr\pccp@innerw-\pccp@leftw-\pccp@gapw\relax}}
+
+\newsavebox\pccp@absbox
+\renewenvironment{abstract}{%
+  \pccp@setwidths
+  \global\setbox\pccp@absbox\vbox\bgroup
+    \hsize\pccp@rightw \linewidth\hsize \@parboxrestore
+    \normalfont\sffamily\normalsize\parindent\z@
+    \noindent\ignorespaces
+}{%
+  \par\egroup
+  \global\pccp@abstracttrue
+  \ifpccp@titlepending\pccp@printtitle\fi
+  \ignorespacesafterend}
+
+%% Footnote without a counter mark (the text carries its own label)
+\long\def\pccp@plainfootnote#1{%
+  \begingroup
+    \def\@thefnmark{}%
+    \long\def\@makefntext##1{\noindent##1}%
+    \@footnotetext{#1}%
+  \endgroup}
+
+\long\def\esinote#1{%
+  \long\gdef\pccp@esi{#1}\global\pccp@esitrue
+  \ifpccp@titledone\pccp@esifootnote\fi}
+\def\pccp@esifootnote{%
+  \ifpccp@esidone\else
+    \global\pccp@esidonetrue
+    \pccp@plainfootnote{\textdagger\,Electronic supplementary information
+      (ESI) available: \ignorespaces\pccp@esi\unskip\space
+      See DOI: 10.1039/x0xx00000x}%
+  \fi}
+
+\def\pccp@titleblock{%
+  \hsize\textwidth \linewidth\textwidth
+  \pccp@setwidths
+  \begingroup
+  \setlength\fboxsep{\pccp@boxsep}\setlength\fboxrule{\pccp@boxrule}%
+  \noindent\fcolorbox{pccpframe}{pccpshade}{%
+    \begin{minipage}[t]{\pccp@innerw}%
+      \begin{minipage}[t]{\pccp@leftw}%
+        \vspace{0pt}\raggedright\normalfont\sffamily\footnotesize
+        \color{pccpgrey}%
+        DOI: 00.0000/xxxxxxxxxx\par
+        \vspace{2.2\baselineskip}%
+        Received Date\par
+        Accepted Date\par
+      \end{minipage}\hspace{\pccp@gapw}%
+      \begin{minipage}[t]{\pccp@rightw}%
+        \vspace{0pt}\raggedright\normalfont\sffamily
+        {\LARGE\bfseries\@title\textsuperscript{\textdagger}\par}%
+        \vspace{7\p@}%
+        {\large\@author\textsuperscript{\ensuremath{\ast}\textit{a}}\par}%
+        \vspace{8\p@}%
+        \ifvoid\pccp@absbox\else\noindent\usebox\pccp@absbox\par\fi
+      \end{minipage}%
+    \end{minipage}}%
+  \par
+  \endgroup
+  \vspace{12\p@}}
+
+\def\pccp@printtitle{%
+  \ifpccp@titledone\else
+    \global\pccp@titledonetrue
+    \global\pccp@titlependingfalse
+    \twocolumn[\pccp@titleblock]%
+    \thispagestyle{pccpfirst}%
+    \pccp@plainfootnote{\textsuperscript{\textit{a}}\,\pccp@affil.
+      E-mail: \pccp@email}%
+    \ifpccp@esi\pccp@esifootnote\fi
+  \fi}
+\def\pccp@flushtitle{\ifpccp@titlepending\pccp@printtitle\fi}
+\renewcommand\maketitle{%
+  \ifpccp@abstract\pccp@printtitle\else\global\pccp@titlependingtrue\fi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Table of contents entry (graphical abstract): stored where it is written,
+%% printed at the end of the document. RSC: image at most 8 cm x 4 cm.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newsavebox\pccp@tocbox
+\newif\ifpccp@toc
+\newenvironment{tocentry}{%
+  \global\setbox\pccp@tocbox\vbox\bgroup
+    \hsize 8cm \linewidth\hsize \@parboxrestore
+    \normalfont\sffamily\small\parindent\z@\centering
+}{%
+  \par\egroup
+  \global\pccp@toctrue
+  \ignorespacesafterend}
+\def\pccp@printtoc{%
+  \par\vspace{18\p@}%
+  \noindent\begin{minipage}{\columnwidth}%
+    {\normalfont\sffamily\bfseries\normalsize Table of contents entry\par}%
+    \vspace{2\p@}{\color{pccpframe}\hrule\@height0.6\p@}\vspace{6\p@}%
+    \centering\usebox\pccp@tocbox\par
+  \end{minipage}\par}
+\AtEndDocument{\ifpccp@toc\pccp@printtoc\fi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Citations and references: natbib numbered superscripts (sorted and
+%% compressed) with rsc.bst; list headed "Notes and references".
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\@ifpackageloaded{natbib}{}{\RequirePackage[super,sort&compress,comma]{natbib}}
+\renewcommand\refname{Notes and references}
+\renewcommand\bibnumfmt[1]{#1}
+\renewcommand\bibfont{\small}
+\setlength\bibsep{1\p@ \@plus 0.5\p@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fallbacks: booktabs rules (plain rules in the same places)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifdefined\toprule\else
+  \def\toprule{\noalign{\ifnum0=`}\fi
+    \@ifnextchar[{\pccp@btrule{\z@}}{\pccp@btrule{\z@}[.08em]}}
+  \def\midrule{\noalign{\ifnum0=`}\fi
+    \@ifnextchar[{\pccp@btrule{.4ex}}{\pccp@btrule{.4ex}[.05em]}}
+  \def\bottomrule{\noalign{\ifnum0=`}\fi
+    \@ifnextchar[{\pccp@btrulelast{.4ex}}{\pccp@btrulelast{.4ex}[.08em]}}
+  \def\pccp@btrule#1[#2]{\vskip#1\hrule\@height#2\vskip.65ex\ifnum0=`{\fi}}
+  \def\pccp@btrulelast#1[#2]{\vskip#1\hrule\@height#2\ifnum0=`{\fi}}
+  \def\cmidrule{\noalign{\ifnum0=`}\fi
+    \@ifnextchar[\pccp@cmA\pccp@cmB}
+  \def\pccp@cmA[#1]{\pccp@cmB}
+  \def\pccp@cmB{\@ifnextchar(\pccp@cmC\pccp@cmD}
+  \def\pccp@cmC(#1){\pccp@cmD}
+  \def\pccp@cmD#1{\ifnum0=`{\fi}\cline{#1}}
+  \def\addlinespace{\noalign{\ifnum0=`}\fi
+    \@ifnextchar[\pccp@als{\pccp@als[.5em]}}
+  \def\pccp@als[#1]{\vskip#1\ifnum0=`{\fi}}
+  \def\specialrule#1#2#3{\noalign{\vskip#2\hrule\@height#1\vskip#3}}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fallbacks: \ce (mhchem) and \num (siunitx). With expl3 (in every LaTeX
+%% since 2020) \ce turns H2O into H_2O-style subscripts, ^{2+} into
+%% superscripts and -> / <=> into arrows, and \num turns 1.2e-3 into
+%% 1.2 x 10^-3; without expl3 they print their argument as typed.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifdefined\ExplSyntaxOn\else
+  \IfFileExists{expl3.sty}{\RequirePackage{expl3}}{}
+\fi
+\newif\ifpccp@expl
+\ifdefined\ExplSyntaxOn\pccp@expltrue\fi
+\ifpccp@expl
+\ExplSyntaxOn
+\tl_new:N \l__pccp_fallback_tl
+\cs_new_protected:Npn \pccp_ce_fallback:n #1
+  {
+    \tl_set:Nn \l__pccp_fallback_tl {#1}
+    \regex_replace_all:nnN { \^ ([0-9]*[\+\-]) }
+      { \c{textsuperscript} \cB\{ \1 \cE\} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { \^ } { \c{textsuperscript} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { \_ } { \c{textsubscript} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { ([A-Za-z\)\]]) ([0-9]+) }
+      { \1 \c{textsubscript} \cB\{ \2 \cE\} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { \<\=\> }
+      { \c{ensuremath} \cB\{ \c{rightleftharpoons} \cE\} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { \-\> }
+      { \c{ensuremath} \cB\{ \c{rightarrow} \cE\} } \l__pccp_fallback_tl
+    \regex_replace_all:nnN { \<\- }
+      { \c{ensuremath} \cB\{ \c{leftarrow} \cE\} } \l__pccp_fallback_tl
+    \mbox { \normalfont \tl_use:N \l__pccp_fallback_tl }
+  }
+\cs_new_protected:Npn \pccp_num_fallback:n #1
+  {
+    \tl_set:Nn \l__pccp_fallback_tl {#1}
+    \regex_replace_all:nnN { ([0-9\.\,]+) \s* [eE] \s* ([\+\-]?[0-9]+) }
+      { \1 \c{times} 10 \cU\^ \cB\{ \2 \cE\} } \l__pccp_fallback_tl
+    \ensuremath { \tl_use:N \l__pccp_fallback_tl }
+  }
+\cs_new_eq:NN \pccp@cefallback \pccp_ce_fallback:n
+\cs_new_eq:NN \pccp@numfallback \pccp_num_fallback:n
+\ExplSyntaxOff
+\else
+  \DeclareRobustCommand*\pccp@cefallback[1]{\texttt{\detokenize{#1}}}
+  \DeclareRobustCommand*\pccp@numfallback[1]{\ensuremath{#1}}
+\fi
+
+\ifdefined\ce\else
+  \PackageInfo{pccp-approx}{mhchem not loaded: \protect\ce\space prints
+    a simple fallback}%
+  \let\ce\pccp@cefallback
+\fi
+\ifdefined\cf\else\let\cf\ce\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% siunitx: RSC-style output (kJ mol^-1, en-dash ranges) and units that
+%% computational chemistry needs; fallbacks when siunitx is missing.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\@ifpackageloaded{siunitx}{%
+  \DeclareSIUnit{\calorie}{cal}%
+  \DeclareSIUnit{\debye}{D}%
+  % atomic units and the angstrom, redeclared so siunitx v3 does not warn they are deprecated
+  \DeclareSIUnit{\hartree}{\ensuremath{E_{\mathrm{h}}}}%
+  \DeclareSIUnit{\bohr}{\ensuremath{a_{0}}}%
+  \DeclareSIUnit{\angstrom}{\text{\AA}}%
+  \sisetup{range-phrase={\textendash},range-units=single}%
+}{%
+  \PackageInfo{pccp-approx}{siunitx not loaded: \protect\SI, \protect\si,
+    \protect\num\space print simple fallbacks}%
+  \newif\ifpccp@usep
+  \def\pccp@u#1{\ifpccp@usep\,\fi#1\pccp@useptrue}%
+  \def\pccp@p#1{\ifpccp@usep\,\fi#1\pccp@usepfalse}%
+  \def\pccp@unitdefs{%
+    \pccp@usepfalse
+    \def\per{/\pccp@usepfalse}%
+    \def\squared{^{2}}\def\cubed{^{3}}\def\tothe##1{^{##1}}%
+    \def\square##1{##1^{2}}\def\cubic##1{##1^{3}}%
+    \def\femto{\pccp@p{f}}\def\pico{\pccp@p{p}}\def\nano{\pccp@p{n}}%
+    \def\micro{\pccp@p{\mu}}\def\milli{\pccp@p{m}}\def\centi{\pccp@p{c}}%
+    \def\deci{\pccp@p{d}}\def\kilo{\pccp@p{k}}\def\mega{\pccp@p{M}}%
+    \def\giga{\pccp@p{G}}\def\tera{\pccp@p{T}}%
+    \def\metre{\pccp@u{m}}\def\meter{\pccp@u{m}}\def\gram{\pccp@u{g}}%
+    \def\kilogram{\pccp@u{kg}}\def\second{\pccp@u{s}}\def\mole{\pccp@u{mol}}%
+    \def\kelvin{\pccp@u{K}}\def\joule{\pccp@u{J}}\def\calorie{\pccp@u{cal}}%
+    \def\electronvolt{\pccp@u{eV}}\def\hartree{\pccp@u{E_{h}}}%
+    \def\bohr{\pccp@u{a_{0}}}\def\angstrom{\pccp@u{\mbox{\AA}}}%
+    \def\dalton{\pccp@u{Da}}\def\litre{\pccp@u{L}}\def\liter{\pccp@u{L}}%
+    \def\hour{\pccp@u{h}}\def\minute{\pccp@u{min}}\def\pascal{\pccp@u{Pa}}%
+    \def\bar{\pccp@u{bar}}\def\atmosphere{\pccp@u{atm}}\def\atm{\pccp@u{atm}}%
+    \def\hertz{\pccp@u{Hz}}\def\watt{\pccp@u{W}}\def\volt{\pccp@u{V}}%
+    \def\ampere{\pccp@u{A}}\def\coulomb{\pccp@u{C}}\def\newton{\pccp@u{N}}%
+    \def\ohm{\pccp@u{\Omega}}\def\debye{\pccp@u{D}}\def\molar{\pccp@u{M}}%
+    \def\tesla{\pccp@u{T}}\def\farad{\pccp@u{F}}\def\siemens{\pccp@u{S}}%
+    \def\elementarycharge{\pccp@u{e}}\def\percent{\pccp@u{\%}}%
+    \def\degree{\pccp@u{{}^{\circ}}}\def\degreeCelsius{\pccp@u{{}^{\circ}C}}%
+  }%
+  \DeclareRobustCommand\si[2][]{{\pccp@unitdefs\ensuremath{\mathrm{#2}}}}%
+  \DeclareRobustCommand\num[2][]{\pccp@numfallback{#2}}%
+  \DeclareRobustCommand\SI[3][]{\num{#2}\,\si{#3}}%
+  \DeclareRobustCommand\SIrange[4][]{\num{#2}\textendash\num{#3}\,\si{#4}}%
+  \DeclareRobustCommand\numrange[3][]{\num{#2}\textendash\num{#3}}%
+  \DeclareRobustCommand\ang[2][]{\ensuremath{#2^{\circ}}}%
+  \providecommand\sisetup[1]{}%
+  \providecommand\DeclareSIUnit[3][]{}%
+}
+\ifdefined\qty\else\let\qty\SI\fi
+\ifdefined\unit\else\let\unit\si\fi
+\ifdefined\qtyrange\else\let\qtyrange\SIrange\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hyperlinks (last)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[hyperfootnotes=false,colorlinks=true,linkcolor=pccplink,
+  citecolor=pccplink,urlcolor=pccplink,breaklinks=true,
+  bookmarksnumbered=true]{hyperref}
+\pdfstringdefDisableCommands{\let\ce\@firstofone}
+
+\endinput
+%% End of file `pccp-approx.sty'.

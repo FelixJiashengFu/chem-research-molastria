@@ -1,0 +1,29 @@
+{
+  "kind": "journal",
+  "venue_name": "Nature Methods",
+  "short_name": "Nat. Methods",
+  "field": "experimental and computational methodology in life and biomedical sciences",
+  "review_model": "single-blind",
+  "separate_related_work_section": false,
+  "section_order": [
+    "Introduction",
+    "Results",
+    "Discussion",
+    "Methods"
+  ],
+  "abstract_limit": "150 words, one unreferenced paragraph without subheadings (technical advance, enabling power, quantitative benchmark vs baselines, demonstrated utility)",
+  "writing_style": "Nature Methods style addressed to experimental and computational biologists who will adopt the method: concise unheaded Introduction framing existing bottlenecks and methodological advance; Results organized under informative finding-driven subheadings covering technical development, rigorous benchmarking against credible baselines, generalizability across systems and compelling biological application; concise unheaded Discussion covering scope, failure modes and limitations (no separate Conclusions); comprehensive reproducible Methods and protocol details; superscript numbered references.",
+  "reviewer_focus": "Referees weigh whether the method delivers clear enabling power over state-of-the-art alternatives, credible head-to-head benchmarking on representative baselines, demonstrated general utility beyond one narrow showcase, full reproducibility (parameters, code/data/protocol availability, compute or experimental constraints), and complete statistical reporting (n, exact test, effect size/CI) without overclaiming.",
+  "figure_style": "Nature Portfolio figure standards: single column 89 mm (3.5 in) or double column 183 mm (7.2 in) width, Arial or Helvetica sans-serif lettering at 5-7 pt at final size, lines >= 0.5-1 pt, at least 300 dpi RGB, lowercase bold panel labels (a, b, c) and colorblind-safe Okabe-Ito or viridis palettes without red-green contrast or rainbow scales. Each legend opens with a bold one-sentence title followed by <= 350 words explaining every panel and defining error bars/n. Workflow schematics must clearly trace data/assay flow; no AI-generated artwork in final figures.",
+  "extras": [
+    "Data availability statement after Methods (mandatory; no invented repositories or DOIs)",
+    "Code availability statement (mandatory for computational/software methods; state only provided repos)",
+    "Acknowledgements including funding (no invented grants)",
+    "Author contributions by initials (A.R.)",
+    "Competing interests statement (mandatory, even if none)",
+    "Reporting summary / statistics & reproducibility subsection in Methods",
+    "Nature AI-use disclosure in Methods only if generative AI assisted manuscript drafting (do not invent)",
+    "Bold title sentence at the start of every figure and table legend",
+    "No TOC graphic or graphical abstract"
+  ]
+}

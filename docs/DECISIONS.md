@@ -978,3 +978,10 @@ Stripe 里两条付款链接的地址不变，只把价格换成新建的 ¥9.90
 - **没有新闻稿的条目不显示“新闻报道”一行。** `press: []` 时隐藏；有代码仓库的条目多一行“代码”，写上许可证。
 - 在线试用（站长电脑上跑 DBCata、模型接口里一个窗口）是另一件事，见同一天的在线模型记录；上线前要看 Figshare 上权重的许可证和试跑的误差。
 
+## 2026-11-24 论文工坊 `/paper/`：照 PaperOrchestra Studio 在浏览器里重写，key 只存在用户的浏览器
+
+- **许可证。** PaperOrchestra Studio 是 Apache-2.0（fork 自 google-research/paper-orchestra），可以改写进 MIT 的仓库：JS 是修改过的作品，按第 4 条写明改动、放许可证全文（`public/paper/LICENSE-Apache-2.0.txt`、`THIRD-PARTY-paper-orchestra.md`）。它改编的 Lattice（Apache-2.0）、Nature-Paper-Skills（MIT / Apache-2.0）照样注明；Best-Paper-Writing-Skill 是 CC BY 4.0，署名写在说明里。会议自己的 `.sty`（AAAI、ACL、CVPR、ICLR、ICML、NeurIPS）没写许可证，公开仓库不放，导出时写明去哪里下载；LPPL 的文件原样不改。Lattice 的 `gpui/`（GPL-3.0）和 Trellis（非商用）没用。
+- **为什么是浏览器里、用户自己的 key。** 站长要求“让用户自己配置自己的 API key”。原版是本机的 Python 服务；搬到账号服务上就得替用户保管 key、按次付钱，还会碰到 Worker 免费版每次 10 ms CPU 的限制。所以全部在浏览器里跑，浏览器直接问服务商：key 存 `molastria-paper-keys`（勾“记住”在 localStorage，否则只在这个标签页的 sessionStorage），不进项目存档、导出和云同步，请求不带 cookie 和 referrer，报错文字里先把 key 抹掉。代价是不支持浏览器跨域的服务商用不了（设置里能测试连接）。
+- **和原版不同的地方。** 审稿读 LaTeX 源码，不是 PDF；画图不跑 Python，模型只给图的规格（数据只能来自实验记录），浏览器按期刊插图的画法画；不在本机编译，改成导出 zip 和“在 Overleaf 打开”；arXiv 的接口不许跨域，学术检索和引用核对改问 OpenAlex、Semantic Scholar、Crossref。SSH / GPU 作业、Lean、Google Drive、图像生成、latexdiff 的 PDF 没有搬。
+- **怎么保证和原版一样。** 纯逻辑（打分、修改轮次的接受规则、引用核对、双盲、编译日志、稿件体检）照 Python 一行行改写，连 JSON 写法、四舍五入、`splitlines` 和按码位截取都照 Python；`tools/paper/fixtures.py` 跑原版函数，`tools/paper-test.mjs` 逐项对照。提示词由 `tools/paper/extract-prompts.py` 用 `ast` 从源码原样取出。
+
