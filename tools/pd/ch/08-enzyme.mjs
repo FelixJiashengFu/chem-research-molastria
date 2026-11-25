@@ -1,0 +1,61 @@
+// 第八章：酶——二十年没动，2025–2026 年动了。
+export default {
+  id: 'enzyme',
+  title: ['酶：从“慢十万倍”到进了天然酶的区间', 'Enzymes: from a hundred-thousandfold too slow to inside the natural range'],
+  summary: ['设计酶的难点是能量尺度：催化要求过渡态被多稳定 1–2 kcal/mol，而打分函数做不到。2025–2026 年的突破来自更好的生成器加上更狠的筛选。', 'Designing enzymes is a question of energy scale: catalysis needs the transition state stabilised by 1–2 kcal/mol more, and scoring functions cannot deliver that. The 2025–2026 breakthroughs came from better generators plus much harsher filtering.'],
+  level: 'frontier',
+  demos: ['kcat'],
+  body: [
+    ['酶的本事可以用一句话概括：**它不改变平衡，只降低过渡态的自由能**。Eyring 的过渡态理论把这件事写成一个指数关系 [@eyring1935]：活化自由能每降 1.364 kcal/mol，速率快十倍。这既是好消息（只要稳定住过渡态 10 kcal/mol，就是 $10^7$ 倍加速）也是坏消息（算错 2 kcal/mol，就差 30 倍）。', 'What an enzyme does can be put in one sentence: **it does not change the equilibrium, it lowers the free energy of the transition state**. Eyring’s transition-state theory makes that an exponential relation [@eyring1935]: every 1.364 kcal/mol off the activation free energy is a tenfold rate increase. That is good news — stabilise the transition state by 10 kcal/mol and you have $10^7$-fold catalysis — and bad news: be wrong by 2 kcal/mol and you are off by thirty.'],
+    { demo: 'kcat' },
+    { h: ['为什么卡了二十年', 'Why it was stuck for twenty years'] },
+    ['2008 年设计出来的 Kemp 消除酶和逆醛缩酶有活性，但比天然酶慢四到六个数量级（{{ch:rosetta}}）。原因是多层的：', 'The Kemp eliminases and retro-aldolases designed in 2008 were active but four to six orders of magnitude slower than natural enzymes ({{ch:rosetta}}). The reasons are layered:'],
+    { list: [
+      ['**几何精度**。催化基团的位置和取向要准到零点几埃；骨架稍微松一点，过渡态的稳定化就没了。', '**Geometric precision.** Catalytic groups must be positioned and oriented to within a few tenths of an ångström; let the backbone relax a little and the transition-state stabilisation is gone.'],
+      ['**整条路径，不只一个状态**。真实的催化循环有结合、化学步骤、产物释放，还常有质子转移和水的进出。只优化一个过渡态会让别的步骤变成瓶颈（这正是[[reaction/#c-span|能量跨度模型]]讲的事）。', '**The whole pathway, not one state.** A real catalytic cycle has binding, the chemical step and product release, usually with proton transfers and water coming and going. Optimising one transition state makes another step the bottleneck — exactly what the [[reaction/#c-span|energy-span model]] is about.'],
+      ['**打分函数在这个尺度上不可靠**。1–2 kcal/mol 是隐式溶剂化模型和静电项的误差量级。', '**Scoring functions are not reliable at this scale.** One to two kcal/mol is the error of implicit solvation models and electrostatic terms.'],
+      ['**动力学和柔性**。很多天然酶靠构象变化把底物夹住或者把水排开，静态设计抓不到这个。', '**Dynamics and flexibility.** Many natural enzymes clamp the substrate or exclude water through conformational change, which a static design cannot capture.'],
+    ] },
+    { h: ['2025–2026 年发生了什么', 'What happened in 2025–2026'] },
+    { table: {
+      head: [['成果', 'Result'], ['命中率', 'Hit rate'], ['最好的 $k_{\\mathrm{cat}}/K_M$ 或加速', 'Best $k_{\\mathrm{cat}}/K_M$ or acceleration']],
+      rows: [
+        [['丝氨酸水解酶（2025）[@lauko2025]', 'Serine hydrolases (2025) [@lauko2025]'], ['1.6 %（129 个里 2 个）→ 73 %（11 个里 8 个），取决于筛选有多狠', '1.6 % (2 of 129) to 73 % (8 of 11), depending on how hard the filtering was'], ['$2.2 \\times 10^{5}$ M⁻¹s⁻¹，比之前的设计酶高约六万倍', '$2.2 \\times 10^{5}$ M⁻¹s⁻¹, about 60,000× earlier designed enzymes']],
+        [['金属水解酶（2025）[@kim2025]', 'Metallohydrolases (2025) [@kim2025]'], ['第一轮 96 个里 5 个，第二轮 11 个', '5 of 96 in the first round, 11 in the second'], ['$5.3 \\times 10^{4}$ M⁻¹s⁻¹（之前的设计金属酶是 3–60），晶体结构差 0.8 Å', '$5.3 \\times 10^{4}$ M⁻¹s⁻¹ where earlier designed metalloenzymes managed 3–60; the crystal structure sits 0.8 Å from the design']],
+        [['金属蛋白酶（2026）[@chen2026]', 'Metalloproteases (2026) [@chen2026]'], ['135 个里 36 % 切在指定的键上（只有锌 15 %，锌加水 88 %）', '36 % of 135 cut at the intended bond (15 % for zinc only, 88 % for zinc plus water)'], ['加速 $>10^{8}$，再改四个氨基酸 $>10^{10}$；离最强的天然蛋白酶还差 $10^{3}$–$10^{4}$', 'Acceleration above $10^{8}$, and above $10^{10}$ after four substitutions; still $10^{3}$–$10^{4}$ short of the most efficient natural proteases']],
+        [['AlphaProtein Novo（2026）[@wu2026]', 'AlphaProtein Novo (2026) [@wu2026]'], ['Kemp 消除酶 3 % → 34 %（1536 个新支架设计），酯酶 0 % → 44 %（1569 个）', 'Kemp eliminase 3 % → 34 % over 1,536 novel-scaffold designs; esterase 0 % → 44 % over 1,569'], ['$3.6 \\times 10^{5}$ M⁻¹s⁻¹；氮烯转移酶做出 99:1 六元环选择性、94 % ee', '$3.6 \\times 10^{5}$ M⁻¹s⁻¹; a nitrene transferase with 99:1 six-ring selectivity and 94 % ee']],
+      ],
+      cap: ['四项都有湿实验数据，其中两项有和设计一致的晶体结构。注意第一行：同一批设计，筛选从宽到严，命中率从 1.6 % 变到 73 %。', 'All four carry wet-lab data and two have crystal structures matching the design. Note the first row: the same designs, filtering from loose to strict, and a hit rate from 1.6 % to 73 %.'],
+    } },
+    ['技术上有两件事同时成熟了。一是**原子级的条件**：RFdiffusion2 可以直接按原子给出活性位点，不用先枚举旋转异构体、也不用指定残基编号，于是 41 道酶支架基准全部算通（原版 16/41）[@ahern2026]。二是**筛选**：丝氨酸水解酶那一篇把筛子分成几层（结构自洽、活性位点几何、与过渡态类似物的对接），每加一层命中率就跳一级 [@lauko2025]。', 'Two things matured at once. First, **atom-level conditioning**: RFdiffusion2 specifies an active site atom by atom with no rotamer enumeration and no residue numbering, and passes 41 of 41 enzyme-scaffolding benchmarks where the original passed 16 [@ahern2026]. Second, **filtering**: the serine-hydrolase paper stacked its sieves — structural self-consistency, active-site geometry, docking against a transition-state analogue — and each layer jumped the hit rate a level [@lauko2025].'],
+    { note: ['最值得化学研究者注意的一条是 AlphaProtein Novo 的氮烯转移酶：它做出了 99:1 的六元环选择性和 94 % 对映体过量，而这个选择性**天然酶里没有** [@wu2026]。到这里，设计酶的意义就不再是“重做天然酶”，而是做天然进化没走过的反应和选择性——这正是合成化学最想要的东西。', 'The single result most worth a chemist’s attention is AlphaProtein Novo’s nitrene transferase: 99:1 six-ring selectivity and 94 % enantiomeric excess, a selectivity **no natural enzyme provides** [@wu2026]. At that point designed enzymes stop being reproductions of natural ones and start being reactions and selectivities evolution never explored — which is exactly what synthetic chemistry wants from them.'], kind: 'ok' },
+    { h: ['还差多少', 'How far is left'] },
+    ['把数字换成能量就清楚了。最好的设计酶和最强的天然酶差 $10^{3}$–$10^{4}$ 倍，也就是 4.1–5.5 kcal/mol——两到四个氢键。听起来很近，但这正是打分函数误差的量级，所以剩下的差距不是“再多算一点”能补的，需要的是更准的筛选（包括真的做实验）和对整条路径的处理。', 'Translate the numbers into energy and it becomes clear. The best designed enzymes are $10^{3}$–$10^{4}$ below the most efficient natural ones, which is 4.1–5.5 kcal/mol — two to four hydrogen bonds. That sounds close, but it is exactly the error scale of the scoring functions, so the remaining gap will not be closed by computing a little more; it needs better filtering, experiments included, and treatment of the whole pathway.'],
+    ['另外，成功的反应类型仍然偏向活化能较低的水解和消除。碳–碳成键、C–H 活化这些合成化学最想要的“硬”反应，还没有从头设计成功的公开例子。', 'The reaction types that work also remain biased towards hydrolyses and eliminations with lower barriers. Carbon–carbon bond formation and C–H activation, the hard reactions synthetic chemistry most wants, have no published de novo success.'],
+  ],
+  points: [
+    [['催化的全部算术是一个指数', 'The whole arithmetic of catalysis is one exponential'], ['$k \\propto e^{-\\Delta G^\\ddagger / RT}$：每 1.364 kcal/mol 换十倍速率 [@eyring1935]。所以 $10^{10}$ 倍加速 = 13.6 kcal/mol。', '$k \\propto e^{-\\Delta G^\\ddagger / RT}$: 1.364 kcal/mol per tenfold [@eyring1935], so a $10^{10}$ acceleration is 13.6 kcal/mol.'], 'proved'],
+    [['设计酶二十年卡在能量尺度上', 'Designed enzymes were stuck on the energy scale for twenty years'], ['1–2 kcal/mol 的要求正好是隐式溶剂化和静电项的误差，所以活性只能靠实验筛出来。', 'The 1–2 kcal/mol requirement is exactly the error of implicit solvation and electrostatics, so activity could only be found by screening.'], 'tested'],
+    [['2025 年第一次进了天然酶的区间', '2025 was the first time a design entered the natural range'], ['丝氨酸水解酶的 $2.2 \\times 10^{5}$ M⁻¹s⁻¹ 比之前的设计酶高约六万倍 [@lauko2025]，而且有晶体结构支持。', 'The serine hydrolases’ $2.2 \\times 10^{5}$ M⁻¹s⁻¹ is about 60,000× earlier designs [@lauko2025], with crystal structures to support it.'], 'tested'],
+    [['命中率主要是筛选的函数', 'The hit rate is mostly a function of the filtering'], ['同一批设计从 1.6 % 到 73 %，差别全在筛子上 [@lauko2025]。这和 {{ch:general}} 的贝叶斯算术是同一回事。', 'The same designs went from 1.6 % to 73 % purely by filtering [@lauko2025]. This is the Bayesian arithmetic of {{ch:general}}.'], 'tested'],
+    [['设计酶已经能做天然酶做不到的选择性', 'Designed enzymes can now reach selectivities nature does not offer'], ['氮烯转移酶的 99:1 六元环选择性和 94 % ee [@wu2026]。这是“超越天然”的第一个清楚例子。', 'The nitrene transferase’s 99:1 six-ring selectivity and 94 % ee [@wu2026] — the first clear case of going beyond nature.'], 'frontier'],
+    [['硬反应还没有从头设计成功的例子', 'Hard reactions have no de novo success yet'], ['碳–碳成键、C–H 活化等高活化能反应仍在公开成果之外。', 'Carbon–carbon bond formation, C–H activation and other high-barrier reactions remain outside the published record.'], 'open'],
+  ],
+  math: [
+    ['k = \\frac{k_B T}{h} \\, e^{-\\Delta G^{\\ddagger} / RT}, \\qquad \\frac{k_B T}{h} = 6.21 \\times 10^{12} \\ \\mathrm{s^{-1}} \\ (298 \\ \\mathrm{K})', ['Eyring 方程 [@eyring1935]。前因子是“每秒尝试多少次”，所以活化自由能一确定，速率就定了。', 'The Eyring equation [@eyring1935]. The prefactor is how many attempts per second, so once the activation free energy is fixed, so is the rate.']],
+    ['\\frac{k_2}{k_1} = e^{-\\Delta\\Delta G^{\\ddagger} / RT}, \\qquad \\Delta\\Delta G^{\\ddagger} = 1.364 \\ \\mathrm{kcal/mol} \\ \\Rightarrow \\ 10\\times', ['速率比和活化自由能差。演示里的两条曲线就是这个式子。', 'The rate ratio and the difference in activation free energy; the two curves in the demo are this expression.']],
+    ['\\frac{k_{\\mathrm{cat}}}{K_M} = \\frac{k_{\\mathrm{cat}}}{K_M}\\bigg|_{\\text{diffusion limit}} \\lesssim 10^{8}\\text{–}10^{9} \\ \\mathrm{M^{-1}s^{-1}}', ['催化效率的上限由底物扩散到活性位点的速率决定，所以“完美的酶”也有天花板。设计酶现在在 $10^{5}$ 量级。', 'The ceiling on catalytic efficiency is set by diffusion of the substrate to the active site, so even a perfect enzyme has a limit. Designed enzymes are now at the $10^{5}$ level.']],
+    ['\\frac{k_{\\mathrm{cat}}}{k_{\\text{uncat}}} = \\frac{K_{\\mathrm{TS}}^{\\text{bind}}}{K_{\\mathrm{S}}^{\\text{bind}}}', ['Pauling 的观点写成公式：催化等于“对过渡态的结合比对底物的结合强多少”。这就是设计里“照过渡态类似物摆活性位点”的理由。', 'Pauling’s insight as an equation: catalysis is how much more tightly the transition state binds than the substrate. It is the reason active sites are designed around transition-state analogues.']],
+  ],
+  example: {
+    q: ['2026 年的设计金属蛋白酶加速超过 $10^{8}$ 倍，而最强的天然蛋白酶还要高 $10^{3}$–$10^{4}$ 倍。这个差距是多少 kcal/mol？相当于几个氢键？', 'The designed metalloproteases of 2026 accelerate hydrolysis more than $10^{8}$-fold, while the most efficient natural proteases are a further $10^{3}$–$10^{4}$ above that. How many kcal/mol is the gap, and how many hydrogen bonds?'],
+    steps: [
+      ['$RT = 1.987 \\times 10^{-3} \\times 298.15 = 0.5925$ kcal/mol，所以 $RT\\ln 10 = 1.364$ kcal/mol。', '$RT = 1.987 \\times 10^{-3} \\times 298.15 = 0.5925$ kcal/mol, so $RT\\ln 10 = 1.364$ kcal/mol.'],
+      ['$10^{3}$ 倍：$3 \\times 1.364 = 4.09$ kcal/mol。$10^{4}$ 倍：$4 \\times 1.364 = 5.46$ kcal/mol。', '$10^{3}$-fold: $3 \\times 1.364 = 4.09$ kcal/mol. $10^{4}$-fold: $4 \\times 1.364 = 5.46$ kcal/mol.'],
+      ['一个蛋白质里的氢键大约值 1–2 kcal/mol，所以是 2–4 个氢键。', 'A hydrogen bond in a protein is worth roughly 1–2 kcal/mol, so this is two to four hydrogen bonds.'],
+      ['再对比：设计已经走过的 $10^{8}$ 倍相当于 10.9 kcal/mol，而那四个让加速再升两个数量级的氨基酸替换值 2.7 kcal/mol。', 'For comparison: the $10^{8}$ already achieved is 10.9 kcal/mol, and the four substitutions that added two more orders of magnitude were worth 2.7 kcal/mol.'],
+    ],
+    a: ['4.1–5.5 kcal/mol，两到四个氢键。这个数字有两面。一面是乐观的：剩下的差距在化学上很小，几个精确放置的相互作用就够；2026 年那四个氨基酸替换带来两个数量级（2.7 kcal/mol）正是这件事的实证。另一面是悲观的：4–5 kcal/mol 也正好是打分函数的误差范围，所以**算不出来**，只能靠筛选和实验找。这也解释了为什么 2025–2026 年的进展更多来自“筛得更狠”（1.6 % → 73 %）而不是“算得更准”。', '4.1–5.5 kcal/mol, two to four hydrogen bonds. The number cuts both ways. Optimistically, the remaining gap is chemically small — a few precisely placed interactions suffice, and the four substitutions that bought two orders of magnitude (2.7 kcal/mol) in 2026 demonstrate it. Pessimistically, 4–5 kcal/mol is also exactly the error range of the scoring functions, so it **cannot be computed**; it has to be found by filtering and experiment. That is why the 2025–2026 progress came more from filtering harder (1.6 % → 73 %) than from computing better.'],
+  },
+  refs: ['eyring1935', 'lauko2025', 'kim2025', 'chen2026', 'wu2026', 'ahern2026'],
+};

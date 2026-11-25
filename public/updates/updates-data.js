@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'protein-design', date: '2026-11-25', path: 'protein-design/index.html', group: 'models', icon: 'protein', store: 'molastria-protein', chapters: 11,
+      zh: 'AI 蛋白质设计', en: 'AI Protein Design',
+      note: ['OpenAI 和各家公司的成果汇总：十一章、十二个现算的演示，每项标明证据等级', 'Results from OpenAI and the other labs: eleven chapters, twelve live demos, and a level of evidence on every result'],
+      more: ['从 Anfinsen 和 Rosetta 讲到 AlphaFold、ProteinMPNN、RFdiffusion、ESM 和通用大模型：结合蛋白、抗体、从头设计的酶各家做到了什么，OpenAI 2025 年的 RetroSOX / RetroKLF 和 2026 年 11 月的 GPT-6 结合蛋白各自的证据有多硬。55 项成果列成一张表，每项标明是湿实验验证、只有计算结果，还是只有公司发布的说法，以及权重公开到什么程度；另有判断一份成果真假的清单（分母、筛选、误差棒）和生物安全那一章的分层筛查算术。79 篇文献里有 DOI 的逐条在 OpenAlex 核对过。',
+        'From Anfinsen and Rosetta to AlphaFold, ProteinMPNN, RFdiffusion, ESM and general-purpose models: what each group actually achieved for binders, antibodies and de novo enzymes, and how hard the evidence is for OpenAI’s RetroSOX / RetroKLF of 2025 and its GPT-6 binders of November 2026. Fifty-five results in one table, each marked as validated in the wet lab, computational only or a company statement, with a note on how open its weights are; plus a checklist for judging a result (denominators, filtering, error bars) and the arithmetic of layered screening in the biosecurity chapter. Every one of the 79 references that has a DOI was checked on OpenAlex.'],
+    },
+    {
       id: 'paper-studio', date: '2026-11-24', path: 'paper/index.html', group: 'make', icon: 'quill',
       zh: '论文工坊', en: 'Paper Studio',
       note: ['用你自己的 API key 写论文、模拟审稿、投稿体检', 'Write a paper, get it reviewed and check it for submission with your own API key'],
