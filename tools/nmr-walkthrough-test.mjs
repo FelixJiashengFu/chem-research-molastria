@@ -1,5 +1,5 @@
 // 逐步解谱讲解（public/nmr/walkthrough/）：nw-core.js 的纯逻辑和生成的文件。
-// 照 nmr-walkthrough 自己的 scripts/test.mjs：三个示例校验没有警告、没有来源就拒绝；另外核对“数据必须真实”的两道关
+// 照 nmr-walkthrough 自己的 scripts/test.mjs：每个示例校验没有警告、没有来源就拒绝；另外核对“数据必须真实”的两道关
 // （ground 把用户数据里找不到的数改标成 ≈ / *，finalize 换掉模型写的来源）、提示词、取 JSON，以及页面接上了顶栏、SEO 和最近更新。
 // 设 NMRW_SRC=<nmr-walkthrough 的路径> 时，再对照上游的 lib/build.mjs：校验结果和生成的网页逐字一样。
 import { test } from 'node:test';
@@ -21,17 +21,22 @@ const G = JSON.parse(JSON.stringify(ctx.window.MOLASTRIA_NMRW_GUIDE));
 const TPL = readFileSync(join(DIR, 'player.html'), 'utf8');
 const ex = (id) => JSON.parse(JSON.stringify(G.examples.find((e) => e.id === id).spec));
 
-test('generated files: player.html matches the fingerprint, three examples, guide and schema, MIT licence', () => {
+test('generated files: player.html matches the fingerprint, every upstream example in order, guide and schema, MIT licence', () => {
   assert.equal(createHash('sha256').update(TPL).digest('hex').slice(0, 16), G.upstream.playerSha, 'player.html edited by hand: run node tools/nmr-walkthrough-sync.mjs --src …');
   assert.ok(TPL.includes('/*__SPEC__*/null') && TPL.includes('__TITLE__'));
-  assert.deepEqual(G.examples.map((e) => e.id), ['ethyl-crotonate', 'vanillin', 'ibuprofen']);
+  assert.deepEqual(G.examples.map((e) => e.id), ['ethyl-crotonate', 'estragole', 'pulegone', 'vanillin', 'melatonin', 'ibuprofen']);
+  // 三个多谱联用的示例（上游 dcaf255）：¹H、¹³C 加二维谱
+  for (const id of ['estragole', 'pulegone', 'melatonin']) {
+    const k = ex(id).spectra.map((sp) => sp.nucleus || sp.type);
+    assert.ok(k.includes('1H') && k.includes('13C') && ex(id).spectra.filter((sp) => sp.kind === '2d').length >= 2, id);
+  }
   assert.match(G.guide, /数据必须真实/);
   assert.match(G.schema, /sources/);
   assert.match(readFileSync(join(DIR, 'LICENSE.txt'), 'utf8'), /^MIT License/);
   assert.equal(G.upstream.license, 'MIT');
 });
 
-test('the three examples validate with no warnings and build; no sources is an error, unverified downgrades it', () => {
+test('every example validates with no warnings and builds; no sources is an error, unverified downgrades it', () => {
   for (const e of G.examples) {
     const v = W.validate(e.spec);
     assert.deepEqual(v, { errors: [], warnings: [] }, e.id);
@@ -104,6 +109,18 @@ test('ground: numbers in the user data pass; made-up ones are marked ≈ / * and
   // a multiplet centre inside a range the user wrote counts as found
   const r = W.ground({ spectra: [{ id: 'h', kind: '1d', nucleus: '1H', range: [8, 0], peaks: [{ id: 'm', ppm: 7.28, mult: 'm' }] }] }, '7.20–7.35 (m, 5H)');
   assert.deepEqual(r.flagged, []);
+});
+
+test('ground on each example: a user who pastes the example\'s own numbers gets nothing re-flagged', () => {
+  for (const e of G.examples) {
+    const s = ex(e.id);
+    const lines = s.spectra.map((sp) => (sp.kind === '2d'
+      ? `${sp.type}: ` + sp.peaks.filter((p) => !p.expected).map((p) => `${p.x}/${p.y}`).join(', ')
+      : `${sp.nucleus}: ` + sp.peaks.filter((p) => !p.est).map((p) => `${p.ppm}${p.J && !p.Jest ? ` (J = ${p.J.join(', ')} Hz)` : ''}`).join(', ')));
+    const g = W.ground(s, lines.join('\n'));
+    assert.deepEqual(g.flagged, [], `${e.id}: ${JSON.stringify(g.flagged)}`);
+    assert.ok(g.checked > 10, e.id);
+  }
 });
 
 test('finalize: the user data is the only source, unverified is dropped, the note is honest', () => {

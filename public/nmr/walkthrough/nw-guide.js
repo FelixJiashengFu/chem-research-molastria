@@ -1,13 +1,13 @@
 /* 生成的文件，不要手改：node tools/nmr-walkthrough-sync.mjs --src <nmr-walkthrough 的路径>。
-   内容来自站长的 nmr-walkthrough（https://github.com/FelixJiashengFu/nmr-walkthrough，MIT）：讲解方法 STYLE-GUIDE.md、数据格式 SCHEMA.md、三个示例。
+   内容来自站长的 nmr-walkthrough（https://github.com/FelixJiashengFu/nmr-walkthrough，MIT）：讲解方法 STYLE-GUIDE.md、数据格式 SCHEMA.md、examples/ 里的全部示例。
    示例里的每个位移、J 值和相关峰都来自各自 sources 所列的实测数据。 */
 window.MOLASTRIA_NMRW_GUIDE = {
  "upstream": {
   "repo": "https://github.com/FelixJiashengFu/nmr-walkthrough",
-  "version": "1.1.0",
-  "commit": "b076ef7",
+  "version": "1.3.0",
+  "commit": "dcaf255",
   "license": "MIT",
-  "playerSha": "498ac8f669d36d79"
+  "playerSha": "a5f03a4ad9228841"
  },
  "guide": "# NMR 分步讲解风格指南 / NMR walkthrough style guide\n\n学自 nmr.tips 的解答写法（其印刷版解答的 1D、2D、偶合、综合四册，以及网页版\"点一下出一步\"的幻灯片形式）。只学方法，不抄题目、文字和图。\nLearned from how nmr.tips writes its solutions (the printed 1D, 2D, coupling and mixed sets, and the click-to-advance slide format of the web version). Method only: no problems, wording or figures are copied.\n\n## 0. 底线：数据必须真实 / Ground rule: the data must be real\n\n- 每一个位移、J 值、相关峰，都必须来自用户自己的谱图或峰表，或者来自注明出处的实测数据。凭记忆写出来的\"差不多的数\"不算数据。\n  Every shift, J value and cross peak must come from the user's own spectra or peak list, or from a cited measured source. A plausible number recalled from memory is not data.\n- 动笔前先找来源，逐项核对；两份独立来源互相对一下更好。来源写进 `sources`，并写清每个来源具体给了哪些值。\n  Find the source before writing and check item by item; two independent sources are better. List them in `sources`, stating exactly which values each one gives.\n- 来源没给、但画图需要的值（常见的是 J 的赫兹数和 2D 里\"理应有\"的相关峰），用 `est`、`Jest`、`expected` 标出来，页面会显示 ≈ 和 *，并在该步的\"核对\"里说明。\n  Values the source lacks but the picture needs (typically J in Hz and \"should be there\" 2D peaks) are flagged with `est`, `Jest`, `expected`; the page shows ≈ and *, and the step's check says so.\n- 来源里没有的谱（例如 NOESY）不要画。可以说\"这个实验能直接证明\"，但不能假装做过。\n  Do not draw a spectrum the source lacks (a NOESY, for example). Say that the experiment would prove the point; do not pretend it was run.\n- 来源本身可能有错（学生报告尤其如此）。对不上的地方写明，不要悄悄\"修正\"成自己觉得对的数。\n  Sources can be wrong, student reports especially. State the mismatch; do not silently replace it with the number you believe.\n- 谱线形状是程序按峰表画的示意图。位移是真的，峰形不是原始谱。\n  Line shapes are drawn by the program from the peak list. The shifts are real; the shapes are not the raw spectrum.\n\n## 1. 核心：一次点击 = 一个推理动作 / One click = one reasoning move\n\n每一步固定四拍，对应播放器的四个字段。\nEvery step has the same four beats, matching four fields of the player.\n\n| 拍 Beat | 字段 | 写什么 What to write |\n|---|---|---|\n| 观察 Observe | `text` | 只说谱图上看得见的：δ、积分、裂分、J、哪个交叉峰。Only what is visible: δ, integral, multiplicity, J, which cross peak. |\n| 依据 Rule | `rule` | 用到的规律，并给参考值。例：\"³J(E) ≈ 15 Hz，³J(Z) ≈ 10 Hz\"。HMBC 要把键的路径写出来：\"H–C(1')–O–C(1)，三根键\"。The rule used, with reference values. For HMBC write the bond path out. |\n| 结论 So | `so` | 只加一个推论：一个片段、一根键、一个归属。Exactly one inference: a fragment, a bond, an assignment. |\n| 核对 Check | `check` | 留有余地或交叉验证：\"指向 E\"而不是\"证明 E\"；这个位移现在还不可靠，等取代基确定再说。Hedge or cross-check: \"points to E\", not \"proves E\". |\n\n每步 2 到 4 句。一题 8 到 16 步。\n2 to 4 sentences per step. 8 to 16 steps per problem.\n\n## 2. 推理顺序 / Order of reasoning\n\n1. **分子式与不饱和度** Formula and DBE. 把算式写在 `board` 上。\n2. **清点氢谱** Inventory of the ¹H spectrum: 有几组信号，积分比写成 1 : 1 : 2 : 3 : 3，加起来是否等于分子式的 H 数。\n3. **先排除不属于样品的峰** Set aside what is not the compound: 溶剂（CDCl₃ 中 CHCl₃ 约 7.26）、水（CDCl₃ 中约 1.55）、积分不成整数的杂质峰，并说明理由。\n4. **选入口信号并说明为什么** Pick the entry signal and say why: 积分、裂分、位移三样都不含糊的那个（常是甲基双峰或三重峰），或者只有一种可能位置的独特多重峰。\n5. **由偶合搭片段** Build fragments from couplings, 一步一个片段。J 相同的两组峰是邻居。\n6. **碳谱和 DEPT** ¹³C / DEPT: 数碳、看对称性、由位移认官能团。\n7. **HSQC**：给每个 H 配上 C。还没定位置时先用字母 a、b、c 暂称，结构清楚后再编号。没有交叉峰的碳是季碳。\n8. **COSY**：按\"对角峰 → 交叉峰 → 对角峰\"一个峰一个峰地走，把链写成 H-4 → H-3 → H-2。对角线两侧信息相同。没有后续交叉峰说明链到头了。\n9. **HMBC**：一次只用一个关键相关，跨过季碳和杂原子把片段接起来，其余的峰留到最后做交叉检查。\n10. **立体化学** Stereochemistry: 由 J 值（E/Z，直立/平伏约 10 Hz）或 NOE。\n11. **有歧义就比较候选结构** Compare candidates when ambiguous: 列出 a)、b)、c)，用位移增量估算或\"应该出现却没出现的峰\"逐个排除，最后写\"只剩下……\"。增量法只给参考值，要说明。\n12. **收尾核对** Final check: 原子数、不饱和度、每个峰都归属，写出化合物名称。数据确实定不了的地方要直说，并建议能解决它的实验（例如选择性 1D TOCSY）。\n\n## 3. 抓细节 / Fine points that make it work\n\n- **没看到的峰也是证据** Predicted absences count: 先预言\"这个峰在 COSY 里应当看不到\"，再去确认。但只在预期峰本应很强时才可靠。\n- **陷阱要点名** Name the traps: 非对映异位的 CH₂、假五重峰和假六重峰（两个 J 恰好接近）、屋顶效应和高级谱、¹⁹F 或 ³¹P 带来的额外裂分、偶然重叠（重叠不一定就是高级谱）。\n- **拥挤区域就放大** Zoom into crowded regions，不要让读者在全谱里找。\n- **数字的写法** Numbers: ¹H 的 δ 写两位小数（低场仪器一位），¹³C 一位或两位，J 用 Hz 写一位小数，统一用小数点。拿不准的写\"t?\"，不要装作确定。\n- **表格跟着推理长** A running table: 列顺序为 δ、裂分和 J、积分、归属，行按 δ 从大到小，归属一栏随着步骤逐行填上。\n- **交叉峰的叫法** Cross-peak names: COSY 写 H3/H4，HSQC 和 HMBC 写 H3/C1。\n- **让读者先想** Make the reader predict: 关键一步先用 `ask` 抛出问题，再点一下才给答案。\n- **语气** Tone: 像助教在黑板前讲，直接、口语化，可以有一点幽默；该提醒就提醒（\"这里要小心\"）。\n- **用对称性省力** Use symmetry: 有 C₂ 轴就只讲半个分子，但要说出来。\n\n## 4. 画面规则 / Screen rules\n\n- 当前这一步在谱图上高亮，结论同时出现在结构上，两边一起动。\n- 结构是长出来的：没推出来的原子和键不画，新出现的部分用强调色。\n- 颜色固定：COSY 蓝，HSQC 绿，HMBC 橙，NOE 紫。箭头从 H 所在的碳指向相关的碳。\n- 一屏学完：平板和电脑上整页不滚动，谱图在左，结构、讲解和按钮在右，归属表和全文放在谱图上方的标签里。\n- 每步都有中文和英文，文字可切换中文、英文、双语。朗读每次只读一种语言（中文或英文），用设备系统自带的语音。\n- 谱图若是模拟或示意的，在页脚写明。\n",
  "schema": "Pass one JSON object. Text fields accept a plain string or `{ \"zh\": \"...\", \"en\": \"...\" }` (use both). In text, `_{3}` is a subscript, `^{13}` a superscript and `**x**` bold.\n\n```\n{\n  title, shortTitle?, formula?, prompt?, note?, answer?,      // answer is shown only on the step marked final\n  sources: [{ label, url?, covers? }],                         // where the numbers were measured; covers says exactly which values each source gives. Shown under the table and the transcript. For the user's own spectra use the file or handout name as label (url optional)\n  lang?: \"both\" | \"zh\" | \"en\",                                 // starting language, default both\n  molecule: {\n    atoms: [{ id, x, y, label?, el?, num?, numBelow?, numAt?: [dx, dy] }],  // x,y in any unit, y grows downward; label like \"CH3\"; label \"\" draws a bare vertex (ring carbons); numAt places the number, in px\n    bonds: [{ a, b, order?: 1|2|3, id? }]                      // a bond WITH an id stays hidden until a step reveals it\n  },\n  spectra: [\n    { id, kind: \"1d\", nucleus: \"1H\" | \"13C\" | ..., mhz?, range: [hi, lo], name?,\n      peaks: [{ id, ppm, mult?: \"s|d|t|q|quint|sext|sept|m|br\" or combos like \"dq\", J?: [Hz,...], nH?, type?: \"CH3\", intensity?, lw?,\n                est?: true,     // this shift is a typical literature value, not read from the cited spectrum: shown as \"≈\"\n                Jest?: true }]  // same for J: shown as \"J ≈\"\n    },\n    { id, kind: \"2d\", type: \"COSY\" | \"HSQC\" | \"HMBC\" | \"TOCSY\" | \"NOESY\",\n      x: { nucleus, range: [hi, lo], ref?: <1D spectrum id drawn as projection> }, y: { ... },\n      peaks: [{ id, x, y, label?, weak?, expected?: true }] }   // expected: predicted from the structure, not listed by the source: grey dashed ring, label gets \"*\"\n                       // COSY/TOCSY/NOESY: give one side, the mirror and diagonal are drawn for you\n  ],\n  steps: [{\n    title,                      // what this click is about\n    ask?,                       // question shown first; the next click reveals the rest\n    text,                       // OBSERVE: what is seen in the highlighted region\n    rule?,                      // RULE: the rule or reference value used\n    so,                         // SO: the one inference this step adds\n    check?,                     // CHECK: hedge, cross-check or trap\n    board?: [lines],            // equations, e.g. the DBE calculation\n    spectrum?: <spectrum id>,   // omit for a formula-only step\n    zoom?: [hi, lo] | { x: [hi, lo], y: [hi, lo] },\n    peaks?: [peak ids],         // highlighted in the spectrum and the table\n    atoms?: [atom ids],         // ringed on the structure\n    arrows?: [{ from, to, kind: \"cosy\" | \"hsqc\" | \"hmbc\" | \"noe\", bend?: 1 | -1 }],\n    reveal?: { atoms?: [ids], bonds?: [bond ids] },   // the structure grows; nothing is drawn before it is deduced\n    assign?: { <peak id>: \"H-3\" },                     // fills the running assignment table\n    final?: true                // last step: shows the answer\n  }]\n}\n```\n\nPeak ids must be unique across all spectra. Bonds without an id appear as soon as both atoms are revealed.\n\n\n## Data must be real\n\nEvery shift, J value and cross peak in a spec must come from the user's own spectra or peak list, or from a cited measured source listed in `sources`. Never fill a gap from memory and present it as measured. If a value is needed for the picture but the source does not give it, set `est` / `Jest` / `expected` so the page marks it, and say so in that step's `check`. Do not draw a spectrum type (NOESY, COSY ...) that the source does not contain. A spec without `sources` is rejected by validate and build. Only when the user explicitly accepts unverified data, set `unverified: true`; the page then shows a red \"unverified\" notice.\n",
@@ -933,6 +933,1930 @@ window.MOLASTRIA_NMRW_GUIDE = {
       "covers": {
        "zh": "实测：HMBC 中 OCH_{2} 的氢与羰基碳和 CH_{3} 碳相关；COSY 的相关。",
        "en": "Measured: the HMBC correlations from the OCH_{2} protons to the carbonyl carbon and to the CH_{3} carbon; the COSY correlations."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "estragole",
+   "spec": {
+    "title": {
+     "zh": "由 1D 与 2D NMR 推出 C_{10}H_{12}O 的结构",
+     "en": "Solving C_{10}H_{12}O from 1D and 2D NMR"
+    },
+    "shortTitle": "C10H12O NMR walkthrough",
+    "formula": "C10H12O",
+    "prompt": {
+     "zh": "在 CDCl_{3}（含 1% TMS）中测得 ^{1}H（800 MHz）、^{13}C（125 MHz）、gCOSY 和 gHMQC。推出结构并归属每一个峰。",
+     "en": "^{1}H (800 MHz), ^{13}C (125 MHz), gCOSY and gHMQC in CDCl_{3} with 1% TMS. Deduce the structure and assign every peak."
+    },
+    "note": {
+     "zh": "全部位移和报告写明的 COSY、HMQC 相关都取自下面所列的实测报告。这是入门题：报告没有做 HMBC，也没有给积分和 J 值；带 ≈ 的 J 是典型值，带 * 的相关峰是按结构预期画的。",
+     "en": "All shifts and the COSY and HMQC correlations stated in the report are measured data from the source below. This is a starter problem: the report has no HMBC and gives no integrals or J values; J marked ≈ is a typical value, and correlations marked * are drawn as expected from the structure."
+    },
+    "answer": {
+     "zh": "答案：1-甲氧基-4-(丙-2-烯-1-基)苯（4-烯丙基苯甲醚，草蒿脑）",
+     "en": "Answer: 1-methoxy-4-(prop-2-en-1-yl)benzene (4-allylanisole, estragole)"
+    },
+    "sources": [
+     {
+      "label": "University of Utah, Dept. of Chemistry: 4-allylanisole (estragole) NMR report (1H and gCOSY 800 MHz, 13C 125 MHz, gHMQC; CDCl3 with 1% TMS)",
+      "url": "https://www.chemistry.utah.edu/wp-content/uploads/sites/15/2024/11/4allylanisole.pdf",
+      "covers": {
+       "zh": "实测：^{1}H 位移 7.07（H2/H6）、6.81（H3/H5）、5.93（H8，复杂多重峰）、5.03/5.02（H9 的两个 H）、3.72（H10，单峰）、3.30（H7，双峰）；^{13}C 位移 158.12（C4）、138.01（C8）、132.15（C1）、129.60（C2/C6）、115.49（C9）、113.94（C3/C5）、55.25（C10）、39.45（C7）；gCOSY：H8 和 H9 都与 H7 相关，H7 还与 H2/H6 相关；gHMQC：H3/H5 连 C3/C5，H2/H6 连 C2/C6。原子编号沿用该报告。该报告没有 HMBC、积分和 J 值，芳香 H 的峰形也没有描述。",
+       "en": "Measured: ^{1}H shifts 7.07 (H2/H6), 6.81 (H3/H5), 5.93 (H8, complex multiplet), 5.03/5.02 (the two H9), 3.72 (H10, singlet), 3.30 (H7, doublet); ^{13}C shifts 158.12 (C4), 138.01 (C8), 132.15 (C1), 129.60 (C2/C6), 115.49 (C9), 113.94 (C3/C5), 55.25 (C10), 39.45 (C7); gCOSY: H8 and H9 both correlate with H7, and H7 also with H2/H6; gHMQC: H3/H5 on C3/C5 and H2/H6 on C2/C6. Atom numbering follows the report. The report has no HMBC, no integrals and no J values, and does not describe the aromatic multiplet shapes."
+      }
+     }
+    ],
+    "molecule": {
+     "atoms": [
+      {
+       "id": "C4",
+       "x": -1,
+       "y": 0,
+       "label": "",
+       "num": "4",
+       "numAt": [
+        13,
+        0
+       ]
+      },
+      {
+       "id": "C3",
+       "x": -0.5,
+       "y": -0.866,
+       "label": "",
+       "num": "3",
+       "numAt": [
+        6,
+        11
+       ]
+      },
+      {
+       "id": "C2",
+       "x": 0.5,
+       "y": -0.866,
+       "label": "",
+       "num": "2",
+       "numAt": [
+        -6,
+        11
+       ]
+      },
+      {
+       "id": "C1",
+       "x": 1,
+       "y": 0,
+       "label": "",
+       "num": "1",
+       "numAt": [
+        -13,
+        0
+       ]
+      },
+      {
+       "id": "C6",
+       "x": 0.5,
+       "y": 0.866,
+       "label": "",
+       "num": "6",
+       "numAt": [
+        -6,
+        -11
+       ]
+      },
+      {
+       "id": "C5",
+       "x": -0.5,
+       "y": 0.866,
+       "label": "",
+       "num": "5",
+       "numAt": [
+        6,
+        -11
+       ]
+      },
+      {
+       "id": "O",
+       "x": -2,
+       "y": 0,
+       "label": "O"
+      },
+      {
+       "id": "C10",
+       "x": -2.5,
+       "y": 0.866,
+       "label": "CH3",
+       "num": "10"
+      },
+      {
+       "id": "C7",
+       "x": 1.866,
+       "y": -0.5,
+       "label": "CH2",
+       "num": "7"
+      },
+      {
+       "id": "C8",
+       "x": 2.732,
+       "y": 0,
+       "label": "CH",
+       "num": "8"
+      },
+      {
+       "id": "C9",
+       "x": 3.598,
+       "y": -0.5,
+       "label": "CH2",
+       "num": "9"
+      }
+     ],
+     "bonds": [
+      {
+       "a": "C4",
+       "b": "C3",
+       "order": 2
+      },
+      {
+       "a": "C3",
+       "b": "C2"
+      },
+      {
+       "a": "C2",
+       "b": "C1",
+       "order": 2
+      },
+      {
+       "a": "C1",
+       "b": "C6"
+      },
+      {
+       "a": "C6",
+       "b": "C5",
+       "order": 2
+      },
+      {
+       "a": "C5",
+       "b": "C4"
+      },
+      {
+       "a": "C4",
+       "b": "O"
+      },
+      {
+       "a": "O",
+       "b": "C10"
+      },
+      {
+       "a": "C1",
+       "b": "C7",
+       "id": "b17"
+      },
+      {
+       "a": "C7",
+       "b": "C8"
+      },
+      {
+       "a": "C8",
+       "b": "C9",
+       "order": 2
+      }
+     ]
+    },
+    "spectra": [
+     {
+      "id": "h1",
+      "kind": "1d",
+      "nucleus": "1H",
+      "mhz": 800,
+      "range": [
+       7.4,
+       3
+      ],
+      "peaks": [
+       {
+        "id": "h26",
+        "ppm": 7.07,
+        "mult": "d",
+        "J": [
+         8.6
+        ],
+        "Jest": true
+       },
+       {
+        "id": "h35",
+        "ppm": 6.81,
+        "mult": "d",
+        "J": [
+         8.6
+        ],
+        "Jest": true
+       },
+       {
+        "id": "h8",
+        "ppm": 5.93,
+        "mult": "m",
+        "lw": 10
+       },
+       {
+        "id": "h9a",
+        "ppm": 5.03,
+        "mult": "m",
+        "lw": 5
+       },
+       {
+        "id": "h9b",
+        "ppm": 5.02,
+        "mult": "m",
+        "lw": 5
+       },
+       {
+        "id": "h10",
+        "ppm": 3.72,
+        "mult": "s"
+       },
+       {
+        "id": "h7",
+        "ppm": 3.3,
+        "mult": "d",
+        "J": [
+         6.7
+        ],
+        "Jest": true
+       }
+      ]
+     },
+     {
+      "id": "c13",
+      "kind": "1d",
+      "nucleus": "13C",
+      "mhz": 125,
+      "range": [
+       165,
+       30
+      ],
+      "peaks": [
+       {
+        "id": "c4",
+        "ppm": 158.12,
+        "intensity": 0.5
+       },
+       {
+        "id": "c8",
+        "ppm": 138.01
+       },
+       {
+        "id": "c1",
+        "ppm": 132.15,
+        "intensity": 0.5
+       },
+       {
+        "id": "c26",
+        "ppm": 129.6,
+        "intensity": 2
+       },
+       {
+        "id": "c9",
+        "ppm": 115.49
+       },
+       {
+        "id": "c35",
+        "ppm": 113.94,
+        "intensity": 2
+       },
+       {
+        "id": "c10",
+        "ppm": 55.25
+       },
+       {
+        "id": "c7",
+        "ppm": 39.45
+       }
+      ]
+     },
+     {
+      "id": "cosy",
+      "kind": "2d",
+      "type": "COSY",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        7.3,
+        3.1
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "1H",
+       "range": [
+        7.3,
+        3.1
+       ],
+       "ref": "h1"
+      },
+      "peaks": [
+       {
+        "id": "k1",
+        "x": 5.93,
+        "y": 3.3,
+        "label": "H8/H7"
+       },
+       {
+        "id": "k2",
+        "x": 5.025,
+        "y": 3.3,
+        "label": "H9/H7",
+        "weak": true
+       },
+       {
+        "id": "k3",
+        "x": 7.07,
+        "y": 3.3,
+        "label": "H2,6/H7",
+        "weak": true
+       },
+       {
+        "id": "k4",
+        "x": 5.93,
+        "y": 5.025,
+        "label": "H8/H9",
+        "expected": true
+       },
+       {
+        "id": "k5",
+        "x": 7.07,
+        "y": 6.81,
+        "label": "H2,6/H3,5",
+        "expected": true
+       }
+      ]
+     },
+     {
+      "id": "hmqc",
+      "kind": "2d",
+      "type": "HSQC",
+      "name": "gHMQC",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        7.4,
+        3
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "13C",
+       "range": [
+        140,
+        30
+       ],
+       "ref": "c13"
+      },
+      "peaks": [
+       {
+        "id": "q1",
+        "x": 7.07,
+        "y": 129.6,
+        "label": "H2,6/C2,6"
+       },
+       {
+        "id": "q2",
+        "x": 6.81,
+        "y": 113.94,
+        "label": "H3,5/C3,5"
+       },
+       {
+        "id": "q3",
+        "x": 5.93,
+        "y": 138.01,
+        "label": "5.93 / 138.0",
+        "expected": true
+       },
+       {
+        "id": "q4",
+        "x": 5.025,
+        "y": 115.49,
+        "label": "5.03 / 115.5",
+        "expected": true
+       },
+       {
+        "id": "q5",
+        "x": 3.72,
+        "y": 55.25,
+        "label": "3.72 / 55.3",
+        "expected": true
+       },
+       {
+        "id": "q6",
+        "x": 3.3,
+        "y": 39.45,
+        "label": "3.30 / 39.5",
+        "expected": true
+       }
+      ]
+     }
+    ],
+    "steps": [
+     {
+      "title": {
+       "zh": "不饱和度：5",
+       "en": "Degrees of unsaturation: 5"
+      },
+      "text": {
+       "zh": "分子式 C_{10}H_{12}O。",
+       "en": "The formula is C_{10}H_{12}O."
+      },
+      "board": [
+       "DBE = (2×10 + 2 − 12) / 2 = 5",
+       "5 = 4 (benzene ring) + 1"
+      ],
+      "rule": {
+       "zh": "不饱和度 ≥ 4 先想苯环（3 个 C=C 加 1 个环）。",
+       "en": "With 4 or more, think of a benzene ring first (three C=C plus one ring)."
+      },
+      "so": {
+       "zh": "假设：一个苯环，外加一个双键或环。",
+       "en": "Hypothesis: one benzene ring plus one more double bond or ring."
+      }
+     },
+     {
+      "title": {
+       "zh": "碳谱：10 个碳只有 8 个峰",
+       "en": "Carbon spectrum: 10 carbons, only 8 peaks"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "c4",
+       "c8",
+       "c1",
+       "c26",
+       "c9",
+       "c35",
+       "c10",
+       "c7"
+      ],
+      "ask": {
+       "zh": "分子有 10 个碳，碳谱只有 8 个峰。少的两个去哪了？",
+       "en": "The molecule has 10 carbons but the spectrum shows only 8 peaks. Where are the other two?"
+      },
+      "text": {
+       "zh": "8 个峰：158.1、138.0、132.2、129.6、115.5、113.9、55.3、39.5。129.6 和 113.9 特别高。",
+       "en": "Eight peaks: 158.1, 138.0, 132.2, 129.6, 115.5, 113.9, 55.3, 39.5. The peaks at 129.6 and 113.9 are especially tall."
+      },
+      "rule": {
+       "zh": "分子里有对称面时，等价的碳只出一个峰。对二取代苯环有 4 种碳：两个季碳，两对 CH。",
+       "en": "When a molecule has a mirror plane, equivalent carbons give one peak. A para-disubstituted benzene has four kinds of carbon: two quaternary and two pairs of CH."
+      },
+      "so": {
+       "zh": "129.6 和 113.9 各代表 2 个碳，这指向对二取代苯环。",
+       "en": "129.6 and 113.9 each stand for two carbons, which points to a para-disubstituted benzene."
+      },
+      "check": {
+       "zh": "峰高只是提示（季碳通常矮），不能当积分用，后面用氢谱和 HMQC 核对。",
+       "en": "Peak height is only a hint (quaternary carbons are usually short) and is not an integral; check it with the proton spectrum and HMQC."
+      }
+     },
+     {
+      "title": {
+       "zh": "芳香区：两组信号",
+       "en": "Aromatic region: two signals"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       7.3,
+       6.6
+      ],
+      "peaks": [
+       "h26",
+       "h35"
+      ],
+      "text": {
+       "zh": "芳香区只有两组信号：7.07 和 6.81。",
+       "en": "The aromatic region has just two signals: 7.07 and 6.81."
+      },
+      "rule": {
+       "zh": "对二取代苯环的 4 个 H 分成两对，常看成两个“双峰”（AA′BB′）。给电子基（如 OR）邻位的 H 偏高场，约 6.8。",
+       "en": "The four H of a para-disubstituted benzene form two pairs that often look like two doublets (AA′BB′). H ortho to an electron donor such as OR sit upfield, near 6.8."
+      },
+      "so": {
+       "zh": "对二取代苯环得到支持，6.81 那一对很可能挨着一个 O 取代基。",
+       "en": "The para-disubstituted ring is supported, and the pair at 6.81 probably sits next to an O substituent."
+      },
+      "check": {
+       "zh": "报告没有描述这两组峰的形状，图中画成双峰、J ≈ 8.6 Hz 是典型值。",
+       "en": "The report does not describe these two shapes; drawing them as doublets with J ≈ 8.6 Hz uses a typical value."
+      }
+     },
+     {
+      "title": {
+       "zh": "δ 3.72 单峰和 158.1：芳基甲醚",
+       "en": "δ 3.72 singlet and 158.1: an aryl methyl ether"
+      },
+      "spectrum": "h1",
+      "peaks": [
+       "h10"
+      ],
+      "text": {
+       "zh": "δ 3.72 是单峰；碳谱有 55.3 和 158.1。",
+       "en": "δ 3.72 is a singlet; the carbon spectrum has 55.3 and 158.1."
+      },
+      "rule": {
+       "zh": "Ar–O–CH_{3}：H 约 3.7–3.9（单峰），C 约 55；连 O 的芳碳在 155–160。",
+       "en": "Ar–O–CH_{3}: H about 3.7–3.9 (singlet), C about 55; the aromatic carbon bearing the O lies at 155–160."
+      },
+      "so": {
+       "zh": "片段：CH_{3}O–Ar，O 接在 158.1 的芳碳上。这用掉了唯一的 O。",
+       "en": "Fragment: CH_{3}O–Ar, with the O on the aromatic carbon at 158.1. That uses the only oxygen."
+      },
+      "reveal": {
+       "atoms": [
+        "C4",
+        "C3",
+        "C2",
+        "C1",
+        "C6",
+        "C5",
+        "O",
+        "C10"
+       ]
+      },
+      "atoms": [
+       "C4",
+       "O",
+       "C10"
+      ],
+      "assign": {
+       "h10": "H-10",
+       "c10": "C-10",
+       "c4": "C-4"
+      }
+     },
+     {
+      "title": {
+       "zh": "5.93 和 5.03/5.02：末端烯",
+       "en": "5.93 and 5.03/5.02: a terminal alkene"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       6.1,
+       4.9
+      ],
+      "peaks": [
+       "h8",
+       "h9a",
+       "h9b"
+      ],
+      "text": {
+       "zh": "5.93 是复杂多重峰；5.03 和 5.02 是两个靠得很近的 H。碳谱有 138.0 和 115.5。",
+       "en": "5.93 is a complex multiplet; 5.03 and 5.02 are two protons very close together. The carbon spectrum has 138.0 and 115.5."
+      },
+      "rule": {
+       "zh": "–CH=CH_{2}：内侧 =CH– 约 5.7–6.0，末端 =CH_{2} 的两个 H 约 4.9–5.1；末端 =CH_{2} 的碳约 115，内侧 =CH– 约 135–140。",
+       "en": "–CH=CH_{2}: the inner =CH– near 5.7–6.0, the two terminal =CH_{2} protons near 4.9–5.1; the terminal =CH_{2} carbon near 115 and the inner =CH– near 135–140."
+      },
+      "so": {
+       "zh": "片段：–CH=CH_{2}。这就是第 5 个不饱和度。",
+       "en": "Fragment: –CH=CH_{2}. This is the fifth degree of unsaturation."
+      },
+      "check": {
+       "zh": "末端 =CH_{2} 的两个 H 一个和 CH 顺式、一个反式，所以位移略有不同（5.03 和 5.02）。",
+       "en": "The two terminal =CH_{2} protons are cis and trans to the CH, so their shifts differ slightly (5.03 and 5.02)."
+      },
+      "reveal": {
+       "atoms": [
+        "C8",
+        "C9"
+       ]
+      },
+      "atoms": [
+       "C8",
+       "C9"
+      ],
+      "assign": {
+       "h8": "H-8",
+       "h9a": "H-9",
+       "h9b": "H-9"
+      }
+     },
+     {
+      "title": {
+       "zh": "δ 3.30 双峰：夹在中间的 CH_{2}",
+       "en": "δ 3.30 doublet: a CH_{2} in between"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       3.45,
+       3.15
+      ],
+      "peaks": [
+       "h7"
+      ],
+      "text": {
+       "zh": "δ 3.30 是双峰，碳谱对应 39.5。",
+       "en": "δ 3.30 is a doublet, matching the carbon at 39.5."
+      },
+      "rule": {
+       "zh": "双峰说明邻碳上只有 1 个 H。CH_{2} 同时在苯环旁和双键旁（既是苄位又是烯丙位）时约 3.3 ppm。",
+       "en": "A doublet means one H on the neighbouring carbon. A CH_{2} next to both a benzene ring and a C=C (benzylic and allylic) appears near 3.3 ppm."
+      },
+      "so": {
+       "zh": "这个 CH_{2} 的唯一邻居 H 是 =CH–（5.93），另一边连苯环：Ar–CH_{2}–CH=CH_{2}。",
+       "en": "Its only neighbouring H is the =CH– (5.93), and its other side is the ring: Ar–CH_{2}–CH=CH_{2}."
+      },
+      "check": {
+       "zh": "J ≈ 6.7 Hz 是典型值；报告只写了双峰。",
+       "en": "J ≈ 6.7 Hz is a typical value; the report only says doublet."
+      },
+      "reveal": {
+       "atoms": [
+        "C7"
+       ]
+      },
+      "atoms": [
+       "C7"
+      ],
+      "assign": {
+       "h7": "H-7",
+       "c7": "C-7"
+      }
+     },
+     {
+      "title": {
+       "zh": "COSY：烯丙基的耦合网",
+       "en": "COSY: the allyl coupling network"
+      },
+      "spectrum": "cosy",
+      "peaks": [
+       "k1",
+       "k2",
+       "k3"
+      ],
+      "text": {
+       "zh": "3.30（H7）与 5.93（H8）、5.03/5.02（H9）都有交叉峰，还与 7.07 有一个交叉峰。",
+       "en": "3.30 (H7) gives cross peaks with 5.93 (H8) and 5.03/5.02 (H9), and also with 7.07."
+      },
+      "rule": {
+       "zh": "COSY 主要看 ^{3}J，有时也能看到较弱的 ^{4}J：烯丙位（H7/H9）和苄位（H7 与芳环邻位 H）。",
+       "en": "COSY mainly shows ^{3}J, and sometimes weaker ^{4}J: allylic (H7/H9) and benzylic (H7 with the ring H next to it)."
+      },
+      "so": {
+       "zh": "H7–H8 是相邻；H7–H9 是烯丙位远程耦合；H7–7.07 说明 7.07 的 H 就在 CH_{2} 所连碳的旁边，是 H2/H6。",
+       "en": "H7–H8 are neighbours; H7–H9 is an allylic long-range coupling; H7–7.07 shows that the 7.07 protons sit next to the carbon carrying the CH_{2}, so they are H2/H6."
+      },
+      "check": {
+       "zh": "H8/H9 和两组芳香 H 之间的交叉峰报告没有写，图中按结构预期画出（*）。",
+       "en": "The H8/H9 cross peak and the one between the two aromatic signals are not stated in the report; they are drawn as expected (*)."
+      },
+      "arrows": [
+       {
+        "from": "C7",
+        "to": "C8",
+        "kind": "cosy"
+       },
+       {
+        "from": "C7",
+        "to": "C2",
+        "kind": "cosy",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "bonds": [
+        "b17"
+       ]
+      },
+      "atoms": [
+       "C7",
+       "C8",
+       "C2",
+       "C6"
+      ],
+      "assign": {
+       "h26": "H-2/H-6"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMQC：两对芳香 CH",
+       "en": "HMQC: the two aromatic CH pairs"
+      },
+      "spectrum": "hmqc",
+      "zoom": {
+       "x": [
+        7.3,
+        6.6
+       ],
+       "y": [
+        140,
+        105
+       ]
+      },
+      "peaks": [
+       "q1",
+       "q2"
+      ],
+      "text": {
+       "zh": "7.07 连 129.6，6.81 连 113.9。",
+       "en": "7.07 sits on 129.6, and 6.81 on 113.9."
+      },
+      "rule": {
+       "zh": "OCH_{3} 邻位的芳 CH 碳受屏蔽，约 114；间位约 129–130。",
+       "en": "An aromatic CH ortho to OCH_{3} is shielded, near 114; meta to it, near 129–130."
+      },
+      "so": {
+       "zh": "113.9 / 6.81 是 OCH_{3} 邻位的 C3/C5–H；129.6 / 7.07 是烯丙基邻位的 C2/C6–H。两个高峰各 2 个碳得到确认。",
+       "en": "113.9 / 6.81 is C3/C5–H, ortho to OCH_{3}; 129.6 / 7.07 is C2/C6–H, ortho to the allyl group. The two tall carbon peaks are confirmed as two carbons each."
+      },
+      "assign": {
+       "h35": "H-3/H-5",
+       "c35": "C-3/C-5",
+       "c26": "C-2/C-6"
+      },
+      "atoms": [
+       "C3",
+       "C5",
+       "C2",
+       "C6"
+      ]
+     },
+     {
+      "title": {
+       "zh": "最后核对",
+       "en": "Final check"
+      },
+      "final": true,
+      "spectrum": "c13",
+      "peaks": [
+       "c4",
+       "c8",
+       "c1",
+       "c26",
+       "c9",
+       "c35",
+       "c10",
+       "c7"
+      ],
+      "text": {
+       "zh": "剩下的 132.2 是苯环上接烯丙基的季碳 C1。10 个碳、5 个不饱和度（苯环 4、C=C 1）都对上，每个峰都有了归属。",
+       "en": "The remaining 132.2 is C1, the ring carbon carrying the allyl group. Ten carbons and five degrees of unsaturation (ring 4, C=C 1) match, and every peak is assigned."
+      },
+      "rule": {
+       "zh": "没有 HMBC 时，季碳只能靠位移和排除法定。",
+       "en": "Without HMBC, quaternary carbons can only be placed by shift and elimination."
+      },
+      "so": {
+       "zh": "结构是 1-甲氧基-4-烯丙基苯。",
+       "en": "The structure is 1-methoxy-4-allylbenzene."
+      },
+      "check": {
+       "zh": "报告没有积分，所以 H 数是靠碳谱、HMQC 和结构推出来的，不是量出来的。想把 C1 和 C4 也用数据钉死，需要 HMBC（例如 H7 到 C2/C6 和 C1）。",
+       "en": "The report has no integrals, so the H count comes from the carbon spectrum, HMQC and the structure rather than from measurement. To pin down C1 and C4 with data as well, an HMBC is needed (for example H7 to C2/C6 and C1)."
+      },
+      "assign": {
+       "c1": "C-1",
+       "c8": "C-8",
+       "c9": "C-9"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "pulegone",
+   "spec": {
+    "title": {
+     "zh": "由 1D 与 2D NMR 推出 C_{10}H_{16}O 的结构",
+     "en": "Solving C_{10}H_{16}O from 1D and 2D NMR"
+    },
+    "shortTitle": "C10H16O NMR walkthrough",
+    "formula": "C10H16O",
+    "prompt": {
+     "zh": "在 CDCl_{3} 中（500 MHz，298 K）测得 ^{1}H、^{13}C、DEPT-135、HSQC 和 HMBC。推出结构并归属每一个峰。",
+     "en": "^{1}H, ^{13}C, DEPT-135, HSQC and HMBC in CDCl_{3} (500 MHz, 298 K). Deduce the structure and assign every peak."
+    },
+    "note": {
+     "zh": "全部位移、DEPT 相位、HSQC 和 HMBC 峰都取自 BMRB 公开的实测峰表。J 值是按该记录给出的谱线位置换算的。该记录做过 COSY 但没有公布峰表，所以这里不画 COSY。",
+     "en": "Every shift, DEPT phase, HSQC and HMBC peak is taken from the measured peak lists published by BMRB. J values are computed from the line positions in that record. The record includes a COSY experiment but no COSY peak list, so no COSY is drawn here."
+    },
+    "answer": {
+     "zh": "答案：5-甲基-2-(丙-2-亚基)环己酮（胡薄荷酮）。所测样品是 (+)-(R)-胡薄荷酮，但 NMR 分不出对映体。",
+     "en": "Answer: 5-methyl-2-(propan-2-ylidene)cyclohexan-1-one (pulegone). The sample measured is (+)-(R)-pulegone, but NMR cannot tell enantiomers apart."
+    },
+    "sources": [
+     {
+      "label": "BMRB metabolomics entry bmse000839, (+)-pulegone (Bruker DMX 500 MHz, 100 mM in CDCl3, 298 K, TMS; National Magnetic Resonance Facility at Madison). doi:10.13018/BMSE000839",
+      "url": "https://bmrb.io/metabolomics/mol_summary/show_data.php?id=bmse000839",
+      "covers": {
+       "zh": "实测：^{1}H 峰表 9 个峰的位移、峰形和积分（2.714 m 1、2.494 m 1、2.252 t 1、2.020 m 1、1.976 s 3、1.869 m 1、1.777 s 3、1.329 m 1、1.003 d 3）和 43 条谱线的位置；^{13}C 10 个位移（204.437、141.836、131.891、50.897、32.826、31.659、28.668、23.030、22.120、21.803）；DEPT-90（31.648）和 DEPT-135 的相位；HSQC 10 个峰；HMBC 8 个峰。本页的原子编号用 p-薄荷烷编号；BMRB 的原子名对应为：C10→C3、C9→C4、C7→C8、C6→C2、C8→C1、C4→C6、C5→C5、C3→C7、C1/C2→C9/C10。两个异丙亚基甲基哪个是 C9、哪个是 C10，该记录标为不确定。",
+       "en": "Measured: shift, shape and integral of the nine ^{1}H peaks (2.714 m 1, 2.494 m 1, 2.252 t 1, 2.020 m 1, 1.976 s 3, 1.869 m 1, 1.777 s 3, 1.329 m 1, 1.003 d 3) and the positions of 43 lines; ten ^{13}C shifts (204.437, 141.836, 131.891, 50.897, 32.826, 31.659, 28.668, 23.030, 22.120, 21.803); DEPT-90 (31.648) and the DEPT-135 phases; 10 HSQC peaks; 8 HMBC peaks. This page uses p-menthane numbering; BMRB atom names map as C10→C3, C9→C4, C7→C8, C6→C2, C8→C1, C4→C6, C5→C5, C3→C7, C1/C2→C9/C10. The record leaves open which isopropylidene methyl is C9 and which is C10."
+      }
+     }
+    ],
+    "molecule": {
+     "atoms": [
+      {
+       "id": "C4",
+       "x": -1,
+       "y": 0,
+       "label": "",
+       "num": "4",
+       "numAt": [
+        13,
+        0
+       ]
+      },
+      {
+       "id": "C3",
+       "x": -0.5,
+       "y": -0.866,
+       "label": "",
+       "num": "3",
+       "numAt": [
+        6.5,
+        11.3
+       ]
+      },
+      {
+       "id": "C2",
+       "x": 0.5,
+       "y": -0.866,
+       "label": "",
+       "num": "2",
+       "numAt": [
+        -6.5,
+        11.3
+       ]
+      },
+      {
+       "id": "C1",
+       "x": 1,
+       "y": 0,
+       "label": "",
+       "num": "1",
+       "numAt": [
+        -13,
+        0
+       ]
+      },
+      {
+       "id": "C6",
+       "x": 0.5,
+       "y": 0.866,
+       "label": "",
+       "num": "6",
+       "numAt": [
+        -6.5,
+        -11.3
+       ]
+      },
+      {
+       "id": "C5",
+       "x": -0.5,
+       "y": 0.866,
+       "label": "",
+       "num": "5",
+       "numAt": [
+        6.5,
+        -11.3
+       ]
+      },
+      {
+       "id": "O",
+       "x": -1,
+       "y": -1.732,
+       "label": "O"
+      },
+      {
+       "id": "C7",
+       "x": 2,
+       "y": 0,
+       "label": "CH3",
+       "num": "7"
+      },
+      {
+       "id": "C8",
+       "x": -2,
+       "y": 0,
+       "label": "",
+       "num": "8",
+       "numAt": [
+        10,
+        10
+       ]
+      },
+      {
+       "id": "C9",
+       "x": -2.5,
+       "y": -0.866,
+       "label": "CH3",
+       "num": "9"
+      },
+      {
+       "id": "C10",
+       "x": -2.5,
+       "y": 0.866,
+       "label": "CH3",
+       "num": "10"
+      }
+     ],
+     "bonds": [
+      {
+       "a": "C4",
+       "b": "C3",
+       "id": "b34"
+      },
+      {
+       "a": "C3",
+       "b": "C2",
+       "id": "b23"
+      },
+      {
+       "a": "C2",
+       "b": "C1"
+      },
+      {
+       "a": "C1",
+       "b": "C6"
+      },
+      {
+       "a": "C6",
+       "b": "C5",
+       "id": "b56"
+      },
+      {
+       "a": "C5",
+       "b": "C4"
+      },
+      {
+       "a": "C3",
+       "b": "O",
+       "order": 2,
+       "id": "bO"
+      },
+      {
+       "a": "C1",
+       "b": "C7"
+      },
+      {
+       "a": "C4",
+       "b": "C8",
+       "order": 2
+      },
+      {
+       "a": "C8",
+       "b": "C9"
+      },
+      {
+       "a": "C8",
+       "b": "C10"
+      }
+     ]
+    },
+    "spectra": [
+     {
+      "id": "h1",
+      "kind": "1d",
+      "nucleus": "1H",
+      "mhz": 500,
+      "range": [
+       2.9,
+       0.8
+      ],
+      "peaks": [
+       {
+        "id": "h5a",
+        "ppm": 2.714,
+        "mult": "m",
+        "nH": 1,
+        "lw": 6
+       },
+       {
+        "id": "h2a",
+        "ppm": 2.494,
+        "mult": "m",
+        "nH": 1,
+        "lw": 6
+       },
+       {
+        "id": "h5b",
+        "ppm": 2.252,
+        "mult": "t",
+        "J": [
+         12.8
+        ],
+        "nH": 1
+       },
+       {
+        "id": "h2b",
+        "ppm": 2.02,
+        "mult": "m",
+        "nH": 1,
+        "lw": 6
+       },
+       {
+        "id": "h9",
+        "ppm": 1.976,
+        "mult": "s",
+        "nH": 3
+       },
+       {
+        "id": "h1x",
+        "ppm": 1.977,
+        "mult": "m",
+        "nH": 1,
+        "lw": 8,
+        "est": false
+       },
+       {
+        "id": "h6a",
+        "ppm": 1.869,
+        "mult": "m",
+        "nH": 1,
+        "lw": 6
+       },
+       {
+        "id": "h10",
+        "ppm": 1.777,
+        "mult": "s",
+        "nH": 3
+       },
+       {
+        "id": "h6b",
+        "ppm": 1.329,
+        "mult": "m",
+        "nH": 1,
+        "lw": 7
+       },
+       {
+        "id": "h7",
+        "ppm": 1.003,
+        "mult": "d",
+        "J": [
+         6
+        ],
+        "nH": 3
+       }
+      ]
+     },
+     {
+      "id": "c13",
+      "kind": "1d",
+      "nucleus": "13C",
+      "mhz": 125,
+      "range": [
+       212,
+       14
+      ],
+      "peaks": [
+       {
+        "id": "cCO",
+        "ppm": 204.4,
+        "type": "C"
+       },
+       {
+        "id": "c8",
+        "ppm": 141.8,
+        "type": "C"
+       },
+       {
+        "id": "c4",
+        "ppm": 131.9,
+        "type": "C"
+       },
+       {
+        "id": "c2",
+        "ppm": 50.9,
+        "type": "CH2"
+       },
+       {
+        "id": "c6",
+        "ppm": 32.8,
+        "type": "CH2"
+       },
+       {
+        "id": "c1",
+        "ppm": 31.7,
+        "type": "CH"
+       },
+       {
+        "id": "c5",
+        "ppm": 28.7,
+        "type": "CH2"
+       },
+       {
+        "id": "c9",
+        "ppm": 23,
+        "type": "CH3"
+       },
+       {
+        "id": "c10",
+        "ppm": 22.1,
+        "type": "CH3"
+       },
+       {
+        "id": "c7",
+        "ppm": 21.8,
+        "type": "CH3"
+       }
+      ]
+     },
+     {
+      "id": "hsqc",
+      "kind": "2d",
+      "type": "HSQC",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        2.9,
+        0.8
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "13C",
+       "range": [
+        56,
+        18
+       ],
+       "ref": "c13"
+      },
+      "peaks": [
+       {
+        "id": "q1",
+        "x": 2.496,
+        "y": 50.883,
+        "label": "2.50 / 50.9"
+       },
+       {
+        "id": "q2",
+        "x": 2.002,
+        "y": 50.883,
+        "label": "2.00 / 50.9"
+       },
+       {
+        "id": "q3",
+        "x": 1.865,
+        "y": 32.839,
+        "label": "1.87 / 32.8"
+       },
+       {
+        "id": "q4",
+        "x": 1.329,
+        "y": 32.839,
+        "label": "1.33 / 32.8"
+       },
+       {
+        "id": "q5",
+        "x": 1.977,
+        "y": 31.662,
+        "label": "1.98 / 31.7"
+       },
+       {
+        "id": "q6",
+        "x": 2.714,
+        "y": 28.675,
+        "label": "2.71 / 28.7"
+       },
+       {
+        "id": "q7",
+        "x": 2.252,
+        "y": 28.675,
+        "label": "2.25 / 28.7"
+       },
+       {
+        "id": "q8",
+        "x": 1.975,
+        "y": 23.034,
+        "label": "1.98 / 23.0"
+       },
+       {
+        "id": "q9",
+        "x": 1.779,
+        "y": 22.127,
+        "label": "1.78 / 22.1"
+       },
+       {
+        "id": "q10",
+        "x": 1.004,
+        "y": 21.803,
+        "label": "1.00 / 21.8"
+       }
+      ]
+     },
+     {
+      "id": "hmbc",
+      "kind": "2d",
+      "type": "HMBC",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        2.9,
+        0.8
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "13C",
+       "range": [
+        150,
+        20
+       ],
+       "ref": "c13"
+      },
+      "peaks": [
+       {
+        "id": "m1",
+        "x": 1.002,
+        "y": 31.672,
+        "label": "H7 / C1"
+       },
+       {
+        "id": "m2",
+        "x": 1.002,
+        "y": 32.833,
+        "label": "H7 / C6"
+       },
+       {
+        "id": "m3",
+        "x": 1.003,
+        "y": 50.899,
+        "label": "H7 / C2"
+       },
+       {
+        "id": "m4",
+        "x": 2.715,
+        "y": 141.883,
+        "label": "H5 / C8"
+       },
+       {
+        "id": "m5",
+        "x": 1.777,
+        "y": 141.883,
+        "label": "H10 / C8"
+       },
+       {
+        "id": "m6",
+        "x": 2.711,
+        "y": 131.839,
+        "label": "H5 / C4"
+       },
+       {
+        "id": "m7",
+        "x": 1.777,
+        "y": 131.839,
+        "label": "H10 / C4"
+       },
+       {
+        "id": "m8",
+        "x": 1.332,
+        "y": 131.872,
+        "label": "H6 / C4"
+       }
+      ]
+     }
+    ],
+    "steps": [
+     {
+      "title": {
+       "zh": "不饱和度：3",
+       "en": "Degrees of unsaturation: 3"
+      },
+      "text": {
+       "zh": "分子式 C_{10}H_{16}O。",
+       "en": "The formula is C_{10}H_{16}O."
+      },
+      "board": [
+       "DBE = (2×10 + 2 − 16) / 2 = 3"
+      ],
+      "rule": {
+       "zh": "每个双键或环算 1。氧不影响不饱和度。",
+       "en": "Each double bond or ring counts 1. Oxygen does not change the count."
+      },
+      "so": {
+       "zh": "一共 3 个双键或环，可能是 C=O、C=C 和环的某种组合。",
+       "en": "Three double bonds or rings in total, some combination of C=O, C=C and rings."
+      },
+      "check": {
+       "zh": "单靠分子式分不出是哪种组合，要看碳谱。",
+       "en": "The formula alone cannot say which combination, so look at the carbon spectrum next."
+      }
+     },
+     {
+      "title": {
+       "zh": "碳谱加 DEPT：10 个碳，16 个 H",
+       "en": "Carbon spectrum with DEPT: 10 carbons, 16 H"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "cCO",
+       "c8",
+       "c4",
+       "c2",
+       "c6",
+       "c1",
+       "c5",
+       "c9",
+       "c10",
+       "c7"
+      ],
+      "ask": {
+       "zh": "10 个碳峰。DEPT-135 里 50.9、32.8、28.7 朝下，31.7、23.0、22.1、21.8 朝上，DEPT-90 只剩 31.7。各是什么碳？",
+       "en": "Ten carbon peaks. In DEPT-135, 50.9, 32.8 and 28.7 point down; 31.7, 23.0, 22.1 and 21.8 point up; DEPT-90 keeps only 31.7. What is each carbon?"
+      },
+      "text": {
+       "zh": "10 个峰对应 10 个碳。204.4、141.8、131.9 在 DEPT 里不出现。",
+       "en": "Ten peaks for ten carbons. 204.4, 141.8 and 131.9 do not appear in DEPT."
+      },
+      "rule": {
+       "zh": "DEPT-135：CH_{2} 朝下，CH 和 CH_{3} 朝上；DEPT-90 只显示 CH；不带 H 的碳在 DEPT 里消失。",
+       "en": "DEPT-135: CH_{2} points down, CH and CH_{3} point up; DEPT-90 shows only CH; carbons without H vanish in DEPT."
+      },
+      "so": {
+       "zh": "3 个季碳、1 个 CH、3 个 CH_{2}、3 个 CH_{3}：0 + 1 + 6 + 9 = 16 H，正好等于分子式。没有 O–H。",
+       "en": "Three quaternary C, one CH, three CH_{2}, three CH_{3}: 0 + 1 + 6 + 9 = 16 H, exactly the formula. There is no O–H."
+      },
+      "check": {
+       "zh": "31.7 在 DEPT-90 里出现，所以它是 CH，不是 CH_{3}。",
+       "en": "31.7 survives in DEPT-90, so it is a CH, not a CH_{3}."
+      }
+     },
+     {
+      "title": {
+       "zh": "204.4、141.8、131.9：C=O 和一个四取代 C=C",
+       "en": "204.4, 141.8, 131.9: a C=O and a tetrasubstituted C=C"
+      },
+      "spectrum": "c13",
+      "zoom": [
+       212,
+       125
+      ],
+      "peaks": [
+       "cCO",
+       "c8",
+       "c4"
+      ],
+      "text": {
+       "zh": "204.4 一个，141.8 和 131.9 一对，三个都不带 H。",
+       "en": "One peak at 204.4 and a pair at 141.8 and 131.9, none of them carrying H."
+      },
+      "rule": {
+       "zh": "酮的 C=O 在 195–215 ppm；烯碳在 100–150 ppm。",
+       "en": "A ketone C=O lies at 195–215 ppm; alkene carbons at 100–150 ppm."
+      },
+      "so": {
+       "zh": "一个酮羰基，一个 C=C，C=C 的两端都没有 H（四取代）。三个不饱和度用掉两个，剩下一个只能是环。",
+       "en": "One ketone carbonyl and one C=C whose two ends carry no H (tetrasubstituted). That uses two of the three degrees of unsaturation, so the third must be a ring."
+      },
+      "check": {
+       "zh": "两个烯碳相差 10 ppm，说明 C=C 两端环境不同，比如一端接着 C=O。这一点后面用 HMBC 验证。",
+       "en": "The two alkene carbons differ by 10 ppm, so the two ends are in different environments, for example one end next to the C=O. HMBC will test this later."
+      }
+     },
+     {
+      "title": {
+       "zh": "氢谱积分：只数到 15 个 H",
+       "en": "Proton integrals: only 15 H counted"
+      },
+      "spectrum": "h1",
+      "peaks": [
+       "h5a",
+       "h2a",
+       "h5b",
+       "h2b",
+       "h9",
+       "h6a",
+       "h10",
+       "h6b",
+       "h7"
+      ],
+      "ask": {
+       "zh": "积分 1 : 1 : 1 : 1 : 3 : 1 : 3 : 1 : 3，加起来是多少？和分子式比一比。",
+       "en": "Integrals 1 : 1 : 1 : 1 : 3 : 1 : 3 : 1 : 3. What is the total? Compare it with the formula."
+      },
+      "text": {
+       "zh": "9 个峰，积分加起来 15H，分子式却有 16 个 H。",
+       "en": "Nine peaks whose integrals add up to 15H, while the formula has 16 H."
+      },
+      "rule": {
+       "zh": "积分比例要和分子式对上。少了的 H 通常是被别的峰盖住了，或者是交换掉的 OH/NH。",
+       "en": "Integrals must add up to the formula. A missing H is usually hidden under another peak, or is an exchanged OH/NH."
+      },
+      "so": {
+       "zh": "有 1 个 H 藏在某个峰下面。碳谱已经说明没有 OH，所以它一定是被重叠盖住的 C–H。",
+       "en": "One H is hidden under another peak. The carbon count already ruled out an OH, so it must be a C–H covered by overlap."
+      },
+      "check": {
+       "zh": "先记住这个缺口，HSQC 会把它找出来。",
+       "en": "Keep this gap in mind; HSQC will find it."
+      }
+     },
+     {
+      "title": {
+       "zh": "δ 1.003 双峰：CH_{3}–CH",
+       "en": "δ 1.003 doublet: CH_{3}–CH"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       1.1,
+       0.9
+      ],
+      "peaks": [
+       "h7"
+      ],
+      "text": {
+       "zh": "δ 1.003，3H，双峰。两条线在 1.009 和 0.997 ppm，相差 0.012 ppm。",
+       "en": "δ 1.003, 3H, doublet. Its two lines sit at 1.009 and 0.997 ppm, 0.012 ppm apart."
+      },
+      "board": [
+       "J = 0.012 ppm × 500 MHz = 6.0 Hz"
+      ],
+      "rule": {
+       "zh": "n+1 规则：双峰说明邻碳上只有 1 个 H。饱和碳上的 CH_{3} 在 0.8–1.2 ppm，^{3}J 约 6–7 Hz。",
+       "en": "n+1 rule: a doublet means exactly one H on the neighbouring carbon. A CH_{3} on saturated carbon appears at 0.8–1.2 ppm with ^{3}J of about 6–7 Hz."
+      },
+      "so": {
+       "zh": "片段：CH_{3}–CH，而这个 CH 就是碳谱里唯一的 CH（31.7）。",
+       "en": "Fragment: CH_{3}–CH, and that CH is the only CH in the carbon spectrum (31.7)."
+      },
+      "check": {
+       "zh": "J 是按 BMRB 给出的两条谱线位置算的，不是来源直接写的数值。",
+       "en": "J is computed from the two line positions BMRB lists; the record does not state it as a number."
+      },
+      "reveal": {
+       "atoms": [
+        "C7",
+        "C1"
+       ]
+      },
+      "atoms": [
+       "C7",
+       "C1"
+      ],
+      "assign": {
+       "h7": "H-7"
+      }
+     },
+     {
+      "title": {
+       "zh": "1.976 和 1.777 两个单峰：烯丙位甲基",
+       "en": "Singlets at 1.976 and 1.777: allylic methyls"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       2.1,
+       1.7
+      ],
+      "peaks": [
+       "h9",
+       "h10"
+      ],
+      "text": {
+       "zh": "两个 3H 单峰，在 1.976 和 1.777。",
+       "en": "Two 3H singlets, at 1.976 and 1.777."
+      },
+      "rule": {
+       "zh": "单峰说明相邻碳上没有 H。接在 C=C 上的甲基在 1.6–2.1 ppm，比饱和碳上的甲基低场。",
+       "en": "A singlet means no H on the neighbouring carbon. A methyl on a C=C appears at 1.6–2.1 ppm, downfield of a methyl on saturated carbon."
+      },
+      "so": {
+       "zh": "两个甲基都接在不带 H 的碳上，位移指向 C=C 的碳。",
+       "en": "Both methyls sit on carbons without H, and the shifts point to carbons of the C=C."
+      },
+      "check": {
+       "zh": "另一个可能是接在 C=O 上（甲基酮约 2.1–2.2 ppm）。要用 HMBC 判断。",
+       "en": "Another option would be a methyl on the C=O (a methyl ketone, about 2.1–2.2 ppm). HMBC will decide."
+      }
+     },
+     {
+      "title": {
+       "zh": "HSQC：找到藏起来的 H",
+       "en": "HSQC: finding the hidden H"
+      },
+      "spectrum": "hsqc",
+      "zoom": {
+       "x": [
+        2.1,
+        1.7
+       ],
+       "y": [
+        35,
+        19
+       ]
+      },
+      "peaks": [
+       "q5",
+       "q8",
+       "q9"
+      ],
+      "ask": {
+       "zh": "1.98 附近有两个 HSQC 峰。它们分别连在哪个碳上？",
+       "en": "There are two HSQC peaks near 1.98. Which carbons are they on?"
+      },
+      "text": {
+       "zh": "δ_{H} 1.977 与 31.7（CH）相关，δ_{H} 1.975 与 23.0（CH_{3}）相关。两个 H 的位移几乎一样。",
+       "en": "δ_{H} 1.977 correlates with 31.7 (the CH) and δ_{H} 1.975 with 23.0 (a CH_{3}). The two proton shifts are almost identical."
+      },
+      "rule": {
+       "zh": "HSQC 只显示直接相连的 C–H（一键）。在氢谱里重叠的两个 H，只要连在不同碳上，HSQC 就能把它们分开。",
+       "en": "HSQC shows only directly bonded C–H pairs (one bond). Two protons that overlap in the proton spectrum are separated by HSQC if they sit on different carbons."
+      },
+      "so": {
+       "zh": "缺的那个 H 是 CH（31.7）上的 H，藏在 1.976 的甲基单峰下面。现在 16 个 H 都找到了。",
+       "en": "The missing H is the one on the CH (31.7), hidden under the methyl singlet at 1.976. All 16 H are now found."
+      },
+      "check": {
+       "zh": "这就是第 4 步积分少 1 的原因：1.976 那个峰其实是 3H + 1H。",
+       "en": "This explains the integral gap in step 4: the peak at 1.976 is really 3H + 1H."
+      },
+      "assign": {
+       "h1x": "H-1",
+       "h9": "H-9 or H-10",
+       "h10": "H-10 or H-9"
+      },
+      "atoms": [
+       "C1"
+      ]
+     },
+     {
+      "title": {
+       "zh": "HSQC：三个 CH_{2}，每个两种 H",
+       "en": "HSQC: three CH_{2}, each with two different H"
+      },
+      "spectrum": "hsqc",
+      "peaks": [
+       "q1",
+       "q2",
+       "q3",
+       "q4",
+       "q6",
+       "q7"
+      ],
+      "text": {
+       "zh": "50.9 连着 2.50 和 2.00；32.8 连着 1.87 和 1.33；28.7 连着 2.71 和 2.25。",
+       "en": "50.9 carries 2.50 and 2.00; 32.8 carries 1.87 and 1.33; 28.7 carries 2.71 and 2.25."
+      },
+      "rule": {
+       "zh": "同一个 CH_{2} 上的两个 H 位移不同，叫非对映异位。分子里有手性中心、又在环上时最常见。",
+       "en": "When the two H of one CH_{2} have different shifts they are diastereotopic. This is most common in a ring that contains a stereocentre."
+      },
+      "so": {
+       "zh": "三个 CH_{2} 很可能都在环上，而 CH(CH_{3}) 是那个手性中心。",
+       "en": "The three CH_{2} groups are probably all in the ring, and the CH(CH_{3}) is the stereocentre."
+      },
+      "check": {
+       "zh": "50.9 的 CH_{2} 碳和它的 H（2.0–2.5）都偏低场，符合 C=O 旁边的 CH_{2}。",
+       "en": "The CH_{2} at 50.9 and its protons (2.0–2.5) are both downfield, as expected for a CH_{2} next to a C=O."
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：从 CH_{3} 双峰看出去",
+       "en": "HMBC: looking out from the CH_{3} doublet"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        1.2,
+        0.8
+       ],
+       "y": [
+        56,
+        26
+       ]
+      },
+      "peaks": [
+       "m1",
+       "m2",
+       "m3"
+      ],
+      "text": {
+       "zh": "δ_{H} 1.00 与 31.7、32.8、50.9 三个碳相关。",
+       "en": "δ_{H} 1.00 correlates with three carbons: 31.7, 32.8 and 50.9."
+      },
+      "rule": {
+       "zh": "HMBC 主要显示隔 2 个或 3 个键的 C–H。CH_{3}–C 上的 H：2 键到它所连的碳，3 键到再隔一个的碳。",
+       "en": "HMBC mainly shows C–H pairs two or three bonds apart. For the H of CH_{3}–C: two bonds to the carbon it sits on, three bonds to that carbon's neighbours."
+      },
+      "so": {
+       "zh": "H7 到 C1（31.7）是 2 键；到 32.8 和 50.9 是 3 键，所以 C1 两边接着这两个 CH_{2}。片段：CH_{2}(32.8)–CH(CH_{3})–CH_{2}(50.9)。",
+       "en": "H7 to C1 (31.7) is two bonds; 32.8 and 50.9 are three bonds, so C1 is flanked by these two CH_{2}. Fragment: CH_{2}(32.8)–CH(CH_{3})–CH_{2}(50.9)."
+      },
+      "arrows": [
+       {
+        "from": "C7",
+        "to": "C1",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C7",
+        "to": "C6",
+        "kind": "hmbc",
+        "bend": 1
+       },
+       {
+        "from": "C7",
+        "to": "C2",
+        "kind": "hmbc",
+        "bend": -1
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "C2",
+        "C6"
+       ]
+      },
+      "atoms": [
+       "C1",
+       "C2",
+       "C6"
+      ],
+      "assign": {
+       "h2a": "H-2",
+       "h2b": "H-2",
+       "h6a": "H-6",
+       "h6b": "H-6"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：甲基 1.777 接在 C=C 上",
+       "en": "HMBC: the 1.777 methyl sits on the C=C"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        2.85,
+        1.6
+       ],
+       "y": [
+        148,
+        126
+       ]
+      },
+      "peaks": [
+       "m5",
+       "m7"
+      ],
+      "ask": {
+       "zh": "1.777 的甲基同时看到 141.9 和 131.8。它接在哪个碳上？",
+       "en": "The 1.777 methyl sees both 141.9 and 131.8. Which carbon is it attached to?"
+      },
+      "text": {
+       "zh": "δ_{H} 1.777 与 141.9 和 131.8 都相关，和 204.4 不相关。",
+       "en": "δ_{H} 1.777 correlates with both 141.9 and 131.8, and not with 204.4."
+      },
+      "rule": {
+       "zh": "甲基 H 到所连碳 2 键，到下一个碳 3 键。两个烯碳都出现，说明甲基接在其中一个烯碳上，另一个隔一个键。",
+       "en": "A methyl H is two bonds from its carbon and three from the next. Seeing both alkene carbons means the methyl sits on one of them, with the other one bond further away."
+      },
+      "so": {
+       "zh": "甲基接在 C=C 上，排除了甲基酮。片段：CH_{3}–C=C。",
+       "en": "The methyl is on the C=C, which rules out a methyl ketone. Fragment: CH_{3}–C=C."
+      },
+      "check": {
+       "zh": "另一个甲基（1.976）和 H1 重叠，记录里没有它的 HMBC 峰。它也是单峰、也在烯丙位，又只剩烯碳可接，所以按 (CH_{3})_{2}C= 处理。两个甲基哪个是 C9、哪个是 C10，这些数据定不了。",
+       "en": "The other methyl (1.976) overlaps with H1, and the record lists no HMBC peak for it. It is also a singlet in the allylic range, and only an alkene carbon is left for it, so treat the unit as (CH_{3})_{2}C=. Which methyl is C9 and which C10 cannot be settled from these data."
+      },
+      "arrows": [
+       {
+        "from": "C10",
+        "to": "C8",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C10",
+        "to": "C4",
+        "kind": "hmbc",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "C8",
+        "C9",
+        "C10",
+        "C4"
+       ]
+      },
+      "atoms": [
+       "C8",
+       "C4",
+       "C9",
+       "C10"
+      ]
+     },
+     {
+      "title": {
+       "zh": "HMBC：环上 CH_{2}（28.7）连到 C=C",
+       "en": "HMBC: the ring CH_{2} (28.7) joins the C=C"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        2.85,
+        1.6
+       ],
+       "y": [
+        148,
+        126
+       ]
+      },
+      "peaks": [
+       "m4",
+       "m6"
+      ],
+      "text": {
+       "zh": "δ_{H} 2.71（C 28.7 上的 H）与 131.8 和 141.9 相关。",
+       "en": "δ_{H} 2.71 (on C 28.7) correlates with 131.8 and 141.9."
+      },
+      "rule": {
+       "zh": "CH_{2} 接在烯碳上时，H 到这个烯碳 2 键，到另一端烯碳 3 键。",
+       "en": "When a CH_{2} is attached to an alkene carbon, its H is two bonds from that carbon and three from the far alkene carbon."
+      },
+      "so": {
+       "zh": "28.7 的 CH_{2} 接在 131.8（C4）上，141.8 就是另一端（C8），带两个甲基。片段：CH_{2}–C4=C8(CH_{3})_{2}。",
+       "en": "The CH_{2} at 28.7 is bonded to 131.8 (C4), and 141.8 is the far end (C8) carrying the two methyls. Fragment: CH_{2}–C4=C8(CH_{3})_{2}."
+      },
+      "check": {
+       "zh": "这和上一步一致：甲基到 C8 是 2 键，到 C4 是 3 键。",
+       "en": "This agrees with the previous step: the methyl is two bonds from C8 and three from C4."
+      },
+      "arrows": [
+       {
+        "from": "C5",
+        "to": "C4",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C5",
+        "to": "C8",
+        "kind": "hmbc",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "C5"
+       ]
+      },
+      "atoms": [
+       "C5",
+       "C4",
+       "C8"
+      ],
+      "assign": {
+       "h5a": "H-5",
+       "h5b": "H-5",
+       "h10": "H-9/H-10",
+       "h9": "H-9/H-10"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：把两段接起来",
+       "en": "HMBC: joining the two pieces"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        2.85,
+        1
+       ],
+       "y": [
+        148,
+        126
+       ]
+      },
+      "peaks": [
+       "m8"
+      ],
+      "text": {
+       "zh": "δ_{H} 1.33（C 32.8 上的 H）与 131.9（C4）相关。",
+       "en": "δ_{H} 1.33 (on C 32.8) correlates with 131.9 (C4)."
+      },
+      "rule": {
+       "zh": "HMBC 一般到 3 键为止。H 到 C4 是 3 键，说明中间只隔一个碳。",
+       "en": "HMBC usually reaches three bonds. Three bonds from this H to C4 means exactly one carbon lies between them."
+      },
+      "so": {
+       "zh": "中间那个碳就是 C5（28.7）。链连成：C4–C5H_{2}–C6H_{2}–C1H(CH_{3})–C2H_{2}。",
+       "en": "The carbon between them is C5 (28.7). The chain now reads C4–C5H_{2}–C6H_{2}–C1H(CH_{3})–C2H_{2}."
+      },
+      "check": {
+       "zh": "这一步用的是 HMBC，不是 COSY。COSY 本来能直接看到 H5/H6 相邻，但这条记录没有给出 COSY 峰表。",
+       "en": "This step uses HMBC, not COSY. COSY would show the H5/H6 neighbours directly, but this record gives no COSY peak list."
+      },
+      "arrows": [
+       {
+        "from": "C6",
+        "to": "C4",
+        "kind": "hmbc",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "bonds": [
+        "b56"
+       ]
+      },
+      "atoms": [
+       "C6",
+       "C5",
+       "C4"
+      ]
+     },
+     {
+      "title": {
+       "zh": "合环：C=O 放在 C2 和 C4 之间",
+       "en": "Closing the ring: the C=O goes between C2 and C4"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "cCO",
+       "c2"
+      ],
+      "text": {
+       "zh": "只剩下 204.4 的 C=O 没有接上。链的两个空端是 C2（50.9）和 C4（131.9）。",
+       "en": "Only the C=O at 204.4 is still unattached. The two open ends of the chain are C2 (50.9) and C4 (131.9)."
+      },
+      "rule": {
+       "zh": "第 3 个不饱和度是一个环。C=O 接在两个空端之间就合成六元环。",
+       "en": "The third degree of unsaturation is a ring. Placing the C=O between the two open ends closes a six-membered ring."
+      },
+      "so": {
+       "zh": "环己酮，C2 位是 CH_{2}，C4 位是异丙亚基，和 C=O 共轭。",
+       "en": "A cyclohexanone with CH_{2} at C2 and an isopropylidene at C4, conjugated with the C=O."
+      },
+      "check": {
+       "zh": "C2 的碳（50.9）和 H（2.00、2.50）都在 C=O 旁的范围里，符合。两个烯碳差 10 ppm 也说得通：远离 C=O 的 C8 在低场。不过记录里没有 H2 到 C=O 的 HMBC 峰，这一连接是靠排除法得出的。",
+       "en": "C2 (50.9) and its protons (2.00, 2.50) fall in the range for a CH_{2} next to a C=O, as expected. The 10 ppm gap between the alkene carbons also fits: C8, away from the C=O, is downfield. However the record lists no HMBC peak from H2 to the C=O, so this link comes from elimination."
+      },
+      "reveal": {
+       "atoms": [
+        "C3",
+        "O"
+       ],
+       "bonds": [
+        "b34",
+        "b23",
+        "bO"
+       ]
+      },
+      "atoms": [
+       "C3",
+       "O"
+      ],
+      "assign": {
+       "cCO": "C-3"
+      }
+     },
+     {
+      "title": {
+       "zh": "最后核对",
+       "en": "Final check"
+      },
+      "final": true,
+      "spectrum": "h1",
+      "peaks": [
+       "h5a",
+       "h2a",
+       "h5b",
+       "h2b",
+       "h9",
+       "h1x",
+       "h6a",
+       "h10",
+       "h6b",
+       "h7"
+      ],
+      "text": {
+       "zh": "10 个碳、16 个 H、3 个不饱和度（C=O、C=C、环）都对上了。每个 ^{1}H 峰、^{13}C 峰、HSQC 峰和 HMBC 峰都有了归属。",
+       "en": "Ten carbons, 16 H and three degrees of unsaturation (C=O, C=C, ring) all match. Every ^{1}H, ^{13}C, HSQC and HMBC peak is assigned."
+      },
+      "rule": {
+       "zh": "8 个 HMBC 峰都在 2–3 键以内，没有一个和结构矛盾。",
+       "en": "All eight HMBC peaks are within two or three bonds, and none contradicts the structure."
+      },
+      "so": {
+       "zh": "结构是 5-甲基-2-(丙-2-亚基)环己酮。",
+       "en": "The structure is 5-methyl-2-(propan-2-ylidene)cyclohexan-1-one."
+      },
+      "check": {
+       "zh": "这些数据没有回答两件事：哪个异丙亚基甲基在 C=O 一侧（要 NOESY），以及手性中心 C1 的绝对构型（NMR 本身分不出对映体）。",
+       "en": "Two questions remain open with these data: which isopropylidene methyl lies on the C=O side (that needs NOESY), and the absolute configuration at C1 (NMR alone cannot tell enantiomers apart)."
+      },
+      "assign": {
+       "c8": "C-8",
+       "c4": "C-4",
+       "c2": "C-2",
+       "c6": "C-6",
+       "c1": "C-1",
+       "c5": "C-5",
+       "c9": "C-9/C-10",
+       "c10": "C-9/C-10",
+       "c7": "C-7"
       }
      }
     ]
@@ -1875,6 +3799,1269 @@ window.MOLASTRIA_NMRW_GUIDE = {
       "check": {
        "zh": "想把 H-2 和 H-6 分开看，可以换溶剂（例如 DMSO-d_{6}）重测。",
        "en": "To see H-2 and H-6 separately, the sample can be re-measured in another solvent such as DMSO-d_{6}."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "melatonin",
+   "spec": {
+    "title": {
+     "zh": "由 1D 与 2D NMR 推出 C_{13}H_{16}N_{2}O_{2} 的结构",
+     "en": "Solving C_{13}H_{16}N_{2}O_{2} from 1D and 2D NMR"
+    },
+    "shortTitle": "C13H16N2O2 NMR walkthrough",
+    "formula": "C13H16N2O2",
+    "prompt": {
+     "zh": "500 MHz 下测得 ^{1}H、^{13}C、DEPT、gCOSY、gHMQC 和 gHMBC。推出结构并归属每一个峰。",
+     "en": "^{1}H, ^{13}C, DEPT, gCOSY, gHMQC and gHMBC at 500 MHz. Deduce the structure and assign every peak."
+    },
+    "note": {
+     "zh": "全部位移和报告里写明的 COSY、HMQC、HMBC 相关都取自下面所列的实测报告。报告没有给 J 的数值，带 ≈ 的 J 是文献典型值；带 * 的相关峰是报告没有列出、按结构预期画的。",
+     "en": "All shifts and the COSY, HMQC and HMBC correlations stated in the report are measured data from the source below. The report gives no J values in Hz, so J marked ≈ is a typical literature value; correlations marked * are not listed in the report and are drawn as expected from the structure."
+    },
+    "answer": {
+     "zh": "答案：N-[2-(5-甲氧基-1H-吲哚-3-基)乙基]乙酰胺（褪黑素）",
+     "en": "Answer: N-[2-(5-methoxy-1H-indol-3-yl)ethyl]acetamide (melatonin)"
+    },
+    "sources": [
+     {
+      "label": "University of Utah, Dept. of Chemistry: melatonin NMR report, S. Clair and P. F. Flynn (500 MHz; 1H, 13C, DEPT, gCOSY, gHMQC, gHMBC)",
+      "url": "https://www.chemistry.utah.edu/wp-content/uploads/sites/15/2024/11/melatonin.pdf",
+      "covers": {
+       "zh": "实测：8 个 ^{1}H 位移（7.217、7.059、7.034、6.755、3.821、3.449、2.900、1.918）和文字描述的峰形（单峰、双峰、双二重峰、三重峰）；13 个 ^{13}C 位移（173.290、154.969、133.407、129.118、124.158、113.082、112.909、112.600、101.257、56.312、41.519、26.268、22.645）；gCOSY：H7/H6 相关，H4/H6 弱相关；gHMQC 表：C6/H6、C7/H7、C2/H2、C4/H4；gHMBC 表：C13 与 H12、H14，H11 与 C3、C2、C9，C5 与 H10、H7、H4；C8 由排除法定出。原子编号沿用该报告（8 = 吲哚的 C7a，9 = C3a）。该报告没有写溶剂，没有 J 值，也没有列出两个 N–H。",
+       "en": "Measured: eight ^{1}H shifts (7.217, 7.059, 7.034, 6.755, 3.821, 3.449, 2.900, 1.918) with the multiplet shapes described in words (singlet, doublet, doublet of doublets, triplet); 13 ^{13}C shifts (173.290, 154.969, 133.407, 129.118, 124.158, 113.082, 112.909, 112.600, 101.257, 56.312, 41.519, 26.268, 22.645); gCOSY: H7/H6, and a weak H4/H6; gHMQC table: C6/H6, C7/H7, C2/H2, C4/H4; gHMBC table: C13 with H12 and H14, H11 with C3, C2 and C9, C5 with H10, H7 and H4; C8 assigned by elimination. Atom numbering follows the report (8 = indole C7a, 9 = C3a). The report states no solvent, no J values, and lists neither N–H."
+      }
+     }
+    ],
+    "molecule": {
+     "atoms": [
+      {
+       "id": "C4",
+       "x": 0,
+       "y": -1,
+       "label": "",
+       "num": "4",
+       "numAt": [
+        0,
+        13
+       ]
+      },
+      {
+       "id": "C5",
+       "x": -0.866,
+       "y": -0.5,
+       "label": "",
+       "num": "5",
+       "numAt": [
+        11,
+        7
+       ]
+      },
+      {
+       "id": "C6",
+       "x": -0.866,
+       "y": 0.5,
+       "label": "",
+       "num": "6",
+       "numAt": [
+        11,
+        -7
+       ]
+      },
+      {
+       "id": "C7",
+       "x": 0,
+       "y": 1,
+       "label": "",
+       "num": "7",
+       "numAt": [
+        0,
+        -13
+       ]
+      },
+      {
+       "id": "C8",
+       "x": 0.866,
+       "y": 0.5,
+       "label": "",
+       "num": "8",
+       "numAt": [
+        0,
+        14
+       ]
+      },
+      {
+       "id": "C9",
+       "x": 0.866,
+       "y": -0.5,
+       "label": "",
+       "num": "9",
+       "numAt": [
+        0,
+        -14
+       ]
+      },
+      {
+       "id": "C3",
+       "x": 1.817,
+       "y": -0.809,
+       "label": "",
+       "num": "3",
+       "numAt": [
+        -10,
+        -9
+       ]
+      },
+      {
+       "id": "C2",
+       "x": 2.405,
+       "y": 0,
+       "label": "",
+       "num": "2",
+       "numAt": [
+        13,
+        0
+       ]
+      },
+      {
+       "id": "N1",
+       "x": 1.817,
+       "y": 0.809,
+       "label": "NH"
+      },
+      {
+       "id": "O5",
+       "x": -1.732,
+       "y": -1,
+       "label": "O"
+      },
+      {
+       "id": "C10",
+       "x": -2.598,
+       "y": -0.5,
+       "label": "CH3",
+       "num": "10"
+      },
+      {
+       "id": "C11",
+       "x": 2.683,
+       "y": -1.309,
+       "label": "CH2",
+       "num": "11"
+      },
+      {
+       "id": "C12",
+       "x": 3.549,
+       "y": -0.809,
+       "label": "CH2",
+       "num": "12"
+      },
+      {
+       "id": "N2",
+       "x": 4.415,
+       "y": -1.309,
+       "label": "NH"
+      },
+      {
+       "id": "C13",
+       "x": 5.281,
+       "y": -0.809,
+       "label": "",
+       "num": "13",
+       "numAt": [
+        -12,
+        6
+       ]
+      },
+      {
+       "id": "O13",
+       "x": 5.281,
+       "y": 0.191,
+       "label": "O"
+      },
+      {
+       "id": "C14",
+       "x": 6.147,
+       "y": -1.309,
+       "label": "CH3",
+       "num": "14"
+      }
+     ],
+     "bonds": [
+      {
+       "a": "C4",
+       "b": "C5",
+       "order": 2
+      },
+      {
+       "a": "C5",
+       "b": "C6"
+      },
+      {
+       "a": "C6",
+       "b": "C7",
+       "order": 2
+      },
+      {
+       "a": "C7",
+       "b": "C8"
+      },
+      {
+       "a": "C8",
+       "b": "C9",
+       "order": 2
+      },
+      {
+       "a": "C9",
+       "b": "C4"
+      },
+      {
+       "a": "C9",
+       "b": "C3"
+      },
+      {
+       "a": "C3",
+       "b": "C2",
+       "order": 2
+      },
+      {
+       "a": "C2",
+       "b": "N1"
+      },
+      {
+       "a": "N1",
+       "b": "C8"
+      },
+      {
+       "a": "C5",
+       "b": "O5"
+      },
+      {
+       "a": "O5",
+       "b": "C10"
+      },
+      {
+       "a": "C3",
+       "b": "C11"
+      },
+      {
+       "a": "C11",
+       "b": "C12",
+       "id": "b1112"
+      },
+      {
+       "a": "C12",
+       "b": "N2",
+       "id": "b12N"
+      },
+      {
+       "a": "N2",
+       "b": "C13"
+      },
+      {
+       "a": "C13",
+       "b": "O13",
+       "order": 2
+      },
+      {
+       "a": "C13",
+       "b": "C14"
+      }
+     ]
+    },
+    "spectra": [
+     {
+      "id": "h1",
+      "kind": "1d",
+      "nucleus": "1H",
+      "mhz": 500,
+      "range": [
+       7.6,
+       1.6
+      ],
+      "peaks": [
+       {
+        "id": "h7",
+        "ppm": 7.217,
+        "mult": "d",
+        "J": [
+         8.8
+        ],
+        "Jest": true,
+        "nH": 1
+       },
+       {
+        "id": "h4",
+        "ppm": 7.059,
+        "mult": "d",
+        "J": [
+         2.4
+        ],
+        "Jest": true,
+        "nH": 1
+       },
+       {
+        "id": "h2",
+        "ppm": 7.034,
+        "mult": "s",
+        "nH": 1
+       },
+       {
+        "id": "h6",
+        "ppm": 6.755,
+        "mult": "dd",
+        "J": [
+         8.8,
+         2.4
+        ],
+        "Jest": true,
+        "nH": 1
+       },
+       {
+        "id": "h10",
+        "ppm": 3.821,
+        "mult": "s",
+        "nH": 3
+       },
+       {
+        "id": "h12",
+        "ppm": 3.449,
+        "mult": "t",
+        "J": [
+         7.2
+        ],
+        "Jest": true,
+        "nH": 2
+       },
+       {
+        "id": "h11",
+        "ppm": 2.9,
+        "mult": "t",
+        "J": [
+         7.2
+        ],
+        "Jest": true,
+        "nH": 2
+       },
+       {
+        "id": "h14",
+        "ppm": 1.918,
+        "mult": "s",
+        "nH": 3
+       }
+      ]
+     },
+     {
+      "id": "c13",
+      "kind": "1d",
+      "nucleus": "13C",
+      "mhz": 125,
+      "range": [
+       180,
+       15
+      ],
+      "peaks": [
+       {
+        "id": "cC13",
+        "ppm": 173.29,
+        "type": "C"
+       },
+       {
+        "id": "cC5",
+        "ppm": 154.97,
+        "type": "C"
+       },
+       {
+        "id": "cC8",
+        "ppm": 133.41,
+        "type": "C"
+       },
+       {
+        "id": "cC9",
+        "ppm": 129.12,
+        "type": "C"
+       },
+       {
+        "id": "cC2",
+        "ppm": 124.16,
+        "type": "CH"
+       },
+       {
+        "id": "cC3",
+        "ppm": 113.08,
+        "type": "C"
+       },
+       {
+        "id": "cC7",
+        "ppm": 112.91,
+        "type": "CH"
+       },
+       {
+        "id": "cC6",
+        "ppm": 112.6,
+        "type": "CH"
+       },
+       {
+        "id": "cC4",
+        "ppm": 101.26,
+        "type": "CH"
+       },
+       {
+        "id": "cC10",
+        "ppm": 56.31,
+        "type": "CH3"
+       },
+       {
+        "id": "cC12",
+        "ppm": 41.52,
+        "type": "CH2"
+       },
+       {
+        "id": "cC11",
+        "ppm": 26.27,
+        "type": "CH2"
+       },
+       {
+        "id": "cC14",
+        "ppm": 22.65,
+        "type": "CH3"
+       }
+      ]
+     },
+     {
+      "id": "cosy",
+      "kind": "2d",
+      "type": "COSY",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        7.5,
+        2.6
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "1H",
+       "range": [
+        7.5,
+        2.6
+       ],
+       "ref": "h1"
+      },
+      "peaks": [
+       {
+        "id": "k1",
+        "x": 7.217,
+        "y": 6.755,
+        "label": "H7/H6"
+       },
+       {
+        "id": "k2",
+        "x": 7.059,
+        "y": 6.755,
+        "label": "H4/H6",
+        "weak": true
+       },
+       {
+        "id": "k3",
+        "x": 3.449,
+        "y": 2.9,
+        "label": "H12/H11",
+        "expected": true
+       }
+      ]
+     },
+     {
+      "id": "hmqc",
+      "kind": "2d",
+      "type": "HSQC",
+      "name": "gHMQC",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        7.6,
+        1.6
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "13C",
+       "range": [
+        130,
+        15
+       ],
+       "ref": "c13"
+      },
+      "peaks": [
+       {
+        "id": "q1",
+        "x": 7.034,
+        "y": 124.16,
+        "label": "H2/C2"
+       },
+       {
+        "id": "q2",
+        "x": 7.217,
+        "y": 112.91,
+        "label": "H7/C7"
+       },
+       {
+        "id": "q3",
+        "x": 6.755,
+        "y": 112.6,
+        "label": "H6/C6"
+       },
+       {
+        "id": "q4",
+        "x": 7.059,
+        "y": 101.26,
+        "label": "H4/C4"
+       },
+       {
+        "id": "q5",
+        "x": 3.821,
+        "y": 56.31,
+        "label": "3.82 / 56.3",
+        "expected": true
+       },
+       {
+        "id": "q6",
+        "x": 3.449,
+        "y": 41.52,
+        "label": "3.45 / 41.5",
+        "expected": true
+       },
+       {
+        "id": "q7",
+        "x": 2.9,
+        "y": 26.27,
+        "label": "2.90 / 26.3",
+        "expected": true
+       },
+       {
+        "id": "q8",
+        "x": 1.918,
+        "y": 22.65,
+        "label": "1.92 / 22.6",
+        "expected": true
+       }
+      ]
+     },
+     {
+      "id": "hmbc",
+      "kind": "2d",
+      "type": "HMBC",
+      "name": "gHMBC",
+      "x": {
+       "nucleus": "1H",
+       "range": [
+        7.6,
+        1.6
+       ],
+       "ref": "h1"
+      },
+      "y": {
+       "nucleus": "13C",
+       "range": [
+        180,
+        100
+       ],
+       "ref": "c13"
+      },
+      "peaks": [
+       {
+        "id": "m1",
+        "x": 1.918,
+        "y": 173.29,
+        "label": "H14/C13"
+       },
+       {
+        "id": "m2",
+        "x": 3.449,
+        "y": 173.29,
+        "label": "H12/C13"
+       },
+       {
+        "id": "m3",
+        "x": 2.9,
+        "y": 113.08,
+        "label": "H11/C3"
+       },
+       {
+        "id": "m4",
+        "x": 2.9,
+        "y": 124.16,
+        "label": "H11/C2"
+       },
+       {
+        "id": "m5",
+        "x": 2.9,
+        "y": 129.12,
+        "label": "H11/C9"
+       },
+       {
+        "id": "m6",
+        "x": 3.821,
+        "y": 154.97,
+        "label": "H10/C5"
+       },
+       {
+        "id": "m7",
+        "x": 7.217,
+        "y": 154.97,
+        "label": "H7/C5"
+       },
+       {
+        "id": "m8",
+        "x": 7.059,
+        "y": 154.97,
+        "label": "H4/C5"
+       }
+      ]
+     }
+    ],
+    "steps": [
+     {
+      "title": {
+       "zh": "不饱和度：7",
+       "en": "Degrees of unsaturation: 7"
+      },
+      "text": {
+       "zh": "分子式 C_{13}H_{16}N_{2}O_{2}。",
+       "en": "The formula is C_{13}H_{16}N_{2}O_{2}."
+      },
+      "board": [
+       "DBE = (2×13 + 2 + 2 − 16) / 2 = 7"
+      ],
+      "rule": {
+       "zh": "每个 N 在计算时加 1（公式里的 +2 来自两个 N），O 不计。不饱和度 ≥ 4 时先想芳环。",
+       "en": "Each N adds one to the count (the +2 comes from the two N); O is ignored. With 4 or more, think of an aromatic ring first."
+      },
+      "so": {
+       "zh": "7 个不饱和度：很可能有芳环，外加别的双键或环。",
+       "en": "Seven degrees: very likely an aromatic ring, plus more double bonds or rings."
+      }
+     },
+     {
+      "title": {
+       "zh": "氢谱清点：14 个 H，少了 2 个",
+       "en": "Proton inventory: 14 H, two missing"
+      },
+      "spectrum": "h1",
+      "peaks": [
+       "h7",
+       "h4",
+       "h2",
+       "h6",
+       "h10",
+       "h12",
+       "h11",
+       "h14"
+      ],
+      "ask": {
+       "zh": "8 组信号：4 个 1H、2 个 2H、2 个 3H。和分子式的 16 个 H 差多少？差的可能是什么？",
+       "en": "Eight signals: four 1H, two 2H, two 3H. How far is that from the 16 H of the formula, and what could be missing?"
+      },
+      "text": {
+       "zh": "1+1+1+1+3+2+2+3 = 14H，比分子式少 2 个。",
+       "en": "1+1+1+1+3+2+2+3 = 14H, two fewer than the formula."
+      },
+      "rule": {
+       "zh": "连在 N 或 O 上的 H 可以和氘代溶剂（如 CD_{3}OD、D_{2}O）交换，交换后在氢谱里看不到。",
+       "en": "H on N or O can exchange with a deuterated solvent such as CD_{3}OD or D_{2}O, and then it does not show in the proton spectrum."
+      },
+      "so": {
+       "zh": "缺的 2 个 H 很可能是 N–H 或 O–H。",
+       "en": "The two missing H are probably N–H or O–H."
+      },
+      "check": {
+       "zh": "报告没有写溶剂。这里看不到可交换的 H，又和 CD_{3}OD 中的位移相符，所以推测是在甲醇-d_{4} 中测的。这是推测，不是报告写的。",
+       "en": "The report does not state the solvent. No exchangeable H is seen, and the shifts fit CD_{3}OD, so methanol-d_{4} is a guess. It is an inference, not something the report says."
+      }
+     },
+     {
+      "title": {
+       "zh": "碳谱：13 个碳",
+       "en": "Carbon spectrum: 13 carbons"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "cC13",
+       "cC5",
+       "cC8",
+       "cC9",
+       "cC2",
+       "cC3",
+       "cC7",
+       "cC6",
+       "cC4",
+       "cC10",
+       "cC12",
+       "cC11",
+       "cC14"
+      ],
+      "text": {
+       "zh": "13 个峰。173.3 一个；101–155 之间 8 个；56.3 一个；41.5、26.3、22.6 三个。",
+       "en": "Thirteen peaks: one at 173.3, eight between 101 and 155, one at 56.3, and three at 41.5, 26.3 and 22.6."
+      },
+      "rule": {
+       "zh": "酰胺或酯的 C=O 在 165–175；芳碳在 100–160，连 O 的芳碳在 150–160；OCH_{3} 在 55–57。",
+       "en": "An amide or ester C=O lies at 165–175; aromatic carbons at 100–160, with an O-bearing aromatic carbon at 150–160; OCH_{3} at 55–57."
+      },
+      "so": {
+       "zh": "一个酰胺或酯的 C=O、8 个芳碳（其中 154.97 连着 O），一个 OCH_{3}，三个饱和碳。",
+       "en": "One amide or ester C=O, eight aromatic carbons (154.97 bearing an O), one OCH_{3} and three saturated carbons."
+      },
+      "check": {
+       "zh": "8 个芳碳比苯环多 2 个，说明芳香部分不只是一个苯环。",
+       "en": "Eight aromatic carbons are two more than a benzene ring, so the aromatic part is more than one benzene ring."
+      }
+     },
+     {
+      "title": {
+       "zh": "两个甲基单峰：OCH_{3} 和 CH_{3}C=O",
+       "en": "Two methyl singlets: OCH_{3} and CH_{3}C=O"
+      },
+      "spectrum": "h1",
+      "peaks": [
+       "h10",
+       "h14"
+      ],
+      "text": {
+       "zh": "δ 3.821（3H，单峰）和 δ 1.918（3H，单峰）。",
+       "en": "δ 3.821 (3H, singlet) and δ 1.918 (3H, singlet)."
+      },
+      "rule": {
+       "zh": "芳基甲醚的 OCH_{3} 在 3.7–3.9；乙酰基 CH_{3}C(=O)– 在 1.9–2.2，乙酰胺偏低端（约 1.9）。",
+       "en": "An aryl methyl ether OCH_{3} appears at 3.7–3.9; an acetyl CH_{3}C(=O)– at 1.9–2.2, with acetamides at the low end (about 1.9)."
+      },
+      "so": {
+       "zh": "3.821 是芳环上的 OCH_{3}；1.918 是连在 C=O 上的 CH_{3}。",
+       "en": "3.821 is an OCH_{3} on the aromatic ring; 1.918 is a CH_{3} on a C=O."
+      },
+      "check": {
+       "zh": "这两个是按位移推的，下面用 HMBC 核对。",
+       "en": "Both are shift-based guesses; HMBC checks them next."
+      },
+      "assign": {
+       "h10": "H-10",
+       "h14": "H-14"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：乙酰胺片段",
+       "en": "HMBC: an acetamide piece"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        3.7,
+        1.7
+       ],
+       "y": [
+        180,
+        165
+       ]
+      },
+      "peaks": [
+       "m1",
+       "m2"
+      ],
+      "text": {
+       "zh": "173.3 的 C=O 同时和 1.918（CH_{3}）、3.449（CH_{2}）相关。",
+       "en": "The C=O at 173.3 correlates with both 1.918 (CH_{3}) and 3.449 (CH_{2})."
+      },
+      "rule": {
+       "zh": "HMBC 看 2–3 键。CH_{3} 到 C=O 是 2 键；CH_{2} 要经过一个 N 才到 C=O，是 3 键。CH_{2} 的 δ_{H} 3.4–3.5 正是连在酰胺 N 上的范围。",
+       "en": "HMBC sees two or three bonds. CH_{3} to C=O is two bonds; the CH_{2} reaches the C=O through an N, three bonds. A δ_{H} of 3.4–3.5 is exactly the range for a CH_{2} on an amide N."
+      },
+      "so": {
+       "zh": "片段：CH_{3}–C(=O)–NH–CH_{2}–。用掉一个 N 和一个 O；这个 N–H 是缺的 H 之一。",
+       "en": "Fragment: CH_{3}–C(=O)–NH–CH_{2}–. This uses one N and one O, and that N–H is one of the missing H."
+      },
+      "check": {
+       "zh": "若是酯（–O–CH_{2}–），CH_{2} 会在 4 ppm 以上。3.45 更符合酰胺。",
+       "en": "For an ester (–O–CH_{2}–) the CH_{2} would sit above 4 ppm. 3.45 fits an amide better."
+      },
+      "arrows": [
+       {
+        "from": "C14",
+        "to": "C13",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C12",
+        "to": "C13",
+        "kind": "hmbc",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "C14",
+        "C13",
+        "O13",
+        "N2",
+        "C12"
+       ],
+       "bonds": [
+        "b12N"
+       ]
+      },
+      "atoms": [
+       "C13",
+       "C14",
+       "C12"
+      ],
+      "assign": {
+       "cC13": "C-13",
+       "h12": "H-12"
+      }
+     },
+     {
+      "title": {
+       "zh": "两个三重峰：–CH_{2}–CH_{2}–",
+       "en": "Two triplets: –CH_{2}–CH_{2}–"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       3.6,
+       2.75
+      ],
+      "peaks": [
+       "h12",
+       "h11"
+      ],
+      "text": {
+       "zh": "3.449（2H）和 2.900（2H）都是三重峰。",
+       "en": "3.449 (2H) and 2.900 (2H) are both triplets."
+      },
+      "rule": {
+       "zh": "n+1 规则：三重峰说明邻碳上有 2 个 H。两个 CH_{2} 互为三重峰，就是 –CH_{2}–CH_{2}–。2.9 ppm 是接在芳环上的 CH_{2}。",
+       "en": "n+1 rule: a triplet means two H on the neighbouring carbon. Two CH_{2} that split each other into triplets form –CH_{2}–CH_{2}–. 2.9 ppm is typical of a CH_{2} on an aromatic ring."
+      },
+      "so": {
+       "zh": "片段：Ar–CH_{2}–CH_{2}–NH–C(=O)CH_{3}。",
+       "en": "Fragment: Ar–CH_{2}–CH_{2}–NH–C(=O)CH_{3}."
+      },
+      "check": {
+       "zh": "报告的 COSY 表没有列出 H11/H12，本页的 COSY 里这一对按结构预期画出（*）。J ≈ 7 Hz 是典型值。",
+       "en": "The report's COSY list does not include H11/H12; the pair is drawn in the COSY as expected (*). J ≈ 7 Hz is a typical value."
+      },
+      "reveal": {
+       "atoms": [
+        "C11"
+       ],
+       "bonds": [
+        "b1112"
+       ]
+      },
+      "atoms": [
+       "C11",
+       "C12"
+      ],
+      "assign": {
+       "h11": "H-11"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMQC：4 个芳香 CH",
+       "en": "HMQC: four aromatic CH"
+      },
+      "spectrum": "hmqc",
+      "zoom": {
+       "x": [
+        7.4,
+        6.6
+       ],
+       "y": [
+        130,
+        95
+       ]
+      },
+      "peaks": [
+       "q1",
+       "q2",
+       "q3",
+       "q4"
+      ],
+      "text": {
+       "zh": "7.034–124.2，7.217–112.9，6.755–112.6，7.059–101.3。",
+       "en": "7.034–124.2, 7.217–112.9, 6.755–112.6, 7.059–101.3."
+      },
+      "rule": {
+       "zh": "HMQC/HSQC 只显示一键 C–H。8 个芳碳里有 4 个带 H，另外 4 个（154.97、133.4、129.1、113.1）是季碳。",
+       "en": "HMQC/HSQC shows only one-bond C–H pairs. Four of the eight aromatic carbons carry H; the other four (154.97, 133.4, 129.1, 113.1) are quaternary."
+      },
+      "so": {
+       "zh": "芳香部分：4 个 CH，4 个季碳。",
+       "en": "The aromatic part: four CH and four quaternary carbons."
+      },
+      "check": {
+       "zh": "101.3 很高场，说明这个 CH 的邻位或对位有给电子基团，比如 OCH_{3}。",
+       "en": "101.3 is far upfield, which suggests an electron donor such as OCH_{3} ortho or para to this CH."
+      },
+      "assign": {
+       "cC2": "C-2",
+       "cC7": "C-7",
+       "cC6": "C-6",
+       "cC4": "C-4"
+      }
+     },
+     {
+      "title": {
+       "zh": "芳香区：d、dd、d 加一个单峰",
+       "en": "Aromatic region: d, dd, d and a singlet"
+      },
+      "spectrum": "h1",
+      "zoom": [
+       7.35,
+       6.65
+      ],
+      "peaks": [
+       "h7",
+       "h4",
+       "h2",
+       "h6"
+      ],
+      "ask": {
+       "zh": "7.217 双峰、6.755 双二重峰、7.059 双峰，另有 7.034 单峰。前三个是什么排布？",
+       "en": "A doublet at 7.217, a doublet of doublets at 6.755, a doublet at 7.059, plus a singlet at 7.034. How are the first three arranged?"
+      },
+      "text": {
+       "zh": "7.217（d）、6.755（dd）、7.059（d），以及 7.034（s）。",
+       "en": "7.217 (d), 6.755 (dd), 7.059 (d), and 7.034 (s)."
+      },
+      "rule": {
+       "zh": "苯环上 d（大 J）+ dd（大 J 和小 J）+ d（小 J）是 1,2,4-三取代的典型图样：邻位 ^{3}J ≈ 8–9 Hz，间位 ^{4}J ≈ 2–3 Hz。",
+       "en": "On a benzene ring, d (large J) + dd (large and small J) + d (small J) is the classic 1,2,4-trisubstituted pattern: ortho ^{3}J ≈ 8–9 Hz, meta ^{4}J ≈ 2–3 Hz."
+      },
+      "so": {
+       "zh": "一个三取代苯环带 3 个 H。7.034 的单峰不在这个环上，是另一个芳香 CH。",
+       "en": "A trisubstituted benzene ring carrying three H. The singlet at 7.034 is not on this ring; it is another aromatic CH."
+      },
+      "check": {
+       "zh": "报告只用文字写了峰形，没有 J 值。图中的 J 是典型值（≈）。",
+       "en": "The report describes the shapes in words and gives no J values. The J values in the plot are typical values (≈)."
+      }
+     },
+     {
+      "title": {
+       "zh": "COSY：谁和谁相邻",
+       "en": "COSY: who is next to whom"
+      },
+      "spectrum": "cosy",
+      "zoom": {
+       "x": [
+        7.4,
+        6.6
+       ],
+       "y": [
+        7.4,
+        6.6
+       ]
+      },
+      "peaks": [
+       "k1",
+       "k2"
+      ],
+      "text": {
+       "zh": "7.217 和 6.755 有强交叉峰；7.059 和 6.755 有弱交叉峰。",
+       "en": "7.217 and 6.755 give a strong cross peak; 7.059 and 6.755 a weak one."
+      },
+      "rule": {
+       "zh": "COSY 主要看 ^{3}J（相邻）。间位的 ^{4}J 很小，交叉峰弱。",
+       "en": "COSY mainly shows ^{3}J (neighbours). A meta ^{4}J is small, so its cross peak is weak."
+      },
+      "so": {
+       "zh": "6.755 的 H 夹在中间：一侧是邻位的 7.217，另一侧隔一个碳是间位的 7.059。把它们记作 H7、H6、H4。",
+       "en": "The 6.755 proton sits in the middle: ortho to 7.217 on one side and meta to 7.059 across one carbon. Label them H7, H6 and H4."
+      },
+      "check": {
+       "zh": "7.059 和 7.217 之间没有交叉峰，说明它们是对位，不相邻。",
+       "en": "There is no cross peak between 7.059 and 7.217, so they are para to each other, not adjacent."
+      },
+      "arrows": [
+       {
+        "from": "C7",
+        "to": "C6",
+        "kind": "cosy"
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9"
+       ]
+      },
+      "atoms": [
+       "C4",
+       "C6",
+       "C7"
+      ],
+      "assign": {
+       "h7": "H-7",
+       "h6": "H-6",
+       "h4": "H-4"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：OCH_{3} 放在 C5",
+       "en": "HMBC: the OCH_{3} goes on C5"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        7.4,
+        3.6
+       ],
+       "y": [
+        160,
+        148
+       ]
+      },
+      "peaks": [
+       "m6",
+       "m7",
+       "m8"
+      ],
+      "text": {
+       "zh": "154.97 和 3.821（OCH_{3}）、7.217（H7）、7.059（H4）都相关。",
+       "en": "154.97 correlates with 3.821 (OCH_{3}), 7.217 (H7) and 7.059 (H4)."
+      },
+      "rule": {
+       "zh": "OCH_{3} 的 H 经过 O 到芳碳是 3 键。H4 到相邻碳 2 键，H7 隔两个碳 3 键。",
+       "en": "The OCH_{3} protons reach the aromatic carbon through the O in three bonds. H4 is two bonds from its neighbour; H7 is three bonds away across two carbons."
+      },
+      "so": {
+       "zh": "OCH_{3} 接在 C5 上，C5 位于 H4 和 H6 之间。",
+       "en": "The OCH_{3} sits on C5, between H4 and H6."
+      },
+      "check": {
+       "zh": "这也解释了 C4 在 101.3 的高场位移：它在 OCH_{3} 的邻位。",
+       "en": "This also explains the upfield C4 at 101.3: it is ortho to the OCH_{3}."
+      },
+      "arrows": [
+       {
+        "from": "C10",
+        "to": "C5",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C4",
+        "to": "C5",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C7",
+        "to": "C5",
+        "kind": "hmbc",
+        "bend": 1
+       }
+      ],
+      "reveal": {
+       "atoms": [
+        "O5",
+        "C10"
+       ]
+      },
+      "atoms": [
+       "C5",
+       "C10"
+      ],
+      "assign": {
+       "cC5": "C-5",
+       "cC10": "C-10"
+      }
+     },
+     {
+      "title": {
+       "zh": "还差两个不饱和度和一个 N",
+       "en": "Two degrees of unsaturation and one N still to place"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "cC2",
+       "cC3",
+       "cC8",
+       "cC9"
+      ],
+      "text": {
+       "zh": "已用：苯环 4 个，C=O 1 个，共 5 个。剩下：C2（CH，124.2）、C3（113.1）、C8（133.4）、C9（129.1）、1 个 N 和 1 个 N–H。",
+       "en": "Used so far: benzene ring 4 and C=O 1, total 5. Left: C2 (CH, 124.2), C3 (113.1), C8 (133.4), C9 (129.1), one N and one N–H."
+      },
+      "rule": {
+       "zh": "还差 2 个不饱和度：一个环加一个 C=C。苯环的两个季碳（C8、C9）和 C2、C3、NH 正好围成吲哚的五元环。吲哚 C2–H 一般 7.0–7.2 ppm（单峰），C3 约 110–115 ppm。",
+       "en": "Two degrees remain: one ring plus one C=C. The two quaternary benzene carbons (C8, C9) with C2, C3 and NH close exactly the five-membered ring of an indole. An indole C2–H usually appears at 7.0–7.2 ppm (singlet) and C3 at about 110–115 ppm."
+      },
+      "so": {
+       "zh": "芳香部分是吲哚：7.034 的单峰是 H2，第二个 N–H 是吲哚 NH。",
+       "en": "The aromatic part is an indole: the singlet at 7.034 is H2, and the second N–H is the indole NH."
+      },
+      "check": {
+       "zh": "吲哚有两种连法（侧链在 C2 还是 C3），H2 是单峰说明 C3 上没有 H，要用 HMBC 确认。",
+       "en": "The side chain could be on C2 or C3. H2 being a singlet means C3 carries no H; HMBC will confirm."
+      },
+      "reveal": {
+       "atoms": [
+        "C2",
+        "C3",
+        "N1"
+       ]
+      },
+      "atoms": [
+       "C2",
+       "C3",
+       "N1"
+      ],
+      "assign": {
+       "h2": "H-2"
+      }
+     },
+     {
+      "title": {
+       "zh": "HMBC：侧链接在 C3",
+       "en": "HMBC: the side chain is on C3"
+      },
+      "spectrum": "hmbc",
+      "zoom": {
+       "x": [
+        3.2,
+        2.6
+       ],
+       "y": [
+        135,
+        108
+       ]
+      },
+      "peaks": [
+       "m3",
+       "m4",
+       "m5"
+      ],
+      "text": {
+       "zh": "2.900（H11）和 113.1、124.2、129.1 相关。",
+       "en": "2.900 (H11) correlates with 113.1, 124.2 and 129.1."
+      },
+      "rule": {
+       "zh": "H11 到它所连的 C3 是 2 键，到 C3 的两个邻碳是 3 键。",
+       "en": "H11 is two bonds from C3, the carbon it sits on, and three bonds from C3's two neighbours."
+      },
+      "so": {
+       "zh": "侧链接在 C3（113.1）上，C3 两边是 C2（124.2）和 C9（129.1）。",
+       "en": "The side chain is attached to C3 (113.1), which is flanked by C2 (124.2) and C9 (129.1)."
+      },
+      "check": {
+       "zh": "如果侧链在 C2，就看不到到 C9 的 3 键相关。",
+       "en": "If the chain were on C2, the three-bond correlation to C9 would be impossible."
+      },
+      "arrows": [
+       {
+        "from": "C11",
+        "to": "C3",
+        "kind": "hmbc"
+       },
+       {
+        "from": "C11",
+        "to": "C2",
+        "kind": "hmbc",
+        "bend": 1
+       },
+       {
+        "from": "C11",
+        "to": "C9",
+        "kind": "hmbc",
+        "bend": -1
+       }
+      ],
+      "atoms": [
+       "C3",
+       "C2",
+       "C9"
+      ],
+      "assign": {
+       "cC3": "C-3",
+       "cC9": "C-9"
+      }
+     },
+     {
+      "title": {
+       "zh": "C8：用排除法",
+       "en": "C8: by elimination"
+      },
+      "spectrum": "c13",
+      "peaks": [
+       "cC8"
+      ],
+      "text": {
+       "zh": "133.4 是最后一个季碳，报告里没有它的 HMBC 相关。",
+       "en": "133.4 is the last quaternary carbon, and the report lists no HMBC correlation for it."
+      },
+      "rule": {
+       "zh": "吲哚里连在 N 上的稠合碳（C7a）通常在 130–137 ppm，比 C3a 低场。",
+       "en": "In an indole, the ring-fusion carbon bonded to N (C7a) usually appears at 130–137 ppm, downfield of C3a."
+      },
+      "so": {
+       "zh": "133.4 是 C8（吲哚的 C7a），连着 N1 和 C7。",
+       "en": "133.4 is C8 (the indole C7a), bonded to N1 and C7."
+      },
+      "check": {
+       "zh": "报告也是用排除法定的 C8。",
+       "en": "The report also assigns C8 by elimination."
+      },
+      "atoms": [
+       "C8"
+      ],
+      "assign": {
+       "cC8": "C-8"
+      }
+     },
+     {
+      "title": {
+       "zh": "最后核对",
+       "en": "Final check"
+      },
+      "final": true,
+      "spectrum": "hmqc",
+      "peaks": [
+       "q1",
+       "q2",
+       "q3",
+       "q4",
+       "q5",
+       "q6",
+       "q7",
+       "q8"
+      ],
+      "text": {
+       "zh": "13 个碳、16 个 H（含两个看不见的 N–H）、7 个不饱和度（苯环 4、吡咯环 2、C=O 1）都对上了。",
+       "en": "Thirteen carbons, 16 H (including the two unseen N–H) and seven degrees of unsaturation (benzene 4, pyrrole ring 2, C=O 1) all match."
+      },
+      "rule": {
+       "zh": "8 个 HMBC 峰都在 2–3 键内；COSY 的邻位和间位关系也和 5-取代吲哚一致。",
+       "en": "All eight HMBC peaks are within two or three bonds, and the COSY ortho and meta relations fit a 5-substituted indole."
+      },
+      "so": {
+       "zh": "结构是 N-[2-(5-甲氧基-1H-吲哚-3-基)乙基]乙酰胺。",
+       "en": "The structure is N-[2-(5-methoxy-1H-indol-3-yl)ethyl]acetamide."
+      },
+      "check": {
+       "zh": "四个脂肪族 HMQC 峰报告没有列表，本页按结构预期画出（*）。OCH_{3} 放在 C5 而不是 C6，靠的是 H4 只有间位耦合、H7 只有邻位耦合。",
+       "en": "The report does not tabulate the four aliphatic HMQC peaks; they are drawn as expected (*). Placing the OCH_{3} on C5 rather than C6 relies on H4 having only a meta coupling and H7 only an ortho coupling."
+      },
+      "assign": {
+       "cC12": "C-12",
+       "cC11": "C-11",
+       "cC14": "C-14"
       }
      }
     ]
