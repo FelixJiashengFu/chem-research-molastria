@@ -94,7 +94,7 @@ const checks = [];
 const check = (name, fn) => checks.push([name, fn]);
 
 check('every main page loads without script errors', async () => {
-  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/protein-design/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/paper/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
+  for (const path of ['/index.html', '/atlas/index.html', '/manual/index.html', '/ai-math/index.html', '/nequip/index.html', '/reaction/index.html', '/macro/index.html', '/optics/index.html', '/quasiparticles/index.html', '/quasiparticles/phonons/index.html', '/group-theory/index.html', '/md/index.html', '/tensor/index.html', '/photochem/index.html', '/em/index.html', '/chem-ml/index.html', '/world-models/index.html', '/protein-design/index.html', '/dft/index.html', '/journals/index.html', '/scimodels/index.html', '/videos/index.html', '/hub/index.html', '/hub/network.html', '/lab/index.html', '/meta/index.html', '/models/index.html', '/train/index.html', '/pro/index.html', '/pro/account.html', '/download/index.html', '/about/index.html', '/api/index.html', '/review/index.html', '/code/index.html', '/extract/index.html', '/workbench/index.html', '/paper/index.html', '/nmr/walkthrough/index.html', '/particles/index.html', '/radar/index.html', '/research-atlas/index.html', '/qchem/index.html', '/digest/index.html', '/learn/index.html', '/open-models/index.html', '/open-models/deepmind/index.html', '/programming/index.html', '/vision/index.html', '/chat/index.html', '/pet/index.html', '/shelf/index.html']) {
     const p = await open();
     await go(p, path);
     assert.deepEqual(p.errors, [], `errors on ${path}`);
@@ -7282,6 +7282,88 @@ check('nmrium: samples, a practice spectrum, your own files and a Bruker folder 
   assert.doesNotMatch(await e.innerText('#nmrium-bar'), /[一-鿿]/, 'no Chinese in the English bar');
   assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
   assert.ok(await e.evaluate(() => document.getElementById('nmrium-frame').getBoundingClientRect().height > 300), 'NMRium keeps most of the screen');
+  await finish(e);
+});
+
+check('nmr walkthroughs: examples play in a sandboxed frame; generate with a fake model and your own key (repair round, a made-up shift marked ≈, user data as the only source); open a JSON; links; English dark phone', async () => {
+  const KEY = 'sk-e2e-NMRW-0123456789abcdef';
+  const p = await open({ reducedMotion: 'reduce' });
+  const ctx = p.context();
+  const leaks = [];
+  ctx.on('request', (r) => { const all = r.url() + JSON.stringify(r.headers()) + (r.postData() || ''); if (all.includes(KEY) && !r.url().startsWith('https://api.deepseek.com/')) leaks.push(r.url()); });
+  await go(p, '/nmr/walkthrough/index.html');
+  await p.waitForFunction(() => document.getElementById('nw-frame').srcdoc.length > 20000);
+  assert.equal(await p.getAttribute('#nw-frame', 'sandbox'), 'allow-scripts', 'model-written pages run without this site’s origin');
+  assert.equal(await p.locator('#nw-ex-cards [data-ex]').count(), 3);
+  const frame = p.frameLocator('#nw-frame');
+  await frame.locator('#next').click();
+  await frame.locator('#stepcard h2').waitFor();
+  await p.click('[data-ex=vanillin]');
+  await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'c8h8o3-nmr-walkthrough');
+  // the fake model: first a spec with a broken step (validation sends it back), then a fixed one with one shift the user never gave
+  const crot = await p.evaluate(() => JSON.parse(JSON.stringify(window.MOLASTRIA_NMRW_GUIDE.examples[0].spec)));
+  const h = crot.spectra.find((sp) => sp.nucleus === '1H');
+  const data = crot.spectra.filter((sp) => sp.kind !== '2d').map((sp) => `${sp.nucleus}: ` + sp.peaks.map((q) => `${q.ppm}${q.J ? ` (J = ${q.J.join(', ')} Hz)` : ''}`).join(', ')).join('\n');
+  const good = JSON.parse(JSON.stringify(crot));
+  delete good.sources;
+  good.sources = [{ label: 'A paper the model remembered', url: 'https://doi.org/10.0000/made-up' }];
+  const fake = good.spectra.find((sp) => sp.nucleus === '1H').peaks[0];
+  delete fake.est; fake.ppm = +(fake.ppm + 0.41).toFixed(2);
+  const broken = JSON.parse(JSON.stringify(good));
+  broken.steps[1].peaks = ['no-such-peak'];
+  const prompts = [];
+  await ctx.route(/^https:\/\/api\.deepseek\.com\//, (r) => {
+    if (r.request().headers().authorization !== `Bearer ${KEY}`) return r.fulfill({ status: 401, body: '{"error":{"message":"bad key"}}' });
+    const body = JSON.parse(r.request().postData());
+    prompts.push(body);
+    const reply = prompts.length === 1 ? 'Here it is:\n```json\n' + JSON.stringify(broken) + '\n```' : JSON.stringify(good);
+    const chunks = (reply.match(/[\s\S]{1,400}/g) || []).map((t) => `data: ${JSON.stringify({ choices: [{ delta: { content: t } }] })}\n\n`).join('');
+    return r.fulfill({ status: 200, contentType: 'text/event-stream', headers: { 'Access-Control-Allow-Origin': '*' }, body: chunks + `data: ${JSON.stringify({ choices: [{ delta: {}, finish_reason: 'stop' }], usage: { prompt_tokens: 20000, completion_tokens: 9000 } })}\n\ndata: [DONE]\n\n` });
+  });
+  await p.fill('#nw-f-formula', 'C6H10O2');
+  await p.fill('#nw-f-data', data);
+  await p.fill('#nw-f-label', 'My own spectra, 2026-11-20');
+  await p.click('#nw-gen');
+  await p.waitForFunction(() => /先填|API key/.test(document.getElementById('nw-status').textContent));
+  await p.selectOption('#nw-prov', 'deepseek');
+  await p.fill('#nw-key', KEY);
+  await p.click('#nw-gen');
+  await p.waitForFunction(() => document.getElementById('nw-status').dataset.kind === 'ok', null, { timeout: 30000 });
+  assert.equal(prompts.length, 2, 'one repair round');
+  assert.match(prompts[0].messages[0].content, /Use ONLY the numbers the user gives you/);
+  assert.ok(prompts[0].messages[1].content.includes(data), 'the user data go in the prompt');
+  assert.match(prompts[1].messages.at(-1).content, /unknown peak "no-such-peak"/);
+  assert.match(await text(p, '#nw-report'), /1 个在你的数据里找不到/);
+  assert.match(await text(p, '#nw-report'), new RegExp(fake.id));
+  const srcdoc = await p.getAttribute('#nw-frame', 'srcdoc');
+  assert.ok(srcdoc.includes('My own spectra, 2026-11-20') && !srcdoc.includes('made-up'), 'the user data is the only source');
+  assert.ok(srcdoc.includes(`"ppm":${fake.ppm},"est":true`) || /"est":true/.test(srcdoc.slice(srcdoc.indexOf(`"ppm":${fake.ppm}`) - 80, srcdoc.indexOf(`"ppm":${fake.ppm}`) + 120)), 'the made-up shift is marked ≈');
+  // the key: only in this tab (no Remember), only sent to DeepSeek
+  const stores = await p.evaluate(() => [JSON.stringify(localStorage), JSON.stringify(sessionStorage)]);
+  assert.ok(!stores[0].includes(KEY) && stores[1].includes(KEY), 'key in sessionStorage only');
+  assert.deepEqual(leaks, []);
+  // reload: the last walkthrough comes back from this tab
+  await p.reload();
+  await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'ethyl-crotonate-nmr-walkthrough' && !document.getElementById('nw-report').hidden);
+  // open a JSON: the vanillin example without its sources is refused, with them it plays
+  const van = await p.evaluate(() => window.MOLASTRIA_NMRW_GUIDE.examples[1].spec);
+  await p.setInputFiles('#nw-load-file', { name: 'bare.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ ...van, sources: [] })) });
+  await p.waitForFunction(() => /打不开/.test(document.getElementById('nw-load-status').textContent));
+  await p.setInputFiles('#nw-load-file', { name: 'vanillin.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(van)) });
+  await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'c8h8o3-nmr-walkthrough');
+  await finish(p);
+  // the NMR page and the nav link here
+  const q = await open({ reducedMotion: 'reduce' });
+  await go(q, '/nmr/index.html');
+  assert.ok(await q.locator('a[href="walkthrough/index.html#ex=vanillin"]').count());
+  await finish(q);
+  // English, dark, phone: no Chinese outside the frame, no sideways scroll, the player fills the frame
+  const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
+  await go(e, '/nmr/walkthrough/index.html?lang=en#ex=ibuprofen');
+  await e.waitForFunction(() => document.getElementById('nw-main').dataset.playing);
+  assert.doesNotMatch(await e.innerText('#nw-main'), /[一-鿿]{2}/, 'no Chinese in the English page');
+  assert.match(await e.getAttribute('#nw-frame', 'srcdoc'), /data-theme="dark"/);
+  assert.ok(await e.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll on a phone');
   await finish(e);
 });
 

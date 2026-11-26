@@ -1,0 +1,467 @@
+<meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>__TITLE__</title>
+<style>
+/* Layout: a one-screen lesson. Slim title bar; spectrum stage on the left; on the right the growing structure, one step card and the controls. Tables and the transcript live in stage tabs, so nothing sits below the fold. */
+:root{
+  --bg:#edf0f4; --panel:#fbfcfd; --sunk:#f1f4f7; --ink:#15202c; --muted:#5d6b7b; --line:#d3d9e1;
+  --trace:#1d3f72; --trace-fill:rgba(29,63,114,.07); --hot:#c2255c; --hot-soft:rgba(194,37,92,.11); --ok:#0b7a5e;
+  --k-cosy:#1c6fd1; --k-hsqc:#0b7a5e; --k-hmbc:#b45309; --k-noe:#7c3aed;
+  --shadow:0 1px 2px rgba(21,32,44,.05),0 6px 20px -12px rgba(21,32,44,.18);
+  --sans:system-ui,-apple-system,"SF Pro Text","PingFang SC","Segoe UI","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e141b; --panel:#171f29; --sunk:#111922; --ink:#e8edf3; --muted:#93a1b2; --line:#2a3644;
+  --trace:#9cc2f7; --trace-fill:rgba(156,194,247,.08); --hot:#ff7fab; --hot-soft:rgba(255,127,171,.14); --ok:#55d6b0;
+  --k-cosy:#6aa9ff; --k-hsqc:#55d6b0; --k-hmbc:#f2a650; --k-noe:#b79bff;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.6); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e141b; --panel:#171f29; --sunk:#111922; --ink:#e8edf3; --muted:#93a1b2; --line:#2a3644;
+  --trace:#9cc2f7; --trace-fill:rgba(156,194,247,.08); --hot:#ff7fab; --hot-soft:rgba(255,127,171,.14); --ok:#55d6b0;
+  --k-cosy:#6aa9ff; --k-hsqc:#55d6b0; --k-hmbc:#f2a650; --k-noe:#b79bff;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.6); color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.5;-webkit-text-size-adjust:100%}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.app{box-sizing:border-box;max-width:1440px;margin:0 auto;padding-block:10px 12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
+.zh,.en{display:block}
+.inl .zh,.inl .en{display:inline}
+[data-lang="zh"] .en,[data-lang="en"] .zh{display:none!important}
+[data-lang="both"] .inl .zh::after{content:" · ";opacity:.55}
+[data-lang="both"] .en{color:var(--muted)}
+[data-lang="both"] .inl .en,[data-lang="both"] button .en{color:inherit}
+[data-lang="both"] .short .en{display:none}
+[data-lang="both"] .short .zh::after{content:none}
+.top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+h1{margin:0;flex:1 1 240px;min-width:0;font-size:16px;font-weight:650;line-height:1.5;letter-spacing:.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:2px;gap:2px}
+.seg>span{padding:0 6px 0 8px;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.seg button{border:0;border-radius:7px;background:none;color:var(--muted);font-size:13px;font-weight:600;padding:5px 11px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.seg.say button[aria-pressed="true"]{background:var(--hot);color:#fff}
+.grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(320px,1fr);gap:10px;min-height:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:0}
+.left{display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;flex-wrap:wrap;gap:2px;padding:7px 8px 0}
+.tabs button{border:0;border-radius:7px;background:none;color:var(--muted);font:600 12.5px var(--sans);padding:5px 10px;cursor:pointer}
+.tabs button[aria-current="true"]{color:var(--ink);background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line)}
+.tabs .gap{flex:1}
+.stage{flex:1;min-height:0;height:min(64vw,400px);overflow:hidden;padding:2px 8px 6px;outline-offset:-3px}
+.stage.plot{cursor:pointer}
+.stage.panel{overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 16px 14px}
+.stage svg{display:block;width:100%;height:100%;animation:fade .35s ease}
+.overview{height:100%;box-sizing:border-box;padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:14px;animation:fade .35s ease}
+.overview .big{font:650 clamp(30px,5vw,46px) var(--mono);letter-spacing:.01em}
+.overview .q{max-width:60ch;font-size:15.5px}
+.overview .given{color:var(--muted);font-size:13px}
+.board{margin:0;padding:10px 12px;border-radius:9px;background:var(--sunk);font:14px/1.7 var(--mono);overflow-x:auto;white-space:pre}
+.side{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0}
+.molcard{position:relative;flex:none}
+.mol{height:clamp(126px,25vh,200px);padding:2px 6px}
+.mol svg{display:block;width:100%;height:100%}
+.legend{position:absolute;left:12px;right:12px;bottom:6px;display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11.5px;color:var(--muted);pointer-events:none}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.answer{margin:0;padding:0 12px 9px;font-weight:650;color:var(--ok);font-size:14px}
+.answer:empty,.board:empty{display:none}
+.stepcard{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.stepcard.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent);mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+[data-lang="both"] .stepcard .beat .en,[data-lang="both"] .stepcard .ask .en{font-size:12.5px;line-height:1.45}
+.stepcard>*{animation:rise .4s ease both;flex:none}
+.counter{float:right;margin:2px 0 0 10px;font:600 11.5px var(--mono);color:var(--muted);letter-spacing:.03em}
+h2{margin:0;font-size:16px;font-weight:650;line-height:1.3}
+[data-lang="both"] h2 .en{font-size:13.5px}
+.beat{padding:6px 10px;border-radius:9px}
+.beat::after{content:"";display:block;clear:both}
+.tag{float:left;margin:2px 8px 0 0;font:700 10.5px var(--sans);letter-spacing:.06em;color:var(--muted);white-space:nowrap;padding:2px 7px;border-radius:999px;background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line)}
+.beat.rule{background:var(--sunk)}
+.beat.so{background:var(--hot-soft);font-weight:600}
+.beat.so .tag{color:var(--hot);background:none;box-shadow:inset 0 0 0 1px var(--hot)}
+.beat.check{box-shadow:inset 0 0 0 1px var(--line)}
+.ask{padding:9px 12px;border-radius:9px;box-shadow:inset 0 0 0 1.5px var(--k-cosy);font-weight:600}
+.ask small{display:block;margin-top:3px;font-weight:400;color:var(--muted)}
+.controls{flex:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+.controls button{font-weight:650;font-size:14.5px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:11px 14px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
+.controls .next{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.controls button:disabled{opacity:.4;cursor:default}
+.controls button[aria-pressed="true"]{border-color:var(--hot);color:var(--hot)}
+button:focus-visible,.stage:focus-visible{outline:2px solid var(--hot)}
+.dots{grid-column:1/-1;display:flex;gap:4px}
+.dots button{flex:1 1 8px;min-width:4px;height:6px;padding:0;border:0;border-radius:3px;background:var(--line);box-shadow:none;cursor:pointer}
+.dots button.done{background:var(--muted)}
+.dots button.now{background:var(--hot)}
+.panel h3{margin:10px 0 4px;font-size:12.5px;color:var(--muted);font-weight:650}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+th,td{text-align:left;padding:5px 12px 5px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11.5px;color:var(--muted);font-weight:650}
+td.num{font-family:var(--mono)}
+tr.on td{background:var(--hot-soft)}
+td.as{color:var(--ok);font-weight:700}
+.script{margin:6px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:12px;max-width:78ch}
+.script li.now>b{color:var(--hot)}
+.script li>b{cursor:pointer}
+.script p{margin:3px 0}
+.script p::after{content:"";display:block;clear:both}
+.note{margin:10px 0 0;font-size:12px;color:var(--muted);max-width:78ch}
+.note.warn{color:var(--hot);font-weight:600}
+.src{margin:4px 0 0;padding-left:18px;font-size:12.5px;max-width:78ch;display:flex;flex-direction:column;gap:6px}
+.src a{color:var(--k-cosy);word-break:break-all}
+.src div{color:var(--muted)}
+svg text{font-family:var(--sans);fill:var(--ink)}
+svg .mono{font-family:var(--mono)}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+.pop{animation:fade .7s ease both}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s .15s ease forwards}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes draw{to{stroke-dashoffset:0}}
+/* one-screen mode: tablets and desktops */
+@media (min-width:740px) and (min-height:440px){
+  .app{height:100%}
+  .grid{flex:1}
+  .stage{height:auto}
+}
+@media not ((min-width:740px) and (min-height:440px)){
+  html,body{height:auto}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .stepcard{overflow:visible}
+  .side{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.draw{stroke-dashoffset:0}}
+</style>
+<div class="app" id="app" data-lang="both">
+  <header class="top">
+    <h1 id="title" class="inl"></h1>
+    <div class="tools">
+      <div class="seg say" id="saybox" role="group" aria-label="Read aloud">
+        <span class="inl short"><span class="zh">朗读</span><span class="en">Read</span></span>
+        <button type="button" id="say-zh" data-say="zh" aria-pressed="false">中文</button>
+        <button type="button" id="say-en" data-say="en" aria-pressed="false">English</button>
+      </div>
+      <div class="seg" role="group" aria-label="Language">
+        <span class="inl short"><span class="zh">文字</span><span class="en">Text</span></span>
+        <button type="button" id="lang-zh" data-lang-btn="zh">中文</button>
+        <button type="button" id="lang-en" data-lang-btn="en">EN</button>
+        <button type="button" id="lang-both" data-lang-btn="both">双语</button>
+      </div>
+    </div>
+  </header>
+  <main class="grid">
+    <section class="card left">
+      <div class="tabs" id="tabs"></div>
+      <div class="stage" id="stage" tabindex="0"></div>
+    </section>
+    <aside class="side">
+      <div class="card molcard">
+        <div class="mol" id="mol"></div>
+        <div class="legend" id="legend"></div>
+        <p class="answer" id="answer"></p>
+      </div>
+      <div class="card stepcard" id="stepcard" aria-live="polite"></div>
+      <div class="controls">
+        <div class="dots" id="dots"></div>
+        <button type="button" id="prev" aria-label="Back">←</button>
+        <button type="button" id="next" class="next inl"></button>
+        <button type="button" id="auto" class="inl" aria-pressed="false"><span class="zh">自动</span><span class="en">Auto</span></button>
+      </div>
+    </aside>
+  </main>
+</div>
+<script>
+(() => {
+const SPEC = /*__SPEC__*/null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/_\{(.+?)\}/g,'<sub>$1</sub>').replace(/\^\{(.+?)\}/g,'<sup>$1</sup>');
+const bi = v => v == null ? '' : typeof v === 'string' ? `<span>${fmt(v)}</span>` : `<span class="zh" lang="zh">${fmt(v.zh||'')}</span><span class="en" lang="en">${fmt(v.en||'')}</span>`;
+const formulaHtml = f => esc(f).replace(/(\d+)/g,'<sub>$1</sub>');
+const SUP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const nuc = n => String(n||'').replace(/^\d+/, d => [...d].map(c => SUP[c]).join(''));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const spById = Object.fromEntries(SPEC.spectra.map(s => [s.id, s]));
+const steps = SPEC.steps;
+const KINDS = {cosy:'COSY', hsqc:'HSQC', hmbc:'HMBC', noe:'NOE'};
+
+/* ---------- cumulative state per step ---------- */
+const usesReveal = steps.some(s => s.reveal);
+const cum = []; { const a = new Set(), b = new Set(), as = {};
+  steps.forEach(s => { (s.reveal?.atoms||[]).forEach(x => a.add(x)); (s.reveal?.bonds||[]).forEach(x => b.add(x)); Object.assign(as, s.assign||{});
+    cum.push({atoms:new Set(a), bonds:new Set(b), assign:{...as}}); }); }
+
+/* ---------- 1D line shapes ---------- */
+const SPLIT = {d:1,t:2,q:3,p:4,quint:4,sext:5,sept:6};
+const binom = (n,k) => { let r = 1; for (let i = 1; i <= k; i++) r = r*(n-k+i)/i; return r; };
+function lines(sp){
+  if (sp._l) return sp._l;
+  const mhz = sp.mhz || (sp.nucleus === '1H' ? 400 : 100), out = [];
+  for (const p of sp.peaks){
+    const toks = String(p.mult||'s').match(/sext|sept|quint|br|[sdtqpm]/g) || ['s'];
+    const J = [].concat(p.J ?? []); let ji = 0, ls = [{o:0,w:1}];
+    for (const t of toks){ const n = SPLIT[t]; if (!n) continue; const j = J[ji++] ?? 7, nl = [];
+      for (const l of ls) for (let k = 0; k <= n; k++) nl.push({o:l.o+(k-n/2)*j, w:l.w*binom(n,k)/2**n}); ls = nl; }
+    const broad = toks.includes('br') || toks.includes('m');
+    const g = (p.lw ?? (broad ? 6 : sp.nucleus === '1H' ? 1.1 : 1.6))/mhz/2;
+    const area = p.nH ?? p.intensity ?? 1;
+    for (const l of ls) out.push({ppm:p.ppm+l.o/mhz, a:area*l.w*(1.1/400/2)/g, g, id:p.id});
+  }
+  return sp._l = out;
+}
+function trace(sp, hi, lo, n){
+  const L = lines(sp), xs = [];
+  for (let k = 0; k <= n; k++) xs.push(lo+(hi-lo)*k/n);
+  for (const l of L) for (const m of [-8,-4,-2,-1,-.5,0,.5,1,2,4,8]){ const x = l.ppm+m*l.g; if (x > lo && x < hi) xs.push(x); }
+  xs.sort((a,b) => a-b);
+  const ys = xs.map(x => { let y = 0; for (const l of L){ const d = x-l.ppm; y += l.a*l.g*l.g/(d*d+l.g*l.g); } return y; });
+  return {xs, ys, max: Math.max(...ys)};
+}
+const gmax = sp => sp._g ?? (sp._g = Math.max(...lines(sp).map(l => { let y = 0; for (const m of lines(sp)){ const d = l.ppm-m.ppm; y += m.a*m.g*m.g/(d*d+m.g*m.g); } return y; })));
+const valAt = (sp, x) => { let y = 0; for (const l of lines(sp)){ const d = x-l.ppm; y += l.a*l.g*l.g/(d*d+l.g*l.g); } return y; };
+function ticks(hi, lo, target){
+  const raw = (hi-lo)/target, p = 10**Math.floor(Math.log10(raw)), m = raw/p, st = (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10)*p, out = [];
+  for (let v = Math.ceil(lo/st-1e-9)*st; v <= hi+1e-9; v += st) out.push(+v.toFixed(6));
+  return {out, dec: Math.max(0, -Math.floor(Math.log10(st)+1e-9))};
+}
+const multText = p => (p.mult||'s') + (p.J != null ? `, J ${p.Jest ? '≈' : '='} ${[].concat(p.J).join(', ')} Hz` : '');
+
+/* ---------- stage drawing ---------- */
+const stage = $('#stage');
+let cur = null, raf = 0, i = 0, peek = null, hidden = false;
+const EMPTY = {atoms:new Set(), bonds:new Set(), assign:{}};
+const state = () => hidden ? (cum[i-1] || EMPTY) : cum[i], stepNow = () => hidden ? {} : steps[i];
+const hi2 = r => [Math.max(r[0],r[1]), Math.min(r[0],r[1])];
+function targetView(step){
+  const sp = spById[step.spectrum]; if (!sp) return null;
+  if (sp.kind === '2d'){ const z = step.zoom || {}; return {sp, x:hi2(z.x||sp.x.range), y:hi2(z.y||sp.y.range)}; }
+  return {sp, x:hi2(step.zoom||sp.range)};
+}
+function go(view, hl){
+  cancelAnimationFrame(raf);
+  if (!view){ cur = null; overview(); return; }
+  if (reduced || !cur || cur.sp !== view.sp){ cur = view; draw(hl); return; }
+  const from = cur, t0 = performance.now(), mix = (a,b,k) => a.map((v,j) => v+(b[j]-v)*k);
+  const tick = t => { let k = Math.min(1,(t-t0)/650); k = k<.5 ? 2*k*k : 1-2*(1-k)*(1-k);
+    cur = {sp:view.sp, x:mix(from.x,view.x,k), y:view.y ? mix(from.y,view.y,k) : undefined}; draw(hl, k < 1);
+    if (k < 1) raf = requestAnimationFrame(tick); };
+  raf = requestAnimationFrame(tick);
+}
+function overview(){
+  const s = stepNow();
+  stage.innerHTML = `<div class="overview"><div class="big">${formulaHtml(SPEC.formula||'')}</div>` + (SPEC.prompt ? `<div class="q">${bi(SPEC.prompt)}</div>` : '') +
+    (s.board ? `<pre class="board">${[].concat(s.board).map(fmt).join('\n')}</pre>` : '') +
+    `<div class="inl given"><span class="zh">已有谱图：</span><span class="en">Spectra given: </span>${SPEC.spectra.map(sp => esc(spName(sp))).join(' · ')}</div></div>`;
+}
+const spName = sp => sp.name || (sp.kind === '2d' ? sp.type : `${nuc(sp.nucleus)} NMR`);
+function draw(hl, moving){
+  const W = Math.max(300, stage.clientWidth-16), HH = Math.max(230, stage.clientHeight-8), {sp} = cur;
+  const old = stage.querySelector('svg');
+  const html = sp.kind === '2d' ? draw2d(W, HH, hl) : draw1d(W, HH, hl);
+  if (old && old.dataset.sp === sp.id){ old.setAttribute('viewBox', html.vb); old.innerHTML = html.inner; }
+  else stage.innerHTML = `<svg data-sp="${esc(sp.id)}" viewBox="${html.vb}" role="img" aria-label="${esc(spName(sp))}">${html.inner}</svg>`;
+}
+function axisX(hi, lo, X, y, label, W){
+  const t = ticks(hi, lo, W < 480 ? 5 : 9); let o = `<line x1="${X(hi)}" x2="${X(lo)}" y1="${y}" y2="${y}" stroke="var(--ink)"/>`;
+  for (const v of t.out) o += `<line x1="${X(v)}" x2="${X(v)}" y1="${y}" y2="${y+5}" stroke="var(--ink)"/><text class="mono" x="${X(v)}" y="${y+18}" font-size="11" text-anchor="middle">${v.toFixed(t.dec)}</text>`;
+  return o + `<text x="${X(lo)}" y="${y+34}" font-size="11.5" text-anchor="end" style="fill:var(--muted)">${label}</text>`;
+}
+function draw1d(W, H, hl){
+  const {sp, x:[hi,lo]} = cur;
+  const l = 14, r = 14, t = 52, b = 42, X = p => l+(hi-p)/(hi-lo)*(W-l-r), base = H-b;
+  const tr = trace(sp, hi, lo, Math.round(W*1.6)), ymax = Math.max(tr.max, gmax(sp)*.03), Y = v => base-(v/ymax)*(base-t)*.96;
+  const as = state().assign, on = new Set(hl||[]);
+  let o = '', lab = ''; const labs = [];
+  for (const p of [...sp.peaks].sort((a,b) => b.ppm-a.ppm)){
+    const ls = lines(sp).filter(q => q.id === p.id), pmax = Math.max(...ls.map(q => q.ppm+3*q.g)), pmin = Math.min(...ls.map(q => q.ppm-3*q.g));
+    if (pmin > hi || pmax < lo) continue;
+    const cx = X(p.ppm), top = Math.max(t-6, Y(Math.max(...ls.map(q => valAt(sp, q.ppm))))), hot = on.has(p.id);
+    if (hot){ const x1 = Math.min(X(pmax), cx-8), x2 = Math.max(X(pmin), cx+8);
+      o += `<rect class="pop" x="${x1}" y="${t-8}" width="${x2-x1}" height="${base-t+8}" rx="4" fill="var(--hot-soft)"/>`; }
+    if (hot || as[p.id]){
+      const txt = hot ? `${as[p.id] ? as[p.id]+' · ' : ''}δ ${p.est ? '≈' : ''}${p.ppm.toFixed(sp.nucleus === '1H' ? 2 : 1)}${p.mult ? ' '+p.mult : ''}${p.nH ? ' · '+p.nH+'H' : ''}` : as[p.id];
+      labs.push({cx, top, txt, hot, w: txt.length*(hot ? 7.3 : 6.8)});
+    }
+  }
+  const rows = [];
+  labs.forEach(a => { a.w *= 1.12; a.x0 = a.cx < a.w/2+6 ? Math.max(6, a.cx) : a.cx > W-a.w/2-6 ? Math.min(W-6, a.cx)-a.w : a.cx-a.w/2; a.x1 = a.x0+a.w; });
+  labs.forEach((a, k) => { const near = b => b && a.x0 < b.x1+8 && b.x0 < a.x1+8, crowded = near(labs[k-1]) || near(labs[k+1]);
+    let row = 0;
+    if (crowded) { while (row < 5 && (rows[row] || []).some(near)) row++; (rows[row] = rows[row] || []).push(a); }
+    const ty = crowded ? 14+row*14 : Math.max(13, a.top-9), col = `var(${a.hot ? '--hot' : '--ok'})`;
+    if (crowded) lab += `<line x1="${a.cx}" x2="${a.cx}" y1="${ty+4}" y2="${Math.max(ty+6, a.top-3)}" stroke="${col}" stroke-width=".9" opacity=".55"/>`;
+    lab += `<text x="${Math.min(W-6, Math.max(6, a.cx))}" y="${ty}" font-size="${a.hot ? 12.5 : 11.5}" font-weight="700" text-anchor="${a.cx < a.w/2+6 ? 'start' : a.cx > W-a.w/2-6 ? 'end' : 'middle'}" style="fill:${col}">${esc(a.txt)}</text>`; });
+  let d = ''; tr.xs.forEach((x, k) => d += (k ? 'L' : 'M')+X(x).toFixed(1)+' '+Math.max(t-10, Y(tr.ys[k])).toFixed(1));
+  o += `<path d="${d}L${X(tr.xs.at(-1)).toFixed(1)} ${base}L${X(tr.xs[0]).toFixed(1)} ${base}Z" fill="var(--trace-fill)" stroke="none"/><path d="${d}" fill="none" stroke="var(--trace)" stroke-width="1.5" stroke-linejoin="round"/>` + lab + axisX(hi, lo, X, base, `δ(${nuc(sp.nucleus)}) / ppm`, W);
+  return {vb:`0 0 ${W} ${H}`, inner:o};
+}
+function draw2d(W, H, hl){
+  const {sp, x:[xh,xl], y:[yh,yl]} = cur;
+  const L = 46, T = 40, R = 46, B = 42, pw = W-L-R, ph = H-T-B;
+  const X = p => L+(xh-p)/(xh-xl)*pw, Y = p => T+(p-yl)/(yh-yl)*ph, on = new Set(hl||[]), xr = spById[sp.x.ref], yr = spById[sp.y.ref];
+  let o = `<defs><clipPath id="clip2d"><rect x="${L}" y="${T}" width="${pw}" height="${ph}"/></clipPath></defs><rect x="${L}" y="${T}" width="${pw}" height="${ph}" fill="none" stroke="var(--line)"/>`;
+  if (xr){ const tr = trace(xr, xh, xl, Math.round(pw)), m = Math.max(tr.max, gmax(xr)*.03); let d = '';
+    tr.xs.forEach((x,k) => d += (k?'L':'M')+X(x).toFixed(1)+' '+(T-3-Math.min(1,tr.ys[k]/m)*(T-8)).toFixed(1)); o += `<path d="${d}" fill="none" stroke="var(--trace)" stroke-width="1.1"/>`; }
+  if (yr){ const tr = trace(yr, yh, yl, Math.round(ph)), m = Math.max(tr.max, gmax(yr)*.03); let d = '';
+    tr.xs.forEach((y,k) => d += (k?'L':'M')+(L-3-Math.min(1,tr.ys[k]/m)*(L-8)).toFixed(1)+' '+Y(y).toFixed(1)); o += `<path d="${d}" fill="none" stroke="var(--trace)" stroke-width="1.1"/>`; }
+  const sym = sp.type === 'COSY' || sp.type === 'TOCSY' || sp.type === 'NOESY';
+  let pk = sp.peaks.map(p => ({...p}));
+  if (sym && sp.symmetric !== false) pk = pk.concat(sp.peaks.map(p => ({...p, x:p.y, y:p.x, mirror:true})));
+  let g = `<g clip-path="url(#clip2d)">`;
+  if (sym){ g += `<line x1="${X(Math.max(xh,yh))}" y1="${Y(Math.max(xh,yh))}" x2="${X(Math.min(xl,yl))}" y2="${Y(Math.min(xl,yl))}" stroke="var(--line)" stroke-dasharray="4 4"/>`;
+    for (const p of (xr?.peaks||[])) g += blob(X(p.ppm), Y(p.ppm), 'var(--muted)', false); }
+  let guides = '', labels = ''; const placed = [];
+  for (const p of pk){ const hot = on.has(p.id), cx = X(p.x), cy = Y(p.y);
+    if (hot){ guides += `<path class="pop" d="M${cx} ${T}V${cy}H${L}" fill="none" stroke="var(--hot)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      if (!p.mirror && cx > L && cx < L+pw && cy > T && cy < T+ph){ const txt = (p.label || `${p.x} / ${p.y}`) + (p.expected ? ' *' : ''), w = 7.4*txt.length;
+        let best = null; for (const [dx,dy] of [[1,-1],[-1,-1],[1,1],[-1,1]]){ const x0 = dx > 0 ? cx+12 : cx-12-w, y0 = dy < 0 ? cy-22 : cy+9, r = [x0, y0, x0+w, y0+14];
+          if (x0 < L+2 || x0+w > L+pw-2 || y0 < T+2 || y0+14 > T+ph-2 || placed.some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1])) continue; best = r; break; }
+        if (!best){ const x0 = Math.min(L+pw-w-2, cx+12); best = [x0, cy-22, x0+w, cy-8]; } placed.push(best);
+        labels += `<text class="pop" x="${best[0]}" y="${best[1]+12}" font-size="12.5" font-weight="700" style="fill:var(--hot)">${esc(txt)}</text>`; } }
+    g += blob(cx, cy, hot ? 'var(--hot)' : p.expected ? 'var(--muted)' : 'var(--trace)', p.weak || p.expected, hot); }
+  o += g + guides + `</g>` + labels + axisX(xh, xl, X, T+ph, `F2 δ(${nuc(sp.x.nucleus)}) / ppm`, W);
+  const t = ticks(yh, yl, 7);
+  for (const v of t.out) o += `<line x1="${L+pw}" x2="${L+pw+5}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--ink)"/><text class="mono" x="${L+pw+8}" y="${Y(v)+4}" font-size="11">${v.toFixed(t.dec)}</text>`;
+  o += `<text x="${W-2}" y="${T-10}" font-size="11.5" text-anchor="end" style="fill:var(--muted)">F1 δ(${nuc(sp.y.nucleus)})</text><text x="${L+4}" y="${T+ph+34}" font-size="12" font-weight="700" style="fill:var(--muted)">${esc(sp.type)}${sp.peaks.some(q => q.expected) ? '  ·  * = ' + ($('#app').dataset.lang === 'en' ? 'expected, not listed in source' : '按结构预期，来源未列出') : ''}</text>`;
+  return {vb:`0 0 ${W} ${H}`, inner:o};
+}
+function blob(cx, cy, col, weak, hot){
+  let o = ''; for (const s of weak ? [1] : [1,.62,.28]) o += `<ellipse cx="${cx}" cy="${cy}" rx="${7.5*s}" ry="${5.5*s}" fill="none" stroke="${col}" stroke-width="${hot ? 2 : 1.2}"${weak ? ' stroke-dasharray="2.5 2"' : ''}/>`;
+  return hot ? `<g class="pulse">${o}</g>` : o;
+}
+
+/* ---------- structure ---------- */
+function drawMol(){
+  const m = SPEC.molecule, box = $('#mol'); if (!m){ box.parentElement.hidden = true; return; }
+  const W = Math.max(240, box.clientWidth-12), H = Math.max(120, box.clientHeight-4), s = stepNow(), st = state();
+  const xs = m.atoms.map(a => a.x), ys = m.atoms.map(a => a.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const sc = Math.min((W-80)/((x1-x0)||1), (H-54)/((y1-y0)||1), 62), fs = Math.max(11.5, Math.min(15, sc*.3)), P = a => [W/2+(a.x-(x0+x1)/2)*sc, H/2-10+(a.y-(y0+y1)/2)*sc];
+  const A = Object.fromEntries(m.atoms.map(a => [a.id, a])), shown = id => !usesReveal || st.atoms.has(id), isNew = id => usesReveal && (s.reveal?.atoms||[]).includes(id);
+  const lbl = a => a.label ?? (a.el && a.el !== 'C' ? a.el : '');
+  let o = `<defs>${Object.keys(KINDS).map(k => `<marker id="ah-${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--k-${k})"/></marker>`).join('')}</defs>`;
+  for (const b of m.bonds){
+    if (!shown(b.a) || !shown(b.b) || (usesReveal && b.id && !st.bonds.has(b.id))) continue;
+    const [ax,ay] = P(A[b.a]), [bx,by] = P(A[b.b]), len = Math.hypot(bx-ax, by-ay), ux = (bx-ax)/len, uy = (by-ay)/len;
+    const ga = lbl(A[b.a]) ? (6+4.2*lbl(A[b.a]).length)*fs/15 : 0, gb = lbl(A[b.b]) ? (6+4.2*lbl(A[b.b]).length)*fs/15 : 0;
+    const fresh = isNew(b.a) || isNew(b.b) || (s.reveal?.bonds||[]).includes(b.id);
+    for (const off of (b.order === 2 ? [-2.6, 2.6] : b.order === 3 ? [-4,0,4] : [0]))
+      o += `<line${fresh ? ' class="pop"' : ''} x1="${ax+ux*ga-uy*off}" y1="${ay+uy*ga+ux*off}" x2="${bx-ux*gb-uy*off}" y2="${by-uy*gb+ux*off}" stroke="${fresh ? 'var(--hot)' : 'var(--ink)'}" stroke-width="1.7" stroke-linecap="round"/>`;
+  }
+  const hot = new Set(s.atoms||[]);
+  for (const a of m.atoms){ if (!shown(a.id)) continue; const [x,y] = P(a), t = lbl(a);
+    o += `<g${isNew(a.id) ? ' class="pop"' : ''}>`;
+    if (hot.has(a.id)) o += `<circle class="pulse" cx="${x}" cy="${y}" r="${Math.max(15, 8+4.4*t.length)*fs/15}" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="1.6"/>`;
+    if (t) o += `<text x="${x}" y="${y+fs/3}" font-size="${fs}" font-weight="600" text-anchor="middle">${esc(t).replace(/(\d+)/g,'<tspan dy="4" font-size="'+(fs*.7)+'">$1</tspan><tspan dy="-4" font-size="0"> </tspan>')}</text>`;
+    if (a.num != null && a.numAt) o += `<text class="mono" x="${x+a.numAt[0]}" y="${y+a.numAt[1]+3.5}" font-size="10" text-anchor="middle" style="fill:var(--muted)">${esc(a.num)}</text>`;
+    else if (a.num != null) o += `<text class="mono" x="${x}" y="${y+(a.numBelow ? (hot.has(a.id) ? 32 : 25) : (hot.has(a.id) ? -22 : -14))}" font-size="10.5" text-anchor="middle" style="fill:var(--muted)">${esc(a.num)}</text>`;
+    o += `</g>`; }
+  const kinds = new Set();
+  (s.arrows||[]).forEach((ar, k) => { if (!A[ar.from] || !A[ar.to]) return; const kind = KINDS[ar.kind] ? ar.kind : 'hmbc'; kinds.add(kind);
+    const [ax,ay] = P(A[ar.from]), [bx,by] = P(A[ar.to]), len = Math.hypot(bx-ax,by-ay)||1, ux = (bx-ax)/len, uy = (by-ay)/len, sg = (ar.bend ?? (k%2 ? 1 : -1)), h = Math.min(46, 18+len*.22)*sg;
+    const sx = ax+ux*14-uy*h*.3, sy = ay+uy*14+ux*h*.3, ex = bx-ux*14-uy*h*.3, ey = by-uy*14+ux*h*.3;
+    o += `<path class="draw" pathLength="1" d="M${sx} ${sy}Q${(ax+bx)/2-uy*h*1.45} ${(ay+by)/2+ux*h*1.45} ${ex} ${ey}" fill="none" stroke="var(--k-${kind})" stroke-width="2" marker-end="url(#ah-${kind})"${kind === 'cosy' || kind === 'noe' ? ` marker-start="url(#ah-${kind})"` : ''}/>`; });
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="structure">${o}</svg>`;
+  const LG = {cosy:{zh:'COSY：H–H 偶合',en:'COSY: H–H coupling'}, hsqc:{zh:'HSQC：H 直接连 C',en:'HSQC: one-bond H–C'}, hmbc:{zh:'HMBC：H→C，2–3 键',en:'HMBC: H→C, 2–3 bonds'}, noe:{zh:'NOE：空间接近',en:'NOE: close in space'}};
+  $('#legend').innerHTML = [...kinds].map(k => `<span class="inl"><i style="border-color:var(--k-${k})"></i>${bi(LG[k])}</span>`).join('');
+  $('#answer').innerHTML = s.final && SPEC.answer ? bi(SPEC.answer) : '';
+}
+
+/* ---------- table + transcript panels (shown in the stage) ---------- */
+const TAGS = {ask:{zh:'想一想',en:'Think'}, text:{zh:'观察',en:'Observe'}, rule:{zh:'依据',en:'Rule'}, so:{zh:'结论',en:'So'}, check:{zh:'核对',en:'Check'}};
+function sourcesHtml(){
+  const anyEst = SPEC.spectra.some(sp => sp.peaks.some(p => p.est || p.Jest || p.expected));
+  return `<h3 class="inl"><span class="zh">数据来源</span><span class="en">Data sources</span></h3>` +
+    ((SPEC.sources||[]).length ? `<ul class="src">${SPEC.sources.map(q => `<li>${q.url ? `<a href="${esc(q.url)}" target="_blank" rel="noopener">${esc(q.label||q.url)}</a>` : esc(q.label||'')}${q.covers ? `<div>${bi(q.covers)}</div>` : ''}</li>`).join('')}</ul>`
+      : `<p class="note warn inl"><span class="zh">这份讲解没有注明数据来源，数值未经核对。</span><span class="en">No data source is given for this walkthrough. The values are unverified.</span></p>`) +
+    (anyEst ? `<p class="note"><span class="zh">"≈" 表示文献典型值，不是所引实测谱的读数。2D 谱里灰色虚线圈和带 * 的标签表示按结构预期的相关峰，所引来源没有逐个列出。</span><span class="en">"≈" marks a typical literature value, not a reading from the cited spectrum. In 2D maps, grey dashed rings and labels with * are correlations expected from the structure that the cited source does not list individually.</span></p>` : '') +
+    `<p class="note"><span class="zh">谱线形状由程序根据峰表画出，是示意图，不是原始谱图。</span><span class="en">Line shapes are drawn by the program from the peak list. They are schematic, not the original spectra.</span></p>`;
+}
+function tablePanel(){
+  const on = new Set(steps[i].peaks||[]), as = state().assign;
+  return SPEC.spectra.filter(sp => sp.kind !== '2d').map(sp => { const h = sp.nucleus === '1H';
+    return `<h3>${esc(spName(sp))}</h3><div class="tw"><table><thead><tr><th>δ / ppm</th>${h ? '<th class="inl"><span class="zh">裂分</span><span class="en">mult.</span></th><th>∫</th>' : '<th class="inl"><span class="zh">类型</span><span class="en">type</span></th>'}<th class="inl"><span class="zh">归属</span><span class="en">assignment</span></th></tr></thead><tbody>` +
+      [...sp.peaks].sort((a,b) => b.ppm-a.ppm).map(p => `<tr${on.has(p.id) ? ' class="on"' : ''}><td class="num">${p.est ? '≈' : ''}${p.ppm.toFixed(h ? 2 : 1)}</td>${h ? `<td class="num">${esc(multText(p))}</td><td class="num">${p.nH ? p.nH+'H' : ''}</td>` : `<td class="num">${esc(p.type||'')}</td>`}<td class="as">${esc(as[p.id]||'')}</td></tr>`).join('') + `</tbody></table></div>`;
+  }).join('') + `<p class="note inl"><span class="zh">归属一栏随步骤逐行填上。</span><span class="en">The assignment column fills in as the steps proceed.</span></p>` + sourcesHtml();
+}
+function scriptPanel(){
+  return (SPEC.prompt ? `<div class="q">${bi(SPEC.prompt)}</div>` : '') + `<ol class="script">` + steps.map((s,k) => `<li data-k="${k}"${k === i ? ' class="now"' : ''}><b>${bi(s.title)}</b>${['ask','text','rule','so','check'].map(q => s[q] ? `<p><span class="tag inl short">${bi(TAGS[q])}</span><span>${bi(s[q])}</span></p>` : '').join('')}</li>`).join('') + `</ol>` + (SPEC.note ? `<div class="note">${bi(SPEC.note)}</div>` : '') + sourcesHtml();
+}
+function panel(kind){ cancelAnimationFrame(raf); cur = null; stage.className = 'stage panel'; stage.innerHTML = kind === '#table' ? tablePanel() : scriptPanel();
+  if (kind === '#script') stage.querySelector('li.now')?.scrollIntoView({block:'start'}); }
+
+/* ---------- step control ---------- */
+const more = () => { const c = $('#stepcard'); c.classList.toggle('more', c.scrollHeight-c.scrollTop-c.clientHeight > 6); };
+$('#stepcard').addEventListener('scroll', more, {passive:true});
+const part = (s, k) => s[k] ? `<div class="beat ${k}"><span class="tag inl short">${bi(TAGS[k])}</span><div>${bi(s[k])}</div></div>` : '';
+function show(n, rev){
+  i = Math.max(0, Math.min(steps.length-1, n)); peek = null; const s = steps[i]; hidden = !!s.ask && !rev;
+  $('#stepcard').innerHTML = `<div><span class="counter">${i+1} / ${steps.length}</span><h2>${bi(s.title)}</h2></div>` +
+    (s.ask ? `<div class="ask">${bi(s.ask)}${hidden ? '<small class="inl"><span class="zh">先自己想一想，再点一下看答案</span><span class="en">Think first, then tap for the answer</span></small>' : ''}</div>` : '') +
+    (hidden ? '' : part(s,'text') + (s.board && s.spectrum ? `<pre class="board">${[].concat(s.board).map(fmt).join('\n')}</pre>` : '') + part(s,'rule') + part(s,'so') + part(s,'check'));
+  $('#stepcard').scrollTop = 0; more();
+  stage.className = 'stage plot'; go(targetView(s), s.peaks); drawMol(); tabs();
+  $('#prev').disabled = i === 0;
+  $('#next').innerHTML = hidden ? '<span class="zh">看答案 →</span><span class="en">Show answer</span>' : i === steps.length-1 ? '<span class="zh">↺ 重新开始</span><span class="en">Restart</span>' : '<span class="zh">下一步 →</span><span class="en">Next</span>';
+  [...$('#dots').children].forEach((d,k) => { d.className = k < i ? 'done' : k === i ? 'now' : ''; });
+  say(); schedule();
+}
+const next = () => hidden ? show(i, true) : show(i === steps.length-1 ? 0 : i+1);
+function tabs(){
+  const act = peek || steps[i].spectrum || '';
+  $('#tabs').innerHTML = SPEC.spectra.map(sp => `<button type="button" data-sp="${esc(sp.id)}" aria-current="${sp.id === act}">${esc(spName(sp))}</button>`).join('') +
+    `<span class="gap"></span><button type="button" class="inl short" data-sp="#table" aria-current="${act === '#table'}"><span class="zh">归属表</span><span class="en">Table</span></button><button type="button" class="inl short" data-sp="#script" aria-current="${act === '#script'}"><span class="zh">全文</span><span class="en">Transcript</span></button>`;
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+  if (peek === b.dataset.sp){ show(i, !hidden); return; }           // tap the open tab again: back to the lesson
+  peek = b.dataset.sp; tabs();
+  if (peek[0] === '#') panel(peek); else { stage.className = 'stage plot'; cur = null; go(targetView({spectrum:peek}), []); } });
+stage.addEventListener('click', e => { if (stage.classList.contains('plot')) return next();
+  const li = e.target.closest('.script li>b'); if (li) show(+li.parentElement.dataset.k, true); });
+stage.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); next(); } });
+$('#next').addEventListener('click', next);
+$('#prev').addEventListener('click', () => show(i-1));
+$('#dots').innerHTML = steps.map((s,k) => `<button type="button" aria-label="Step ${k+1}"></button>`).join('');
+$('#dots').addEventListener('click', e => { const k = [...$('#dots').children].indexOf(e.target); if (k >= 0) show(k); });
+document.addEventListener('keydown', e => { if (e.target.closest('button') && e.key === ' ') return;
+  if (e.key === 'ArrowRight' || e.key === ' '){ e.preventDefault(); next(); } else if (e.key === 'ArrowLeft') show(i-1); });
+
+/* ---------- read aloud: one language at a time, with the device's own system voice ---------- */
+const plain = v => String(v||'').replace(/\*\*|_\{|\^\{|\}/g,'');
+const synth = window.speechSynthesis;
+let sayLang = null, autoOn = false, timer = 0, token = 0;
+const stepText = l => { const s = steps[i]; return (hidden ? ['title','ask'] : ['title','text','rule','so','check']).map(k => typeof s[k] === 'string' ? s[k] : s[k]?.[l]).filter(Boolean).map(plain); };
+function voiceFor(l){
+  let vs = []; try { vs = synth.getVoices(); } catch {}
+  for (const w of (l === 'zh' ? ['zh-cn','zh-hans','zh'] : ['en-us','en-gb','en'])){
+    const c = vs.filter(v => v.lang.replace('_','-').toLowerCase().startsWith(w));
+    if (c.length) return c.find(v => v.localService && v.default) || c.find(v => v.localService) || c[0]; }
+  return null;
+}
+function say(){
+  if (!synth) return; const my = ++token; try { synth.cancel(); } catch {}
+  if (!sayLang) return; const t = stepText(sayLang).join(sayLang === 'zh' ? '。' : '. '); if (!t) return;
+  const u = new SpeechSynthesisUtterance(t), v = voiceFor(sayLang); if (v) u.voice = v; u.lang = v ? v.lang : sayLang === 'zh' ? 'zh-CN' : 'en-US'; u.rate = 1;
+  u.onend = () => { if (my === token && autoOn){ clearTimeout(timer); timer = setTimeout(advance, 700); } };
+  try { synth.speak(u); } catch {}
+}
+if (!synth) $('#saybox').hidden = true; else try { synth.getVoices(); } catch {}
+$('#saybox').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+  sayLang = sayLang === b.dataset.say ? null : b.dataset.say;
+  document.querySelectorAll('[data-say]').forEach(x => x.setAttribute('aria-pressed', x.dataset.say === sayLang)); say(); schedule(); });
+function advance(){ if (!autoOn) return; if (i === steps.length-1 && !hidden) return setAuto(false); next(); }
+function schedule(){ clearTimeout(timer); if (!autoOn) return;
+  const l = sayLang || ($('#app').dataset.lang === 'en' ? 'en' : 'zh'), n = stepText(l).join('').length * (l === 'zh' ? 2.2 : 1);
+  timer = setTimeout(advance, sayLang && synth ? 6000+n*160 : 3500+n*55); }   // with speech on, the utterance's end advances first; this is the fallback
+function setAuto(on){ autoOn = on; $('#auto').setAttribute('aria-pressed', on); schedule(); }
+$('#auto').addEventListener('click', () => setAuto(!autoOn));
+addEventListener('pagehide', () => { try { synth?.cancel(); } catch {} });
+
+function setLang(l){ $('#app').dataset.lang = l; document.querySelectorAll('[data-lang-btn]').forEach(b => b.setAttribute('aria-pressed', b.dataset.langBtn === l)); if (typeof more === 'function') more(); try { localStorage.setItem('nmr-lang', l); } catch {} }
+document.querySelectorAll('[data-lang-btn]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.langBtn)));
+let saved = null; try { saved = localStorage.getItem('nmr-lang'); } catch {}
+setLang(['zh','en','both'].includes(saved) ? saved : (SPEC.lang || 'both'));
+$('#title').innerHTML = bi(SPEC.title);
+show(0);
+let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (cur) draw(peek ? [] : steps[i].peaks); drawMol(); }, 120); });
+})();
+</script>

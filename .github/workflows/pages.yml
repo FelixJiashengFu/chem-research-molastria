@@ -127,6 +127,10 @@ jobs:
         run: node --test tools/extract-test.mjs
       - name: Paper Studio (PaperOrchestra port — prompts, templates, audits, pipeline and key handling, checked against the Python original)
         run: node --test tools/paper-test.mjs
+      - name: NMR walkthroughs (nmr-walkthrough port — validation, examples, grounding every number in the user's data, key handling)
+        run: |
+          node tools/nmr-walkthrough-sync.mjs --check
+          node --test tools/nmr-walkthrough-test.mjs
       - name: Workbench (formats, crystals, paths, conformers, R/S vs RDKit, Molden vs PySCF, cube, Hirshfeld, IGM/IGMH, spectra vs cclib, job scripts)
         run: node --test tools/workbench-test.mjs
       - name: Thermochemistry (GoodVibes port, compared with the real GoodVibes 4.4.0 on real outputs)

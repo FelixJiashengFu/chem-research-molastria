@@ -1,0 +1,85 @@
+/* 逐步解谱讲解：只用 shared-nav.css 的颜色和字体变量，深浅两种主题都生效。播放器自己在 iframe 里（有自己的深浅两套颜色，
+   跟着这一页的主题传进去）。手机宽度上单栏。 */
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--font-sans)}
+a{color:var(--accent-text)}
+[hidden]{display:none!important}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.nw-file:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+.muted{color:var(--muted)}
+.nw-main{max-width:1240px;margin:0 auto;padding:0 20px 72px}
+.nw-noscript{margin:48px 20px;text-align:center;color:var(--muted)}
+
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer;font:500 13px var(--font-sans)}
+.button:hover{background:var(--surface-2)}
+.button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.button.primary:hover{background:var(--accent-hover)}
+.button:disabled{opacity:.55;cursor:default}
+
+.nw-hero{padding:40px 0 8px}
+.eyebrow{margin:0 0 12px;font-size:11px;letter-spacing:2px;font-weight:700;color:var(--muted)}
+.eyebrow a{color:inherit}
+.nw-hero h1{margin:0;font:600 clamp(28px,4.6vw,42px)/1.2 var(--font-serif);letter-spacing:.04em}
+.nw-h1-en{display:block;margin-top:6px;font:italic 400 clamp(16px,2vw,19px)/1.3 var(--font-num);color:var(--muted);letter-spacing:.02em}
+.nw-h1-en:empty{display:none}
+:root[lang=en] .nw-hero h1{font-family:var(--font-num);letter-spacing:.01em}
+.lead{max-width:60em;margin:16px 0 0;font-size:15.5px;line-height:1.9;color:var(--ink-2)}
+.nw-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:18px 0;padding:0;list-style:none}
+.nw-rules li{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:13.5px;line-height:1.7;color:var(--ink-2)}
+.nw-rules b{color:var(--ink)}
+.nw-rules li:first-child{border-color:color-mix(in srgb,var(--ok) 45%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
+.fs-jump{display:flex;flex-wrap:wrap;gap:10px}
+
+.nw-block{margin-top:34px;scroll-margin-top:calc(var(--cr-nav-height,64px) + 12px)}
+.nw-block>h2,.nw-stage-head h2{margin:0 0 8px;font:600 20px/1.35 var(--font-serif)}
+.nw-block>p{max-width:62em;font-size:14px;line-height:1.8}
+
+.nw-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.nw-card{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.nw-card h3{margin:0;font-size:15px;line-height:1.5}
+.nw-card p{margin:0;font-size:13px}
+.nw-formula{font:600 14px var(--font-num);color:var(--gold-ink)}
+.nw-card .button{align-self:flex-start;margin-top:8px}
+
+.nw-stage-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.nw-btns{display:flex;flex-wrap:wrap;gap:8px}
+.nw-hint{margin:6px 0 10px;font-size:13px}
+.nw-frame-box{position:relative;height:min(780px,calc(100vh - var(--cr-nav-height,64px) - 40px));min-height:560px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.nw-frame-box:fullscreen{height:100%;border-radius:0}
+.nw-frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+
+.nw-report{margin:0 0 10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:13.5px;line-height:1.7}
+.nw-report[data-kind=ok]{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.nw-report[data-kind=warn]{border-color:color-mix(in srgb,var(--warn) 55%,var(--line));background:color-mix(in srgb,var(--warn) 7%,var(--surface))}
+.nw-report p{margin:0}
+.nw-report details{margin-top:4px}
+.nw-report summary{cursor:pointer;color:var(--accent-text)}
+.nw-report ul{margin:4px 0;padding-left:20px;max-height:220px;overflow:auto}
+.nw-report code{font-family:var(--font-mono,ui-monospace,monospace);font-size:12.5px}
+
+.nw-form{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding:20px 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.nw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.nw-form label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:13px;font-weight:600;color:var(--ink-2)}
+.nw-form input:not([type=checkbox]):not([type=file]),.nw-form select,.nw-form textarea{width:100%;min-height:38px;padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);color:var(--ink);font:400 14px var(--font-sans)}
+.nw-form textarea{min-height:180px;resize:vertical;font:13.5px/1.6 var(--font-mono,ui-monospace,monospace)}
+.nw-imgs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.nw-small{flex-basis:100%;margin:0;font-size:12.5px;line-height:1.7}
+.nw-file{position:relative;overflow:hidden}
+.nw-file input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
+.nw-form .nw-file{flex-direction:row;font-weight:500;color:var(--ink)}
+.nw-model{margin:4px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;gap:10px}
+.nw-model legend{padding:0 6px;font-size:13px;font-weight:700;color:var(--ink)}
+.nw-keyrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-size:13px}
+.nw-form .nw-check{flex-direction:row;align-items:center;gap:6px;font-weight:500}
+.nw-go{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.nw-status{flex:1 1 260px;min-width:0;margin:0;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.nw-status[data-kind=error]{color:var(--danger)}
+.nw-status[data-kind=ok]{color:var(--ok)}
+#nw-load .nw-status{margin-top:8px}
+
+@media (max-width:760px){
+  .nw-main{padding:0 16px 56px}
+  .nw-hero{padding-top:24px}
+  .nw-form{padding:16px 14px}
+  /* 播放器在窄屏上自己改成上下排列：框要高一些，框里自己滚动 */
+  .nw-frame-box{height:1180px;min-height:0}
+}

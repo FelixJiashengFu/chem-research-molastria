@@ -4,3 +4,6 @@ tools/code-fixtures/** text eol=lf
 # NMRium：app/ 是 tools/vendor-nmrium.mjs 生成的构建结果，不看 diff；示例数据原样保存，换行不能改
 public/nmr/nmrium/app/** -diff linguist-generated
 public/nmr/nmrium/samples/** -text
+# 逐步解谱讲解：player.html 和 nw-guide.js 由 tools/nmr-walkthrough-sync.mjs 从 nmr-walkthrough 生成
+public/nmr/walkthrough/player.html linguist-generated
+public/nmr/walkthrough/nw-guide.js linguist-generated
