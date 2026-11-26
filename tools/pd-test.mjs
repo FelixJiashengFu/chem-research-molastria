@@ -313,7 +313,9 @@ test('顶栏、SEO、站点地图和最近更新接上了', () => {
   assert.match(seo, /injectHead\("protein-design\/index\.html"/); assert.match(seo, /\["protein-design\/", "0\.8", "monthly"\]/);
   assert.match(read('protein-design/index.html'), /data-section="protein"/);
   assert.match(read('updates/updates-data.js'), /id: 'protein-design'/);
-  assert.match(read('shared-nav.js'), /UPDATES_LATEST = '2026-11-25'/);
+  // 以后的栏目会把 UPDATES_LATEST 往后推，这里只要求不早于这一条的日期
+  const latest = read('shared-nav.js').match(/UPDATES_LATEST = '(\d{4}-\d{2}-\d{2})'/);
+  assert.ok(latest && latest[1] >= '2026-11-25', 'UPDATES_LATEST 不早于 2026-11-25');
   const yml = fs.readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
   assert.match(yml, /node --test tools\/pd-test\.mjs/);
 });
