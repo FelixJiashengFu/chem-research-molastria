@@ -1913,6 +1913,11 @@
  "在 NMRium 里处理谱图": [
   "nmr/index.html"
  ],
+ "逐步解谱讲解": [
+  "nmr/index.html",
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
  "说法核对": [
   "nmr/index.html"
  ],
@@ -1962,6 +1967,24 @@
   "nmr/index.html"
  ],
  "谱图馆 · 练习题": [
+  "nmr/index.html"
+ ],
+ "点一下动一步：逐步解谱讲解": [
+  "nmr/index.html"
+ ],
+ "用 ¹H、¹³C、COSY、HSQC、HMBC 推出一个结构，每一步只讲一个推理动作：谱图放大高亮一个信号，结构长出一块。三个示例都用注明出处的实测数据；也能贴上自己的峰表，用自己的大模型 API key 生成，网页会逐个核对每个数是不是来自你的数据。": [
+  "nmr/index.html"
+ ],
+ "入门：巴豆酸乙酯": [
+  "nmr/index.html"
+ ],
+ "进阶：香草醛": [
+  "nmr/index.html"
+ ],
+ "60 MHz 台式谱：布洛芬": [
+  "nmr/index.html"
+ ],
+ "用自己的数据生成": [
   "nmr/index.html"
  ],
  "从自由感应衰减到谱：傅里叶变换": [
@@ -8846,7 +8869,7 @@
  "从 1938 年的分子束到 1.2 GHz、超极化和 AI 解谱，附五个动手演示": [
   "shared-nav.js"
  ],
- "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫 nmrium 处理谱图 jcamp bruker fid 相位 积分 峰": [
+ "nmr 核磁 核磁共振 mri 磁共振 spectroscopy 波谱 谱学 化学位移 chemical shift cosy noesy hsqc mas dnp 超极化 固体核磁 弛豫 nmrium 处理谱图 jcamp bruker fid 相位 积分 峰 解谱 逐步 讲解 walkthrough 结构解析 structure elucidation": [
   "shared-nav.js"
  ],
  "91 种分析方法的谱图怎么来、怎么读：红外、质谱、GC-MS、LC-MS、色谱、衍射、热分析、冷冻电镜和高分子表征，附实测谱和 78 个演示": [
@@ -9032,6 +9055,13 @@
   "shared-nav.js"
  ],
  "world model 世界模型 dreamer jepa v-jepa genie sora cosmos 视频生成 video generation 学出来的模拟器 learned simulator gns graphcast 天气 weather 想象 imagination 规划 planning mpc model-based reinforcement learning 强化学习 koopman dmd sindy 马尔可夫态模型 msm 自驱实验室 self-driving lab 代理模型 surrogate": [
+  "shared-nav.js"
+ ],
+ "AI 蛋白质设计": [
+  "shared-nav.js",
+  "tools/build-seo.ts"
+ ],
+ "OpenAI、DeepMind、Baker 组、EvolutionaryScale 和中国团队的成果汇总：十一章十二个演示，每项标明有没有湿实验验证": [
   "shared-nav.js"
  ],
  "在线跑 15 个机器学习势：优化、频率、光谱": [
@@ -18946,6 +18976,12 @@
  "在浏览器里用开源的 NMRium 处理核磁数据：JCAMP-DX、Bruker、原始 FID，傅里叶变换、相位、基线、积分、找峰和二维谱；数据不上传。": [
   "tools/build-seo.ts"
  ],
+ "逐步解谱讲解 · NMR walkthroughs · MolAstria": [
+  "tools/build-seo.ts"
+ ],
+ "核磁解谱点一下动一步：谱图放大高亮一个信号，结构长出一块，配观察、依据、结论、核对四句讲解；三个实测数据的示例（巴豆酸乙酯、香草醛、布洛芬），也能贴上自己的峰表、用自己的大模型 API key 生成，网页逐个核对每个数是否来自用户的数据。": [
+  "tools/build-seo.ts"
+ ],
  "谱图馆 · Spectra Hall": [
   "tools/build-seo.ts"
  ],
@@ -19022,6 +19058,12 @@
   "tools/build-seo.ts"
  ],
  "世界模型十一章：什么是世界模型、潜空间和状态空间模型、在想象里学（Dyna、World Models、Dreamer）、用模型规划（MPC、MuZero）、JEPA 和自监督表征、视频世界模型（Genie、Cosmos）、学出来的物理模拟器（GNS、DMD、力匹配）、天气和地球系统（GraphCast、GenCast）、分子世界（马尔可夫态模型、学出来的传播器、机器学习势）、实验室世界模型（贝叶斯优化、自驱实验室）、什么时候该相信世界模型；每章写明和化学研究的联系，附约七十个世界物理模型的总览、十三个在浏览器里当场计算的演示和 80 篇按 DOI / arXiv 核对过的文献。": [
+  "tools/build-seo.ts"
+ ],
+ "AI 蛋白质设计 · AI Protein Design": [
+  "tools/build-seo.ts"
+ ],
+ "AI 蛋白质设计十一章：设计是一道反问题、折叠的物理和 HP 模型、Rosetta 和 Top7 的二十年、协同进化与蛋白质语言模型（ESM、ProGen、Evo）、逆折叠（ProteinMPNN、LigandMPNN）、扁散生成骱架（RFdiffusion、Chroma、Proteina）、结合蛋白与抗体（AlphaProteo、BindCraft、Chai-2、RFantibody）、从头设计的酶、通用大模型（OpenAI GPT-4b micro 和 GPT-6）、怎么判断一份成果的真假、生物安全与治理；55 项成果逐项标明证据等级和权重开放程度，十二个在浏览器里当场计算的演示，79 篇文献按 DOI 核对过。": [
   "tools/build-seo.ts"
  ],
  "前沿 AI 数学 · Frontier AI Mathematics": [
