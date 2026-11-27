@@ -86,6 +86,8 @@ jobs:
         run: node --test tools/wm-test.mjs
       - name: AI protein design demos and content
         run: node --test tools/pd-test.mjs
+      - name: Artificial catalysts demos and content
+        run: node --test tools/cat-test.mjs
       - name: Electromagnetism models and content
         run: node --test tools/em-test.mjs
       - name: Tensor networks models and content

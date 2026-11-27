@@ -23,6 +23,7 @@
   const GROUP = { find: ['发现', 'Discover'], learn: ['学习', 'Learn'], explore: ['探索', 'Explore'], models: ['模型与 AI', 'Models & AI'], make: ['工具', 'Tools'] };
   // 每条一枚自己画的小图（24 × 24 的线稿，白色画在分组颜色的底上）
   const ICONS = {
+    cage: '<path d="M12 3.5 20 8v8l-8 4.5L4 16V8Z"/><path d="M4 8l8 4.5L20 8M12 12.5v8" stroke-dasharray="1.6 1.9"/><circle cx="12" cy="12.2" r="1.7"/>',
     protein: '<path d="M8 3.5c4 1.5 4 4.5 0 6s-4 4.5 0 6 4 4.5 0 6"/><path d="M16 3.5c-4 1.5-4 4.5 0 6s4 4.5 0 6 4 4.5 0 6"/><path d="M9.6 6.3h4.8M9.6 12.3h4.8M9.6 18.3h4.8"/>',
     world: '<circle cx="11" cy="13" r="6.5"/><path d="M4.5 13h13M11 6.5c-2.2 1.8-2.2 11.2 0 13M11 6.5c2.2 1.8 2.2 11.2 0 13"/><path d="M15.5 3.5c2.6.4 4.6 2.4 5 5M18.8 3.2l-3.3.3.6 3"/>',
     bench: '<path d="M3.5 15.5h17v3.5h-17z"/><circle cx="8" cy="8.5" r="2"/><circle cx="16" cy="7.5" r="2"/><path d="M9.9 8.2l4.2-.4M8 10.5v5M16 9.5v6"/>',
