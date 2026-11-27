@@ -7,6 +7,13 @@
 window.MOLASTRIA_UPDATES = {
   items: [
     {
+      id: 'catalysts', date: '2026-11-27', path: 'catalysts/index.html', group: 'explore', icon: 'cage', store: 'molastria-catalyst', chapters: 10,
+      zh: '人工催化剂', en: 'Artificial Catalysts',
+      note: ['笼、框架、人工金属酶、设计酶、有机小分子、单原子和纳米酶：十章、十四个现算的演示', 'Cages, frameworks, artificial metalloenzymes, designed enzymes, organocatalysts, single atoms and nanozymes: ten chapters and fourteen live demos'],
+      more: ['起点是 2026 年 11 月那篇笼催化的论文：爱丁堡和牛津的两个组用原位的办法一次测了 30 个钯笼，活性跨四个数量级以上，再用随机森林把活化自由能预测到 0.4 kcal/mol。顺着它把人工催化剂的七条路线讲一遍：加速倍数到底相对什么、TON 的分母是什么、决速步怎么定、99 % ee 其实只要 3.1 kcal/mol、析氧过电位为什么有 0.37 V 的理论下限，最后一章是一张读论文的检查单。',
+        'The starting point is the cage-catalysis paper of November 2026: two groups in Edinburgh and Oxford measured 30 palladium cages in one in situ campaign, spanning over four orders of magnitude, and predicted the activation free energy to 0.4 kcal/mol with a random forest. From there, the seven routes to an artificial catalyst: what an acceleration is relative to, what the denominator of a turnover number is, how a rate-determining step is identified, why 99 % ee needs only 3.1 kcal/mol, why oxygen evolution has a 0.37 V floor on its overpotential, and a closing checklist for reading such a paper.'],
+    },
+    {
       id: 'nmr-walkthrough', date: '2026-11-26', path: 'nmr/walkthrough/index.html', group: 'explore', icon: 'nmr',
       zh: '逐步解谱讲解', en: 'Step-by-step NMR walkthroughs',
       note: ['核磁解谱点一下动一步；贴上自己的峰表，用自己的 API key 生成新的一份', 'NMR structure solving one click at a time; paste your own peak lists and generate one with your own API key'],
