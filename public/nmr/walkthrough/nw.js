@@ -51,8 +51,8 @@
   <section class="nw-hero" aria-labelledby="nw-h1">
     <p class="eyebrow"><a href="../index.html">${L('核磁共振', 'NMR')}</a> · ${L('逐步解谱讲解', 'Step-by-step walkthroughs')}</p>
     <h1 id="nw-h1">${L('逐步解谱讲解', 'Step-by-step NMR walkthroughs')}<span class="nw-h1-en" lang="en">${en ? '' : 'Click-to-advance NMR'}</span></h1>
-    <p class="lead">${L('点一下，动一步：谱图放大并高亮一个信号，结构多长出一块，旁边给出“观察、依据、结论、核对”四句讲解。先看三个用实测数据做的示例；再贴上你自己的峰表，用你自己的大模型 API key 生成一份新的。',
-      'One click, one step: the spectrum zooms to one signal, the structure grows by one piece, and four short beats (Observe, Rule, So, Check) explain it. Start with three examples built on measured data, then paste your own peak lists and generate a new one with your own model API key.')}</p>
+    <p class="lead">${L('点一下，动一步：谱图放大并高亮一个信号，结构多长出一块，旁边给出“观察、依据、结论、核对”四句讲解。先看几个用实测数据做的示例；再贴上你自己的峰表，用你自己的大模型 API key 生成一份新的。',
+      'One click, one step: the spectrum zooms to one signal, the structure grows by one piece, and four short beats (Observe, Rule, So, Check) explain it. Start with examples built on measured data, then paste your own peak lists and generate a new one with your own model API key.')}</p>
     <ul class="nw-rules">
       <li><b>${L('数据必须真实。', 'Real data only.')}</b> ${L('讲解里的每个位移、J 值和相关峰都要来自你给的数据。生成后网页会逐个核对，你的数据里找不到的数一律标成 ≈（位移、J）或 *（二维峰），不当实测显示。', 'Every shift, J value and cross peak must come from the data you give. After generating, the page checks each number; any it cannot find in your data is marked ≈ (shifts, J) or * (2D peaks) and never shown as measured.')}</li>
       <li><b>${L('key 只在你的浏览器里。', 'Your key stays in your browser.')}</b> ${L('浏览器直接把请求发给你选的服务商，不经过 MolAstria 的服务器，也不进云同步。', 'The browser sends the request straight to the provider you choose, never through MolAstria’s servers, and the key is not synced.')}</li>
@@ -67,8 +67,8 @@
   </section>
 
   <section class="nw-block" id="nw-examples" aria-labelledby="nw-ex-h" tabindex="-1">
-    <h2 id="nw-ex-h">${L('三个示例', 'Three examples')}</h2>
-    <p class="muted">${L('数据来源写在每个示例的归属表下面（两份是大学的学生实验报告，对不上的地方都已注明）。', 'The sources are listed under each example’s assignment table (two are university lab reports; every mismatch is noted).')}</p>
+    <h2 id="nw-ex-h">${L('示例', 'Examples')}</h2>
+    <p class="muted">${L('数据来源写在每个示例的归属表下面：大学化学系的谱图报告、仪器厂家的应用说明和 BMRB 数据库；和来源对不上、或来源里没有的地方都已注明。', 'The sources are listed under each example’s assignment table: university chemistry department NMR reports, instrument makers’ application notes and the BMRB database. Anything that differs from the source, or is missing from it, is noted.')}</p>
     <div class="nw-cards" id="nw-ex-cards"></div>
   </section>
 
@@ -88,7 +88,7 @@
 
   <section class="nw-block" id="nw-make" aria-labelledby="nw-make-h" tabindex="-1">
     <h2 id="nw-make-h">${L('用自己的数据生成', 'Generate from your own data')}</h2>
-    <p class="muted">${L('贴上你测的（或讲义上给的）峰表，模型照上面三个示例的写法写一份讲解。没有数据只有化合物名字的话请先去找有出处的实测数据：这里不让模型凭记忆写数字。', 'Paste the peak lists you measured (or that your handout gives); the model writes a walkthrough in the style of the examples above. If you only have a compound name, find measured data with a source first: the model is not allowed to write numbers from memory here.')}</p>
+    <p class="muted">${L('贴上你测的（或讲义上给的）峰表，模型照上面示例的写法写一份讲解。没有数据只有化合物名字的话请先去找有出处的实测数据：这里不让模型凭记忆写数字。', 'Paste the peak lists you measured (or that your handout gives); the model writes a walkthrough in the style of the examples above. If you only have a compound name, find measured data with a source first: the model is not allowed to write numbers from memory here.')}</p>
     <form class="nw-form" id="nw-form" autocomplete="off">
       <div class="nw-grid">
         <label>${L('题目或化合物（可选）', 'Problem or compound (optional)')}<input id="nw-f-name" maxlength="160" value="${esc(f0.name || '')}" placeholder="${L('例如：CHMD11 第 2 题', 'e.g. Problem 2, week 3')}"></label>
@@ -195,10 +195,13 @@
       ${r.warnings.length ? `<details><summary>${L(`写法上的提示（${r.warnings.length} 条，英文）`, `Teaching-quality hints (${r.warnings.length})`)}</summary><ul lang="en">${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></details>` : ''}`;
   }
 
-  // 示例卡片
+  // 示例卡片：难度照上游 README 的说法（名单外的新示例只写场强）
+  const LEVEL = { 'ethyl-crotonate': ['入门', 'Starter'], estragole: ['入门', 'Starter'], pulegone: ['中等', 'Intermediate'], vanillin: ['进阶', 'Advanced'], melatonin: ['进阶', 'Advanced'], ibuprofen: ['台式谱', 'Benchtop'] };
   $('#nw-ex-cards').innerHTML = G.examples.map((e) => {
     const s = e.spec, n = s.steps.length, sp = s.spectra.map((x) => (x.kind === '2d' ? x.type : String(x.nucleus).replace(/^(\d+)/, (d) => [...d].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join('')))).join(' · ');
-    return `<article class="nw-card"><h3>${fmt(T(s.title))}</h3><p class="nw-formula">${esc(s.formula || '')}</p>
+    const mhz = s.spectra.find((x) => x.nucleus === '1H')?.mhz, lv = LEVEL[e.id];
+    const tag = [lv ? L(...lv) : '', mhz ? `¹H ${esc(mhz)} MHz` : ''].filter(Boolean).join(' · ');
+    return `<article class="nw-card">${tag ? `<p class="nw-level">${tag}</p>` : ''}<h3>${fmt(T(s.title))}</h3><p class="nw-formula">${esc(s.formula || '')}</p>
       <p class="muted">${esc(sp)} · ${L(`${n} 步`, `${n} steps`)}</p>
       <button type="button" class="button primary" data-ex="${esc(e.id)}">${L('播放', 'Play')}</button></article>`;
   }).join('');

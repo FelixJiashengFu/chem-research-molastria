@@ -7294,12 +7294,18 @@ check('nmr walkthroughs: examples play in a sandboxed frame; generate with a fak
   await go(p, '/nmr/walkthrough/index.html');
   await p.waitForFunction(() => document.getElementById('nw-frame').srcdoc.length > 20000);
   assert.equal(await p.getAttribute('#nw-frame', 'sandbox'), 'allow-scripts', 'model-written pages run without this site’s origin');
-  assert.equal(await p.locator('#nw-ex-cards [data-ex]').count(), 3);
+  assert.equal(await p.locator('#nw-ex-cards [data-ex]').count(), 6);
+  assert.equal((await p.locator('#nw-ex-cards .nw-level').first().textContent()).trim(), '入门 · ¹H 400 MHz');
   const frame = p.frameLocator('#nw-frame');
   await frame.locator('#next').click();
   await frame.locator('#stepcard h2').waitFor();
   await p.click('[data-ex=vanillin]');
   await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'c8h8o3-nmr-walkthrough');
+  // a multi-spectrum example (¹H, ¹³C, COSY, HSQC, HMBC) plays too, and steps forward
+  await p.click('[data-ex=melatonin]');
+  await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'c13h16n2o2-nmr-walkthrough');
+  await frame.locator('#next').click();
+  await frame.locator('#stepcard h2').waitFor();
   // the fake model: first a spec with a broken step (validation sends it back), then a fixed one with one shift the user never gave
   const crot = await p.evaluate(() => JSON.parse(JSON.stringify(window.MOLASTRIA_NMRW_GUIDE.examples[0].spec)));
   const h = crot.spectra.find((sp) => sp.nucleus === '1H');
@@ -7346,7 +7352,7 @@ check('nmr walkthroughs: examples play in a sandboxed frame; generate with a fak
   await p.reload();
   await p.waitForFunction(() => document.getElementById('nw-main').dataset.playing === 'ethyl-crotonate-nmr-walkthrough' && !document.getElementById('nw-report').hidden);
   // open a JSON: the vanillin example without its sources is refused, with them it plays
-  const van = await p.evaluate(() => window.MOLASTRIA_NMRW_GUIDE.examples[1].spec);
+  const van = await p.evaluate(() => window.MOLASTRIA_NMRW_GUIDE.examples.find((x) => x.id === 'vanillin').spec);
   await p.setInputFiles('#nw-load-file', { name: 'bare.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ ...van, sources: [] })) });
   await p.waitForFunction(() => /打不开/.test(document.getElementById('nw-load-status').textContent));
   await p.setInputFiles('#nw-load-file', { name: 'vanillin.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(van)) });
@@ -7356,6 +7362,7 @@ check('nmr walkthroughs: examples play in a sandboxed frame; generate with a fak
   const q = await open({ reducedMotion: 'reduce' });
   await go(q, '/nmr/index.html');
   assert.ok(await q.locator('a[href="walkthrough/index.html#ex=vanillin"]').count());
+  for (const id of ['estragole', 'pulegone', 'melatonin']) assert.ok(await q.locator(`a[href="walkthrough/index.html#ex=${id}"]`).count(), id);
   await finish(q);
   // English, dark, phone: no Chinese outside the frame, no sideways scroll, the player fills the frame
   const e = await open({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', reducedMotion: 'reduce' });
